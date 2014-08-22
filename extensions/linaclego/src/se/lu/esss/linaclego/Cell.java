@@ -17,24 +17,18 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "cell")
 public class Cell {
 
-    protected List<Slot> slot;
-    protected Parameters d;
+    protected List<Slot> slot = new ArrayList<Slot>();
+    protected Parameters d = new Parameters();
     @XmlAttribute(name = "id", required = true)
     protected String id;
     @XmlAttribute(name = "model")
     protected String model;
 
-    public List<Slot> getSlot() {
-        if (slot == null) {
-            slot = new ArrayList<Slot>();
-        }
+    public List<Slot> getSlots() {
         return this.slot;
     }
 
-    public Parameters getD() {
-        if (d == null) {
-            d = new Parameters();
-        }
+    public Parameters getParameters() { 
         return this.d;
     }
 
@@ -42,16 +36,7 @@ public class Cell {
         return id;
     }
 
-    public void setId(String value) {
-        this.id = value;
-    }
-
     public String getModel() {
         return model;
     }
-
-    public void setModel(String value) {
-        this.model = value;
-    }
-
 }

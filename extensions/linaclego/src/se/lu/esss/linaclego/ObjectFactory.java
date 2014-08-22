@@ -45,11 +45,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link LinacLego }
+     * Create an instance of {@link Linac }
      * 
      */
-    public LinacLego createLinacLego() {
-        return new LinacLego();
+    public Linac createLinacLego() {
+        return new Linac();
     }
 
     /**

@@ -25,16 +25,15 @@ public class BeamlineElementXmlAdaptor extends XmlAdapter<BeamlineElement, Beaml
 	
 	@Override
 	public BeamlineElement marshal(BeamlineElement v) throws Exception {
-		v.setType(v.getClass().getAnnotation(XmlType.class).name());
 		return v;
 	}
 
 	@Override
 	public BeamlineElement unmarshal(BeamlineElement v) throws Exception {
-		BeamlineElement v2 = bles.get(v.getType()).newInstance();
-		v2.setId(v.getId());
-		v2.setModel(v.getModel());
-		v2.getParameters().addAll(v.getParameters());
+		BeamlineElement v2 = bles.get(v.type).newInstance();
+		v2.id = v.id;
+		v2.model = v.model;
+		v2.parameters = v.parameters;
 		return v2;
 	}
 }

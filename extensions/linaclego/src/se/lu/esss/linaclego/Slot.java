@@ -19,24 +19,18 @@ import se.lu.esss.linaclego.elements.BeamlineElement;
 })
 @XmlRootElement(name = "slot")
 public class Slot {
-	protected List<BeamlineElement> ble;
-    protected Parameters d;
+	protected List<BeamlineElement> ble = new ArrayList<BeamlineElement>();
+    protected Parameters d = new Parameters();
     @XmlAttribute(name = "id", required = true)
     protected String id;
     @XmlAttribute(name = "model")
     protected String model;
 
-    public List<BeamlineElement> getBle() {
-        if (ble == null) {
-            ble = new ArrayList<BeamlineElement>();
-        }
+    public List<BeamlineElement> getBeamlineElements() {
         return this.ble;
     }
 
-    public Parameters getD() {
-        if (d == null) {
-            d = new Parameters();
-        }
+    public Parameters getParameters() {
         return this.d;
     }
 
@@ -44,16 +38,7 @@ public class Slot {
         return id;
     }
 
-    public void setId(String value) {
-        this.id = value;
-    }
-
     public String getModel() {
         return model;
     }
-
-    public void setModel(String value) {
-        this.model = value;
-    }
-
 }

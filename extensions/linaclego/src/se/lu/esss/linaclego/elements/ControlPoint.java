@@ -36,6 +36,21 @@ public class ControlPoint {
     @XmlAttribute(name = "section", required = true)
     protected String section;
 
+    public ControlPoint()
+    {
+    	
+    }
+    
+    public ControlPoint(String id, String type, String section, String cell, String slot, String ble)
+    {
+    	this.id = id;
+    	this.type = type;
+    	this.section = section;
+    	this.cell = cell;
+    	this.slot = slot;
+    	this.ble = ble;
+    }
+    
     public Parameters getD() {
         if (d == null) {
             d = new Parameters();
@@ -47,64 +62,31 @@ public class ControlPoint {
         return id;
     }
 
-    public void setId(String value) {
-        this.id = value;
-    }
-
-    public String getBle() {
-        return ble;
-    }
-
-    public void setBle(String value) {
-        this.ble = value;
+    public String getSection() {
+        return section;
     }
 
     public String getCell() {
         return cell;
     }
 
-    public void setCell(String value) {
-        this.cell = value;
-    }
-
     public String getSlot() {
         return slot;
     }
 
-    public void setSlot(String value) {
-        this.slot = value;
+    public String getBle() {
+        return ble;
     }
-
+    
     public String getType() {
         return type;
-    }
-
-    public void setType(String value) {
-        this.type = value;
     }
 
     public String getModel() {
         return model;
     }
 
-    public void setModel(String value) {
-        this.model = value;
-    }
-
     public String getDevName() {
         return devName;
     }
-
-    public void setDevName(String value) {
-        this.devName = value;
-    }
-
-    public String getSection() {
-        return section;
-    }
-
-    public void setSection(String value) {
-        this.section = value;
-    }
-
 }

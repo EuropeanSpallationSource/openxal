@@ -18,25 +18,18 @@ import javax.xml.bind.annotation.XmlType;
 public class Section {
 
     @XmlElement(required = true)
-    protected List<Cell> cell;
+    protected List<Cell> cell = new ArrayList<Cell>();
     @XmlAttribute(name = "id", required = true)
     protected String id;
     @XmlAttribute(name = "rfHarmonic", required = true)
     protected byte rfHarmonic;
 
-    public List<Cell> getCell() {
-        if (cell == null) {
-            cell = new ArrayList<Cell>();
-        }
+    public List<Cell> getCells() {   
         return this.cell;
     }
 
     public String getId() {
         return id;
-    }
-
-    public void setId(String value) {
-        this.id = value;
     }
 
     public byte getRfHarmonic() {

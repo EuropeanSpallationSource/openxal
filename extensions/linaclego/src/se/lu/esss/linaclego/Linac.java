@@ -21,7 +21,7 @@ import se.lu.esss.linaclego.models.SlotModel;
     "linac"
 })
 @XmlRootElement(name = "linacLego")
-public class LinacLego {
+public class Linac {
 
     @XmlAttribute(name = "revNo", required = true)
     protected String revNo;
@@ -34,27 +34,27 @@ public class LinacLego {
 	protected Header header = new Header();
 
     @XmlElement(required = true)
-	protected Linac linac = new Linac();
+	protected LinacDesc linac = new LinacDesc();
 
     @XmlAccessorType(XmlAccessType.FIELD)
-    protected static class Linac {
+    protected static class LinacDesc {
 	    @XmlElement(required = true)
-	    protected LinacLego.LinacData linacData;
+	    protected Linac.LinacData linacData = new Linac.LinacData();
 	   
 	    @XmlElement(required = true)
-	    protected List<Section> section;
+	    protected List<Section> section = new ArrayList<Section>();
     }
     
     @XmlAccessorType(XmlAccessType.FIELD)
     protected static class Header {
-	    @XmlElement(required = true)
-	    protected List<LinacLego.SlotModels> slotModels;
+	    @XmlElement(name="slotModels", required = true)
+	    protected List<Linac.SlotModelsSets> slotModelsSets = new ArrayList<Linac.SlotModelsSets>();
 	    
-	    @XmlElement(required = true)
-	    protected List<LinacLego.CellModels> cellModels;
+	    @XmlElement(name = "cellModels", required = true)
+	    protected List<Linac.CellModelsSet> cellModelsSets = new ArrayList<Linac.CellModelsSet>();
 	        
-	    @XmlElement(required = true)
-	    protected List<LinacLego.ControlPoints> controlPoints;
+	    @XmlElement(name = "controlPoints", required = true)
+	    protected List<Linac.ControlPointsSets> controlPointsSets = new ArrayList<Linac.ControlPointsSets>();
     }
     
     public String getRevNo() {
@@ -81,25 +81,16 @@ public class LinacLego {
         this.comment = value;
     }
 
-    public List<LinacLego.SlotModels> getSlotModels() {
-        if (header.slotModels == null) {
-            header.slotModels = new ArrayList<LinacLego.SlotModels>();
-        }
-        return this.header.slotModels;
+    public List<Linac.SlotModelsSets> getSlotModelSets() {
+        return this.header.slotModelsSets;
     }
 
-    public List<LinacLego.CellModels> getCellModels() {
-        if (header.cellModels == null) {
-            header.cellModels = new ArrayList<LinacLego.CellModels>();
-        }
-        return this.header.cellModels;
+    public List<Linac.CellModelsSet> getCellModelSets() {
+        return this.header.cellModelsSets;
     }
 
-    public List<LinacLego.ControlPoints> getControlPoints() {
-        if (header.controlPoints == null) {
-            header.controlPoints = new ArrayList<LinacLego.ControlPoints>();
-        }
-        return this.header.controlPoints;
+    public List<Linac.ControlPointsSets> getControlPointSets() {
+        return this.header.controlPointsSets;
     }
 
 
@@ -107,25 +98,18 @@ public class LinacLego {
     @XmlType(name = "", propOrder = {
         "cellModel"
     })
-    public static class CellModels {
+    public static class CellModelsSet {
 
-        protected List<CellModel> cellModel;
+        protected List<CellModel> cellModel = new ArrayList<CellModel>();
         @XmlAttribute(name = "id", required = true)
         protected String id;
 
-        public List<CellModel> getCellModel() {
-            if (cellModel == null) {
-                cellModel = new ArrayList<CellModel>();
-            }
+        public List<CellModel> getCellModels() {
             return this.cellModel;
         }
 
         public String getId() {
             return id;
-        }
-
-        public void setId(String value) {
-            this.id = value;
         }
     }
 
@@ -134,26 +118,19 @@ public class LinacLego {
     @XmlType(name = "", propOrder = {
         "cnpt"
     })
-    public static class ControlPoints {
+    public static class ControlPointsSets {
 
-        protected List<ControlPoint> cnpt;
+        protected List<ControlPoint> cnpt = new ArrayList<ControlPoint>();
         
         @XmlAttribute(name = "id", required = true)
         protected String id;
 
-        public List<ControlPoint> getCnpt() {
-            if (cnpt == null) {
-                cnpt = new ArrayList<ControlPoint>();
-            }
+        public List<ControlPoint> getControlPoints() {
             return this.cnpt;
         }
 
         public String getId() {
             return id;
-        }
-
-        public void setId(String value) {
-            this.id = value;
         }
     }
 
@@ -162,41 +139,26 @@ public class LinacLego {
     @XmlType(name = "", propOrder = {
         "slotModel"
     })
-    public static class SlotModels {
+    public static class SlotModelsSets {
 
-        protected List<SlotModel> slotModel;
+        protected List<SlotModel> slotModel = new ArrayList<SlotModel>();
         @XmlAttribute(name = "id", required = true)
         protected String id;
 
-        public List<SlotModel> getSlotModel() {
-            if (slotModel == null) {
-                slotModel = new ArrayList<SlotModel>();
-            }
+        public List<SlotModel> getSlotModels() {
             return this.slotModel;
         }
 
         public String getId() {
             return id;
         }
-
-        public void setId(String value) {
-            this.id = value;
-        }
-
     }
 
-    public LinacLego.LinacData getLinacData() {
-        return linac.linacData;
+    public Parameters getLinacData() {
+        return linac.linacData.d;
     }
 
-    public void setLinacData(LinacLego.LinacData value) {
-        this.linac.linacData = value;
-    }
-
-    public List<Section> getSection() {
-        if (linac.section == null) {
-            linac.section = new ArrayList<Section>();
-        }
+    public List<Section> getSections() {
         return this.linac.section;
     }
 
@@ -208,14 +170,6 @@ public class LinacLego {
     public static class LinacData {
 
         @XmlElement(required = true)
-        protected Parameters d;
-
-        public Parameters getD() {
-            if (d == null) {
-                d = new Parameters();
-            }
-            return this.d;
-        }
-
+        protected Parameters d = new Parameters();
     }
 }
