@@ -40,4 +40,9 @@ public class Section {
         this.rfHarmonic = value;
     }
 
+	public void accept(BLEVisitor visitor) {
+		visitor.visit(this);
+		for (Cell c : getCells()) c.accept(visitor);
+	}
+
 }

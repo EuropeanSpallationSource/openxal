@@ -7,9 +7,12 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+import se.lu.esss.linaclego.Cell;
+import se.lu.esss.linaclego.Parameters;
 import se.lu.esss.linaclego.Slot;
 
 
@@ -24,7 +27,8 @@ public class CellModel {
     @XmlElement(required = true)
     protected List<Var> var;
     @XmlElement(required = true)
-    protected List<Slot> slot;
+    protected List<Slot> slot= new ArrayList<Slot>();
+    @XmlID
     @XmlAttribute(name = "id", required = true)
     protected String id;
 
@@ -35,16 +39,21 @@ public class CellModel {
         return this.var;
     }
 
-    public List<Slot> getSlot() {
-        if (slot == null) {
-            slot = new ArrayList<Slot>();
-        }
+    public List<Slot> getSlots() {
         return this.slot;
     }
-
+    
     public String getId() {
         return id;
-    }
-
+    }    
     
+    public Cell apply(String id, Parameters arguments)
+    {
+    	Cell cell = new Cell(id);
+    	List<Slot> slotsout = cell.getSlots();
+    	for (Slot s : slot) {
+    		slotsout.add(s.apply(arguments));
+    	}
+    	return cell;
+    }
 }

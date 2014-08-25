@@ -6,10 +6,13 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import se.lu.esss.linaclego.elements.BeamlineElement;
+import se.lu.esss.linaclego.models.SlotModel;
 
 
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -23,11 +26,32 @@ public class Slot {
     protected Parameters d = new Parameters();
     @XmlAttribute(name = "id", required = true)
     protected String id;
+    
+    @XmlIDREF
     @XmlAttribute(name = "model")
-    protected String model;
+    protected SlotModel model;
+    
+    @XmlTransient
+    protected Slot slotInstance;
 
+    public Slot()
+    {
+    	
+    }
+    
+    public Slot(String id)
+    {
+    	this.id = id;
+    }
+    
     public List<BeamlineElement> getBeamlineElements() {
-        return this.ble;
+    	if (model != null) {
+    		if (slotInstance == null)
+    			slotInstance =  model.apply(id, getParameters());    		 
+    		return slotInstance.getBeamlineElements();
+    	} else {
+    		return this.ble;
+    	}
     }
 
     public Parameters getParameters() {
@@ -38,7 +62,24 @@ public class Slot {
         return id;
     }
 
-    public String getModel() {
+    public SlotModel getModel() {
         return model;
     }
+
+	public void accept(BLEVisitor visitor) {
+		for (BeamlineElement ble : getBeamlineElements()) ble.accept(visitor);
+	}
+
+	public Slot apply(Parameters arguments) {
+		if (model != null) 
+			return model.apply(id, arguments); // TODO apply parameters to arguments
+		else {
+			Slot s = new Slot();
+			s.id = id;
+			List<BeamlineElement> bleout = s.getBeamlineElements();
+			for (BeamlineElement blein : ble)
+				bleout.add(blein.apply(arguments));
+			return s;
+		}
+	}
 }

@@ -172,4 +172,9 @@ public class Linac {
         @XmlElement(required = true)
         protected Parameters d = new Parameters();
     }
+    
+    public void accept(BLEVisitor visitor)
+    {
+    	for (Section s: getSections()) s.accept(visitor);
+    }
 }

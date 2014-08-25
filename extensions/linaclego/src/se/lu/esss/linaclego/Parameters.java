@@ -1,7 +1,9 @@
 package se.lu.esss.linaclego;
 
+import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -11,14 +13,21 @@ import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
 
 
-public class Parameters extends ArrayList<Parameters.D> {
-	private static final long serialVersionUID = 1L;
-	protected Map<String, D> hashed = new HashMap<>();
+public class Parameters extends AbstractList<Parameters.D> {
+	protected Map<String, D> hashedData = new HashMap<>();
+	protected List<D> data = new ArrayList<>();
 	
+	public Parameters() 
+	{
+	}
+
+	public D get(String value) {
+		return hashedData.get(value);
+	}
 	
 	public double getDoubleValue(String id)
 	{
-		return Double.parseDouble(hashed.get(id).getValue());
+		return Double.parseDouble(hashedData.get(id).getValue());
 	}
 	
 	@XmlAccessorType(XmlAccessType.FIELD)
@@ -72,9 +81,29 @@ public class Parameters extends ArrayList<Parameters.D> {
 	    }
 	}
 
+
+
 	@Override
-	public boolean add(D e) {
-		hashed.put(e.getId(), e);
-		return super.add(e);
+	public D get(int index) {
+		return data.get(index);
+	}
+
+	@Override
+	public int size() {
+		return data.size();
+	}
+
+	@Override
+	public void add(int i,D e) {
+		hashedData.put(e.id, e);
+		data.add(i, e);
+	}
+	
+	@Override
+	public D remove(int i)
+	{
+		D d = data.remove(i);
+		hashedData.remove(d.id);
+		return d;
 	}
 }

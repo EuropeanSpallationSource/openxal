@@ -8,6 +8,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import se.lu.esss.linaclego.BLEVisitor;
 import se.lu.esss.linaclego.Parameters;
 
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -45,4 +46,32 @@ public class BeamlineElement {
     public String getId() {
         return id;
     }
+    
+    public String getEssId() {
+        return id;
+    }
+
+	public void accept(BLEVisitor visitor) {
+	}
+
+	public BeamlineElement apply(Parameters arguments) {
+		BeamlineElement bleout;
+		try {
+			bleout = this.getClass().newInstance();
+			
+			bleout.id = id;
+			Parameters pout = bleout.getParameters();
+			for (Parameters.D param : parameters) {
+				Parameters.D arg = arguments.get(param.getValue());
+				if (arg != null) {
+					pout.add(new Parameters.D(param.getId(), arg.getValue()));
+				} else
+					pout.add(param);
+			}
+			return bleout;
+		} catch (InstantiationException | IllegalAccessException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 }
