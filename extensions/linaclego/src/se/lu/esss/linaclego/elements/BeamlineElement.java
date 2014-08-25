@@ -46,10 +46,6 @@ public class BeamlineElement {
     public String getId() {
         return id;
     }
-    
-    public String getEssId() {
-        return id;
-    }
 
 	public void accept(BLEVisitor visitor) {
 	}

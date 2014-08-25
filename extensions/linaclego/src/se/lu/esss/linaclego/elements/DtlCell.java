@@ -17,12 +17,12 @@ public class DtlCell extends RfGap {
 		return getParameters().getDoubleValue("cellLenmm");
 	}
 	
-	public double getQ1Lenght()
+	public double getQ1Length()
 	{
 		return getParameters().getDoubleValue("q1Lenmm");
 	}
 	
-	public double getQ2Lenght()
+	public double getQ2Length()
 	{
 		return getParameters().getDoubleValue("q2Lenmm");
 	}

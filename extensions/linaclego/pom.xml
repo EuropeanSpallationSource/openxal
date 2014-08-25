@@ -25,4 +25,10 @@
 		</resources>
 
 	</build>
+	<dependencies>
+		<dependency>
+			<groupId>se.lu.esss.ics.jels</groupId>
+			<artifactId>jels</artifactId>
+		</dependency>
+	</dependencies>
 </project>

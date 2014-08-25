@@ -120,7 +120,7 @@ public class TraceWinExporter implements BLEVisitor {
 
 	@Override
 	public void visit(Drift drift) {
-		println(drift.getEssId(), "DRIFT",
+		println(drift.getId(), "DRIFT",
 				fourPlaces.format(drift.getLength()),
 				fourPlaces.format(drift.getApertureR()),
 				fourPlaces.format(drift.getApertureY()));
@@ -131,14 +131,14 @@ public class TraceWinExporter implements BLEVisitor {
 
 	@Override
 	public void visit(Quad quad) {
-		println(quad.getEssId(), "QUAD",
+		println(quad.getId(), "QUAD",
 				quad.getLength(),quad.getFieldGradient(), quad.getApertureR());
 		visitControlPoints(quad.getId());
 	}
 
 	@Override
 	public void visit(RfGap rfGap) {
-		println(rfGap.getEssId(),"GAP",
+		println(rfGap.getId(),"GAP",
 				rfGap.getVoltage(),
 				rfGap.getRFPhase(),
 				rfGap.getApertureR(),
@@ -154,7 +154,7 @@ public class TraceWinExporter implements BLEVisitor {
 
 	@Override
 	public void visit(Bend bend) {
-		println(bend.getEssId(), "BEND", 
+		println(bend.getId(), "BEND", 
 				bend.getBendAngle(),
 				bend.getCurvatureRadius(),
 				bend.getFieldIndex(),
@@ -165,7 +165,7 @@ public class TraceWinExporter implements BLEVisitor {
 
 	@Override
 	public void visit(Edge edge) {
-		println(edge.getEssId(), "EDGE",
+		println(edge.getId(), "EDGE",
 				edge.getPoleFaceRotationAngle(),
 				edge.getCurvatureRadius(),
 				edge.getGap(),
@@ -178,7 +178,7 @@ public class TraceWinExporter implements BLEVisitor {
 	
 	@Override
 	public void visit(ThinSteering thinSteering) {
-		println(thinSteering.getEssId(), "THIN_STEERING",
+		println(thinSteering.getId(), "THIN_STEERING",
 				thinSteering.getXKick(),
 				thinSteering.getYKick(),
 				thinSteering.getApertureR(),
@@ -219,7 +219,7 @@ public class TraceWinExporter implements BLEVisitor {
 */
 	@Override
 	public void visit(FieldMap fieldMap) {
-		println(fieldMap.getEssId(), "FIELD_MAP",
+		println(fieldMap.getId(), "FIELD_MAP",
 				100,
 				fourPlaces.format(fieldMap.getLength()),
 				fourPlaces.format(fieldMap.getRFPhase()),
@@ -234,10 +234,10 @@ public class TraceWinExporter implements BLEVisitor {
 
 	@Override
 	public void visit(DtlCell dtlCell) {
-		println(dtlCell.getEssId(), "DTL_CEL",
+		println(dtlCell.getId(), "DTL_CEL",
 				dtlCell.getLength(),
-				dtlCell.getQ1Lenght(),
-				dtlCell.getQ2Lenght(),
+				dtlCell.getQ1Length(),
+				dtlCell.getQ2Length(),
 				dtlCell.getCellCenter(),
 				dtlCell.getQ1FieldGradient(),
 				dtlCell.getQ2FieldGradient(),
