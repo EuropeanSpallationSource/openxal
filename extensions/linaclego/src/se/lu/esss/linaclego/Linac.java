@@ -35,7 +35,7 @@ public class Linac {
 
     @XmlElement(required = true)
 	protected LinacDesc linac = new LinacDesc();
-
+    
     @XmlAccessorType(XmlAccessType.FIELD)
     protected static class LinacDesc {
 	    @XmlElement(required = true)
@@ -180,5 +180,17 @@ public class Linac {
 
 	public double getBeamFrequency() {
 		return getLinacData().getDoubleValue("beamFrequency");
+	}
+
+	public List<ControlPoint> getControlPoints(String section, String cell, String slot, String ble) {
+		// TODO lame implementation
+		List<ControlPoint> ret = new ArrayList<>();
+		for (ControlPointsSets cps : getControlPointSets())
+			for (ControlPoint cp : cps.getControlPoints())
+			{
+				if (section.equals(cp.getSection()) && cell.equals(cp.getCell()) && slot.equals(cp.getSlot()) && ble.equals(cp.getBle()))
+					ret.add(cp);
+			}
+		return ret;
 	}
 }

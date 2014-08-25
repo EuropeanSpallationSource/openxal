@@ -20,6 +20,10 @@ import se.lu.esss.linaclego.elements.ThinSteering;
  *
  */
 public interface BLEVisitor {
+	public void visit(Section section);
+	public void visit(Cell cell);
+	public void visit(Slot slot);
+	
 	public void visit(Drift drift);
 	public void visit(Quad quad);
 	public void visit(RfGap rfGap);
@@ -30,7 +34,6 @@ public interface BLEVisitor {
 	//public void visit(DtlRfGap dtlRfGap);
 	//public void visit(DtlDriftTube dtlDriftTube);
 	public void visit(DtlCell dtlCell);
-	public void visit(Section section);
 	public void visit(Edge edge);
 	public void visit(ControlPoint controlPoint);
 }

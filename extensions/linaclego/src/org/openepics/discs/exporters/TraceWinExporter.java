@@ -7,8 +7,10 @@ import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
 import se.lu.esss.linaclego.BLEVisitor;
+import se.lu.esss.linaclego.Cell;
 import se.lu.esss.linaclego.Linac;
 import se.lu.esss.linaclego.Section;
+import se.lu.esss.linaclego.Slot;
 import se.lu.esss.linaclego.elements.Bend;
 import se.lu.esss.linaclego.elements.ControlPoint;
 import se.lu.esss.linaclego.elements.Drift;
@@ -22,10 +24,13 @@ import se.lu.esss.linaclego.elements.ThinSteering;
 public class TraceWinExporter implements BLEVisitor {
 	private String fileName;
 	private PrintWriter pw;
-	private boolean printIdInTraceWin;
-	private boolean printControlPoints;
-	private boolean insidePeriodicLattice;
+	private boolean printIdInTraceWin = true;
+	private boolean printControlPoints = true;
+	
 	private Linac linac;
+	private Section section;
+	private Cell cell;
+	private Slot slot;
 	
 	public static final String space = "\t";
 	public static final String newline = System.getProperty("line.separator");
@@ -42,7 +47,7 @@ public class TraceWinExporter implements BLEVisitor {
 		pw.println(";" + linac.getTitle());
 		//printIdInTraceWin = linacLego.isPrintIdInTraceWin();
 		//printControlPoints = linacLego.isPrintControlPoints();
-		insidePeriodicLattice = false;
+
 		this.linac = linac;
 		linac.accept(this);
 		pw.println("END");
@@ -52,7 +57,7 @@ public class TraceWinExporter implements BLEVisitor {
 	
 	@Override
 	public void visit(Section section) {
-		if (!section.isPeriodicLatticeSection() && insidePeriodicLattice)
+		if (!section.isPeriodicLatticeSection() && this.section != null && this.section.isPeriodicLatticeSection())
 		{
 			println(null, "LATTICE_END");
 		}
@@ -61,7 +66,18 @@ public class TraceWinExporter implements BLEVisitor {
 		{
 			println(null, "LATTICE", section.getCells().get(0).getNumBeamlineElements(), 0);
 		}
-		insidePeriodicLattice = section.isPeriodicLatticeSection();
+		this.section = section;
+	}
+	
+	
+	public void visit(Cell cell)
+	{
+		this.cell = cell;
+	}
+	
+	public void visit(Slot slot)
+	{
+		this.slot = slot;
 	}
 	
 	public void println(String id, String command, Object... params) 
@@ -75,7 +91,9 @@ public class TraceWinExporter implements BLEVisitor {
 	{
 		StringBuilder sb = new StringBuilder();
 		if (printIdInTraceWin && id != null) 
-			sb.append(id).append(":").append(space);
+			sb.append(section.getId()).append('-').append(cell.getId()).append('-')
+				.append(slot.getId()).append('-').append(id)
+				.append(":").append(space);
 		sb.append(command);
 		pw.print(sb);
 	}
@@ -95,12 +113,16 @@ public class TraceWinExporter implements BLEVisitor {
 				fourPlaces.format(drift.getLength()),
 				fourPlaces.format(drift.getApertureR()),
 				fourPlaces.format(drift.getApertureY()));
+		visitControlPoints(drift.getId());
 	}
+
+
 
 	@Override
 	public void visit(Quad quad) {
 		println(quad.getEssId(), "QUAD",
 				quad.getLength(),quad.getFieldGradient(), quad.getApertureR());
+		visitControlPoints(quad.getId());
 	}
 
 	@Override
@@ -116,6 +138,7 @@ public class TraceWinExporter implements BLEVisitor {
 				rfGap.getTTF().getK2Ts(),
 				rfGap.getTTF().getKS(),
 				rfGap.getTTF().getK2S());
+		visitControlPoints(rfGap.getId());
 	}
 
 	@Override
@@ -126,6 +149,7 @@ public class TraceWinExporter implements BLEVisitor {
 				bend.getFieldIndex(),
 				bend.getAperRadmm(),
 				bend.getHVflag());*/
+		visitControlPoints(bend.getId());
 	}
 
 	@Override
@@ -138,6 +162,7 @@ public class TraceWinExporter implements BLEVisitor {
 				edge.getK2(),
 				edge.getAperRadmm(),
 				edge.getHVflag());	*/
+		visitControlPoints(edge.getId());
 	}
 	
 	@Override
@@ -147,6 +172,7 @@ public class TraceWinExporter implements BLEVisitor {
 				thinSteering.getYkick(),
 				thinSteering.getRmm(),
 				thinSteering.getKickType());*/
+		visitControlPoints(thinSteering.getId());
 	}
 /*
 	@Override
@@ -192,6 +218,7 @@ public class TraceWinExporter implements BLEVisitor {
 				0,
 				0,
 				fieldMap.getFieldmapFile().split("\\.")[0]);
+		visitControlPoints(fieldMap.getId());
 	}
 
 	@Override
@@ -211,6 +238,7 @@ public class TraceWinExporter implements BLEVisitor {
 				dtlCell.getTTF().getTs(),
 				dtlCell.getTTF().getKTs(),
 				dtlCell.getTTF().getK2Ts());
+		visitControlPoints(dtlCell.getId());
 	}
 
 /*
@@ -253,13 +281,21 @@ public class TraceWinExporter implements BLEVisitor {
 				0.0);
 	}
 */
+	
+	private void visitControlPoints(String id) {
+		for (ControlPoint cp : linac.getControlPoints(section.getId(), cell.getId(), slot.getId(), id))
+		{
+			visit(cp);
+		}
+	}
+	
 	@Override
 	public void visit(ControlPoint controlPoint) {
-		/*if (printControlPoints) {
-			println(null, ";" + controlPoint.getName().replace(":", "-"),
-				 "dxmm=" + Double.toString(controlPoint.getEndLocalPosVec()[0] * 1000.0),
-				 "dymm=" + Double.toString(controlPoint.getEndLocalPosVec()[1] * 1000.0),
-				 "dzmm=" + Double.toString(controlPoint.getEndLocalPosVec()[2] * 1000.0));
-		}*/
+		if (printControlPoints) {
+			println(null, ";" + controlPoint.getDevName().replace(":", "-"),
+				 "dxmm=" + Double.toString(controlPoint.getPosition()[0] * 1000.0),
+				 "dymm=" + Double.toString(controlPoint.getPosition()[1] * 1000.0),
+				 "dzmm=" + Double.toString(controlPoint.getPosition()[2] * 1000.0));
+		}
 	}
 }

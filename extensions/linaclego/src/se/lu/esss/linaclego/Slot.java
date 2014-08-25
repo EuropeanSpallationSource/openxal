@@ -67,6 +67,7 @@ public class Slot {
     }
 
 	public void accept(BLEVisitor visitor) {
+		visitor.visit(this);
 		for (BeamlineElement ble : getBeamlineElements()) ble.accept(visitor);
 	}
 

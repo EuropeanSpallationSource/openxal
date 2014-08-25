@@ -18,7 +18,7 @@ import se.lu.esss.linaclego.Parameters;
 public class ControlPoint {
 
     @XmlElement(name="d", required = true)
-    protected Parameters d;
+    protected Parameters d = new Parameters();
     @XmlAttribute(name = "id", required = true)
     protected String id;
     @XmlAttribute(name = "ble", required = true)
@@ -51,10 +51,7 @@ public class ControlPoint {
     	this.ble = ble;
     }
     
-    public Parameters getD() {
-        if (d == null) {
-            d = new Parameters();
-        }
+    public Parameters getParameters() {
         return this.d;
     }
 
@@ -89,4 +86,9 @@ public class ControlPoint {
     public String getDevName() {
         return devName;
     }
+
+	public double[] getPosition() {
+		
+		return new double[]{d.getDoubleValue("dxmm"), d.getDoubleValue("dymm"), d.getDoubleValue("dzmm")};
+	}
 }

@@ -64,6 +64,7 @@ public class Cell {
     }
 
 	public void accept(BLEVisitor visitor) {
+		visitor.visit(this);
 		for (Slot s : getSlots()) s.accept(visitor);
 	}
 
