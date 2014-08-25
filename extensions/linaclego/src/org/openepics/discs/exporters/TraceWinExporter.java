@@ -26,6 +26,8 @@ import se.lu.esss.linaclego.elements.Bend;
 import se.lu.esss.linaclego.elements.ControlPoint;
 import se.lu.esss.linaclego.elements.Drift;
 import se.lu.esss.linaclego.elements.DtlCell;
+import se.lu.esss.linaclego.elements.DtlDriftTube;
+import se.lu.esss.linaclego.elements.DtlRfGap;
 import se.lu.esss.linaclego.elements.Edge;
 import se.lu.esss.linaclego.elements.FieldMap;
 import se.lu.esss.linaclego.elements.Quad;
@@ -252,46 +254,48 @@ public class TraceWinExporter implements BLEVisitor {
 		visitControlPoints(dtlCell.getId());
 	}
 
-/*
+
 	@Override
 	public void visit(DtlDriftTube dtlDriftTube) {
-		println(dtlDriftTube.getEssId(), "DRIFT",
-				fourPlaces.format(dtlDriftTube.getNoseConeUpLen()),
-				fourPlaces.format(dtlDriftTube.getRadius()),
+		println(dtlDriftTube.getId(), "DRIFT",
+				fourPlaces.format(dtlDriftTube.getNoseConeUpLength()),
+				fourPlaces.format(dtlDriftTube.getApertureR()),
 				0.0);
 		println(null, "QUAD",
-				dtlDriftTube.getQuadLen(),
-				dtlDriftTube.getQuadGrad(),
-				dtlDriftTube.getRadius());
+				dtlDriftTube.getQuadLength(),
+				dtlDriftTube.getFieldGradient(),
+				dtlDriftTube.getApertureR());
 		println(null, "DRIFT",
-				fourPlaces.format(dtlDriftTube.getNoseConeDnLen()),
-				fourPlaces.format(dtlDriftTube.getRadius()),
+				fourPlaces.format(dtlDriftTube.getNoseConeDnLength()),
+				fourPlaces.format(dtlDriftTube.getApertureR()),
 				0.0);
+		visitControlPoints(dtlDriftTube.getId());
 	}
 
 	@Override
 	public void visit(DtlRfGap dtlRfGap) {
-		println(dtlRfGap.getEssId(), "DRIFT",
+		println(dtlRfGap.getId(), "DRIFT",
 				fourPlaces.format(dtlRfGap.getLength() / 2.0),
-				fourPlaces.format(dtlRfGap.getRadApermm()),
+				fourPlaces.format(dtlRfGap.getApertureR()),
 				0.0);
 		println(null, "GAP", 
-				dtlRfGap.getVoltsT(),
-				dtlRfGap.getRfPhaseDeg(),
-				dtlRfGap.getRadApermm(),
+				dtlRfGap.getVoltage(),
+				dtlRfGap.getRFPhase(),
+				dtlRfGap.getApertureR(),
 				dtlRfGap.getPhaseFlag(),
 				dtlRfGap.getBetaS(),
-				dtlRfGap.getTts(),
-				dtlRfGap.getKtts(),
-				dtlRfGap.getK2tts(),
+				dtlRfGap.getTTF().getTs(),
+				dtlRfGap.getTTF().getKTs(),
+				dtlRfGap.getTTF().getK2Ts(),
 				0.0,
 				0.0);
 		println(null, "DRIFT",
 				fourPlaces.format(dtlRfGap.getLength() / 2.0),
-				fourPlaces.format(dtlRfGap.getRadApermm()),
+				fourPlaces.format(dtlRfGap.getApertureR()),
 				0.0);
+		visitControlPoints(dtlRfGap.getId());
 	}
-*/
+
 	
 	private void visitControlPoints(String id) {
 		for (ControlPoint cp : linac.getControlPoints(section.getId(), cell.getId(), slot.getId(), id))

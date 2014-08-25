@@ -11,7 +11,8 @@ public class BeamlineElementXmlAdaptor extends XmlAdapter<BeamlineElement, Beaml
 	
 	public BeamlineElementXmlAdaptor()
 	{
-		add(Drift.class, Quad.class, ThinSteering.class, RfGap.class, DtlCell.class, Edge.class, Bend.class, FieldMap.class);
+		add(Drift.class, Quad.class, ThinSteering.class, RfGap.class, DtlCell.class, Edge.class, 
+				Bend.class, FieldMap.class, DtlDriftTube.class, DtlRfGap.class);
 	}
 	
 	
