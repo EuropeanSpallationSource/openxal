@@ -66,4 +66,11 @@ public class Cell {
 	public void accept(BLEVisitor visitor) {
 		for (Slot s : getSlots()) s.accept(visitor);
 	}
+
+	public int getNumBeamlineElements() {
+		int n = 0;
+		for (Slot s : getSlots())
+			n += s.getBeamlineElements().size();
+		return n;
+	}
 }

@@ -177,4 +177,8 @@ public class Linac {
     {
     	for (Section s: getSections()) s.accept(visitor);
     }
+
+	public double getBeamFrequency() {
+		return getLinacData().getDoubleValue("beamFrequency");
+	}
 }

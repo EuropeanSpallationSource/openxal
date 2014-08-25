@@ -27,7 +27,14 @@ public class Parameters extends AbstractList<Parameters.D> {
 	
 	public double getDoubleValue(String id)
 	{
-		return Double.parseDouble(hashedData.get(id).getValue());
+		Parameters.D p = hashedData.get(id);
+		return p == null ? 0 : Double.parseDouble(p.getValue());
+	}
+	
+
+	public int getIntValue(String id) {
+		Parameters.D p = hashedData.get(id);
+		return p == null ? 0 : Integer.parseInt(p.getValue());
 	}
 	
 	@XmlAccessorType(XmlAccessType.FIELD)
@@ -106,4 +113,5 @@ public class Parameters extends AbstractList<Parameters.D> {
 		hashedData.remove(d.id);
 		return d;
 	}
+
 }

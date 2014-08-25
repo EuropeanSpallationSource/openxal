@@ -11,4 +11,9 @@ public class Quad extends BeamlineElement {
 	public void accept(BLEVisitor visitor) {
 		visitor.visit(this);
 	}
+	
+	public double getFieldGradient()
+	{
+		return getParameters().getDoubleValue("g");
+	}
 }

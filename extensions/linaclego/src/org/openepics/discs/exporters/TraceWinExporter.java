@@ -25,6 +25,7 @@ public class TraceWinExporter implements BLEVisitor {
 	private boolean printIdInTraceWin;
 	private boolean printControlPoints;
 	private boolean insidePeriodicLattice;
+	private Linac linac;
 	
 	public static final String space = "\t";
 	public static final String newline = System.getProperty("line.separator");
@@ -36,13 +37,14 @@ public class TraceWinExporter implements BLEVisitor {
 		this.fileName = fileName;
 	}
 	
-	public void export(Linac linacLego) throws FileNotFoundException {
+	public void export(Linac linac) throws FileNotFoundException {
 		pw = new PrintWriter(fileName);
-		pw.println(";" + linacLego.getTitle());
+		pw.println(";" + linac.getTitle());
 		//printIdInTraceWin = linacLego.isPrintIdInTraceWin();
 		//printControlPoints = linacLego.isPrintControlPoints();
 		insidePeriodicLattice = false;
-		linacLego.accept(this);
+		this.linac = linac;
+		linac.accept(this);
 		pw.println("END");
 		pw.close();
 		pw = null;
@@ -50,16 +52,16 @@ public class TraceWinExporter implements BLEVisitor {
 	
 	@Override
 	public void visit(Section section) {
-	/*	if (!section.isPeriodicLatticeSection() && insidePeriodicLattice)
+		if (!section.isPeriodicLatticeSection() && insidePeriodicLattice)
 		{
 			println(null, "LATTICE_END");
 		}
-		*///println(null, "FREQ", section.getRfFreqMHz());
-		/*if (section.isPeriodicLatticeSection())
+		println(null, "FREQ", linac.getBeamFrequency() * section.getRFHarmonic());
+		if (section.isPeriodicLatticeSection())
 		{
-			println(null, "LATTICE", section.getCellList().get(0).getNumBeamLineElements(), 0);
+			println(null, "LATTICE", section.getCells().get(0).getNumBeamlineElements(), 0);
 		}
-		insidePeriodicLattice = section.isPeriodicLatticeSection();*/
+		insidePeriodicLattice = section.isPeriodicLatticeSection();
 	}
 	
 	public void println(String id, String command, Object... params) 
@@ -89,31 +91,31 @@ public class TraceWinExporter implements BLEVisitor {
 
 	@Override
 	public void visit(Drift drift) {
-		println(drift.getEssId(), "DRIFT");//, 
-			/*	fourPlaces.format(drift.getLengthMM()),
-				fourPlaces.format(drift.getrMM()),
-				fourPlaces.format(drift.getRyMM()));*/
+		println(drift.getEssId(), "DRIFT",
+				fourPlaces.format(drift.getLength()),
+				fourPlaces.format(drift.getApertureR()),
+				fourPlaces.format(drift.getApertureY()));
 	}
 
 	@Override
 	public void visit(Quad quad) {
-		println(quad.getEssId(), "QUAD");// 
-			//	quad.getLengthMM(),quad.getGradTpM(),quad.getRadius());
+		println(quad.getEssId(), "QUAD",
+				quad.getLength(),quad.getFieldGradient(), quad.getApertureR());
 	}
 
 	@Override
 	public void visit(RfGap rfGap) {
-		println(rfGap.getEssId(),"GAP");/*,
-				rfGap.getVoltsT(),
-				rfGap.getRfPhaseDeg(),
-				rfGap.getRadApermm(),
+		println(rfGap.getEssId(),"GAP",
+				rfGap.getVoltage(),
+				rfGap.getRFPhase(),
+				rfGap.getApertureR(),
 				rfGap.getPhaseFlag(),
 				rfGap.getBetaS(),
-				rfGap.getTts(),
-				rfGap.getKtts(),
-				rfGap.getK2tts(),
-				rfGap.getKs(),
-				rfGap.getK2s());		*/
+				rfGap.getTTF().getTs(),
+				rfGap.getTTF().getKTs(),
+				rfGap.getTTF().getK2Ts(),
+				rfGap.getTTF().getKS(),
+				rfGap.getTTF().getK2S());
 	}
 
 	@Override
@@ -180,35 +182,35 @@ public class TraceWinExporter implements BLEVisitor {
 */
 	@Override
 	public void visit(FieldMap fieldMap) {
-		println(fieldMap.getEssId(), "FIELD_MAP");/*,
+		println(fieldMap.getEssId(), "FIELD_MAP",
 				100,
-				fourPlaces.format(fieldMap.getLengthmm()),
-				fourPlaces.format(fieldMap.getRfpdeg()),
-				fourPlaces.format(fieldMap.getRadiusmm()),
+				fourPlaces.format(fieldMap.getLength()),
+				fourPlaces.format(fieldMap.getRFPhase()),
+				fourPlaces.format(fieldMap.getApertureR()),
 				0,
-				fieldMap.getXelmax(),
+				fieldMap.getElectricFieldFactor(),
 				0,
 				0,
-				fieldMap.getFieldMapFileName().split("\\.")[0]);*/
+				fieldMap.getFieldmapFile().split("\\.")[0]);
 	}
 
 	@Override
 	public void visit(DtlCell dtlCell) {
-		println(dtlCell.getEssId(), "DTL_CEL");/*,
-				dtlCell.getCellLenmm(),
-				dtlCell.getQ1Lenmm(),
-				dtlCell.getQ2Lenmm(),
-				dtlCell.getCellCentermm(),
-				dtlCell.getGrad1Tpm(),
-				dtlCell.getGrad2Tpm(),
-				dtlCell.getVoltsT() * dtlCell.getVoltMult(),
-				dtlCell.getRfPhaseDeg() + dtlCell.getPhaseAdd(),
-				dtlCell.getRadApermm(),
+		println(dtlCell.getEssId(), "DTL_CEL",
+				dtlCell.getLength(),
+				dtlCell.getQ1Lenght(),
+				dtlCell.getQ2Lenght(),
+				dtlCell.getCellCenter(),
+				dtlCell.getQ1FieldGradient(),
+				dtlCell.getQ2FieldGradient(),
+				dtlCell.getVoltage() * dtlCell.getVoltageMult(),
+				dtlCell.getRFPhase() + dtlCell.getRFPhaseAdd(),
+				dtlCell.getApertureR(),
 				dtlCell.getPhaseFlag(),
 				dtlCell.getBetaS(),
-				dtlCell.getTts(),
-				dtlCell.getKtts(),
-				dtlCell.getK2tts());*/
+				dtlCell.getTTF().getTs(),
+				dtlCell.getTTF().getKTs(),
+				dtlCell.getTTF().getK2Ts());
 	}
 
 /*

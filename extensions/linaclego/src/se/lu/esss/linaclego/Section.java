@@ -2,6 +2,7 @@ package se.lu.esss.linaclego;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -22,8 +23,11 @@ public class Section {
     @XmlAttribute(name = "id", required = true)
     protected String id;
     @XmlAttribute(name = "rfHarmonic", required = true)
-    protected byte rfHarmonic;
+    protected double rfHarmonic;
+    @XmlAttribute(name = "type")
+    protected String type;
 
+    
     public List<Cell> getCells() {   
         return this.cell;
     }
@@ -32,12 +36,8 @@ public class Section {
         return id;
     }
 
-    public byte getRfHarmonic() {
+    public double getRFHarmonic() {
         return rfHarmonic;
-    }
-
-    public void setRfHarmonic(byte value) {
-        this.rfHarmonic = value;
     }
 
 	public void accept(BLEVisitor visitor) {
@@ -45,4 +45,7 @@ public class Section {
 		for (Cell c : getCells()) c.accept(visitor);
 	}
 
+	public boolean isPeriodicLatticeSection() {
+		return "periodic".equals(type);
+	}
 }

@@ -74,4 +74,20 @@ public class BeamlineElement {
 			return null;
 		}
 	}
+	
+	public double getLength()
+	{
+		return getParameters().getDoubleValue("l");
+	}
+	
+	public double getApertureR()
+	{
+		return getParameters().getDoubleValue("r");
+	}
+	
+	public double getApertureY()
+	{
+		return getParameters().getDoubleValue("ry");
+	}
+	
 }
