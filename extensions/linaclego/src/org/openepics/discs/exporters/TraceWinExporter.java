@@ -143,35 +143,35 @@ public class TraceWinExporter implements BLEVisitor {
 
 	@Override
 	public void visit(Bend bend) {
-		println(bend.getEssId(), "BEND");/*, 
-				bend.getTWBendAngleDeg(),
-				bend.getRadOfCurvmm(),
+		println(bend.getEssId(), "BEND", 
+				bend.getBendAngle(),
+				bend.getCurvatureRadius(),
 				bend.getFieldIndex(),
-				bend.getAperRadmm(),
-				bend.getHVflag());*/
+				bend.getApertureR(),
+				bend.getHVFlag());
 		visitControlPoints(bend.getId());
 	}
 
 	@Override
 	public void visit(Edge edge) {
-		println(edge.getEssId(), "EDGE");/*,
-				edge.getPoleFaceAngleDeg(),
-				edge.getRadOfCurvmm(),
-				edge.getGapmm(),
+		println(edge.getEssId(), "EDGE",
+				edge.getPoleFaceRotationAngle(),
+				edge.getCurvatureRadius(),
+				edge.getGap(),
 				edge.getK1(),
 				edge.getK2(),
-				edge.getAperRadmm(),
-				edge.getHVflag());	*/
+				edge.getApertureR(),
+				edge.getHVFlag());
 		visitControlPoints(edge.getId());
 	}
 	
 	@Override
 	public void visit(ThinSteering thinSteering) {
-		println(thinSteering.getEssId(), "THIN_STEERING");/*,
-				thinSteering.getXkick(),
-				thinSteering.getYkick(),
-				thinSteering.getRmm(),
-				thinSteering.getKickType());*/
+		println(thinSteering.getEssId(), "THIN_STEERING",
+				thinSteering.getXKick(),
+				thinSteering.getYKick(),
+				thinSteering.getApertureR(),
+				thinSteering.getKickType());
 		visitControlPoints(thinSteering.getId());
 	}
 /*

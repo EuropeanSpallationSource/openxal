@@ -72,8 +72,17 @@ public class Slot {
 	}
 
 	public Slot apply(Parameters arguments) {
-		if (model != null) 
-			return model.apply(id, arguments); // TODO apply parameters to arguments
+		if (model != null) {
+			Parameters pout = new Parameters();
+			for (Parameters.D param : getParameters()) {
+				Parameters.D arg = arguments.get(param.getValue());
+				if (arg != null) {
+					pout.add(new Parameters.D(param.getId(), arg.getValue()));
+				} else
+					pout.add(param);
+			}
+			return model.apply(id, pout); 
+		}
 		else {
 			Slot s = new Slot();
 			s.id = id;

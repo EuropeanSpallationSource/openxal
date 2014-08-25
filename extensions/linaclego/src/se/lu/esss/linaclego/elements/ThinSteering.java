@@ -10,4 +10,20 @@ public class ThinSteering extends BeamlineElement {
 	public void accept(BLEVisitor visitor) {
 		visitor.visit(this);
 	}
+	
+	public double getXKick()
+	{
+		return getParameters().getDoubleValue("xkick");
+	}
+	
+	public double getYKick()
+	{
+		return getParameters().getDoubleValue("ykick");
+	}
+	
+	public int getKickType()
+	{
+		// TODO make enum
+		return getParameters().getIntValue("kickType");
+	}
 }
