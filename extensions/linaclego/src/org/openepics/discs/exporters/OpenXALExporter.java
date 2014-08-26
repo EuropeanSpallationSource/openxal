@@ -20,6 +20,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
+import se.lu.esss.ics.jels.smf.impl.ESSFieldMap;
 import se.lu.esss.ics.jels.smf.impl.ESSRfCavity;
 import se.lu.esss.linaclego.BLEVisitor;
 import se.lu.esss.linaclego.Cell;
@@ -609,10 +610,15 @@ public class OpenXALExporter implements BLEVisitor {
 
 	@Override
 	public void visit(FieldMap fieldMap) {
-		Marker m = new Marker(getEssId(fieldMap));
-		m.setPosition(sectionPosition);
-		m.setLength(fieldMap.getLength()*1e-3);
-		add(m);
+		ESSFieldMap fm = new ESSFieldMap(getEssId(fieldMap));
+		fm.setPosition(sectionPosition + fieldMap.getLength()*1e-3*0.5);
+		fm.setLength(fieldMap.getLength()*1e-3);
+		fm.setFrequency(section.getRFHarmonic() * linac.getBeamFrequency());
+		fm.setXelmax(fieldMap.getElectricFieldFactor());
+		fm.setPhase(fieldMap.getRFPhase());
+		fm.setFieldMapFile(fieldMap.getFieldmapFile());
+		updateApertureBucket(fieldMap, fm.getAper());
+		add(fm);
 		
 		visitControlPoints(fieldMap.getId());
 	}
