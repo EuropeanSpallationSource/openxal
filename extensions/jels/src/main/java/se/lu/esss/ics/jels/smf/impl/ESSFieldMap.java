@@ -1,11 +1,16 @@
 package se.lu.esss.ics.jels.smf.impl;
 
-import se.lu.esss.ics.jels.smf.attr.ESSFieldMapBucket;
-import xal.smf.AcceleratorNode;
-import xal.smf.attr.AttributeBucket;
-import xal.smf.impl.qualify.ElementTypeManager;
+import java.net.URI;
+import java.net.URISyntaxException;
 
-public class ESSFieldMap extends AcceleratorNode {
+import se.lu.esss.ics.jels.smf.attr.ESSFieldMapBucket;
+import xal.smf.attr.AttributeBucket;
+import xal.smf.impl.Electrostatic;
+import xal.smf.impl.qualify.ElementTypeManager;
+import xal.tools.data.DataAdaptor;
+import xal.tools.xml.XmlDataAdaptor;
+
+public class ESSFieldMap extends Electrostatic {
 	public static final String      s_strType = "FM";
 	
     /*
@@ -70,4 +75,14 @@ public class ESSFieldMap extends AcceleratorNode {
     public void setPhase(double dblVal)      { m_bucFieldMap.setPhase(dblVal); }
     public void setFrequency(double dblVal)  { m_bucFieldMap.setFrequency(dblVal); }
     public void setFieldMapFile(String strVal)  { m_bucFieldMap.setFieldMapFile(strVal); }
+
+	@Override
+	public void update(DataAdaptor adaptor) throws NumberFormatException {
+		super.update(adaptor);
+		try {
+			setFieldMapFile(new URI(((XmlDataAdaptor)adaptor).document().getDocumentURI()).resolve(getFieldMapFile()).toString());
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
+	}
 }
