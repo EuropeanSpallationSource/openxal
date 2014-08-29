@@ -15,6 +15,18 @@ import java.util.Map;
 import xal.model.IProbe;
 import xal.tools.beam.PhaseMatrix;
 
+/**
+ * Taking care of loading and interpolating transfer matrices from a file.
+ * 
+ * <ul>
+ * <li> loader = TransferMapLoader.getInstance(URI tmFile) returns an instance while the file is being loaded
+ * <li> el_tm = loader.prepare(double position, double length) prepares TransferMaps class for an element (lazily)
+ * <li> el_tm.transferMap(IProbe p, double l) on first call loads all the elements
+ *    It returns interpolated transfer map for specific range
+ * </ul>
+ *    
+ * @author Ivo List <ivo.list@cosylab.com>
+ */
 public class TransferMapLoader {
 	private static Map<URI, TransferMapLoader> loaders = new HashMap<>();
 	
@@ -23,12 +35,12 @@ public class TransferMapLoader {
 	protected List<TransferMaps> tms = new ArrayList<>();
 	private double[] Es;
 	private double[] E;
+	private boolean loaded = false;
 	
-	
-	public TransferMapLoader(URI tmFile) {
-		this.tmFile = tmFile;
-	}
-	
+	/**
+	 * Class models transfer matrices for one element.
+	 *
+	 */
 	public class TransferMaps implements Comparable<TransferMaps>
 	{
 		private double[] positions;
@@ -46,7 +58,7 @@ public class TransferMapLoader {
 		}
 
 		public PhaseMatrix transferMap(IProbe p, double l) {
-			if (positions == null) lazyLoader();
+			if (!loaded) lazyLoader();
 			
 			int i0=-1, in=-1;
 			double s0 = p.getPosition();
@@ -102,23 +114,44 @@ public class TransferMapLoader {
 		}
 		
 	}
-	
 
-
+	/**
+	 * Prepares TransferMaps class. It's not loaded yet.
+	 * @param position Start of the element
+	 * @param length Length of the element
+	 * @return TransferMaps file for the element
+	 */
 	public TransferMaps prepare(double position, double length) {
+		if (loaded)
+			throw new Error("Cannot prepare a matrix after thez are already loaded!");
 		TransferMaps maps = new TransferMaps(position, length);
 		tms.add(maps);
 		return maps;
 	}
 	
+	/**
+	 * Returns interpolated energy (eV) at position s
+	 * @param s the position
+	 * @return the enery
+	 */
 	public double getEnergy(double s)
 	{
+		if (!loaded) lazyLoader();
 		int i = Arrays.binarySearch(Es, s);
 		if (i<0) i= -(i+1);
 		return 1.e6 * (E[i-1]*(s-Es[i-1]) + E[i]*(Es[i]-s)) / (Es[i]-Es[i-1]);
 	}
 	
+	/**
+	 * loads all the matrices for TransferMap classes that were previously prepared
+	 * loads the energies
+	 */
 	public void lazyLoader() {
+		// remove ourselves from the list of loaders - to free the reference and 
+		//   that the same file may be loaded more than once
+		loaders.remove(tmFile);
+		loaded = true;
+		
 		Collections.sort(tms);
 		
 		List<Double> positions = new ArrayList<>();
@@ -191,7 +224,7 @@ public class TransferMapLoader {
 
 	/**
 	 * A helper procedure to count the lines in a file.
-	 * @param resource the file
+	 * @param file the file
 	 * @return number of lines
 	 * @throws IOException
 	 */
@@ -203,6 +236,55 @@ public class TransferMapLoader {
 		return i;
 	}
 	
+	/**
+	 * Parses a single matrix from an array of string containing T_xx', T_yy' and T_zz' components
+	 * @param data string matrix data
+	 * @return the transfer matrix
+	 */
+	private static PhaseMatrix extractMatrix(String[] data) {
+		double[][] m = new double[7][7];
+		m[0][0] = Double.parseDouble(data[1]);
+		m[0][1] = Double.parseDouble(data[2]);
+		m[1][0] = Double.parseDouble(data[3]);
+		m[1][1] = Double.parseDouble(data[4]);
+		m[2][2] = Double.parseDouble(data[5]);
+		m[2][3] = Double.parseDouble(data[6]);
+		m[3][2] = Double.parseDouble(data[7]);
+		m[3][3] = Double.parseDouble(data[8]);
+		m[4][4] = Double.parseDouble(data[9]);
+		m[4][5] = Double.parseDouble(data[10]);
+		m[5][4] = Double.parseDouble(data[11]);
+		m[5][5] = Double.parseDouble(data[12]);
+		m[6][6] = 1.;
+		return new PhaseMatrix(m);
+	}
+
+	/**
+	 * Creates the loader for specific file
+	 * @param tmFile the file
+	 */
+	public TransferMapLoader(URI tmFile) {
+		this.tmFile = tmFile;
+	}
+	
+	/**
+	 * Gets an instance for a specific file
+	 * 
+	 * @param tmFile path to the file
+	 * @return transfer map loader
+	 */
+	public static TransferMapLoader getInstance(URI tmFile) {
+		if (loaders.containsKey(tmFile)) return loaders.get(tmFile);
+		TransferMapLoader loader = new TransferMapLoader(tmFile);
+		loaders.put(tmFile, loader);
+		return loader;
+	}
+	
+	
+	/**
+	 * A test program, that reads the file and outputs transfer matrices.
+	 * @param args file name
+	 */
 	public static void main(String args[])
 	{
 		try {
@@ -232,30 +314,5 @@ public class TransferMapLoader {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-
-	private static PhaseMatrix extractMatrix(String[] data) {
-		double[][] m = new double[7][7];
-		m[0][0] = Double.parseDouble(data[1]);
-		m[0][1] = Double.parseDouble(data[2]);
-		m[1][0] = Double.parseDouble(data[3]);
-		m[1][1] = Double.parseDouble(data[4]);
-		m[2][2] = Double.parseDouble(data[5]);
-		m[2][3] = Double.parseDouble(data[6]);
-		m[3][2] = Double.parseDouble(data[7]);
-		m[3][3] = Double.parseDouble(data[8]);
-		m[4][4] = Double.parseDouble(data[9]);
-		m[4][5] = Double.parseDouble(data[10]);
-		m[5][4] = Double.parseDouble(data[11]);
-		m[5][5] = Double.parseDouble(data[12]);
-		m[6][6] = 1.;
-		return new PhaseMatrix(m);
-	}
-
-	public static TransferMapLoader getInstance(URI tmFile) {
-		if (loaders.containsKey(tmFile)) return loaders.get(tmFile);
-		TransferMapLoader loader = new TransferMapLoader(tmFile);
-		loaders.put(tmFile, loader);
-		return loader;
 	}
 }

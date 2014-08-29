@@ -22,7 +22,13 @@ import xal.model.elem.ThickElement;
 import xal.sim.scenario.LatticeElement;
 import xal.tools.beam.PhaseMap;
 
-
+/**
+ * A Fake element model implementation. It loads transfer matrices from a file.
+ * Limitation is that it works only at single energy.
+ * 
+ * @author Ivo List <ivo.list@cosylab.com>
+ *
+ */
 public class FakeElement extends ThickElement {
     /** string type identifier for all FakeFieldMap objects */
     public static final String s_strType = "FakeFieldMap";
@@ -103,7 +109,7 @@ public class FakeElement extends ThickElement {
     
 	/**
 	 * Conversion method to be provided by the user
-	 * ]
+	 * 
 	 * @param latticeElement the SMF node to convert
 	 */
     @Override
