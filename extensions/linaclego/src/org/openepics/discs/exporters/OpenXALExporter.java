@@ -64,7 +64,7 @@ public class OpenXALExporter implements BLEVisitor {
 	private List<MagnetPowerSupply> magnetPowerSupplies;
 	private double acceleratorPosition;
 	private double sectionPosition;
-	public static final double beta_gamma_Er_by_e0_c = -0.08980392292066133;
+	public static final double beta_gamma_Er_by_e0_c = -9.302773635653585;
 	
 	private Linac linac;
 	private Section section;
@@ -112,7 +112,7 @@ public class OpenXALExporter implements BLEVisitor {
 		if (node instanceof Magnet) {
 			if (node instanceof xal.smf.impl.Bend)
 				length = ((xal.smf.impl.Bend) node).getDfltPathLength();
-			else
+			else if (!(node instanceof HDipoleCorr) && !(node instanceof VDipoleCorr))
 				length = ((Magnet) node).getEffLength();
 		} 
 		sectionPosition += length;
@@ -396,9 +396,9 @@ public class OpenXALExporter implements BLEVisitor {
 	public void visit(final Bend ibend) {
 		double alpha_deg = ibend.getBendAngle();
 		double rho = ibend.getCurvatureRadius();
-		double entry_angle_deg = alpha_deg / 2.; //ibend.getEntranceAngle();
-		double exit_angle_deg = alpha_deg / 2.; //ibend.getExitAngle();
-		double G = 0.;// ibend.getGap();
+		double entry_angle_deg = Math.abs(alpha_deg / 2.); //ibend.getEntranceAngle();
+		double exit_angle_deg = Math.abs(alpha_deg / 2.); //ibend.getExitAngle();
+		double G = 0.;//ibend.getGap();
 		
 		// TODO put those values into the database
 		double entrK1 = 0.45, entrK2 = 2.8, exitK1 = 0.45, exitK2 = 2.8;
