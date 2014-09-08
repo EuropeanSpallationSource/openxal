@@ -39,7 +39,7 @@ public class JElsDemo {
 		System.out.println("Running\n");
 		
 		// Setup (pick combination of elements and algorithm)
-		ElementMapping elementMapping = JElsElementMapping.getInstance(); // JELS element mapping - transfer matrices in OpenXal reference frame
+		//ElementMapping elementMapping = JElsElementMapping.getInstance(); // JELS element mapping - transfer matrices in OpenXal reference frame
 		//ElementMapping elementMapping = ElsElementMapping.getInstance(); // ELS element mapping - transfer matrices in TraceWin reference frame
 		//ElementMapping elementMapping = DefaultElementMapping.getInstance(); // OpenXAL element mapping - transfer matrices in OpenXal reference frame
 		
@@ -54,7 +54,7 @@ public class JElsDemo {
 		AcceleratorSeq sequence = loadAcceleratorSequence();
 				
 		// Generates lattice from SMF accelerator
-		Scenario scenario = Scenario.newScenarioFor(sequence, elementMapping);		
+		Scenario scenario = Scenario.newScenarioFor(sequence);//, elementMapping);		
 		scenario.setProbe(probe);			
 						
 		// Setting up synchronization mode
@@ -78,7 +78,7 @@ public class JElsDemo {
 		saveLattice(scenario.getLattice(), "lattice.xml");
 						
 		// Running simulation
-		scenario.setStartElementId("BEGIN_mebt");
+		//scenario.setStartElementId("BEGIN_mebt");
 		scenario.run();
 		
 		
@@ -118,7 +118,7 @@ public class JElsDemo {
 		    w[i] = ps.getKineticEnergy()/1.e6;
 		    PhaseVector mean = ps.phaseMean();
 			
-		    System.out.printf("%E %E %E %E %E %E %E %E %E %E %E %E %E %E %E %E %E\n", ps.getPosition(), ps.getGamma()-1, 		
+		    System.out.printf("%E %E %E %E %E %E %E %E %E %E %E %E %E %E %E %E %E %s\n", ps.getPosition(), ps.getGamma()-1, 		
 					twiss[0].getEnvelopeRadius(),
 					Math.sqrt(twiss[0].getGamma()*twiss[0].getEmittance()),
 					twiss[1].getEnvelopeRadius(),
@@ -135,7 +135,9 @@ public class JElsDemo {
 					mean.getzp(),
 				
 					twiss[0].getBeta(),
-					twiss[1].getBeta());
+					twiss[1].getBeta(),
+					
+		    		ps.getElementId());
 		    
 		    
 		    /*if (ps.getElementId().startsWith("BEGIN")) {
@@ -221,7 +223,7 @@ public class JElsDemo {
 		probe.setBeamCurrent(62.5e-3);
 		probe.setBunchFrequency(352.21e6); 	
 	}
-	
+
 	public static void loadInitialParameters(EnvelopeProbe probe, String file) {
 		XmlDataAdaptor document = XmlDataAdaptor.adaptorForUrl( JElsDemo.class.getResource(file).toString(), false);
         EnvelopeProbeState state = new EnvelopeProbeState();
