@@ -7,6 +7,13 @@ import xal.model.IProbe;
 import xal.model.elem.ElementSeq;
 import xal.sim.scenario.LatticeElement;
 
+/**
+ * Implementation of drift-gap-drift simulation of fieldmaps.
+ * Uses numeric integrator for TTF function 
+ * 
+ * @author Ivo List <ivo.list@cosylab.com>
+ *
+ */
 public class DriftGapDrift extends ElementSeq {
 	private IdealDrift drift1 = new IdealDrift(), drift2 = new IdealDrift();
 	private IdealRfGap gap;
@@ -25,14 +32,18 @@ public class DriftGapDrift extends ElementSeq {
 	    final ESSFieldMap fm = (ESSFieldMap)latticeElement.getNode();
 	    final TTFIntegrator intgr = TTFIntegrator.getInstance(fm.getFieldMapFile()+".edz", fm.getFrequency()*1e6);
 	    
+	    /*
+	     * Old implementation of IdealRfGap is used. Synchronous phase is calculated when the energy at the
+	     * entrace into the gap is known. Also TTF integrator is supplied with the necessary phases.
+	     */
 	    gap = new IdealRfGap(fm.getId(), intgr.getE0TL()*fm.getXelmax(),0, fm.getFrequency()*1e6) {
 	    	@Override
-	    	public double calculatePhase(IProbe probe)
+	    	public void calculatePhase(IProbe probe)
 	    	{
 	    		double inputphase = fm.getPhase()*Math.PI/180.;
 	    		double phis = intgr.getSyncPhase(inputphase, probe.getBeta());
 	    		setTTFFit(intgr.integratorWithInputPhase(inputphase-phis));
-	    		return phis;
+	    		setPhase(phis);
 	    	}
 	    };
 	   

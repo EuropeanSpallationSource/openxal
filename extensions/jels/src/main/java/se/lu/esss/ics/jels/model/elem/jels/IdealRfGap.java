@@ -158,10 +158,14 @@ public class IdealRfGap extends ThinElement implements IRfGap {
      *  @return     phase delay w.r.t. synchonous particle (in <bold>radians</bold>).
      */
      public double getPhase() { return m_dblPhase; };
-
-     public double calculatePhase(IProbe probe) { 
-    	 return getPhase(); 
-    };
+     
+     /**
+      * Method is intended to be used by overriding implementations of IdealRfGap, so that
+      * the implementations are able to calculate the phase when input energy is known.
+      * @param probe Probe at the input of the element
+      */
+     public void calculatePhase(IProbe probe) { 
+     }
      
     /**  
      * Get the operating frequency of the RF gap.
@@ -272,7 +276,10 @@ public class IdealRfGap extends ThinElement implements IRfGap {
      	double lambda=LightSpeed/getFrequency();
     	
     	double Phis;
-    	if (isFirstGap()) Phis = calculatePhase(probe);
+    	if (isFirstGap()) {
+    		calculatePhase(probe);
+    		Phis = getPhase();
+    	}
     	else {    		 
     		double lastGapPosition = probe.getLastGapPosition();
     		double position = probe.getPosition();
