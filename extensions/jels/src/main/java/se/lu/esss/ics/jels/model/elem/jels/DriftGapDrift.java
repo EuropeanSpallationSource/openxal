@@ -3,12 +3,13 @@ package se.lu.esss.ics.jels.model.elem.jels;
 import se.lu.esss.ics.jels.model.elem.els.IdealDrift;
 import se.lu.esss.ics.jels.smf.impl.ESSFieldMap;
 import se.lu.esss.ics.jels.tools.math.TTFIntegrator;
+import xal.model.IProbe;
 import xal.model.elem.ElementSeq;
 import xal.sim.scenario.LatticeElement;
 
 public class DriftGapDrift extends ElementSeq {
 	private IdealDrift drift1 = new IdealDrift(), drift2 = new IdealDrift();
-	private IdealRfGapInputPhase gap = new IdealRfGapInputPhase();
+	private IdealRfGap gap;
 	
 	public DriftGapDrift() {
         this(null);
@@ -16,26 +17,37 @@ public class DriftGapDrift extends ElementSeq {
 	
 	public DriftGapDrift(String strId) {
 		super("RfGapWithTTFIntegrator", strId, 3);
-		addChild(drift1);
-		addChild(gap);
-		addChild(drift2);
 	}
 
 	@Override
 	public void initializeFrom(LatticeElement latticeElement) {
 		super.initializeFrom(latticeElement);
-	    ESSFieldMap fm = (ESSFieldMap)latticeElement.getNode();
-
-		gap.initialGap = true;
-		gap.cellLength = fm.getLength();
-		TTFIntegrator intgr = TTFIntegrator.getInstance(fm.getFieldMapFile()+".edz", fm.getFrequency()*1e6);
-		gap.TTFFit = intgr;
-		gap.setFrequency(fm.getFrequency()*1e6);
-		gap.setInputPhase(fm.getPhase()*Math.PI/180.);
+	    final ESSFieldMap fm = (ESSFieldMap)latticeElement.getNode();
+	    final TTFIntegrator intgr = TTFIntegrator.getInstance(fm.getFieldMapFile()+".edz", fm.getFrequency()*1e6);
+	    
+	    gap = new IdealRfGap(fm.getId(), intgr.getE0TL()*fm.getXelmax(),0, fm.getFrequency()*1e6) {
+	    	@Override
+	    	public double calculatePhase(IProbe probe)
+	    	{
+	    		double inputphase = fm.getPhase()*Math.PI/180.;
+	    		double phis = intgr.getSyncPhase(inputphase, probe.getBeta());
+	    		setTTFFit(intgr.integratorWithInputPhase(inputphase-phis));
+	    		return phis;
+	    	}
+	    };
+	   
+		gap.setInitialGap(true);
+		gap.setCellLength(fm.getLength());
 		gap.setE0(fm.getXelmax());
-		gap.setETL(intgr.getE0TL()*fm.getXelmax());
+		
+		drift1.setId(fm.getId()+":DR1");
 		drift1.setLength(fm.getLength()/2.);
+		drift2.setId(fm.getId()+":DR2");
 		drift2.setLength(fm.getLength()/2.);	
+
+		addChild(drift1);
+		addChild(gap);
+		addChild(drift2);
 	}
 
 }

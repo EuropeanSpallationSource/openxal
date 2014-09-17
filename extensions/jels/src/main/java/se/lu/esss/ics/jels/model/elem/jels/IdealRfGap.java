@@ -159,6 +159,10 @@ public class IdealRfGap extends ThinElement implements IRfGap {
      */
      public double getPhase() { return m_dblPhase; };
 
+     public double calculatePhase(IProbe probe) { 
+    	 return getPhase(); 
+    };
+     
     /**  
      * Get the operating frequency of the RF gap.
      *
@@ -268,7 +272,7 @@ public class IdealRfGap extends ThinElement implements IRfGap {
      	double lambda=LightSpeed/getFrequency();
     	
     	double Phis;
-    	if (isFirstGap()) Phis = getPhase();
+    	if (isFirstGap()) Phis = calculatePhase(probe);
     	else {    		 
     		double lastGapPosition = probe.getLastGapPosition();
     		double position = probe.getPosition();
@@ -406,6 +410,26 @@ public class IdealRfGap extends ThinElement implements IRfGap {
 	    SPrimeFit = rfgap.getSPrimeFit();
 	    SFit = rfgap.getSFit();
 	    structureMode = rfgap.getStructureMode();
+	}
+
+	public boolean isInitialGap() {
+		return initialGap;
+	}
+
+	public void setInitialGap(boolean initialGap) {
+		this.initialGap = initialGap;
+	}
+
+	public UnivariateRealPolynomial getTTFFit() {
+		return TTFFit;
+	}
+
+	public void setTTFFit(UnivariateRealPolynomial tTFFit) {
+		TTFFit = tTFFit;
+	}
+
+	public void setCellLength(double cellLength) {
+		this.cellLength = cellLength;
 	}
 }
 

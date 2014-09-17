@@ -210,6 +210,27 @@ public class TTFIntegrator {
 		instances.put(path, i);
 		return i;
 	}
+
+
+	public UnivariateRealPolynomial integratorWithInputPhase(final double dphi) {
+		return new UnivariateRealPolynomial() {
+
+			@Override
+			public double getCoef(int iOrder) {
+				return 1.0; // fake coef to trigger evaluations
+			}
+
+			@Override
+			public double evaluateAt(double beta) {
+				return TTFIntegrator.this.evaluateAt(dphi, beta);
+			}
+
+			@Override
+			public double evaluateDerivativeAt(double beta) {
+				return TTFIntegrator.this.evaluateDerivativeAt(dphi, beta);
+			}
+		};
+	}
 	
 	
 }
