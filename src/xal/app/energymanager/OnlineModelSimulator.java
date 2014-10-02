@@ -203,15 +203,9 @@ public class OnlineModelSimulator {
 	 * @param sequence the sequence for which to get the default probe
 	 * @return the default probe for the specified sequence
 	 */
-<<<<<<< HEAD
-	static public Probe getDefaultProbe( final AcceleratorSeq sequence ) {
-        try {
-            final Probe probe = (sequence instanceof Ring) ? createRingProbe( sequence ) : createEnvelopeProbe( sequence );
-=======
 	static public Probe<?> getDefaultProbe( final AcceleratorSeq sequence ) {
         try {
             final Probe<?> probe = (sequence instanceof Ring) ? createRingProbe( sequence ) : createEnvelopeProbe( sequence );
->>>>>>> local.master
             probe.getAlgorithm().setRfGapPhaseCalculation( true );	// make sure we enable the full RF gap phase slip calculation
 			return probe;
         }
@@ -224,22 +218,14 @@ public class OnlineModelSimulator {
 
 
 	/** create a new ring probe */
-<<<<<<< HEAD
-	static private Probe createRingProbe( final AcceleratorSeq sequence ) throws InstantiationException {
-=======
 	static private Probe<?> createRingProbe( final AcceleratorSeq sequence ) throws InstantiationException {
->>>>>>> local.master
 		final TransferMapTracker tracker = AlgorithmFactory.createTransferMapTracker( sequence );
 		return ProbeFactory.getTransferMapProbe( sequence, tracker );
 	}
 
 
 	/** create a new envelope probe */
-<<<<<<< HEAD
-	static private Probe createEnvelopeProbe( final AcceleratorSeq sequence ) throws InstantiationException {
-=======
 	static private Probe<?> createEnvelopeProbe( final AcceleratorSeq sequence ) throws InstantiationException {
->>>>>>> local.master
 		final IAlgorithm tracker = AlgorithmFactory.createEnvTrackerAdapt( sequence );
 		return ProbeFactory.getEnvelopeProbe( sequence, tracker );
 	}
