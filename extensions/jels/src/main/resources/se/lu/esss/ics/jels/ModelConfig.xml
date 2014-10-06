@@ -7,7 +7,8 @@
     </elements>
     
     <associations>
-		<map smf="fm" model="se.lu.esss.ics.jels.model.elem.jels.DriftGapDrift"/>
+		<map smf="fm" model="se.lu.esss.ics.jels.model.elem.jels.FieldMapNCells"/>  
+		<!--<map smf="fm" model="se.lu.esss.ics.jels.model.elem.jels.DriftGapDrift"/>--> 
 		<map smf="dh" model="se.lu.esss.ics.jels.model.elem.jels.IdealMagWedgeDipole2"/>
 		<map smf="q" model="xal.model.elem.IdealMagQuad"/>
 		<map smf="qt" model="xal.model.elem.IdealMagQuad"/>

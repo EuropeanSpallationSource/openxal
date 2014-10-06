@@ -32,22 +32,28 @@ public class DriftGapDrift extends ElementSeq {
 	    final ESSFieldMap fm = (ESSFieldMap)latticeElement.getNode();
 	    final TTFIntegrator intgr = TTFIntegrator.getInstance(fm.getFieldMapFile()+".edz", fm.getFrequency()*1e6);
 	    
+    	final double pho;	
+    	
+    	if (fm.getFieldMapFile().endsWith("spokeFieldMap")) pho = -Math.PI;
+    	else if (fm.getFieldMapFile().endsWith("medBetaFieldMap")) pho = Math.PI/2.; 
+    	else pho = 0.;
+    	
 	    /*
-	     * Old implementation of IdealRfGap is used. Synchronous phase is calculated when the energy at the
-	     * entrace into the gap is known. Also TTF integrator is supplied with the necessary phases.
+	     * Old implementation of IdealRfGap is used. Middle phase is calculated when the energy at the
+	     * entrance into the gap is known. Also TTF integrator is supplied with the necessary offset.
 	     */
 	    gap = new IdealRfGap(fm.getId(), intgr.getE0TL()*fm.getXelmax(),0, fm.getFrequency()*1e6) {
 	    	@Override
 	    	public void calculatePhase(IProbe probe)
 	    	{
 	    		double inputphase = fm.getPhase()*Math.PI/180.;
-	    		double phis = intgr.getSyncPhase(inputphase, probe.getBeta());
-	    		setTTFFit(intgr.integratorWithInputPhase(inputphase-phis));
-	    		setPhase(phis);
+	    		double phim = 2*Math.PI*getFrequency() * fm.getLength()/2. / probe.getBeta()/LightSpeed;
+	    		setPhase(inputphase + phim + pho);
 	    	}
 	    };
-	   
-		gap.setInitialGap(true);
+	    
+	    gap.setTTFFit(intgr.integratorWithOffset(fm.getLength()/2., pho));
+		gap.setFirstGap(true);
 		gap.setCellLength(fm.getLength());
 		gap.setE0(fm.getXelmax());
 		

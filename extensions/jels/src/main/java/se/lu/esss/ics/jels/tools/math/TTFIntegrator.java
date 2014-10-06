@@ -8,7 +8,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import xal.model.IElement;
@@ -51,6 +53,14 @@ public class TTFIntegrator {
 		}
 	}
 
+	protected TTFIntegrator(int N, double zmax, double[] field, double frequency)
+	{
+		this.N = N;
+		this.zmax = zmax;
+		this.field = field;
+		this.frequency = frequency;
+		initalizeE0TL();
+	}
 
 	/************************** File manipulation ***************************/
 	
@@ -70,6 +80,9 @@ public class TTFIntegrator {
 		N = Integer.parseInt(data[0]);
 		zmax = Double.parseDouble(data[1]);
 		field = new double[N];
+		
+		line = br.readLine();
+		double norm = Double.parseDouble(line);
 		
 		int i = 0;
 		while ((line = br.readLine()) != null && i<N) {
@@ -229,6 +242,52 @@ public class TTFIntegrator {
 		for (int k=0; k<N; k++) X[k] /= maxttf;
 	}*/
 	
+	/************************** Splitting methods ***************************/
+	
+	public TTFIntegrator[] getSplitIntegrators()
+	{
+		List<Integer> pos = new ArrayList<>();
+		pos.add(0);
+		for (int i = 0; i<N-1; i++)
+			if (field[i]*field[i+1] < 0.)
+				pos.add(i+1);
+		pos.add(N);
+		
+		TTFIntegrator[] splitIntgrs = new TTFIntegrator[pos.size()-1];
+		for (int i=0; i<pos.size()-1; i++)
+		{
+			double[] field = new double[pos.get(i+1)-pos.get(i)];
+			System.arraycopy(this.field, pos.get(i), field, 0, field.length);
+			splitIntgrs[i] = new TTFIntegrator(field.length, (pos.get(i+1)-pos.get(i))*zmax/N, field, frequency);
+		}
+		
+		return splitIntgrs;
+	}
+	
+	public double getCenter()
+	{
+		int c = 0;
+		for (int i=0; i<N; i++) 
+			if (Math.abs(field[i]) > Math.abs(field[c]))
+				c = i;
+		
+		double csum = 0.; double cN = 0; 
+		for (int i=0; i<N; i++) 
+			if (Math.abs(field[i]) > Math.abs(field[c])*(0.4))
+			{
+				csum += zmax*i/N;
+				cN++;
+			}
+		return csum/cN;
+		//return getLength()/2.;
+	}
+	
+	public double getLength()
+	{
+		return zmax;
+	}
+	
+	
 	
 	/*****************  Constructing methods ************************************/
 
@@ -257,6 +316,26 @@ public class TTFIntegrator {
 		};
 	}
 	
+	public UnivariateRealPolynomial integratorWithOffset(final double off, final double phase) {
+		return new UnivariateRealPolynomial() {
+
+			@Override
+			public double getCoef(int iOrder) {
+				return 1.0; // fake coef to trigger evaluations
+			}
+
+			@Override
+			public double evaluateAt(double beta) {
+				return TTFIntegrator.this.evaluateAt(-2*Math.PI*frequency*off/beta/IElement.LightSpeed-phase, beta);
+			}
+
+			@Override
+			public double evaluateDerivativeAt(double beta) {
+				return TTFIntegrator.this.evaluateDerivativeAt(-2*Math.PI*frequency*off/beta/IElement.LightSpeed-phase, beta);
+			}
+		};
+	}
+	
 	/**
 	 * Static factory method to give TTF integrator for a specific fieldmap file
 	 * @param path path to the field map file
@@ -271,5 +350,10 @@ public class TTFIntegrator {
 		TTFIntegrator i = new TTFIntegrator(path, frequency);
 		instances.put(path, i);
 		return i;
+	}
+	
+	@Override
+	public String toString() {
+	   return null;
 	}
 }
