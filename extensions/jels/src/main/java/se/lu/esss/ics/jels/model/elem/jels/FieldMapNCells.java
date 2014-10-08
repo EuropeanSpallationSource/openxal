@@ -30,7 +30,7 @@ public class FieldMapNCells extends ElementSeq {
 	public void initializeFrom(LatticeElement latticeElement) {
 		super.initializeFrom(latticeElement);
 	    final ESSFieldMap fm = (ESSFieldMap)latticeElement.getNode();
-	    TTFIntegrator intgr = TTFIntegrator.getInstance(fm.getFieldMapFile()+".edz", fm.getFrequency()*1e6);
+	    final TTFIntegrator intgr = TTFIntegrator.getInstance(fm.getFieldMapFile()+".edz", fm.getFrequency()*1e6);
 	    
 	    TTFIntegrator[] splitIntgrs = intgr.getSplitIntegrators();
 	    
@@ -41,8 +41,15 @@ public class FieldMapNCells extends ElementSeq {
 	    gaps = new IdealRfGap[splitIntgrs.length];
 	    drifts = new IdealDrift[splitIntgrs.length*2];
 	    
+	    double beta, phi0 = 0.;
+		if (fm.getFieldMapFile().endsWith("spokeFieldMap")) beta = 0.5;
+    	else if (fm.getFieldMapFile().endsWith("medBetaFieldMap")) { beta = 0.68; phi0 = Math.PI; }
+    	else beta = 0.87;
+	    
 	    for (int i=0; i<splitIntgrs.length; i++) {
-	    	final double l1 = splitIntgrs[i].getCenter();
+	    	//final double l1 = splitIntgrs[i].getCenter();
+	    	final double l1 = splitIntgrs[i].getSyncCenter(beta, phi0);
+	    	
 	    	double l2 = splitIntgrs[i].getLength() - l1;
 	    	
 	    	drifts[2*i] = new IdealDrift();
@@ -54,7 +61,7 @@ public class FieldMapNCells extends ElementSeq {
 		    	public void calculatePhase(IProbe probe)
 		    	{    		
 		    		double dphi = 2*Math.PI*getFrequency()*l1/probe.getBeta()/LightSpeed;
-		    		setPhase(fm.getPhase()*Math.PI/180. + dphi);	
+		    		setPhase(fm.getPhase()*Math.PI/180. + dphi);
 		    	}
 		    };
 			

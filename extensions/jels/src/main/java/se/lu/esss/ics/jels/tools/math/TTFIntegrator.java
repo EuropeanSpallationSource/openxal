@@ -31,7 +31,7 @@ public class TTFIntegrator {
 	//private double[] dst;
 	private double e0tl;
 	private double frequency;
-	
+	private int gapCount;
 	
 	/**
 	 * Constructs new TTFIntegrator and loads field from the file
@@ -53,12 +53,13 @@ public class TTFIntegrator {
 		}
 	}
 
-	protected TTFIntegrator(int N, double zmax, double[] field, double frequency)
+	protected TTFIntegrator(int N, double zmax, double[] field, double frequency, int gapCount)
 	{
 		this.N = N;
 		this.zmax = zmax;
 		this.field = field;
 		this.frequency = frequency;
+		this.gapCount = gapCount;
 		initalizeE0TL();
 	}
 
@@ -258,14 +259,22 @@ public class TTFIntegrator {
 		{
 			double[] field = new double[pos.get(i+1)-pos.get(i)];
 			System.arraycopy(this.field, pos.get(i), field, 0, field.length);
-			splitIntgrs[i] = new TTFIntegrator(field.length, (pos.get(i+1)-pos.get(i))*zmax/N, field, frequency);
+			splitIntgrs[i] = new TTFIntegrator(field.length, (pos.get(i+1)-pos.get(i))*zmax/N, field, frequency, i);
 		}
 		
 		return splitIntgrs;
 	}
 	
-	public double getCenter()
+	public double getSyncCenter(double beta, double phi0)
 	{
+		double phis = Math.IEEEremainder(getSyncPhase(0., beta) + gapCount*Math.PI + phi0, 2*Math.PI) ;
+		if (phis < 0) phis+=2*Math.PI;
+		double l =  (phis) / (2*Math.PI*frequency) * beta * IElement.LightSpeed;		
+		return l;
+	}
+	
+	public double getCenter()
+	{	
 		int c = 0;
 		for (int i=0; i<N; i++) 
 			if (Math.abs(field[i]) > Math.abs(field[c]))
@@ -278,6 +287,7 @@ public class TTFIntegrator {
 				csum += zmax*i/N;
 				cN++;
 			}
+		
 		return csum/cN;
 		//return getLength()/2.;
 	}
@@ -356,4 +366,5 @@ public class TTFIntegrator {
 	public String toString() {
 	   return null;
 	}
+
 }
