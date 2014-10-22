@@ -367,4 +367,8 @@ public class TTFIntegrator {
 	   return null;
 	}
 
+	public double[] getField() {
+		return field;
+	}
+
 }
