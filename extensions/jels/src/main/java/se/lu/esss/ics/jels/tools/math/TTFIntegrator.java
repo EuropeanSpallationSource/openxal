@@ -367,6 +367,11 @@ public class TTFIntegrator {
 	   return null;
 	}
 
+	/**
+	 * Returns the field on which current integrator is working.
+	 *  
+	 *  @return the field
+	 */
 	public double[] getField() {
 		return field;
 	}

@@ -11,13 +11,19 @@ import xal.sim.scenario.LatticeElement;
 import xal.tools.beam.PhaseMap;
 import xal.tools.beam.PhaseMatrix;
 
+/**
+ * This is direct fieldmap implementation, matching TraceWin implementation.
+ * 
+ * @author Ivo List <ivo.list@cosylab.com>
+ *
+ */
 public class FieldMap extends ThickElement  {
-	double field[];
-	double phi0;
-	double frequency;
-	double k0;
-	double phase[];
-	double E[];
+	private double field[];
+	private double phi0;
+	private double frequency;
+	private double k0;
+	private double phase[];
+	private double E[];
 	
 	public FieldMap() {
         this(null);
@@ -39,6 +45,14 @@ public class FieldMap extends ThickElement  {
 	    k0 = fm.getXelmax();
 	}
 	
+	/**
+	 * This method precalculates the energy and phase on the whole current element, so that we don't have
+	 * any problems when a probe visits of smaller parts of the element.
+	 *  
+	 * @param beta energy at the start of the element
+	 * @param E0 energy at the start of the element
+	 * @param Er particles rest energy
+	 */
 	private void initPhase(double beta, double E0, double Er)
 	{
 		if (phase != null) return;
@@ -79,6 +93,11 @@ public class FieldMap extends ThickElement  {
 		return i<0?0.: (i>=field.length ? 0  : field[i]);
 	}
 	
+	
+	/**
+	 * Method calculates transfer matrix for the fieldmap on the current range (i.e from probe.getPosition, and for dblLength).
+	 * It does so by numerically integrating equations of motion and calculating matrix exponent of them, to get the transfer matrix.
+	 */
 	@Override
 	public PhaseMap transferMap(IProbe probe, double dblLen)
 			throws ModelException {
@@ -108,6 +127,8 @@ public class FieldMap extends ThickElement  {
 			double Ez = k0 * field[i] * Math.cos(phase[i]);
 			//double pEz_pz = k0 * (field(i+1)-field(i-1))/(2.*dz) * Math.cos(phase[i])
 			//double pEz_pz = k0 * field[i] * Math.sin(phase[i]) * (phase[Math.min(phase.length-1,i+1)]-phase[i])/ dz;
+			
+			// partial derivative of E_z by z: seems to be a bug in TW here, since derivative is done over time
 			double pEz_pz = k0 * field[i] * Math.sin(phase[i]) * 2*Math.PI*frequency / (beta * LightSpeed);
 					
 			double pEx_px = - 0.5 * k0 * (field(i+1)-field(i-1))/(2.*dz) * Math.cos(phase[i]);
@@ -128,14 +149,16 @@ public class FieldMap extends ThickElement  {
 			
 			double gammae = (E[Math.min(i+1,E.length-1)])/Er + 1.0;
 			double betae = Math.sqrt(1.0 - 1.0/(gammae*gammae));
-			
+		
+			// Following line fixes the determinant of longitudinal transfer matrix
+			// This is another bug in TW.
 			pm.setElem(4, 4, ((beta*gamma)/(betae*gammae) + pm.getElem(4,5)*pm.getElem(5,4)) / pm.getElem(5, 5));
 			
 			t = pm.times(t);	
 		}
 		
-		//probe.setLastGapPhase(phi);
-		//System.out.println(i0+" "+in);
+		//Following is a handy printout of transfer matrices useful for comparison with TW transfer matrices
+		
 		/*PhaseMap tw = new PhaseMap(t);
 		ROpenXal2TW(probe.getGamma(), gamma, tw);
 		
