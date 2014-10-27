@@ -3,13 +3,11 @@ package se.lu.esss.ics.jels.model.elem.jels;
 import se.lu.esss.ics.jels.model.elem.els.IdealDrift;
 import se.lu.esss.ics.jels.smf.impl.ESSFieldMap;
 import se.lu.esss.ics.jels.tools.math.TTFIntegrator;
-import xal.model.IComponent;
 import xal.model.IElement;
 import xal.model.IProbe;
 import xal.model.ModelException;
 import xal.model.elem.ElementSeq;
 import xal.sim.scenario.LatticeElement;
-import xal.tools.beam.PhaseMap;
 
 /**
  * Implementation of NCells simulation of fieldmaps.
@@ -20,7 +18,7 @@ import xal.tools.beam.PhaseMap;
  */
 public class FieldMapNCells extends ElementSeq {
 	private IdealDrift[] drifts;
-	private IdealRfGap[] gaps;
+	private IdealRfGap2[] gaps;
 	private TTFIntegrator[] splitIntgrs;
 	private double phi0 = 0.;
 	private double phase;
@@ -46,13 +44,13 @@ public class FieldMapNCells extends ElementSeq {
 	     * Old implementation of IdealRfGap is used. First gap phase is calculated when the energy at the
 	     * entrace into the gap is known. Also TTF integrator is supplied with the necessary offset.
 	     */
-	    gaps = new IdealRfGap[splitIntgrs.length];
+	    gaps = new IdealRfGap2[splitIntgrs.length];
 	    drifts = new IdealDrift[splitIntgrs.length*2];
 	    frequency = fm.getFrequency()*1e6;
 	    phase = fm.getPhase();
 	    
 	    double beta;
-		if (fm.getFieldMapFile().endsWith("spokeFieldMap")) beta = 0.5;
+		if (fm.getFieldMapFile().endsWith("spokeFieldMap")) { beta = 0.5; }
     	else if (fm.getFieldMapFile().endsWith("medBetaFieldMap")) { beta = 0.68; phi0 = Math.PI; }
     	else beta = 0.87;
 	    
@@ -65,7 +63,7 @@ public class FieldMapNCells extends ElementSeq {
 	    	drifts[2*i].setId(fm.getId()+":DR"+2*i);
 			drifts[2*i].setLength(l1);
 						
-		    gaps[i] = new IdealRfGap(fm.getId(), splitIntgrs[i].getE0TL()*fm.getXelmax(),0, fm.getFrequency()*1e6);/* {
+		    gaps[i] = new IdealRfGap2(fm.getId(), splitIntgrs[i].getE0TL()*fm.getXelmax(),0, fm.getFrequency()*1e6);/* {
 		    	@Override
 		    	public void calculatePhase(IProbe probe)
 		    	{    		
