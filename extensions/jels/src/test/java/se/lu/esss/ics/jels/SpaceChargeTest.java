@@ -1,7 +1,9 @@
 package se.lu.esss.ics.jels;
 
+import java.io.File;
 import java.io.IOException;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import se.lu.esss.ics.jels.model.elem.jels.JElsElementMapping;
@@ -9,11 +11,18 @@ import xal.model.ModelException;
 import xal.model.alg.EnvelopeTracker;
 import xal.model.alg.Tracker;
 import xal.model.probe.EnvelopeProbe;
-import xal.model.probe.Probe;
 import xal.smf.Accelerator;
 import xal.smf.AcceleratorSeq;
 
 public class SpaceChargeTest {
+	
+	private static final String RESULTS_DIR = "temp";
+	
+	@BeforeClass
+	public static void beforeClass() throws Exception {
+		new File(RESULTS_DIR).mkdir();
+	}
+	
 	//@Test
 	public void driftTest() throws ModelException, IOException
 	{
@@ -25,7 +34,7 @@ public class SpaceChargeTest {
 		acc.addNode(sequence);
 		acc.setElementMapping(JElsElementMapping.getInstance());
 		double dataOX[][] = GeneralTest.run(probe, sequence);
-		GeneralTest.saveResults("openxal.drift500.txt", dataOX);
+		GeneralTest.saveResults(RESULTS_DIR + "/openxal.drift500.txt", dataOX);
 	}
 	
 	//@Test
@@ -37,7 +46,7 @@ public class SpaceChargeTest {
 			((EnvelopeTracker)probe.getAlgorithm()).setProbeUpdatePolicy(Tracker.UPDATE_ALWAYS);
 			((EnvelopeTracker)probe.getAlgorithm()).setStepSize(1./i);
 			double dataOX[][] = GeneralTest.run(probe);
-			GeneralTest.saveResults("openxal.s"+i+".txt", dataOX);
+			GeneralTest.saveResults(RESULTS_DIR + "/openxal.s"+i+".txt", dataOX);
 		}
 	}
 	
@@ -61,6 +70,6 @@ public class SpaceChargeTest {
 		acc.setLength(0.126);
 		acc.setElementMapping(JElsElementMapping.getInstance());
 		double dataOX[][] = GeneralTest.run(probe, acc);
-		GeneralTest.saveResults("openxal.dgd6.txt", dataOX);
+		GeneralTest.saveResults(RESULTS_DIR + "/openxal.dgd6.txt", dataOX);
 	}
 }
