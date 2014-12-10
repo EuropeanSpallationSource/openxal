@@ -161,10 +161,10 @@ public class EnvelopeTracker extends EnvelopeTrackerBase {
         	return;
         }
   
-        if(this.getSpaceChargeFlag())
+      //  if(this.getSpaceChargeFlag())
             cntSteps = (int) Math.max(Math.ceil(propLen / getStepSize()), 1);
-        else 
-            cntSteps = 1;
+      //  else 
+       //     cntSteps = 1;
         
         dblStep = propLen / cntSteps;
         

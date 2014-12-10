@@ -27,6 +27,8 @@ import xal.smf.Accelerator;
 import xal.smf.AcceleratorNode;
 import xal.smf.AcceleratorSeq;
 import xal.smf.data.XMLDataManager;
+import xal.tools.beam.CovarianceMatrix;
+import xal.tools.beam.PhaseMatrix;
 import xal.tools.beam.PhaseVector;
 import xal.tools.beam.Twiss;
 import xal.tools.xml.XmlDataAdaptor;
@@ -75,13 +77,12 @@ public class JElsDemo {
 		scenario.resync();  // all rfgaps are updated*/		
 		
 		// Outputting lattice elements
-		saveLattice(scenario.getLattice(), "lattice.xml");
+		//saveLattice(scenario.getLattice(), "lattice.xml");
 						
 		// Running simulation
 		//scenario.setStartElementId("BEGIN_mebt");
 		scenario.run();
-		
-		
+		//System.exit(0);
 		// Getting results
 		Trajectory trajectory = probe.getTrajectory();
 		
@@ -179,10 +180,10 @@ public class JElsDemo {
 	private static EnvelopeProbe setupOpenXALProbe() {
 		EnvelopeTracker envelopeTracker = new EnvelopeTracker();			
 		envelopeTracker.setRfGapPhaseCalculation(true);
-		envelopeTracker.setUseSpacecharge(true);
+		envelopeTracker.setUseSpacecharge(false);
 		envelopeTracker.setEmittanceGrowth(false);
-		envelopeTracker.setStepSize(0.1);
-		envelopeTracker.setProbeUpdatePolicy(Tracker.UPDATE_EXIT);
+		envelopeTracker.setStepSize(0.01);
+		envelopeTracker.setProbeUpdatePolicy(Tracker.UPDATE_ALWAYS);
 		
 		EnvelopeProbe envelopeProbe = new EnvelopeProbe();
 		envelopeProbe.setAlgorithm(envelopeTracker);		
@@ -216,11 +217,17 @@ public class JElsDemo {
 				
 		double beta_gamma = probe.getBeta() * probe.getGamma();
 	
+		/*probe.setCovariance(CovarianceMatrix.buildCovariance(new Twiss(-0.051805615,0.20954703,0.25288*1e-6 / beta_gamma),
+				  new Twiss(-0.30984478,0.37074849,0.251694*1e-6 / beta_gamma),
+				  new Twiss(-0.48130325,0.92564505,0.3615731*1e-6 / beta_gamma),
+				  new PhaseVector(0.1,0,0.1,0,0.1,0)));*/
 		
 		probe.initFromTwiss(new Twiss[]{new Twiss(-0.051805615,0.20954703,0.25288*1e-6 / beta_gamma),
 										  new Twiss(-0.30984478,0.37074849,0.251694*1e-6 / beta_gamma),
 										  new Twiss(-0.48130325,0.92564505,0.3615731*1e-6 / beta_gamma)});
-		probe.setBeamCurrent(62.5e-3);
+		
+		
+		probe.setBeamCurrent(0);//62.5e-3);
 		probe.setBunchFrequency(352.21e6); 	
 	}
 

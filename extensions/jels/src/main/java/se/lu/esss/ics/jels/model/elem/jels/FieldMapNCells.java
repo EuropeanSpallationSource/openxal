@@ -18,7 +18,7 @@ import xal.sim.scenario.LatticeElement;
  */
 public class FieldMapNCells extends ElementSeq {
 	private IdealDrift[] drifts;
-	private IdealRfGap2[] gaps;
+	private IdealRfGap[] gaps;
 	private TTFIntegrator[] splitIntgrs;
 	private double phi0 = 0.;
 	private double phase;
@@ -44,7 +44,7 @@ public class FieldMapNCells extends ElementSeq {
 	     * Old implementation of IdealRfGap is used. First gap phase is calculated when the energy at the
 	     * entrace into the gap is known. Also TTF integrator is supplied with the necessary offset.
 	     */
-	    gaps = new IdealRfGap2[splitIntgrs.length];
+	    gaps = new IdealRfGap[splitIntgrs.length];
 	    drifts = new IdealDrift[splitIntgrs.length*2];
 	    frequency = fm.getFrequency()*1e6;
 	    phase = fm.getPhase();
@@ -63,7 +63,7 @@ public class FieldMapNCells extends ElementSeq {
 	    	drifts[2*i].setId(fm.getId()+":DR"+2*i);
 			drifts[2*i].setLength(l1);
 						
-		    gaps[i] = new IdealRfGap2(fm.getId(), splitIntgrs[i].getE0TL()*fm.getXelmax(),0, fm.getFrequency()*1e6);/* {
+		    gaps[i] = new IdealRfGap(fm.getId(), splitIntgrs[i].getE0TL()*fm.getXelmax(),0, fm.getFrequency()*1e6);/* {
 		    	@Override
 		    	public void calculatePhase(IProbe probe)
 		    	{    		
@@ -96,6 +96,7 @@ public class FieldMapNCells extends ElementSeq {
 			if (i==0) {
 				double dphi = 2*Math.PI*frequency*l1/probe.getBeta()/IElement.LightSpeed;
     			gaps[i].setPhase(phase*Math.PI/180. + dphi);
+    			System.out.printf("%E\n", frequency);
 			}
 			drifts[2*i].setLength(l1);
 			drifts[2*i+1].setLength(l2);
