@@ -1,7 +1,7 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
 <xdxf xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
  	xsi:noNamespaceSchemaLocation="http://sourceforge.net/p/xaldev/openxal/ci/master/tree/core/resources/xal/schemas/xdxf.xsd?format=raw"
-    date="12.10.2014" system="ESS" ver="">
+    date="29.12.2014" system="ESS" ver="">
 	<comboseq id="from-mebt">
 		<sequence id="mebt"/>
 		<sequence id="dtl"/>
@@ -121,7 +121,6 @@
             </channelsuite>
             <ps main="QP4-PS"/>
         </node>
-        <node id="SET_BEAM_PHASE_ERROR-0-0" len="0.0" pos="0.575" type="marker"/>
         <sequence id="GAP1" len="0.0" pos="0.575" type="RF">
             <attributes>
                 <rfcavity amp="0.125435" ampFactor="1.0" freq="352.21" phase="-90.0" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
@@ -194,7 +193,6 @@
             </channelsuite>
             <ps main="QP6-PS"/>
         </node>
-        <node id="CHOPPER-3-0-10-0-1--;-V-chopper-off" len="0.0" pos="0.9500000000200002" type="marker"/>
         <node id="QP7" len="0.255" pos="1.1500000000200001" type="Q">
             <attributes>
                 <magnet bendAngle="0.0" dfltMagFld="2.05" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0.0" dipoleQuadComponent="0.0" len="0.255" pathLength="0.0" polarity="1.0"/>
@@ -205,7 +203,6 @@
             </channelsuite>
             <ps main="QP7-PS"/>
         </node>
-        <node id="SET_BEAM_PHASE_ERROR-0-0" len="0.0" pos="1.9150000000399983" type="marker"/>
         <sequence id="GAP2" len="0.0" pos="1.9150000000399983" type="RF">
             <attributes>
                 <rfcavity amp="0.0623499" ampFactor="1.0" freq="352.21" phase="-90.0" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
@@ -443,7 +440,6 @@
             </channelsuite>
             <ps main="QP15-PS"/>
         </node>
-        <node id="SET_BEAM_PHASE_ERROR-0-0" len="0.0" pos="3.1150000000499967" type="marker"/>
         <sequence id="GAP3" len="0.0" pos="3.1150000000499967" type="RF">
             <attributes>
                 <rfcavity amp="0.14601" ampFactor="1.0" freq="352.21" phase="-90.0" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
@@ -631,7 +627,6 @@
         <attributes>
             <sequence predecessors="mebt"/>
         </attributes>
-        <node id="FREQ-352.21" len="0.0" pos="0.0" type="marker"/>
         <node id="QP22" len="0.025" pos="0.0125" type="Q">
             <attributes>
                 <magnet bendAngle="0.0" dfltMagFld="-59.9444" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0.0" dipoleQuadComponent="0.0" len="0.025" pathLength="0.0" polarity="1.0"/>
@@ -642,8 +637,8 @@
             </channelsuite>
             <ps main="QP22-PS"/>
         </node>
-        <node id="SET_BEAM_PHASE_ERROR-0-0" len="0.0" pos="0.025" type="marker"/>
-        <node id="LATTICE-4-0" len="0.0" pos="0.025" type="marker"/>
+        <node id="LATTICE-POINT-1" len="0.0" pos="0.025" type="marker"/>
+        <node id="LATTICE-START-1" len="0.0" pos="0.025" type="marker"/>
         <sequence id="DTL1" len="0.0752368" pos="0.025" type="RF">
             <attributes>
                 <rfcavity STFCoefs="0.0884558,0.0,0.0,0.0" STF_endCoefs="0.0884558,0.0,0.0,0.0" TTFCoefs="0.0884558,0.780607,-0.378458,-0.163516" TTF_endCoefs="0.0884558,0.780607,-0.378458,-0.163516" amp="6.890666333233042" ampFactor="1.0" freq="352.21" phase="-35.0" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
@@ -820,6 +815,7 @@
                 <ps main="DTL4B-PS"/>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-2" len="0.0" pos="0.33487500000000003" type="marker"/>
         <sequence id="DTL5" len="0.0812303" pos="0.33487500000000003" type="RF">
             <attributes>
                 <rfcavity STFCoefs="0.0954842,0.0,0.0,0.0" STF_endCoefs="0.0954842,0.0,0.0,0.0" TTFCoefs="0.0954842,0.804402,-0.343792,-0.172695" TTF_endCoefs="0.0954842,0.804402,-0.343792,-0.172695" amp="6.2630237445780965" ampFactor="1.0" freq="352.21" phase="-34.34" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
@@ -956,6 +952,7 @@
                 <ps main="DTL8B-PS"/>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-3" len="0.0" pos="0.6690358000000001" type="marker"/>
         <sequence id="DTL9" len="0.0874283" pos="0.6690358000000001" type="RF">
             <attributes>
                 <rfcavity STFCoefs="0.102754,0.0,0.0,0.0" STF_endCoefs="0.102754,0.0,0.0,0.0" TTFCoefs="0.102754,0.82582,-0.311126,-0.175139" TTF_endCoefs="0.102754,0.82582,-0.311126,-0.175139" amp="5.783695504241709" ampFactor="1.0" freq="352.21" phase="-33.69" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
@@ -1092,6 +1089,7 @@
                 <ps main="DTL12B-PS"/>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-4" len="0.0" pos="1.0282701" type="marker"/>
         <sequence id="DTL13" len="0.09380759999999999" pos="1.0282701" type="RF">
             <attributes>
                 <rfcavity STFCoefs="0.110237,0.0,0.0,0.0" STF_endCoefs="0.110237,0.0,0.0,0.0" TTFCoefs="0.110237,0.844334,-0.281896,-0.173259" TTF_endCoefs="0.110237,0.844334,-0.281896,-0.173259" amp="5.423446564180242" ampFactor="1.0" freq="352.21" phase="-33.03" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
@@ -1228,6 +1226,7 @@
                 <ps main="DTL16B-PS"/>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-5" len="0.0" pos="1.4132680000000004" type="marker"/>
         <sequence id="DTL17" len="0.100348" pos="1.4132680000000004" type="RF">
             <attributes>
                 <rfcavity STFCoefs="0.117911,0.0,0.0,0.0" STF_endCoefs="0.117911,0.0,0.0,0.0" TTFCoefs="0.117911,0.860196,-0.256178,-0.168867" TTF_endCoefs="0.117911,0.860196,-0.256178,-0.168867" amp="5.142384710665056" ampFactor="1.0" freq="352.21" phase="-32.38" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
@@ -1379,6 +1378,7 @@
                 <ps main="DTL20B-PS"/>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-6" len="0.0" pos="1.8246470000000006" type="marker"/>
         <sequence id="DTL21" len="0.107029" pos="1.8246470000000006" type="RF">
             <attributes>
                 <rfcavity STFCoefs="0.12575,0.0,0.0,0.0" STF_endCoefs="0.12575,0.0,0.0,0.0" TTFCoefs="0.12575,0.873948,-0.233257,-0.162457" TTF_endCoefs="0.12575,0.873948,-0.233257,-0.162457" amp="4.920305843303501" ampFactor="1.0" freq="352.21" phase="-31.72" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
@@ -1555,6 +1555,7 @@
                 <ps main="DTL24B-PS"/>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-7" len="0.0" pos="2.2629380000000006" type="marker"/>
         <sequence id="DTL25" len="0.113832" pos="2.2629380000000006" type="RF">
             <attributes>
                 <rfcavity STFCoefs="0.133734,0.0,0.0,0.0" STF_endCoefs="0.133734,0.0,0.0,0.0" TTFCoefs="0.133734,0.885127,-0.214297,-0.155874" TTF_endCoefs="0.133734,0.885127,-0.214297,-0.155874" amp="4.739503617983548" ampFactor="1.0" freq="352.21" phase="-31.07" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
@@ -1691,6 +1692,7 @@
                 <ps main="DTL28B-PS"/>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-8" len="0.0" pos="2.728592000000001" type="marker"/>
         <sequence id="DTL29" len="0.120728" pos="2.728592000000001" type="RF">
             <attributes>
                 <rfcavity STFCoefs="0.141828,0.0,0.0,0.0" STF_endCoefs="0.141828,0.0,0.0,0.0" TTFCoefs="0.141828,0.892578,-0.201643,-0.151441" TTF_endCoefs="0.141828,0.892578,-0.201643,-0.151441" amp="4.568799326112027" ampFactor="1.0" freq="352.21" phase="-30.41" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
@@ -1827,6 +1829,7 @@
                 <ps main="DTL32B-PS"/>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-9" len="0.0" pos="3.221943000000001" type="marker"/>
         <sequence id="DTL33" len="0.127703" pos="3.221943000000001" type="RF">
             <attributes>
                 <rfcavity STFCoefs="0.150012,0.0,0.0,0.0" STF_endCoefs="0.150012,0.0,0.0,0.0" TTFCoefs="0.150012,0.899207,-0.190214,-0.146753" TTF_endCoefs="0.150012,0.899207,-0.190214,-0.146753" amp="4.4314128334549805" ampFactor="1.0" freq="352.21" phase="-29.76" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
@@ -1963,6 +1966,7 @@
                 <ps main="DTL36B-PS"/>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-10" len="0.0" pos="3.7432830000000004" type="marker"/>
         <sequence id="DTL37" len="0.13473400000000002" pos="3.7432830000000004" type="RF">
             <attributes>
                 <rfcavity STFCoefs="0.15827,0.0,0.0,0.0" STF_endCoefs="0.15827,0.0,0.0,0.0" TTFCoefs="0.15827,0.904509,-0.181013,-0.142763" TTF_endCoefs="0.15827,0.904509,-0.181013,-0.142763" amp="4.309063016285106" ampFactor="1.0" freq="352.21" phase="-29.1" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
@@ -2114,6 +2118,7 @@
                 <ps main="DTL40B-PS"/>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-11" len="0.0" pos="4.292843" type="marker"/>
         <sequence id="DTL41" len="0.141828" pos="4.292843" type="RF">
             <attributes>
                 <rfcavity STFCoefs="0.166593,0.0,0.0,0.0" STF_endCoefs="0.166593,0.0,0.0,0.0" TTFCoefs="0.166593,0.909057,-0.173051,-0.139034" TTF_endCoefs="0.166593,0.909057,-0.173051,-0.139034" amp="4.20646484974811" ampFactor="1.0" freq="352.21" phase="-28.45" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
@@ -2290,6 +2295,7 @@
                 <ps main="DTL44B-PS"/>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-12" len="0.0" pos="4.870838000000001" type="marker"/>
         <sequence id="DTL45" len="0.14896" pos="4.870838000000001" type="RF">
             <attributes>
                 <rfcavity STFCoefs="0.174971,0.0,0.0,0.0" STF_endCoefs="0.174971,0.0,0.0,0.0" TTFCoefs="0.174971,0.913154,-0.165812,-0.135375" TTF_endCoefs="0.174971,0.913154,-0.165812,-0.135375" amp="4.1229869175542095" ampFactor="1.0" freq="352.21" phase="-27.79" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
@@ -2426,6 +2432,7 @@
                 <ps main="DTL48B-PS"/>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-13" len="0.0" pos="5.477433000000001" type="marker"/>
         <sequence id="DTL49" len="0.156139" pos="5.477433000000001" type="RF">
             <attributes>
                 <rfcavity STFCoefs="0.183394,0.0,0.0,0.0" STF_endCoefs="0.183394,0.0,0.0,0.0" TTFCoefs="0.183394,0.916627,-0.159643,-0.132134" TTF_endCoefs="0.183394,0.916627,-0.159643,-0.132134" amp="4.054342241098912" ampFactor="1.0" freq="352.21" phase="-27.14" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
@@ -2562,6 +2569,7 @@
                 <ps main="DTL52B-PS"/>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-14" len="0.0" pos="6.112779000000001" type="marker"/>
         <sequence id="DTL53" len="0.16334" pos="6.112779000000001" type="RF">
             <attributes>
                 <rfcavity STFCoefs="0.191854,0.0,0.0,0.0" STF_endCoefs="0.191854,0.0,0.0,0.0" TTFCoefs="0.191854,0.919385,-0.154738,-0.129539" TTF_endCoefs="0.191854,0.919385,-0.154738,-0.129539" amp="3.9949207122654995" ampFactor="1.0" freq="352.21" phase="-26.48" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
@@ -2698,6 +2706,7 @@
                 <ps main="DTL56B-PS"/>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-15" len="0.0" pos="6.776978000000001" type="marker"/>
         <sequence id="DTL57" len="0.170569" pos="6.776978000000001" type="RF">
             <attributes>
                 <rfcavity STFCoefs="0.200337,0.0,0.0,0.0" STF_endCoefs="0.200337,0.0,0.0,0.0" TTFCoefs="0.200337,0.919774,-0.154221,-0.129998" TTF_endCoefs="0.200337,0.919774,-0.154221,-0.129998" amp="3.919911086044158" ampFactor="1.0" freq="352.21" phase="-25.83" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
@@ -2849,6 +2858,7 @@
                 <ps main="DTL60B-PS"/>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-16" len="0.0" pos="7.465181000000001" type="marker"/>
         <sequence id="DTL61" len="0.177456" pos="7.465181000000001" type="RF">
             <attributes>
                 <rfcavity STFCoefs="0.208535,0.0,0.0,0.0" STF_endCoefs="0.208535,0.0,0.0,0.0" TTFCoefs="0.208535,0.906359,-0.179459,-0.149052" TTF_endCoefs="0.208535,0.906359,-0.179459,-0.149052" amp="3.748380532259797" ampFactor="1.0" freq="352.21" phase="-35.0" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
@@ -2883,7 +2893,7 @@
                 <ps main="DTL61B-PS"/>
             </node>
         </sequence>
-        <node id="LATTICE-4-0" len="0.0" pos="7.6426370000000015" type="marker"/>
+        <node id="LATTICE-START-2" len="0.0" pos="7.6426370000000015" type="marker"/>
         <sequence id="DTL62" len="0.178302" pos="7.6426370000000015" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.0" amp="0.0" ampFactor="1.0" freq="352.21" phase="0.0" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
@@ -2918,7 +2928,6 @@
                 <ps main="DTL62B-PS"/>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0-0" len="0.0" pos="7.820939000000002" type="marker"/>
         <sequence id="DTL63" len="0.18110400000000001" pos="7.820939000000002" type="RF">
             <attributes>
                 <rfcavity STFCoefs="0.210485,0.0,0.0,0.0" STF_endCoefs="0.210485,0.0,0.0,0.0" TTFCoefs="0.210485,0.894659,-0.200612,-0.161659" TTF_endCoefs="0.210485,0.894659,-0.200612,-0.161659" amp="3.9288205917664207" ampFactor="1.0" freq="352.21" phase="-34.0" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
@@ -3007,6 +3016,7 @@
                 <ps main="DTL64B-PS"/>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-17" len="0.0" pos="8.185171000000002" type="marker"/>
         <sequence id="DTL65" len="0.182673" pos="8.185171000000002" type="RF">
             <attributes>
                 <rfcavity STFCoefs="0.214669,0.0,0.0,0.0" STF_endCoefs="0.214669,0.0,0.0,0.0" TTFCoefs="0.214669,0.895329,-0.199506,-0.161419" TTF_endCoefs="0.214669,0.895329,-0.199506,-0.161419" amp="5.009623113312281" ampFactor="1.0" freq="352.21" phase="-25.5" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
@@ -3163,6 +3173,7 @@
                 <ps main="DTL68B-PS"/>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-18" len="0.0" pos="8.926872000000001" type="marker"/>
         <sequence id="DTL69" len="0.190001" pos="8.926872000000001" type="RF">
             <attributes>
                 <rfcavity STFCoefs="0.223278,0.0,0.0,0.0" STF_endCoefs="0.223278,0.0,0.0,0.0" TTFCoefs="0.223278,0.894264,-0.201721,-0.163916" TTF_endCoefs="0.223278,0.894264,-0.201721,-0.163916" amp="4.877398836993639" ampFactor="1.0" freq="352.21" phase="-25.5" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
@@ -3314,6 +3325,7 @@
                 <ps main="DTL72B-PS"/>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-19" len="0.0" pos="9.697802000000003" type="marker"/>
         <sequence id="DTL73" len="0.197272" pos="9.697802000000003" type="RF">
             <attributes>
                 <rfcavity STFCoefs="0.23182,0.0,0.0,0.0" STF_endCoefs="0.23182,0.0,0.0,0.0" TTFCoefs="0.23182,0.892305,-0.205563,-0.167425" TTF_endCoefs="0.23182,0.892305,-0.205563,-0.167425" amp="4.737684006603091" ampFactor="1.0" freq="352.21" phase="-25.5" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
@@ -3490,6 +3502,7 @@
                 <ps main="DTL76B-PS"/>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-20" len="0.0" pos="10.497722000000003" type="marker"/>
         <sequence id="DTL77" len="0.20448" pos="10.497722000000003" type="RF">
             <attributes>
                 <rfcavity STFCoefs="0.240289,0.0,0.0,0.0" STF_endCoefs="0.240289,0.0,0.0,0.0" TTFCoefs="0.240289,0.889845,-0.21031,-0.171471" TTF_endCoefs="0.240289,0.889845,-0.21031,-0.171471" amp="4.6149038384292815" ampFactor="1.0" freq="352.21" phase="-25.5" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
@@ -3626,6 +3639,7 @@
                 <ps main="DTL80B-PS"/>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-21" len="0.0" pos="11.326372000000003" type="marker"/>
         <sequence id="DTL81" len="0.211618" pos="11.326372000000003" type="RF">
             <attributes>
                 <rfcavity STFCoefs="0.248676,0.0,0.0,0.0" STF_endCoefs="0.248676,0.0,0.0,0.0" TTFCoefs="0.248676,0.886677,-0.216344,-0.176307" TTF_endCoefs="0.248676,0.886677,-0.216344,-0.176307" amp="4.502447812545353" ampFactor="1.0" freq="352.21" phase="-25.5" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
@@ -3777,6 +3791,7 @@
                 <ps main="DTL84B-PS"/>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-22" len="0.0" pos="12.183464" type="marker"/>
         <sequence id="DTL85" len="0.218682" pos="12.183464" type="RF">
             <attributes>
                 <rfcavity STFCoefs="0.256975,0.0,0.0,0.0" STF_endCoefs="0.256975,0.0,0.0,0.0" TTFCoefs="0.256975,0.882941,-0.223405,-0.181753" TTF_endCoefs="0.256975,0.882941,-0.223405,-0.181753" amp="4.398914334377225" ampFactor="1.0" freq="352.21" phase="-25.5" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
@@ -3953,6 +3968,7 @@
                 <ps main="DTL88B-PS"/>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-23" len="0.0" pos="13.068692" type="marker"/>
         <sequence id="DTL89" len="0.225666" pos="13.068692" type="RF">
             <attributes>
                 <rfcavity STFCoefs="0.265181,0.0,0.0,0.0" STF_endCoefs="0.265181,0.0,0.0,0.0" TTFCoefs="0.265181,0.878764,-0.231254,-0.187627" TTF_endCoefs="0.265181,0.878764,-0.231254,-0.187627" amp="4.305291630052724" ampFactor="1.0" freq="352.21" phase="-25.5" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
@@ -4089,6 +4105,7 @@
                 <ps main="DTL92B-PS"/>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-24" len="0.0" pos="13.981733" type="marker"/>
         <sequence id="DTL93" len="0.232566" pos="13.981733" type="RF">
             <attributes>
                 <rfcavity STFCoefs="0.273289,0.0,0.0,0.0" STF_endCoefs="0.273289,0.0,0.0,0.0" TTFCoefs="0.273289,0.874204,-0.239784,-0.193853" TTF_endCoefs="0.273289,0.874204,-0.239784,-0.193853" amp="4.233353916731278" ampFactor="1.0" freq="352.21" phase="-25.5" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
@@ -4240,7 +4257,8 @@
                 <ps main="DTL96B-PS"/>
             </node>
         </sequence>
-        <node id="LATTICE-4-0" len="0.0" pos="14.92207" type="marker"/>
+        <node id="LATTICE-POINT-25" len="0.0" pos="14.92207" type="marker"/>
+        <node id="LATTICE-START-3" len="0.0" pos="14.92207" type="marker"/>
         <sequence id="DTL97" len="0.238368" pos="14.92207" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.0" amp="0.0" ampFactor="1.0" freq="352.21" phase="0.0" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
@@ -4275,7 +4293,6 @@
                 <ps main="DTL97B-PS"/>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0-0" len="0.0" pos="15.160438" type="marker"/>
         <sequence id="DTL98" len="0.241736" pos="15.160438" type="RF">
             <attributes>
                 <rfcavity STFCoefs="0.280942,0.0,0.0,0.0" STF_endCoefs="0.280942,0.0,0.0,0.0" TTFCoefs="0.280942,0.865899,-0.255126,-0.20429" TTF_endCoefs="0.280942,0.865899,-0.255126,-0.20429" amp="3.9793911180534542" ampFactor="1.0" freq="352.21" phase="-34.0" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
@@ -4398,6 +4415,7 @@
                 <ps main="DTL100B-PS"/>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-26" len="0.0" pos="15.888066999999998" type="marker"/>
         <sequence id="DTL101" len="0.24387899999999998" pos="15.888066999999998" type="RF">
             <attributes>
                 <rfcavity STFCoefs="0.286578,0.0,0.0,0.0" STF_endCoefs="0.286578,0.0,0.0,0.0" TTFCoefs="0.286578,0.865822,-0.255377,-0.204892" TTF_endCoefs="0.286578,0.865822,-0.255377,-0.204892" amp="3.9618751113638755" ampFactor="1.0" freq="352.21" phase="-25.5" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
@@ -4554,6 +4572,7 @@
                 <ps main="DTL104B-PS"/>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-27" len="0.0" pos="16.873322999999996" type="marker"/>
         <sequence id="DTL105" len="0.250355" pos="16.873322999999996" type="RF">
             <attributes>
                 <rfcavity STFCoefs="0.294187,0.0,0.0,0.0" STF_endCoefs="0.294187,0.0,0.0,0.0" TTFCoefs="0.294187,0.860477,-0.265265,-0.211668" TTF_endCoefs="0.294187,0.860477,-0.265265,-0.211668" amp="3.8846552814228676" ampFactor="1.0" freq="352.21" phase="-25.5" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
@@ -4725,6 +4744,7 @@
                 <ps main="DTL108B-PS"/>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-28" len="0.0" pos="17.884349999999994" type="marker"/>
         <sequence id="DTL109" len="0.256742" pos="17.884349999999994" type="RF">
             <attributes>
                 <rfcavity STFCoefs="0.301692,0.0,0.0,0.0" STF_endCoefs="0.301692,0.0,0.0,0.0" TTFCoefs="0.301692,0.854827,-0.275676,-0.218635" TTF_endCoefs="0.301692,0.854827,-0.275676,-0.218635" amp="3.8121053653060404" ampFactor="1.0" freq="352.21" phase="-25.5" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
@@ -4881,6 +4901,7 @@
                 <ps main="DTL112B-PS"/>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-29" len="0.0" pos="18.92079199999999" type="marker"/>
         <sequence id="DTL113" len="0.26303899999999997" pos="18.92079199999999" type="RF">
             <attributes>
                 <rfcavity STFCoefs="0.309092,0.0,0.0,0.0" STF_endCoefs="0.309092,0.0,0.0,0.0" TTFCoefs="0.309092,0.848891,-0.286569,-0.225749" TTF_endCoefs="0.309092,0.848891,-0.286569,-0.225749" amp="3.7434893236655067" ampFactor="1.0" freq="352.21" phase="-25.5" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
@@ -5032,6 +5053,7 @@
                 <ps main="DTL116B-PS"/>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-30" len="0.0" pos="19.98228599999999" type="marker"/>
         <sequence id="DTL117" len="0.269245" pos="19.98228599999999" type="RF">
             <attributes>
                 <rfcavity STFCoefs="0.316384,0.0,0.0,0.0" STF_endCoefs="0.316384,0.0,0.0,0.0" TTFCoefs="0.316384,0.84284,-0.297636,-0.23281" TTF_endCoefs="0.316384,0.84284,-0.297636,-0.23281" amp="3.679537626260224" ampFactor="1.0" freq="352.21" phase="-25.5" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
@@ -5208,6 +5230,7 @@
                 <ps main="DTL120B-PS"/>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-31" len="0.0" pos="21.068466999999995" type="marker"/>
         <sequence id="DTL121" len="0.27535899999999996" pos="21.068466999999995" type="RF">
             <attributes>
                 <rfcavity STFCoefs="0.323568,0.0,0.0,0.0" STF_endCoefs="0.323568,0.0,0.0,0.0" TTFCoefs="0.323568,0.836538,-0.309114,-0.239945" TTF_endCoefs="0.323568,0.836538,-0.309114,-0.239945" amp="3.6182448912942773" ampFactor="1.0" freq="352.21" phase="-25.5" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
@@ -5344,6 +5367,7 @@
                 <ps main="DTL124B-PS"/>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-32" len="0.0" pos="22.175454999999996" type="marker"/>
         <sequence id="DTL125" len="0.27820100000000003" pos="22.175454999999996" type="RF">
             <attributes>
                 <rfcavity STFCoefs="0.330596,0.0,0.0,0.0" STF_endCoefs="0.330596,0.0,0.0,0.0" TTFCoefs="0.330596,0.836085,-0.310057,-0.241013" TTF_endCoefs="0.330596,0.836085,-0.310057,-0.241013" amp="3.588679262327291" ampFactor="1.0" freq="352.21" phase="-30.0" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
@@ -5427,7 +5451,7 @@
                 <ps main="DTL126B-PS"/>
             </node>
         </sequence>
-        <node id="LATTICE-4-0" len="0.0" pos="22.743070999999997" type="marker"/>
+        <node id="LATTICE-START-4" len="0.0" pos="22.743070999999997" type="marker"/>
         <sequence id="DTL127" len="0.283481" pos="22.743070999999997" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.0" amp="0.0" ampFactor="1.0" freq="352.21" phase="0.0" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
@@ -5462,7 +5486,6 @@
                 <ps main="DTL127B-PS"/>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0-0" len="0.0" pos="23.026551999999995" type="marker"/>
         <sequence id="DTL128" len="0.28724400000000005" pos="23.026551999999995" type="RF">
             <attributes>
                 <rfcavity STFCoefs="0.333834,0.0,0.0,0.0" STF_endCoefs="0.333834,0.0,0.0,0.0" TTFCoefs="0.333834,0.812129,-0.352302,-0.261651" TTF_endCoefs="0.333834,0.812129,-0.352302,-0.261651" amp="3.4211018586729707" ampFactor="1.0" freq="352.21" phase="-34.0" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
@@ -5497,6 +5520,7 @@
                 <ps main="DTL128B-PS"/>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-33" len="0.0" pos="23.313795999999996" type="marker"/>
         <sequence id="DTL129" len="0.289029" pos="23.313795999999996" type="RF">
             <attributes>
                 <rfcavity STFCoefs="0.33544,0.0,0.0,0.0" STF_endCoefs="0.33544,0.0,0.0,0.0" TTFCoefs="0.33544,0.809351,-0.357236,-0.264205" TTF_endCoefs="0.33544,0.809351,-0.357236,-0.264205" amp="3.4060364314531113" ampFactor="1.0" freq="352.21" phase="-30.0" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
@@ -5673,6 +5697,7 @@
                 <ps main="DTL132B-PS"/>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-34" len="0.0" pos="24.467775999999997" type="marker"/>
         <sequence id="DTL133" len="0.29118099999999997" pos="24.467775999999997" type="RF">
             <attributes>
                 <rfcavity STFCoefs="0.342161,0.0,0.0,0.0" STF_endCoefs="0.342161,0.0,0.0,0.0" TTFCoefs="0.342161,0.810584,-0.355216,-0.263859" TTF_endCoefs="0.342161,0.810584,-0.355216,-0.263859" amp="3.3966821653007697" ampFactor="1.0" freq="352.21" phase="-25.5" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
@@ -5824,6 +5849,7 @@
                 <ps main="DTL136B-PS"/>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-35" len="0.0" pos="25.641014000000002" type="marker"/>
         <sequence id="DTL137" len="0.29683800000000005" pos="25.641014000000002" type="RF">
             <attributes>
                 <rfcavity STFCoefs="0.348808,0.0,0.0,0.0" STF_endCoefs="0.348808,0.0,0.0,0.0" TTFCoefs="0.348808,0.804127,-0.366747,-0.270081" TTF_endCoefs="0.348808,0.804127,-0.366747,-0.270081" amp="3.344545109064611" ampFactor="1.0" freq="352.21" phase="-25.5" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
@@ -6000,6 +6026,7 @@
                 <ps main="DTL140B-PS"/>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-36" len="0.0" pos="26.836744000000003" type="marker"/>
         <sequence id="DTL141" len="0.302405" pos="26.836744000000003" type="RF">
             <attributes>
                 <rfcavity STFCoefs="0.355349,0.0,0.0,0.0" STF_endCoefs="0.355349,0.0,0.0,0.0" TTFCoefs="0.355349,0.797493,-0.37854,-0.276228" TTF_endCoefs="0.355349,0.797493,-0.37854,-0.276228" amp="3.293732655406657" ampFactor="1.0" freq="352.21" phase="-25.5" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
@@ -6151,6 +6178,7 @@
                 <ps main="DTL144B-PS"/>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-37" len="0.0" pos="28.054609000000003" type="marker"/>
         <sequence id="DTL145" len="0.30788299999999996" pos="28.054609000000003" type="RF">
             <attributes>
                 <rfcavity STFCoefs="0.361786,0.0,0.0,0.0" STF_endCoefs="0.361786,0.0,0.0,0.0" TTFCoefs="0.361786,0.790854,-0.390293,-0.282157" TTF_endCoefs="0.361786,0.790854,-0.390293,-0.282157" amp="3.2469319015540585" ampFactor="1.0" freq="352.21" phase="-25.5" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
@@ -6327,6 +6355,7 @@
                 <ps main="DTL148B-PS"/>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-38" len="0.0" pos="29.294251000000003" type="marker"/>
         <sequence id="DTL149" len="0.313272" pos="29.294251000000003" type="RF">
             <attributes>
                 <rfcavity STFCoefs="0.368118,0.0,0.0,0.0" STF_endCoefs="0.368118,0.0,0.0,0.0" TTFCoefs="0.368118,0.784227,-0.40198,-0.287853" TTF_endCoefs="0.368118,0.784227,-0.40198,-0.287853" amp="3.2044852076281796" ampFactor="1.0" freq="352.21" phase="-25.5" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
@@ -6478,6 +6507,7 @@
                 <ps main="DTL152B-PS"/>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-39" len="0.0" pos="30.547794000000003" type="marker"/>
         <sequence id="DTL153" len="0.325974" pos="30.547794000000003" type="RF">
             <attributes>
                 <rfcavity STFCoefs="0.374216,0.0,0.0,0.0" STF_endCoefs="0.374216,0.0,0.0,0.0" TTFCoefs="0.374216,0.758033,-0.447244,-0.306079" TTF_endCoefs="0.374216,0.758033,-0.447244,-0.306079" amp="3.0573313457736924" ampFactor="1.0" freq="352.21" phase="-34.0" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
@@ -6512,7 +6542,7 @@
                 <ps main="DTL153B-PS"/>
             </node>
         </sequence>
-        <node id="LATTICE-4-0" len="0.0" pos="30.873768000000002" type="marker"/>
+        <node id="LATTICE-START-5" len="0.0" pos="30.873768000000002" type="marker"/>
         <sequence id="DTL154" len="0.319125" pos="30.873768000000002" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.0" amp="0.0" ampFactor="1.0" freq="352.21" phase="0.0" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
@@ -6547,7 +6577,6 @@
                 <ps main="DTL154B-PS"/>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0-0" len="0.0" pos="31.192893" type="marker"/>
         <sequence id="DTL155" len="0.323222" pos="31.192893" type="RF">
             <attributes>
                 <rfcavity STFCoefs="0.375651,0.0,0.0,0.0" STF_endCoefs="0.375651,0.0,0.0,0.0" TTFCoefs="0.375651,0.767986,-0.430244,-0.300073" TTF_endCoefs="0.375651,0.767986,-0.430244,-0.300073" amp="3.191375008628935" ampFactor="1.0" freq="352.21" phase="-34.0" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
@@ -6636,6 +6665,7 @@
                 <ps main="DTL156B-PS"/>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-40" len="0.0" pos="31.841068000000003" type="marker"/>
         <sequence id="DTL157" len="0.322258" pos="31.841068000000003" type="RF">
             <attributes>
                 <rfcavity STFCoefs="0.378679,0.0,0.0,0.0" STF_endCoefs="0.378679,0.0,0.0,0.0" TTFCoefs="0.378679,0.772934,-0.42178,-0.297034" TTF_endCoefs="0.378679,0.772934,-0.42178,-0.297034" amp="3.213357969585986" ampFactor="1.0" freq="352.21" phase="-25.5" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
@@ -6807,6 +6837,7 @@
                 <ps main="DTL160B-PS"/>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-41" len="0.0" pos="33.13808300000001" type="marker"/>
         <sequence id="DTL161" len="0.327562" pos="33.13808300000001" type="RF">
             <attributes>
                 <rfcavity STFCoefs="0.384912,0.0,0.0,0.0" STF_endCoefs="0.384912,0.0,0.0,0.0" TTFCoefs="0.384912,0.766179,-0.433559,-0.302221" TTF_endCoefs="0.384912,0.766179,-0.433559,-0.302221" amp="3.1718979173962865" ampFactor="1.0" freq="352.21" phase="-25.5" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
@@ -6983,6 +7014,7 @@
                 <ps main="DTL164B-PS"/>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-42" len="0.0" pos="34.456179000000006" type="marker"/>
         <sequence id="DTL165" len="0.332775" pos="34.456179000000006" type="RF">
             <attributes>
                 <rfcavity STFCoefs="0.391037,0.0,0.0,0.0" STF_endCoefs="0.391037,0.0,0.0,0.0" TTFCoefs="0.391037,0.759299,-0.445503,-0.307244" TTF_endCoefs="0.391037,0.759299,-0.445503,-0.307244" amp="3.1273950585099417" ampFactor="1.0" freq="352.21" phase="-25.5" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
@@ -7134,6 +7166,7 @@
                 <ps main="DTL168B-PS"/>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-43" len="0.0" pos="35.79499200000001" type="marker"/>
         <sequence id="DTL169" len="0.337899" pos="35.79499200000001" type="RF">
             <attributes>
                 <rfcavity STFCoefs="0.397058,0.0,0.0,0.0" STF_endCoefs="0.397058,0.0,0.0,0.0" TTFCoefs="0.397058,0.752642,-0.457013,-0.311897" TTF_endCoefs="0.397058,0.752642,-0.457013,-0.311897" amp="3.087988776449156" ampFactor="1.0" freq="352.21" phase="-25.5" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
@@ -7310,6 +7343,7 @@
                 <ps main="DTL172B-PS"/>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-44" len="0.0" pos="37.15416700000001" type="marker"/>
         <sequence id="DTL173" len="0.342934" pos="37.15416700000001" type="RF">
             <attributes>
                 <rfcavity STFCoefs="0.402974,0.0,0.0,0.0" STF_endCoefs="0.402974,0.0,0.0,0.0" TTFCoefs="0.402974,0.745885,-0.46864,-0.316364" TTF_endCoefs="0.402974,0.745885,-0.46864,-0.316364" amp="3.056183244516616" ampFactor="1.0" freq="352.21" phase="-25.5" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
@@ -7461,6 +7495,7 @@
                 <ps main="DTL176B-PS"/>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-45" len="0.0" pos="38.51586000000001" type="marker"/>
         <sequence id="DTL177" len="0.364885" pos="38.51586000000001" type="RF">
             <attributes>
                 <rfcavity STFCoefs="0.408385,0.0,0.0,0.0" STF_endCoefs="0.408385,0.0,0.0,0.0" TTFCoefs="0.408385,0.686991,-0.56646,-0.33923" TTF_endCoefs="0.408385,0.686991,-0.56646,-0.33923" amp="2.730064026756901" ampFactor="1.0" freq="352.21" phase="-43.5" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
@@ -7495,14 +7530,14 @@
                 <ps main="DTL177B-PS"/>
             </node>
         </sequence>
-        <node id="lattice_end" len="0.0" pos="38.88074500000001" type="marker"/>
+        <node id="LATTICE-END-5" len="0.0" pos="38.88074500000001" type="marker"/>
     </sequence>
     <sequence id="spoke" len="55.860038659322576" pos="42.72074500007001">
         <attributes>
             <sequence predecessors="dtl"/>
         </attributes>
-        <node id="LATTICE-11-0" len="0.0" pos="0.24" type="marker"/>
-        <node id="FREQ-352.21" len="0.0" pos="0.24" type="marker"/>
+        <node id="LATTICE-POINT-46" len="0.0" pos="0.24" type="marker"/>
+        <node id="LATTICE-START-6" len="0.0" pos="0.24" type="marker"/>
         <node id="QP23" len="0.31" pos="0.555" type="Q">
             <attributes>
                 <magnet bendAngle="0.0" dfltMagFld="5.22743" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0.0" dipoleQuadComponent="0.0" len="0.31" pathLength="0.0" polarity="1.0"/>
@@ -7559,7 +7594,6 @@
             </channelsuite>
             <ps main="ST2-HC-PS"/>
         </node>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="2.395" type="marker"/>
         <sequence id="NC1" len="0.6383814868970217" pos="2.395" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.412028,0.690127,0.376221,0.323174" TTF_endCoefs="0.412028,0.673558,0.572507,0.271845" TTF_startCoefs="0.412028,0.676653,0.568015,0.273498" amp="4.85994" ampFactor="1.0" freq="352.21" phase="-61.4286" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -7586,7 +7620,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="3.586621486897022" type="marker"/>
         <sequence id="NC2" len="0.6383814868970217" pos="3.586621486897022" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.418636,0.696025,0.365238,0.316176" TTF_endCoefs="0.418636,0.68256,0.559156,0.275284" TTF_startCoefs="0.418636,0.685584,0.55471,0.276653" amp="4.90476" ampFactor="1.0" freq="352.21" phase="-56.1496" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -7613,6 +7646,7 @@
                 </attributes>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-47" len="0.0" pos="4.740002973794043" type="marker"/>
         <node id="BPM26" len="0.0" pos="4.900002973794043" type="BPM">
             <attributes>
                 <bpm frequency="3.5221E8" length="1.0" orientation="1"/>
@@ -7684,7 +7718,6 @@
             </channelsuite>
             <ps main="ST4-HC-PS"/>
         </node>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="6.655002973794043" type="marker"/>
         <sequence id="NC3" len="0.6383814868970217" pos="6.655002973794043" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.425895,0.702204,0.353688,0.308593" TTF_endCoefs="0.425895,0.692051,0.544914,0.278196" TTF_startCoefs="0.425895,0.694999,0.540518,0.279269" amp="5.75934" ampFactor="1.0" freq="352.21" phase="-38.2112" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -7711,7 +7744,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="7.846624460691065" type="marker"/>
         <sequence id="NC4" len="0.6383814868970217" pos="7.846624460691065" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.433732,0.708545,0.341796,0.300555" TTF_endCoefs="0.433732,0.70185,0.530025,0.280424" TTF_startCoefs="0.433732,0.704719,0.52569,0.281223" amp="5.8144" ampFactor="1.0" freq="352.21" phase="-34.1162" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -7738,6 +7770,7 @@
                 </attributes>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-48" len="0.0" pos="9.000005947588088" type="marker"/>
         <node id="BPM27" len="0.0" pos="9.160005947588088" type="BPM">
             <attributes>
                 <bpm frequency="3.5221E8" length="1.0" orientation="1"/>
@@ -7809,7 +7842,6 @@
             </channelsuite>
             <ps main="ST6-HC-PS"/>
         </node>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="10.91500594758809" type="marker"/>
         <sequence id="NC5" len="0.6383814868970217" pos="10.91500594758809" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.441915,0.714823,0.329978,0.292341" TTF_endCoefs="0.441915,0.711616,0.515007,0.281875" TTF_startCoefs="0.441915,0.714405,0.510737,0.282409" amp="6.422549999999999" ampFactor="1.0" freq="352.21" phase="-34.354" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -7836,7 +7868,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="12.106627434485112" type="marker"/>
         <sequence id="NC6" len="0.6383814868970217" pos="12.106627434485112" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.450405,0.72099,0.318327,0.284033" TTF_endCoefs="0.450405,0.721273,0.499982,0.282552" TTF_startCoefs="0.450405,0.723981,0.495785,0.282848" amp="6.48076" ampFactor="1.0" freq="352.21" phase="-30.245" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -7863,6 +7894,7 @@
                 </attributes>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-49" len="0.0" pos="13.260008921382134" type="marker"/>
         <node id="BPM28" len="0.0" pos="13.420008921382134" type="BPM">
             <attributes>
                 <bpm frequency="3.5221E8" length="1.0" orientation="1"/>
@@ -7934,7 +7966,6 @@
             </channelsuite>
             <ps main="ST8-HC-PS"/>
         </node>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="15.175008921382137" type="marker"/>
         <sequence id="NC7" len="0.6383814868970217" pos="15.175008921382137" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.458796,0.726765,0.307385,0.276046" TTF_endCoefs="0.458796,0.730369,0.485673,0.282509" TTF_startCoefs="0.458796,0.733001,0.481548,0.282595" amp="6.53494" ampFactor="1.0" freq="352.21" phase="-26.314" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -7961,7 +7992,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="16.366630408279157" type="marker"/>
         <sequence id="NC8" len="0.6383814868970217" pos="16.366630408279157" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.467059,0.73216,0.297132,0.268404" TTF_endCoefs="0.467059,0.738917,0.472089,0.281872" TTF_startCoefs="0.467059,0.741476,0.468037,0.281773" amp="6.58528" ampFactor="1.0" freq="352.21" phase="-22.56" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -7988,6 +8018,7 @@
                 </attributes>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-50" len="0.0" pos="17.52001189517618" type="marker"/>
         <node id="BPM29" len="0.0" pos="17.68001189517618" type="BPM">
             <attributes>
                 <bpm frequency="3.5221E8" length="1.0" orientation="1"/>
@@ -8059,7 +8090,6 @@
             </channelsuite>
             <ps main="ST10-HC-PS"/>
         </node>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="19.435011895176178" type="marker"/>
         <sequence id="NC9" len="0.6383814868970217" pos="19.435011895176178" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.475162,0.737188,0.28755,0.261129" TTF_endCoefs="0.475162,0.746926,0.459243,0.280752" TTF_startCoefs="0.475162,0.749416,0.455262,0.280491" amp="6.631939999999999" ampFactor="1.0" freq="352.21" phase="-19.362" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -8086,7 +8116,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="20.626633382073198" type="marker"/>
         <sequence id="NC10" len="0.6383814868970217" pos="20.626633382073198" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.483076,0.741863,0.27862,0.254237" TTF_endCoefs="0.483076,0.754411,0.447134,0.279251" TTF_startCoefs="0.483076,0.756836,0.443225,0.278848" amp="6.67517" ampFactor="1.0" freq="352.21" phase="-16.437" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -8113,6 +8142,7 @@
                 </attributes>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-51" len="0.0" pos="21.78001486897022" type="marker"/>
         <node id="BPM30" len="0.0" pos="21.94001486897022" type="BPM">
             <attributes>
                 <bpm frequency="3.5221E8" length="1.0" orientation="1"/>
@@ -8184,7 +8214,6 @@
             </channelsuite>
             <ps main="ST12-HC-PS"/>
         </node>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="23.69501486897022" type="marker"/>
         <sequence id="NC11" len="0.6383814868970217" pos="23.69501486897022" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.490786,0.746209,0.270301,0.247721" TTF_endCoefs="0.490786,0.7614,0.435738,0.277456" TTF_startCoefs="0.490786,0.763764,0.431897,0.276928" amp="6.71521" ampFactor="1.0" freq="352.21" phase="-13.68" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -8211,7 +8240,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="24.88663635586724" type="marker"/>
         <sequence id="NC12" len="0.6383814868970217" pos="24.88663635586724" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.498287,0.75025,0.262549,0.241569" TTF_endCoefs="0.498287,0.767928,0.425017,0.275437" TTF_startCoefs="0.498287,0.770235,0.421243,0.2748" amp="6.75233" ampFactor="1.0" freq="352.21" phase="-11.081" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -8238,6 +8266,7 @@
                 </attributes>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-52" len="0.0" pos="26.04001784276426" type="marker"/>
         <node id="BPM31" len="0.0" pos="26.20001784276426" type="BPM">
             <attributes>
                 <bpm frequency="3.5221E8" length="1.0" orientation="1"/>
@@ -8309,7 +8338,6 @@
             </channelsuite>
             <ps main="ST14-HC-PS"/>
         </node>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="27.95501784276426" type="marker"/>
         <sequence id="NC13" len="0.6383814868970217" pos="27.95501784276426" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.505577,0.754011,0.255323,0.235766" TTF_endCoefs="0.505577,0.774028,0.414934,0.273253" TTF_startCoefs="0.505577,0.77628,0.411224,0.272521" amp="6.786779999999999" ampFactor="1.0" freq="352.21" phase="-8.63" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -8336,7 +8364,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="29.14663932966128" type="marker"/>
         <sequence id="NC14" len="0.6383814868970217" pos="29.14663932966128" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.512641,0.757507,0.248594,0.230304" TTF_endCoefs="0.512641,0.77972,0.405467,0.270958" TTF_startCoefs="0.512641,0.781921,0.401819,0.270142" amp="6.8187999999999995" ampFactor="1.0" freq="352.21" phase="-6.868" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -8363,6 +8390,7 @@
                 </attributes>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-53" len="0.0" pos="30.300020816558302" type="marker"/>
         <node id="BPM32" len="0.0" pos="30.460020816558302" type="BPM">
             <attributes>
                 <bpm frequency="3.5221E8" length="1.0" orientation="1"/>
@@ -8434,7 +8462,6 @@
             </channelsuite>
             <ps main="ST16-HC-PS"/>
         </node>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="32.2150208165583" type="marker"/>
         <sequence id="NC15" len="0.6383814868970217" pos="32.2150208165583" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.519469,0.760754,0.242334,0.225174" TTF_endCoefs="0.519469,0.785025,0.396593,0.268594" TTF_startCoefs="0.519469,0.787178,0.393004,0.267705" amp="6.84849" ampFactor="1.0" freq="352.21" phase="-5.244" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -8461,7 +8488,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="33.40664230345533" type="marker"/>
         <sequence id="NC16" len="0.6383814868970217" pos="33.40664230345533" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.526065,0.763775,0.236503,0.220355" TTF_endCoefs="0.526065,0.789977,0.388268,0.266195" TTF_startCoefs="0.526065,0.792085,0.384735,0.265242" amp="6.87608" ampFactor="1.0" freq="352.21" phase="-3.748" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -8488,6 +8514,7 @@
                 </attributes>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-54" len="0.0" pos="34.56002379035235" type="marker"/>
         <node id="BPM33" len="0.0" pos="34.72002379035235" type="BPM">
             <attributes>
                 <bpm frequency="3.5221E8" length="1.0" orientation="1"/>
@@ -8559,7 +8586,6 @@
             </channelsuite>
             <ps main="ST18-HC-PS"/>
         </node>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="36.475023790352346" type="marker"/>
         <sequence id="NC17" len="0.6383814868970217" pos="36.475023790352346" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.532435,0.766589,0.231064,0.215824" TTF_endCoefs="0.532435,0.794603,0.380452,0.263785" TTF_startCoefs="0.532435,0.796669,0.376974,0.262775" amp="6.90175" ampFactor="1.0" freq="352.21" phase="-2.37" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -8586,7 +8612,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="37.66664527724937" type="marker"/>
         <sequence id="NC18" len="0.6383814868970217" pos="37.66664527724937" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.538588,0.769214,0.225984,0.211562" TTF_endCoefs="0.538588,0.798932,0.373107,0.261383" TTF_startCoefs="0.538588,0.800958,0.36968,0.260324" amp="6.925669999999999" ampFactor="1.0" freq="352.21" phase="-1.101" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -8613,6 +8638,7 @@
                 </attributes>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-55" len="0.0" pos="38.8200267641464" type="marker"/>
         <node id="BPM34" len="0.0" pos="38.980026764146395" type="BPM">
             <attributes>
                 <bpm frequency="3.5221E8" length="1.0" orientation="1"/>
@@ -8684,7 +8710,6 @@
             </channelsuite>
             <ps main="ST20-HC-PS"/>
         </node>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="40.73502676414639" type="marker"/>
         <sequence id="NC19" len="0.6383814868970217" pos="40.73502676414639" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.544529,0.771667,0.221232,0.207549" TTF_endCoefs="0.544529,0.802987,0.366198,0.259004" TTF_startCoefs="0.544529,0.804976,0.36282,0.257901" amp="6.9479999999999995" ampFactor="1.0" freq="352.21" phase="0.066" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -8711,7 +8736,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="41.92664825104342" type="marker"/>
         <sequence id="NC20" len="0.6383814868970217" pos="41.92664825104342" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.550258,0.77396,0.216787,0.203773" TTF_endCoefs="0.550258,0.806786,0.359701,0.256664" TTF_startCoefs="0.550258,0.80874,0.35637,0.255522" amp="6.968929999999999" ampFactor="1.0" freq="352.21" phase="0.76859" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -8738,6 +8762,7 @@
                 </attributes>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-56" len="0.0" pos="43.08002973794044" type="marker"/>
         <node id="BPM35" len="0.0" pos="43.24002973794044" type="BPM">
             <attributes>
                 <bpm frequency="3.5221E8" length="1.0" orientation="1"/>
@@ -8809,7 +8834,6 @@
             </channelsuite>
             <ps main="ST22-HC-PS"/>
         </node>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="44.995029737940435" type="marker"/>
         <sequence id="NC21" len="0.6383814868970217" pos="44.995029737940435" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.555774,0.776101,0.212631,0.200223" TTF_endCoefs="0.555774,0.810343,0.353595,0.254374" TTF_startCoefs="0.555774,0.812264,0.350308,0.253198" amp="6.9884699999999995" ampFactor="1.0" freq="352.21" phase="1.37962" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -8836,7 +8860,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="46.18665122483746" type="marker"/>
         <sequence id="NC22" len="0.6383814868970217" pos="46.18665122483746" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.561086,0.778105,0.208739,0.196882" TTF_endCoefs="0.561086,0.813679,0.347851,0.25214" TTF_startCoefs="0.561086,0.815569,0.344606,0.250934" amp="7.006749999999999" ampFactor="1.0" freq="352.21" phase="1.90543" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -8863,6 +8886,7 @@
                 </attributes>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-57" len="0.0" pos="47.34003271173449" type="marker"/>
         <node id="BPM36" len="0.0" pos="47.500032711734484" type="BPM">
             <attributes>
                 <bpm frequency="3.5221E8" length="1.0" orientation="1"/>
@@ -8934,7 +8958,6 @@
             </channelsuite>
             <ps main="ST24-HC-PS"/>
         </node>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="49.25503271173448" type="marker"/>
         <sequence id="NC23" len="0.6383814868970217" pos="49.25503271173448" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.566201,0.779983,0.205089,0.193734" TTF_endCoefs="0.566201,0.816811,0.34244,0.249966" TTF_startCoefs="0.566201,0.818672,0.339237,0.248734" amp="7.02387" ampFactor="1.0" freq="352.21" phase="2.35216" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -8961,7 +8984,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="50.44665419863151" type="marker"/>
         <sequence id="NC24" len="0.6383814868970217" pos="50.44665419863151" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.571128,0.781745,0.201662,0.190766" TTF_endCoefs="0.571128,0.819756,0.337339,0.247856" TTF_startCoefs="0.571128,0.821589,0.334174,0.2466" amp="7.03994" ampFactor="1.0" freq="352.21" phase="2.72544" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -8988,6 +9010,7 @@
                 </attributes>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-58" len="0.0" pos="51.60003568552853" type="marker"/>
         <node id="BPM37" len="0.0" pos="51.76003568552853" type="BPM">
             <attributes>
                 <bpm frequency="3.5221E8" length="1.0" orientation="1"/>
@@ -9059,7 +9082,6 @@
             </channelsuite>
             <ps main="ST26-HC-PS"/>
         </node>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="53.515035685528524" type="marker"/>
         <sequence id="NC25" len="0.6383814868970217" pos="53.515035685528524" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.575874,0.7834,0.198439,0.187964" TTF_endCoefs="0.575874,0.822528,0.332525,0.245811" TTF_startCoefs="0.575874,0.824335,0.329396,0.244534" amp="7.0550299999999995" ampFactor="1.0" freq="352.21" phase="5.2173" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -9086,7 +9108,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="54.70665717242555" type="marker"/>
         <sequence id="NC26" len="0.6383814868970217" pos="54.70665717242555" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.580447,0.784958,0.195405,0.185317" TTF_endCoefs="0.580447,0.82514,0.327976,0.243831" TTF_startCoefs="0.580447,0.826923,0.324882,0.242536" amp="7.069229999999999" ampFactor="1.0" freq="352.21" phase="5.45872" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -9113,13 +9134,13 @@
                 </attributes>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-59" len="0.0" pos="55.860038659322576" type="marker"/>
     </sequence>
     <sequence id="mb" len="76.67997092791232" pos="98.58078365939258">
         <attributes>
             <sequence predecessors="spoke"/>
         </attributes>
-        <node id="LATTICE-15-0" len="0.0" pos="0.0" type="marker"/>
-        <node id="FREQ-704.42" len="0.0" pos="0.0" type="marker"/>
+        <node id="LATTICE-START-7" len="0.0" pos="0.0" type="marker"/>
         <node id="BPM38" len="0.0" pos="0.19697" type="BPM">
             <attributes>
                 <bpm frequency="7.0442E8" length="1.0" orientation="1"/>
@@ -9191,7 +9212,6 @@
             </channelsuite>
             <ps main="ST28-HC-PS"/>
         </node>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="2.4789400000000006" type="marker"/>
         <sequence id="NC27" len="0.855431192442009" pos="2.4789400000000006" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.581179,-0.702187,-0.525886,-0.264043" TTF_endCoefs="0.581179,-0.473694,-0.669947,0.344783" TTF_startCoefs="0.581179,-0.473696,-0.670456,0.343735" amp="-6.65823" ampFactor="1.0" freq="704.42" phase="76.6467" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -9233,7 +9253,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="3.96595419244201" type="marker"/>
         <sequence id="NC28" len="0.855431192442009" pos="3.96595419244201" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.584188,-0.704893,-0.521815,-0.264829" TTF_endCoefs="0.584188,-0.477152,-0.668678,0.336053" TTF_startCoefs="0.584188,-0.477154,-0.669184,0.334999" amp="-6.68812" ampFactor="1.0" freq="704.42" phase="80.1867" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -9275,7 +9294,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="5.452968384884019" type="marker"/>
         <sequence id="NC29" len="0.855431192442009" pos="5.452968384884019" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.587294,-0.707648,-0.517653,-0.265564" TTF_endCoefs="0.587294,-0.480694,-0.667327,0.327118" TTF_startCoefs="0.587294,-0.480697,-0.667828,0.326059" amp="-6.718319999999999" ampFactor="1.0" freq="704.42" phase="78.2518" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -9317,7 +9335,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="6.939982577326028" type="marker"/>
         <sequence id="NC30" len="0.855431192442009" pos="6.939982577326028" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.590493,-0.710449,-0.513408,-0.266245" TTF_endCoefs="0.590493,-0.484317,-0.665891,0.317992" TTF_startCoefs="0.590493,-0.48432,-0.666386,0.316929" amp="-6.74879" ampFactor="1.0" freq="704.42" phase="81.894" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -9359,6 +9376,7 @@
                 </attributes>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-60" len="0.0" pos="8.519996769768039" type="marker"/>
         <node id="BPM39" len="0.0" pos="8.716966769768039" type="BPM">
             <attributes>
                 <bpm frequency="7.0442E8" length="1.0" orientation="1"/>
@@ -9430,7 +9448,6 @@
             </channelsuite>
             <ps main="ST30-HC-PS"/>
         </node>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="10.99893676976804" type="marker"/>
         <sequence id="NC31" len="0.855431192442009" pos="10.99893676976804" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.593594,-0.713128,-0.509333,-0.266835" TTF_endCoefs="0.593594,-0.487803,-0.664432,0.30928" TTF_startCoefs="0.593594,-0.487806,-0.664974,0.3081" amp="-7.53979" ampFactor="1.0" freq="704.42" phase="84.7803" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -9472,7 +9489,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="12.485950962210048" type="marker"/>
         <sequence id="NC32" len="0.855431192442009" pos="12.485950962210048" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.597349,-0.716324,-0.504452,-0.267459" TTF_endCoefs="0.597349,-0.491989,-0.662645,0.298772" TTF_startCoefs="0.597349,-0.491991,-0.663177,0.297597" amp="-7.57815" ampFactor="1.0" freq="704.42" phase="88.837" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -9514,7 +9530,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="13.972965154652055" type="marker"/>
         <sequence id="NC33" len="0.855431192442009" pos="13.972965154652055" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.601206,-0.719555,-0.499498,-0.268001" TTF_endCoefs="0.601206,-0.496249,-0.660751,0.288103" TTF_startCoefs="0.601206,-0.496252,-0.661271,0.286936" amp="-7.61656" ampFactor="1.0" freq="704.42" phase="92.9325" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -9556,7 +9571,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="15.459979347094063" type="marker"/>
         <sequence id="NC34" len="0.855431192442009" pos="15.459979347094063" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.60516,-0.722813,-0.494482,-0.268459" TTF_endCoefs="0.60516,-0.500575,-0.658752,0.277303" TTF_startCoefs="0.60516,-0.500578,-0.659259,0.276148" amp="-7.6549" ampFactor="1.0" freq="704.42" phase="97.0589" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -9598,6 +9612,7 @@
                 </attributes>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-61" len="0.0" pos="17.03999353953607" type="marker"/>
         <node id="BPM40" len="0.0" pos="17.23696353953607" type="BPM">
             <attributes>
                 <bpm frequency="7.0442E8" length="1.0" orientation="1"/>
@@ -9669,7 +9684,6 @@
             </channelsuite>
             <ps main="ST32-HC-PS"/>
         </node>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="19.51893353953607" type="marker"/>
         <sequence id="NC35" len="0.855431192442009" pos="19.51893353953607" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.608824,-0.725784,-0.489889,-0.268799" TTF_endCoefs="0.608824,-0.504548,-0.656805,0.267521" TTF_startCoefs="0.608824,-0.504551,-0.657389,0.266174" amp="-9.102179999999999" ampFactor="1.0" freq="704.42" phase="101.41" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -9711,7 +9725,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="21.00594773197808" type="marker"/>
         <sequence id="NC36" len="0.855431192442009" pos="21.00594773197808" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.613697,-0.729665,-0.483863,-0.269132" TTF_endCoefs="0.613697,-0.509776,-0.654204,0.25457" TTF_startCoefs="0.613697,-0.509779,-0.654765,0.25325" amp="-9.155569999999999" ampFactor="1.0" freq="704.42" phase="106.188" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -9753,7 +9766,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="22.492961924420086" type="marker"/>
         <sequence id="NC37" len="0.855431192442009" pos="22.492961924420086" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.618669,-0.733545,-0.477812,-0.269338" TTF_endCoefs="0.618669,-0.515045,-0.651469,0.24159" TTF_startCoefs="0.618669,-0.515048,-0.652007,0.240302" amp="-9.208219999999999" ampFactor="1.0" freq="704.42" phase="110.968" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -9795,7 +9807,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="23.979976116862094" type="marker"/>
         <sequence id="NC38" len="0.855431192442009" pos="23.979976116862094" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.623724,-0.737408,-0.471756,-0.269419" TTF_endCoefs="0.623724,-0.520337,-0.64861,0.228636" TTF_startCoefs="0.623724,-0.52034,-0.649123,0.227385" amp="-9.25995" ampFactor="1.0" freq="704.42" phase="115.736" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -9837,6 +9848,7 @@
                 </attributes>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-62" len="0.0" pos="25.5599903093041" type="marker"/>
         <node id="BPM41" len="0.0" pos="25.7569603093041" type="BPM">
             <attributes>
                 <bpm frequency="7.0442E8" length="1.0" orientation="1"/>
@@ -9908,7 +9920,6 @@
             </channelsuite>
             <ps main="ST34-HC-PS"/>
         </node>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="28.038930309304103" type="marker"/>
         <sequence id="NC39" len="0.855431192442009" pos="28.038930309304103" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.628255,-0.740804,-0.46641,-0.269387" TTF_endCoefs="0.628255,-0.525025,-0.645928,0.217372" TTF_startCoefs="0.628255,-0.525027,-0.646529,0.215886" amp="-11.4195" ampFactor="1.0" freq="704.42" phase="120.811" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -9950,7 +9961,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="29.52594450174611" type="marker"/>
         <sequence id="NC40" len="0.855431192442009" pos="29.52594450174611" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.634593,-0.745448,-0.459063,-0.269188" TTF_endCoefs="0.634593,-0.531492,-0.642163,0.201765" TTF_startCoefs="0.634593,-0.531495,-0.642725,0.200349" amp="-11.4931" ampFactor="1.0" freq="704.42" phase="125.976" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -9992,7 +10002,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="31.012958694188118" type="marker"/>
         <sequence id="NC41" len="0.855431192442009" pos="31.012958694188118" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.640969,-0.750002,-0.45182,-0.26882" TTF_endCoefs="0.640969,-0.537895,-0.638272,0.186471" TTF_startCoefs="0.640969,-0.537898,-0.638793,0.18513" amp="-11.5635" ampFactor="1.0" freq="704.42" phase="130.647" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -10034,7 +10043,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="32.499972886630125" type="marker"/>
         <sequence id="NC42" len="0.855431192442009" pos="32.499972886630125" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.647339,-0.754435,-0.444731,-0.268297" TTF_endCoefs="0.647339,-0.54419,-0.634287,0.171604" TTF_startCoefs="0.647339,-0.544193,-0.63477,0.170339" amp="-11.631" ampFactor="1.0" freq="704.42" phase="135.207" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -10076,6 +10084,7 @@
                 </attributes>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-63" len="0.0" pos="34.07998707907214" type="marker"/>
         <node id="BPM42" len="0.0" pos="34.27695707907214" type="BPM">
             <attributes>
                 <bpm frequency="7.0442E8" length="1.0" orientation="1"/>
@@ -10147,7 +10156,6 @@
             </channelsuite>
             <ps main="ST36-HC-PS"/>
         </node>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="36.55892707907213" type="marker"/>
         <sequence id="NC43" len="0.855431192442009" pos="36.55892707907213" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.653172,-0.758395,-0.438367,-0.267694" TTF_endCoefs="0.653172,-0.549864,-0.630527,0.158449" TTF_startCoefs="0.653172,-0.549868,-0.631045,0.15707" amp="-13.5337" ampFactor="1.0" freq="704.42" phase="139.913" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -10189,7 +10197,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="38.04594127151414" type="marker"/>
         <sequence id="NC44" len="0.855431192442009" pos="38.04594127151414" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.660428,-0.763196,-0.430613,-0.266789" TTF_endCoefs="0.660428,-0.556808,-0.625799,0.142446" TTF_startCoefs="0.660428,-0.556811,-0.62627,0.141167" amp="-13.614899999999999" ampFactor="1.0" freq="704.42" phase="144.862" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -10231,7 +10238,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="39.53295546395615" type="marker"/>
         <sequence id="NC45" len="0.855431192442009" pos="39.53295546395615" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.667582,-0.767794,-0.423146,-0.265747" TTF_endCoefs="0.667582,-0.563527,-0.621046,0.127198" TTF_startCoefs="0.667582,-0.56353,-0.621472,0.126017" amp="-13.6914" ampFactor="1.0" freq="704.42" phase="149.62" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -10273,7 +10279,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="41.01996965639816" type="marker"/>
         <sequence id="NC46" len="0.855431192442009" pos="41.01996965639816" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.674603,-0.772184,-0.415981,-0.26459" TTF_endCoefs="0.674603,-0.570002,-0.616299,0.112737" TTF_startCoefs="0.674603,-0.570005,-0.616685,0.111649" amp="-13.7633" ampFactor="1.0" freq="704.42" phase="154.18" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -10315,6 +10320,7 @@
                 </attributes>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-64" len="0.0" pos="42.599983848840175" type="marker"/>
         <node id="BPM43" len="0.0" pos="42.796953848840175" type="BPM">
             <attributes>
                 <bpm frequency="7.0442E8" length="1.0" orientation="1"/>
@@ -10386,7 +10392,6 @@
             </channelsuite>
             <ps main="ST38-HC-PS"/>
         </node>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="45.07892384884016" type="marker"/>
         <sequence id="NC47" len="0.855431192442009" pos="45.07892384884016" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.680751,-0.77593,-0.409841,-0.26348" TTF_endCoefs="0.680751,-0.575575,-0.612049,0.100587" TTF_startCoefs="0.680751,-0.575578,-0.612473,0.099373" amp="-16.68" ampFactor="1.0" freq="704.42" phase="158.898" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -10428,7 +10433,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="46.56593804128217" type="marker"/>
         <sequence id="NC48" len="0.855431192442009" pos="46.56593804128217" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.688806,-0.780705,-0.401975,-0.2619" TTF_endCoefs="0.688806,-0.582745,-0.606457,0.0850895" TTF_startCoefs="0.688806,-0.582748,-0.606832,0.083994" amp="-16.769299999999998" ampFactor="1.0" freq="704.42" phase="163.861" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -10470,7 +10474,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="48.052952233724184" type="marker"/>
         <sequence id="NC49" len="0.855431192442009" pos="48.052952233724184" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.696592,-0.785181,-0.394564,-0.260251" TTF_endCoefs="0.696592,-0.589533,-0.600983,0.0707179" TTF_startCoefs="0.696592,-0.589536,-0.601316,0.06973" amp="-16.8519" ampFactor="1.0" freq="704.42" phase="168.541" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -10512,7 +10515,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="49.539966426166195" type="marker"/>
         <sequence id="NC50" len="0.855431192442009" pos="49.539966426166195" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.704092,-0.789369,-0.387598,-0.258562" TTF_endCoefs="0.704092,-0.595942,-0.595656,0.0574263" TTF_startCoefs="0.704092,-0.595945,-0.595951,0.0565352" amp="-16.9282" ampFactor="1.0" freq="704.42" phase="172.946" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -10554,6 +10556,7 @@
                 </attributes>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-65" len="0.0" pos="51.11998061860821" type="marker"/>
         <node id="BPM44" len="0.0" pos="51.31695061860821" type="BPM">
             <attributes>
                 <bpm frequency="7.0442E8" length="1.0" orientation="1"/>
@@ -10625,7 +10628,6 @@
             </channelsuite>
             <ps main="ST40-HC-PS"/>
         </node>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="53.5989206186082" type="marker"/>
         <sequence id="NC51" len="0.855431192442009" pos="53.5989206186082" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.711216,-0.793239,-0.381134,-0.256877" TTF_endCoefs="0.711216,-0.601915,-0.59055,0.0453008" TTF_startCoefs="0.711216,-0.601918,-0.590818,0.0444779" amp="-17.3767" ampFactor="1.0" freq="704.42" phase="177.126" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -10667,7 +10669,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="55.08593481105021" type="marker"/>
         <sequence id="NC52" len="0.855431192442009" pos="55.08593481105021" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.718279,-0.796974,-0.374869,-0.255137" TTF_endCoefs="0.718279,-0.607726,-0.585459,0.0337357" TTF_startCoefs="0.718279,-0.607729,-0.585697,0.0329934" amp="-17.4449" ampFactor="1.0" freq="704.42" phase="-178.899" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -10709,7 +10710,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="56.57294900349222" type="marker"/>
         <sequence id="NC53" len="0.855431192442009" pos="56.57294900349222" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.725034,-0.800455,-0.369007,-0.253414" TTF_endCoefs="0.725034,-0.613185,-0.580564,0.0230953" TTF_startCoefs="0.725034,-0.613188,-0.580776,0.0224245" amp="-17.5081" ampFactor="1.0" freq="704.42" phase="-175.168" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -10751,7 +10751,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="58.05996319593423" type="marker"/>
         <sequence id="NC54" len="0.855431192442009" pos="58.05996319593423" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.731488,-0.803701,-0.363523,-0.251721" TTF_endCoefs="0.731488,-0.61831,-0.575868,0.0133056" TTF_startCoefs="0.731488,-0.618313,-0.576058,0.0126978" amp="-17.5669" ampFactor="1.0" freq="704.42" phase="-171.665" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -10793,6 +10792,7 @@
                 </attributes>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-66" len="0.0" pos="59.639977388376245" type="marker"/>
         <node id="BPM45" len="0.0" pos="59.836947388376245" type="BPM">
             <attributes>
                 <bpm frequency="7.0442E8" length="1.0" orientation="1"/>
@@ -10864,7 +10864,6 @@
             </channelsuite>
             <ps main="ST42-HC-PS"/>
         </node>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="62.11891738837623" type="marker"/>
         <sequence id="NC55" len="0.855431192442009" pos="62.11891738837623" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.737651,-0.80673,-0.35839,-0.250066" TTF_endCoefs="0.737651,-0.623123,-0.571372,0.00429425" TTF_startCoefs="0.737651,-0.623127,-0.571542,0.00374221" amp="-17.6216" ampFactor="1.0" freq="704.42" phase="-168.374" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -10906,7 +10905,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="63.60593158081824" type="marker"/>
         <sequence id="NC56" len="0.855431192442009" pos="63.60593158081824" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.743532,-0.809557,-0.353583,-0.248455" TTF_endCoefs="0.743532,-0.627645,-0.567073,-0.0040072" TTF_startCoefs="0.743532,-0.627648,-0.567226,-0.00451002" amp="-17.6727" ampFactor="1.0" freq="704.42" phase="-165.282" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -10948,7 +10946,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="65.09294577326025" type="marker"/>
         <sequence id="NC57" len="0.855431192442009" pos="65.09294577326025" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.749145,-0.812199,-0.349078,-0.246892" TTF_endCoefs="0.749145,-0.631894,-0.562965,-0.0116628" TTF_startCoefs="0.749145,-0.631897,-0.563103,-0.0121221" amp="-17.720499999999998" ampFactor="1.0" freq="704.42" phase="-162.372" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -10990,7 +10987,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="66.57995996570227" type="marker"/>
         <sequence id="NC58" len="0.855431192442009" pos="66.57995996570227" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.754501,-0.81467,-0.344853,-0.245381" TTF_endCoefs="0.754501,-0.635891,-0.559043,-0.0187318" TTF_startCoefs="0.754501,-0.635895,-0.559168,-0.0191526" amp="-17.7653" ampFactor="1.0" freq="704.42" phase="-159.632" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -11032,6 +11028,7 @@
                 </attributes>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-67" len="0.0" pos="68.15997415814428" type="marker"/>
         <node id="BPM46" len="0.0" pos="68.35694415814427" type="BPM">
             <attributes>
                 <bpm frequency="7.0442E8" length="1.0" orientation="1"/>
@@ -11103,7 +11100,6 @@
             </channelsuite>
             <ps main="ST44-HC-PS"/>
         </node>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="70.63891415814426" type="marker"/>
         <sequence id="NC59" len="0.855431192442009" pos="70.63891415814426" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.759613,-0.816986,-0.340886,-0.243921" TTF_endCoefs="0.759613,-0.639654,-0.555299,-0.0252684" TTF_startCoefs="0.759613,-0.639658,-0.555412,-0.025655" amp="-17.807299999999998" ampFactor="1.0" freq="704.42" phase="-156.623" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -11145,7 +11141,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="72.12592835058628" type="marker"/>
         <sequence id="NC60" len="0.855431192442009" pos="72.12592835058628" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.764495,-0.819158,-0.337156,-0.242513" TTF_endCoefs="0.764495,-0.6432,-0.551725,-0.0313217" TTF_startCoefs="0.764495,-0.643204,-0.551828,-0.031678" amp="-17.846899999999998" ampFactor="1.0" freq="704.42" phase="-154.185" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -11187,7 +11182,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="73.6129425430283" type="marker"/>
         <sequence id="NC61" len="0.855431192442009" pos="73.6129425430283" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.769158,-0.821197,-0.333645,-0.241157" TTF_endCoefs="0.769158,-0.646546,-0.548313,-0.0369365" TTF_startCoefs="0.769158,-0.646549,-0.548408,-0.0372658" amp="-17.8842" ampFactor="1.0" freq="704.42" phase="-151.264" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -11229,7 +11223,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="75.09995673547031" type="marker"/>
         <sequence id="NC62" len="0.855431192442009" pos="75.09995673547031" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.773616,-0.823116,-0.330337,-0.239852" TTF_endCoefs="0.773616,-0.649705,-0.545055,-0.0421529" TTF_startCoefs="0.773616,-0.649708,-0.545142,-0.0424581" amp="-17.9193" ampFactor="1.0" freq="704.42" phase="-149.085" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -11271,13 +11264,13 @@
                 </attributes>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-68" len="0.0" pos="76.67997092791232" type="marker"/>
     </sequence>
     <sequence id="hb" len="178.92008102240172" pos="175.26075458730492">
         <attributes>
             <sequence predecessors="mb"/>
         </attributes>
-        <node id="LATTICE-15-0" len="0.0" pos="0.0" type="marker"/>
-        <node id="FREQ-704.42" len="0.0" pos="0.0" type="marker"/>
+        <node id="LATTICE-START-8" len="0.0" pos="0.0" type="marker"/>
         <node id="BPM47" len="0.0" pos="0.196975" type="BPM">
             <attributes>
                 <bpm frequency="7.0442E8" length="1.0" orientation="1"/>
@@ -11349,7 +11342,6 @@
             </channelsuite>
             <ps main="ST46-HC-PS"/>
         </node>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="2.47895" type="marker"/>
         <sequence id="NC63" len="0.9150134645523977" pos="2.47895" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.782235,0.732179,0.478443,0.268869" TTF_endCoefs="0.782235,0.563217,0.643641,-0.0552397" TTF_startCoefs="0.782235,0.56322,0.64349,-0.0556436" amp="18.3716" ampFactor="1.0" freq="704.42" phase="-61.7761" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -11386,7 +11378,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="3.965963464552398" type="marker"/>
         <sequence id="NC64" len="0.9150134645523977" pos="3.965963464552398" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.786708,0.734895,0.474193,0.268959" TTF_endCoefs="0.786708,0.566877,0.640426,-0.0480563" TTF_startCoefs="0.786708,0.56688,0.640283,-0.0484393" amp="18.4343" ampFactor="1.0" freq="704.42" phase="-59.5171" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -11423,7 +11414,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="5.452976929104795" type="marker"/>
         <sequence id="NC65" len="0.9150134645523977" pos="5.452976929104795" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.79112,0.737535,0.470049,0.268988" TTF_endCoefs="0.79112,0.57045,0.637247,-0.0411358" TTF_startCoefs="0.79112,0.570453,0.637113,-0.0414986" amp="18.4953" ampFactor="1.0" freq="704.42" phase="-57.3118" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -11460,7 +11450,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="6.939990393657193" type="marker"/>
         <sequence id="NC66" len="0.9150134645523977" pos="6.939990393657193" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.795466,0.740099,0.466011,0.26896" TTF_endCoefs="0.795466,0.573932,0.63411,-0.0344766" TTF_startCoefs="0.795466,0.573935,0.633983,-0.0348202" amp="18.5547" ampFactor="1.0" freq="704.42" phase="-55.1638" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -11497,6 +11486,7 @@
                 </attributes>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-69" len="0.0" pos="8.520003858209591" type="marker"/>
         <node id="BPM48" len="0.0" pos="8.716978858209592" type="BPM">
             <attributes>
                 <bpm frequency="7.0442E8" length="1.0" orientation="1"/>
@@ -11568,7 +11558,6 @@
             </channelsuite>
             <ps main="ST48-HC-PS"/>
         </node>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="10.998953858209592" type="marker"/>
         <sequence id="NC67" len="0.9150134645523977" pos="10.998953858209592" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.79974,0.742586,0.462083,0.26888" TTF_endCoefs="0.79974,0.577321,0.631019,-0.028076" TTF_startCoefs="0.79974,0.577324,0.630899,-0.0284011" amp="18.6125" ampFactor="1.0" freq="704.42" phase="-54.181" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -11605,7 +11594,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="12.48596732276199" type="marker"/>
         <sequence id="NC68" len="0.9150134645523977" pos="12.48596732276199" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.803939,0.744996,0.458266,0.268755" TTF_endCoefs="0.803939,0.580618,0.627978,-0.0219297" TTF_startCoefs="0.803939,0.580621,0.627866,-0.0222374" amp="18.668499999999998" ampFactor="1.0" freq="704.42" phase="-52.149" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -11642,7 +11630,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="13.972980787314388" type="marker"/>
         <sequence id="NC69" len="0.9150134645523977" pos="13.972980787314388" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.80806,0.747329,0.454559,0.268587" TTF_endCoefs="0.80806,0.58382,0.624991,-0.0160328" TTF_startCoefs="0.80806,0.583823,0.624886,-0.0163238" amp="18.7228" ampFactor="1.0" freq="704.42" phase="-50.174" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -11679,7 +11666,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="15.459994251866785" type="marker"/>
         <sequence id="NC70" len="0.9150134645523977" pos="15.459994251866785" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.812098,0.749586,0.450963,0.268382" TTF_endCoefs="0.812098,0.586928,0.622061,-0.010379" TTF_startCoefs="0.812098,0.586931,0.621962,-0.0106543" amp="18.775499999999997" ampFactor="1.0" freq="704.42" phase="-48.258" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -11716,6 +11702,7 @@
                 </attributes>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-70" len="0.0" pos="17.040007716419183" type="marker"/>
         <node id="BPM49" len="0.0" pos="17.23698271641918" type="BPM">
             <attributes>
                 <bpm frequency="7.0442E8" length="1.0" orientation="1"/>
@@ -11787,7 +11774,6 @@
             </channelsuite>
             <ps main="ST50-HC-PS"/>
         </node>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="19.51895771641918" type="marker"/>
         <sequence id="NC71" len="0.9150134645523977" pos="19.51895771641918" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.816053,0.751769,0.447478,0.268143" TTF_endCoefs="0.816053,0.589943,0.619191,-0.00496182" TTF_startCoefs="0.816053,0.589946,0.619097,-0.00522219" amp="18.8264" ampFactor="1.0" freq="704.42" phase="-46.399" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -11824,7 +11810,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="21.005971180971578" type="marker"/>
         <sequence id="NC72" len="0.9150134645523977" pos="21.005971180971578" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.819923,0.753877,0.444101,0.267875" TTF_endCoefs="0.819923,0.592865,0.616382,2.2619E-4" TTF_startCoefs="0.819923,0.592868,0.616294,-2.01195E-5" amp="18.8756" ampFactor="1.0" freq="704.42" phase="-44.597" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -11861,7 +11846,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="22.492984645523975" type="marker"/>
         <sequence id="NC73" len="0.9150134645523977" pos="22.492984645523975" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.823705,0.755914,0.440832,0.267582" TTF_endCoefs="0.823705,0.595696,0.613636,0.00519265" TTF_startCoefs="0.823705,0.595699,0.613553,0.0049596" amp="18.923199999999998" ampFactor="1.0" freq="704.42" phase="-42.851" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -11898,7 +11882,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="23.979998110076373" type="marker"/>
         <sequence id="NC74" len="0.9150134645523977" pos="23.979998110076373" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.827401,0.75788,0.437669,0.267267" TTF_endCoefs="0.827401,0.598437,0.610954,0.00994553" TTF_startCoefs="0.827401,0.59844,0.610875,0.00972494" amp="18.9692" ampFactor="1.0" freq="704.42" phase="-41.161" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -11935,6 +11918,7 @@
                 </attributes>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-71" len="0.0" pos="25.56001157462877" type="marker"/>
         <node id="BPM50" len="0.0" pos="25.75698657462877" type="BPM">
             <attributes>
                 <bpm frequency="7.0442E8" length="1.0" orientation="1"/>
@@ -12006,7 +11990,6 @@
             </channelsuite>
             <ps main="ST52-HC-PS"/>
         </node>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="28.038961574628768" type="marker"/>
         <sequence id="NC75" len="0.9150134645523977" pos="28.038961574628768" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.831009,0.759778,0.434609,0.266932" TTF_endCoefs="0.831009,0.601089,0.608336,0.0144929" TTF_startCoefs="0.831009,0.601092,0.608262,0.0142841" amp="19.0136" ampFactor="1.0" freq="704.42" phase="-39.524" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -12043,7 +12026,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="29.525975039181166" type="marker"/>
         <sequence id="NC76" len="0.9150134645523977" pos="29.525975039181166" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.834529,0.761609,0.43165,0.266581" TTF_endCoefs="0.834529,0.603656,0.605783,0.0188431" TTF_startCoefs="0.834529,0.603658,0.605713,0.0186452" amp="19.0565" ampFactor="1.0" freq="704.42" phase="-37.941" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -12080,7 +12062,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="31.012988503733563" type="marker"/>
         <sequence id="NC77" len="0.9150134645523977" pos="31.012988503733563" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.837963,0.763375,0.42879,0.266216" TTF_endCoefs="0.837963,0.606137,0.603295,0.0230042" TTF_startCoefs="0.837963,0.60614,0.603228,0.0228167" amp="19.0978" ampFactor="1.0" freq="704.42" phase="-36.409" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -12117,7 +12098,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="32.500001968285964" type="marker"/>
         <sequence id="NC78" len="0.9150134645523977" pos="32.500001968285964" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.84131,0.765079,0.426026,0.26584" TTF_endCoefs="0.84131,0.608537,0.600871,0.0269843" TTF_startCoefs="0.84131,0.60854,0.600808,0.0268065" amp="19.1377" ampFactor="1.0" freq="704.42" phase="-34.928" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -12154,6 +12134,7 @@
                 </attributes>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-72" len="0.0" pos="34.08001543283836" type="marker"/>
         <node id="BPM51" len="0.0" pos="34.27699043283836" type="BPM">
             <attributes>
                 <bpm frequency="7.0442E8" length="1.0" orientation="1"/>
@@ -12225,7 +12206,6 @@
             </channelsuite>
             <ps main="ST54-HC-PS"/>
         </node>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="36.55896543283835" type="marker"/>
         <sequence id="NC79" len="0.9150134645523977" pos="36.55896543283835" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.844571,0.766722,0.423355,0.265455" TTF_endCoefs="0.844571,0.610858,0.598511,0.0307915" TTF_startCoefs="0.844571,0.61086,0.598451,0.0306228" amp="19.176199999999998" ampFactor="1.0" freq="704.42" phase="-33.495" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -12262,7 +12242,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="38.04597889739075" type="marker"/>
         <sequence id="NC80" len="0.9150134645523977" pos="38.04597889739075" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.847748,0.768307,0.420774,0.265063" TTF_endCoefs="0.847748,0.6131,0.596214,0.0344335" TTF_startCoefs="0.847748,0.613103,0.596157,0.0342734" amp="19.2133" ampFactor="1.0" freq="704.42" phase="-32.11" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -12299,7 +12278,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="39.532992361943144" type="marker"/>
         <sequence id="NC81" len="0.9150134645523977" pos="39.532992361943144" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.850842,0.769836,0.418281,0.264665" TTF_endCoefs="0.850842,0.615268,0.59398,0.037918" TTF_startCoefs="0.850842,0.615271,0.593926,0.0377659" amp="19.2491" ampFactor="1.0" freq="704.42" phase="-30.77" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -12336,7 +12314,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="41.02000582649554" type="marker"/>
         <sequence id="NC82" len="0.9150134645523977" pos="41.02000582649554" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.853855,0.77131,0.415872,0.264264" TTF_endCoefs="0.853855,0.617364,0.591806,0.0412525" TTF_startCoefs="0.853855,0.617367,0.591755,0.0411078" amp="19.2836" ampFactor="1.0" freq="704.42" phase="-29.475" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -12373,6 +12350,7 @@
                 </attributes>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-73" len="0.0" pos="42.600019291047936" type="marker"/>
         <node id="BPM52" len="0.0" pos="42.79699429104794" type="BPM">
             <attributes>
                 <bpm frequency="7.0442E8" length="1.0" orientation="1"/>
@@ -12444,7 +12422,6 @@
             </channelsuite>
             <ps main="ST56-HC-PS"/>
         </node>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="45.078969291047926" type="marker"/>
         <sequence id="NC83" len="0.9150134645523977" pos="45.078969291047926" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.856787,0.772732,0.413545,0.26386" TTF_endCoefs="0.856787,0.619389,0.589693,0.0444439" TTF_startCoefs="0.856787,0.619392,0.589645,0.0443063" amp="19.3169" ampFactor="1.0" freq="704.42" phase="-28.223" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -12481,7 +12458,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="46.565982755600324" type="marker"/>
         <sequence id="NC84" len="0.9150134645523977" pos="46.565982755600324" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.859642,0.774103,0.411296,0.263454" TTF_endCoefs="0.859642,0.621347,0.587639,0.0474993" TTF_startCoefs="0.859642,0.62135,0.587593,0.0473683" amp="19.349" ampFactor="1.0" freq="704.42" phase="-27.012" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -12518,7 +12494,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="48.05299622015272" type="marker"/>
         <sequence id="NC85" len="0.9150134645523977" pos="48.05299622015272" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.86242,0.775427,0.409123,0.263049" TTF_endCoefs="0.86242,0.62324,0.585643,0.0504251" TTF_startCoefs="0.86242,0.623242,0.585599,0.0503003" amp="19.38" ampFactor="1.0" freq="704.42" phase="-25.841" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -12555,7 +12530,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="49.54000968470512" type="marker"/>
         <sequence id="NC86" len="0.9150134645523977" pos="49.54000968470512" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.865123,0.776704,0.407024,0.262644" TTF_endCoefs="0.865123,0.625069,0.583703,0.0532278" TTF_startCoefs="0.865123,0.625072,0.583661,0.0531088" amp="19.4099" ampFactor="1.0" freq="704.42" phase="-24.709" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -12592,6 +12566,7 @@
                 </attributes>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-74" len="0.0" pos="51.12002314925751" type="marker"/>
         <node id="BPM53" len="0.0" pos="51.316998149257515" type="BPM">
             <attributes>
                 <bpm frequency="7.0442E8" length="1.0" orientation="1"/>
@@ -12663,7 +12638,6 @@
             </channelsuite>
             <ps main="ST58-HC-PS"/>
         </node>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="53.5989731492575" type="marker"/>
         <sequence id="NC87" len="0.9150134645523977" pos="53.5989731492575" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.867753,0.777936,0.404995,0.262241" TTF_endCoefs="0.867753,0.626838,0.581817,0.0559133" TTF_startCoefs="0.867753,0.626841,0.581777,0.0557998" amp="19.4388" ampFactor="1.0" freq="704.42" phase="-23.614" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -12700,7 +12674,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="55.0859866138099" type="marker"/>
         <sequence id="NC88" len="0.9150134645523977" pos="55.0859866138099" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.870312,0.779126,0.403033,0.26184" TTF_endCoefs="0.870312,0.628549,0.579986,0.0584875" TTF_startCoefs="0.870312,0.628551,0.579947,0.058379" amp="19.4666" ampFactor="1.0" freq="704.42" phase="-22.554" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -12737,7 +12710,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="56.5730000783623" type="marker"/>
         <sequence id="NC89" len="0.9150134645523977" pos="56.5730000783623" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.872802,0.780275,0.401137,0.261441" TTF_endCoefs="0.872802,0.630203,0.578205,0.0609557" TTF_startCoefs="0.872802,0.630206,0.578169,0.0608521" amp="19.493499999999997" ampFactor="1.0" freq="704.42" phase="-21.529" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -12774,7 +12746,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="58.060013542914696" type="marker"/>
         <sequence id="NC90" len="0.9150134645523977" pos="58.060013542914696" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.875225,0.781384,0.399303,0.261047" TTF_endCoefs="0.875225,0.631804,0.576476,0.0633233" TTF_startCoefs="0.875225,0.631806,0.57644,0.0632242" amp="19.519399999999997" ampFactor="1.0" freq="704.42" phase="-20.537" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -12811,6 +12782,7 @@
                 </attributes>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-75" len="0.0" pos="59.64002700746709" type="marker"/>
         <node id="BPM54" len="0.0" pos="59.83700200746709" type="BPM">
             <attributes>
                 <bpm frequency="7.0442E8" length="1.0" orientation="1"/>
@@ -12882,7 +12854,6 @@
             </channelsuite>
             <ps main="ST60-HC-PS"/>
         </node>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="62.11897700746708" type="marker"/>
         <sequence id="NC91" len="0.9150134645523977" pos="62.11897700746708" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.877583,0.782456,0.39753,0.260656" TTF_endCoefs="0.877583,0.633352,0.574795,0.0655952" TTF_startCoefs="0.877583,0.633355,0.574761,0.0655003" amp="19.5445" ampFactor="1.0" freq="704.42" phase="-19.577" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -12919,7 +12890,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="63.60599047201948" type="marker"/>
         <sequence id="NC92" len="0.9150134645523977" pos="63.60599047201948" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.879877,0.783491,0.395814,0.26027" TTF_endCoefs="0.879877,0.634851,0.573162,0.0677761" TTF_startCoefs="0.879877,0.634853,0.57313,0.0676852" amp="19.5687" ampFactor="1.0" freq="704.42" phase="-18.647" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -12956,7 +12926,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="65.09300393657188" type="marker"/>
         <sequence id="NC93" len="0.9150134645523977" pos="65.09300393657188" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.882109,0.784492,0.394154,0.259888" TTF_endCoefs="0.882109,0.636301,0.571575,0.0698705" TTF_startCoefs="0.882109,0.636304,0.571544,0.0697834" amp="19.5921" ampFactor="1.0" freq="704.42" phase="-17.747" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -12993,7 +12962,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="66.58001740112428" type="marker"/>
         <sequence id="NC94" len="0.9150134645523977" pos="66.58001740112428" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.884282,0.78546,0.392547,0.259512" TTF_endCoefs="0.884282,0.637705,0.570033,0.0718826" TTF_startCoefs="0.884282,0.637708,0.570003,0.071799" amp="19.6147" ampFactor="1.0" freq="704.42" phase="-16.876" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -13030,6 +12998,7 @@
                 </attributes>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-76" len="0.0" pos="68.16003086567669" type="marker"/>
         <node id="BPM55" len="0.0" pos="68.35700586567668" type="BPM">
             <attributes>
                 <bpm frequency="7.0442E8" length="1.0" orientation="1"/>
@@ -13101,7 +13070,6 @@
             </channelsuite>
             <ps main="ST62-HC-PS"/>
         </node>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="70.63898086567667" type="marker"/>
         <sequence id="NC95" len="0.9150134645523977" pos="70.63898086567667" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.886397,0.786396,0.390992,0.259141" TTF_endCoefs="0.886397,0.639065,0.568534,0.0738165" TTF_startCoefs="0.886397,0.639068,0.568505,0.0737363" amp="19.636499999999998" ampFactor="1.0" freq="704.42" phase="-16.031" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -13138,7 +13106,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="72.12599433022908" type="marker"/>
         <sequence id="NC96" len="0.9150134645523977" pos="72.12599433022908" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.888455,0.787301,0.389486,0.258775" TTF_endCoefs="0.888455,0.640382,0.567077,0.0756759" TTF_startCoefs="0.888455,0.640385,0.567049,0.0755988" amp="19.6577" ampFactor="1.0" freq="704.42" phase="-15.213" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -13175,7 +13142,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="73.61300779478148" type="marker"/>
         <sequence id="NC97" len="0.9150134645523977" pos="73.61300779478148" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.890459,0.788177,0.388028,0.258414" TTF_endCoefs="0.890459,0.641658,0.565661,0.0774645" TTF_startCoefs="0.890459,0.641661,0.565634,0.0773904" amp="19.6781" ampFactor="1.0" freq="704.42" phase="-14.42" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -13212,7 +13178,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="75.10002125933389" type="marker"/>
         <sequence id="NC98" len="0.9150134645523977" pos="75.10002125933389" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.892411,0.789025,0.386615,0.25806" TTF_endCoefs="0.892411,0.642895,0.564283,0.0791856" TTF_startCoefs="0.892411,0.642898,0.564257,0.0791143" amp="19.6979" ampFactor="1.0" freq="704.42" phase="-13.651" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -13249,6 +13214,7 @@
                 </attributes>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-77" len="0.0" pos="76.6800347238863" type="marker"/>
         <node id="BPM56" len="0.0" pos="76.87700972388629" type="BPM">
             <attributes>
                 <bpm frequency="7.0442E8" length="1.0" orientation="1"/>
@@ -13320,7 +13286,6 @@
             </channelsuite>
             <ps main="ST64-HC-PS"/>
         </node>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="79.15898472388628" type="marker"/>
         <sequence id="NC99" len="0.9150134645523977" pos="79.15898472388628" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.894311,0.789846,0.385245,0.257711" TTF_endCoefs="0.894311,0.644094,0.562944,0.0808425" TTF_startCoefs="0.894311,0.644096,0.562919,0.0807739" amp="19.7171" ampFactor="1.0" freq="704.42" phase="-12.906" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -13357,7 +13322,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="80.64599818843868" type="marker"/>
         <sequence id="NC100" len="0.9150134645523977" pos="80.64599818843868" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.896161,0.790641,0.383918,0.257368" TTF_endCoefs="0.896161,0.645256,0.561642,0.0824383" TTF_startCoefs="0.896161,0.645259,0.561617,0.0823721" amp="19.735599999999998" ampFactor="1.0" freq="704.42" phase="-12.183" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -13394,7 +13358,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="82.13301165299109" type="marker"/>
         <sequence id="NC101" len="0.9150134645523977" pos="82.13301165299109" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.897964,0.791411,0.382631,0.257031" TTF_endCoefs="0.897964,0.646383,0.560375,0.0839758" TTF_startCoefs="0.897964,0.646386,0.560351,0.083912" amp="19.7535" ampFactor="1.0" freq="704.42" phase="-11.481" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -13431,7 +13394,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="83.62002511754349" type="marker"/>
         <sequence id="NC102" len="0.9150134645523977" pos="83.62002511754349" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.89972,0.792157,0.381383,0.256699" TTF_endCoefs="0.89972,0.647477,0.559142,0.0854577" TTF_startCoefs="0.89972,0.647479,0.559119,0.0853962" amp="19.770899999999997" ampFactor="1.0" freq="704.42" phase="-10.8" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -13468,6 +13430,7 @@
                 </attributes>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-78" len="0.0" pos="85.2000385820959" type="marker"/>
         <node id="BPM57" len="0.0" pos="85.3970135820959" type="BPM">
             <attributes>
                 <bpm frequency="7.0442E8" length="1.0" orientation="1"/>
@@ -13539,7 +13502,6 @@
             </channelsuite>
             <ps main="ST66-HC-PS"/>
         </node>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="87.67898858209588" type="marker"/>
         <sequence id="NC103" len="0.9150134645523977" pos="87.67898858209588" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.901431,0.792881,0.380172,0.256374" TTF_endCoefs="0.901431,0.648538,0.557943,0.0868867" TTF_startCoefs="0.901431,0.64854,0.55792,0.0868273" amp="19.7878" ampFactor="1.0" freq="704.42" phase="-10.139" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -13576,7 +13538,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="89.16600204664829" type="marker"/>
         <sequence id="NC104" len="0.9150134645523977" pos="89.16600204664829" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.903098,0.793582,0.378997,0.256054" TTF_endCoefs="0.903098,0.649568,0.556775,0.0882652" TTF_startCoefs="0.903098,0.64957,0.556754,0.0882078" amp="19.8041" ampFactor="1.0" freq="704.42" phase="-9.498" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -13613,7 +13574,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="90.65301551120069" type="marker"/>
         <sequence id="NC105" len="0.9150134645523977" pos="90.65301551120069" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.904723,0.794262,0.377857,0.255741" TTF_endCoefs="0.904723,0.650568,0.555639,0.0895955" TTF_startCoefs="0.904723,0.65057,0.555618,0.08954" amp="19.82" ampFactor="1.0" freq="704.42" phase="-8.874" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -13650,7 +13610,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="92.1400289757531" type="marker"/>
         <sequence id="NC106" len="0.9150134645523977" pos="92.1400289757531" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.906307,0.794922,0.37675,0.255433" TTF_endCoefs="0.906307,0.651539,0.554533,0.0908798" TTF_startCoefs="0.906307,0.651541,0.554513,0.0908261" amp="19.8353" ampFactor="1.0" freq="704.42" phase="-8.269" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -13687,6 +13646,7 @@
                 </attributes>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-79" len="0.0" pos="93.7200424403055" type="marker"/>
         <node id="BPM58" len="0.0" pos="93.9170174403055" type="BPM">
             <attributes>
                 <bpm frequency="7.0442E8" length="1.0" orientation="1"/>
@@ -13758,7 +13718,6 @@
             </channelsuite>
             <ps main="ST68-HC-PS"/>
         </node>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="96.19899244030549" type="marker"/>
         <sequence id="NC107" len="0.9150134645523977" pos="96.19899244030549" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.907852,0.795563,0.375674,0.255131" TTF_endCoefs="0.907852,0.652482,0.553456,0.0921202" TTF_startCoefs="0.907852,0.652485,0.553436,0.0920682" amp="19.8503" ampFactor="1.0" freq="704.42" phase="-7.681" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -13795,7 +13754,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="97.6860059048579" type="marker"/>
         <sequence id="NC108" len="0.9150134645523977" pos="97.6860059048579" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.909358,0.796185,0.37463,0.254834" TTF_endCoefs="0.909358,0.653399,0.552407,0.0933187" TTF_startCoefs="0.909358,0.653401,0.552388,0.0932683" amp="19.8647" ampFactor="1.0" freq="704.42" phase="-7.109" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -13832,7 +13790,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="99.1730193694103" type="marker"/>
         <sequence id="NC109" len="0.9150134645523977" pos="99.1730193694103" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.910827,0.796789,0.373615,0.254544" TTF_endCoefs="0.910827,0.654289,0.551385,0.094477" TTF_startCoefs="0.910827,0.654292,0.551367,0.0944282" amp="19.8788" ampFactor="1.0" freq="704.42" phase="-6.553" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -13869,7 +13826,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="100.6600328339627" type="marker"/>
         <sequence id="NC110" len="0.9150134645523977" pos="100.6600328339627" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.91226,0.797375,0.372629,0.254258" TTF_endCoefs="0.91226,0.655155,0.55039,0.095597" TTF_startCoefs="0.91226,0.655158,0.550372,0.0955496" amp="19.8924" ampFactor="1.0" freq="704.42" phase="-6.012" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -13906,6 +13862,7 @@
                 </attributes>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-80" len="0.0" pos="102.24004629851511" type="marker"/>
         <node id="BPM59" len="0.0" pos="102.4370212985151" type="BPM">
             <attributes>
                 <bpm frequency="7.0442E8" length="1.0" orientation="1"/>
@@ -13977,7 +13934,6 @@
             </channelsuite>
             <ps main="ST70-HC-PS"/>
         </node>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="104.7189962985151" type="marker"/>
         <sequence id="NC111" len="0.9150134645523977" pos="104.7189962985151" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.913658,0.797945,0.37167,0.253979" TTF_endCoefs="0.913658,0.655997,0.54942,0.0966804" TTF_startCoefs="0.913658,0.656,0.549402,0.0966344" amp="19.9057" ampFactor="1.0" freq="704.42" phase="-5.487" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -14014,7 +13970,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="106.2060097630675" type="marker"/>
         <sequence id="NC112" len="0.9150134645523977" pos="106.2060097630675" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.915022,0.798499,0.370737,0.253704" TTF_endCoefs="0.915022,0.656816,0.548474,0.0977287" TTF_startCoefs="0.915022,0.656819,0.548457,0.097684" amp="19.918499999999998" ampFactor="1.0" freq="704.42" phase="-4.975" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -14051,7 +14006,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="107.6930232276199" type="marker"/>
         <sequence id="NC113" len="0.9150134645523977" pos="107.6930232276199" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.916353,0.799037,0.36983,0.253435" TTF_endCoefs="0.916353,0.657613,0.547553,0.0987434" TTF_startCoefs="0.916353,0.657616,0.547536,0.0987" amp="19.930999999999997" ampFactor="1.0" freq="704.42" phase="-4.477" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -14088,7 +14042,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="109.18003669217231" type="marker"/>
         <sequence id="NC114" len="0.9150134645523977" pos="109.18003669217231" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.917653,0.799561,0.368947,0.253171" TTF_endCoefs="0.917653,0.658388,0.546654,0.099726" TTF_startCoefs="0.917653,0.658391,0.546637,0.0996838" amp="19.943199999999997" ampFactor="1.0" freq="704.42" phase="-3.992" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -14125,6 +14078,7 @@
                 </attributes>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-81" len="0.0" pos="110.76005015672472" type="marker"/>
         <node id="BPM60" len="0.0" pos="110.95702515672471" type="BPM">
             <attributes>
                 <bpm frequency="7.0442E8" length="1.0" orientation="1"/>
@@ -14196,7 +14150,6 @@
             </channelsuite>
             <ps main="ST72-HC-PS"/>
         </node>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="113.2390001567247" type="marker"/>
         <sequence id="NC115" len="0.9150134645523977" pos="113.2390001567247" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.918922,0.80007,0.368088,0.252912" TTF_endCoefs="0.918922,0.659143,0.545777,0.100678" TTF_startCoefs="0.918922,0.659146,0.545761,0.100637" amp="19.955" ampFactor="1.0" freq="704.42" phase="-3.52" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -14233,7 +14186,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="114.7260136212771" type="marker"/>
         <sequence id="NC116" len="0.9150134645523977" pos="114.7260136212771" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.920161,0.800565,0.367252,0.252659" TTF_endCoefs="0.920161,0.659878,0.544923,0.1016" TTF_startCoefs="0.920161,0.659881,0.544907,0.10156" amp="19.9665" ampFactor="1.0" freq="704.42" phase="-3.061" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -14270,7 +14222,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="116.21302708582951" type="marker"/>
         <sequence id="NC117" len="0.9150134645523977" pos="116.21302708582951" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.921371,0.801048,0.366438,0.25241" TTF_endCoefs="0.921371,0.660594,0.544089,0.102494" TTF_startCoefs="0.921371,0.660596,0.544073,0.102455" amp="19.9777" ampFactor="1.0" freq="704.42" phase="-2.613" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -14307,7 +14258,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="117.70004055038191" type="marker"/>
         <sequence id="NC118" len="0.9150134645523977" pos="117.70004055038191" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.922553,0.801517,0.365646,0.252166" TTF_endCoefs="0.922553,0.661291,0.543275,0.103361" TTF_startCoefs="0.922553,0.661293,0.54326,0.103323" amp="19.988599999999998" ampFactor="1.0" freq="704.42" phase="-2.177" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -14344,6 +14294,7 @@
                 </attributes>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-82" len="0.0" pos="119.28005401493432" type="marker"/>
         <node id="BPM61" len="0.0" pos="119.47702901493432" type="BPM">
             <attributes>
                 <bpm frequency="7.0442E8" length="1.0" orientation="1"/>
@@ -14415,7 +14366,6 @@
             </channelsuite>
             <ps main="ST74-HC-PS"/>
         </node>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="121.7590040149343" type="marker"/>
         <sequence id="NC119" len="0.9150134645523977" pos="121.7590040149343" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.923708,0.801974,0.364873,0.251927" TTF_endCoefs="0.923708,0.66197,0.542481,0.104202" TTF_startCoefs="0.923708,0.661973,0.542466,0.104165" amp="19.9992" ampFactor="1.0" freq="704.42" phase="-1.752" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -14452,7 +14402,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="123.24601747948671" type="marker"/>
         <sequence id="NC120" len="0.9150134645523977" pos="123.24601747948671" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.924837,0.802419,0.364121,0.251692" TTF_endCoefs="0.924837,0.662632,0.541705,0.105018" TTF_startCoefs="0.924837,0.662634,0.541691,0.104982" amp="20.0095" ampFactor="1.0" freq="704.42" phase="-1.337" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -14489,7 +14438,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="124.73303094403911" type="marker"/>
         <sequence id="NC121" len="0.9150134645523977" pos="124.73303094403911" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.92594,0.802852,0.363387,0.251462" TTF_endCoefs="0.92594,0.663277,0.540948,0.10581" TTF_startCoefs="0.92594,0.66328,0.540934,0.105775" amp="20.0196" ampFactor="1.0" freq="704.42" phase="-0.933" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -14526,7 +14474,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="126.22004440859152" type="marker"/>
         <sequence id="NC122" len="0.9150134645523977" pos="126.22004440859152" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.927018,0.803275,0.362672,0.251236" TTF_endCoefs="0.927018,0.663906,0.540209,0.106578" TTF_startCoefs="0.927018,0.663909,0.540195,0.106544" amp="20.0294" ampFactor="1.0" freq="704.42" phase="-0.539" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -14563,6 +14510,7 @@
                 </attributes>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-83" len="0.0" pos="127.80005787314393" type="marker"/>
         <node id="BPM62" len="0.0" pos="127.99703287314392" type="BPM">
             <attributes>
                 <bpm frequency="7.0442E8" length="1.0" orientation="1"/>
@@ -14634,7 +14582,6 @@
             </channelsuite>
             <ps main="ST76-HC-PS"/>
         </node>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="130.27900787314394" type="marker"/>
         <sequence id="NC123" len="0.9150134645523977" pos="130.27900787314394" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.928072,0.803687,0.361975,0.251015" TTF_endCoefs="0.928072,0.66452,0.539487,0.107325" TTF_startCoefs="0.928072,0.664522,0.539474,0.107292" amp="20.038899999999998" ampFactor="1.0" freq="704.42" phase="-0.155" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -14671,7 +14618,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="131.76602133769634" type="marker"/>
         <sequence id="NC124" len="0.9150134645523977" pos="131.76602133769634" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.929102,0.804088,0.361295,0.250798" TTF_endCoefs="0.929102,0.665118,0.538782,0.108051" TTF_startCoefs="0.929102,0.665121,0.538769,0.108018" amp="20.048199999999998" ampFactor="1.0" freq="704.42" phase="0.220375" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -14708,7 +14654,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="133.25303480224875" type="marker"/>
         <sequence id="NC125" len="0.9150134645523977" pos="133.25303480224875" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.93011,0.804479,0.360632,0.250585" TTF_endCoefs="0.93011,0.665702,0.538093,0.108756" TTF_startCoefs="0.93011,0.665704,0.53808,0.108724" amp="20.057299999999998" ampFactor="1.0" freq="704.42" phase="0.586417" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -14745,7 +14690,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="134.74004826680115" type="marker"/>
         <sequence id="NC126" len="0.9150134645523977" pos="134.74004826680115" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.931096,0.804861,0.359985,0.250376" TTF_endCoefs="0.931096,0.666272,0.53742,0.109441" TTF_startCoefs="0.931096,0.666274,0.537407,0.10941" amp="20.0661" ampFactor="1.0" freq="704.42" phase="0.943712" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -14782,6 +14726,7 @@
                 </attributes>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-84" len="0.0" pos="136.32006173135355" type="marker"/>
         <node id="BPM63" len="0.0" pos="136.51703673135356" type="BPM">
             <attributes>
                 <bpm frequency="7.0442E8" length="1.0" orientation="1"/>
@@ -14853,7 +14798,6 @@
             </channelsuite>
             <ps main="ST78-HC-PS"/>
         </node>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="138.79901173135357" type="marker"/>
         <sequence id="NC127" len="0.9150134645523977" pos="138.79901173135357" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.932061,0.805234,0.359354,0.250172" TTF_endCoefs="0.932061,0.666828,0.536762,0.110107" TTF_startCoefs="0.932061,0.66683,0.536749,0.110077" amp="20.0747" ampFactor="1.0" freq="704.42" phase="1.29254" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -14890,7 +14834,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="140.28602519590598" type="marker"/>
         <sequence id="NC128" len="0.9150134645523977" pos="140.28602519590598" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.933005,0.805597,0.358737,0.249971" TTF_endCoefs="0.933005,0.667371,0.536119,0.110756" TTF_startCoefs="0.933005,0.667373,0.536106,0.110726" amp="20.083099999999998" ampFactor="1.0" freq="704.42" phase="1.63318" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -14927,7 +14870,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="141.77303866045838" type="marker"/>
         <sequence id="NC129" len="0.9150134645523977" pos="141.77303866045838" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.933928,0.805952,0.358135,0.249774" TTF_endCoefs="0.933928,0.667901,0.53549,0.111386" TTF_startCoefs="0.933928,0.667903,0.535477,0.111357" amp="20.0913" ampFactor="1.0" freq="704.42" phase="1.96588" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -14964,7 +14906,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="143.2600521250108" type="marker"/>
         <sequence id="NC130" len="0.9150134645523977" pos="143.2600521250108" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.934832,0.806298,0.357547,0.24958" TTF_endCoefs="0.934832,0.668418,0.534875,0.112" TTF_startCoefs="0.934832,0.668421,0.534862,0.111971" amp="20.0993" ampFactor="1.0" freq="704.42" phase="2.2909" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -15001,6 +14942,7 @@
                 </attributes>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-85" len="0.0" pos="144.84006558956318" type="marker"/>
         <node id="BPM64" len="0.0" pos="145.0370405895632" type="BPM">
             <attributes>
                 <bpm frequency="7.0442E8" length="1.0" orientation="1"/>
@@ -15072,7 +15014,6 @@
             </channelsuite>
             <ps main="ST80-HC-PS"/>
         </node>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="147.3190155895632" type="marker"/>
         <sequence id="NC131" len="0.9150134645523977" pos="147.3190155895632" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.935717,0.806636,0.356973,0.249391" TTF_endCoefs="0.935717,0.668924,0.534273,0.112597" TTF_startCoefs="0.935717,0.668927,0.534261,0.112569" amp="20.1072" ampFactor="1.0" freq="704.42" phase="2.60848" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -15109,7 +15050,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="148.8060290541156" type="marker"/>
         <sequence id="NC132" len="0.9150134645523977" pos="148.8060290541156" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.936584,0.806966,0.356412,0.249205" TTF_endCoefs="0.936584,0.669418,0.533685,0.113179" TTF_startCoefs="0.936584,0.669421,0.533673,0.113151" amp="20.1148" ampFactor="1.0" freq="704.42" phase="2.91885" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -15146,7 +15086,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="150.29304251866802" type="marker"/>
         <sequence id="NC133" len="0.9150134645523977" pos="150.29304251866802" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.937432,0.807288,0.355864,0.249022" TTF_endCoefs="0.937432,0.669901,0.533109,0.113745" TTF_startCoefs="0.937432,0.669904,0.533097,0.113718" amp="20.1223" ampFactor="1.0" freq="704.42" phase="3.22222" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -15183,7 +15122,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="151.78005598322042" type="marker"/>
         <sequence id="NC134" len="0.9150134645523977" pos="151.78005598322042" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.938263,0.807604,0.355329,0.248843" TTF_endCoefs="0.938263,0.670374,0.532545,0.114297" TTF_startCoefs="0.938263,0.670376,0.532534,0.114271" amp="20.1295" ampFactor="1.0" freq="704.42" phase="3.51882" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -15220,6 +15158,7 @@
                 </attributes>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-86" len="0.0" pos="153.36006944777282" type="marker"/>
         <node id="BPM65" len="0.0" pos="153.55704444777282" type="BPM">
             <attributes>
                 <bpm frequency="7.0442E8" length="1.0" orientation="1"/>
@@ -15291,7 +15230,6 @@
             </channelsuite>
             <ps main="ST82-HC-PS"/>
         </node>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="155.83901944777284" type="marker"/>
         <sequence id="NC135" len="0.9150134645523977" pos="155.83901944777284" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.939077,0.807911,0.354805,0.248667" TTF_endCoefs="0.939077,0.670835,0.531994,0.114835" TTF_startCoefs="0.939077,0.670838,0.531982,0.114809" amp="20.136599999999998" ampFactor="1.0" freq="704.42" phase="3.80885" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -15328,7 +15266,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="157.32603291232525" type="marker"/>
         <sequence id="NC136" len="0.9150134645523977" pos="157.32603291232525" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.939874,0.808212,0.354293,0.248494" TTF_endCoefs="0.939874,0.671286,0.531454,0.115359" TTF_startCoefs="0.939874,0.671289,0.531443,0.115334" amp="20.1436" ampFactor="1.0" freq="704.42" phase="4.09251" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -15365,7 +15302,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="158.81304637687765" type="marker"/>
         <sequence id="NC137" len="0.9150134645523977" pos="158.81304637687765" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.940655,0.808506,0.353793,0.248325" TTF_endCoefs="0.940655,0.671728,0.530926,0.11587" TTF_startCoefs="0.940655,0.67173,0.530915,0.115845" amp="20.150399999999998" ampFactor="1.0" freq="704.42" phase="4.36998" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -15402,7 +15338,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="160.30005984143006" type="marker"/>
         <sequence id="NC138" len="0.9150134645523977" pos="160.30005984143006" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.941421,0.808794,0.353303,0.248158" TTF_endCoefs="0.941421,0.672159,0.530408,0.116369" TTF_startCoefs="0.941421,0.672162,0.530397,0.116344" amp="20.157" ampFactor="1.0" freq="704.42" phase="4.64146" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -15439,6 +15374,7 @@
                 </attributes>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-87" len="0.0" pos="161.88007330598245" type="marker"/>
         <node id="BPM66" len="0.0" pos="162.07704830598246" type="BPM">
             <attributes>
                 <bpm frequency="7.0442E8" length="1.0" orientation="1"/>
@@ -15510,7 +15446,6 @@
             </channelsuite>
             <ps main="ST84-HC-PS"/>
         </node>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="164.35902330598248" type="marker"/>
         <sequence id="NC139" len="0.9150134645523977" pos="164.35902330598248" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.942171,0.809075,0.352824,0.247995" TTF_endCoefs="0.942171,0.672582,0.529902,0.116855" TTF_startCoefs="0.942171,0.672584,0.529891,0.116831" amp="20.1635" ampFactor="1.0" freq="704.42" phase="4.90711" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -15547,7 +15482,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="165.84603677053488" type="marker"/>
         <sequence id="NC140" len="0.9150134645523977" pos="165.84603677053488" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.942907,0.80935,0.352356,0.247835" TTF_endCoefs="0.942907,0.672995,0.529405,0.117329" TTF_startCoefs="0.942907,0.672998,0.529394,0.117305" amp="20.1699" ampFactor="1.0" freq="704.42" phase="5.16711" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -15584,7 +15518,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="167.33305023508728" type="marker"/>
         <sequence id="NC141" len="0.9150134645523977" pos="167.33305023508728" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.943628,0.80962,0.351897,0.247677" TTF_endCoefs="0.943628,0.6734,0.528919,0.117792" TTF_startCoefs="0.943628,0.673402,0.528908,0.117769" amp="20.176099999999998" ampFactor="1.0" freq="704.42" phase="5.42162" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -15621,7 +15554,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="168.8200636996397" type="marker"/>
         <sequence id="NC142" len="0.9150134645523977" pos="168.8200636996397" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.944335,0.809883,0.351448,0.247522" TTF_endCoefs="0.944335,0.673796,0.528443,0.118244" TTF_startCoefs="0.944335,0.673798,0.528432,0.118221" amp="20.182199999999998" ampFactor="1.0" freq="704.42" phase="5.6708" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -15658,6 +15590,7 @@
                 </attributes>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-88" len="0.0" pos="170.40007716419208" type="marker"/>
         <node id="BPM67" len="0.0" pos="170.5970521641921" type="BPM">
             <attributes>
                 <bpm frequency="7.0442E8" length="1.0" orientation="1"/>
@@ -15729,7 +15662,6 @@
             </channelsuite>
             <ps main="ST86-HC-PS"/>
         </node>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="172.8790271641921" type="marker"/>
         <sequence id="NC143" len="0.9150134645523977" pos="172.8790271641921" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.945028,0.810141,0.351009,0.24737" TTF_endCoefs="0.945028,0.674183,0.527976,0.118685" TTF_startCoefs="0.945028,0.674186,0.527965,0.118662" amp="20.1881" ampFactor="1.0" freq="704.42" phase="5.9148" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -15766,7 +15698,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="174.3660406287445" type="marker"/>
         <sequence id="NC144" len="0.9150134645523977" pos="174.3660406287445" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.945708,0.810393,0.350579,0.247221" TTF_endCoefs="0.945708,0.674563,0.527518,0.119115" TTF_startCoefs="0.945708,0.674565,0.527508,0.119093" amp="20.1939" ampFactor="1.0" freq="704.42" phase="6.15378" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -15803,7 +15734,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="175.85305409329692" type="marker"/>
         <sequence id="NC145" len="0.9150134645523977" pos="175.85305409329692" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.946375,0.81064,0.350158,0.247075" TTF_endCoefs="0.946375,0.674934,0.52707,0.119536" TTF_startCoefs="0.946375,0.674937,0.527059,0.119514" amp="20.1996" ampFactor="1.0" freq="704.42" phase="6.38786" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -15840,7 +15770,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="SET_BEAM_PHASE_ERROR-0" len="0.0" pos="177.34006755784932" type="marker"/>
         <sequence id="NC146" len="0.9150134645523977" pos="177.34006755784932" type="RF">
             <attributes>
                 <rfcavity TTFCoefs="0.947029,0.810882,0.349745,0.246931" TTF_endCoefs="0.947029,0.675299,0.52663,0.119947" TTF_startCoefs="0.947029,0.675301,0.52662,0.119925" amp="20.205199999999998" ampFactor="1.0" freq="704.42" phase="6.61718" phaseOffset="0.0" qLoaded="0.0" structureMode="1.0" structureTTF="1.0"/>
@@ -15877,12 +15806,13 @@
                 </attributes>
             </node>
         </sequence>
+        <node id="LATTICE-POINT-89" len="0.0" pos="178.92008102240172" type="marker"/>
     </sequence>
     <sequence id="hebt" len="242.51064989099785" pos="354.1808356097066">
         <attributes>
             <sequence predecessors="hb"/>
         </attributes>
-        <node id="LATTICE-6-1" len="0.0" pos="0.0" type="marker"/>
+        <node id="LATTICE-START-9" len="0.0" pos="0.0" type="marker"/>
         <node id="BPM68" len="0.0" pos="0.2562" type="BPM">
             <attributes>
                 <bpm frequency="7.0442E8" length="1.0" orientation="1"/>
@@ -15954,6 +15884,7 @@
             </channelsuite>
             <ps main="ST88-HC-PS"/>
         </node>
+        <node id="LATTICE-POINT-90" len="0.0" pos="8.52" type="marker"/>
         <node id="QP111" len="0.41000000000000003" pos="8.9812" type="Q">
             <attributes>
                 <magnet bendAngle="0.0" dfltMagFld="3.96079" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0.0" dipoleQuadComponent="0.0" len="0.41000000000000003" pathLength="0.0" polarity="1.0"/>
@@ -16025,6 +15956,7 @@
             </channelsuite>
             <ps main="ST90-HC-PS"/>
         </node>
+        <node id="LATTICE-POINT-91" len="0.0" pos="17.04" type="marker"/>
         <node id="QP113" len="0.41000000000000003" pos="17.501199999999997" type="Q">
             <attributes>
                 <magnet bendAngle="0.0" dfltMagFld="3.5276" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0.0" dipoleQuadComponent="0.0" len="0.41000000000000003" pathLength="0.0" polarity="1.0"/>
@@ -16096,6 +16028,7 @@
             </channelsuite>
             <ps main="ST92-HC-PS"/>
         </node>
+        <node id="LATTICE-POINT-92" len="0.0" pos="25.560000000000002" type="marker"/>
         <node id="QP115" len="0.41000000000000003" pos="26.0212" type="Q">
             <attributes>
                 <magnet bendAngle="0.0" dfltMagFld="3.82791" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0.0" dipoleQuadComponent="0.0" len="0.41000000000000003" pathLength="0.0" polarity="1.0"/>
@@ -16167,6 +16100,7 @@
             </channelsuite>
             <ps main="ST94-HC-PS"/>
         </node>
+        <node id="LATTICE-POINT-93" len="0.0" pos="34.080000000000005" type="marker"/>
         <node id="QP117" len="0.41000000000000003" pos="34.5412" type="Q">
             <attributes>
                 <magnet bendAngle="0.0" dfltMagFld="4.62783" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0.0" dipoleQuadComponent="0.0" len="0.41000000000000003" pathLength="0.0" polarity="1.0"/>
@@ -16238,6 +16172,7 @@
             </channelsuite>
             <ps main="ST96-HC-PS"/>
         </node>
+        <node id="LATTICE-POINT-94" len="0.0" pos="42.6" type="marker"/>
         <node id="QP119" len="0.41000000000000003" pos="43.0612" type="Q">
             <attributes>
                 <magnet bendAngle="0.0" dfltMagFld="4.62783" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0.0" dipoleQuadComponent="0.0" len="0.41000000000000003" pathLength="0.0" polarity="1.0"/>
@@ -16309,6 +16244,7 @@
             </channelsuite>
             <ps main="ST98-HC-PS"/>
         </node>
+        <node id="LATTICE-POINT-95" len="0.0" pos="51.12" type="marker"/>
         <node id="QP121" len="0.41000000000000003" pos="51.581199999999995" type="Q">
             <attributes>
                 <magnet bendAngle="0.0" dfltMagFld="4.62783" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0.0" dipoleQuadComponent="0.0" len="0.41000000000000003" pathLength="0.0" polarity="1.0"/>
@@ -16380,6 +16316,7 @@
             </channelsuite>
             <ps main="ST100-HC-PS"/>
         </node>
+        <node id="LATTICE-POINT-96" len="0.0" pos="59.63999999999999" type="marker"/>
         <node id="QP123" len="0.41000000000000003" pos="60.10119999999999" type="Q">
             <attributes>
                 <magnet bendAngle="0.0" dfltMagFld="4.62783" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0.0" dipoleQuadComponent="0.0" len="0.41000000000000003" pathLength="0.0" polarity="1.0"/>
@@ -16451,6 +16388,7 @@
             </channelsuite>
             <ps main="ST102-HC-PS"/>
         </node>
+        <node id="LATTICE-POINT-97" len="0.0" pos="68.15999999999998" type="marker"/>
         <node id="QP125" len="0.41000000000000003" pos="68.62119999999999" type="Q">
             <attributes>
                 <magnet bendAngle="0.0" dfltMagFld="4.62783" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0.0" dipoleQuadComponent="0.0" len="0.41000000000000003" pathLength="0.0" polarity="1.0"/>
@@ -16522,6 +16460,7 @@
             </channelsuite>
             <ps main="ST104-HC-PS"/>
         </node>
+        <node id="LATTICE-POINT-98" len="0.0" pos="76.67999999999998" type="marker"/>
         <node id="QP127" len="0.41000000000000003" pos="77.14119999999998" type="Q">
             <attributes>
                 <magnet bendAngle="0.0" dfltMagFld="4.62783" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0.0" dipoleQuadComponent="0.0" len="0.41000000000000003" pathLength="0.0" polarity="1.0"/>
@@ -16593,6 +16532,7 @@
             </channelsuite>
             <ps main="ST106-HC-PS"/>
         </node>
+        <node id="LATTICE-POINT-99" len="0.0" pos="85.19999999999997" type="marker"/>
         <node id="QP129" len="0.41000000000000003" pos="85.66119999999998" type="Q">
             <attributes>
                 <magnet bendAngle="0.0" dfltMagFld="4.62783" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0.0" dipoleQuadComponent="0.0" len="0.41000000000000003" pathLength="0.0" polarity="1.0"/>
@@ -16664,6 +16604,7 @@
             </channelsuite>
             <ps main="ST108-HC-PS"/>
         </node>
+        <node id="LATTICE-POINT-100" len="0.0" pos="93.71999999999997" type="marker"/>
         <node id="QP131" len="0.41000000000000003" pos="94.18119999999998" type="Q">
             <attributes>
                 <magnet bendAngle="0.0" dfltMagFld="4.78812" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0.0" dipoleQuadComponent="0.0" len="0.41000000000000003" pathLength="0.0" polarity="1.0"/>
@@ -16735,6 +16676,7 @@
             </channelsuite>
             <ps main="ST110-HC-PS"/>
         </node>
+        <node id="LATTICE-POINT-101" len="0.0" pos="102.23999999999997" type="marker"/>
         <node id="QP133" len="0.41000000000000003" pos="102.70119999999997" type="Q">
             <attributes>
                 <magnet bendAngle="0.0" dfltMagFld="4.97656" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0.0" dipoleQuadComponent="0.0" len="0.41000000000000003" pathLength="0.0" polarity="1.0"/>
@@ -16806,6 +16748,7 @@
             </channelsuite>
             <ps main="ST112-HC-PS"/>
         </node>
+        <node id="LATTICE-POINT-102" len="0.0" pos="110.75999999999996" type="marker"/>
         <node id="QP135" len="0.41000000000000003" pos="111.22119999999997" type="Q">
             <attributes>
                 <magnet bendAngle="0.0" dfltMagFld="5.18695" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0.0" dipoleQuadComponent="0.0" len="0.41000000000000003" pathLength="0.0" polarity="1.0"/>
@@ -16877,6 +16820,7 @@
             </channelsuite>
             <ps main="ST114-HC-PS"/>
         </node>
+        <node id="LATTICE-POINT-103" len="0.0" pos="119.27999999999996" type="marker"/>
         <node id="QP137" len="0.41000000000000003" pos="119.74119999999996" type="Q">
             <attributes>
                 <magnet bendAngle="0.0" dfltMagFld="5.41363" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0.0" dipoleQuadComponent="0.0" len="0.41000000000000003" pathLength="0.0" polarity="1.0"/>
@@ -16948,7 +16892,8 @@
             </channelsuite>
             <ps main="ST116-HC-PS"/>
         </node>
-        <node id="LATTICE_END" len="0.0" pos="127.79999999999995" type="marker"/>
+        <node id="LATTICE-POINT-104" len="0.0" pos="127.79999999999995" type="marker"/>
+        <node id="LATTICE-END-9" len="0.0" pos="127.79999999999995" type="marker"/>
         <node id="QP139" len="0.41000000000000003" pos="128.26119999999997" type="Q">
             <attributes>
                 <magnet bendAngle="0.0" dfltMagFld="6.35671" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0.0" dipoleQuadComponent="0.0" len="0.41000000000000003" pathLength="0.0" polarity="1.0"/>
@@ -17035,7 +16980,6 @@
                 <channel handle="phaseTBT" settable="false" signal="BPM84:PhsTBT"/>
             </channelsuite>
         </node>
-        <node id="START_ACHROMAT" len="0.0" pos="130.45270000000997" type="marker"/>
         <node id="BEND1" len="1.7999999454837996" pos="131.35269997275188" type="DV">
             <attributes>
                 <magnet bendAngle="-4.0" dfltMagFld="0.0034830537414299034" dipoleEntrRotAngle="-2.0" dipoleExitRotAngle="-2.0" dipoleQuadComponent="-0.0" entrK1="0.45" entrK2="2.8" exitK1="0.45" exitK2="2.8" gap="0.1" len="0.0" pathLength="1.7999999454837996" polarity="1.0"/>
@@ -17497,7 +17441,6 @@
             </channelsuite>
             <ps main="BEND2-PS"/>
         </node>
-        <node id="SET_ACHROMAT-100-1-1" len="0.0" pos="196.7621198909876" type="marker"/>
         <node id="TS41-VC" len="0.0" pos="197.8871198909876" type="DCV">
             <attributes>
                 <magnet bendAngle="0.0" dfltMagFld="0.0" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0.0" dipoleQuadComponent="0.0" len="0.0" pathLength="0.0" polarity="1.0"/>
@@ -17958,7 +17901,6 @@
             </channelsuite>
             <ps main="QP159-PS"/>
         </node>
-        <node id="END" len="0.0" pos="242.51064989099785" type="marker"/>
     </sequence>
     <powersupplies>
         <ps id="QP1-PS" type="main">
