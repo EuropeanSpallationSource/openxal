@@ -3,6 +3,7 @@ package se.lu.esss.ics.jels;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
+import se.lu.esss.ics.jels.smf.impl.ESSRfGap;
 import xal.extension.solver.AlgorithmSchedule;
 import xal.extension.solver.AlgorithmScheduleListener;
 import xal.extension.solver.Evaluator;
@@ -26,25 +28,35 @@ import xal.extension.solver.Variable;
 import xal.extension.solver.market.AlgorithmStrategy;
 import xal.extension.solver.solutionjudge.SolutionJudge;
 import xal.extension.solver.solutionjudge.SolutionJudgeListener;
+import xal.model.Lattice;
 import xal.model.ModelException;
 import xal.model.alg.EnvTrackerAdapt;
 import xal.model.alg.EnvelopeTracker;
 import xal.model.alg.Tracker;
+import xal.model.elem.Marker;
 import xal.model.probe.EnvelopeProbe;
 import xal.model.probe.traj.EnvelopeProbeState;
 import xal.model.probe.traj.ProbeState;
 import xal.model.probe.traj.Trajectory;
+import xal.model.xml.LatticeXmlWriter;
 import xal.sim.scenario.Scenario;
 import xal.sim.sync.SynchronizationException;
 import xal.smf.Accelerator;
+import xal.smf.AcceleratorNode;
 import xal.smf.AcceleratorSeq;
 import xal.smf.data.XMLDataManager;
+import xal.smf.impl.Quadrupole;
+import xal.smf.impl.RfGap;
+import xal.tools.beam.CovarianceMatrix;
 import xal.tools.beam.Twiss;
 
 public class Matcher implements Evaluator {
 	
+	//0.2011591303 0.3583795833 0.9771896612
+	//-0.1083747827 -0.3119539455 -0.0341951600
+	
 	final Variable 
-		ax = new Variable("ax", -0.051805615, -0.07, -0.04),
+		/*ax = new Variable("ax", -0.051805615, -0.07, -0.04),  // initial conditions by Royichi
 		bx = new Variable("bx", 0.20954703, 0.1, 0.4),
 		ex = new Variable("ex", 0.25288, 0.1, 0.4),
 		ay = new Variable("ay", -0.30984478, -0.4, -0.2),
@@ -53,8 +65,24 @@ public class Matcher implements Evaluator {
 		az = new Variable("az", -0.48130325, -0.6,-0.4),
 		bz = new Variable("bz", 0.92564505, 0.8, 1),
 		ez = new Variable("ez", 0.3615731, 0.3, 0.5),
-		E = new Variable("E", 3.6217853e6, 3.5e6, 3.7e6);
-	final List<Variable> variables = Arrays.asList(ax,bx,ex,ay,by,ey,az,bz,ez,E);
+		E = new Variable("E", 3.6217853e6, 3.5e6, 3.7e6); */
+	ax = new Variable("ax", -0.1083747827, -0.15, -0.04),         // initial conditions by TW matching (lattice criterion)
+			bx = new Variable("bx",0.2011591303, 0.1, 0.4),
+			//ex = new Variable("ex", 0.25288, 0.1, 0.4),
+			ay = new Variable("ay", -0.3119539455, -0.4, -0.2),
+			by = new Variable("by", 0.3583795833, 0.2, 0.4),
+			//ey = new Variable("ey",  0.251694, 0.2, 0.3),
+			az = new Variable("az", -0.0341951600, -0.6,-0.4),
+			bz = new Variable("bz", 0.9771896612, 0.8, 1);
+			//ez = new Variable("ez", 0.3615731, 0.3, 0.5),
+			//E = new Variable("E", 3.6217853e6, 3.5e6, 3.7e6);
+	final double Ex = 0.25288, Ey = 0.251694, Ez = 0.3615731, e0 =  3.6217853e6;
+	
+	//final List<Variable> variables = Arrays.asList(ax,bx,ex,ay,by,ey,az,bz,ez,E);
+	 
+	
+	
+	final List<Variable> variables = Arrays.asList(ax,bx,ay,by,az,bz);
 	
 	final Accelerator accelerator = loadAccelerator();
 		
@@ -195,6 +223,16 @@ public class Matcher implements Evaluator {
 		}
 	}
 	
+	static void saveLattice(Lattice lattice, String file) {		
+		lattice.setAuthor(System.getProperty("user.name", "ESS"));		
+		try {
+			LatticeXmlWriter.writeXml(lattice, file);
+		} catch (IOException e1) {
+			e1.printStackTrace();
+			return;
+		}
+	}
+	
 	public void printSolution(String file, TrialPoint trial) {	
 		probe.reset();
 		setupInitialParameters(probe, trial);
@@ -205,22 +243,67 @@ public class Matcher implements Evaluator {
 			e.printStackTrace();
 		}
 		
+		//saveLattice(scenario.getLattice(),file);
+		
 		try {
 			Formatter f1  = new Formatter(file+".dat", "UTF8", Locale.ENGLISH);
 			Formatter f2  = new Formatter(file+".max.dat", "UTF8", Locale.ENGLISH);
 			
+			
+	
 			Trajectory trajectory = probe.getTrajectory();
 
 			//System.out.println();
 			Iterator<ProbeState> i = trajectory.stateIterator();
-			Twiss[] t0 = ((EnvelopeProbeState)i.next()).twissParameters();
+		/*	Twiss[] t0 = ((EnvelopeProbeState)i.next()).twissParameters();
 			Twiss[] t1 = ((EnvelopeProbeState)i.next()).twissParameters();
+			*/
+	/*		int latticeElems = 0;
+			int latticeCount = 0;
+			String lastId = "";
+		*/	
+			
+			double phix = 0;
+			double pos0 = 0;
+			double phil = 0;
+			double posl = 0;
 			
 			while (i.hasNext()) {
 				ProbeState ps = i.next();
+		
+			/*	if (ps.getElementId().toUpperCase().startsWith("LATTICE-")) {
+					if (latticeElems != 0) System.out.println("lattice start ignored");
+					else {
+						latticeElems = Integer.parseInt(ps.getElementId().split("-")[1]);
+						latticeCount = 0;
+						System.out.printf("lattice start %s %d\n", ps.getElementId(), latticeElems);
+						lastId = "";
+					}
+				}
+				
+				if (latticeElems != 0) {
+					AcceleratorNode node = accelerator.getNode(ps.getElementId());
+					if (node instanceof Quadrupole || node instanceof ESSRfGap || ps.getElementId().startsWith("DR")) {
+						
+						
+						String currentid = node == null ? ps.getElementId() : node.getParent().getId();	
+						if (!lastId.equals(currentid)) {
+							if (latticeCount == 0) System.out.println("lattice point");
+							latticeCount = (latticeCount + 1) % latticeElems;
+							System.out.println("el: "+currentid);
+							lastId = currentid;
+						}
+					}
+				}
+				
+				if (ps.getElementId().toUpperCase().startsWith("LATTICE_END")) {
+					System.out.println("lattice end " + ps.getElementId());
+					latticeElems = 0;
+				}*/
+				
 				
 				Twiss[] t2 = ((EnvelopeProbeState)ps).twissParameters();
-				if ( t0[0].getEnvelopeRadius() < t1[0].getEnvelopeRadius() &&
+				/*if ( t0[0].getEnvelopeRadius() < t1[0].getEnvelopeRadius() &&
 						t1[0].getEnvelopeRadius() > t2[0].getEnvelopeRadius() ) { // we have local max
 				    f2.format("%E %E %E %E %E %E %E %E %E\n", ps.getPosition(), ps.getGamma()-1, 		
 								t2[0].getEnvelopeRadius(),
@@ -233,6 +316,9 @@ public class Matcher implements Evaluator {
 				}
 				t0=t1;
 				t1=t2;
+*/			
+				phix += (ps.getPosition() - pos0) / (t2[0].getBeta());
+				pos0 = ps.getPosition();
 				
 			    f1.format("%E %E %E %E %E %E %E %E %E\n", ps.getPosition(), ps.getGamma()-1, 		
 							t2[0].getEnvelopeRadius(),
@@ -242,6 +328,24 @@ public class Matcher implements Evaluator {
 							t2[2].getEnvelopeRadius()/ps.getGamma(),
 							Math.sqrt(t2[2].getGamma()*t2[2].getEmittance())*ps.getGamma(),
 							Math.sqrt(t2[2].getGamma()*t2[2].getEmittance())/ps.getGamma());
+			    
+			    
+			    if (ps.getElementId().toUpperCase().startsWith("LATTICE-POINT")) {
+				//	System.out.printf("%s %f\n", ps.getElementId(), ps.getPosition());
+				/* CovarianceMatrix R = ((EnvelopeProbeState)ps).getCovarianceMatrix();
+					 double x11 = R.getElem(0, 0), x12 = R.getElem(0,1), x21 = R.getElem(1,0), x22 = R.getElem(1,1);
+					 double d = x11*x22 - x12*x21;
+					 double cosfi = .5*(x11+x22);
+					 double fi = Math.acos(cosfi);
+					 double sinfi2 = -x12*x21-Math.pow(x11-x22,2);
+					 double sinfi = Math.sqrt(sinfi2);
+					 fi = Math.asin(sinfi);
+					 f2.format("%E %E %E %E %E %E\n", ps.getPosition(), fi, d, cosfi, sinfi2, sinfi);*/
+			    	
+			    	f2.format("%E %E\n", ps.getPosition(), (phix - phil) / (ps.getPosition() - posl) * 180. / Math.PI);
+			    	phil = phix;
+			    	posl = ps.getPosition();
+				}
 			}
 			
 			f1.close();
@@ -257,14 +361,14 @@ public class Matcher implements Evaluator {
 			TrialPoint trialPoint) {
 		double Ax = trialPoint.getValue(ax),
 				Bx = trialPoint.getValue(bx),
-				Ex = trialPoint.getValue(ex),
+		//		Ex = trialPoint.getValue(ex),
 				Ay = trialPoint.getValue(ay),
 				By = trialPoint.getValue(by),
-				Ey = trialPoint.getValue(ey),
+		//		Ey = trialPoint.getValue(ey),
 				Az = trialPoint.getValue(az),
-				Bz = trialPoint.getValue(bz),
-				Ez = trialPoint.getValue(ez),
-				e0 = trialPoint.getValue(E);
+				Bz = trialPoint.getValue(bz);
+		//		Ez = trialPoint.getValue(ez),
+		//		e0 = trialPoint.getValue(E);
 		
 		probe.setSpeciesCharge(1);
 		probe.setSpeciesRestEnergy(9.3827202900E8);
