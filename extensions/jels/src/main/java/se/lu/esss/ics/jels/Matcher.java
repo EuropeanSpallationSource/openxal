@@ -247,77 +247,25 @@ public class Matcher implements Evaluator {
 		
 		try {
 			Formatter f1  = new Formatter(file+".dat", "UTF8", Locale.ENGLISH);
-			Formatter f2  = new Formatter(file+".max.dat", "UTF8", Locale.ENGLISH);
+			Formatter f2  = new Formatter(file+".phi.dat", "UTF8", Locale.ENGLISH);
 			
 			
 	
 			Trajectory trajectory = probe.getTrajectory();
 
-			//System.out.println();
 			Iterator<ProbeState> i = trajectory.stateIterator();
-		/*	Twiss[] t0 = ((EnvelopeProbeState)i.next()).twissParameters();
-			Twiss[] t1 = ((EnvelopeProbeState)i.next()).twissParameters();
-			*/
-	/*		int latticeElems = 0;
-			int latticeCount = 0;
-			String lastId = "";
-		*/	
 			
-			double phix = 0;
+			double[] phix = new double[3];
 			double pos0 = 0;
-			double phil = 0;
+			double[] phil = null;
 			double posl = 0;
 			
 			while (i.hasNext()) {
 				ProbeState ps = i.next();
-		
-			/*	if (ps.getElementId().toUpperCase().startsWith("LATTICE-")) {
-					if (latticeElems != 0) System.out.println("lattice start ignored");
-					else {
-						latticeElems = Integer.parseInt(ps.getElementId().split("-")[1]);
-						latticeCount = 0;
-						System.out.printf("lattice start %s %d\n", ps.getElementId(), latticeElems);
-						lastId = "";
-					}
-				}
-				
-				if (latticeElems != 0) {
-					AcceleratorNode node = accelerator.getNode(ps.getElementId());
-					if (node instanceof Quadrupole || node instanceof ESSRfGap || ps.getElementId().startsWith("DR")) {
-						
-						
-						String currentid = node == null ? ps.getElementId() : node.getParent().getId();	
-						if (!lastId.equals(currentid)) {
-							if (latticeCount == 0) System.out.println("lattice point");
-							latticeCount = (latticeCount + 1) % latticeElems;
-							System.out.println("el: "+currentid);
-							lastId = currentid;
-						}
-					}
-				}
-				
-				if (ps.getElementId().toUpperCase().startsWith("LATTICE_END")) {
-					System.out.println("lattice end " + ps.getElementId());
-					latticeElems = 0;
-				}*/
-				
 				
 				Twiss[] t2 = ((EnvelopeProbeState)ps).twissParameters();
-				/*if ( t0[0].getEnvelopeRadius() < t1[0].getEnvelopeRadius() &&
-						t1[0].getEnvelopeRadius() > t2[0].getEnvelopeRadius() ) { // we have local max
-				    f2.format("%E %E %E %E %E %E %E %E %E\n", ps.getPosition(), ps.getGamma()-1, 		
-								t2[0].getEnvelopeRadius(),
-								Math.sqrt(t2[0].getGamma()*t2[0].getEmittance()),
-								t2[1].getEnvelopeRadius(),
-								Math.sqrt(t2[1].getGamma()*t2[1].getEmittance()),
-								t2[2].getEnvelopeRadius()/ps.getGamma(),
-								Math.sqrt(t2[2].getGamma()*t2[2].getEmittance())*ps.getGamma(),
-								Math.sqrt(t2[2].getGamma()*t2[2].getEmittance())/ps.getGamma());			
-				}
-				t0=t1;
-				t1=t2;
-*/			
-				phix += (ps.getPosition() - pos0) / (t2[0].getBeta());
+
+				for (int k = 0; k<3; k++) phix[k] += (ps.getPosition() - pos0) / (t2[k].getBeta());
 				pos0 = ps.getPosition();
 				
 			    f1.format("%E %E %E %E %E %E %E %E %E\n", ps.getPosition(), ps.getGamma()-1, 		
@@ -331,21 +279,15 @@ public class Matcher implements Evaluator {
 			    
 			    
 			    if (ps.getElementId().toUpperCase().startsWith("LATTICE-POINT")) {
-				//	System.out.printf("%s %f\n", ps.getElementId(), ps.getPosition());
-				/* CovarianceMatrix R = ((EnvelopeProbeState)ps).getCovarianceMatrix();
-					 double x11 = R.getElem(0, 0), x12 = R.getElem(0,1), x21 = R.getElem(1,0), x22 = R.getElem(1,1);
-					 double d = x11*x22 - x12*x21;
-					 double cosfi = .5*(x11+x22);
-					 double fi = Math.acos(cosfi);
-					 double sinfi2 = -x12*x21-Math.pow(x11-x22,2);
-					 double sinfi = Math.sqrt(sinfi2);
-					 fi = Math.asin(sinfi);
-					 f2.format("%E %E %E %E %E %E\n", ps.getPosition(), fi, d, cosfi, sinfi2, sinfi);*/
-			    	
-			    	f2.format("%E %E\n", ps.getPosition(), (phix - phil) / (ps.getPosition() - posl) * 180. / Math.PI);
-			    	phil = phix;
+			    	if (phil != null)
+				    	f2.format("%E %E %E %E\n", ps.getPosition(), 
+				    			(phix[0] - phil[0]) / (ps.getPosition() - posl) * 180. / Math.PI,
+				    			(phix[1] - phil[1]) / (ps.getPosition() - posl) * 180. / Math.PI,
+				    			(phix[2] - phil[2]) / (ps.getPosition() - posl) * 180. / Math.PI);
+			    	phil = phix.clone();
 			    	posl = ps.getPosition();
 				}
+			    if (ps.getElementId().toUpperCase().startsWith("LATTICE-END")) phil = null;
 			}
 			
 			f1.close();
