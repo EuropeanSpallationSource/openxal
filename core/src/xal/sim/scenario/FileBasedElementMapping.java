@@ -7,7 +7,6 @@
 package xal.sim.scenario;
 
 import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
 import java.util.List;
 
 import xal.model.IComponent;
@@ -85,6 +84,7 @@ public class FileBasedElementMapping extends ElementMapping {
 	}
 
 
+	@SuppressWarnings( "unchecked" )
 	private void setDrift(String stringValue) throws ClassNotFoundException {
 		driftElement = (Class<? extends IComponent>) Class.forName(stringValue);
 		
