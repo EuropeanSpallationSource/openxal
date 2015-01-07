@@ -1,0 +1,1 @@
+paste -d' '   t11.txt t12.txt t21.txt t22.txt t33.txt t34.txt t43.txt t44.txt t55.txt t56.txt t65.txt t66.txt | sed -e 's/ \r [^ ]*//g' > ess.tm
