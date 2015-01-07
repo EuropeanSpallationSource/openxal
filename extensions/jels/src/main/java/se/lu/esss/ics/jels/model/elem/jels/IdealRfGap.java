@@ -66,9 +66,6 @@ public class IdealRfGap extends ThinElement implements IRfGap {
 	 */
 	private double m_dblFreq = 0.0;
 
-        
-    /** the separation of the gap center from the cell center (m) */
-    private double gapOffset = 0.;
     
     /** the on axis accelerating field (V) */
     private double E0 = 0.;
@@ -82,17 +79,7 @@ public class IdealRfGap extends ThinElement implements IRfGap {
     private double structureMode =0;
     
     /** fit of the TTF vs. beta */
-    private UnivariateRealPolynomial TTFFit;
-    
-   /** fit of the TTF-prime vs. beta */
-    private UnivariateRealPolynomial TTFPrimeFit;
-
-    /** fit of the S factor vs. beta */
-    private UnivariateRealPolynomial SFit;
-    
-   /** fit of the S-prime vs. beta */
-    private UnivariateRealPolynomial SPrimeFit;
-
+    protected UnivariateRealPolynomial TTFFit;
     
     /** the energy gained in this gap (eV)  */
     private double energyGain;
@@ -158,7 +145,15 @@ public class IdealRfGap extends ThinElement implements IRfGap {
      *  @return     phase delay w.r.t. synchonous particle (in <bold>radians</bold>).
      */
      public double getPhase() { return m_dblPhase; };
-
+     
+     /**
+      * Method is intended to be used by overriding implementations of IdealRfGap, so that
+      * the implementations are able to calculate the phase when input energy is known.
+      * @param probe Probe at the input of the element
+      */
+     public void calculatePhase(IProbe probe) { 
+     }
+     
     /**  
      * Get the operating frequency of the RF gap.
      *
@@ -259,7 +254,7 @@ public class IdealRfGap extends ThinElement implements IRfGap {
      *  @param  probe       compute transfer map using parameters from this probe
      *
      *  @return             transfer map for the probe
-     *
+     *<map smf="fm" model="se.lu.esss.ics.jels.model.elem.jels.FieldMapNCells"/>
      *  @exception  ModelException  this should not occur
      */
     @Override
@@ -268,14 +263,17 @@ public class IdealRfGap extends ThinElement implements IRfGap {
      	double lambda=LightSpeed/getFrequency();
     	
     	double Phis;
-    	if (isFirstGap()) Phis = getPhase();
+    	if (isFirstGap()) {
+    		calculatePhase(probe);
+    		Phis = getPhase();
+    	}
     	else {    		 
     		double lastGapPosition = probe.getLastGapPosition();
     		double position = probe.getPosition();
     		if (lastGapPosition == position) {
     			Phis = getPhase(); // we are visiting gap for the second time
     		} else {
-	    		Phis = probe.getLastGapPhase();
+    			Phis = probe.getLastGapPhase();
 	    		Phis += 2*Math.PI*(position - lastGapPosition)/(lambda*probe.getBeta());
 	    		if (structureMode == 1) Phis += Math.PI;
 	    		setPhase(Phis);
@@ -320,6 +318,7 @@ public class IdealRfGap extends ThinElement implements IRfGap {
     			double beta_avg = computeBetaFromGamma(gamma_avg);
     
     			deltaPhi=E0TL_scaled/mass*Math.sin(Phis)/(Math.pow(gamma_avg,2)*beta_avg)*(kToverT);
+    			
     			kxy=-Math.PI*E0TL_scaled/mass*Math.sin(Phis)/(Math.pow(gamma_avg*beta_avg,2)*lambda);
     			kx=1-E0TL_scaled/(2*mass)*Math.cos(Phis)/(Math.pow(beta_avg,2)*Math.pow(gamma_avg,3))*(Math.pow(gamma_avg,2)+kToverT);
     			ky=1-E0TL_scaled/(2*mass)*Math.cos(Phis)/(Math.pow(beta_avg,2)*Math.pow(gamma_avg,3))*(Math.pow(gamma_avg,2)-kToverT);
@@ -400,12 +399,28 @@ public class IdealRfGap extends ThinElement implements IRfGap {
 	    // Initialize from source values
 	    initialGap = rfgap.isFirstGap();
 	    cellLength = rfgap.getGapLength();
-	    gapOffset = rfgap.getGapOffset();
-	    TTFPrimeFit = rfgap.getTTFPrimeFit();
 	    TTFFit = rfgap.getTTFFit();	
-	    SPrimeFit = rfgap.getSPrimeFit();
-	    SFit = rfgap.getSFit();
 	    structureMode = rfgap.getStructureMode();
+	}
+
+	public void setFirstGap(boolean initialGap) {
+		this.initialGap = initialGap;
+	}
+
+	public void setCellLength(double cellLength) {
+		this.cellLength = cellLength;
+	}
+
+	public double getStructureMode() {
+		return structureMode;
+	}
+
+	public void setStructureMode(double structureMode) {
+		this.structureMode = structureMode;
+	}
+
+	public void setTTFFit(UnivariateRealPolynomial TTFFit) {
+		this.TTFFit = TTFFit;
 	}
 }
 

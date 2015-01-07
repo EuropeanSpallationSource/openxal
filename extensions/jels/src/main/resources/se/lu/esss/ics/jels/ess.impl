@@ -11,6 +11,7 @@
    <device type="DCH" class="xal.smf.impl.HDipoleCorr"/>
    <device type="QSC" class="xal.smf.impl.Quadrupole"/>
    <device type="RF" class="se.lu.esss.ics.jels.smf.impl.ESSRfCavity"/>
+   <device type="FM" class="se.lu.esss.ics.jels.smf.impl.ESSFieldMap"/>
    <device type="RG" class="se.lu.esss.ics.jels.smf.impl.ESSRfGap"/>
    <device type="SOL" class="xal.smf.impl.Solenoid"/>
    <device type="BPM" class="xal.smf.impl.BPM"/>
