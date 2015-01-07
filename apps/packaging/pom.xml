@@ -19,6 +19,7 @@
 		<module>bricks</module>
 		<module>dbbrowser</module>
 		<module>extlatgenerator</module>
+		<module>experimentautomator</module>
 		<module>knobs</module>
 		<module>launcher</module>
 		<module>machinesimulator</module>

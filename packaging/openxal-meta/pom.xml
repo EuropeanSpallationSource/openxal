@@ -35,6 +35,7 @@
 
 							<dependency version="current">%{codac_rpm_prefix}-openxal-bricks</dependency>
 							<dependency version="current">%{codac_rpm_prefix}-openxal-dbbrowser</dependency>
+							<dependency version="current">%{codac_rpm_prefix}-openxal-experimentautomator</dependency>
 							<dependency version="current">%{codac_rpm_prefix}-openxal-extlatgenerator</dependency>
 							<dependency version="current">%{codac_rpm_prefix}-openxal-knobs</dependency>
 							<dependency version="current">%{codac_rpm_prefix}-openxal-launcher</dependency>
