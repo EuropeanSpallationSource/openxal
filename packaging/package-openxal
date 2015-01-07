@@ -49,6 +49,7 @@ declare -a RPM_DIRS=(
     # OpenXAL applications
     "$PROJECTDIR/apps/packaging/bricks"
     "$PROJECTDIR/apps/packaging/dbbrowser"
+    "$PROJECTDIR/apps/packaging/experimentautomator"
     "$PROJECTDIR/apps/packaging/extlatgenerator"
     "$PROJECTDIR/apps/packaging/knobs"
     "$PROJECTDIR/apps/packaging/launcher"
