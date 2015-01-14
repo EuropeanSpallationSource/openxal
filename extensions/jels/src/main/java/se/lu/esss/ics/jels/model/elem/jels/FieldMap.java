@@ -53,9 +53,7 @@ public class FieldMap extends ThickElement  {
 	 * @param Er particles rest energy
 	 */
 	private void initPhase(double beta, double E0, double Er)
-	{
-		if (phase != null) return;
-		
+	{	
 		phase = new double[field.length];
 		
 		double phi = phi0;
@@ -106,7 +104,8 @@ public class FieldMap extends ThickElement  {
 	@Override
 	public PhaseMap transferMap(IProbe probe, double dblLen)
 			throws ModelException {
-		initPhase(probe.getBeta(), probe.getKineticEnergy(), probe.getSpeciesRestEnergy());
+		if (phase == null) 
+			initPhase(probe.getBeta(), probe.getKineticEnergy(), probe.getSpeciesRestEnergy());
 		
 		double p0 = probe.getPosition() - (getPosition() - getLength()/2.);
 		int i0 = (int)Math.round(p0/getLength()*field.length);
@@ -119,8 +118,7 @@ public class FieldMap extends ThickElement  {
 	//	double DE = 0.;
 		double Er = probe.getSpeciesRestEnergy();
 		
-		Matrix Tx = Matrix.identity(2, 2), 
-				Ty = Matrix.identity(2, 2),
+		Matrix Ttr = Matrix.identity(2, 2), 
 				Tz = Matrix.identity(2, 2);
 	
 		double gamma;
@@ -142,14 +140,14 @@ public class FieldMap extends ThickElement  {
 					
 			double pEx_px = - 0.5 * k0 * (field(i+1)-field(i-1))/(2.*dz) * Math.cos(phase[i]);
 			double pBx_py = 2*Math.PI*frequency / (2. * LightSpeed * LightSpeed) * k0 * field[i] * Math.sin(phase[i]);
-			double pBy_px = -pBx_py;
+			//double pBy_px = -pBx_py;
 			
 			double k = 1. / (gamma*Math.pow(beta,2)*Er);
 			
 			double gammae = (E0 + DE)/Er + 1.0;
 			double betae = Math.sqrt(1.0 - 1.0/(gammae*gammae));
-			
-			double Ax[][] = new double[][] {{0,dz},{k*(pEx_px-beta*LightSpeed*pBy_px)*dz, -k*Ez*dz}};
+				
+			//double Ax[][] = new double[][] {{0,dz},{k*(pEx_px-beta*LightSpeed*pBy_px)*dz, -k*Ez*dz}};
 			double Ay[][] = new double[][] {{0,dz},{k*(pEx_px+beta*LightSpeed*pBx_py)*dz, -k*Ez*dz}};
 			//DoubleMatrix Az = new DoubleMatrix(new double[][] {{0,1},{k*pEz_pz / (gamma * gamma), -k*(2-beta*beta)*Ez  - dgamma/gamma }}).mul(dz);
 			double Az[][] = new double[][] {{0,dz},{k*pEz_pz / (gamma*gamma) * dz, Math.log((beta*gamma)/(betae*gammae)) }};
@@ -166,8 +164,9 @@ public class FieldMap extends ThickElement  {
 			//System.out.printf(" -> %E %E\n", pm.getElem(4,4)*pm.getElem(5,5) - pm.getElem(4,5)*pm.getElem(5,4) - 1, (beta*gamma)/(betae*gammae) - 1);
 			//pm.setElem(4, 4, ((beta*gamma)/(betae*gammae) + pm.getElem(4,5)*pm.getElem(5,4)) / pm.getElem(5, 5));
 			
-			Tx = new Matrix(matrix22Exp(Ax)).times(Tx);
-			Ty = new Matrix(matrix22Exp(Ay)).times(Ty);
+			
+			Matrix Atr = new Matrix(matrix22Exp(Ay)); 
+			Ttr = Atr.times(Ttr);			
 			Tz = new Matrix(matrix22Exp(Az)).times(Tz);
 		
 			E0 += DE;
@@ -187,8 +186,8 @@ public class FieldMap extends ThickElement  {
 		System.out.println();*/
 
 		PhaseMatrix T = PhaseMatrix.identity();
-		T.setSubMatrix(0, 1, 0, 1, Tx.getArray());
-		T.setSubMatrix(2, 3, 2, 3, Ty.getArray());
+		T.setSubMatrix(0, 1, 0, 1, Ttr.getArray());
+		T.setSubMatrix(2, 3, 2, 3, Ttr.getArray());
 		T.setSubMatrix(4, 5, 4, 5, Tz.getArray());
 		
 		return new PhaseMap(T);
