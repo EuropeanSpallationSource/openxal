@@ -125,20 +125,25 @@ public class FieldMap extends ThickElement  {
 			
 			//double Ez0 = k0 * field[i];
 			double Ez = k0 * field[i] * Math.cos(phase[i]);
-			//double pEz_pz = k0 * (field(i+1)-field(i-1))/(2.*dz) * Math.cos(phase[i])
+			double pEz_pz = k0 * (field(i+1)-field(i-1))/(2.*dz) * Math.cos(phase[i]);
 			//double pEz_pz = k0 * field[i] * Math.sin(phase[i]) * (phase[Math.min(phase.length-1,i+1)]-phase[i])/ dz;
 			
 			// partial derivative of E_z by z: seems to be a bug in TW here, since derivative is done over time
-			double pEz_pz = k0 * field[i] * Math.sin(phase[i]) * 2*Math.PI*frequency / (beta * LightSpeed);
+			//double pEz_pz = k0 * field[i] * Math.sin(phase[i]) * 2*Math.PI*frequency / (beta * LightSpeed);
 					
 			double pEx_px = - 0.5 * k0 * (field(i+1)-field(i-1))/(2.*dz) * Math.cos(phase[i]);
 			double pBx_py = 2*Math.PI*frequency / (2. * LightSpeed * LightSpeed) * k0 * field[i] * Math.sin(phase[i]);
 			double pBy_px = -pBx_py;
 			
 			double k = 1. / (gamma*Math.pow(beta,2)*Er);
+			
+			double gammae = (E[Math.min(i+1,E.length-1)])/Er + 1.0;
+			double betae = Math.sqrt(1.0 - 1.0/(gammae*gammae));
+			
 			DoubleMatrix Ax = new DoubleMatrix(new double[][] {{0,1},{k*(pEx_px-beta*LightSpeed*pBy_px), -k*Ez}}).mul(dz);
 			DoubleMatrix Ay = new DoubleMatrix(new double[][] {{0,1},{k*(pEx_px+beta*LightSpeed*pBx_py), -k*Ez}}).mul(dz);
-			DoubleMatrix Az = new DoubleMatrix(new double[][] {{0,1},{k*pEz_pz / (gamma * gamma), -k*(2-beta*beta)*Ez  - dgamma/gamma }}).mul(dz);
+			//DoubleMatrix Az = new DoubleMatrix(new double[][] {{0,1},{k*pEz_pz / (gamma * gamma), -k*(2-beta*beta)*Ez  - dgamma/gamma }}).mul(dz);
+			DoubleMatrix Az = new DoubleMatrix(new double[][] {{0,1},{k*pEz_pz / (gamma*gamma), Math.log((beta*gamma)/(betae*gammae))/dz }}).mul(dz);
 //			DoubleMatrix Az = new DoubleMatrix(new double[][] {{0,1./(gamma*(gamma+dgamma))},{k*pEz_pz, -k*(2-beta*beta)*Ez }}).mul(dz);
 //			DoubleMatrix Az = new DoubleMatrix(new double[][] {{0,1/(gamma*gamma)},{k*pEz_pz, -k*(2-beta*beta)*Ez}}).mul(dz);
 			
@@ -146,13 +151,11 @@ public class FieldMap extends ThickElement  {
 			pm.setSubMatrix(0, 1, 0, 1, org.jblas.MatrixFunctions.expm(Ax).toArray2());
 			pm.setSubMatrix(2, 3, 2, 3, org.jblas.MatrixFunctions.expm(Ay).toArray2());
 			pm.setSubMatrix(4, 5, 4, 5, org.jblas.MatrixFunctions.expm(Az).toArray2());
-			
-			double gammae = (E[Math.min(i+1,E.length-1)])/Er + 1.0;
-			double betae = Math.sqrt(1.0 - 1.0/(gammae*gammae));
 		
 			// Following line fixes the determinant of longitudinal transfer matrix
 			// This is another bug in TW.
-			pm.setElem(4, 4, ((beta*gamma)/(betae*gammae) + pm.getElem(4,5)*pm.getElem(5,4)) / pm.getElem(5, 5));
+			//System.out.printf(" -> %E %E\n", pm.getElem(4,4)*pm.getElem(5,5) - pm.getElem(4,5)*pm.getElem(5,4) - 1, (beta*gamma)/(betae*gammae) - 1);
+			//pm.setElem(4, 4, ((beta*gamma)/(betae*gammae) + pm.getElem(4,5)*pm.getElem(5,4)) / pm.getElem(5, 5));
 			
 			t = pm.times(t);	
 		}
