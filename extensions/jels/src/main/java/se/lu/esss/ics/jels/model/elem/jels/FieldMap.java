@@ -125,21 +125,25 @@ public class FieldMap extends ThickElement  {
 		
 		for (int i = i0; i < in; i++)
 		{
+			double Edz = field[i] * dz;
+			double phi = phase[i];
+			double dE = (field(i+1)-field(i-1))/2.;
+			
 			gamma = E0/Er + 1.0;
 			double beta = Math.sqrt(1.0 - 1.0/(gamma*gamma));
-			double DE = k0 * field[i]*Math.cos(phase[i])*dz;
+			double DE = k0 * Edz * Math.cos(phi);
 			double dgamma = DE/Er;
 			
 			//double Ez0 = k0 * field[i];
-			double Ez = k0 * field[i] * Math.cos(phase[i]);
-			double pEz_pz = k0 * (field(i+1)-field(i-1))/(2.*dz) * Math.cos(phase[i]);
+			double Ezdz = k0 * Edz * Math.cos(phi);
+			double pEz_pzdz = k0 * dE * Math.cos(phi);
 			//double pEz_pz = k0 * field[i] * Math.sin(phase[i]) * (phase[Math.min(phase.length-1,i+1)]-phase[i])/ dz;
 			
 			// partial derivative of E_z by z: seems to be a bug in TW here, since derivative is done over time
 			//double pEz_pz = k0 * field[i] * Math.sin(phase[i]) * 2*Math.PI*frequency / (beta * LightSpeed);
 					
-			double pEx_px = - 0.5 * k0 * (field(i+1)-field(i-1))/(2.*dz) * Math.cos(phase[i]);
-			double pBx_py = 2*Math.PI*frequency / (2. * LightSpeed * LightSpeed) * k0 * field[i] * Math.sin(phase[i]);
+			double pEx_pxdz = - 0.5 * k0 * dE * Math.cos(phi);
+			double pBx_pydz = 2*Math.PI*frequency / (2. * LightSpeed * LightSpeed) * k0 * Edz * Math.sin(phi);
 			//double pBy_px = -pBx_py;
 			
 			double k = 1. / (gamma*Math.pow(beta,2)*Er);
@@ -148,9 +152,9 @@ public class FieldMap extends ThickElement  {
 			double betae = Math.sqrt(1.0 - 1.0/(gammae*gammae));
 				
 			//double Ax[][] = new double[][] {{0,dz},{k*(pEx_px-beta*LightSpeed*pBy_px)*dz, -k*Ez*dz}};
-			double Ay[][] = new double[][] {{0,dz},{k*(pEx_px+beta*LightSpeed*pBx_py)*dz, -k*Ez*dz}};
+			double Ay[][] = new double[][] {{0,dz},{k*(pEx_pxdz+beta*LightSpeed*pBx_pydz), -k*Ezdz}};
 			//DoubleMatrix Az = new DoubleMatrix(new double[][] {{0,1},{k*pEz_pz / (gamma * gamma), -k*(2-beta*beta)*Ez  - dgamma/gamma }}).mul(dz);
-			double Az[][] = new double[][] {{0,dz},{k*pEz_pz / (gamma*gamma) * dz, Math.log((beta*gamma)/(betae*gammae)) }};
+			double Az[][] = new double[][] {{0,dz},{k*pEz_pzdz / (gamma*gamma), Math.log((beta*gamma)/(betae*gammae)) }};
 //			DoubleMatrix Az = new DoubleMatrix(new double[][] {{0,1./(gamma*(gamma+dgamma))},{k*pEz_pz, -k*(2-beta*beta)*Ez }}).mul(dz);
 //			DoubleMatrix Az = new DoubleMatrix(new double[][] {{0,1/(gamma*gamma)},{k*pEz_pz, -k*(2-beta*beta)*Ez}}).mul(dz);
 			
