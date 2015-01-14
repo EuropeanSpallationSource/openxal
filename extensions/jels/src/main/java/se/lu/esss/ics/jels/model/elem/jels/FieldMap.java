@@ -1,7 +1,5 @@
 package se.lu.esss.ics.jels.model.elem.jels;
 
-import org.jblas.DoubleMatrix;
-
 import se.lu.esss.ics.jels.smf.impl.ESSFieldMap;
 import se.lu.esss.ics.jels.tools.math.TTFIntegrator;
 import xal.model.IProbe;
@@ -140,17 +138,17 @@ public class FieldMap extends ThickElement  {
 			double gammae = (E[Math.min(i+1,E.length-1)])/Er + 1.0;
 			double betae = Math.sqrt(1.0 - 1.0/(gammae*gammae));
 			
-			DoubleMatrix Ax = new DoubleMatrix(new double[][] {{0,1},{k*(pEx_px-beta*LightSpeed*pBy_px), -k*Ez}}).mul(dz);
-			DoubleMatrix Ay = new DoubleMatrix(new double[][] {{0,1},{k*(pEx_px+beta*LightSpeed*pBx_py), -k*Ez}}).mul(dz);
+			double Ax[][] = new double[][] {{0,dz},{k*(pEx_px-beta*LightSpeed*pBy_px)*dz, -k*Ez*dz}};
+			double Ay[][] = new double[][] {{0,dz},{k*(pEx_px+beta*LightSpeed*pBx_py)*dz, -k*Ez*dz}};
 			//DoubleMatrix Az = new DoubleMatrix(new double[][] {{0,1},{k*pEz_pz / (gamma * gamma), -k*(2-beta*beta)*Ez  - dgamma/gamma }}).mul(dz);
-			DoubleMatrix Az = new DoubleMatrix(new double[][] {{0,1},{k*pEz_pz / (gamma*gamma), Math.log((beta*gamma)/(betae*gammae))/dz }}).mul(dz);
+			double Az[][] = new double[][] {{0,dz},{k*pEz_pz / (gamma*gamma) * dz, Math.log((beta*gamma)/(betae*gammae)) }};
 //			DoubleMatrix Az = new DoubleMatrix(new double[][] {{0,1./(gamma*(gamma+dgamma))},{k*pEz_pz, -k*(2-beta*beta)*Ez }}).mul(dz);
 //			DoubleMatrix Az = new DoubleMatrix(new double[][] {{0,1/(gamma*gamma)},{k*pEz_pz, -k*(2-beta*beta)*Ez}}).mul(dz);
 			
 			PhaseMatrix pm = new PhaseMatrix();
-			pm.setSubMatrix(0, 1, 0, 1, org.jblas.MatrixFunctions.expm(Ax).toArray2());
-			pm.setSubMatrix(2, 3, 2, 3, org.jblas.MatrixFunctions.expm(Ay).toArray2());
-			pm.setSubMatrix(4, 5, 4, 5, org.jblas.MatrixFunctions.expm(Az).toArray2());
+			pm.setSubMatrix(0, 1, 0, 1, matrix22Exp(Ax));
+			pm.setSubMatrix(2, 3, 2, 3, matrix22Exp(Ay));
+			pm.setSubMatrix(4, 5, 4, 5, matrix22Exp(Az));
 		
 			// Following line fixes the determinant of longitudinal transfer matrix
 			// This is another bug in TW.
@@ -174,6 +172,41 @@ public class FieldMap extends ThickElement  {
 		return new PhaseMap(t);
 	}
 
+	public double[][] matrix22Exp(double[][] A)
+	{
+		double a = A[0][0], b = A[0][1], c = A[1][0], d = A[1][1];
+		double D = Math.pow((a-d),2)+4*b*c;
+		
+		double cosh, sinhD;
+		if (D > 0.) {
+			D = Math.sqrt(D);
+			cosh = Math.cosh(D/2.);
+			sinhD = Math.sinh(D/2.)/D;	
+		} else if (D < 0.) {
+			D = Math.sqrt(-D);
+			cosh = Math.cos(D/2.);
+			sinhD = Math.sin(D/2.)/D;
+		} else {
+			cosh = 1;
+			sinhD = 0.5;
+		}
+		
+		double exp = Math.exp((a+d)/2.);
+		
+		
+		double m11 = exp * (cosh + (a-d)*sinhD);	
+		double m12 = 2 * b * exp * sinhD;	
+		double m21 = 2 * c * exp * sinhD;	
+		double m22 = exp * (cosh + (d-a)*sinhD);
+		
+		A[0][0] = m11;
+		A[0][1] = m12;
+		A[1][0] = m21;
+		A[1][1] = m22;
+		
+		return A;
+	}
+	
 	public static void ROpenXal2TW(double gamma_start, double gamma_end, PhaseMap pm) {		
 		PhaseMatrix r = pm.getFirstOrder();
 		

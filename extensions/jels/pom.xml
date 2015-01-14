@@ -31,11 +31,6 @@
 			<groupId>com.github.wendykierp</groupId>
 			<artifactId>JTransforms</artifactId>
 			<version>3.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.jblas</groupId>
-			<artifactId>jblas</artifactId>
-			<version>1.2.3</version>
 		</dependency>			
 	</dependencies>
 </project>
