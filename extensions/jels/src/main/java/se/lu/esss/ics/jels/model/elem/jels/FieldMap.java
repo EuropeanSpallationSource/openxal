@@ -21,7 +21,7 @@ public class FieldMap extends ThickElement  {
 	private double frequency;
 	private double k0;
 	private double phase[];
-	private double E[];
+	private double energyGain;
 	
 	public FieldMap() {
         this(null);
@@ -56,7 +56,6 @@ public class FieldMap extends ThickElement  {
 		if (phase != null) return;
 		
 		phase = new double[field.length];
-		E = new double[field.length];
 		
 		double phi = phi0;
 		double dz = getLength() / field.length;
@@ -65,7 +64,6 @@ public class FieldMap extends ThickElement  {
 		for (int i = 0; i < field.length; i++)
 		{
 			phase[i] = phi;
-			E[i] = E0+DE;
 			
 			DE += k0 * field[i]*Math.cos(phi)*dz;
 			double gamma = (E0+DE)/Er + 1.0;
@@ -77,13 +75,21 @@ public class FieldMap extends ThickElement  {
 	
 	@Override
 	public double energyGain(IProbe probe, double dblLen) {
+		return energyGain;
+		/*
 		initPhase(probe.getBeta(), probe.getKineticEnergy(), probe.getSpeciesRestEnergy());
 		
 		double p0 = probe.getPosition() - (getPosition() - getLength()/2.);
 		int i0 = (int)Math.round(p0/getLength()*field.length);
 		int in = (int)Math.round((p0+dblLen)/getLength()*field.length);
 		
-		return E[Math.min(in,field.length-1)] - E[i0];
+		double DE = 0;
+		double dz = getLength() / field.length;
+		
+		for (int i = i0; i < Math.min(in,field.length-1); i++)
+			DE += k0 * field[i]*Math.cos(phase[i])*dz;
+		
+		return  DE;*/
 	}
 
 	private double field(int i)
@@ -107,7 +113,7 @@ public class FieldMap extends ThickElement  {
 		
 		double dz = getLength() / field.length;
 	//	double beta = probe.getBeta();
-		//double E0 = probe.getKineticEnergy();
+		double E0 = probe.getKineticEnergy();
 	//	double DE = 0.;
 		double Er = probe.getSpeciesRestEnergy();
 		
@@ -116,7 +122,7 @@ public class FieldMap extends ThickElement  {
 		
 		for (int i = i0; i < in && i < field.length; i++)
 		{
-			gamma = (E[i])/Er + 1.0;
+			gamma = E0/Er + 1.0;
 			double beta = Math.sqrt(1.0 - 1.0/(gamma*gamma));
 			double DE = k0 * field[i]*Math.cos(phase[i])*dz;
 			double dgamma = DE/Er;
@@ -135,7 +141,7 @@ public class FieldMap extends ThickElement  {
 			
 			double k = 1. / (gamma*Math.pow(beta,2)*Er);
 			
-			double gammae = (E[Math.min(i+1,E.length-1)])/Er + 1.0;
+			double gammae = (E0 + DE)/Er + 1.0;
 			double betae = Math.sqrt(1.0 - 1.0/(gammae*gammae));
 			
 			double Ax[][] = new double[][] {{0,dz},{k*(pEx_px-beta*LightSpeed*pBy_px)*dz, -k*Ez*dz}};
@@ -156,7 +162,10 @@ public class FieldMap extends ThickElement  {
 			//pm.setElem(4, 4, ((beta*gamma)/(betae*gammae) + pm.getElem(4,5)*pm.getElem(5,4)) / pm.getElem(5, 5));
 			
 			t = pm.times(t);	
+			E0 += DE;
 		}
+		
+		energyGain = E0 - probe.getKineticEnergy();
 		
 		//Following is a handy printout of transfer matrices useful for comparison with TW transfer matrices
 		
