@@ -1,5 +1,6 @@
 package se.lu.esss.ics.jels.model.elem.jels;
 
+import Jama.Matrix;
 import se.lu.esss.ics.jels.smf.impl.ESSFieldMap;
 import se.lu.esss.ics.jels.tools.math.TTFIntegrator;
 import xal.model.IProbe;
@@ -110,6 +111,7 @@ public class FieldMap extends ThickElement  {
 		double p0 = probe.getPosition() - (getPosition() - getLength()/2.);
 		int i0 = (int)Math.round(p0/getLength()*field.length);
 		int in = (int)Math.round((p0+dblLen)/getLength()*field.length);
+		if (in >= field.length) in = field.length;
 		
 		double dz = getLength() / field.length;
 	//	double beta = probe.getBeta();
@@ -117,10 +119,13 @@ public class FieldMap extends ThickElement  {
 	//	double DE = 0.;
 		double Er = probe.getSpeciesRestEnergy();
 		
-		PhaseMatrix t = PhaseMatrix.identity();
-		double gamma = 0;
+		Matrix Tx = Matrix.identity(2, 2), 
+				Ty = Matrix.identity(2, 2),
+				Tz = Matrix.identity(2, 2);
+	
+		double gamma;
 		
-		for (int i = i0; i < in && i < field.length; i++)
+		for (int i = i0; i < in; i++)
 		{
 			gamma = E0/Er + 1.0;
 			double beta = Math.sqrt(1.0 - 1.0/(gamma*gamma));
@@ -151,17 +156,20 @@ public class FieldMap extends ThickElement  {
 //			DoubleMatrix Az = new DoubleMatrix(new double[][] {{0,1./(gamma*(gamma+dgamma))},{k*pEz_pz, -k*(2-beta*beta)*Ez }}).mul(dz);
 //			DoubleMatrix Az = new DoubleMatrix(new double[][] {{0,1/(gamma*gamma)},{k*pEz_pz, -k*(2-beta*beta)*Ez}}).mul(dz);
 			
-			PhaseMatrix pm = new PhaseMatrix();
-			pm.setSubMatrix(0, 1, 0, 1, matrix22Exp(Ax));
-			pm.setSubMatrix(2, 3, 2, 3, matrix22Exp(Ay));
-			pm.setSubMatrix(4, 5, 4, 5, matrix22Exp(Az));
+			/*Matrix pm = new Matrix(7,7);
+			pm.setMatrix(0, 1, 0, 1, new Matrix(matrix22Exp(Ax)));
+			pm.setMatrix(2, 3, 2, 3, new Matrix(matrix22Exp(Ay)));
+			pm.setMatrix(4, 5, 4, 5, new Matrix(matrix22Exp(Az)));*/
 		
 			// Following line fixes the determinant of longitudinal transfer matrix
 			// This is another bug in TW.
 			//System.out.printf(" -> %E %E\n", pm.getElem(4,4)*pm.getElem(5,5) - pm.getElem(4,5)*pm.getElem(5,4) - 1, (beta*gamma)/(betae*gammae) - 1);
 			//pm.setElem(4, 4, ((beta*gamma)/(betae*gammae) + pm.getElem(4,5)*pm.getElem(5,4)) / pm.getElem(5, 5));
 			
-			t = pm.times(t);	
+			Tx = new Matrix(matrix22Exp(Ax)).times(Tx);
+			Ty = new Matrix(matrix22Exp(Ay)).times(Ty);
+			Tz = new Matrix(matrix22Exp(Az)).times(Tz);
+		
 			E0 += DE;
 		}
 		
@@ -178,7 +186,12 @@ public class FieldMap extends ThickElement  {
 				System.out.printf("%E ", tw.getFirstOrder().getElem(j, k));
 		System.out.println();*/
 
-		return new PhaseMap(t);
+		PhaseMatrix T = PhaseMatrix.identity();
+		T.setSubMatrix(0, 1, 0, 1, Tx.getArray());
+		T.setSubMatrix(2, 3, 2, 3, Ty.getArray());
+		T.setSubMatrix(4, 5, 4, 5, Tz.getArray());
+		
+		return new PhaseMap(T);
 	}
 
 	public double[][] matrix22Exp(double[][] A)
