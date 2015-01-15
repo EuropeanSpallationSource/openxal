@@ -75,5 +75,9 @@
 			<artifactId>openxal.plugins.jca</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.xal</groupId>
+			<artifactId>openxal.extensions.widgets</artifactId>
+		</dependency>					
 	</dependencies>
 </project>

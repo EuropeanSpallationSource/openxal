@@ -23,6 +23,7 @@
 		<module>scan</module>			
 		<module>service</module>			
 		<module>solver</module>			
+		<module>twissobserver</module>
 		<module>widgets</module>
 		<module>jels</module>
 		<module>../services/pvlogger/extension</module>			

@@ -126,6 +126,11 @@
 			</dependency>
 			<dependency>
 				<groupId>org.xal</groupId>
+				<artifactId>openxal.extensions.twissobserver</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.xal</groupId>
 				<artifactId>openxal.services.pvlogger</artifactId>
 				<version>${project.version}</version>
 			</dependency>			

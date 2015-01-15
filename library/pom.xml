@@ -52,6 +52,7 @@
 				    <resources>
 					<resource><directory>../apps/bricks/target</directory><includes><include>openxal.apps.bricks-${project.version}.jar</include></includes></resource>
 					<resource><directory>../apps/dbbrowser/target</directory><includes><include>openxal.apps.dbbrowser-${project.version}.jar</include></includes></resource>
+					<resource><directory>../apps/experimentautomator/target</directory><includes><include>openxal.apps.experimentautomator-${project.version}.jar</include></includes></resource>
 					<resource><directory>../apps/extlatgenerator/target</directory><includes><include>openxal.apps.extlatgenerator-${project.version}.jar</include></includes></resource>
 					<resource><directory>../apps/knobs/target</directory><includes><include>openxal.apps.knobs-${project.version}.jar</include></includes></resource>
 					<resource><directory>../apps/launcher/target</directory><includes><include>openxal.apps.launcher-${project.version}.jar</include></includes></resource>
@@ -119,6 +120,10 @@
 		<dependency>
 		    <groupId>org.xal</groupId>
 		    <artifactId>openxal.extensions.scan</artifactId>
+		</dependency>
+		<dependency>
+		    <groupId>org.xal</groupId>
+		    <artifactId>openxal.extensions.twissobserver</artifactId>
 		</dependency>
 		<dependency>
 		    <groupId>org.xal</groupId>

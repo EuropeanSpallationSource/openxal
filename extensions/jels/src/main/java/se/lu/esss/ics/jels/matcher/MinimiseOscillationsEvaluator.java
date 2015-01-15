@@ -1,11 +1,12 @@
 package se.lu.esss.ics.jels.matcher;
 
+import java.util.List;
+
 import xal.extension.solver.Objective;
 import xal.extension.solver.SatisfactionCurve;
 import xal.extension.solver.Trial;
 import xal.model.ModelException;
 import xal.model.probe.traj.EnvelopeProbeState;
-import xal.model.probe.traj.ProbeState;
 import xal.model.probe.traj.Trajectory;
 import xal.smf.Accelerator;
 import xal.smf.AcceleratorSeq;
@@ -31,12 +32,12 @@ public class MinimiseOscillationsEvaluator extends OnlineModelEvaluator {
 			e.printStackTrace();
 		}
 		
-		Trajectory trajectory = probe.getTrajectory();
+		Trajectory<EnvelopeProbeState> trajectory = probe.getTrajectory();
 
 		//System.out.println();
 		for (Objective o : objectives) {
 			MinimizeOscillationsObjective moo = (MinimizeOscillationsObjective)o;
-			ProbeState[] ps = trajectory.statesInPositionRange(moo.seq.getPosition(), moo.seq.getPosition()+moo.seq.getLength());
+			List<EnvelopeProbeState> ps = trajectory.statesInPositionRange(moo.seq.getPosition(), moo.seq.getPosition()+moo.seq.getLength());
 			
 			/*Twiss[] t0 = ((EnvelopeProbeState)ps[0]).twissParameters();
 			Twiss[] t1 = ((EnvelopeProbeState)ps[1]).twissParameters();
@@ -59,8 +60,8 @@ public class MinimiseOscillationsEvaluator extends OnlineModelEvaluator {
 			double minx = 1e100, maxx = -1e100;
 			double miny = 1e100, maxy = -1e100;
 			double minz = 1e100, maxz = -1e100;
-			for (int i = 0; i < ps.length; i++) {
-				Twiss[] t = ((EnvelopeProbeState)ps[i]).twissParameters();
+			for (int i = 0; i < ps.size(); i++) {
+				Twiss[] t = ((EnvelopeProbeState)ps.get(i)).twissParameters();
 				if ( t[0].getEnvelopeRadius() < minx) minx = t[0].getEnvelopeRadius();
 				if ( t[0].getEnvelopeRadius() > maxx) maxx = t[0].getEnvelopeRadius();
 				if ( t[1].getEnvelopeRadius() < miny) miny = t[1].getEnvelopeRadius();
