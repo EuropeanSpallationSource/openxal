@@ -22,7 +22,6 @@ public class FieldMap extends ThickElement  {
 	private double frequency;
 	private double k0;
 	private double phase[];
-	private double energyGain;
 	
 	public FieldMap() {
         this(null);
@@ -74,8 +73,6 @@ public class FieldMap extends ThickElement  {
 	
 	@Override
 	public double energyGain(IProbe probe, double dblLen) {
-		return energyGain;
-		/*
 		initPhase(probe.getBeta(), probe.getKineticEnergy(), probe.getSpeciesRestEnergy());
 		
 		double p0 = probe.getPosition() - (getPosition() - getLength()/2.);
@@ -88,7 +85,7 @@ public class FieldMap extends ThickElement  {
 		for (int i = i0; i < Math.min(in,field.length-1); i++)
 			DE += k0 * field[i]*Math.cos(phase[i])*dz;
 		
-		return  DE;*/
+		return  DE;
 	}
 
 	private double field(int i)
@@ -175,8 +172,6 @@ public class FieldMap extends ThickElement  {
 		
 			E0 += DE;
 		}
-		
-		energyGain = E0 - probe.getKineticEnergy();
 		
 		//Following is a handy printout of transfer matrices useful for comparison with TW transfer matrices
 		
