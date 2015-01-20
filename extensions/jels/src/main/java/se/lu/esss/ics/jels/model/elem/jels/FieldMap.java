@@ -73,7 +73,8 @@ public class FieldMap extends ThickElement  {
 	
 	@Override
 	public double energyGain(IProbe probe, double dblLen) {
-		initPhase(probe.getBeta(), probe.getKineticEnergy(), probe.getSpeciesRestEnergy());
+		if (phase == null) 
+			initPhase(probe.getBeta(), probe.getKineticEnergy(), probe.getSpeciesRestEnergy());
 		
 		double p0 = probe.getPosition() - (getPosition() - getLength()/2.);
 		int i0 = (int)Math.round(p0/getLength()*field.length);
@@ -125,6 +126,7 @@ public class FieldMap extends ThickElement  {
 			double Edz = field[i] * dz;
 			double phi = phase[i];
 			double dE = (field(i+1)-field(i-1))/2.;
+			//double dE = (-field(i+2)+8*field(i+1)-8*field(i-1)+field(i-2))/12.;
 			
 			gamma = E0/Er + 1.0;
 			double beta = Math.sqrt(1.0 - 1.0/(gamma*gamma));
@@ -137,7 +139,7 @@ public class FieldMap extends ThickElement  {
 			//double pEz_pz = k0 * field[i] * Math.sin(phase[i]) * (phase[Math.min(phase.length-1,i+1)]-phase[i])/ dz;
 			
 			// partial derivative of E_z by z: seems to be a bug in TW here, since derivative is done over time
-			//double pEz_pz = k0 * field[i] * Math.sin(phase[i]) * 2*Math.PI*frequency / (beta * LightSpeed);
+			//double pEz_pzdz = k0 * field[i] * Math.sin(phase[i]) * 2*Math.PI*frequency / (beta * LightSpeed) * dz;
 					
 			double pEx_pxdz = - 0.5 * k0 * dE * Math.cos(phi);
 			double pBx_pydz = 2*Math.PI*frequency / (2. * LightSpeed * LightSpeed) * k0 * Edz * Math.sin(phi);
