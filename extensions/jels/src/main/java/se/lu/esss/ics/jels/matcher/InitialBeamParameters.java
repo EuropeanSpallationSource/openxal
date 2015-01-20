@@ -23,18 +23,30 @@ public class InitialBeamParameters {
 		bz = new Variable("bz", 0.92564505, 0.8, 1);*/
 //		ez = new Variable("ez", 0.3615731, 0.3, 0.5),
 		//E = new Variable("E", 3.6217853e6, 3.5e6, 3.7e6);
-			ax = new Variable("ax", -0.1083747827, -0.15, -0.04),         // initial conditions by TW matching (lattice criterion)
-			bx = new Variable("bx",0.2011591303, 0.1, 0.4),
+	
+			ax = new Variable("ax", -0.051952048, -0.15, -0.04),         // initial conditions by Mamad
+			bx = new Variable("bx",0.20962859, 0.1, 0.4),
 			//ex = new Variable("ex", 0.25288, 0.1, 0.4),
-			ay = new Variable("ay", -0.3119539455, -0.4, -0.2),
-			by = new Variable("by", 0.3583795833, 0.2, 0.4),
+			ay = new Variable("ay", -0.31155119, -0.4, -0.2),
+			by = new Variable("by", 0.37226081, 0.2, 0.4),
 			//ey = new Variable("ey",  0.251694, 0.2, 0.3),
-			az = new Variable("az", -0.0341951600, -0.6,-0.4),
-			bz = new Variable("bz", 0.9771896612, 0.8, 1);
+			az = new Variable("az", -0.48513031, -0.6,-0.4),
+			bz = new Variable("bz", 0.92578192, 0.8, 1);
 			//ez = new Variable("ez", 0.3615731, 0.3, 0.5),
 			//E = new Variable("E", 3.6217853e6, 3.5e6, 3.7e6);
-	final double Ex = 0.25288, Ey = 0.251694, Ez = 0.3615731, e0 =  3.6217853e6;
 	
+	/*ax = new Variable("ax", -0.1, -0.15, -0.04),         // initial off conditions
+	bx = new Variable("bx",0.2, 0.1, 0.4),
+	//ex = new Variable("ex", 0.25288, 0.1, 0.4),
+	ay = new Variable("ay", -0.3, -0.4, -0.2),
+	by = new Variable("by", 0.3, 0.2, 0.4),
+	//ey = new Variable("ey",  0.251694, 0.2, 0.3),
+	az = new Variable("az", -0.5, -0.6,-0.4),
+	bz = new Variable("bz", 0.9, 0.8, 1);
+	//ez = new Variable("ez", 0.3615731, 0.3, 0.5),
+	//E = new Variable("E", 3.6217853e6, 3.5e6, 3.7e6);*/
+	
+	final double Ex = 0.2529362, Ey = 0.2510271, Ez = 0.3599253, e0 =  3.6218151e6;
 	//final List<Variable> variables = Arrays.asList(ax,bx,ex,ay,by,ey,az,bz,ez,E);
 	 
 	
