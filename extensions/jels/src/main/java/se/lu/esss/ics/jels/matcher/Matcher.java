@@ -1,6 +1,10 @@
 package se.lu.esss.ics.jels.matcher;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.Formatter;
+import java.util.Locale;
 
 import se.lu.esss.ics.jels.JElsDemo;
 import xal.extension.solver.AlgorithmSchedule;
@@ -11,6 +15,7 @@ import xal.extension.solver.SolveStopperFactory;
 import xal.extension.solver.Solver;
 import xal.extension.solver.Trial;
 import xal.extension.solver.Variable;
+import xal.extension.solver.hint.ExcursionHint;
 import xal.extension.solver.market.AlgorithmStrategy;
 import xal.model.Lattice;
 import xal.model.ModelException;
@@ -58,44 +63,51 @@ public class Matcher {
 		
 		Solver solver = new Solver(SolveStopperFactory.maxElapsedTimeStopper(300));
 
-		solver.getAlgorithmSchedule().addAlgorithmScheduleListener(new AlgorithmScheduleListener() {
-			
+		solver.getAlgorithmSchedule().addAlgorithmScheduleListener(new AlgorithmScheduleListener() {	
 			@Override
 			public void trialVetoed(AlgorithmSchedule algorithmSchedule, Trial trial) {
-				// TODO Auto-generated method stub
-				
 			}
 			
 			@Override
 			public void trialScored(AlgorithmSchedule algorithmSchedule, Trial trial) {
-				System.out.printf("score: %f\n", trial.getSatisfaction());			
+				System.out.printf("score: %f algo: %s\n", trial.getSatisfaction(), trial.getAlgorithm().getClass());			
 			}
 			
 			@Override
 			public void strategyWillExecute(AlgorithmSchedule schedule,
 					AlgorithmStrategy strategy, ScoreBoard scoreBoard) {
-				// TODO Auto-generated method stub
-				
 			}
 			
 			@Override
 			public void strategyExecuted(AlgorithmSchedule schedule,
 					AlgorithmStrategy strategy, ScoreBoard scoreBoard) {
-				// TODO Auto-generated method stub
-				
 			}
 		});
 		
-		evaluator.printSolution("initial-sc-ryo", problem.generateInitialTrialPoint());
+		evaluator.printSolution("initial-sc", problem.generateInitialTrialPoint());
 		
 		solver.solve(problem);
 		
-		evaluator.printSolution("best-ryo-5min", solver.getScoreBoard().getBestSolution().getTrialPoint());
+		evaluator.printSolution("best-fm-5min-off", solver.getScoreBoard().getBestSolution().getTrialPoint());
 	
-		for (Variable v : initialParameters.getVariables()) {
-			System.out.printf("%s: %f\n", v.getName(), solver.getScoreBoard().getBestSolution().getTrialPoint().getValue(v));
+	
+		try {
+			Formatter f1  = new Formatter("best-fm-5min-off.txt", "UTF8", Locale.ENGLISH);
+			
+			for (Variable v : initialParameters.getVariables()) {
+				System.out.printf("%s: %f\n", v.getName(), solver.getScoreBoard().getBestSolution().getTrialPoint().getValue(v));
+				f1.format("%s: %f\n", v.getName(), solver.getScoreBoard().getBestSolution().getTrialPoint().getValue(v));
+			}
+			
+			System.out.printf("best score: %f\n", solver.getScoreBoard().getBestSolution().getSatisfaction());
+			f1.format("best score: %f\n", solver.getScoreBoard().getBestSolution().getSatisfaction());
+			f1.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
 		}
-		System.out.printf("best score: %f\n", solver.getScoreBoard().getBestSolution().getSatisfaction());		
+		
 	}
 	
 	public static void main(String args[]) throws ModelException
