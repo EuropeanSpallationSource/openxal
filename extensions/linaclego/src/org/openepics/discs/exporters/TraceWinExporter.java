@@ -30,6 +30,7 @@ import se.lu.esss.linaclego.elements.DtlDriftTube;
 import se.lu.esss.linaclego.elements.DtlRfGap;
 import se.lu.esss.linaclego.elements.Edge;
 import se.lu.esss.linaclego.elements.FieldMap;
+import se.lu.esss.linaclego.elements.Monitor;
 import se.lu.esss.linaclego.elements.Quad;
 import se.lu.esss.linaclego.elements.RfGap;
 import se.lu.esss.linaclego.elements.ThinSteering;
@@ -312,6 +313,15 @@ public class TraceWinExporter implements BLEVisitor {
 				 "dymm=" + Double.toString(controlPoint.getPosition()[1] * 1000.0),
 				 "dzmm=" + Double.toString(controlPoint.getPosition()[2] * 1000.0));
 		}
+	}
+	
+	@Override
+	public void visit(Monitor monitor) {
+		//println(null, ";" + monitor.getMonitorType());
+		println(monitor.getId(), "DRIFT",
+				fourPlaces.format(monitor.getLength()),
+				fourPlaces.format(monitor.getApertureR()),
+				fourPlaces.format(monitor.getApertureY()));
 	}
 	
 	

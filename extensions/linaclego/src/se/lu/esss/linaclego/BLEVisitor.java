@@ -11,6 +11,7 @@ import se.lu.esss.linaclego.elements.DtlDriftTube;
 import se.lu.esss.linaclego.elements.DtlRfGap;
 import se.lu.esss.linaclego.elements.Edge;
 import se.lu.esss.linaclego.elements.FieldMap;
+import se.lu.esss.linaclego.elements.Monitor;
 import se.lu.esss.linaclego.elements.Quad;
 import se.lu.esss.linaclego.elements.RfGap;
 import se.lu.esss.linaclego.elements.ThinSteering;
@@ -38,4 +39,5 @@ public interface BLEVisitor {
 	public void visit(DtlCell dtlCell);
 	public void visit(Edge edge);
 	public void visit(ControlPoint controlPoint);
+	public void visit(Monitor monitor);
 }

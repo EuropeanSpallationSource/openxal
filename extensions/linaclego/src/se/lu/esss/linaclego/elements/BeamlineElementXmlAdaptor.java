@@ -12,7 +12,7 @@ public class BeamlineElementXmlAdaptor extends XmlAdapter<BeamlineElement, Beaml
 	public BeamlineElementXmlAdaptor()
 	{
 		add(Drift.class, Quad.class, ThinSteering.class, RfGap.class, DtlCell.class, Edge.class, 
-				Bend.class, FieldMap.class, DtlDriftTube.class, DtlRfGap.class);
+				Bend.class, FieldMap.class, DtlDriftTube.class, DtlRfGap.class, Monitor.class);
 	}
 	
 	
@@ -31,6 +31,9 @@ public class BeamlineElementXmlAdaptor extends XmlAdapter<BeamlineElement, Beaml
 
 	@Override
 	public BeamlineElement unmarshal(BeamlineElement v) throws Exception {
+		if (!bles.containsKey(v.type)) {
+			System.err.println("ERROR: Unknown beamline element type " + v.type);
+		}
 		BeamlineElement v2 = bles.get(v.type).newInstance();
 		v2.id = v.id;
 		v2.model = v.model;

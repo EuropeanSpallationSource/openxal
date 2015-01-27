@@ -36,6 +36,7 @@ import se.lu.esss.linaclego.elements.DtlDriftTube;
 import se.lu.esss.linaclego.elements.DtlRfGap;
 import se.lu.esss.linaclego.elements.Edge;
 import se.lu.esss.linaclego.elements.FieldMap;
+import se.lu.esss.linaclego.elements.Monitor;
 import se.lu.esss.linaclego.elements.Quad;
 import se.lu.esss.linaclego.elements.RfGap;
 import se.lu.esss.linaclego.elements.ThinSteering;
@@ -164,13 +165,13 @@ public class OpenXALExporter implements BLEVisitor {
 	
 	private static class RFCavityChannelSuite extends ChannelSuite 
 	{
-		private String name;
+	//	private String name;
 		private String ampChannel, phaseChannel, ampCtlChannel, phaseCtlChannel;
 		
 		public RFCavityChannelSuite(String name)
 		{
 			name = name.replace('_', ':');
-			this.name = name;
+	//		this.name = name;
 			ampChannel = name+":AmpAvg";
 			phaseChannel = name+":PhsAvg";
 			ampCtlChannel = name+":AmpCtl";
@@ -180,7 +181,7 @@ public class OpenXALExporter implements BLEVisitor {
 		
 		public RFCavityChannelSuite(String name, String ampChannel, String phaseChannel)
 		{
-			this.name = name.replace('_', ':');
+	//		this.name = name.replace('_', ':');
 			this.ampChannel = ampChannel;
 			this.phaseChannel = phaseChannel;
 			ampCtlChannel = ampChannel+"Ctl";
@@ -884,6 +885,23 @@ public class OpenXALExporter implements BLEVisitor {
 			bpm.getBPMBucket().setLength(1.0);
 			bpm.getBPMBucket().setOrientation(1);
 			bpm.setPosition(sectionPosition);
+			add(bpm);
+		}
+	}
+	
+	@Override
+	public void visit(final Monitor monitor) {
+		if ("bpm".equals(monitor.getMonitorType().toLowerCase())) {
+			xal.smf.impl.BPM bpm = new BPM(getEssId(monitor)) {
+				{
+					channelSuite = new BPMChannelSuite(getEssId(monitor));
+				}
+			};
+			bpm.getBPMBucket().setFrequency(linac.getBeamFrequency() * section.getRFHarmonic());
+			bpm.getBPMBucket().setLength(monitor.getLength());
+			bpm.getBPMBucket().setOrientation(1);
+			bpm.setLength(monitor.getLength());
+			bpm.setPosition(sectionPosition+monitor.getLength()/2.);
 			add(bpm);
 		}
 	}
