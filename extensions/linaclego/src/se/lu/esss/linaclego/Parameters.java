@@ -2,15 +2,19 @@ package se.lu.esss.linaclego;
 
 import java.util.AbstractList;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlElementRefs;
+import javax.xml.bind.annotation.XmlMixed;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.XmlValue;
 
 
 public class Parameters extends AbstractList<Parameters.D> {
@@ -43,8 +47,11 @@ public class Parameters extends AbstractList<Parameters.D> {
 	})
 	public static class D {
 	
-	    @XmlValue
-	    protected String value;
+	    @XmlMixed
+	    @XmlElementRefs({
+            @XmlElementRef(name="legoSet", type=JAXBElement.class)})
+	    protected List<Object> value;
+	    
 	    @XmlAttribute(name = "id", required = true)
 	    protected String id;
 	    @XmlAttribute(name = "type")
@@ -57,10 +64,16 @@ public class Parameters extends AbstractList<Parameters.D> {
 	    	
 	    }
 	    
+	    public D(String id, D value)
+	    {
+	    	this.id = id;
+	    	this.value = value.value;
+	    }
+	    
 	    public D(String id, String value)
 	    {
 	    	this.id = id;
-	    	this.value = value;
+	    	this.value = Arrays.asList((Object)value);
 	    }
 	    	
 	    public D(String id, String type, String unit, String value)
@@ -68,11 +81,26 @@ public class Parameters extends AbstractList<Parameters.D> {
 	    	this.id = id;
 	    	this.type = type;
 	    	this.unit = unit;
-	    	this.value = value;
+	    	this.value = Arrays.asList((Object)value);
 	    }
 	    
 	    public String getValue() {
-	        return value;
+	    	StringBuffer buf = new StringBuffer();
+	    	for (Object o : value) {
+	    		if (o instanceof String) buf.append((String)o);
+	    	}
+	    	
+	        return buf.toString().trim();
+	    }
+	    
+		
+		@SuppressWarnings("unchecked")
+		public LegoSet getLegoSet() {
+	    	for (Object o : value) {
+	    		if (o instanceof JAXBElement && ((JAXBElement<?>)o).getDeclaredType().equals(LegoSet.class)) 	    			
+	    			return ((JAXBElement<LegoSet>)o).getValue();
+	    	}
+	    	return null;
 	    }
 	
 	    public String getId() {

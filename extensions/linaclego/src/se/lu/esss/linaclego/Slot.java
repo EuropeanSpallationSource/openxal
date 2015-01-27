@@ -77,7 +77,7 @@ public class Slot {
 			for (Parameters.D param : getParameters()) {
 				Parameters.D arg = arguments.get(param.getValue());
 				if (arg != null) {
-					pout.add(new Parameters.D(param.getId(), arg.getValue()));
+					pout.add(new Parameters.D(param.getId(), arg));
 				} else
 					pout.add(param);
 			}

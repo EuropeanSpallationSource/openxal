@@ -60,7 +60,7 @@ public class BeamlineElement {
 			for (Parameters.D param : parameters) {
 				Parameters.D arg = arguments.get(param.getValue());
 				if (arg != null) {
-					pout.add(new Parameters.D(param.getId(), arg.getValue()));
+					pout.add(new Parameters.D(param.getId(), arg));
 				} else
 					pout.add(param);
 			}

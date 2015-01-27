@@ -51,7 +51,6 @@ import xal.smf.impl.HDipoleCorr;
 import xal.smf.impl.Magnet;
 import xal.smf.impl.MagnetMainSupply;
 import xal.smf.impl.MagnetPowerSupply;
-import xal.smf.impl.Marker;
 import xal.smf.impl.RfCavity;
 import xal.smf.impl.VDipoleCorr;
 import xal.smf.impl.qualify.MagnetType;
@@ -166,21 +165,38 @@ public class OpenXALExporter implements BLEVisitor {
 	private static class RFCavityChannelSuite extends ChannelSuite 
 	{
 		private String name;
+		private String ampChannel, phaseChannel, ampCtlChannel, phaseCtlChannel;
 		
 		public RFCavityChannelSuite(String name)
 		{
-			this.name = name.replace('_', ':');
+			name = name.replace('_', ':');
+			this.name = name;
+			ampChannel = name+":AmpAvg";
+			phaseChannel = name+":PhsAvg";
+			ampCtlChannel = name+":AmpCtl";
+			phaseCtlChannel = name+":PhsCtl";
 		}
+		
+		
+		public RFCavityChannelSuite(String name, String ampChannel, String phaseChannel)
+		{
+			this.name = name.replace('_', ':');
+			this.ampChannel = ampChannel;
+			this.phaseChannel = phaseChannel;
+			ampCtlChannel = ampChannel+"Ctl";
+			phaseCtlChannel = phaseChannel+"Ctl";
+		}
+		
 		
 		/**
 	     * Write data to the data adaptor for storage.
 	     * @param adaptor The adaptor to which the receiver's data is written
 	     */
 	    public void write( final DataAdaptor adaptor ) {	       	    	
-	    	writeChannel(adaptor, RfCavity.CAV_AMP_SET_HANDLE, name+":AmpCtl", true);
-	    	writeChannel(adaptor, RfCavity.CAV_PHASE_SET_HANDLE, name+":PhsCtl", true);
-	    	writeChannel(adaptor, RfCavity.CAV_AMP_AVG_HANDLE, name+":AmpAvg", false);
-	    	writeChannel(adaptor, RfCavity.CAV_PHASE_AVG_HANDLE, name+":PhsAvg", false);
+	    	writeChannel(adaptor, RfCavity.CAV_AMP_SET_HANDLE, ampCtlChannel, true);
+	    	writeChannel(adaptor, RfCavity.CAV_PHASE_SET_HANDLE, phaseCtlChannel, true);
+	    	writeChannel(adaptor, RfCavity.CAV_AMP_AVG_HANDLE, ampChannel, false);
+	    	writeChannel(adaptor, RfCavity.CAV_PHASE_AVG_HANDLE, phaseChannel, false);
 	    }
 	    
 	    public void writeChannel( final DataAdaptor adaptor, String handle, String signal, boolean settable ) {	       	    	
@@ -362,7 +378,7 @@ public class OpenXALExporter implements BLEVisitor {
 		ESSRfCavity cavity = new ESSRfCavity(getEssId(rfGap))
 		{
 			{
-				channelSuite = new RFCavityChannelSuite(getEssId(rfGap));
+				channelSuite = new RFCavityChannelSuite(getEssId(rfGap), rfGap.getVoltageDevName(), rfGap.getRFPhaseDevName());
 			}
 		};
 		cavity.addNode(gap);

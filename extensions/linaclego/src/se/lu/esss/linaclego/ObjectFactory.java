@@ -8,6 +8,8 @@
 
 package se.lu.esss.linaclego;
 
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.annotation.XmlElementDecl;
 import javax.xml.bind.annotation.XmlRegistry;
 
 import se.lu.esss.linaclego.elements.BeamlineElement;
@@ -132,5 +134,18 @@ public class ObjectFactory {
      */
     public Section createSection() {
         return new Section();
+    }
+    
+    /**
+     * Create an instance of {@link LegoSet}
+     * 
+     */
+    public LegoSet createLegoSet() {
+        return new LegoSet();
+    }
+    
+    @XmlElementDecl(name="legoSet")
+    public JAXBElement<LegoSet> createLegoSet(LegoSet value) {
+        return new JAXBElement<LegoSet>(null, LegoSet.class, value);
     }
 }
