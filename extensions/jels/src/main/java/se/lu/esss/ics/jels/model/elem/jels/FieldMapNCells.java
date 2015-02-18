@@ -17,6 +17,7 @@ import xal.sim.scenario.LatticeElement;
  *
  */
 public class FieldMapNCells extends ElementSeq {
+	private ESSFieldMap fm;
 	private IdealDrift[] drifts;
 	private IdealRfGap[] gaps;
 	private TTFIntegrator[] splitIntgrs;
@@ -35,7 +36,7 @@ public class FieldMapNCells extends ElementSeq {
 	@Override
 	public void initializeFrom(LatticeElement latticeElement) {
 		super.initializeFrom(latticeElement);
-	    final ESSFieldMap fm = (ESSFieldMap)latticeElement.getNode();
+	    fm  = (ESSFieldMap)latticeElement.getNode();
 	    final TTFIntegrator intgr = TTFIntegrator.getInstance(fm.getFieldMapFile()+".edz", fm.getFrequency()*1e6);
 	    
 	    splitIntgrs = intgr.getSplitIntegrators();
@@ -61,7 +62,6 @@ public class FieldMapNCells extends ElementSeq {
 						
 		    gaps[i] = new IdealRfGap(fm.getId(), splitIntgrs[i].getE0TL()*fm.getXelmax(), 0, fm.getFrequency()*1e6);
 			
-			gaps[i].setTTFFit(splitIntgrs[i].integratorWithOffset(0.));
 			gaps[i].setFirstGap(i==0);
 			gaps[i].setCellLength(fm.getLength());
 			gaps[i].setE0(fm.getXelmax());
@@ -83,7 +83,7 @@ public class FieldMapNCells extends ElementSeq {
 	public void propagate(IProbe probe) throws ModelException {
 		double phi = this.phiInput;
 		for (int i=0; i<splitIntgrs.length; i++) {			
-			double phis = splitIntgrs[i].getSyncPhase(phi, probe.getBeta());
+			double phis = splitIntgrs[i].getSyncPhase(phi, probe.getBeta(),probe.getSpeciesRestEnergy(), fm.getXelmax());
 			double phil = Math.IEEEremainder(phis - phi, 2*Math.PI);
 			if (phil < 0) phil += 2*Math.PI;
 			double l1 =  phil * probe.getBeta() * IElement.LightSpeed / (2*Math.PI*frequency);		
@@ -91,7 +91,7 @@ public class FieldMapNCells extends ElementSeq {
 			if (i==0) {
     			gaps[i].setPhase(phis + (splitIntgrs[i].getInverted() ? Math.PI : 0));
 			}
-			gaps[i].setTTFFit(splitIntgrs[i].integratorWithOffset(phi - phis));
+			gaps[i].setTTFFit(splitIntgrs[i].integratorWithOffset(phi - phis, fm.getXelmax(), probe.getSpeciesRestEnergy()));
 			
 			drifts[2*i].setLength(l1);
 			drifts[2*i].setPosition(startPos + l1/2.);
