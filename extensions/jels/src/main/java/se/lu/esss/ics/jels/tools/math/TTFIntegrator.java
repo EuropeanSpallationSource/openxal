@@ -326,7 +326,7 @@ public class TTFIntegrator {
 		};
 	}
 	
-	public UnivariateRealPolynomial integratorWithOffset(final double off, final double phase) {
+	public UnivariateRealPolynomial integratorWithOffset(final double phase) {
 		return new UnivariateRealPolynomial() {
 
 			@Override
@@ -336,12 +336,12 @@ public class TTFIntegrator {
 
 			@Override
 			public double evaluateAt(double beta) {
-				return TTFIntegrator.this.evaluateAt(-2*Math.PI*frequency*off/beta/IElement.LightSpeed-phase, beta);
+				return TTFIntegrator.this.evaluateAt(phase, beta);
 			}
 
 			@Override
 			public double evaluateDerivativeAt(double beta) {
-				return TTFIntegrator.this.evaluateDerivativeAt(-2*Math.PI*frequency*off/beta/IElement.LightSpeed-phase, beta);
+				return TTFIntegrator.this.evaluateDerivativeAt(phase, beta);
 			}
 		};
 	}

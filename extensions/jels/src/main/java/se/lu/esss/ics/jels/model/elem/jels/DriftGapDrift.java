@@ -49,10 +49,9 @@ public class DriftGapDrift extends ElementSeq {
 	    		double inputphase = fm.getPhase()*Math.PI/180.;
 	    		double phim = 2*Math.PI*getFrequency() * fm.getLength()/2. / probe.getBeta()/LightSpeed;
 	    		setPhase(inputphase + phim + pho);
+	    		setTTFFit(intgr.integratorWithOffset(phim + pho));
 	    	}
 	    };
-	    
-	    gap.setTTFFit(intgr.integratorWithOffset(fm.getLength()/2., pho));
 		gap.setFirstGap(true);
 		gap.setCellLength(fm.getLength());
 		gap.setE0(fm.getXelmax());

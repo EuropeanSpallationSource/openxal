@@ -47,7 +47,7 @@ public class FieldMapNCells extends ElementSeq {
 	    gaps = new IdealRfGap[splitIntgrs.length];
 	    drifts = new IdealDrift[splitIntgrs.length*2];
 	    frequency = fm.getFrequency()*1e6;
-	    phase = fm.getPhase();
+	    phase = fm.getPhase()*Math.PI/180.;
 	    
 	    double beta;
 		if (fm.getFieldMapFile().endsWith("Spoke_F2F")) { beta = 0.5; }
@@ -63,20 +63,13 @@ public class FieldMapNCells extends ElementSeq {
 	    	drifts[2*i].setId(fm.getId()+":DR"+2*i);
 			drifts[2*i].setLength(l1);
 						
-		    gaps[i] = new IdealRfGap(fm.getId(), splitIntgrs[i].getE0TL()*fm.getXelmax(),0, fm.getFrequency()*1e6);/* {
-		    	@Override
-		    	public void calculatePhase(IProbe probe)
-		    	{    		
-		    		double dphi = 2*Math.PI*getFrequency()*l1/probe.getBeta()/LightSpeed;
-		    		setPhase(fm.getPhase()*Math.PI/180. + dphi);
-		    	}
-		    };*/
+		    gaps[i] = new IdealRfGap(fm.getId(), splitIntgrs[i].getE0TL()*fm.getXelmax(),0, fm.getFrequency()*1e6);
 			
-			gaps[i].setTTFFit(splitIntgrs[i].integratorWithOffset(l1,i*Math.PI));
+			gaps[i].setTTFFit(splitIntgrs[i].integratorWithOffset(0.));
 			gaps[i].setFirstGap(i==0);
 			gaps[i].setCellLength(fm.getLength());
 			gaps[i].setE0(fm.getXelmax());
-			gaps[i].setStructureMode(1);
+			gaps[i].setStructureMode(0);
 			
 			drifts[2*i+1] = new IdealDrift();
 			drifts[2*i+1].setId(fm.getId()+":DR"+(2*i+1));
@@ -90,20 +83,25 @@ public class FieldMapNCells extends ElementSeq {
 	
 	
 	public void propagate(IProbe probe) throws ModelException {
-		for (int i=0; i<splitIntgrs.length; i++) {
-			double l1 = splitIntgrs[i].getSyncCenter(probe.getBeta(), phi0);
+		double phase = this.phase;
+		for (int i=0; i<splitIntgrs.length; i++) {			
+			double phis = splitIntgrs[i].getSyncPhase(phase, probe.getBeta()) + i*Math.PI + phi0;
+			double phil = Math.IEEEremainder(phis - phase, 2*Math.PI);
+			if (phil < 0) phil+=2*Math.PI;
+			double l1 =  phil / (2*Math.PI*frequency) * probe.getBeta() * IElement.LightSpeed;		
 			double l2 = splitIntgrs[i].getLength() - l1;
 			if (i==0) {
-				double dphi = 2*Math.PI*frequency*l1/probe.getBeta()/IElement.LightSpeed;
-    			gaps[i].setPhase(phase*Math.PI/180. + dphi);
+    			gaps[i].setPhase(phis);
 			}
 			drifts[2*i].setLength(l1);
 			drifts[2*i+1].setLength(l2);
-			gaps[i].setTTFFit(splitIntgrs[i].integratorWithOffset(l1,i*Math.PI));
+			gaps[i].setTTFFit(splitIntgrs[i].integratorWithOffset(phase - phis));
 			
 			drifts[2*i].propagate(probe);
 			gaps[i].propagate(probe);
 			drifts[2*i+1].propagate(probe);
+			
+			phase = probe.getLastGapPhase() + 2*Math.PI*frequency*l2/(probe.getBeta()*IElement.LightSpeed);
         }
     }
 
