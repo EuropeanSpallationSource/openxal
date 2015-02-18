@@ -1,12 +1,12 @@
 package se.lu.esss.ics.jels.model.elem.jels;
 
-import se.lu.esss.ics.jels.model.elem.els.IdealDrift;
 import se.lu.esss.ics.jels.smf.impl.ESSFieldMap;
 import se.lu.esss.ics.jels.tools.math.TTFIntegrator;
 import xal.model.IElement;
 import xal.model.IProbe;
 import xal.model.ModelException;
 import xal.model.elem.ElementSeq;
+import xal.model.elem.IdealDrift;
 import xal.sim.scenario.LatticeElement;
 
 /**
