@@ -81,17 +81,15 @@ public class FieldMapNCells extends ElementSeq {
 	
 	
 	public void propagate(IProbe probe) throws ModelException {
-		double phi = this.phiInput;
 		for (int i=0; i<splitIntgrs.length; i++) {			
-			double phis = splitIntgrs[i].getSyncPhase(phi, probe.getBeta(),probe.getSpeciesRestEnergy(), fm.getXelmax());
-			double phil = Math.IEEEremainder(phis - phi, 2*Math.PI);
-			if (phil < 0) phil += 2*Math.PI;
-			double l1 =  phil * probe.getBeta() * IElement.LightSpeed / (2*Math.PI*frequency);		
+			double phim = splitIntgrs[i].getSyncPhase(probe.getBeta()); // phis = phim + phi
+			if (phim < 0) phim += 2*Math.PI;
+			double l1 =  phim * probe.getBeta() * IElement.LightSpeed / (2*Math.PI*frequency);		
 			double l2 = splitIntgrs[i].getLength() - l1;
 			if (i==0) {
-    			gaps[i].setPhase(phis + (splitIntgrs[i].getInverted() ? Math.PI : 0));
+    			gaps[i].setPhase(this.phiInput + phim + (splitIntgrs[i].getInverted() ? Math.PI : 0));
 			}
-			gaps[i].setTTFFit(splitIntgrs[i].integratorWithOffset(phi - phis, fm.getXelmax(), probe.getSpeciesRestEnergy()));
+			gaps[i].setTTFFit(splitIntgrs[i]);
 			
 			drifts[2*i].setLength(l1);
 			drifts[2*i].setPosition(startPos + l1/2.);
@@ -102,8 +100,6 @@ public class FieldMapNCells extends ElementSeq {
 			drifts[2*i].propagate(probe);
 			gaps[i].propagate(probe);
 			drifts[2*i+1].propagate(probe);
-			
-			phi = probe.getLastGapPhase() + 2*Math.PI*frequency*l2/(probe.getBeta()*IElement.LightSpeed);
         }
     }
 

@@ -21,7 +21,7 @@ import xal.tools.math.poly.UnivariateRealPolynomial;
  * 
  * @author Ivo List <ivo.list@cosylab.com>
  */
-public class TTFIntegrator {
+public class TTFIntegrator extends UnivariateRealPolynomial {
 	private static Map<String, TTFIntegrator> instances = new HashMap<>();
 
 	private int N;
@@ -126,65 +126,51 @@ public class TTFIntegrator {
 	/**
 	 * Calculates synchronous phase given input phase and input beta.
 	 * atan( \int E(z)sin(..)dz / \int E(z)cos(..)dz )
-	 * @param phi0 input phase
 	 * @param beta0 input beta
 	 * @return synchronous phase
 	 */
-	public double getSyncPhase(double phi0, double beta0, double Er, double k0)
+	public double getSyncPhase(double beta0)
 	{
-		return Math.atan2(evaluateEzSin(phi0, beta0, k0, Er), evaluateEzCos(phi0, beta0, k0, Er));
+		return Math.atan2(evaluateEzSin(beta0), evaluateEzCos(beta0));
 	}
 
 	/**
-	 * Evaluates TTF at beta, actually a cosine transform of the field (with given phase shift). 
-	 * @param phi0 phase shift in TTF transform
+	 * Evaluates TTF at beta, actually a cosine transform of the field. 
 	 * @param beta energy
 	 * @return TTF
 	 */
-	public double evaluateEzCos(double phi0, double beta, double k0, double Er)
+	public double evaluateEzCos(double beta)
 	{
-		double phi = phi0;
+		double phi = 0;
 		double dz = getLength() / field.length;
 		double DE = 0.;
 
-		double gamma = Math.sqrt(1 / (1 - beta*beta));
-		double E0 = (gamma - 1) * Er; 
-
 		for (int i = 0; i < field.length; i++)
 		{			
-			DE += k0*field[i]*Math.cos(phi)*dz;
-			gamma = (E0+DE)/Er + 1.0;
-			//beta = Math.sqrt(1.0 - 1.0/(gamma*gamma));
+			DE += field[i]*Math.cos(phi)*dz;
 			phi += 2*Math.PI*frequency*dz / (beta * IElement.LightSpeed);
 		}
-		return DE/(e0tl*k0);
+		return DE/e0tl;
 	}
 
 	/**
-	 * Evaluates sine transform of the field (with given phase shift). 
+	 * Evaluates sine transform of the field. 
 	 * @param phi0 phase shift in TTF transform
 	 * @param beta energy
 	 * @return sine transform
 	 */
-	public double evaluateEzSin(double phi0, double beta, double k0, double Er)
+	public double evaluateEzSin(double beta)
 	{
-		double phi = phi0;
+		double phi = 0;
 		double dz = getLength() / field.length;
-		double DE = 0.;
 		double DS = 0.;
-
-		double gamma = Math.sqrt(1 / (1 - beta*beta));
-		double E0 = (gamma - 1) * Er; 
 
 		for (int i = 0; i < field.length; i++)
 		{			
-			DE += k0*field[i]*Math.cos(phi)*dz;
-			DS += k0*field[i]*Math.sin(phi)*dz;
-			gamma = (E0+DE)/Er + 1.0;
-			//beta = Math.sqrt(1.0 - 1.0/(gamma*gamma));
+			DS += field[i]*Math.sin(phi)*dz;
 			phi += 2*Math.PI*frequency*dz / (beta * IElement.LightSpeed);
 		}
-		return DS/(e0tl*k0);
+		return DS/e0tl;
 	}
 
 	/**
@@ -193,22 +179,15 @@ public class TTFIntegrator {
 	 * @param beta energy
 	 * @return derivative of TTF
 	 */
-	public double evaluateEzzSin(double phi0, double beta, double k0, double Er)
+	public double evaluateEzzSin(double phi0, double beta)
 	{
 		double phi = phi0;
 		double dz = getLength() / field.length;
-		double DE = 0.;
 		double DZS = 0.;
-
-		double gamma = Math.sqrt(1 / (1 - beta*beta));
-		double E0 = (gamma - 1) * Er; 
 
 		for (int i = 0; i < field.length; i++)
 		{			
-			DE += k0*field[i]*Math.cos(phi)*dz;
-			DZS += k0*field[i]*Math.sin(phi)*(i*dz)*dz;
-			gamma = (E0+DE)/Er + 1.0;
-			//beta = Math.sqrt(1.0 - 1.0/(gamma*gamma));
+			DZS += field[i]*Math.sin(phi)*(i*dz)*dz;
 			phi += 2*Math.PI*frequency*dz / (beta * IElement.LightSpeed);
 		}
 		return DZS/e0tl*2 * Math.PI * frequency / beta / beta / IElement.LightSpeed;
@@ -253,33 +232,29 @@ public class TTFIntegrator {
 		return zmax;
 	}	
 
-	/*****************  Constructing methods ************************************/
+	/*****************  TTF function methods ************************************/
 
-	/**
-	 * Returns the TTF integrator for a given delta_phi = input phase - synchronous phase
-	 * @param dphi delta phi
-	 * @return TTF integrator
-	 */	
-	public UnivariateRealPolynomial integratorWithOffset(final double phase, final double k0, final double Er) {
-		return new UnivariateRealPolynomial() {
-
-			@Override
-			public double getCoef(int iOrder) {
-				return 1.0; // fake coef to trigger evaluations
-			}
-
-			@Override
-			public double evaluateAt(double beta) {
-				return TTFIntegrator.this.evaluateEzCos(phase, beta, k0, Er);
-			}
-
-			@Override
-			public double evaluateDerivativeAt(double beta) {
-				return TTFIntegrator.this.evaluateEzzSin(phase, beta, k0, Er);
-			}
-		};
+	@Override
+	public double getCoef(int iOrder) {
+		return 1.0; // fake coef to trigger evaluations
 	}
 
+	@Override
+	public double evaluateAt(double beta) {
+		double sin = evaluateEzSin(beta);
+		double cos = evaluateEzCos(beta);
+		return Math.sqrt(cos*cos + sin*sin);
+		//double phase = Math.atan2(evaluateEzSin(0., beta), evaluateEzCos(0., beta));
+		//return TTFIntegrator.this.evaluateEzCos(-phase, beta);
+	}
+
+	@Override
+	public double evaluateDerivativeAt(double beta) {
+		double phase = Math.atan2(evaluateEzSin(beta), evaluateEzCos(beta));
+		return TTFIntegrator.this.evaluateEzzSin(-phase, beta);
+	}
+
+	
 	/**
 	 * Static factory method to give TTF integrator for a specific fieldmap file
 	 * @param path path to the field map file
