@@ -20,7 +20,6 @@ public class FieldMapNCells extends ElementSeq {
 	private IdealDrift[] drifts;
 	private IdealRfGap[] gaps;
 	private TTFIntegrator[] splitIntgrs;
-	private double phi0 = 0.;
 	private double phiInput;
 	private double frequency;
 	private double startPos;
@@ -50,11 +49,6 @@ public class FieldMapNCells extends ElementSeq {
 	    frequency = fm.getFrequency()*1e6;
 	    phiInput = fm.getPhase()*Math.PI/180.;
 	    startPos = latticeElement.getStartPosition();
-	    		
-	    double beta;
-		if (fm.getFieldMapFile().endsWith("Spoke_F2F")) { beta = 0.5; }
-    	else if (fm.getFieldMapFile().endsWith("MB_F2F")) { beta = 0.68; phi0 = Math.PI; }
-    	else beta = 0.87;
 	    
 	    for (int i=0; i<splitIntgrs.length; i++) {
 	    	final double l1 = splitIntgrs[i].getLength() / 2.;	    	
@@ -71,7 +65,7 @@ public class FieldMapNCells extends ElementSeq {
 			gaps[i].setFirstGap(i==0);
 			gaps[i].setCellLength(fm.getLength());
 			gaps[i].setE0(fm.getXelmax());
-			gaps[i].setStructureMode(0);
+			gaps[i].setStructureMode(1);
 			gaps[i].setPosition(startPos + l1);
 			
 			drifts[2*i+1] = new IdealDrift();
@@ -89,13 +83,13 @@ public class FieldMapNCells extends ElementSeq {
 	public void propagate(IProbe probe) throws ModelException {
 		double phi = this.phiInput;
 		for (int i=0; i<splitIntgrs.length; i++) {			
-			double phis = splitIntgrs[i].getSyncPhase(phi, probe.getBeta()) + i*Math.PI + phi0;
+			double phis = splitIntgrs[i].getSyncPhase(phi, probe.getBeta());
 			double phil = Math.IEEEremainder(phis - phi, 2*Math.PI);
 			if (phil < 0) phil += 2*Math.PI;
 			double l1 =  phil * probe.getBeta() * IElement.LightSpeed / (2*Math.PI*frequency);		
 			double l2 = splitIntgrs[i].getLength() - l1;
 			if (i==0) {
-    			gaps[i].setPhase(phis);
+    			gaps[i].setPhase(phis + (splitIntgrs[i].getInverted() ? Math.PI : 0));
 			}
 			gaps[i].setTTFFit(splitIntgrs[i].integratorWithOffset(phi - phis));
 			

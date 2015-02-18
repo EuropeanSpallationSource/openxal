@@ -31,7 +31,7 @@ public class TTFIntegrator {
 	//private double[] dst;
 	private double e0tl;
 	private double frequency;
-	private int gapCount;
+	private boolean inverted;
 	
 	/**
 	 * Constructs new TTFIntegrator and loads field from the file
@@ -53,13 +53,13 @@ public class TTFIntegrator {
 		}
 	}
 
-	protected TTFIntegrator(int N, double zmax, double[] field, double frequency, int gapCount)
+	protected TTFIntegrator(int N, double zmax, double[] field, double frequency, boolean inverted)
 	{
 		this.N = N;
 		this.zmax = zmax;
 		this.field = field;
 		this.frequency = frequency;
-		this.gapCount = gapCount;
+		this.inverted = inverted;
 		initalizeE0TL();
 	}
 
@@ -249,9 +249,12 @@ public class TTFIntegrator {
 	{
 		List<Integer> pos = new ArrayList<>();
 		pos.add(0);
+		boolean invert = false;
 		for (int i = 0; i<N-1; i++)
-			if (field[i]*field[i+1] < 0.)
+			if (field[i]*field[i+1] < 0.) {
+				if (field[i] < 0 && pos.size() == 1) invert = true;
 				pos.add(i+1);
+			}
 		pos.add(N);
 		
 		TTFIntegrator[] splitIntgrs = new TTFIntegrator[pos.size()-1];
@@ -259,18 +262,18 @@ public class TTFIntegrator {
 		{
 			double[] field = new double[pos.get(i+1)-pos.get(i)];
 			System.arraycopy(this.field, pos.get(i), field, 0, field.length);
-			splitIntgrs[i] = new TTFIntegrator(field.length, (pos.get(i+1)-pos.get(i))*zmax/N, field, frequency, i);
+			if (invert) 
+				for (int j = 0; j<field.length; j++) field[j] = -field[j];
+			splitIntgrs[i] = new TTFIntegrator(field.length, (pos.get(i+1)-pos.get(i))*zmax/N, field, frequency, invert);
+			invert = !invert;
 		}
 		
 		return splitIntgrs;
 	}
 	
-	public double getSyncCenter(double beta, double phi0)
+	public boolean getInverted()
 	{
-		double phis = Math.IEEEremainder(getSyncPhase(0., beta) + gapCount*Math.PI + phi0, 2*Math.PI) ;
-		if (phis < 0) phis+=2*Math.PI;
-		double l =  (phis) / (2*Math.PI*frequency) * beta * IElement.LightSpeed;		
-		return l;
+		return inverted;
 	}
 	
 	public double getCenter()
