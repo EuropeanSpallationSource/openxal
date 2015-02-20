@@ -74,9 +74,6 @@ public class FieldMap extends ThickElement  {
 	
 	@Override
 	public double energyGain(IProbe probe, double dblLen) {
-		if (phase == null) 
-			initPhase(probe.getBeta(), probe.getKineticEnergy(), probe.getSpeciesRestEnergy());
-		
 		double p0 = probe.getPosition() - (getPosition() - getLength()/2.);
 		int i0 = (int)Math.round(p0/getLength()*field.length);
 		int in = (int)Math.round((p0+dblLen)/getLength()*field.length);
@@ -89,12 +86,6 @@ public class FieldMap extends ThickElement  {
 		
 		return  DE;
 	}
-
-	private double field(int i)
-	{
-		return i<0?0.: (i>=field.length ? 0  : field[i]);
-	}
-	
 	
 	/**
 	 * Method calculates transfer matrix for the fieldmap on the current range (i.e from probe.getPosition, and for dblLength).
@@ -103,9 +94,6 @@ public class FieldMap extends ThickElement  {
 	@Override
 	public PhaseMap transferMap(IProbe probe, double dblLen)
 			throws ModelException {
-		if (phase == null) 
-			initPhase(probe.getBeta(), probe.getKineticEnergy(), probe.getSpeciesRestEnergy());
-		
 		double p0 = probe.getPosition() - (getPosition() - getLength()/2.);
 		int i0 = (int)Math.round(p0/getLength()*field.length);
 		int in = (int)Math.round((p0+dblLen)/getLength()*field.length);
@@ -124,7 +112,7 @@ public class FieldMap extends ThickElement  {
 		{
 			double Edz = field[i] * dz;
 			double phi = phase[i];
-			double dE = (field(i+1)-field(i-1))/2.;
+			double dE = (i == 0 ? field[i+1] : (i == field.length - 1 ? field[i-1] : field[i+1]-field[i-1]))/2.;
 			//double dE = (-field(i+2)+8*field(i+1)-8*field(i-1)+field(i-2))/12.; // higher precision derivative
 			
 			gamma = E0/Er + 1.0;
@@ -229,4 +217,17 @@ public class FieldMap extends ThickElement  {
 	public double elapsedTime(IProbe probe, double dblLen) {
 		return 0;
 	}
+	
+	/**
+	 * Since it is currently hard to track phase on the probe, this way we initialize the phase
+	 * and deinitialize it when the probe pases.
+	 * 
+	 */
+	@Override
+	public void propagate(IProbe probe) throws ModelException {
+		initPhase(probe.getBeta(), probe.getKineticEnergy(), probe.getSpeciesRestEnergy());
+		super.propagate(probe);
+		phase = null;
+    }
+	
 }
