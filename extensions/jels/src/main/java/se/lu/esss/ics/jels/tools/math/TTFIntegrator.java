@@ -172,25 +172,50 @@ public class TTFIntegrator extends UnivariateRealPolynomial {
 		}
 		return DS/e0tl;
 	}
+	
+	/**
+	 * Evaluates cosine transform of the field with sync phase offset. 
+	 * @param phi0 phase shift in TTF transform
+	 * @param beta energy
+	 * @return sine transform
+	 */
+	public double evaluateEzCos0(double beta)
+	{
+		double dz = getLength() / field.length;
+		double dphi = 2*Math.PI*frequency*dz / (beta * IElement.LightSpeed);
+		double DC = 0., DS = 0.;
+
+		for (int i = 0; i < field.length; i++)
+		{	
+			DC += field[i]*Math.cos(i*dphi);
+			DS += field[i]*Math.sin(i*dphi);
+		}
+		return Math.sqrt(DC*DC+DS*DS)*dz/e0tl;
+	}
 
 	/**
-	 * Evaluates derivative of TTF at beta (with given phase shift). 
+	 * Evaluates derivative of TTF at beta (with sync phase shift). 
 	 * @param phi0 phase shift in TTF transform
 	 * @param beta energy
 	 * @return derivative of TTF
 	 */
-	public double evaluateEzzSin(double phi0, double beta)
+	public double evaluateEzzSin(double beta)
 	{
-		double phi = phi0;
 		double dz = getLength() / field.length;
-		double DZS = 0.;
-
+		double DZS = 0., DZC = 0.;
+		double DC = 0., DS = 0.;
+		double dphi = 2*Math.PI*frequency*dz / (beta * IElement.LightSpeed);
+		
 		for (int i = 0; i < field.length; i++)
-		{			
-			DZS += field[i]*Math.sin(phi)*(i*dz)*dz;
-			phi += 2*Math.PI*frequency*dz / (beta * IElement.LightSpeed);
+		{
+			double phi = i*dphi;
+			DZS += field[i]*Math.sin(phi)*i;
+			DZC += field[i]*Math.cos(phi)*i;
+			DC += field[i]*Math.cos(phi);
+			DS += field[i]*Math.sin(phi);
 		}
-		return DZS/e0tl*2 * Math.PI * frequency / beta / beta / IElement.LightSpeed;
+		double DZ = (DZS*DC-DZC*DS)*dz*dz/Math.sqrt(DC*DC+DS*DS);
+		return DZ/e0tl*2 * Math.PI * frequency / beta / beta / IElement.LightSpeed;
 	}
 
 
@@ -241,17 +266,12 @@ public class TTFIntegrator extends UnivariateRealPolynomial {
 
 	@Override
 	public double evaluateAt(double beta) {
-		double sin = evaluateEzSin(beta);
-		double cos = evaluateEzCos(beta);
-		return Math.sqrt(cos*cos + sin*sin);
-		//double phase = Math.atan2(evaluateEzSin(0., beta), evaluateEzCos(0., beta));
-		//return TTFIntegrator.this.evaluateEzCos(-phase, beta);
+		return evaluateEzCos0(beta);
 	}
 
 	@Override
 	public double evaluateDerivativeAt(double beta) {
-		double phase = Math.atan2(evaluateEzSin(beta), evaluateEzCos(beta));
-		return TTFIntegrator.this.evaluateEzzSin(-phase, beta);
+		return TTFIntegrator.this.evaluateEzzSin(beta);
 	}
 
 	
