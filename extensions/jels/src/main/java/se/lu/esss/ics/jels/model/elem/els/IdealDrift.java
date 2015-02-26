@@ -34,6 +34,7 @@ public class IdealDrift extends ThickElement {
      */
     public IdealDrift(String strId, double dblLen) {
         super(s_strType, strId, dblLen);
+        ElsElementMapping.printWarning();
     };
     
     /** 
@@ -43,6 +44,7 @@ public class IdealDrift extends ThickElement {
      */
     public IdealDrift() {
         super(s_strType);
+        ElsElementMapping.printWarning();
     };
     
     /*
