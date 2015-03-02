@@ -302,7 +302,7 @@ public class GeneralTest {
 	 * @param yb y values of second function
 	 * @return returns relative error
 	 */
-	protected double compare(double[] xa, double[] xb, double[] ya, double yb[]) {
+	public static double compare(double[] xa, double[] xb, double[] ya, double yb[]) {
 		double d = integrateL1sup(xa,xb,ya,yb);
 		double a = integrateSup(xb,yb);
 		//System.out.printf("%E %E\n", d, a);
@@ -316,7 +316,7 @@ public class GeneralTest {
 	 * @param y y values of function
 	 * @return the integral
 	 */
-	private double integrateSup(double[] x, double[] y) {
+	private static double integrateSup(double[] x, double[] y) {
 		double I = 0.;
 		for (int i = 0; i<x.length-1; i++) {
 			I += Math.abs(y[i]) * (x[i+1]-x[i]);
@@ -332,7 +332,7 @@ public class GeneralTest {
 	 * @param yb y values of second function
 	 * @return value of the integral
 	 */
-	private double integrateL1sup(double[] xa, double[] xb, double[] ya, double yb[]) {
+	private static double integrateL1sup(double[] xa, double[] xb, double[] ya, double yb[]) {
 		if (xa.length == 0) return integrateSup(xb, yb);
 		if (xb.length == 0) return integrateSup(xa, ya);
 		
