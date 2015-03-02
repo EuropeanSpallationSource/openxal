@@ -276,6 +276,7 @@ public class GeneralTest {
 		    i=i+1;
 		}
 		
+		probe.reset();
 		return dataOX;
 	}
 		
