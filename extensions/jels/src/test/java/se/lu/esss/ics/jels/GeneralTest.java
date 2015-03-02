@@ -80,21 +80,28 @@ public class GeneralTest {
 	
 	protected Probe probe;
 	protected URL tracewinData;
+	protected AcceleratorSeq seq;
 	
-	public GeneralTest(Probe probe, URL tracewinData)
+	public GeneralTest(Probe probe, URL tracewinData, AcceleratorSeq seq)
 	{
 		this.probe = probe;
 		this.tracewinData = tracewinData;
+		this.seq = seq;
 	}
 	
 	@Parameters
 	public static Collection<Object[]> tests() {
 		List<Object []> tests = new ArrayList<>();
-		int i = 0;
-		while (GeneralTest.class.getResource("probe."+i+".xml") != null) {
-			Probe probe = loadProbeFromXML(GeneralTest.class.getResource("probe."+i+".xml").toString());
-			tests.add(new Object[]{probe, GeneralTest.class.getResource("tracewin."+i+".txt")});
-			i++;
+		int lattice = 0;
+		while (GeneralTest.class.getResource("lattice" + lattice + "/main.xal") != null) {
+			int test = 0;
+			AcceleratorSeq seq = loadAcceleratorSequence(GeneralTest.class.getResource("lattice" + lattice + "/main.xal").toString());
+			while (GeneralTest.class.getResource("lattice" + lattice + "/probe." + test + ".xml") != null) {
+				Probe probe = loadProbeFromXML(GeneralTest.class.getResource("lattice" + lattice + "/probe."+test+".xml").toString());
+				tests.add(new Object[]{probe, GeneralTest.class.getResource("lattice" + lattice + "/tracewin."+test+".txt"), seq});
+				test++;
+			}
+			lattice++;
 		}
 		return tests;
 	}	
@@ -109,7 +116,7 @@ public class GeneralTest {
 	public void runTest() throws IOException, ModelException
 	{
 		double dataTW[][] = loadTWData(tracewinData);
-        double dataOX[][] = run(probe);
+        double dataOX[][] = run(probe, seq);
         
         //saveResults(tracewinData.getFile() + ".out", dataOX);
         
@@ -192,33 +199,19 @@ public class GeneralTest {
 		return null;
 	}
 
-	
 	/**
-	 * Loads default accelerator from the resources.
+	 * Loads accelerator with given path.
 	 * @return the accelerator
 	 */
-	private static AcceleratorSeq loadAcceleratorSequence() {
+	private static AcceleratorSeq loadAcceleratorSequence(String location) {
 		/* Loading SMF model */				
-		Accelerator accelerator = XMLDataManager.acceleratorWithUrlSpec(JElsDemo.class.getResource("test/main.xal").toString());
+		Accelerator accelerator = XMLDataManager.acceleratorWithUrlSpec(location);
 				
 		if (accelerator == null)
 		{			
 			throw new Error("Accelerator is empty. Could not load the default accelerator.");
 		} 			
 		return accelerator;
-	}
-	
-	/**
-	 * Runs the default accelerator with the give probe
-	 * @param probe probe
-	 * @return results from simulation
-	 * @throws ModelException
-	 * @throws IOException
-	 */
-	public static double[][] run(Probe probe) throws ModelException, IOException
-	{
-		 AcceleratorSeq sequence = loadAcceleratorSequence();
-		 return run(probe.copy(), sequence);
 	}
 	
 	/**
