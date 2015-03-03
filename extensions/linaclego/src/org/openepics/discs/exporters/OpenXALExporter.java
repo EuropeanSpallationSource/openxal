@@ -2,8 +2,12 @@ package org.openepics.discs.exporters;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -24,6 +28,7 @@ import se.lu.esss.ics.jels.smf.impl.ESSFieldMap;
 import se.lu.esss.ics.jels.smf.impl.ESSRfCavity;
 import se.lu.esss.linaclego.BLEVisitor;
 import se.lu.esss.linaclego.Cell;
+import se.lu.esss.linaclego.FieldProfile;
 import se.lu.esss.linaclego.Linac;
 import se.lu.esss.linaclego.Section;
 import se.lu.esss.linaclego.Slot;
@@ -60,7 +65,6 @@ import xal.tools.xml.XmlDataAdaptor;
 import xal.tools.xml.XmlWriter;
 
 public class OpenXALExporter implements BLEVisitor {
-	private String fileName;
 	private List<MagnetPowerSupply> magnetPowerSupplies;
 	private double acceleratorPosition;
 	private double sectionPosition;
@@ -74,11 +78,11 @@ public class OpenXALExporter implements BLEVisitor {
 	private Accelerator accelerator;
 	private AcceleratorSeq currentSequence;
 	
-	public OpenXALExporter(String fileName) {
-		this.fileName = fileName;
-	}
+	private Set<String> fieldMapFiles;
 	
-	public void export(Linac linac) throws IOException {
+	public void export(Linac linac, String fileName) throws IOException {
+		fieldMapFiles = new HashSet<>(); 
+		
 		acceleratorPosition = 0.0;
 		sectionPosition = 0.0;
 		magnetPowerSupplies = new ArrayList<>();
@@ -103,7 +107,31 @@ public class OpenXALExporter implements BLEVisitor {
 		cleanup(document);
 		
 		XmlWriter.writeToFile(document, new File(fileName));
-	}		
+	}
+	
+	public void export(String sourceFileName, String destinationFilename) throws IOException, URISyntaxException, SAXException, ParserConfigurationException, JAXBException {
+		
+		JAXBContext context = JAXBContext.newInstance(Linac.class, Drift.class, Quad.class, FieldProfile.class);
+		Unmarshaller um = context.createUnmarshaller();
+		
+		SAXParserFactory spf = SAXParserFactory.newInstance();
+		spf.setXIncludeAware(true);
+		spf.setNamespaceAware(true);
+		spf.setValidating(true);
+
+		XMLReader xr = spf.newSAXParser().getXMLReader();
+		SAXSource source = new SAXSource(xr, new InputSource(sourceFileName));
+		Linac ll = um.unmarshal(source, Linac.class).getValue();
+		
+		export(ll, destinationFilename);
+		
+		// load and export fieldmaps
+		for (String file : fieldMapFiles) {
+			SAXSource fmsource = new SAXSource(xr, new InputSource(new URL(new URL(sourceFileName), file+".xml").toString()));
+			FieldProfile fp = um.unmarshal(fmsource, FieldProfile.class).getValue();
+			new se.lu.esss.ics.jels.smf.impl.FieldProfile(fp.getLength(), fp.getField()).saveFile(new URL(new File(destinationFilename).getAbsoluteFile().toURI().toURL(), file+".edz").toString());
+		}
+	}
 	
 	private void add(AcceleratorNode node)
 	{
@@ -638,6 +666,8 @@ public class OpenXALExporter implements BLEVisitor {
 		add(fm);
 		
 		visitControlPoints(fieldMap.getId());
+		
+		fieldMapFiles.add(fieldMap.getFieldmapFile());
 	}
 
 	
@@ -916,25 +946,13 @@ public class OpenXALExporter implements BLEVisitor {
 		return section.getId()+"-"+cell.getId()+"-"+slot.getId()+"-"+ble.getId();
 	}
 
-	public static void main(String[] args) throws JAXBException, SAXException, ParserConfigurationException, IOException {
+	public static void main(String[] args) throws JAXBException, SAXException, ParserConfigurationException, IOException, URISyntaxException {
 		if (args.length < 2) {
 			System.out.println("Usage: OpenXALExporter <linaclego.xml> <openxal.xdxf>");
 			System.exit(-1);
 		}
-		
-		JAXBContext context = JAXBContext.newInstance(Linac.class, Drift.class, Quad.class);
-		Unmarshaller um = context.createUnmarshaller();
-		
-		SAXParserFactory spf = SAXParserFactory.newInstance();
-		spf.setXIncludeAware(true);
-		spf.setNamespaceAware(true);
-		spf.setValidating(true);
 
-		XMLReader xr = spf.newSAXParser().getXMLReader();
-		SAXSource source = new SAXSource(xr, new InputSource(args[0]));
-		Linac ll = um.unmarshal(source, Linac.class).getValue();
-		
-		OpenXALExporter twe = new OpenXALExporter(args[1]);
-		twe.export(ll);
+		OpenXALExporter twe = new OpenXALExporter();
+		twe.export(args[0], args[1]);		
 	}
 }
