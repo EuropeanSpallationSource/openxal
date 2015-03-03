@@ -1,14 +1,14 @@
 package se.lu.esss.ics.jels.model.elem.jels;
 
-import Jama.Matrix;
 import se.lu.esss.ics.jels.smf.impl.ESSFieldMap;
-import se.lu.esss.ics.jels.tools.math.TTFIntegrator;
+import se.lu.esss.ics.jels.smf.impl.FieldProfile;
 import xal.model.IProbe;
 import xal.model.ModelException;
 import xal.model.elem.ThickElement;
 import xal.sim.scenario.LatticeElement;
 import xal.tools.beam.PhaseMap;
 import xal.tools.beam.PhaseMatrix;
+import Jama.Matrix;
 
 /**
  * This is direct fieldmap implementation, matching TraceWin implementation.
@@ -35,11 +35,11 @@ public class FieldMap extends ThickElement  {
 	public void initializeFrom(LatticeElement latticeElement) {
 		super.initializeFrom(latticeElement);
 		final ESSFieldMap fm = (ESSFieldMap)latticeElement.getNode();
-		final TTFIntegrator intgr = TTFIntegrator.getInstance(fm.getFieldMapFile()+".edz", fm.getFrequency()*1e6);
-		field = intgr.getField();
+		FieldProfile fp = fm.getFieldProfile();
+		field = fp.getField();
 		phi0 = fm.getPhase()/180.*Math.PI;
 		frequency = fm.getFrequency() * 1e6;
-		setLength(intgr.getLength());
+		setLength(fp.getLength());
 		k0 = fm.getXelmax();
 	}
 	

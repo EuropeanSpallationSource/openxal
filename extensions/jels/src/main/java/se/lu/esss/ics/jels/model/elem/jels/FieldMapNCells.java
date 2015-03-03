@@ -1,6 +1,7 @@
 package se.lu.esss.ics.jels.model.elem.jels;
 
 import se.lu.esss.ics.jels.smf.impl.ESSFieldMap;
+import se.lu.esss.ics.jels.smf.impl.FieldProfile;
 import se.lu.esss.ics.jels.tools.math.TTFIntegrator;
 import xal.model.IElement;
 import xal.model.IProbe;
@@ -37,9 +38,8 @@ public class FieldMapNCells extends ElementSeq {
 	public void initializeFrom(LatticeElement latticeElement) {
 		super.initializeFrom(latticeElement);
 	    fm  = (ESSFieldMap)latticeElement.getNode();
-	    final TTFIntegrator intgr = TTFIntegrator.getInstance(fm.getFieldMapFile()+".edz", fm.getFrequency()*1e6);
-	    
-	    splitIntgrs = intgr.getSplitIntegrators();
+	    FieldProfile fp = fm.getFieldProfile();	    
+	    splitIntgrs = TTFIntegrator.getSplitIntegrators(fp, fm.getFrequency()*1e6);
 	    
 	    /*
 	     * Old implementation of IdealRfGap is used. First gap phase is calculated when the energy at the

@@ -97,6 +97,9 @@ public class ESSFieldMap extends Electrostatic {
     /** FieldMap file */
     public void setFieldMapFile(String strVal)  { m_bucFieldMap.setFieldMapFile(strVal); }
 
+    /** Field profile */
+    public FieldProfile getFieldProfile() { return FieldProfile.getInstance(getFieldMapFile()+".edz"); }
+    
     /**
      * Updates fieldMap file attribute to point to the right file. Note, after loading it is not 
      * possible to access absolute path to the file.

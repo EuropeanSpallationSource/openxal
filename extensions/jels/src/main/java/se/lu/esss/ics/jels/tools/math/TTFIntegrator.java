@@ -1,18 +1,9 @@
 package se.lu.esss.ics.jels.tools.math;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import se.lu.esss.ics.jels.smf.impl.FieldProfile;
 import xal.model.IElement;
 import xal.tools.math.poly.UnivariateRealPolynomial;
 
@@ -22,8 +13,6 @@ import xal.tools.math.poly.UnivariateRealPolynomial;
  * @author Ivo List <ivo.list@cosylab.com>
  */
 public class TTFIntegrator extends UnivariateRealPolynomial {
-	private static Map<String, TTFIntegrator> instances = new HashMap<>();
-
 	private int N;
 	private double zmax;
 	private double[] field;
@@ -33,25 +22,11 @@ public class TTFIntegrator extends UnivariateRealPolynomial {
 	private boolean inverted;
 
 	/**
-	 * Constructs new TTFIntegrator and loads field from the file
-	 * @param path path to the file
-	 * @param frequency frequency used in integration
+	 * Constructs new TTFIntegrator
 	 */
-	public TTFIntegrator(String path, double frequency) {
-		try {
-			this.frequency = frequency;
-			loadFile(path);
-			initalizeE0TL();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-		}
-	}
-
-	protected TTFIntegrator(int N, double zmax, double[] field, double frequency, boolean inverted)
+	public TTFIntegrator(double zmax, double[] field, double frequency, boolean inverted)
 	{
-		this.N = N;
+		this.N = field.length;
 		this.zmax = zmax;
 		this.field = field;
 		this.frequency = frequency;
@@ -59,51 +34,7 @@ public class TTFIntegrator extends UnivariateRealPolynomial {
 		initalizeE0TL();
 	}
 
-	/************************** File manipulation ***************************/
 
-	/**
-	 * Loads field from a file.
-	 * @param path path to the file
-	 * @throws IOException
-	 * @throws URISyntaxException
-	 */
-	private void loadFile(String path) throws IOException, URISyntaxException {
-		BufferedReader br = new BufferedReader(new FileReader(new File(new URI(path))));
-
-		// first line
-		String line = br.readLine();
-		String[] data = line.split(" ");
-
-		N = Integer.parseInt(data[0]);
-		zmax = Double.parseDouble(data[1]);
-		field = new double[N];
-
-		line = br.readLine();
-		@SuppressWarnings("unused")
-		double norm = Double.parseDouble(line);
-
-		int i = 0;
-		while ((line = br.readLine()) != null && i<N) {
-			field[i++] = Double.parseDouble(line)*1e6;
-		}
-
-		br.close();
-	}
-
-	/**
-	 * Saves given field to a file
-	 * @param data the field 
-	 * @param path path to the file
-	 * @throws IOException
-	 * @throws URISyntaxException
-	 */
-	@SuppressWarnings("unused")
-	private void saveFile(double[] data, String path) throws IOException, URISyntaxException {
-		PrintWriter pw = new PrintWriter(new FileWriter(new File(new URI(path))));
-		for (int i = 0; i<N; i++)
-			pw.printf("%E\n", data[i]);
-		pw.close();
-	}
 
 	/************************** Numerical methods ***************************/
 
@@ -221,26 +152,28 @@ public class TTFIntegrator extends UnivariateRealPolynomial {
 
 	/************************** Splitting methods ***************************/
 
-	public TTFIntegrator[] getSplitIntegrators()
+	public static TTFIntegrator[] getSplitIntegrators(FieldProfile fp, double frequency)
 	{
+		double[] field = fp.getField();
+		
 		List<Integer> pos = new ArrayList<>();
 		pos.add(0);
 		boolean invert = false;
-		for (int i = 0; i<N-1; i++)
+		for (int i = 0; i<field.length-1; i++)
 			if (field[i]*field[i+1] < 0.) {
 				if (field[i] < 0 && pos.size() == 1) invert = true;
 				pos.add(i+1);
 			}
-		pos.add(N);
+		pos.add(field.length);
 
 		TTFIntegrator[] splitIntgrs = new TTFIntegrator[pos.size()-1];
 		for (int i=0; i<pos.size()-1; i++)
 		{
-			double[] field = new double[pos.get(i+1)-pos.get(i)];
-			System.arraycopy(this.field, pos.get(i), field, 0, field.length);
+			double[] subfield = new double[pos.get(i+1)-pos.get(i)];
+			System.arraycopy(field, pos.get(i), subfield, 0, subfield.length);
 			if (invert) 
-				for (int j = 0; j<field.length; j++) field[j] = -field[j];
-			splitIntgrs[i] = new TTFIntegrator(field.length, (pos.get(i+1)-pos.get(i))*zmax/N, field, frequency, invert);
+				for (int j = 0; j<subfield.length; j++) subfield[j] = -subfield[j];
+			splitIntgrs[i] = new TTFIntegrator((pos.get(i+1)-pos.get(i))*fp.getLength()/field.length, subfield, frequency, invert);
 			invert = !invert;
 		}
 
@@ -273,24 +206,7 @@ public class TTFIntegrator extends UnivariateRealPolynomial {
 	public double evaluateDerivativeAt(double beta) {
 		return TTFIntegrator.this.evaluateEzzSin(beta);
 	}
-
 	
-	/**
-	 * Static factory method to give TTF integrator for a specific fieldmap file
-	 * @param path path to the field map file
-	 * @param frequency frequency at which this fieldmap is running
-	 * @return ttf integrator
-	 */
-	public static TTFIntegrator getInstance(String path, double frequency)
-	{
-		if (instances.containsKey(path)) {
-			return instances.get(path);
-		}
-		TTFIntegrator i = new TTFIntegrator(path, frequency);
-		instances.put(path, i);
-		return i;
-	}
-
 	@Override
 	public String toString() {
 		return null;
