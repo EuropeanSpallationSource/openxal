@@ -74,7 +74,7 @@ public class FieldProfile {
 		String line = br.readLine();
 		String[] data = line.split(" ");
 
-		int N = Integer.parseInt(data[0]);
+		int N = Integer.parseInt(data[0]) + 1;
 		length = Double.parseDouble(data[1]);
 		field = new double[N];
 
@@ -100,9 +100,9 @@ public class FieldProfile {
 		PrintWriter pw = new PrintWriter(new FileWriter(new File(new URI(path))));
 		double[] field = getField();
 		double zmax = getLength();
-		pw.printf("%d %E\n%E\n", field.length, zmax, 1.0);
+		pw.printf("%d %f\n%f\n", field.length-1, zmax, 1.0);
 		for (int i = 0; i<field.length; i++)
-			pw.printf("%E\n", field[i]);
+			pw.printf("%f\n", field[i]);
 		pw.close();
 	}
 }

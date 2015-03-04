@@ -1,8 +1,14 @@
 package se.lu.esss.linaclego;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -11,6 +17,13 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParserFactory;
+import javax.xml.transform.sax.SAXSource;
+
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
 
 import se.lu.esss.linaclego.elements.ControlPoint;
 import se.lu.esss.linaclego.models.CellModel;
@@ -37,6 +50,12 @@ public class Linac {
 
     @XmlElement(required = true)
 	protected LinacDesc linac = new LinacDesc();
+
+    @XmlTransient
+    protected URL source;
+    
+    @XmlTransient
+    protected Map<String, FieldProfile> fieldProfiles = new HashMap<>();
     
     @XmlAccessorType(XmlAccessType.FIELD)
     protected static class LinacDesc {
@@ -202,4 +221,44 @@ public class Linac {
 			}
 		return ret;
 	}
+
+	public void setSource(URL source) {
+		this.source = source;
+	}
+	
+	public URL getSource() {
+		return source;
+	}
+
+	public FieldProfile getFieldProfile(String fieldmapFile) {
+		if (fieldProfiles.containsKey(fieldmapFile)) return fieldProfiles.get(fieldmapFile);
+		
+		try {
+			JAXBContext context = JAXBContext.newInstance(FieldProfile.class);
+			Unmarshaller um = context.createUnmarshaller();
+			
+			SAXParserFactory spf = SAXParserFactory.newInstance();
+			spf.setXIncludeAware(true);
+			spf.setNamespaceAware(true);
+			spf.setValidating(true);
+
+			XMLReader xr = spf.newSAXParser().getXMLReader();
+			
+			SAXSource fmsource = new SAXSource(xr, new InputSource(new URL(getSource(), fieldmapFile+".xml").toString()));
+			FieldProfile fp = um.unmarshal(fmsource, FieldProfile.class).getValue();
+
+			fieldProfiles.put(fieldmapFile, fp);
+			return fp;
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (JAXBException e) {
+			e.printStackTrace();
+		} catch (SAXException e) {
+			e.printStackTrace();
+		} catch (ParserConfigurationException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 }

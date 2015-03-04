@@ -5,9 +5,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -76,11 +74,7 @@ public class OpenXALExporter implements BLEVisitor {
 	private Accelerator accelerator;
 	private AcceleratorSeq currentSequence;
 	
-	private Set<String> fieldMapFiles;
-	
 	public void export(Linac linac, String fileName) throws IOException {
-		fieldMapFiles = new HashSet<>(); 
-		
 		acceleratorPosition = 0.0;
 		sectionPosition = 0.0;
 		magnetPowerSupplies = new ArrayList<>();
@@ -100,10 +94,13 @@ public class OpenXALExporter implements BLEVisitor {
 		linac.accept(this);
 		accelerator.setLength(acceleratorPosition + sectionPosition);
 			
-		XmlDataAdaptor da = XmlDataAdaptor.newDocumentAdaptor(accelerator, "xdxf.dtd");
+		XmlDataAdaptor da = XmlDataAdaptor.newEmptyDocumentAdaptor();
+
 		Document document = da.document();
+		document.setDocumentURI(new File(fileName).toURI().toString());
+
+		da.writeNode(accelerator);
 		cleanup(document);
-		
 		XmlWriter.writeToFile(document, new File(fileName));
 	}
 	
@@ -120,15 +117,9 @@ public class OpenXALExporter implements BLEVisitor {
 		XMLReader xr = spf.newSAXParser().getXMLReader();
 		SAXSource source = new SAXSource(xr, new InputSource(sourceFileName));
 		Linac ll = um.unmarshal(source, Linac.class).getValue();
+		ll.setSource(new URL(sourceFileName)); // source is set so that field profile inside fieldmaps can be loaded
 		
 		export(ll, destinationFilename);
-		
-		// load and export fieldmaps
-		for (String file : fieldMapFiles) {
-			SAXSource fmsource = new SAXSource(xr, new InputSource(new URL(new URL(sourceFileName), file+".xml").toString()));
-			FieldProfile fp = um.unmarshal(fmsource, FieldProfile.class).getValue();
-			new se.lu.esss.ics.jels.smf.impl.FieldProfile(fp.getLength(), fp.getField()).saveFile(new URL(new File(destinationFilename).getAbsoluteFile().toURI().toURL(), file+".edz").toString());
-		}
 	}
 	
 	private void add(AcceleratorNode node)
@@ -646,7 +637,10 @@ public class OpenXALExporter implements BLEVisitor {
 
 	@Override
 	public void visit(FieldMap fieldMap) {
-		ESSFieldMap fm = new ESSFieldMap(fieldMap.getEssId());
+		FieldProfile fp = fieldMap.getFieldProfile();
+		final se.lu.esss.ics.jels.smf.impl.FieldProfile fp2 = new se.lu.esss.ics.jels.smf.impl.FieldProfile(fp.getLength()*1e-3, fp.getField());
+		ESSFieldMap fm = new ESSFieldMap(fieldMap.getEssId());		
+		fm.setFieldProfile(fp2);
 		fm.setPosition(sectionPosition + fieldMap.getLength()*1e-3*0.5);
 		fm.setLength(fieldMap.getLength()*1e-3);
 		fm.setFrequency(fieldMap.getFrequency());
@@ -655,8 +649,6 @@ public class OpenXALExporter implements BLEVisitor {
 		fm.setFieldMapFile(fieldMap.getFieldmapFile());
 		updateApertureBucket(fieldMap, fm.getAper());
 		add(fm);
-		
-		fieldMapFiles.add(fieldMap.getFieldmapFile());
 	}
 
 	

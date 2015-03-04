@@ -27,7 +27,10 @@ public class FieldProfile {
     
     
 	@XmlTransient
+	double[] field;
+	
 	public double[] getField() {
+		if (field != null) return field;
 		double[] field;
 		int N = 0;
 		for (Parameters.D d : parameters) {
@@ -43,6 +46,7 @@ public class FieldProfile {
 		for (int i = 0; i<N; i++)
 			field[i] = parameters.getDoubleValue(Integer.toString(i));
 	
+		this.field = field;
 		return field;
 	}
 	
