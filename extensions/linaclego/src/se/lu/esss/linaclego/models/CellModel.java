@@ -13,6 +13,7 @@ import javax.xml.bind.annotation.XmlType;
 
 import se.lu.esss.linaclego.Cell;
 import se.lu.esss.linaclego.Parameters;
+import se.lu.esss.linaclego.Section;
 import se.lu.esss.linaclego.Slot;
 
 
@@ -47,12 +48,12 @@ public class CellModel {
         return id;
     }    
     
-    public Cell apply(String id, Parameters arguments)
+    public Cell apply(Parameters arguments)
     {
-    	Cell cell = new Cell(id);
+    	Cell cell = new Cell();
     	List<Slot> slotsout = cell.getSlots();
     	for (Slot s : slot) {
-    		slotsout.add(s.apply(arguments));
+    		slotsout.add(s.apply(cell, arguments));
     	}
     	return cell;
     }

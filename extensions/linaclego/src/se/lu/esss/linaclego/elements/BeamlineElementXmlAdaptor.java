@@ -36,6 +36,7 @@ public class BeamlineElementXmlAdaptor extends XmlAdapter<BeamlineElement, Beaml
 		}
 		BeamlineElement v2 = bles.get(v.type).newInstance();
 		v2.id = v.id;
+		v2.parent = v.parent;
 		v2.model = v.model;
 		v2.parameters.addAll(v.parameters);
 		return v2;

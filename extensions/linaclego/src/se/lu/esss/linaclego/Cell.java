@@ -3,6 +3,7 @@ package se.lu.esss.linaclego;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -33,19 +34,31 @@ public class Cell {
     @XmlTransient
     protected Cell cellInstance;
 
+    @XmlTransient
+    private Section parent;
+    
     public Cell()
     {
     	
     }
     
-    public Cell(String id) {
+    public Cell(String id, Section parent) {
     	this.id = id;
+    	this.parent = parent;
 	}
 
+    public Section getParent()
+    {
+    	return parent;
+    }
+    
 	public List<Slot> getSlots() {
     	if (model != null) {
-    		if (cellInstance == null)
-    			cellInstance = model.apply(id, d);
+    		if (cellInstance == null) {
+    			cellInstance = model.apply(d);
+    			cellInstance.id = id;
+    			cellInstance.parent = parent;
+    		}
     		return cellInstance.getSlots();  
     	} else
     		return this.slot;
@@ -73,5 +86,9 @@ public class Cell {
 		for (Slot s : getSlots())
 			n += s.getBeamlineElements().size();
 		return n;
+	}
+	
+	public void afterUnmarshal(Unmarshaller u, Object parent) {
+		this.parent = (Section)parent;
 	}
 }

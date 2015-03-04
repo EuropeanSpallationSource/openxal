@@ -350,7 +350,7 @@ public class OpenXALExporter implements BLEVisitor {
 	@Override
 	public void visit(Drift drift) {
 		sectionPosition += drift.getLength()*1e-3;
-		visitControlPoints(drift.getId());
+		visitControlPoints(drift);
 	}
 
 	@Override
@@ -378,7 +378,7 @@ public class OpenXALExporter implements BLEVisitor {
 		
 		add(quad);
 		
-		visitControlPoints(iquad.getId());
+		visitControlPoints(iquad);
 	}
 
 	@Override
@@ -434,7 +434,7 @@ public class OpenXALExporter implements BLEVisitor {
 		cavity.setLength(0.0);
 		add(cavity);
 		
-		visitControlPoints(rfGap.getId());
+		visitControlPoints(rfGap);
 	}
 
 	@Override
@@ -498,7 +498,7 @@ public class OpenXALExporter implements BLEVisitor {
 				
 		add(bend);		
 		
-		visitControlPoints(ibend.getId());
+		visitControlPoints(ibend);
 	}
 
 	@Override
@@ -535,7 +535,7 @@ public class OpenXALExporter implements BLEVisitor {
 		updateApertureBucket(thinSteering, hcorr.getAper());
 		add(hcorr);
 		
-		visitControlPoints(thinSteering.getId());
+		visitControlPoints(thinSteering);
 	}
 /*
 	@Override
@@ -665,7 +665,7 @@ public class OpenXALExporter implements BLEVisitor {
 		updateApertureBucket(fieldMap, fm.getAper());
 		add(fm);
 		
-		visitControlPoints(fieldMap.getId());
+		visitControlPoints(fieldMap);
 		
 		fieldMapFiles.add(fieldMap.getFieldmapFile());
 	}
@@ -725,7 +725,7 @@ public class OpenXALExporter implements BLEVisitor {
 		cavity.setLength(dtlRfGap.getLength()*1e-3);
 		add(cavity);
 		
-		visitControlPoints(dtlRfGap.getId());
+		visitControlPoints(dtlRfGap);
 	}
 
 	@Override
@@ -759,7 +759,7 @@ public class OpenXALExporter implements BLEVisitor {
 		dt.setPosition(sectionPosition);
 		add(dt);
 		
-		visitControlPoints(dtlDriftTube.getId());
+		visitControlPoints(dtlDriftTube);
 	}
 
 	
@@ -855,7 +855,7 @@ public class OpenXALExporter implements BLEVisitor {
 		dtlTank.setLength(L);
 		dtlTank.setPosition(sectionPosition);		
 		add(dtlTank);
-		visitControlPoints(dtlCell.getId());
+		visitControlPoints(dtlCell);
 	}
 
 	@Override
@@ -893,11 +893,11 @@ public class OpenXALExporter implements BLEVisitor {
 	@Override
 	public void visit(Edge edge) {
 		// TODO Auto-generated method stub
-		visitControlPoints(edge.getId());
+		visitControlPoints(edge);
 	}
 	
-	private void visitControlPoints(String id) {
-		for (ControlPoint cp : linac.getControlPoints(section.getId(), cell.getId(), slot.getId(), id))
+	private void visitControlPoints(BeamlineElement ble) {
+		for (ControlPoint cp : linac.getControlPoints(section.getId(), cell.getId(), slot.getId(), ble.getId()))
 		{
 			visit(cp);
 		}
