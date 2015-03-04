@@ -13,7 +13,6 @@ import javax.xml.bind.annotation.XmlType;
 
 import se.lu.esss.linaclego.Cell;
 import se.lu.esss.linaclego.Parameters;
-import se.lu.esss.linaclego.Section;
 import se.lu.esss.linaclego.Slot;
 
 

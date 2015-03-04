@@ -11,6 +11,8 @@ import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import se.lu.esss.linaclego.BLEVisitor;
+import se.lu.esss.linaclego.Cell;
+import se.lu.esss.linaclego.Linac;
 import se.lu.esss.linaclego.Parameters;
 import se.lu.esss.linaclego.Section;
 import se.lu.esss.linaclego.Slot;
@@ -60,6 +62,15 @@ public class BeamlineElement {
     }
 
 	public void accept(BLEVisitor visitor) {
+		Slot slot = getParent();
+		Cell cell = slot.getParent();
+		Section section = cell.getParent();
+		Linac linac = section.getParent();
+		
+		for (ControlPoint cp : linac.getControlPoints(section.getId(), cell.getId(), slot.getId(), getId()))
+		{
+			visitor.visit(cp);
+		}
 	}
 
 	public BeamlineElement apply(Slot parent, Parameters arguments) {
@@ -97,6 +108,23 @@ public class BeamlineElement {
 	public double getApertureY()
 	{
 		return getParameters().getDoubleValue("ry");
+	}
+	
+	public String getEssId()
+	{
+		Slot slot = getParent();
+		if (slot == null) return getId();
+		Cell cell = slot.getParent();
+		Section section = cell.getParent();
+		return section.getId()+"-"+cell.getId()+"-"+slot.getId()+"-"+getId();
+	}
+	
+	public double getFrequency() {
+		Slot slot = getParent();
+		Cell cell = slot.getParent();
+		Section section = cell.getParent();
+		Linac linac = section.getParent();
+		return linac.getBeamFrequency() * section.getRFHarmonic();
 	}
 	
 	public void afterUnmarshal(Unmarshaller u, Object parent) {

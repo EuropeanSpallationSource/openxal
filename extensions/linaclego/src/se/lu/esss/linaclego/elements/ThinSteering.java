@@ -9,6 +9,7 @@ public class ThinSteering extends BeamlineElement {
 	@Override
 	public void accept(BLEVisitor visitor) {
 		visitor.visit(this);
+		super.accept(visitor);
 	}
 	
 	public double getXKick()

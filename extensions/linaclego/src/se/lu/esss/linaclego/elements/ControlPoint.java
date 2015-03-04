@@ -91,4 +91,9 @@ public class ControlPoint {
 		
 		return new double[]{d.getDoubleValue("dxmm"), d.getDoubleValue("dymm"), d.getDoubleValue("dzmm")};
 	}
+	
+	public String getEssId()
+	{
+		return section+"-"+cell+"-"+slot+"-"+getId();
+	}
 }

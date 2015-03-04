@@ -72,8 +72,6 @@ public class OpenXALExporter implements BLEVisitor {
 	
 	private Linac linac;
 	private Section section;
-	private Cell cell;
-	private Slot slot;
 	
 	private Accelerator accelerator;
 	private AcceleratorSeq currentSequence;
@@ -350,7 +348,6 @@ public class OpenXALExporter implements BLEVisitor {
 	@Override
 	public void visit(Drift drift) {
 		sectionPosition += drift.getLength()*1e-3;
-		visitControlPoints(drift);
 	}
 
 	@Override
@@ -358,12 +355,12 @@ public class OpenXALExporter implements BLEVisitor {
 		double L = iquad.getLength()*1e-3;		
 		double G = iquad.getFieldGradient();
 		
-		final MagnetSupply ps = new MagnetSupply(getEssId(iquad));
+		final MagnetSupply ps = new MagnetSupply(iquad.getEssId());
 		magnetPowerSupplies.add(ps);
-		xal.smf.impl.Quadrupole quad = new xal.smf.impl.Quadrupole(getEssId(iquad)) { // there's no setter for type (you need to extend class)
+		xal.smf.impl.Quadrupole quad = new xal.smf.impl.Quadrupole(iquad.getEssId()) { // there's no setter for type (you need to extend class)
 			{
 				_type="Q"; 
-				channelSuite = new ElectromagnetChannelSuite(getEssId(iquad));
+				channelSuite = new ElectromagnetChannelSuite(iquad.getEssId());
 				mainSupplyId = ps.getId();
 			}
 		};
@@ -377,8 +374,6 @@ public class OpenXALExporter implements BLEVisitor {
 		updateApertureBucket(iquad, quad.getAper());
 		
 		add(quad);
-		
-		visitControlPoints(iquad);
 	}
 
 	@Override
@@ -393,7 +388,7 @@ public class OpenXALExporter implements BLEVisitor {
 		double k2S = rfGap.getTTF().getK2S();		
 
 		// setup		
-		xal.smf.impl.RfGap gap = new xal.smf.impl.RfGap(getEssId(rfGap)+":G");
+		xal.smf.impl.RfGap gap = new xal.smf.impl.RfGap(rfGap.getEssId()+":G");
 		gap.setFirstGap(true); // this uses only phase for calculations
 		gap.getRfGap().setEndCell(0);
 		gap.setLength(0.0); // used only for positioning
@@ -404,16 +399,16 @@ public class OpenXALExporter implements BLEVisitor {
 		gap.getRfGap().setAmpFactor(1.0);
 		/*gap.getRfGap().setGapOffset(dblVal)*/	
 		
-		ESSRfCavity cavity = new ESSRfCavity(getEssId(rfGap))
+		ESSRfCavity cavity = new ESSRfCavity(rfGap.getEssId())
 		{
 			{
-				channelSuite = new RFCavityChannelSuite(getEssId(rfGap), rfGap.getVoltageDevName(), rfGap.getRFPhaseDevName());
+				channelSuite = new RFCavityChannelSuite(rfGap.getEssId(), rfGap.getVoltageDevName(), rfGap.getRFPhaseDevName());
 			}
 		};
 		cavity.addNode(gap);
 		cavity.getRfField().setPhase(Phis);		
 		cavity.getRfField().setAmplitude(E0TL * 1e-6 / length);
-		cavity.getRfField().setFrequency(section.getRFHarmonic() * linac.getBeamFrequency());		
+		cavity.getRfField().setFrequency(rfGap.getFrequency());		
 		/*cavity.getRfField().setStructureMode(dblVal);*/
 		gap.getRfGap().setTTF(1.0);		
 		
@@ -433,8 +428,6 @@ public class OpenXALExporter implements BLEVisitor {
 		cavity.setPosition(sectionPosition);
 		cavity.setLength(0.0);
 		add(cavity);
-		
-		visitControlPoints(rfGap);
 	}
 
 	@Override
@@ -468,13 +461,13 @@ public class OpenXALExporter implements BLEVisitor {
 	    double B0 = k/rho*Math.signum(alpha_deg);
 	    //double B0 = b*gamma*Er/(e*c*rho)*Math.signum(alpha);
 		
-	    final MagnetSupply ps = new MagnetSupply(getEssId(ibend));
+	    final MagnetSupply ps = new MagnetSupply(ibend.getEssId());
 		magnetPowerSupplies.add(ps);
-	    se.lu.esss.ics.jels.smf.impl.ESSBend bend = new se.lu.esss.ics.jels.smf.impl.ESSBend(getEssId(ibend), 
+	    se.lu.esss.ics.jels.smf.impl.ESSBend bend = new se.lu.esss.ics.jels.smf.impl.ESSBend(ibend.getEssId(), 
 				 MagnetType.VERTICAL)
 	    {
 	    	{				
-				channelSuite = new ElectromagnetChannelSuite(getEssId(ibend));
+				channelSuite = new ElectromagnetChannelSuite(ibend.getEssId());
 				mainSupplyId = ps.getId();
 			}
 	    };
@@ -497,20 +490,20 @@ public class OpenXALExporter implements BLEVisitor {
 		updateApertureBucket(ibend, bend.getAper());		
 				
 		add(bend);		
-		
-		visitControlPoints(ibend);
 	}
 
 	@Override
 	public void visit(final ThinSteering thinSteering) {
 		double L = thinSteering.getLength()*1e-3;
 		
-		final MagnetSupply vcps = new MagnetSupply(getEssId(thinSteering)+"-VC");
+		final String essId = thinSteering.getEssId();
+		
+		final MagnetSupply vcps = new MagnetSupply(essId+"-VC");
 		magnetPowerSupplies.add(vcps);
 
-		VDipoleCorr vcorr = new VDipoleCorr(getEssId(thinSteering)+"-VC") {
+		VDipoleCorr vcorr = new VDipoleCorr(essId+"-VC") {
 			{
-				channelSuite = new ElectromagnetChannelSuite(getEssId(thinSteering)+"-VC");
+				channelSuite = new ElectromagnetChannelSuite(essId+"-VC");
 				mainSupplyId = vcps.getId();
 			}
 		};
@@ -520,12 +513,12 @@ public class OpenXALExporter implements BLEVisitor {
 		updateApertureBucket(thinSteering, vcorr.getAper());
 		add(vcorr);
 		
-		final MagnetSupply hcps = new MagnetSupply(getEssId(thinSteering)+"-HC");
+		final MagnetSupply hcps = new MagnetSupply(essId+"-HC");
 		magnetPowerSupplies.add(hcps);
 		
-		HDipoleCorr hcorr = new HDipoleCorr(getEssId(thinSteering)+"-HC") {
+		HDipoleCorr hcorr = new HDipoleCorr(essId+"-HC") {
 			{
-				channelSuite = new ElectromagnetChannelSuite(getEssId(thinSteering)+"-HC");
+				channelSuite = new ElectromagnetChannelSuite(essId+"-HC");
 				mainSupplyId = hcps.getId();
 			}
 		};
@@ -534,8 +527,6 @@ public class OpenXALExporter implements BLEVisitor {
 		hcorr.getMagBucket().setEffLength(L == 0. ?  1. : L);
 		updateApertureBucket(thinSteering, hcorr.getAper());
 		add(hcorr);
-		
-		visitControlPoints(thinSteering);
 	}
 /*
 	@Override
@@ -655,17 +646,15 @@ public class OpenXALExporter implements BLEVisitor {
 
 	@Override
 	public void visit(FieldMap fieldMap) {
-		ESSFieldMap fm = new ESSFieldMap(getEssId(fieldMap));
+		ESSFieldMap fm = new ESSFieldMap(fieldMap.getEssId());
 		fm.setPosition(sectionPosition + fieldMap.getLength()*1e-3*0.5);
 		fm.setLength(fieldMap.getLength()*1e-3);
-		fm.setFrequency(section.getRFHarmonic() * linac.getBeamFrequency());
+		fm.setFrequency(fieldMap.getFrequency());
 		fm.setXelmax(fieldMap.getElectricFieldFactor());
 		fm.setPhase(fieldMap.getRFPhase());
 		fm.setFieldMapFile(fieldMap.getFieldmapFile());
 		updateApertureBucket(fieldMap, fm.getAper());
 		add(fm);
-		
-		visitControlPoints(fieldMap);
 		
 		fieldMapFiles.add(fieldMap.getFieldmapFile());
 	}
@@ -683,7 +672,7 @@ public class OpenXALExporter implements BLEVisitor {
 		double k2S = dtlRfGap.getTTF().getK2S();		
 
 		// setup		
-		xal.smf.impl.RfGap gap = new xal.smf.impl.RfGap(getEssId(dtlRfGap)+":G");
+		xal.smf.impl.RfGap gap = new xal.smf.impl.RfGap(dtlRfGap.getEssId()+":G");
 		gap.setFirstGap(true); // this uses only phase for calculations
 		gap.getRfGap().setEndCell(0);
 		gap.setLength(0.0); // used only for positioning
@@ -695,16 +684,16 @@ public class OpenXALExporter implements BLEVisitor {
 		/*gap.getRfGap().setGapOffset(dblVal)*/	
 		gap.setPosition(dtlRfGap.getLength()*1e-3/2.);
 		
-		ESSRfCavity cavity = new ESSRfCavity(getEssId(dtlRfGap))
+		ESSRfCavity cavity = new ESSRfCavity(dtlRfGap.getEssId())
 		{
 			{
-				channelSuite = new RFCavityChannelSuite(getEssId(dtlRfGap));
+				channelSuite = new RFCavityChannelSuite(dtlRfGap.getEssId());
 			}
 		};
 		cavity.addNode(gap);
 		cavity.getRfField().setPhase(Phis);		
 		cavity.getRfField().setAmplitude(E0TL * 1e-6 / length);
-		cavity.getRfField().setFrequency(section.getRFHarmonic() * linac.getBeamFrequency());		
+		cavity.getRfField().setFrequency(dtlRfGap.getFrequency());		
 		/*cavity.getRfField().setStructureMode(dblVal);*/
 		gap.getRfGap().setTTF(1.0);		
 		
@@ -724,8 +713,6 @@ public class OpenXALExporter implements BLEVisitor {
 		cavity.setPosition(sectionPosition);
 		cavity.setLength(dtlRfGap.getLength()*1e-3);
 		add(cavity);
-		
-		visitControlPoints(dtlRfGap);
 	}
 
 	@Override
@@ -735,12 +722,14 @@ public class OpenXALExporter implements BLEVisitor {
 		double L2 = dtlDriftTube.getNoseConeDnLength() * 1e-3;
 		double G = dtlDriftTube.getFieldGradient();
 		
-		final MagnetSupply ps = new MagnetSupply(getEssId(dtlDriftTube));
+		final String essId = dtlDriftTube.getEssId();
+		
+		final MagnetSupply ps = new MagnetSupply(essId);
 		magnetPowerSupplies.add(ps);
-		xal.smf.impl.Quadrupole quad = new xal.smf.impl.Quadrupole(getEssId(dtlDriftTube)) { // there's no setter for type (you need to extend class)
+		xal.smf.impl.Quadrupole quad = new xal.smf.impl.Quadrupole(essId) { // there's no setter for type (you need to extend class)
 			{
 				_type="Q"; 
-				channelSuite = new ElectromagnetChannelSuite(getEssId(dtlDriftTube));
+				channelSuite = new ElectromagnetChannelSuite(essId);
 				mainSupplyId = ps.getId();
 			}
 		};
@@ -753,13 +742,11 @@ public class OpenXALExporter implements BLEVisitor {
 		quad.getMagBucket().setPolarity(1);
 		updateApertureBucket(dtlDriftTube, quad.getAper());
 		
-		AcceleratorSeq dt = new AcceleratorSeq(getEssId(dtlDriftTube));
+		AcceleratorSeq dt = new AcceleratorSeq(essId);
 		dt.addNode(quad);
 		dt.setLength(L1+Lq+L2);
 		dt.setPosition(sectionPosition);
 		add(dt);
-		
-		visitControlPoints(dtlDriftTube);
 	}
 
 	
@@ -783,14 +770,16 @@ public class OpenXALExporter implements BLEVisitor {
 		double B1 = dtlCell.getQ1FieldGradient();
 		double B2 = dtlCell.getQ2FieldGradient();
 		
+		final String essId = dtlCell.getEssId();
+		
 		// setup		
 		// QUAD1,2
-		final MagnetSupply ps1 = new MagnetSupply(getEssId(dtlCell)+"A");
+		final MagnetSupply ps1 = new MagnetSupply(essId+"A");
 		magnetPowerSupplies.add(ps1);
 		
-		xal.smf.impl.Quadrupole quad1 = new xal.smf.impl.Quadrupole(getEssId(dtlCell)+":Q1") { // there's no setter for type (you need to extend class)
+		xal.smf.impl.Quadrupole quad1 = new xal.smf.impl.Quadrupole(essId+":Q1") { // there's no setter for type (you need to extend class)
 			{_type="Q";
-			channelSuite = new ElectromagnetChannelSuite(getEssId(dtlCell),"B1");
+			channelSuite = new ElectromagnetChannelSuite(essId,"B1");
 			mainSupplyId = ps1.getId();
 			}
 		};
@@ -800,12 +789,12 @@ public class OpenXALExporter implements BLEVisitor {
 		quad1.setDfltField(B1);
 		quad1.getMagBucket().setPolarity(1);
 		
-		final MagnetSupply ps2 = new MagnetSupply(getEssId(dtlCell)+"B");
+		final MagnetSupply ps2 = new MagnetSupply(essId+"B");
 		magnetPowerSupplies.add(ps2);
 		
-		xal.smf.impl.Quadrupole quad2 = new xal.smf.impl.Quadrupole(getEssId(dtlCell)+":Q2") { // there's no setter for type (you need to extend class)
+		xal.smf.impl.Quadrupole quad2 = new xal.smf.impl.Quadrupole(essId+":Q2") { // there's no setter for type (you need to extend class)
 			{_type="Q"; 
-			channelSuite = new ElectromagnetChannelSuite(getEssId(dtlCell),"B2");	
+			channelSuite = new ElectromagnetChannelSuite(essId,"B2");	
 			mainSupplyId = ps2.getId();
 			}
 		};
@@ -817,7 +806,7 @@ public class OpenXALExporter implements BLEVisitor {
 		
 		
 		// GAP
-		xal.smf.impl.RfGap gap = new xal.smf.impl.RfGap(getEssId(dtlCell)+":G");
+		xal.smf.impl.RfGap gap = new xal.smf.impl.RfGap(essId+":G");
 		gap.setFirstGap(true); // this uses only phase for calculations
 		gap.getRfGap().setEndCell(0);
 		gap.setLength(0.0); // used only for positioning
@@ -829,10 +818,10 @@ public class OpenXALExporter implements BLEVisitor {
 		gap.getRfGap().setTTF(1.0);		
 		/*gap.getRfGap().setGapOffset(dblVal)*/		
 		
-		ESSRfCavity dtlTank = new ESSRfCavity(getEssId(dtlCell))
+		ESSRfCavity dtlTank = new ESSRfCavity(essId)
 		{
 			{
-				channelSuite = new RFCavityChannelSuite(getEssId(dtlCell));
+				channelSuite = new RFCavityChannelSuite(essId);
 			}
 		};; // this could also be rfcavity, makes no difference
 		dtlTank.addNode(quad1);
@@ -840,7 +829,7 @@ public class OpenXALExporter implements BLEVisitor {
 		dtlTank.addNode(quad2);
 		dtlTank.getRfField().setPhase(Phis);		
 		dtlTank.getRfField().setAmplitude(E0TL * 1e-6 / length);
-		dtlTank.getRfField().setFrequency(section.getRFHarmonic() * linac.getBeamFrequency());		
+		dtlTank.getRfField().setFrequency(dtlCell.getFrequency());		
 		/*cavity.getRfField().setStructureMode(dblVal);*/
 				
 		// TTF		
@@ -855,7 +844,6 @@ public class OpenXALExporter implements BLEVisitor {
 		dtlTank.setLength(L);
 		dtlTank.setPosition(sectionPosition);		
 		add(dtlTank);
-		visitControlPoints(dtlCell);
 	}
 
 	@Override
@@ -878,35 +866,23 @@ public class OpenXALExporter implements BLEVisitor {
 		this.section = section;
 	}
 		
-	
-	
 	public void visit(Cell cell)
 	{
-		this.cell = cell;
 	}
 	
 	public void visit(Slot slot)
 	{
-		this.slot = slot;
 	}
 
 	@Override
 	public void visit(Edge edge) {
 		// TODO Auto-generated method stub
-		visitControlPoints(edge);
-	}
-	
-	private void visitControlPoints(BeamlineElement ble) {
-		for (ControlPoint cp : linac.getControlPoints(section.getId(), cell.getId(), slot.getId(), ble.getId()))
-		{
-			visit(cp);
-		}
 	}
 	
 	@Override
 	public void visit(final ControlPoint controlPoint) {
 		if ("bpm".equals(controlPoint.getType()) || "bpm".equals(controlPoint.getModel())) {
-			xal.smf.impl.BPM bpm = new BPM(getEssId(controlPoint)) {
+			xal.smf.impl.BPM bpm = new BPM(controlPoint.getEssId()) {
 				{
 					channelSuite = new BPMChannelSuite(controlPoint.getDevName());
 				}
@@ -922,28 +898,18 @@ public class OpenXALExporter implements BLEVisitor {
 	@Override
 	public void visit(final Monitor monitor) {
 		if ("bpm".equals(monitor.getMonitorType().toLowerCase())) {
-			xal.smf.impl.BPM bpm = new BPM(getEssId(monitor)) {
+			xal.smf.impl.BPM bpm = new BPM(monitor.getEssId()) {
 				{
-					channelSuite = new BPMChannelSuite(getEssId(monitor));
+					channelSuite = new BPMChannelSuite(monitor.getEssId());
 				}
 			};
-			bpm.getBPMBucket().setFrequency(linac.getBeamFrequency() * section.getRFHarmonic());
+			bpm.getBPMBucket().setFrequency(monitor.getFrequency());
 			bpm.getBPMBucket().setLength(monitor.getLength());
 			bpm.getBPMBucket().setOrientation(1);
 			bpm.setLength(monitor.getLength());
 			bpm.setPosition(sectionPosition+monitor.getLength()/2.);
 			add(bpm);
 		}
-	}
-
-	protected String getEssId(ControlPoint ble)
-	{
-		return section.getId()+"-"+cell.getId()+"-"+slot.getId()+"-"+ble.getId();
-	}
-	
-	protected String getEssId(BeamlineElement ble)
-	{
-		return section.getId()+"-"+cell.getId()+"-"+slot.getId()+"-"+ble.getId();
 	}
 
 	public static void main(String[] args) throws JAXBException, SAXException, ParserConfigurationException, IOException, URISyntaxException {

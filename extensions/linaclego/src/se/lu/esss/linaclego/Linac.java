@@ -49,7 +49,7 @@ public class Linac {
 	    @XmlTransient
 	    protected Linac linac;
 	    
-	    public void afterUnmarshal(Unmarshaller u, Object parent) {
+	    public void beforeUnmarshal(Unmarshaller u, Object parent) {
 			this.linac = (Linac)parent;
 		}
     }

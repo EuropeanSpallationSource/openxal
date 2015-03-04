@@ -9,6 +9,7 @@ public class DtlDriftTube extends Quad {
 	@Override
 	public void accept(BLEVisitor visitor) {
 		visitor.visit(this);
+		super.accept(visitor);
 	}
 	
 	public double getNoseConeUpLength()
