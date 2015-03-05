@@ -4,8 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -63,7 +62,7 @@ import xal.tools.xml.XmlDataAdaptor;
 import xal.tools.xml.XmlWriter;
 
 public class OpenXALExporter implements BLEVisitor {
-	private List<MagnetPowerSupply> magnetPowerSupplies;
+	private Map<String, MagnetMainSupply> magnetPowerSupplies;
 	private double acceleratorPosition;
 	private double sectionPosition;
 	public static final double beta_gamma_Er_by_e0_c = -9.302773635653585;
@@ -77,19 +76,21 @@ public class OpenXALExporter implements BLEVisitor {
 	public void export(Linac linac, String fileName) throws IOException {
 		acceleratorPosition = 0.0;
 		sectionPosition = 0.0;
-		magnetPowerSupplies = new ArrayList<>();
 		
 		this.linac = linac;
 		
 		accelerator = new Accelerator("ESS") {
-			  public void write(DataAdaptor adaptor) {
-				  super.write(adaptor);
-				  // write out power supplies
-				  DataAdaptor powerSuppliesAdaptor = adaptor.createChild("powersupplies");				 
-				    for ( MagnetPowerSupply mps : magnetPowerSupplies) {
-				    	mps.write( powerSuppliesAdaptor.createChild("ps"));				 
-				    }				 
-			  }
+			{
+				OpenXALExporter.this.magnetPowerSupplies = magnetMainSupplies; 
+			}
+			public void write(DataAdaptor adaptor) {
+				super.write(adaptor);
+				// write out power supplies
+				DataAdaptor powerSuppliesAdaptor = adaptor.createChild("powersupplies");				 
+				for ( MagnetPowerSupply mps : magnetPowerSupplies.values()) {
+					mps.write( powerSuppliesAdaptor.createChild("ps"));				 
+				}				 
+			 }
 		};
 		linac.accept(this);
 		accelerator.setLength(acceleratorPosition + sectionPosition);
@@ -286,7 +287,7 @@ public class OpenXALExporter implements BLEVisitor {
 		double G = iquad.getFieldGradient();
 		
 		final MagnetSupply ps = new MagnetSupply(iquad.getEssId());
-		magnetPowerSupplies.add(ps);
+		magnetPowerSupplies.put(ps.getId(), ps);
 		xal.smf.impl.Quadrupole quad = new xal.smf.impl.Quadrupole(iquad.getEssId()) { // there's no setter for type (you need to extend class)
 			{
 				_type="Q"; 
@@ -392,7 +393,7 @@ public class OpenXALExporter implements BLEVisitor {
 	    //double B0 = b*gamma*Er/(e*c*rho)*Math.signum(alpha);
 		
 	    final MagnetSupply ps = new MagnetSupply(ibend.getEssId());
-		magnetPowerSupplies.add(ps);
+		magnetPowerSupplies.put(ps.getId(), ps);
 	    se.lu.esss.ics.jels.smf.impl.ESSBend bend = new se.lu.esss.ics.jels.smf.impl.ESSBend(ibend.getEssId(), 
 				 MagnetType.VERTICAL)
 	    {
@@ -429,7 +430,7 @@ public class OpenXALExporter implements BLEVisitor {
 		final String essId = thinSteering.getEssId();
 		
 		final MagnetSupply vcps = new MagnetSupply(essId+"-VC");
-		magnetPowerSupplies.add(vcps);
+		magnetPowerSupplies.put(vcps.getId(), vcps);
 
 		VDipoleCorr vcorr = new VDipoleCorr(essId+"-VC") {
 			{
@@ -444,7 +445,7 @@ public class OpenXALExporter implements BLEVisitor {
 		add(vcorr);
 		
 		final MagnetSupply hcps = new MagnetSupply(essId+"-HC");
-		magnetPowerSupplies.add(hcps);
+		magnetPowerSupplies.put(hcps.getId(), hcps);
 		
 		HDipoleCorr hcorr = new HDipoleCorr(essId+"-HC") {
 			{
@@ -656,7 +657,7 @@ public class OpenXALExporter implements BLEVisitor {
 		final String essId = dtlDriftTube.getEssId();
 		
 		final MagnetSupply ps = new MagnetSupply(essId);
-		magnetPowerSupplies.add(ps);
+		magnetPowerSupplies.put(ps.getId(), ps);
 		xal.smf.impl.Quadrupole quad = new xal.smf.impl.Quadrupole(essId) { // there's no setter for type (you need to extend class)
 			{
 				_type="Q"; 
@@ -706,7 +707,7 @@ public class OpenXALExporter implements BLEVisitor {
 		// setup		
 		// QUAD1,2
 		final MagnetSupply ps1 = new MagnetSupply(essId+"A");
-		magnetPowerSupplies.add(ps1);
+		magnetPowerSupplies.put(ps1.getId(), ps1);
 		
 		xal.smf.impl.Quadrupole quad1 = new xal.smf.impl.Quadrupole(essId+":Q1") { // there's no setter for type (you need to extend class)
 			{_type="Q";
@@ -721,7 +722,7 @@ public class OpenXALExporter implements BLEVisitor {
 		quad1.getMagBucket().setPolarity(1);
 		
 		final MagnetSupply ps2 = new MagnetSupply(essId+"B");
-		magnetPowerSupplies.add(ps2);
+		magnetPowerSupplies.put(ps2.getId(), ps2);
 		
 		xal.smf.impl.Quadrupole quad2 = new xal.smf.impl.Quadrupole(essId+":Q2") { // there's no setter for type (you need to extend class)
 			{_type="Q"; 
