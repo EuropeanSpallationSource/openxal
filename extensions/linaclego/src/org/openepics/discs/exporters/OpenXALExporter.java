@@ -180,143 +180,82 @@ public class OpenXALExporter implements BLEVisitor {
 		}	
 	}
 	
-	private static class RFCavityChannelSuite extends ChannelSuite 
+	private static class MutableChannelSuite extends ChannelSuite
 	{
-	//	private String name;
-		private String ampChannel, phaseChannel, ampCtlChannel, phaseCtlChannel;
-		
+		public MutableChannelSuite() {
+			super();
+		}
+	
+		protected void addChannel(String handle, String signal, boolean settable)
+		{
+			SIGNAL_SUITE.addChannel(handle, signal, null, settable);
+		}
+	}
+	
+	private static class RFCavityChannelSuite extends MutableChannelSuite 
+	{
 		public RFCavityChannelSuite(String name)
 		{
 			name = name.replace('_', ':');
-	//		this.name = name;
-			ampChannel = name+":AmpAvg";
-			phaseChannel = name+":PhsAvg";
-			ampCtlChannel = name+":AmpCtl";
-			phaseCtlChannel = name+":PhsCtl";
+			addChannel(RfCavity.CAV_AMP_SET_HANDLE, name+":AmpCtl", true);
+	    	addChannel(RfCavity.CAV_PHASE_SET_HANDLE, name+":PhsCtl", true);
+	    	addChannel(RfCavity.CAV_AMP_AVG_HANDLE, name+":AmpAvg", false);
+	    	addChannel(RfCavity.CAV_PHASE_AVG_HANDLE, name+":PhsAvg", false);
 		}
-		
 		
 		public RFCavityChannelSuite(String name, String ampChannel, String phaseChannel)
 		{
-	//		this.name = name.replace('_', ':');
-			this.ampChannel = ampChannel;
-			this.phaseChannel = phaseChannel;
-			ampCtlChannel = ampChannel+"Ctl";
-			phaseCtlChannel = phaseChannel+"Ctl";
+	    	addChannel(RfCavity.CAV_AMP_SET_HANDLE, ampChannel+"Ctl", true);
+	    	addChannel(RfCavity.CAV_PHASE_SET_HANDLE, phaseChannel+"Ctl", true);
+	    	addChannel(RfCavity.CAV_AMP_AVG_HANDLE, ampChannel, false);
+	    	addChannel(RfCavity.CAV_PHASE_AVG_HANDLE, phaseChannel, false);
 		}
-		
-		
-		/**
-	     * Write data to the data adaptor for storage.
-	     * @param adaptor The adaptor to which the receiver's data is written
-	     */
-	    public void write( final DataAdaptor adaptor ) {	       	    	
-	    	writeChannel(adaptor, RfCavity.CAV_AMP_SET_HANDLE, ampCtlChannel, true);
-	    	writeChannel(adaptor, RfCavity.CAV_PHASE_SET_HANDLE, phaseCtlChannel, true);
-	    	writeChannel(adaptor, RfCavity.CAV_AMP_AVG_HANDLE, ampChannel, false);
-	    	writeChannel(adaptor, RfCavity.CAV_PHASE_AVG_HANDLE, phaseChannel, false);
-	    }
-	    
-	    public void writeChannel( final DataAdaptor adaptor, String handle, String signal, boolean settable ) {	       	    	
-	    	
-	    	final DataAdaptor channelAdaptor = adaptor.createChild("channel");	      	 
-	        channelAdaptor.setValue( "handle", handle );
-	        channelAdaptor.setValue( "signal", signal );
-	        channelAdaptor.setValue( "settable", settable );	        	      
-	    }
 	}
 	
-	private static class BPMChannelSuite extends ChannelSuite 
+	private static class BPMChannelSuite extends MutableChannelSuite 
 	{
-		private String name;
-		
 		public BPMChannelSuite(String name)
 		{
-			this.name = name.replace('_', ':');
+			name = name.replace('_', ':');
+			addChannel(BPM.X_AVG_HANDLE, name+":XAvg", false);
+	    	addChannel(BPM.Y_AVG_HANDLE, name+":YAvg", false);
+	    	addChannel(BPM.X_TBT_HANDLE, name+":XTBT", false);
+	    	addChannel(BPM.Y_TBT_HANDLE, name+":YTBT", false);
+	    	addChannel(BPM.PHASE_AVG_HANDLE, name+":PhsAvg", false);
+	    	addChannel(BPM.AMP_AVG_HANDLE, name+":AmpAvg", false);
+	    	addChannel(BPM.AMP_TBT_HANDLE, name+":AmpTBT", false);
+	    	addChannel(BPM.PHASE_TBT_HANDLE, name+":PhsTBT", false);
 		}
-		
-		/**
-	     * Write data to the data adaptor for storage.
-	     * @param adaptor The adaptor to which the receiver's data is written
-	     */
-	    public void write( final DataAdaptor adaptor ) {	       	    	
-	    	writeChannel(adaptor, BPM.X_AVG_HANDLE, name+":XAvg");
-	    	writeChannel(adaptor, BPM.Y_AVG_HANDLE, name+":YAvg");
-	    	writeChannel(adaptor, BPM.X_TBT_HANDLE, name+":XTBT");
-	    	writeChannel(adaptor, BPM.Y_TBT_HANDLE, name+":YTBT");
-	    	writeChannel(adaptor, BPM.PHASE_AVG_HANDLE, name+":PhsAvg");
-	    	writeChannel(adaptor, BPM.AMP_AVG_HANDLE, name+":AmpAvg");
-	    	writeChannel(adaptor, BPM.AMP_TBT_HANDLE, name+":AmpTBT");
-	    	writeChannel(adaptor, BPM.PHASE_TBT_HANDLE, name+":PhsTBT");
-	    }
-	    
-	    public void writeChannel( final DataAdaptor adaptor, String handle, String signal ) {	       	    	
-	    	
-	    	final DataAdaptor channelAdaptor = adaptor.createChild("channel");	      	 
-	        channelAdaptor.setValue( "handle", handle );
-	        channelAdaptor.setValue( "signal", signal );
-	        channelAdaptor.setValue( "settable", false );	        	      
-	    }
 	}
 	
-	private static class ElectromagnetChannelSuite extends ChannelSuite 
+	private static class ElectromagnetChannelSuite extends MutableChannelSuite 
 	{
-		private String name, signal = "B";
-		
 		public ElectromagnetChannelSuite(String name)
 		{
-			this.name = name.replace('_', ':');
+			name = name.replace('_', ':');
+			addChannel(Electromagnet.FIELD_RB_HANDLE, name + ":B", false);
 		}
 		
 		public ElectromagnetChannelSuite(String name, String signal)
 		{
-			this.name = name.replace('_', ':');
-			this.signal = signal;
+			name = name.replace('_', ':');
+			addChannel(Electromagnet.FIELD_RB_HANDLE, name + ":" + signal, false);
 		}
-		
-		
-		/**
-	     * Write data to the data adaptor for storage.
-	     * @param adaptor The adaptor to which the receiver's data is written
-	     */
-	    public void write( final DataAdaptor adaptor ) {	       	    	
-	    	final DataAdaptor channelAdaptor = adaptor.createChild("channel");
-	            
-	        channelAdaptor.setValue( "handle", Electromagnet.FIELD_RB_HANDLE );
-	        channelAdaptor.setValue( "signal", name + ":" + signal );
-	        channelAdaptor.setValue( "settable", false);	        	      
-	    }		
 	}
 	
 	
-	private static class MagnetChannelSuite extends ChannelSuite 
+	private static class MagnetChannelSuite extends MutableChannelSuite 
 	{
-		private String name;
-		
 		public MagnetChannelSuite(String name)
 		{
-			this.name = name.replace('_', ':');
+			name = name.replace('_', ':');
+			addChannel(MagnetPowerSupply.CURRENT_RB_HANDLE, name+":CurRB", false);
+	    	addChannel(MagnetPowerSupply.CURRENT_SET_HANDLE, name+":CurSet", true);
+	    	addChannel(MagnetMainSupply.FIELD_RB_HANDLE, name+":FldRB", false);
+	    	addChannel(MagnetMainSupply.FIELD_SET_HANDLE, name+":FldSet", true);
+	    	addChannel(MagnetPowerSupply.CYCLE_STATE_HANDLE, name+":CycSt", false);
+	    	addChannel(MagnetMainSupply.CYCLE_ENABLE_HANDLE, name+":CycEn", true);
 		}
-		
-		/**
-	     * Write data to the data adaptor for storage.
-	     * @param adaptor The adaptor to which the receiver's data is written
-	     */
-	    public void write( final DataAdaptor adaptor ) {	       	    	
-	    	writeChannel(adaptor, MagnetPowerSupply.CURRENT_RB_HANDLE, name+":CurRB", false);
-	    	writeChannel(adaptor, MagnetPowerSupply.CURRENT_SET_HANDLE, name+":CurSet", true);
-	    	writeChannel(adaptor, MagnetMainSupply.FIELD_RB_HANDLE, name+":FldRB", false);
-	    	writeChannel(adaptor, MagnetMainSupply.FIELD_SET_HANDLE, name+":FldSet", true);
-	    	writeChannel(adaptor, MagnetPowerSupply.CYCLE_STATE_HANDLE, name+":CycSt", false);
-	    	writeChannel(adaptor, MagnetMainSupply.CYCLE_ENABLE_HANDLE, name+":CycEn", true);
-	    }
-	    
-	    public void writeChannel( final DataAdaptor adaptor, String handle, String signal, boolean settable ) {	       	    	
-	    	
-	    	final DataAdaptor channelAdaptor = adaptor.createChild("channel");	      	 
-	        channelAdaptor.setValue( "handle", handle );
-	        channelAdaptor.setValue( "signal", signal );        	      
-	    }
 	}
 	
 	
@@ -393,7 +332,7 @@ public class OpenXALExporter implements BLEVisitor {
 		ESSRfCavity cavity = new ESSRfCavity(rfGap.getEssId())
 		{
 			{
-				channelSuite = new RFCavityChannelSuite(rfGap.getEssId(), rfGap.getVoltageDevName(), rfGap.getRFPhaseDevName());
+				channelSuite = new RFCavityChannelSuite(rfGap.getEssId());//, rfGap.getVoltageDevName(), rfGap.getRFPhaseDevName());
 			}
 		};
 		cavity.addNode(gap);
