@@ -11,7 +11,7 @@ public class FieldMap extends BeamlineElement {
 	@Override
 	public void accept(BLEVisitor visitor) {
 		visitor.visit(this);
-		super.accept(visitor);
+		visitControlPoints(visitor);
 	}
 	
 	public double getRFPhase()

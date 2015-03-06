@@ -9,7 +9,7 @@ public class DtlCell extends RfGap {
 	@Override
 	public void accept(BLEVisitor visitor) {
 		visitor.visit(this);
-		super.accept(visitor);
+		visitControlPoints(visitor);
 	}
 	
 	@Override

@@ -62,6 +62,10 @@ public class BeamlineElement {
     }
 
 	public void accept(BLEVisitor visitor) {
+		visitControlPoints(visitor);
+	}
+	
+	protected void visitControlPoints(BLEVisitor visitor) {
 		Slot slot = getParent();
 		Cell cell = slot.getParent();
 		Section section = cell.getParent();
