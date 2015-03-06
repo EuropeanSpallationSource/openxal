@@ -26,6 +26,7 @@
 		<module>twissobserver</module>
 		<module>widgets</module>
 		<module>jels</module>
+		<module>linaclego</module>
 		<module>../services/pvlogger/extension</module>			
 		<module>../services/worker/extension</module>					
 	</modules>

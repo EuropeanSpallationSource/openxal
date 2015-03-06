@@ -3,23 +3,16 @@ package org.openepics.discs.exporters;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.Map;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParserFactory;
-import javax.xml.transform.sax.SAXSource;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
 
 import se.lu.esss.ics.jels.smf.impl.ESSFieldMap;
 import se.lu.esss.ics.jels.smf.impl.ESSRfCavity;
@@ -27,6 +20,7 @@ import se.lu.esss.linaclego.BLEVisitor;
 import se.lu.esss.linaclego.Cell;
 import se.lu.esss.linaclego.FieldProfile;
 import se.lu.esss.linaclego.Linac;
+import se.lu.esss.linaclego.LinacLego;
 import se.lu.esss.linaclego.Section;
 import se.lu.esss.linaclego.Slot;
 import se.lu.esss.linaclego.elements.BeamlineElement;
@@ -72,28 +66,40 @@ public class OpenXALExporter implements BLEVisitor {
 	
 	private Accelerator accelerator;
 	private AcceleratorSeq currentSequence;
+
+	protected OpenXALExporter() 
+	{
+		
+	}
 	
-	public void export(Linac linac, String fileName) throws IOException {
-		acceleratorPosition = 0.0;
-		sectionPosition = 0.0;
+	public static Accelerator convert(Linac linac) {
+		final OpenXALExporter exporter = new OpenXALExporter();
 		
-		this.linac = linac;
+		exporter.acceleratorPosition = 0.0;
+		exporter.sectionPosition = 0.0;
 		
-		accelerator = new Accelerator("ESS") {
+		exporter.linac = linac;
+		
+		exporter.accelerator = new Accelerator("ESS") {
 			{
-				OpenXALExporter.this.magnetPowerSupplies = magnetMainSupplies; 
+				exporter.magnetPowerSupplies = magnetMainSupplies; 
 			}
 			public void write(DataAdaptor adaptor) {
 				super.write(adaptor);
 				// write out power supplies
 				DataAdaptor powerSuppliesAdaptor = adaptor.createChild("powersupplies");				 
-				for ( MagnetPowerSupply mps : magnetPowerSupplies.values()) {
+				for ( MagnetPowerSupply mps : exporter.magnetPowerSupplies.values()) {
 					mps.write( powerSuppliesAdaptor.createChild("ps"));				 
 				}				 
 			 }
 		};
-		linac.accept(this);
-		accelerator.setLength(acceleratorPosition + sectionPosition);
+		linac.accept(exporter);
+		exporter.accelerator.setLength(exporter.acceleratorPosition + exporter.sectionPosition);
+		return exporter.accelerator;
+	}
+	
+	public static void export(Linac linac, String fileName) throws IOException {
+		Accelerator accelerator = convert(linac);
 			
 		XmlDataAdaptor da = XmlDataAdaptor.newEmptyDocumentAdaptor();
 
@@ -105,21 +111,8 @@ public class OpenXALExporter implements BLEVisitor {
 		XmlWriter.writeToFile(document, new File(fileName));
 	}
 	
-	public void export(String sourceFileName, String destinationFilename) throws IOException, URISyntaxException, SAXException, ParserConfigurationException, JAXBException {
-		
-		JAXBContext context = JAXBContext.newInstance(Linac.class, Drift.class, Quad.class, FieldProfile.class);
-		Unmarshaller um = context.createUnmarshaller();
-		
-		SAXParserFactory spf = SAXParserFactory.newInstance();
-		spf.setXIncludeAware(true);
-		spf.setNamespaceAware(true);
-		spf.setValidating(true);
-
-		XMLReader xr = spf.newSAXParser().getXMLReader();
-		SAXSource source = new SAXSource(xr, new InputSource(sourceFileName));
-		Linac ll = um.unmarshal(source, Linac.class).getValue();
-		ll.setSource(new URL(sourceFileName)); // source is set so that field profile inside fieldmaps can be loaded
-		
+	public static void export(String sourceFileName, String destinationFilename) throws IOException, URISyntaxException, SAXException, ParserConfigurationException, JAXBException {
+		Linac ll = LinacLego.load(sourceFileName);		
 		export(ll, destinationFilename);
 	}
 	
@@ -140,7 +133,7 @@ public class OpenXALExporter implements BLEVisitor {
 	 * Cleans up XML OpenXal produces
 	 * @param parent node to clean
 	 */
-	private void cleanup(Node parent) {			
+	private static void cleanup(Node parent) {			
 		NodeList children = parent.getChildNodes();
 		NamedNodeMap attrs = parent.getAttributes();
 		if (attrs != null) {
@@ -850,7 +843,6 @@ public class OpenXALExporter implements BLEVisitor {
 			System.exit(-1);
 		}
 
-		OpenXALExporter twe = new OpenXALExporter();
-		twe.export(args[0], args[1]);		
+		export(args[0], args[1]);		
 	}
 }

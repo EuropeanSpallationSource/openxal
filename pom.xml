@@ -140,6 +140,11 @@
 				<artifactId>jels</artifactId>
 				<version>${project.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>se.lu.esss.ics.linaclego</groupId>
+				<artifactId>openxal.extensions.linaclego</artifactId>
+				<version>${project.version}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 

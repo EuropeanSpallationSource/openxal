@@ -2,24 +2,20 @@ package org.openepics.discs.exporters;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParserFactory;
-import javax.xml.transform.sax.SAXSource;
 
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
 
 import se.lu.esss.linaclego.BLEVisitor;
 import se.lu.esss.linaclego.Cell;
 import se.lu.esss.linaclego.Linac;
+import se.lu.esss.linaclego.LinacLego;
 import se.lu.esss.linaclego.Section;
 import se.lu.esss.linaclego.Slot;
 import se.lu.esss.linaclego.elements.BeamlineElement;
@@ -39,7 +35,7 @@ import se.lu.esss.linaclego.elements.ThinSteering;
 public class TraceWinExporter implements BLEVisitor {
 	private String fileName;
 	private PrintWriter pw;
-	private boolean printIdInTraceWin = true;
+	private boolean printIdInTraceWin = false;
 	private boolean printControlPoints = true;
 	
 	private Linac linac;
@@ -309,23 +305,13 @@ public class TraceWinExporter implements BLEVisitor {
 	}
 	
 	
-	public static void main(String[] args) throws JAXBException, SAXException, ParserConfigurationException, FileNotFoundException {
+	public static void main(String[] args) throws JAXBException, SAXException, ParserConfigurationException, FileNotFoundException, MalformedURLException {
 		if (args.length < 2) {
 			System.out.println("Usage: TraceWinExporter <linaclego.xml> <tracewin.dat>");
 			System.exit(-1);
 		}
 		
-		JAXBContext context = JAXBContext.newInstance(Linac.class, Drift.class, Quad.class);
-		Unmarshaller um = context.createUnmarshaller();
-		
-		SAXParserFactory spf = SAXParserFactory.newInstance();
-		spf.setXIncludeAware(true);
-		spf.setNamespaceAware(true);
-		spf.setValidating(true);
-
-		XMLReader xr = spf.newSAXParser().getXMLReader();
-		SAXSource source = new SAXSource(xr, new InputSource(args[0]));
-		Linac ll = um.unmarshal(source, Linac.class).getValue();
+		Linac ll = LinacLego.load(args[0]);
 		
 		TraceWinExporter twe = new TraceWinExporter(args[1]);
 		twe.export(ll);
