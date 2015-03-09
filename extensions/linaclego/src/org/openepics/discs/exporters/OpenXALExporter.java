@@ -339,12 +339,10 @@ public class OpenXALExporter implements BLEVisitor {
 		// TTF		
 		if (betas == 0.0) {
 			cavity.getRfField().setTTFCoefs(new double[] {});
-			cavity.getRfField().setTTF_endCoefs(new double[] {});
+			cavity.getRfField().setTTF_startCoefs(new double[] {});
 		} else {				
 			cavity.getRfField().setTTFCoefs(new double[] {betas, Ts, kTs, k2Ts});
-			cavity.getRfField().setTTF_endCoefs(new double[] {betas, Ts, kTs, k2Ts});
-			cavity.getRfField().setSTFCoefs(new double[] {betas, 0., kS, k2S});
-			cavity.getRfField().setSTF_endCoefs(new double[] {betas, 0., kS, k2S});
+			cavity.getRfField().setTTF_startCoefs(new double[] {betas, Ts, kTs, k2Ts});
 		}		
 		
 		updateApertureBucket(rfGap, gap.getAper());		
@@ -587,8 +585,8 @@ public class OpenXALExporter implements BLEVisitor {
 	
 	@Override
 	public void visit(final DtlRfGap dtlRfGap) {
-		double E0TL = dtlRfGap.getVoltage();
-		double Phis = dtlRfGap.getRFPhase();	
+		double E0TL = dtlRfGap.getVoltage() * dtlRfGap.getVoltageMult();
+		double Phis = dtlRfGap.getRFPhase() + dtlRfGap.getRFPhaseAdd();
 		double betas = dtlRfGap.getBetaS();
 		double Ts = dtlRfGap.getTTF().getTs();
 		double kTs = dtlRfGap.getTTF().getKTs();
@@ -600,14 +598,14 @@ public class OpenXALExporter implements BLEVisitor {
 		xal.smf.impl.RfGap gap = new xal.smf.impl.RfGap(dtlRfGap.getEssId()+":G");
 		gap.setFirstGap(true); // this uses only phase for calculations
 		gap.getRfGap().setEndCell(0);
-		gap.setLength(0.0); // used only for positioning
 		
 		// following are used to calculate E0TL
-		double length = 1.0; // length is not given in TraceWin, but is used only as a factor in E0TL in OpenXal
+		double length = dtlRfGap.getLength()*1e-3; // length is not given in TraceWin, but is used only as a factor in E0TL in OpenXal
+		gap.setLength(0);
 		gap.getRfGap().setLength(length); 		
 		gap.getRfGap().setAmpFactor(1.0);
 		/*gap.getRfGap().setGapOffset(dblVal)*/	
-		gap.setPosition(dtlRfGap.getLength()*1e-3/2.);
+		gap.setPosition(length/2.);
 		
 		ESSRfCavity cavity = new ESSRfCavity(dtlRfGap.getEssId())
 		{
@@ -625,25 +623,23 @@ public class OpenXALExporter implements BLEVisitor {
 		// TTF		
 		if (betas == 0.0) {
 			cavity.getRfField().setTTFCoefs(new double[] {});
-			cavity.getRfField().setTTF_endCoefs(new double[] {});
+			cavity.getRfField().setTTF_startCoefs(new double[] {});
 		} else {				
 			cavity.getRfField().setTTFCoefs(new double[] {betas, Ts, kTs, k2Ts});
-			cavity.getRfField().setTTF_endCoefs(new double[] {betas, Ts, kTs, k2Ts});
-			cavity.getRfField().setSTFCoefs(new double[] {betas, 0., kS, k2S});
-			cavity.getRfField().setSTF_endCoefs(new double[] {betas, 0., kS, k2S});
+			cavity.getRfField().setTTF_startCoefs(new double[] {betas, Ts, kTs, k2Ts});
 		}		
 		
 		updateApertureBucket(dtlRfGap, gap.getAper());		
 		
 		cavity.setPosition(sectionPosition);
-		cavity.setLength(dtlRfGap.getLength()*1e-3);
+		cavity.setLength(length);
 		add(cavity);
 	}
 
 	@Override
 	public void visit(final DtlDriftTube dtlDriftTube) {
 		double L1 = dtlDriftTube.getNoseConeUpLength() * 1e-3;
-		double Lq = dtlDriftTube.getLength()*1e-3;
+		double Lq = dtlDriftTube.getQuadLength()*1e-3;
 		double L2 = dtlDriftTube.getNoseConeDnLength() * 1e-3;
 		double G = dtlDriftTube.getFieldGradient();
 		
@@ -651,7 +647,7 @@ public class OpenXALExporter implements BLEVisitor {
 		
 		final MagnetSupply ps = new MagnetSupply(essId);
 		magnetPowerSupplies.put(ps.getId(), ps);
-		xal.smf.impl.Quadrupole quad = new xal.smf.impl.Quadrupole(essId) { // there's no setter for type (you need to extend class)
+		xal.smf.impl.Quadrupole quad = new xal.smf.impl.Quadrupole(essId + ":Q") { // there's no setter for type (you need to extend class)
 			{
 				_type="Q"; 
 				channelSuite = new ElectromagnetChannelSuite(essId);
@@ -760,11 +756,10 @@ public class OpenXALExporter implements BLEVisitor {
 		// TTF		
 		if (betas == 0.0) {			
 			dtlTank.getRfField().setTTFCoefs(new double[] {0.0});
+			dtlTank.getRfField().setTTF_startCoefs(new double[] {0.0});
 		} else {
 			dtlTank.getRfField().setTTFCoefs(new double[] {betas, Ts, kTs, k2Ts});
-			dtlTank.getRfField().setTTF_endCoefs(new double[] {betas, Ts, kTs, k2Ts});
-			dtlTank.getRfField().setSTFCoefs(new double[] {betas, 0., kS, k2S});
-			dtlTank.getRfField().setSTF_endCoefs(new double[] {betas, 0., kS, k2S});
+			dtlTank.getRfField().setTTF_startCoefs(new double[] {betas, Ts, kTs, k2Ts});
 		}		
 		dtlTank.setLength(L);
 		dtlTank.setPosition(sectionPosition);		

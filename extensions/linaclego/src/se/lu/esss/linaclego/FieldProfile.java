@@ -44,7 +44,7 @@ public class FieldProfile {
 		
 		field = new double[N];
 		for (int i = 0; i<N; i++)
-			field[i] = parameters.getDoubleValue(Integer.toString(i));
+			field[i] = parameters.getDoubleValue(Integer.toString(i)) * 1e6;
 	
 		this.field = field;
 		return field;

@@ -16,5 +16,15 @@ public class DtlRfGap extends RfGap {
 	public double getLength()
 	{
 		return getParameters().getDoubleValue("length");
-	}	
+	}
+	
+	public double getVoltageMult()
+	{
+		return getParameters().getDoubleValue("voltMult");
+	}
+	
+	public double getRFPhaseAdd()
+	{
+		return getParameters().getDoubleValue("rfPhaseAdd");
+	}
 }

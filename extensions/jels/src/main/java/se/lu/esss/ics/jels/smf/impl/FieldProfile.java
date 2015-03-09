@@ -102,7 +102,7 @@ public class FieldProfile {
 		double zmax = getLength();
 		pw.printf("%d %f\n%f\n", field.length-1, zmax, 1.0);
 		for (int i = 0; i<field.length; i++)
-			pw.printf("%f\n", field[i]);
+			pw.printf("%f\n", field[i]*1e-6);
 		pw.close();
 	}
 }
