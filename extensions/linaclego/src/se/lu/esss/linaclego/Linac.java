@@ -80,7 +80,10 @@ public class Linac {
 	    
 	    @XmlElement(name = "cellModels", required = true)
 	    protected List<Linac.CellModelsSet> cellModelsSets = new ArrayList<Linac.CellModelsSet>();
-	        
+
+	    @XmlElement(name = "legoSets", required = true)
+	    protected List<Linac.LegoSets> legoSets = new ArrayList<Linac.LegoSets>();
+	    
 	    @XmlElement(name = "legoMonitors", required = true)
 	    protected List<Linac.LegoMonitors> legoMonitors = new ArrayList<Linac.LegoMonitors>();
     }
@@ -134,6 +137,26 @@ public class Linac {
 
         public List<CellModel> getCellModels() {
             return this.cellModel;
+        }
+
+        public String getId() {
+            return id;
+        }
+    }
+    
+    @XmlAccessorType(XmlAccessType.FIELD)
+    @XmlType(name = "", propOrder = {
+        "legoSet"
+    })
+    public static class LegoSets {
+
+        protected List<LegoSet> legoSet = new ArrayList<LegoSet>();
+        
+        @XmlAttribute(name = "id", required = true)
+        protected String id;
+
+        public List<LegoSet> getLegoSets() {
+            return this.legoSet;
         }
 
         public String getId() {
@@ -259,6 +282,18 @@ public class Linac {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	public List<LegoSet> getLegoSets(Section section, Cell cell) {
+		// TODO lame implementation
+		List<LegoSet> ret = new ArrayList<>();
+		for (LegoSets sets : header.legoSets)
+			for (LegoSet s : sets.getLegoSets())
+			{
+				if (section.getId().equals(s.getSection()) && cell.getId().equals(s.getCell()))
+					ret.add(s);
+			}
+		return ret;
 	}
 	
 }

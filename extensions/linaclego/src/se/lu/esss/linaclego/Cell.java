@@ -12,6 +12,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+import se.lu.esss.linaclego.Parameters.D;
 import se.lu.esss.linaclego.models.CellModel;
 
 
@@ -87,8 +88,23 @@ public class Cell {
 			n += s.getBeamlineElements().size();
 		return n;
 	}
+
+	public void beforeUnmarshal(Unmarshaller u, Object parent) {
+		this.parent = (Section)parent;
+	}
 	
 	public void afterUnmarshal(Unmarshaller u, Object parent) {
-		this.parent = (Section)parent;
+		Section section = (Section)parent;
+		Linac linac = section.getParent();
+		
+		//load lego sets
+		for (LegoSet s : linac.getLegoSets(section, this)) {
+			String dataId = s.getDataId();
+			D data = d.get(dataId);
+			if (data == null) System.err.println("Warning: there is no dataId = " + dataId + " in " + section.getId() + "." + getId());
+			else
+				data.legoSet = s;
+		}
+		
 	}
 }

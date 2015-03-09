@@ -111,7 +111,7 @@ public class Slot {
 		}
 	}
 	
-	public void afterUnmarshal(Unmarshaller u, Object parent) {
+	public void beforeUnmarshal(Unmarshaller u, Object parent) {
 		if (parent instanceof Cell)
 			this.parent = (Cell)parent;
 	}

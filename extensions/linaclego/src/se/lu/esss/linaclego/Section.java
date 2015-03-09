@@ -60,7 +60,7 @@ public class Section {
 		return "periodic".equals(type);
 	}
 	
-	public void afterUnmarshal(Unmarshaller u, Object parent) {
+	public void beforeUnmarshal(Unmarshaller u, Object parent) {
 		this.parent = ((LinacDesc)parent).linac;
 	}
 }
