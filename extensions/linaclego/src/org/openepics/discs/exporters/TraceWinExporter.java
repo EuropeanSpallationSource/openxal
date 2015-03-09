@@ -20,7 +20,7 @@ import se.lu.esss.linaclego.Section;
 import se.lu.esss.linaclego.Slot;
 import se.lu.esss.linaclego.elements.BeamlineElement;
 import se.lu.esss.linaclego.elements.Bend;
-import se.lu.esss.linaclego.elements.ControlPoint;
+import se.lu.esss.linaclego.elements.LegoMonitor;
 import se.lu.esss.linaclego.elements.Drift;
 import se.lu.esss.linaclego.elements.DtlCell;
 import se.lu.esss.linaclego.elements.DtlDriftTube;
@@ -286,12 +286,9 @@ public class TraceWinExporter implements BLEVisitor {
 	}
 
 	@Override
-	public void visit(ControlPoint controlPoint) {
+	public void visit(LegoMonitor legoMonitor) {
 		if (printControlPoints) {
-			println(null, ";" + controlPoint.getDevName().replace(":", "-"),
-				 "dxmm=" + Double.toString(controlPoint.getPosition()[0] * 1000.0),
-				 "dymm=" + Double.toString(controlPoint.getPosition()[1] * 1000.0),
-				 "dzmm=" + Double.toString(controlPoint.getPosition()[2] * 1000.0));
+			println(null, ";" + legoMonitor.getEssId());
 		}
 	}
 	

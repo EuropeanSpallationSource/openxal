@@ -25,7 +25,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
-import se.lu.esss.linaclego.elements.ControlPoint;
+import se.lu.esss.linaclego.elements.LegoMonitor;
 import se.lu.esss.linaclego.models.CellModel;
 import se.lu.esss.linaclego.models.SlotModel;
 
@@ -81,8 +81,8 @@ public class Linac {
 	    @XmlElement(name = "cellModels", required = true)
 	    protected List<Linac.CellModelsSet> cellModelsSets = new ArrayList<Linac.CellModelsSet>();
 	        
-	    @XmlElement(name = "controlPoints", required = true)
-	    protected List<Linac.ControlPointsSets> controlPointsSets = new ArrayList<Linac.ControlPointsSets>();
+	    @XmlElement(name = "legoMonitors", required = true)
+	    protected List<Linac.LegoMonitors> legoMonitors = new ArrayList<Linac.LegoMonitors>();
     }
     
     public String getRevNo() {
@@ -117,8 +117,8 @@ public class Linac {
         return this.header.cellModelsSets;
     }
 
-    public List<Linac.ControlPointsSets> getControlPointSets() {
-        return this.header.controlPointsSets;
+    public List<Linac.LegoMonitors> getControlPointSets() {
+        return this.header.legoMonitors;
     }
 
 
@@ -144,17 +144,17 @@ public class Linac {
 
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "", propOrder = {
-        "cnpt"
+        "legoMonitor"
     })
-    public static class ControlPointsSets {
+    public static class LegoMonitors {
 
-        protected List<ControlPoint> cnpt = new ArrayList<ControlPoint>();
+        protected List<LegoMonitor> legoMonitor = new ArrayList<LegoMonitor>();
         
         @XmlAttribute(name = "id", required = true)
         protected String id;
 
-        public List<ControlPoint> getControlPoints() {
-            return this.cnpt;
+        public List<LegoMonitor> getLegoMonitors() {
+            return this.legoMonitor;
         }
 
         public String getId() {
@@ -210,11 +210,11 @@ public class Linac {
 		return getLinacData().getDoubleValue("beamFrequency");
 	}
 
-	public List<ControlPoint> getControlPoints(String section, String cell, String slot, String ble) {
+	public List<LegoMonitor> getLegoMonitors(String section, String cell, String slot, String ble) {
 		// TODO lame implementation
-		List<ControlPoint> ret = new ArrayList<>();
-		for (ControlPointsSets cps : getControlPointSets())
-			for (ControlPoint cp : cps.getControlPoints())
+		List<LegoMonitor> ret = new ArrayList<>();
+		for (LegoMonitors cps : getControlPointSets())
+			for (LegoMonitor cp : cps.getLegoMonitors())
 			{
 				if (section.equals(cp.getSection()) && cell.equals(cp.getCell()) && slot.equals(cp.getSlot()) && ble.equals(cp.getBle()))
 					ret.add(cp);

@@ -14,6 +14,6 @@ public class Monitor extends BeamlineElement {
 	@Override
 	public void accept(BLEVisitor visitor) {
 		visitor.visit(this);
-		visitControlPoints(visitor);
+		visitLegoMonitors(visitor);
 	}
 }

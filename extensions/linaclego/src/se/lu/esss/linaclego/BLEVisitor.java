@@ -4,7 +4,7 @@
 package se.lu.esss.linaclego;
 
 import se.lu.esss.linaclego.elements.Bend;
-import se.lu.esss.linaclego.elements.ControlPoint;
+import se.lu.esss.linaclego.elements.LegoMonitor;
 import se.lu.esss.linaclego.elements.Drift;
 import se.lu.esss.linaclego.elements.DtlCell;
 import se.lu.esss.linaclego.elements.DtlDriftTube;
@@ -38,6 +38,6 @@ public interface BLEVisitor {
 	public void visit(DtlDriftTube dtlDriftTube);
 	public void visit(DtlCell dtlCell);
 	public void visit(Edge edge);
-	public void visit(ControlPoint controlPoint);
+	public void visit(LegoMonitor legoMonitor);
 	public void visit(Monitor monitor);
 }

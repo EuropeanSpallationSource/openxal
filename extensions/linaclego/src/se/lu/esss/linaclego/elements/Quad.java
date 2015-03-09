@@ -10,7 +10,7 @@ public class Quad extends BeamlineElement {
 	@Override
 	public void accept(BLEVisitor visitor) {
 		visitor.visit(this);
-		visitControlPoints(visitor);
+		visitLegoMonitors(visitor);
 	}
 	
 	public double getFieldGradient()

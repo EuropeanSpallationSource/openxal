@@ -62,16 +62,16 @@ public class BeamlineElement {
     }
 
 	public void accept(BLEVisitor visitor) {
-		visitControlPoints(visitor);
+		visitLegoMonitors(visitor);
 	}
 	
-	protected void visitControlPoints(BLEVisitor visitor) {
+	protected void visitLegoMonitors(BLEVisitor visitor) {
 		Slot slot = getParent();
 		Cell cell = slot.getParent();
 		Section section = cell.getParent();
 		Linac linac = section.getParent();
 		
-		for (ControlPoint cp : linac.getControlPoints(section.getId(), cell.getId(), slot.getId(), getId()))
+		for (LegoMonitor cp : linac.getLegoMonitors(section.getId(), cell.getId(), slot.getId(), getId()))
 		{
 			visitor.visit(cp);
 		}

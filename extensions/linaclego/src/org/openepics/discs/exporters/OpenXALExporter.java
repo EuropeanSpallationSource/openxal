@@ -25,7 +25,7 @@ import se.lu.esss.linaclego.Section;
 import se.lu.esss.linaclego.Slot;
 import se.lu.esss.linaclego.elements.BeamlineElement;
 import se.lu.esss.linaclego.elements.Bend;
-import se.lu.esss.linaclego.elements.ControlPoint;
+import se.lu.esss.linaclego.elements.LegoMonitor;
 import se.lu.esss.linaclego.elements.Drift;
 import se.lu.esss.linaclego.elements.DtlCell;
 import se.lu.esss.linaclego.elements.DtlDriftTube;
@@ -800,11 +800,11 @@ public class OpenXALExporter implements BLEVisitor {
 	}
 	
 	@Override
-	public void visit(final ControlPoint controlPoint) {
-		if ("bpm".equals(controlPoint.getType()) || "bpm".equals(controlPoint.getModel())) {
-			xal.smf.impl.BPM bpm = new BPM(controlPoint.getEssId()) {
+	public void visit(final LegoMonitor legoMonitor) {
+		if ("bpm".equals(legoMonitor.getType().toLowerCase()) || "bpm".equals(legoMonitor.getModel().toLowerCase())) {
+			xal.smf.impl.BPM bpm = new BPM(legoMonitor.getEssId()) {
 				{
-					channelSuite = new BPMChannelSuite(controlPoint.getDevName());
+					channelSuite = new BPMChannelSuite(legoMonitor.getEssId());
 				}
 			};
 			bpm.getBPMBucket().setFrequency(linac.getBeamFrequency() * section.getRFHarmonic());

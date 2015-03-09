@@ -13,7 +13,7 @@ import javax.xml.bind.annotation.XmlElementDecl;
 import javax.xml.bind.annotation.XmlRegistry;
 
 import se.lu.esss.linaclego.elements.BeamlineElement;
-import se.lu.esss.linaclego.elements.ControlPoint;
+import se.lu.esss.linaclego.elements.LegoMonitor;
 import se.lu.esss.linaclego.elements.Drift;
 import se.lu.esss.linaclego.elements.Quad;
 import se.lu.esss.linaclego.models.CellModel;
@@ -55,11 +55,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link ControlPoint }
+     * Create an instance of {@link LegoMonitor }
      * 
      */
-    public ControlPoint createCnpt() {
-        return new ControlPoint();
+    public LegoMonitor createLegoMonitor() {
+        return new LegoMonitor();
     }
 
     /**

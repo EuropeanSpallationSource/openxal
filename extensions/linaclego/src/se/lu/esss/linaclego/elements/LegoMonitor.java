@@ -3,22 +3,14 @@ package se.lu.esss.linaclego.elements;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
 
-import se.lu.esss.linaclego.Parameters;
-
+// <legoMonitor +ble="QV-020" +cell="090" disc="PBI" +id="BPM-020" +model="ElpBpm" +section="HEBT" +slot="LWU" +type="BPM"/>
 
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "d"
-})
-@XmlRootElement(name = "cnpt")
-public class ControlPoint {
+@XmlRootElement(name = "legoMonitor")
+public class LegoMonitor {
 
-    @XmlElement(name="d", required = true)
-    protected Parameters d = new Parameters();
     @XmlAttribute(name = "id", required = true)
     protected String id;
     @XmlAttribute(name = "ble", required = true)
@@ -31,17 +23,17 @@ public class ControlPoint {
     protected String type;
     @XmlAttribute(name = "model", required = true)
     protected String model;
-    @XmlAttribute(name = "devName", required = true)
-    protected String devName;
     @XmlAttribute(name = "section", required = true)
     protected String section;
-
-    public ControlPoint()
+    @XmlAttribute(name = "disc", required = true)
+    protected String disc;
+    
+    public LegoMonitor()
     {
     	
     }
     
-    public ControlPoint(String id, String type, String section, String cell, String slot, String ble)
+    public LegoMonitor(String id, String type, String section, String cell, String slot, String ble)
     {
     	this.id = id;
     	this.type = type;
@@ -49,10 +41,6 @@ public class ControlPoint {
     	this.cell = cell;
     	this.slot = slot;
     	this.ble = ble;
-    }
-    
-    public Parameters getParameters() {
-        return this.d;
     }
 
     public String getId() {
@@ -82,15 +70,6 @@ public class ControlPoint {
     public String getModel() {
         return model;
     }
-
-    public String getDevName() {
-        return devName;
-    }
-
-	public double[] getPosition() {
-		
-		return new double[]{d.getDoubleValue("dxmm"), d.getDoubleValue("dymm"), d.getDoubleValue("dzmm")};
-	}
 	
 	public String getEssId()
 	{
