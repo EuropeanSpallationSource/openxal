@@ -9,6 +9,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -105,9 +106,15 @@ public class OpenXALExporter implements BLEVisitor {
 
 		Document document = da.document();
 		document.setDocumentURI(new File(fileName).toURI().toString());
-
+	
 		da.writeNode(accelerator);
 		cleanup(document);
+	
+		Element root = document.getDocumentElement();
+		
+		root.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
+		root.setAttributeNS("http://www.w3.org/2001/XMLSchema-instance", 
+					    "xsi:noNamespaceSchemaLocation", "http://sourceforge.net/p/xaldev/openxal/ci/master/tree/core/resources/xal/schemas/xdxf.xsd?format=raw");
 		XmlWriter.writeToFile(document, new File(fileName));
 	}
 	
@@ -146,6 +153,13 @@ public class OpenXALExporter implements BLEVisitor {
 			// remove type="sequence" on sequences - import doesn't work otherwise
 			if ("sequence".equals(parent.getNodeName()) && attrs.getNamedItem("type") != null && "sequence".equals(attrs.getNamedItem("type").getNodeValue())) 
 				attrs.removeNamedItem("type");
+			
+			if ("xdxf".equals(parent.getNodeName())) {
+				attrs.removeNamedItem("id");
+				attrs.removeNamedItem("len");
+				attrs.removeNamedItem("pos");
+				attrs.removeNamedItem("type");
+			}
 		}
 		
 		for (int i = 0; i<children.getLength(); )
