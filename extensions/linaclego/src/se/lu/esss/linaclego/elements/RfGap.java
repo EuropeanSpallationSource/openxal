@@ -5,6 +5,7 @@ import javax.xml.bind.annotation.XmlType;
 
 import se.lu.esss.linaclego.BLEVisitor;
 import se.lu.esss.linaclego.LegoSet;
+import se.lu.esss.linaclego.Parameters.D;
 
 @XmlType(name = "rfGap")
 public class RfGap extends BeamlineElement {
@@ -25,7 +26,8 @@ public class RfGap extends BeamlineElement {
 	public String getVoltageDevName()
 	{
 		LegoSet s = getParameters().get("voltsT").getLegoSet();
-		return s == null ? null : s.getDevName();
+		if (s == null) System.err.println("Warning: there's no voltsT devNames for "+getEssId()+ " "+getClass());
+		return s != null ? s.getDevName() : getEssId().replace('-', ':') + ".GRAD";
 	}
 	
 	public double getRFPhase()
@@ -36,7 +38,8 @@ public class RfGap extends BeamlineElement {
 	public String getRFPhaseDevName()
 	{
 		LegoSet s = getParameters().get("rfPhaseDeg").getLegoSet();
-		return s == null ? null : s.getDevName();
+		if (s == null) System.err.println("Warning: there's no rfPhaseDeg devNames for "+getEssId()+ " "+getClass());
+		return s != null ? s.getDevName() : getEssId().replace('-', ':') + ".PHAS";
 	}
 	
 	public int getPhaseFlag()

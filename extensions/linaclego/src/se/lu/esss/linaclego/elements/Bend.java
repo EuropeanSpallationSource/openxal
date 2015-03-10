@@ -3,6 +3,7 @@ package se.lu.esss.linaclego.elements;
 import javax.xml.bind.annotation.XmlType;
 
 import se.lu.esss.linaclego.BLEVisitor;
+import se.lu.esss.linaclego.LegoSet;
 
 @XmlType(name = "bend")
 public class Bend extends BeamlineElement {
@@ -36,5 +37,10 @@ public class Bend extends BeamlineElement {
 	public int getHVFlag()
 	{
 		return getParameters().getIntValue("HVflag");
+	}
+	
+	public String getDevName()
+	{
+		return getEssId().replace('-', ':') + ".CURR";
 	}
 }
