@@ -134,12 +134,16 @@
 		    <artifactId>openxal.plugins.jca</artifactId>
 		</dependency>
 		<dependency>
-	    <groupId>org.xal</groupId>
-	    <artifactId>openxal.plugins.postgres</artifactId>
+			<groupId>org.xal</groupId>
+			<artifactId>openxal.plugins.postgres</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>se.lu.esss.ics.jels</groupId>
 			<artifactId>jels</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>se.lu.esss.ics.linaclego</groupId>
+			<artifactId>openxal.extensions.linaclego</artifactId>
 		</dependency>
 	</dependencies>
 </project>

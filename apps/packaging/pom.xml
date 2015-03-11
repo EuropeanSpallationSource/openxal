@@ -34,6 +34,7 @@
 		<module>scope</module>
 		<module>score</module>
 		<module>virtualaccelerator</module>
-		<module>xyzcorrelator</module>				
+		<module>xyzcorrelator</module>
+		<module>esstools</module>
 	</modules>	
 </project>
