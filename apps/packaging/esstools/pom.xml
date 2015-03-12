@@ -26,6 +26,7 @@
 							<requires version="current">%{codac_rpm_prefix}-openxal-core</requires>	
 							<requires version="current">%{codac_rpm_prefix}-openxal-ess-data</requires>												
 							<include type="script" file="lego2openxal.sh" scripttype="user" name="lego2openxal" />
+							<include type="script" file="lego2tracewin.sh" scripttype="user" name="lego2tracewin" />
 						</package>
 					</packaging>
 				</configuration>
