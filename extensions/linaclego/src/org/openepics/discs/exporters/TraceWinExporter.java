@@ -308,8 +308,10 @@ public class TraceWinExporter implements BLEVisitor {
 			System.exit(-1);
 		}
 		
+		System.out.printf("Loading linac lego file: %s\n", args[0]);
 		Linac ll = LinacLego.load(args[0]);
 		
+		System.out.printf("Exporting TraceWin file: %s\n", args[1]);
 		TraceWinExporter twe = new TraceWinExporter(args[1]);
 		twe.export(ll);
 	}
