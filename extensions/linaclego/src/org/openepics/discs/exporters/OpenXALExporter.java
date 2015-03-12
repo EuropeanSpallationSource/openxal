@@ -3,7 +3,10 @@ package org.openepics.discs.exporters;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.parsers.ParserConfigurationException;
@@ -26,13 +29,13 @@ import se.lu.esss.linaclego.Section;
 import se.lu.esss.linaclego.Slot;
 import se.lu.esss.linaclego.elements.BeamlineElement;
 import se.lu.esss.linaclego.elements.Bend;
-import se.lu.esss.linaclego.elements.LegoMonitor;
 import se.lu.esss.linaclego.elements.Drift;
 import se.lu.esss.linaclego.elements.DtlCell;
 import se.lu.esss.linaclego.elements.DtlDriftTube;
 import se.lu.esss.linaclego.elements.DtlRfGap;
 import se.lu.esss.linaclego.elements.Edge;
 import se.lu.esss.linaclego.elements.FieldMap;
+import se.lu.esss.linaclego.elements.LegoMonitor;
 import se.lu.esss.linaclego.elements.Monitor;
 import se.lu.esss.linaclego.elements.Quad;
 import se.lu.esss.linaclego.elements.RfGap;
@@ -68,12 +71,19 @@ public class OpenXALExporter implements BLEVisitor {
 	private Accelerator accelerator;
 	private AcceleratorSeq currentSequence;
 
+	private Map<String, se.lu.esss.ics.jels.smf.impl.FieldProfile> fieldProfiles = new HashMap<>();
+	
 	protected OpenXALExporter() 
 	{
 		
 	}
 	
 	public static Accelerator convert(Linac linac) {
+		return convertInternal(linac).accelerator;
+	}
+		
+	
+	private static OpenXALExporter convertInternal(Linac linac) {
 		final OpenXALExporter exporter = new OpenXALExporter();
 		
 		exporter.acceleratorPosition = 0.0;
@@ -96,12 +106,16 @@ public class OpenXALExporter implements BLEVisitor {
 		};
 		linac.accept(exporter);
 		exporter.accelerator.setLength(exporter.acceleratorPosition + exporter.sectionPosition);
-		return exporter.accelerator;
+		
+
+		return  exporter;
 	}
 	
-	public static void export(Linac linac, String fileName) throws IOException {
-		Accelerator accelerator = convert(linac);
-			
+	public static void export(Linac linac, String fileName) throws IOException, URISyntaxException {
+		System.out.println("Converting linac lego to openxal.");
+		OpenXALExporter exporter = convertInternal(linac);
+		Accelerator accelerator = exporter.accelerator;
+
 		XmlDataAdaptor da = XmlDataAdaptor.newEmptyDocumentAdaptor();
 
 		Document document = da.document();
@@ -115,10 +129,20 @@ public class OpenXALExporter implements BLEVisitor {
 		root.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
 		root.setAttributeNS("http://www.w3.org/2001/XMLSchema-instance", 
 					    "xsi:noNamespaceSchemaLocation", "http://sourceforge.net/p/xaldev/openxal/ci/master/tree/core/resources/xal/schemas/xdxf.xsd?format=raw");
+
+		System.out.printf("Writing output to: %s\n", fileName);
 		XmlWriter.writeToFile(document, new File(fileName));
+		
+		for (Entry<String, se.lu.esss.ics.jels.smf.impl.FieldProfile> e : exporter.fieldProfiles.entrySet()) {
+			String destinationFile = new URL(new URL(document.getDocumentURI()), e.getKey()+".edz").toString();
+			System.out.printf("Saving fieldmap %s to: %s\n", e.getKey(), destinationFile);
+			e.getValue().saveFile(destinationFile);
+		}
+		
 	}
 	
 	public static void export(String sourceFileName, String destinationFilename) throws IOException, URISyntaxException, SAXException, ParserConfigurationException, JAXBException {
+		System.out.printf("Loading linac lego: %s\n", sourceFileName);
 		Linac ll = LinacLego.load(sourceFileName);		
 		export(ll, destinationFilename);
 	}
@@ -570,6 +594,7 @@ public class OpenXALExporter implements BLEVisitor {
 	public void visit(FieldMap fieldMap) {
 		FieldProfile fp = fieldMap.getFieldProfile();
 		final se.lu.esss.ics.jels.smf.impl.FieldProfile fp2 = new se.lu.esss.ics.jels.smf.impl.FieldProfile(fp.getLength()*1e-3, fp.getField());
+		fieldProfiles.put(fieldMap.getFieldmapFile(),  fp2);
 		ESSFieldMap fm = new ESSFieldMap(fieldMap.getEssId());		
 		fm.setFieldProfile(fp2);
 		fm.setPosition(sectionPosition + fieldMap.getLength()*1e-3*0.5);

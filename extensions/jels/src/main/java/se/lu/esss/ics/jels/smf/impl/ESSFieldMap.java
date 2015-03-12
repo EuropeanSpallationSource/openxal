@@ -119,23 +119,4 @@ public class ESSFieldMap extends Electrostatic {
 			e.printStackTrace();
 		}
 	}
-	
-	/**
-     * Updates fieldMap file attribute to point to the right file. Note, after loading it is not 
-     * possible to access absolute path to the file.
-     */
-	
-	@Override
-	public void write(DataAdaptor adaptor) {
-		super.write(adaptor);
-		try {
-			getFieldProfile().saveFile(new URL(new URL(((XmlDataAdaptor)adaptor).document().getDocumentURI()), getFieldMapFile()+".edz").toString());
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-		}
-	}
 }

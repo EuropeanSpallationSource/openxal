@@ -257,6 +257,9 @@ public class Linac {
 		if (fieldProfiles.containsKey(fieldmapFile)) return fieldProfiles.get(fieldmapFile);
 		
 		try {
+			String file = new URL(getSource(), fieldmapFile+".xml").toString();
+			System.out.printf("Loading field profile: %s\n", file);
+			
 			JAXBContext context = JAXBContext.newInstance(FieldProfile.class);
 			Unmarshaller um = context.createUnmarshaller();
 			
@@ -267,7 +270,7 @@ public class Linac {
 
 			XMLReader xr = spf.newSAXParser().getXMLReader();
 			
-			SAXSource fmsource = new SAXSource(xr, new InputSource(new URL(getSource(), fieldmapFile+".xml").toString()));
+			SAXSource fmsource = new SAXSource(xr, new InputSource(file));
 			FieldProfile fp = um.unmarshal(fmsource, FieldProfile.class).getValue();
 
 			fieldProfiles.put(fieldmapFile, fp);
