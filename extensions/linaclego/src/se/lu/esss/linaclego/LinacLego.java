@@ -15,11 +15,15 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
+import se.lu.esss.ics.jels.JElsDemo;
 import se.lu.esss.ics.jels.model.elem.jels.JElsElementMapping;
 import se.lu.esss.linaclego.elements.Drift;
 import se.lu.esss.linaclego.elements.Quad;
+import xal.model.ModelException;
+import xal.model.probe.EnvelopeProbe;
 import xal.sim.scenario.ElementMapping;
 import xal.smf.Accelerator;
+import xal.smf.AcceleratorSeq;
 
 public class LinacLego {
 	public static Linac load(String sourceFileName) throws JAXBException, SAXException, ParserConfigurationException, MalformedURLException 
@@ -54,6 +58,24 @@ public class LinacLego {
 			e.printStackTrace();
 			return null;
 		}
+	}
+	
+	public static void main(String[] args) throws ModelException
+	{
+		if (args.length == 0) {
+			System.out.println("Usage: <path/url to linacLego.xml> [probe file]");
+			return;
+		}
+		
+		AcceleratorSeq sequence = loadAcceleator(args[0]);
+		EnvelopeProbe probe;
+		if (args.length > 1) {
+			probe = JElsDemo.loadProbeFromXML(args[1]);
+		} else {
+			probe = JElsDemo.defaultProbe();
+		}
+		
+		JElsDemo.run(sequence, probe);
 	}
 	
 }
