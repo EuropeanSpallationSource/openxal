@@ -258,7 +258,7 @@ public class Linac {
 		
 		try {
 			String file = new URL(getSource(), fieldmapFile+".xml").toString();
-			System.out.printf("Loading field profile: %s\n", file);
+			//System.out.printf("Loading field profile: %s\n", file);
 			
 			JAXBContext context = JAXBContext.newInstance(FieldProfile.class);
 			Unmarshaller um = context.createUnmarshaller();
