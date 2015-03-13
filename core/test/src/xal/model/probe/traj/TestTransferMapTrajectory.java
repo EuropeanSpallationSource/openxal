@@ -23,6 +23,7 @@ import xal.sim.scenario.Scenario;
 import xal.smf.Accelerator;
 import xal.smf.AcceleratorSeq;
 import xal.smf.data.XMLDataManager;
+import xal.test.ResourceManager;
 import xal.tools.beam.PhaseMatrix;
 
 /**
@@ -46,7 +47,7 @@ public class TestTransferMapTrajectory {
     @BeforeClass
     public static void SetupClass() throws ModelException {
         
-        ACCEL  = XMLDataManager.loadDefaultAccelerator();
+        ACCEL  =  ResourceManager.getTestAccelerator(); 
 
                 ArrayList<AcceleratorSeq> lst = new ArrayList<AcceleratorSeq>();
                 AcceleratorSeq hebt1 = ACCEL.getSequence("HEBT1");

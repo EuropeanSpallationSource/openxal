@@ -30,6 +30,7 @@ import xal.sim.scenario.Scenario;
 import xal.smf.Accelerator;
 import xal.smf.AcceleratorSeq;
 import xal.smf.data.XMLDataManager;
+
 import xal.tools.ResourceManager;
 import xal.tools.beam.PhaseVector;
 
@@ -119,7 +120,7 @@ public class TestParticleProbeTrajectory {
      */
     private static Accelerator loadAccelerator(String ...arrPathRel) {
         if (arrPathRel.length == 0)
-            return XMLDataManager.loadDefaultAccelerator();
+            return xal.test.ResourceManager.getTestAccelerator();
         String  strPathRel = arrPathRel[0];
         String  strPathXal = ResourceManager.getProjectHomePath();
         String  strFileAccel = strPathXal + strPathRel;
