@@ -54,7 +54,7 @@ public class FieldMapNCellsTest {
 				double e = GeneralTest.compare(dataOXFM[0], dataOXNC[0], dataOXFM[j], dataOXNC[j]);
 				//System.out.printf("%s: %E %c %E\n",allCols[j].name(), e, e < allCols[j].allowedError ? '<' : '>', allCols[j].allowedError);
 				System.out.printf("%E\t", e);
-				if (e >= 0.02) {
+				if (e >= 0.05) {
 					message.append(j).append(" ");
 					ok = false;
 				}
