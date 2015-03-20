@@ -1,0 +1,77 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Configuration date="Tue Oct 14 10:42:11 EDT 2008" version="1.0.0">
+	<publisher publishPeriod="600"/>
+	<persistentStore>
+		<dbtable entity="MachineModel" schema="MACHINE_MODEL" table="RUNS">
+			<column attribute="id" column="ID"/>
+			<column attribute="run_element_date" column="RUN_ELEMENT_DATE"/>
+			<column attribute="run_source_chk" column="RUN_SOURCE_CHK"/>
+			<column attribute="date_created" column="DATE_CREATED"/>
+			<column attribute="comments" column="COMMENTS"/>
+			<column attribute="model_modes_id" column="MODEL_MODES_ID"/>
+		</dbtable>
+		<dbtable entity="MachineModelDetail" schema="MACHINE_MODEL" table="ELEMENT_MODELS">
+			<column attribute="run_id" column="RUNS_ID"/>
+			<column attribute="element_name" column="ELEMENT_NAME"/>
+			<column attribute="index_slice_chk" column="INDEX_SLICE_CHK"/>
+			<column attribute="zpos" column="ZPOS"/>
+			<column attribute="e" column="EK"/>
+			<column attribute="alpha_x" column="ALPHA_X"/>
+			<column attribute="alpha_y" column="ALPHA_Y"/>
+			<column attribute="beta_x" column="BETA_X"/>
+			<column attribute="beta_y" column="BETA_Y"/>
+			<column attribute="psi_x" column="PSI_X"/>
+			<column attribute="psi_y" column="PSI_Y"/>
+			<column attribute="eta_x" column="ETA_X"/>
+			<column attribute="eta_y" column="ETA_Y"/>
+			<column attribute="etap_x" column="ETAP_X"/>
+			<column attribute="etap_y" column="ETAP_Y"/>
+			<column attribute="r11" column="R11"/>
+			<column attribute="r12" column="R12"/>
+			<column attribute="r13" column="R13"/>
+			<column attribute="r14" column="R14"/>
+			<column attribute="r15" column="R15"/>
+			<column attribute="r16" column="R16"/>
+			<column attribute="r21" column="R21"/>
+			<column attribute="r22" column="R22"/>
+			<column attribute="r23" column="R23"/>
+			<column attribute="r24" column="R24"/>
+			<column attribute="r25" column="R25"/>
+			<column attribute="r26" column="R26"/>
+			<column attribute="r31" column="R31"/>
+			<column attribute="r32" column="R32"/>
+			<column attribute="r33" column="R33"/>
+			<column attribute="r34" column="R34"/>
+			<column attribute="r35" column="R35"/>
+			<column attribute="r36" column="R36"/>
+			<column attribute="r41" column="R41"/>
+			<column attribute="r42" column="R42"/>
+			<column attribute="r43" column="R43"/>
+			<column attribute="r44" column="R44"/>
+			<column attribute="r45" column="R45"/>
+			<column attribute="r46" column="R46"/>
+			<column attribute="r51" column="R51"/>
+			<column attribute="r52" column="R52"/>
+			<column attribute="r53" column="R53"/>
+			<column attribute="r54" column="R54"/>
+			<column attribute="r55" column="R55"/>
+			<column attribute="r56" column="R56"/>
+			<column attribute="r61" column="R61"/>
+			<column attribute="r62" column="R62"/>
+			<column attribute="r63" column="R63"/>
+			<column attribute="r64" column="R64"/>
+			<column attribute="r65" column="R65"/>
+			<column attribute="r66" column="R66"/>
+			<column attribute="leff" column="LEFF"/>
+			<column attribute="sleff" column="SLEFF"/>			
+			<column attribute="suml" column="SUML"/>
+			<column attribute="ordinal" column="ORDINAL"/>
+		</dbtable>
+		<dbtable entity="MachineModelDevice" schema="MACHINE_MODEL" table="MODEL_DEVICES">
+			<column attribute="ELEMENT_NAME" column="ELEMENT_NAME"/>
+			<column attribute="DEVICE_PROPERTY" column="DEVICE_PROPERTY"/>
+			<column attribute="DEVICE_VALUE" column="DEVICE_VALUE"/>
+			<column attribute="ZPOS" column="ZPOS"/>
+		</dbtable>
+	</persistentStore>
+</Configuration>

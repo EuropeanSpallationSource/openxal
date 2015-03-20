@@ -1,0 +1,898 @@
+<html xmlns:v="urn:schemas-microsoft-com:vml"
+xmlns:o="urn:schemas-microsoft-com:office:office"
+xmlns:w="urn:schemas-microsoft-com:office:word"
+xmlns:m="http://schemas.microsoft.com/office/2004/12/omml"
+xmlns="http://www.w3.org/TR/REC-html40">
+
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=us-ascii">
+<meta name=ProgId content=Word.Document>
+<meta name=Generator content="Microsoft Word 12">
+<meta name=Originator content="Microsoft Word 12">
+<link rel=File-List href="Help_files/filelist.xml">
+<link rel=Edit-Time-Data href="Help_files/editdata.mso">
+<!--[if !mso]>
+<style>
+v\:* {behavior:url(#default#VML);}
+o\:* {behavior:url(#default#VML);}
+w\:* {behavior:url(#default#VML);}
+.shape {behavior:url(#default#VML);}
+</style>
+<![endif]-->
+<title>Model Manager Help</title>
+<!--[if gte mso 9]><xml>
+ <o:DocumentProperties>
+  <o:Author>SLAC</o:Author>
+  <o:LastAuthor>pchu</o:LastAuthor>
+  <o:Revision>72</o:Revision>
+  <o:TotalTime>462</o:TotalTime>
+  <o:Created>2009-04-13T16:56:00Z</o:Created>
+  <o:LastSaved>2009-04-20T17:40:00Z</o:LastSaved>
+  <o:Pages>4</o:Pages>
+  <o:Words>1160</o:Words>
+  <o:Characters>6613</o:Characters>
+  <o:Company>Stanford Linear Accelerator Center</o:Company>
+  <o:Lines>55</o:Lines>
+  <o:Paragraphs>15</o:Paragraphs>
+  <o:CharactersWithSpaces>7758</o:CharactersWithSpaces>
+  <o:Version>12.00</o:Version>
+ </o:DocumentProperties>
+</xml><![endif]-->
+<link rel=themeData href="Help_files/themedata.thmx">
+<link rel=colorSchemeMapping href="Help_files/colorschememapping.xml">
+<!--[if gte mso 9]><xml>
+ <w:WordDocument>
+  <w:TrackMoves>false</w:TrackMoves>
+  <w:TrackFormatting/>
+  <w:ValidateAgainstSchemas/>
+  <w:SaveIfXMLInvalid>false</w:SaveIfXMLInvalid>
+  <w:IgnoreMixedContent>false</w:IgnoreMixedContent>
+  <w:AlwaysShowPlaceholderText>false</w:AlwaysShowPlaceholderText>
+  <w:DoNotPromoteQF/>
+  <w:LidThemeOther>EN-US</w:LidThemeOther>
+  <w:LidThemeAsian>ZH-CN</w:LidThemeAsian>
+  <w:LidThemeComplexScript>X-NONE</w:LidThemeComplexScript>
+  <w:Compatibility>
+   <w:BreakWrappedTables/>
+   <w:SnapToGridInCell/>
+   <w:WrapTextWithPunct/>
+   <w:UseAsianBreakRules/>
+   <w:DontGrowAutofit/>
+   <w:SplitPgBreakAndParaMark/>
+   <w:DontVertAlignCellWithSp/>
+   <w:DontBreakConstrainedForcedTables/>
+   <w:DontVertAlignInTxbx/>
+   <w:Word11KerningPairs/>
+   <w:CachedColBalance/>
+  </w:Compatibility>
+  <w:BrowserLevel>MicrosoftInternetExplorer4</w:BrowserLevel>
+  <m:mathPr>
+   <m:mathFont m:val="Cambria Math"/>
+   <m:brkBin m:val="before"/>
+   <m:brkBinSub m:val="&#45;-"/>
+   <m:smallFrac m:val="off"/>
+   <m:dispDef/>
+   <m:lMargin m:val="0"/>
+   <m:rMargin m:val="0"/>
+   <m:defJc m:val="centerGroup"/>
+   <m:wrapIndent m:val="1440"/>
+   <m:intLim m:val="subSup"/>
+   <m:naryLim m:val="undOvr"/>
+  </m:mathPr>  <u1:mathPr>
+   <u1:mathFont u1:val="Cambria Math"/>
+   <u1:brkBin u1:val="before"/>
+   <u1:brkBinSub u1:val="--"/>
+   <u1:smallFrac u1:val="off"/>
+   <u1:dispDef/>
+   <u1:lMargin u1:val="0"/>
+   <u1:rMargin u1:val="0"/>
+   <u1:defJc u1:val="centerGroup"/>
+   <u1:wrapIndent u1:val="1440"/>
+   <u1:intLim u1:val="subSup"/>
+   <u1:naryLim u1:val="undOvr"/>
+  </u1:mathPr>
+ </w:WordDocument>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <w:LatentStyles DefLockedState="false" DefUnhideWhenUsed="false"
+  DefSemiHidden="false" DefQFormat="false" LatentStyleCount="267">
+  <w:LsdException Locked="false" Priority="9" Name="heading 1"/>
+  <w:LsdException Locked="false" Priority="10" Name="Title"/>
+  <w:LsdException Locked="false" Priority="1" Name="Default Paragraph Font"/>
+  <w:LsdException Locked="false" Priority="99" Name="Hyperlink"/>
+  <w:LsdException Locked="false" Priority="99" Name="FollowedHyperlink"/>
+  <w:LsdException Locked="false" Priority="99" Name="No List"/>
+  <w:LsdException Locked="false" Priority="99" Name="Balloon Text"/>
+  <w:LsdException Locked="false" Priority="99" SemiHidden="true"
+   Name="Placeholder Text"/>
+  <w:LsdException Locked="false" Priority="1" QFormat="true" Name="No Spacing"/>
+  <w:LsdException Locked="false" Priority="60" Name="Light Shading"/>
+  <w:LsdException Locked="false" Priority="61" Name="Light List"/>
+  <w:LsdException Locked="false" Priority="62" Name="Light Grid"/>
+  <w:LsdException Locked="false" Priority="63" Name="Medium Shading 1"/>
+  <w:LsdException Locked="false" Priority="64" Name="Medium Shading 2"/>
+  <w:LsdException Locked="false" Priority="65" Name="Medium List 1"/>
+  <w:LsdException Locked="false" Priority="66" Name="Medium List 2"/>
+  <w:LsdException Locked="false" Priority="67" Name="Medium Grid 1"/>
+  <w:LsdException Locked="false" Priority="68" Name="Medium Grid 2"/>
+  <w:LsdException Locked="false" Priority="69" Name="Medium Grid 3"/>
+  <w:LsdException Locked="false" Priority="70" Name="Dark List"/>
+  <w:LsdException Locked="false" Priority="71" Name="Colorful Shading"/>
+  <w:LsdException Locked="false" Priority="72" Name="Colorful List"/>
+  <w:LsdException Locked="false" Priority="73" Name="Colorful Grid"/>
+  <w:LsdException Locked="false" Priority="60" Name="Light Shading Accent 1"/>
+  <w:LsdException Locked="false" Priority="61" Name="Light List Accent 1"/>
+  <w:LsdException Locked="false" Priority="62" Name="Light Grid Accent 1"/>
+  <w:LsdException Locked="false" Priority="63" Name="Medium Shading 1 Accent 1"/>
+  <w:LsdException Locked="false" Priority="64" Name="Medium Shading 2 Accent 1"/>
+  <w:LsdException Locked="false" Priority="65" Name="Medium List 1 Accent 1"/>
+  <w:LsdException Locked="false" Priority="99" SemiHidden="true" Name="Revision"/>
+  <w:LsdException Locked="false" Priority="34" QFormat="true"
+   Name="List Paragraph"/>
+  <w:LsdException Locked="false" Priority="29" QFormat="true" Name="Quote"/>
+  <w:LsdException Locked="false" Priority="30" QFormat="true"
+   Name="Intense Quote"/>
+  <w:LsdException Locked="false" Priority="66" Name="Medium List 2 Accent 1"/>
+  <w:LsdException Locked="false" Priority="67" Name="Medium Grid 1 Accent 1"/>
+  <w:LsdException Locked="false" Priority="68" Name="Medium Grid 2 Accent 1"/>
+  <w:LsdException Locked="false" Priority="69" Name="Medium Grid 3 Accent 1"/>
+  <w:LsdException Locked="false" Priority="70" Name="Dark List Accent 1"/>
+  <w:LsdException Locked="false" Priority="71" Name="Colorful Shading Accent 1"/>
+  <w:LsdException Locked="false" Priority="72" Name="Colorful List Accent 1"/>
+  <w:LsdException Locked="false" Priority="73" Name="Colorful Grid Accent 1"/>
+  <w:LsdException Locked="false" Priority="60" Name="Light Shading Accent 2"/>
+  <w:LsdException Locked="false" Priority="61" Name="Light List Accent 2"/>
+  <w:LsdException Locked="false" Priority="62" Name="Light Grid Accent 2"/>
+  <w:LsdException Locked="false" Priority="63" Name="Medium Shading 1 Accent 2"/>
+  <w:LsdException Locked="false" Priority="64" Name="Medium Shading 2 Accent 2"/>
+  <w:LsdException Locked="false" Priority="65" Name="Medium List 1 Accent 2"/>
+  <w:LsdException Locked="false" Priority="66" Name="Medium List 2 Accent 2"/>
+  <w:LsdException Locked="false" Priority="67" Name="Medium Grid 1 Accent 2"/>
+  <w:LsdException Locked="false" Priority="68" Name="Medium Grid 2 Accent 2"/>
+  <w:LsdException Locked="false" Priority="69" Name="Medium Grid 3 Accent 2"/>
+  <w:LsdException Locked="false" Priority="70" Name="Dark List Accent 2"/>
+  <w:LsdException Locked="false" Priority="71" Name="Colorful Shading Accent 2"/>
+  <w:LsdException Locked="false" Priority="72" Name="Colorful List Accent 2"/>
+  <w:LsdException Locked="false" Priority="73" Name="Colorful Grid Accent 2"/>
+  <w:LsdException Locked="false" Priority="60" Name="Light Shading Accent 3"/>
+  <w:LsdException Locked="false" Priority="61" Name="Light List Accent 3"/>
+  <w:LsdException Locked="false" Priority="62" Name="Light Grid Accent 3"/>
+  <w:LsdException Locked="false" Priority="63" Name="Medium Shading 1 Accent 3"/>
+  <w:LsdException Locked="false" Priority="64" Name="Medium Shading 2 Accent 3"/>
+  <w:LsdException Locked="false" Priority="65" Name="Medium List 1 Accent 3"/>
+  <w:LsdException Locked="false" Priority="66" Name="Medium List 2 Accent 3"/>
+  <w:LsdException Locked="false" Priority="67" Name="Medium Grid 1 Accent 3"/>
+  <w:LsdException Locked="false" Priority="68" Name="Medium Grid 2 Accent 3"/>
+  <w:LsdException Locked="false" Priority="69" Name="Medium Grid 3 Accent 3"/>
+  <w:LsdException Locked="false" Priority="70" Name="Dark List Accent 3"/>
+  <w:LsdException Locked="false" Priority="71" Name="Colorful Shading Accent 3"/>
+  <w:LsdException Locked="false" Priority="72" Name="Colorful List Accent 3"/>
+  <w:LsdException Locked="false" Priority="73" Name="Colorful Grid Accent 3"/>
+  <w:LsdException Locked="false" Priority="60" Name="Light Shading Accent 4"/>
+  <w:LsdException Locked="false" Priority="61" Name="Light List Accent 4"/>
+  <w:LsdException Locked="false" Priority="62" Name="Light Grid Accent 4"/>
+  <w:LsdException Locked="false" Priority="63" Name="Medium Shading 1 Accent 4"/>
+  <w:LsdException Locked="false" Priority="64" Name="Medium Shading 2 Accent 4"/>
+  <w:LsdException Locked="false" Priority="65" Name="Medium List 1 Accent 4"/>
+  <w:LsdException Locked="false" Priority="66" Name="Medium List 2 Accent 4"/>
+  <w:LsdException Locked="false" Priority="67" Name="Medium Grid 1 Accent 4"/>
+  <w:LsdException Locked="false" Priority="68" Name="Medium Grid 2 Accent 4"/>
+  <w:LsdException Locked="false" Priority="69" Name="Medium Grid 3 Accent 4"/>
+  <w:LsdException Locked="false" Priority="70" Name="Dark List Accent 4"/>
+  <w:LsdException Locked="false" Priority="71" Name="Colorful Shading Accent 4"/>
+  <w:LsdException Locked="false" Priority="72" Name="Colorful List Accent 4"/>
+  <w:LsdException Locked="false" Priority="73" Name="Colorful Grid Accent 4"/>
+  <w:LsdException Locked="false" Priority="60" Name="Light Shading Accent 5"/>
+  <w:LsdException Locked="false" Priority="61" Name="Light List Accent 5"/>
+  <w:LsdException Locked="false" Priority="62" Name="Light Grid Accent 5"/>
+  <w:LsdException Locked="false" Priority="63" Name="Medium Shading 1 Accent 5"/>
+  <w:LsdException Locked="false" Priority="64" Name="Medium Shading 2 Accent 5"/>
+  <w:LsdException Locked="false" Priority="65" Name="Medium List 1 Accent 5"/>
+  <w:LsdException Locked="false" Priority="66" Name="Medium List 2 Accent 5"/>
+  <w:LsdException Locked="false" Priority="67" Name="Medium Grid 1 Accent 5"/>
+  <w:LsdException Locked="false" Priority="68" Name="Medium Grid 2 Accent 5"/>
+  <w:LsdException Locked="false" Priority="69" Name="Medium Grid 3 Accent 5"/>
+  <w:LsdException Locked="false" Priority="70" Name="Dark List Accent 5"/>
+  <w:LsdException Locked="false" Priority="71" Name="Colorful Shading Accent 5"/>
+  <w:LsdException Locked="false" Priority="72" Name="Colorful List Accent 5"/>
+  <w:LsdException Locked="false" Priority="73" Name="Colorful Grid Accent 5"/>
+  <w:LsdException Locked="false" Priority="60" Name="Light Shading Accent 6"/>
+  <w:LsdException Locked="false" Priority="61" Name="Light List Accent 6"/>
+  <w:LsdException Locked="false" Priority="62" Name="Light Grid Accent 6"/>
+  <w:LsdException Locked="false" Priority="63" Name="Medium Shading 1 Accent 6"/>
+  <w:LsdException Locked="false" Priority="64" Name="Medium Shading 2 Accent 6"/>
+  <w:LsdException Locked="false" Priority="65" Name="Medium List 1 Accent 6"/>
+  <w:LsdException Locked="false" Priority="66" Name="Medium List 2 Accent 6"/>
+  <w:LsdException Locked="false" Priority="67" Name="Medium Grid 1 Accent 6"/>
+  <w:LsdException Locked="false" Priority="68" Name="Medium Grid 2 Accent 6"/>
+  <w:LsdException Locked="false" Priority="69" Name="Medium Grid 3 Accent 6"/>
+  <w:LsdException Locked="false" Priority="70" Name="Dark List Accent 6"/>
+  <w:LsdException Locked="false" Priority="71" Name="Colorful Shading Accent 6"/>
+  <w:LsdException Locked="false" Priority="72" Name="Colorful List Accent 6"/>
+  <w:LsdException Locked="false" Priority="73" Name="Colorful Grid Accent 6"/>
+  <w:LsdException Locked="false" Priority="19" QFormat="true"
+   Name="Subtle Emphasis"/>
+  <w:LsdException Locked="false" Priority="21" QFormat="true"
+   Name="Intense Emphasis"/>
+  <w:LsdException Locked="false" Priority="31" QFormat="true"
+   Name="Subtle Reference"/>
+  <w:LsdException Locked="false" Priority="32" QFormat="true"
+   Name="Intense Reference"/>
+  <w:LsdException Locked="false" Priority="33" QFormat="true" Name="Book Title"/>
+  <w:LsdException Locked="false" Priority="37" SemiHidden="true"
+   UnhideWhenUsed="true" Name="Bibliography"/>
+  <w:LsdException Locked="false" Priority="39" SemiHidden="true"
+   UnhideWhenUsed="true" QFormat="true" Name="TOC Heading"/>
+ </w:LatentStyles>
+</xml><![endif]-->
+<style>
+<!--
+ /* Font Definitions */
+ @font-face
+	{font-family:"Cambria Math";
+	panose-1:2 4 5 3 5 4 6 3 2 4;
+	mso-font-charset:0;
+	mso-generic-font-family:roman;
+	mso-font-pitch:variable;
+	mso-font-signature:-1610611985 1107304683 0 0 159 0;}
+@font-face
+	{font-family:Cambria;
+	panose-1:2 4 5 3 5 4 6 3 2 4;
+	mso-font-charset:0;
+	mso-generic-font-family:roman;
+	mso-font-pitch:variable;
+	mso-font-signature:-1610611985 1073741899 0 0 159 0;}
+@font-face
+	{font-family:Tahoma;
+	panose-1:2 11 6 4 3 5 4 4 2 4;
+	mso-font-charset:0;
+	mso-generic-font-family:swiss;
+	mso-font-pitch:variable;
+	mso-font-signature:1627400839 -2147483648 8 0 66047 0;}
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{mso-style-unhide:no;
+	mso-style-qformat:yes;
+	mso-style-parent:"";
+	margin:0in;
+	margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:"Times New Roman","serif";
+	mso-fareast-font-family:"Times New Roman";}
+h1
+	{mso-style-priority:9;
+	mso-style-unhide:no;
+	mso-style-qformat:yes;
+	mso-style-link:"Heading 1 Char";
+	mso-style-next:Normal;
+	margin-top:24.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:0in;
+	margin-bottom:.0001pt;
+	mso-pagination:widow-orphan lines-together;
+	page-break-after:avoid;
+	mso-outline-level:1;
+	font-size:14.0pt;
+	font-family:"Cambria","serif";
+	mso-fareast-font-family:"Times New Roman";
+	mso-fareast-theme-font:minor-fareast;
+	mso-bidi-font-family:"Times New Roman";
+	mso-bidi-theme-font:major-bidi;
+	color:#365F91;
+	mso-font-kerning:0pt;}
+p.MsoTitle, li.MsoTitle, div.MsoTitle
+	{mso-style-priority:10;
+	mso-style-unhide:no;
+	mso-style-qformat:yes;
+	mso-style-link:"Title Char";
+	mso-style-next:Normal;
+	margin-top:0in;
+	margin-right:0in;
+	margin-bottom:15.0pt;
+	margin-left:0in;
+	mso-add-space:auto;
+	mso-pagination:widow-orphan;
+	border:none;
+	mso-border-bottom-alt:solid #4F81BD 1.0pt;
+	padding:0in;
+	mso-padding-alt:0in 0in 4.0pt 0in;
+	font-size:26.0pt;
+	font-family:"Cambria","serif";
+	mso-fareast-font-family:"Times New Roman";
+	mso-bidi-font-family:"Times New Roman";
+	color:#17365D;
+	letter-spacing:.25pt;
+	mso-font-kerning:14.0pt;}
+p.MsoTitleCxSpFirst, li.MsoTitleCxSpFirst, div.MsoTitleCxSpFirst
+	{mso-style-priority:10;
+	mso-style-unhide:no;
+	mso-style-qformat:yes;
+	mso-style-link:"Title Char";
+	mso-style-next:Normal;
+	mso-style-type:export-only;
+	margin:0in;
+	margin-bottom:.0001pt;
+	mso-add-space:auto;
+	mso-pagination:widow-orphan;
+	border:none;
+	mso-border-bottom-alt:solid #4F81BD 1.0pt;
+	padding:0in;
+	mso-padding-alt:0in 0in 4.0pt 0in;
+	font-size:26.0pt;
+	font-family:"Cambria","serif";
+	mso-fareast-font-family:"Times New Roman";
+	mso-bidi-font-family:"Times New Roman";
+	color:#17365D;
+	letter-spacing:.25pt;
+	mso-font-kerning:14.0pt;}
+p.MsoTitleCxSpMiddle, li.MsoTitleCxSpMiddle, div.MsoTitleCxSpMiddle
+	{mso-style-priority:10;
+	mso-style-unhide:no;
+	mso-style-qformat:yes;
+	mso-style-link:"Title Char";
+	mso-style-next:Normal;
+	mso-style-type:export-only;
+	margin:0in;
+	margin-bottom:.0001pt;
+	mso-add-space:auto;
+	mso-pagination:widow-orphan;
+	border:none;
+	mso-border-bottom-alt:solid #4F81BD 1.0pt;
+	padding:0in;
+	mso-padding-alt:0in 0in 4.0pt 0in;
+	font-size:26.0pt;
+	font-family:"Cambria","serif";
+	mso-fareast-font-family:"Times New Roman";
+	mso-bidi-font-family:"Times New Roman";
+	color:#17365D;
+	letter-spacing:.25pt;
+	mso-font-kerning:14.0pt;}
+p.MsoTitleCxSpLast, li.MsoTitleCxSpLast, div.MsoTitleCxSpLast
+	{mso-style-priority:10;
+	mso-style-unhide:no;
+	mso-style-qformat:yes;
+	mso-style-link:"Title Char";
+	mso-style-next:Normal;
+	mso-style-type:export-only;
+	margin-top:0in;
+	margin-right:0in;
+	margin-bottom:15.0pt;
+	margin-left:0in;
+	mso-add-space:auto;
+	mso-pagination:widow-orphan;
+	border:none;
+	mso-border-bottom-alt:solid #4F81BD 1.0pt;
+	padding:0in;
+	mso-padding-alt:0in 0in 4.0pt 0in;
+	font-size:26.0pt;
+	font-family:"Cambria","serif";
+	mso-fareast-font-family:"Times New Roman";
+	mso-bidi-font-family:"Times New Roman";
+	color:#17365D;
+	letter-spacing:.25pt;
+	mso-font-kerning:14.0pt;}
+a:link, span.MsoHyperlink
+	{mso-style-priority:99;
+	mso-style-unhide:no;
+	color:blue;
+	text-decoration:underline;
+	text-underline:single;}
+a:visited, span.MsoHyperlinkFollowed
+	{mso-style-noshow:yes;
+	mso-style-priority:99;
+	mso-style-unhide:no;
+	color:purple;
+	text-decoration:underline;
+	text-underline:single;}
+p.MsoAcetate, li.MsoAcetate, div.MsoAcetate
+	{mso-style-noshow:yes;
+	mso-style-priority:99;
+	mso-style-unhide:no;
+	mso-style-link:"Balloon Text Char";
+	margin:0in;
+	margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:8.0pt;
+	font-family:"Tahoma","sans-serif";
+	mso-fareast-font-family:"Times New Roman";}
+span.Heading1Char
+	{mso-style-name:"Heading 1 Char";
+	mso-style-priority:9;
+	mso-style-unhide:no;
+	mso-style-locked:yes;
+	mso-style-link:"Heading 1";
+	mso-ansi-font-size:14.0pt;
+	mso-bidi-font-size:14.0pt;
+	font-family:"Cambria","serif";
+	mso-ascii-font-family:Cambria;
+	mso-fareast-font-family:"Times New Roman";
+	mso-hansi-font-family:Cambria;
+	mso-bidi-font-family:"Times New Roman";
+	color:#365F91;
+	font-weight:bold;}
+span.TitleChar
+	{mso-style-name:"Title Char";
+	mso-style-priority:10;
+	mso-style-unhide:no;
+	mso-style-locked:yes;
+	mso-style-link:Title;
+	mso-ansi-font-size:26.0pt;
+	mso-bidi-font-size:26.0pt;
+	font-family:"Cambria","serif";
+	mso-ascii-font-family:Cambria;
+	mso-fareast-font-family:"Times New Roman";
+	mso-hansi-font-family:Cambria;
+	mso-bidi-font-family:"Times New Roman";
+	color:#17365D;
+	letter-spacing:.25pt;
+	mso-font-kerning:14.0pt;}
+span.BalloonTextChar
+	{mso-style-name:"Balloon Text Char";
+	mso-style-noshow:yes;
+	mso-style-priority:99;
+	mso-style-unhide:no;
+	mso-style-locked:yes;
+	mso-style-link:"Balloon Text";
+	mso-ansi-font-size:8.0pt;
+	mso-bidi-font-size:8.0pt;
+	font-family:"Tahoma","sans-serif";
+	mso-ascii-font-family:Tahoma;
+	mso-fareast-font-family:"Times New Roman";
+	mso-hansi-font-family:Tahoma;
+	mso-bidi-font-family:Tahoma;}
+.MsoChpDefault
+	{mso-style-type:export-only;
+	mso-default-props:yes;
+	font-size:10.0pt;
+	mso-ansi-font-size:10.0pt;
+	mso-bidi-font-size:10.0pt;}
+@page Section1
+	{size:8.5in 11.0in;
+	margin:1.0in 1.0in 1.0in 1.0in;
+	mso-header-margin:.5in;
+	mso-footer-margin:.5in;
+	mso-paper-source:0;}
+div.Section1
+	{page:Section1;}
+-->
+</style>
+<!--[if gte mso 10]>
+<style>
+ /* Style Definitions */
+ table.MsoNormalTable
+	{mso-style-name:"Table Normal";
+	mso-tstyle-rowband-size:0;
+	mso-tstyle-colband-size:0;
+	mso-style-noshow:yes;
+	mso-style-priority:99;
+	mso-style-qformat:yes;
+	mso-style-parent:"";
+	mso-padding-alt:0in 5.4pt 0in 5.4pt;
+	mso-para-margin:0in;
+	mso-para-margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:10.0pt;
+	font-family:"Times New Roman","serif";}
+</style>
+<![endif]--><!--[if gte mso 9]><xml>
+ <o:shapedefaults v:ext="edit" spidmax="6146">
+  <o:colormenu v:ext="edit" fillcolor="none" strokecolor="none"/>
+ </o:shapedefaults></xml><![endif]--><!--[if gte mso 9]><xml>
+ <o:shapelayout v:ext="edit">
+  <o:idmap v:ext="edit" data="1"/>
+ </o:shapelayout></xml><![endif]-->
+</head>
+
+<body lang=EN-US link=blue vlink=purple style='tab-interval:.5in'>
+
+<div class=Section1>
+
+<div style='mso-element:para-border-div;border:none;border-bottom:solid #4F81BD 1.0pt;
+padding:0in 0in 4.0pt 0in'>
+
+<p class=MsoTitle><a name="_top"></a>Model Manager Help</p>
+
+</div>
+
+<p class=MsoNormal>Contents</p>
+
+<p class=MsoNormal><a href="#_Introduction">Introduction</a></p>
+
+<p class=MsoNormal><a href="#_Overview">Overview</a></p>
+
+<p class=MsoNormal><a href="#_Display_Models_in">Display Models in the Database</a></p>
+
+<p class=MsoNormal><a href="#_Run_Model">Run Model</a></p>
+
+<p class=MsoNormal><a href="#_Save_a_Model">Save a Model to Database</a></p>
+
+<p class=MsoNormal><a href="#_Make_a_Selected">Make a Selected Model GOLD</a></p>
+
+<p class=MsoNormal><a href="#_Capture_Model_Data">Capture Model Data Panel to
+e-Log</a></p>
+
+<p class=MsoNormal><a href="#_Messages_and_Status">Message and Status Bar</a></p>
+
+<p class=MsoNormal><a href="#_Further_Help">Further Help</a></p>
+
+<h1><a name="_Introduction"></a><span style='mso-fareast-font-family:"Times New Roman"'><br>
+Introduction<o:p></o:p></span></h1>
+
+<p class=MsoNormal>This application provides a graphical user interface (GUI)
+for viewing existing model run data in the Oracle database, running DESIGN and
+EXTANT machine model, and tagging a model in the database as GOLD.<span
+style='mso-spacerun:yes'>&nbsp; </span>To run the application, the following is
+required: a Java runtime environment (JRE) version 5 and above installed,
+access to the SLAC network (SLACDEV or SLACPROD database), and Java Channel
+Access (JCA) for EXTANT machine parameter acquisition.</p>
+
+<h1><a name="_Overview"></a><span style='mso-fareast-font-family:"Times New Roman"'>Overview<o:p></o:p></span></h1>
+
+<p class=MsoNormal>After launching, the application is displayed as Fig.
+1.<span style='mso-spacerun:yes'>&nbsp; </span>The start-up time for production
+network is about 10 seconds including the initial database connection and
+fetching.<span style='mso-spacerun:yes'>&nbsp; </span>The &#946; functions for
+EXTANT GOLD model for the selected beam-line (in the upper left corner) from
+Oracle database is selected and plotted.</p>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNormal align=center style='text-align:center'><span
+style='mso-no-proof:yes'><!--[if gte vml 1]><v:shapetype id="_x0000_t75"
+ coordsize="21600,21600" o:spt="75" o:preferrelative="t" path="m@4@5l@4@11@9@11@9@5xe"
+ filled="f" stroked="f">
+ <v:stroke joinstyle="miter"/>
+ <v:formulas>
+  <v:f eqn="if lineDrawn pixelLineWidth 0"/>
+  <v:f eqn="sum @0 1 0"/>
+  <v:f eqn="sum 0 0 @1"/>
+  <v:f eqn="prod @2 1 2"/>
+  <v:f eqn="prod @3 21600 pixelWidth"/>
+  <v:f eqn="prod @3 21600 pixelHeight"/>
+  <v:f eqn="sum @0 0 1"/>
+  <v:f eqn="prod @6 1 2"/>
+  <v:f eqn="prod @7 21600 pixelWidth"/>
+  <v:f eqn="sum @8 21600 0"/>
+  <v:f eqn="prod @7 21600 pixelHeight"/>
+  <v:f eqn="sum @10 21600 0"/>
+ </v:formulas>
+ <v:path o:extrusionok="f" gradientshapeok="t" o:connecttype="rect"/>
+ <o:lock v:ext="edit" aspectratio="t"/>
+</v:shapetype><v:shape id="Picture_x0020_0" o:spid="_x0000_i1034" type="#_x0000_t75"
+ alt="mm1.png" style='width:604.5pt;height:359.25pt;visibility:visible;
+ mso-wrap-style:square'>
+ <v:imagedata src="Help_files/image018.png" o:title="mm1"/>
+</v:shape><![endif]--><![if !vml]><img border=0 width=806 height=479
+src="Help_files/image020.jpg" alt=mm1.png v:shapes="Picture_x0020_0"><![endif]></span></p>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNormal align=center style='text-align:center'>Fig. 1: Model Manager
+Application</p>
+
+<p class=MsoNormal align=center style='text-align:center'><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNormal>There are three major parts for the GUI: a run-model tool
+bar at the top, model data display in the middle and a list of available models
+saved in the database at the bottom.<span style='mso-spacerun:yes'>&nbsp;
+</span>At top right corner, a &#8220;-&gt;Log Book&#8221; button is provided
+for capturing screen snapshot(s) to electronic logbook.<span
+style='mso-spacerun:yes'>&nbsp; </span>A message panel in between the data
+display and model list shows messages related to the application.<span
+style='mso-spacerun:yes'>&nbsp; </span>At the very bottom, a status bar shows
+the status for current or last action.<span style='mso-spacerun:yes'>&nbsp;
+</span>In this application, all the table columns can be sorted.<span
+style='mso-spacerun:yes'>&nbsp; </span>Simply click the table column label you
+want to sort once will sort the table in ascendant way; click the label again
+will sort in opposite way; and click it the third time will restore the
+original order for that column.</p>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNormal align=center style='text-align:center'><span
+style='mso-no-proof:yes'><!--[if gte vml 1]><v:shape id="Picture_x0020_2"
+ o:spid="_x0000_i1033" type="#_x0000_t75" alt="mm2.PNG" style='width:579.75pt;
+ height:40.5pt;visibility:visible;mso-wrap-style:square'>
+ <v:imagedata src="Help_files/image004.png" o:title="mm2"/>
+</v:shape><![endif]--><![if !vml]><img border=0 width=773 height=54
+src="Help_files/image021.jpg" alt=mm2.PNG v:shapes="Picture_x0020_2"><![endif]></span></p>
+
+<p class=MsoNormal>Fig. 2: Top tool bar for model run.<span
+style='mso-spacerun:yes'>&nbsp; </span>From left to right: beam-line chooser,
+model mode chooser (design/extant), Twiss parameter back-propagate reference
+point and mode (design/extant) for extant model run, <i style='mso-bidi-font-style:
+normal'>Run Model</i> button, <i style='mso-bidi-font-style:normal'>Save</i> to
+database button, and <i style='mso-bidi-font-style:normal'>Make SEL</i> <i
+style='mso-bidi-font-style:normal'>Gold</i> (Selected Model) button.</p>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNormal align=center style='text-align:center'><span
+style='mso-no-proof:yes'><!--[if gte vml 1]><v:shape id="Picture_x0020_3"
+ o:spid="_x0000_i1032" type="#_x0000_t75" alt="mm3.PNG" style='width:615pt;
+ height:210pt;visibility:visible;mso-wrap-style:square'>
+ <v:imagedata src="Help_files/image007.png" o:title="mm3"/>
+</v:shape><![endif]--><![if !vml]><img border=0 width=820 height=280
+src="Help_files/image022.jpg" alt=mm3.PNG v:shapes="Picture_x0020_3"><![endif]></span></p>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNormal>Fig. 3: Model data display panel.<span
+style='mso-spacerun:yes'>&nbsp; </span>There are 3 tabbed panels for the data
+display: <i style='mso-bidi-font-style:normal'>Z plot</i>, <i style='mso-bidi-font-style:
+normal'>Model Details</i> and <i style='mso-bidi-font-style:normal'>Machine
+Parameters</i>.<span style='mso-spacerun:yes'>&nbsp; </span>Shown in this figure
+is the Z Plot panel, the left-hand side is for data plot and right-hand side is
+for plot configuration.<span style='mso-spacerun:yes'>&nbsp; </span></p>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNormal align=center style='text-align:center'><span
+style='mso-no-proof:yes'><!--[if gte vml 1]><v:shape id="Picture_x0020_6"
+ o:spid="_x0000_i1031" type="#_x0000_t75" alt="mm6.PNG" style='width:618.75pt;
+ height:204pt;visibility:visible;mso-wrap-style:square'>
+ <v:imagedata src="Help_files/image012.png" o:title="mm6"/>
+</v:shape><![endif]--><![if !vml]><img border=0 width=825 height=272
+src="Help_files/image023.jpg" alt=mm6.PNG v:shapes="Picture_x0020_6"><![endif]></span></p>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNormal>Fig. 4: Model Details panel.<span
+style='mso-spacerun:yes'>&nbsp; </span>The <i style='mso-bidi-font-style:normal'>Model
+Details</i> tab shows a table of all the model result.<span
+style='mso-spacerun:yes'>&nbsp; </span>The data plotted in the Z Plot panel are
+highlighted here.<span style='mso-spacerun:yes'>&nbsp; </span>In the <i
+style='mso-bidi-font-style:normal'>Comment</i> field, one can edit the comment
+before saving the model to the database.</p>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNormal align=center style='text-align:center'><span
+style='mso-no-proof:yes'><!--[if gte vml 1]><v:shape id="_x0000_i1030" type="#_x0000_t75"
+ alt="mm7.PNG" style='width:617.25pt;height:204pt;visibility:visible;
+ mso-wrap-style:square'>
+ <v:imagedata src="Help_files/image014.png" o:title="mm7"/>
+</v:shape><![endif]--><![if !vml]><img border=0 width=823 height=272
+src="Help_files/image024.jpg" alt=mm7.PNG v:shapes="_x0000_i1030"><![endif]></span></p>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNormal>Fig. 5: The Machine Parameters tab shows the magnet and RF
+parameters used in the model calculation.</p>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNormal align=center style='text-align:center'><span
+style='mso-no-proof:yes'><!--[if gte vml 1]><v:shape id="Picture_x0020_5"
+ o:spid="_x0000_i1029" type="#_x0000_t75" alt="mm4.PNG" style='width:617.25pt;
+ height:74.25pt;visibility:visible;mso-wrap-style:square'>
+ <v:imagedata src="Help_files/image009.png" o:title="mm4"/>
+</v:shape><![endif]--><![if !vml]><img border=0 width=823 height=99
+src="Help_files/image025.jpg" alt=mm4.PNG v:shapes="Picture_x0020_5"><![endif]></span></p>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNormal>Fig. 6: Saved models in the database table.<span
+style='mso-spacerun:yes'>&nbsp; </span>A time range selector is provided for
+fetching time-filtered models.<span style='mso-spacerun:yes'>&nbsp; </span><i
+style='mso-bidi-font-style:normal'>Restore to Default</i> button conveniently
+reset the application to its initial state.</p>
+
+<h1><a name="_Display_Models_in"></a><span style='mso-fareast-font-family:"Times New Roman"'>Display
+Models in the Database<o:p></o:p></span></h1>
+
+<p class=MsoNormal>If you would like to view any saved models in the database,
+you can first select the beam-line you are interested in from the top left
+corner of the app (see Figs.1 and 2).<span style='mso-spacerun:yes'>&nbsp;
+</span>The default beam-line is <i style='mso-bidi-font-style:normal'>CATHODE
+to DUMP</i> line.<span style='mso-spacerun:yes'>&nbsp; </span>All the available
+models within the time range specified in the time range selector (see Fig. 4)
+is listed in the bottom table.<span style='mso-spacerun:yes'>&nbsp; </span>The
+two present <i style='mso-bidi-font-style:normal'>GOLD</i> models, one for <i
+style='mso-bidi-font-style:normal'>DESIGN</i> and one for <i style='mso-bidi-font-style:
+normal'>EXTANT</i>, are color coded in <span style='color:#FFC000'>orange </span>in
+the table.<span style='mso-spacerun:yes'>&nbsp; </span></p>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNormal>In the <i style='mso-bidi-font-style:normal'>Saved Models</i>
+table, one can select any one or two models to plot.<span
+style='mso-spacerun:yes'>&nbsp; </span>If select two models, in the <i
+style='mso-bidi-font-style:normal'>Comparison</i> configuration panel two
+options are offered: <i style='mso-bidi-font-style:normal'>Overlay Reference</i>
+and <i style='mso-bidi-font-style:normal'>Plot Diff from Reference</i>.<span
+style='mso-spacerun:yes'>&nbsp; </span><i style='mso-bidi-font-style:normal'>Overlay
+Reference</i> simply plots selected curve(s), one selected from the <i
+style='mso-bidi-font-style:normal'>REF</i> column and an optional second model
+from the <i style='mso-bidi-font-style:normal'>SEL</i> column.<span
+style='mso-spacerun:yes'>&nbsp; </span>The default color for REF data is <span
+style='color:#00CCFF'>sky blue</span> and the default color for SEL is <span
+style='color:lime'>green</span>.<span style='mso-spacerun:yes'>&nbsp; </span>If
+the selected model (either from REF or from SEL column) is labeled as GOLD,
+that data set is plotted in <span style='color:#FF9900'>orange</span>.<span
+style='mso-spacerun:yes'>&nbsp;&nbsp; </span>See Fig. 7 for example.</p>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNormal align=center style='text-align:center'><span
+style='mso-no-proof:yes'><!--[if gte vml 1]><v:shape id="Picture_x0020_7"
+ o:spid="_x0000_i1028" type="#_x0000_t75" alt="mm8" style='width:594pt;
+ height:405.75pt;visibility:visible;mso-wrap-style:square'>
+ <v:imagedata src="Help_files/image002.png" o:title="mm8"/>
+</v:shape><![endif]--><![if !vml]><img border=0 width=792 height=541
+src="Help_files/image026.jpg" alt=mm8 v:shapes="Picture_x0020_7"><![endif]></span><span
+style='mso-spacerun:yes'>&nbsp;&nbsp; </span><span style='mso-no-proof:yes'><!--[if gte vml 1]><v:shape
+ id="Picture_x0020_8" o:spid="_x0000_i1027" type="#_x0000_t75" alt="mm9"
+ style='width:595.5pt;height:407.25pt;visibility:visible;mso-wrap-style:square'>
+ <v:imagedata src="Help_files/image008.png" o:title="mm9"/>
+</v:shape><![endif]--><![if !vml]><img border=0 width=794 height=543
+src="Help_files/image027.jpg" alt=mm9 v:shapes="Picture_x0020_8"><![endif]></span></p>
+
+<p class=MsoNormal align=center style='text-align:center'><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNormal align=center style='text-align:center'>Fig.7: Plotting two
+models for comparison.</p>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNormal>Other features in the plot panel include a) <i
+style='mso-bidi-font-style:normal'>mouse-over</i> tooltip, depending on which
+horizontal axis label is selected, moving the mouse over the synoptic display
+widget will show MAD name or EPICS name of the device; b) mouse-over in the
+data plot will show data point number; c) zoom in/out of the plot.</p>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNormal><a href="#_top">Back to top.</a></p>
+
+<h1><a name="_Run_Model"></a><span style='mso-fareast-font-family:"Times New Roman"'>Run
+Model<o:p></o:p></span></h1>
+
+<p class=MsoNormal>This application also offers the ability of running either
+DESIGN or EXTANT model.<span style='mso-spacerun:yes'>&nbsp; </span>To run a
+model, you need to focus on the top tool bar (see Fig. 2). First select the
+beam-line you want to use.<span style='mso-spacerun:yes'>&nbsp;
+</span>Available beam-line choices include: <i style='mso-bidi-font-style:normal'>CATHODE
+to DUMP</i>, <i style='mso-bidi-font-style:normal'>CATHODE to 52SL2</i>, <i
+style='mso-bidi-font-style:normal'>CATHODE to 135 MeV SPECT DUMP</i>, and <i
+style='mso-bidi-font-style:normal'>CATHODE to GUN SPECT DUMP</i>.<span
+style='mso-spacerun:yes'>&nbsp; </span>Default beam-line is <i
+style='mso-bidi-font-style:normal'>CATHODE to DUMP</i>.<span
+style='mso-spacerun:yes'>&nbsp; </span>You then select between <i
+style='mso-bidi-font-style:normal'>Design</i> and <i style='mso-bidi-font-style:
+normal'>Extant</i> as the model input source; the default is <i
+style='mso-bidi-font-style:normal'>Design</i>.<span
+style='mso-spacerun:yes'>&nbsp; </span>If you select to run <i
+style='mso-bidi-font-style:normal'>Extant</i>, the <i style='mso-bidi-font-style:
+normal'>Back Propagate Twiss from</i> option is then available.<span
+style='mso-spacerun:yes'>&nbsp; </span>There are five back propagate reference
+points available to choose: <i style='mso-bidi-font-style:normal'>WS02</i>, <i
+style='mso-bidi-font-style:normal'>OTR2</i>, <i style='mso-bidi-font-style:
+normal'>WS12</i>, <i style='mso-bidi-font-style:normal'>WS28144</i> and <i
+style='mso-bidi-font-style:normal'>WS32</i>; the default is <i
+style='mso-bidi-font-style:normal'>WS32</i>.<span
+style='mso-spacerun:yes'>&nbsp; </span>Also, you can choose to use either <i
+style='mso-bidi-font-style:normal'>Measured</i> Twiss parameters (from the
+latest emittance measurement at that point and cached in PVs) or <i
+style='mso-bidi-font-style:normal'>Design</i> ones (calculated from Design model).</p>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNormal>Typically a model run for extant <i style='mso-bidi-font-style:
+normal'>CATHODE to DUMP</i> line takes less than a minute.<span
+style='mso-spacerun:yes'>&nbsp; </span>Same line for design model takes about
+10 seconds.</p>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNormal><a href="#_top">Back to top.</a></p>
+
+<h1><a name="_Save_a_Model"></a><span style='mso-fareast-font-family:"Times New Roman"'>Save
+a Model to Database<o:p></o:p></span></h1>
+
+<p class=MsoNormal>If you are happy with the model you just ran, you can click
+the <i style='mso-bidi-font-style:normal'>Save</i> button to load this set of
+model data to the Oracle database.<span style='mso-spacerun:yes'>&nbsp;
+</span>After you click the Save button, you will be prompted for login name and
+password for the database (see Fig. 8).<span style='mso-spacerun:yes'>&nbsp;
+</span>Default database for MCC is SLAC Production DB.<span
+style='mso-spacerun:yes'>&nbsp; </span>The upload process takes up to ~10-20
+seconds depending on the beam-line.<span style='mso-spacerun:yes'>&nbsp;
+</span>During the data upload, most of the GUI is still clickable except the
+top tool bar related to the model run part.<span
+style='mso-spacerun:yes'>&nbsp; </span>After a model is successfully uploaded,
+there will be a pop-up message to acknowledge.<span
+style='mso-spacerun:yes'>&nbsp; </span>The model list table will then update to
+reflect the model just uploaded.<span style='mso-spacerun:yes'>&nbsp; </span>At
+this moment, a second process is running in the background to update all the
+AIDA names.<span style='mso-spacerun:yes'>&nbsp; </span></p>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNormal align=center style='text-align:center'><span
+style='mso-no-proof:yes'><!--[if gte vml 1]><v:shape id="_x0000_i1026" type="#_x0000_t75"
+ alt="mm10" style='width:633pt;height:375.75pt;visibility:visible;
+ mso-wrap-style:square'>
+ <v:imagedata src="Help_files/image030.png" o:title="mm10"/>
+</v:shape><![endif]--><![if !vml]><img border=0 width=844 height=501
+src="Help_files/image031.jpg" alt=mm10 v:shapes="_x0000_i1026"><![endif]></span></p>
+
+<p class=MsoNormal align=center style='text-align:center'>Fig. 8: Connection
+pop-up windows for security purpose while uploading a model or changing a GOLD
+tag.</p>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNormal><a href="#_top">Back to top.</a></p>
+
+<h1><a name="_Make_a_Selected"></a><span style='mso-fareast-font-family:"Times New Roman"'>Make
+a Selected Model GOLD<o:p></o:p></span></h1>
+
+<p class=MsoNormal>If you would like to make any model in the database the GOLD
+(or default) one, you can click the <i style='mso-bidi-font-style:normal'>Make
+SEL GOLD</i> button.<span style='mso-spacerun:yes'>&nbsp; </span>The GOLD model
+is the one AIDA defaults to, i.e. without supplying the <i style='mso-bidi-font-style:
+normal'>RUN ID</i> in the query.<span style='mso-spacerun:yes'>&nbsp;
+</span>Note that you will also be prompted to enter login ID and password for
+this one.</p>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNormal><a href="#_top">Back to top.</a></p>
+
+<h1><a name="_Capture_Model_Data"></a><span style='mso-fareast-font-family:
+"Times New Roman"'>Capture Model Data Panel to e-Log<o:p></o:p></span></h1>
+
+<p class=MsoNormal>The <span style='background:aqua;mso-highlight:aqua'>-&gt;Log
+Book</span> button near the top right corner can capture the data display panel
+and send it as an image to the physics e-log.<span
+style='mso-spacerun:yes'>&nbsp; </span>There will be more automated
+save-to-elog features added to this app in the future, e.g. post a message when
+a model is uploaded or a GOLD tag is changed.</p>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNormal><a href="#_top">Back to top.</a></p>
+
+<h1><a name="_Messages_and_Status"></a><span style='mso-fareast-font-family:
+"Times New Roman"'>Messages and Status Bar<o:p></o:p></span></h1>
+
+<p class=MsoNormal>An expendable <i style='mso-bidi-font-style:normal'>Message</i>
+panel shows all essential messages for the app (see Fig.9).<span
+style='mso-spacerun:yes'>&nbsp; </span>This is the standard Message window for
+all high-level applications.</p>
+
+<p class=MsoNormal align=center style='text-align:center'><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNormal align=center style='text-align:center'><span
+style='mso-no-proof:yes'><!--[if gte vml 1]><v:shape id="Picture_x0020_9"
+ o:spid="_x0000_i1025" type="#_x0000_t75" alt="mm11.PNG" style='width:639.75pt;
+ height:90.75pt;visibility:visible;mso-wrap-style:square'>
+ <v:imagedata src="Help_files/image028.png" o:title="mm11"/>
+</v:shape><![endif]--><![if !vml]><img border=0 width=853 height=121
+src="Help_files/image032.jpg" alt=mm11.PNG v:shapes="Picture_x0020_9"><![endif]></span></p>
+
+<p class=MsoNormal align=center style='text-align:center'><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNormal align=center style='text-align:center'>Fig. 9: Message
+panel.</p>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNormal><a href="#_top">Back to top.</a></p>
+
+<h1><a name="_Further_Help"></a><span style='mso-fareast-font-family:"Times New Roman"'>Further
+Help<o:p></o:p></span></h1>
+
+<p class=MsoNormal>There will be a web link here&#8230;</p>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNormal><a href="#_top">Back to top.</a></p>
+
+</div>
+
+</body>
+
+</html>
