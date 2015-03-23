@@ -12,8 +12,6 @@ import edu.stanford.slac.Save2Logbook.KeywordEnum;
 import edu.stanford.slac.Save2Logbook.LocationEnum;
 import edu.stanford.slac.Save2Logbook.LogbookEntry;
 import edu.stanford.slac.Save2Logbook.SeverityEnum;
-import gov.sns.tools.apputils.iconlib.IconLib;
-import gov.sns.tools.apputils.iconlib.IconLib.IconGroup;
 
 import java.sql.SQLException;
 import java.text.ParseException;

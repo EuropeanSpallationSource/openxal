@@ -5,11 +5,11 @@ import edu.stanford.lcls.xal.model.RunModel;
 import edu.stanford.lcls.xal.tools.ca.ConnectionManager;
 import edu.stanford.lcls.modelmanager.view.ModelPlotData;
 import edu.stanford.lcls.modelmanager.view.ModelStateView;
-import gov.sns.tools.xml.XmlDataAdaptor;
-import gov.sns.tools.data.DataAdaptor;
-import gov.sns.tools.database.*;
-import gov.sns.tools.messaging.MessageCenter;
-import gov.sns.xal.model.scenario.Scenario;
+
+import xal.tools.data.DataAdaptor;
+import xal.tools.xml.XmlDataAdaptor;
+import xal.sim.scenario.Scenario;
+import xal.tools.messaging.MessageCenter;
 
 import java.net.URL;
 import java.sql.*;
@@ -56,7 +56,7 @@ public class BrowserModel {
 	protected MachineModelDetail[] _goldMachineModelDetail;
 	private int plotFunctionID1;
 	private int plotFunctionID2;
-	protected RunModel rm;
+	protected RunModel2 rm;
 	protected Scenario scenario;
 	protected JFrame _parent;
 	private final String autoRunID = "RUN";
@@ -186,7 +186,7 @@ public class BrowserModel {
 		return plotFunctionID1;
 	}
 
-	public RunModel getRunModel() {
+	public RunModel2 getRunModel() {
 		return rm;
 	}
 
@@ -561,13 +561,14 @@ public class BrowserModel {
 		_selectedMachineModelDetail = DataManager.calculateBmag(
 				_selectedMachineModelDetail, _goldMachineModelDetail);
 	}
-
+	
 	public void runModel(int runModelMethod, String refID, boolean useDesignRef) throws SQLException {
-		rm = new RunModel(modelMode);
+		rm = new RunModel2(modelMode);
 		//TODO Connect all channels for model use.  This may have to be done earlier, not here.
+		/* TODO OPENXAL ConnectionManager depends on XAL
 		ConnectionManager cm = new ConnectionManager(rm.getAccelerator());
 		Thread th = new Thread(cm);
-		th.start();
+		th.start();*/
 		if (runModelMethod == 0) {
 			rm.setRunMode(Scenario.SYNC_MODE_DESIGN);
 		} else if (runModelMethod == 1) {

@@ -7,9 +7,7 @@ import java.sql.*;
 
 import javax.swing.JFrame;
 
-import gov.sns.tools.data.*;
-import gov.sns.tools.database.*;
-
+import xal.tools.data.DataAdaptor;
 
 /** contains information about the persistent storage */
 class PersistentStore {

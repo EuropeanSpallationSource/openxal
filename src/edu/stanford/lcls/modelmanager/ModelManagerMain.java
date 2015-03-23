@@ -12,9 +12,11 @@ package edu.stanford.lcls.modelmanager;
 
 import edu.stanford.lcls.modelmanager.view.ModelManagerFeature;
 import edu.stanford.slac.Message.Message;
-import gov.sns.application.*;
-import gov.sns.xal.smf.application.AcceleratorApplication;
 
+import xal.extension.application.Application;
+import xal.extension.application.ApplicationAdaptor;
+import xal.extension.application.XalDocument;
+import xal.extension.application.smf.AcceleratorApplication;
 
 /**
  * Main is the ApplicationAdaptor for the Template application.

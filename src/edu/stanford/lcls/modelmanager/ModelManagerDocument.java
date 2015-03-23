@@ -13,24 +13,16 @@ package edu.stanford.lcls.modelmanager;
 import edu.stanford.lcls.modelmanager.dbmodel.DataManager;
 import edu.stanford.lcls.modelmanager.view.ModelManagerFeature;
 import edu.stanford.slac.Message.Message;
-import gov.sns.application.ActionFactory;
-import gov.sns.application.Application;
-import gov.sns.application.Commander;
-//import gov.sns.application.HelpWindow;
-import gov.sns.tools.apputils.iconlib.IconLib;
-import gov.sns.tools.apputils.iconlib.IconLib.IconGroup;
-import gov.sns.tools.xml.XmlDataAdaptor;
-import gov.sns.xal.smf.application.*;
+
+import xal.extension.application.Commander;
+import xal.extension.application.smf.AcceleratorDocument;
+import xal.tools.xml.XmlDataAdaptor;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.KeyStroke;
-
 
 /**
  * TemplateDocument

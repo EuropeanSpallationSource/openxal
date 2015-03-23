@@ -11,23 +11,23 @@
 package edu.stanford.lcls.modelmanager;
 
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import edu.stanford.slac.application.LclsXalWindow;
 import edu.stanford.lcls.modelmanager.view.ModelManagerFeature;
 import edu.stanford.slac.Message.Message;
-import gov.sns.tools.apputils.iconlib.IconLib;
-import gov.sns.tools.apputils.iconlib.IconLib.IconGroup;
+
+import xal.extension.application.XalWindow;
 
 import javax.swing.*;
+
 
 /**
  * TemplateViewerWindow
  *
  * @author  somebody
  */
-public class ModelManagerWindow extends LclsXalWindow implements SwingConstants {
+/* TODO OPENXAL extends LclsXalWindow*/
+public class ModelManagerWindow extends XalWindow implements SwingConstants {
     /**
 	 * 
 	 */
@@ -72,6 +72,11 @@ public class ModelManagerWindow extends LclsXalWindow implements SwingConstants 
 		return new ModelManagerFeature(this, this.getStateBar());
 	}
 	
+	private JPanel getStateBar() {
+		// TODO OPENXAL this is imported from LclsXalWindow
+		return new JPanel();
+	}
+
 /*	public Message getMessageLogger(){
 		return ModelManagerFeature.getMessageLogger();
 	}

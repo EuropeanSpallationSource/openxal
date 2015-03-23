@@ -5,11 +5,12 @@ import javax.swing.JFrame;
 import edu.stanford.lcls.modelmanager.view.ModelManagerFeature;
 import edu.stanford.slac.Message.Message;
 
-import gov.sns.application.Application;
-import gov.sns.xal.smf.Accelerator;
-import gov.sns.xal.smf.AcceleratorNode;
-import gov.sns.xal.smf.data.OpticsSwitcher;
-import gov.sns.xal.smf.data.XMLDataManager;
+import xal.extension.application.Application;
+import xal.smf.Accelerator;
+import xal.smf.AcceleratorNode;
+import xal.smf.data.OpticsSwitcher;
+import xal.smf.data.XMLDataManager;
+import xal.smf.impl.Quadrupole;
 
 public class DeviceType {
 	private Accelerator defaultAccelerator;
@@ -31,8 +32,8 @@ public class DeviceType {
 			try {
 				AcceleratorNode node = defaultAccelerator
 						.getNodeWithId(elementName);
-				if(node instanceof gov.sns.xal.smf.impl.Quadrupole){
-					if(((gov.sns.xal.smf.impl.Quadrupole) node).getDfltField() >= 0){
+				if(node instanceof Quadrupole){
+					if(((Quadrupole) node).getDfltField() >= 0){
 						return "FQUAD";
 					}
 					else
@@ -118,11 +119,13 @@ public class DeviceType {
 			this.defaultAccelerator = defaultAccelerator;
 			return true;
 		} else {
+			/* TODO OPENXAL OpticSwitcher's constructor is protected...
 			OpticsSwitcher switcher = new OpticsSwitcher(parent, true);
 			switcher.showNearOwner();
 			if (switcher.getDefaultOpticsPath() != null) {
 				return loadDefaultAccelerator(parent);
 			}
+			*/
 		}
 		return false;
 	}

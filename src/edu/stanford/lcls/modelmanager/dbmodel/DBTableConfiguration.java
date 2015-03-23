@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import gov.sns.tools.data.*;
+import xal.tools.data.DataAdaptor;
 
 
 /** database table configuration */
