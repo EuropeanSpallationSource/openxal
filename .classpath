@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="lib" path="lib/Jama-1.0.2.jar"/>
+	<classpathentry kind="lib" path="lib/jmdns-3.4.2.353-openxal.jar"/>
+	<classpathentry kind="lib" path="lib/openxal.library-1.0.3-SNAPSHOT.jar"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="lib/ext.jar"/>
+	<classpathentry kind="lib" path="lib/hlaCommon.jar"/>
+	<classpathentry kind="lib" path="lib/hlaExtensions.jar"/>
+	<classpathentry kind="lib" path="lib/MessageLogAPI.jar"/>
+	<classpathentry kind="lib" path="lib/ojdbc6.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
