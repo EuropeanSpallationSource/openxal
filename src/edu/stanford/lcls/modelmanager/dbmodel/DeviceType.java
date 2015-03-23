@@ -119,13 +119,11 @@ public class DeviceType {
 			this.defaultAccelerator = defaultAccelerator;
 			return true;
 		} else {
-			/* TODO OPENXAL OpticSwitcher's constructor is protected...
-			OpticsSwitcher switcher = new OpticsSwitcher(parent, true);
-			switcher.showNearOwner();
+			OpticsSwitcher switcher = OpticsSwitcher.getInstance();
+			switcher.showDialogNearOwner(parent);
 			if (switcher.getDefaultOpticsPath() != null) {
 				return loadDefaultAccelerator(parent);
 			}
-			*/
 		}
 		return false;
 	}
