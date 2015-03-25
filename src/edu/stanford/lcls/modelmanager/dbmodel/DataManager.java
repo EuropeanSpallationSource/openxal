@@ -1630,8 +1630,10 @@ public class DataManager {
 				
 				// use PL/SQL for GOLD
 				CallableStatement cstmt = null;
+				
+				// TODO OPENXAL there's no packages in pgsql MACHINE_MODEL.MODEL_UPLOAD_PKG.GOLD_THIS_MODEL
 				cstmt = writeConnection.prepareCall(
-				"{call MACHINE_MODEL.MODEL_UPLOAD_PKG.GOLD_THIS_MODEL ('" 
+				"{call \"MACHINE_MODEL\".\"GOLD_THIS_MODEL\" ('" 
 						+ selectedMachineModel.getPropertyValue("ID").toString() 
 						+ "', '" + comment + "', ?)}");
 				Message.info("Run " + selectedMachineModel.getPropertyValue("ID").toString()
