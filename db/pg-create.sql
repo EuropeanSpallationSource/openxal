@@ -1,4 +1,6 @@
 ﻿
+-- Keeps track of each tracking "run" done by XAL GUI.
+-- Each row in the GUI's runs table corresponds to one row of this table.
 CREATE TABLE "MACHINE_MODEL"."RUNS"
   (
     "ID"                   SERIAL ,
@@ -20,7 +22,9 @@ CREATE TABLE "MACHINE_MODEL"."RUNS"
 
 ALTER TABLE "MACHINE_MODEL"."RUNS" ADD CONSTRAINT CKC_RUN_SOURCE_CHK_RUNS CHECK ( "RUN_SOURCE_CHK" IS NULL OR ( "RUN_SOURCE_CHK" IN ('DESIGN','EXTANT') )) ;
   
-
+-- Keeps track of the kind of device we're talking about; E.g. MONItor (aka BPM), QUAD, XCOR etc.
+-- In particualar DEFAULT_SLICING_POS_CHK is the number of "slices" at which optics are recorded for each device type.
+-- For a QUAD there are 3 - beginning, middle and end. For all others only 1.
 CREATE TABLE "MACHINE_MODEL"."DEVICE_TYPES"
   (
     "ID"                      SERIAL,
@@ -35,6 +39,10 @@ CREATE TABLE "MACHINE_MODEL"."DEVICE_TYPES"
 
  ALTER TABLE "MACHINE_MODEL"."DEVICE_TYPES" ADD CONSTRAINT CKC_DEFAULT_SLICING_P_DEVICE_T CHECK ( "DEFAULT_SLICING_POS_CHK" IS NULL OR ( "DEFAULT_SLICING_POS_CHK" IN (0,1,2) )) ;
 
+-- The Twiss parameters and R-matrices for each device element, for each run. 
+-- Ie, the number of rows = roughly number of runs x number of elements in each model (so a big table).
+-- Most devices are equiv to one elment, some devices, such correspond to >1.
+-- For example quads correspond to 3, being the twiss and R-matrices at the beginning, middle and end of the quadrupole.
  CREATE TABLE "MACHINE_MODEL"."ELEMENT_MODELS"
   (
     "ID"                       SERIAL,
@@ -103,6 +111,7 @@ CREATE TABLE "MACHINE_MODEL"."DEVICE_TYPES"
 
   ALTER TABLE "MACHINE_MODEL"."ELEMENT_MODELS" ADD CONSTRAINT CKC_INDEX_SLICE_CHK_ELEMENT_ CHECK ( "INDEX_SLICE_CHK" IS NULL OR ( "INDEX_SLICE_CHK" IN (0,1,2) )) ;
 
+-- Which model runs have been designated by operations to be good ones, both presently and in the past.
   CREATE TABLE "MACHINE_MODEL"."GOLD"
   (
     "ID"           SERIAL ,
@@ -125,7 +134,10 @@ CREATE TABLE "MACHINE_MODEL"."DEVICE_TYPES"
     PRIMARY KEY ( "ID" )
   );
 
-
+-- At SLAC this table makes a link between a device name and the model runs that have optics (Twiss and R-matrices) for that device, via a FK to device ids
+-- in the infrastructure DB. But for ESS that FK has been removed for now. In future you will need some mechanism like that
+-- so one can query for optics based on a PV name which is in turn based on the device name. This table, with an appropriate column added to identify
+-- a device, will form the translation from device name to runs containing elements corresponding to that device.
 CREATE TABLE "MACHINE_MODEL"."MODEL_DEVICES"
   (
     "ID"                       SERIAL ,
