@@ -47,7 +47,7 @@ CREATE TABLE "MACHINE_MODEL"."DEVICE_TYPES"
   (
     "ID"                       SERIAL,
     "RUNS_ID"                  INTEGER REFERENCES "MACHINE_MODEL"."RUNS" ( "ID" ) ON DELETE CASCADE,
---    "LCLS_ELEMENTS_ELEMENT_ID" INTEGER , -- until ESS infrastructure db is created and want link to device specs.
+    "LCLS_ELEMENTS_ELEMENT_ID" INTEGER , -- until ESS infrastructure db is created and want link to device specs.
     "CREATED_BY"               VARCHAR (30) NOT NULL DEFAULT CURRENT_USER,
     "DATE_CREATED"             TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 --    "UPDATED_BY"               VARCHAR (30) , --  not used. Original design flaw
@@ -163,7 +163,7 @@ CREATE TABLE "MACHINE_MODEL"."MODEL_DEVICES"
   (
     "ID"                       SERIAL ,
     "RUNS_ID"                  INTEGER REFERENCES "MACHINE_MODEL"."RUNS" ( "ID" ) ON DELETE CASCADE,
---    "LCLS_ELEMENTS_ELEMENT_ID" INTEGER , -- Until you have an infrastructure db, delete it.
+    "LCLS_ELEMENTS_ELEMENT_ID" INTEGER , -- Until you have an infrastructure db, delete it.
     "DEVICE_TYPES_ID"          INTEGER REFERENCES "MACHINE_MODEL"."DEVICE_TYPES" ( "ID" ) ON DELETE CASCADE,
     "CREATED_BY"               VARCHAR (30) NOT NULL DEFAULT CURRENT_USER ,
     "DATE_CREATED"             TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
