@@ -46,13 +46,14 @@ public class MachineModelDeviceTable {
 			MachineModelDevice.addPropertyType(3, "NUMBER", 22);
 
 			// get data value
-			final PreparedStatement queryStatement = connection.prepareStatement("SELECT E.ELEMENT_NAME, D.DEVICE_PROPERTY, D.DEVICE_VALUE, E.ZPOS " +
-					"FROM MACHINE_MODEL.MODEL_DEVICES D, MACHINE_MODEL.ELEMENT_MODELS E " +
-					"WHERE D.RUNS_ID = ? AND " +
-					"D.RUNS_ID = E.RUNS_ID(+) AND " +
-					"E.INDEX_SLICE_CHK = 0 AND " +
-					"D.LCLS_ELEMENTS_ELEMENT_ID = E.LCLS_ELEMENTS_ELEMENT_ID(+) " +
-					"ORDER BY E.ORDINAL, D.DEVICE_PROPERTY");		
+			
+			final PreparedStatement queryStatement = connection.prepareStatement("SELECT E.\"ELEMENT_NAME\", D.\"DEVICE_PROPERTY\", D.\"DEVICE_VALUE\", E.\"ZPOS\" " +
+					"FROM \"MACHINE_MODEL\".\"MODEL_DEVICES\" D, \"MACHINE_MODEL\".\"ELEMENT_MODELS\" E " +
+					"WHERE D.\"RUNS_ID\" = ? AND " +
+					"D.\"RUNS_ID\" = E.\"RUNS_ID\" AND " + // TODO OPENXAL outer joins
+					"E.\"INDEX_SLICE_CHK\" = 0 AND " +
+					"D.\"LCLS_ELEMENTS_ELEMENT_ID\" = E.\"LCLS_ELEMENTS_ELEMENT_ID\" " + // TODO OPENXAL Oracle's outer joins (+) " +
+					"ORDER BY E.\"ORDINAL\", D.\"DEVICE_PROPERTY\"");		
 			queryStatement.setLong(1, id);
 			final ResultSet modelResult = queryStatement.executeQuery();
 			MachineModelDevice machineModelDevice;

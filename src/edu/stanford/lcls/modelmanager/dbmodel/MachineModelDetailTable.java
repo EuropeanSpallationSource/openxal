@@ -13,6 +13,7 @@ import javax.swing.JFrame;
 
 import edu.stanford.lcls.modelmanager.view.ModelManagerFeature;
 import edu.stanford.slac.Message.Message;
+import static edu.stanford.lcls.modelmanager.dbmodel.DataManager.escape;
 
 public class MachineModelDetailTable {
 	protected final String SCHEMA_NAME;
@@ -79,8 +80,8 @@ public class MachineModelDetailTable {
 			typeResult.close();
 
 			// get data value
-			final PreparedStatement queryStatement = connection.prepareStatement("SELECT * FROM " + SCHEMA_NAME + "."
-					+ TABLE_NAME + " WHERE RUNS_ID = ? ");
+			final PreparedStatement queryStatement = connection.prepareStatement("SELECT * FROM " + escape(SCHEMA_NAME) + "."
+					+ escape(TABLE_NAME) + " WHERE \"RUNS_ID\" = ? ");
 			queryStatement.setLong(1, id);
 			final ResultSet modelResult = queryStatement.executeQuery();		
 			DeviceType deviceType = new DeviceType(parent);

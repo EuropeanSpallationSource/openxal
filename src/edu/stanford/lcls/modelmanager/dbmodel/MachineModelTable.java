@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import static edu.stanford.lcls.modelmanager.dbmodel.DataManager.escape;
 
 public class MachineModelTable {
 	/** database table name */
@@ -119,7 +120,7 @@ public class MachineModelTable {
 	}
 	
 	protected List<MachineModel> setGold (final Connection connection, List<MachineModel> models)throws SQLException{
-		PreparedStatement queryStatement = connection.prepareStatement("SELECT RUN_ID, GOLD_STATUS_NO_CSS FROM MACHINE_MODEL.V_GOLD_REPORT" );
+		PreparedStatement queryStatement = connection.prepareStatement("SELECT " + escape("RUN_ID")+", "+escape("GOLD_STATUS_NO_CSS")+" FROM " + escape("MACHINE_MODEL") + "." + escape("V_GOLD_REPORT") );
 		ResultSet modelResult = queryStatement.executeQuery();
 		while (modelResult.next()) {
 			for (int i=0; i<models.size(); i++){
@@ -138,14 +139,15 @@ public class MachineModelTable {
 
 	protected PreparedStatement getQueryByTimerangeStatement(
 			final Connection connection) throws SQLException {
-		return connection.prepareStatement("SELECT * FROM " + SCHEMA_NAME + "."
-				+ TABLE_NAME + " WHERE " + DB_TABLE_COLUMN_NAME.get(1)
+		return connection.prepareStatement("SELECT * FROM " + escape(SCHEMA_NAME) + "."
+				+ escape(TABLE_NAME) + " WHERE " + DB_TABLE_COLUMN_NAME.get(1)
 				+ " > ? AND " + DB_TABLE_COLUMN_NAME.get(1) + " < ?");
 	}
 	
+
 	protected PreparedStatement getQueryByAllTimeStatement(
 			final Connection connection) throws SQLException {
-		return connection.prepareStatement("SELECT * FROM " + SCHEMA_NAME + "."
-				+ TABLE_NAME );
+		return connection.prepareStatement("SELECT * FROM " + escape(SCHEMA_NAME) + "."
+				+ escape(TABLE_NAME) );
 	}
 }

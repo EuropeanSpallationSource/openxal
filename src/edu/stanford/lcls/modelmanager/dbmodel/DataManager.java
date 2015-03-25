@@ -46,6 +46,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
@@ -66,9 +67,9 @@ import oracle.sql.ARRAY;
 import oracle.sql.ArrayDescriptor;
 import edu.stanford.slac.Message.Message;
 import edu.stanford.lcls.xal.model.xml.NewTwissRMatXmlWriter;
-
 import xal.ca.ConnectionException;
 import xal.ca.GetException;
+import xal.model.IElement;
 import xal.model.ModelException;
 import xal.model.elem.Element;
 import xal.model.probe.traj.EnvelopeProbeState;
@@ -145,20 +146,24 @@ public class DataManager {
 		try {
 			DriverManager.registerDriver(new oracle.jdbc.OracleDriver());
 	        // DriverManager.setLoginTimeout(15);  // Set timeout to 15 seconds
-	        OracleDataSource ods = new OracleDataSource();
+	        //OracleDataSource ods = new OracleDataSource(); 
 	        url = System.getProperty(DB_URL_PROPERTY_NAME);
 			if ( url != null )
 			{
-				ods.setURL(url);
-				ods.setUser(System.getProperty(DB_USERNAME_PROPERTY_NAME));
-				ods.setPassword(System.getProperty(DB_PWD_PROPERTY_NAME));
-				connection = ods.getConnection();
+				String username = System.getProperty(DB_USERNAME_PROPERTY_NAME); 
+				String password = System.getProperty(DB_PWD_PROPERTY_NAME);
+				/*ods.setURL(url);
+				ods.setUser(username);
+				ods.setPassword(password);
+				connection = ods.getConnection();*/
+				connection = DriverManager.getConnection(url, username, password);
 			}
 			else
 			{
 				url = MCCO_URL;
-				ods.setURL(url);
-				connection = ods.getConnection();
+				/*ods.setURL(url);
+				connection = ods.getConnection();*/
+				connection = DriverManager.getConnection(url);
 			}	
 			
 		} catch (SQLException e) {
@@ -289,7 +294,7 @@ public class DataManager {
 		// loop through all nodes
 		while (it.hasNext()) {
 			AcceleratorNode node = (AcceleratorNode) it.next();
-			List<?> elems = scenario.elementsMappedTo(node);
+			List<IElement> elems = scenario.elementsMappedTo(node);
 			
 			// Get effective length at node level (not the element itself).
 			double node_length = 0.;
@@ -310,6 +315,7 @@ public class DataManager {
 			
 			int devI = 0;
 			
+			if (elems != null)
 			for (int i = 0; i < elems.size(); i++) {
 				if (!((Element) elems.get(i)).getId().endsWith("xx")
 						&& !((Element) elems.get(i)).getId().endsWith("yx")) {
@@ -337,6 +343,7 @@ public class DataManager {
 					double s = 0.;
 					// treat Q30615x and Q30715x differently
 					if (nodeId.contains("Q30615") || nodeId.contains("Q30715")) {
+						// TODO HARDCODED
 						machineModelDetail.setPropertyValue("INDEX_SLICE_CHK", "1");
 						s = node.getSDisplay();
 					} else if (node.isKindOf(RfGap.s_strType)) {
@@ -391,6 +398,7 @@ public class DataManager {
 						// We only output begin/middle/end for a thick device,
 						// therefore, no need to go through all the states but only the
 						// last state for that element.
+						if (states == null) continue;
 						
 						ProbeState state = states.get(states.size() - 1);
 
@@ -698,9 +706,12 @@ public class DataManager {
 		// prepare for MACHINE_MODEL.MODEL_DEVICES
 		String modelDevices[] = new String[runMachineModelDevice.length * 4];
 		try{
-			PreparedStatement stmt2 = writeConnection.prepareStatement("SELECT L.ELEMENT, L.ELEMENT_ID, D.ID " +
-					"FROM MACHINE_MODEL.DEVICE_TYPES D, LCLS_INFRASTRUCTURE.LCLS_ELEMENTS L " +
-			"WHERE L.KEYWORD = D.DEVICE_TYPE");
+			/*PreparedStatement stmt2 = writeConnection.prepareStatement("SELECT L.\"ELEMENT\", L.\"ELEMENT_ID\", D.\"ID\" " +
+					"FROM \"MACHINE_MODEL\".\"DEVICE_TYPES\" D, \"LCLS_INFRASTRUCTURE\".\"LCLS_ELEMENTS\" L " +
+			"WHERE L.\"KEYWORD\" = D.\"DEVICE_TYPE\"");*/
+			// TODO OPENXAL
+			PreparedStatement stmt2 = writeConnection.prepareStatement("SELECT D.\"DEVICE_TYPE\", D.\"ID\", D.\"ID\" " +
+					"FROM \"MACHINE_MODEL\".\"DEVICE_TYPES\" D");
 			rs = stmt2.executeQuery();
 			while(rs.next()){
 				elementName.add(rs.getString(1));
@@ -1751,7 +1762,11 @@ public class DataManager {
 			e.printStackTrace();
 		}
 	}
-
+	
+	public static String escape(String s)
+	{
+		return "\"" + s + "\"";
+	}
 }
 
 /**
@@ -1780,7 +1795,7 @@ class ModelFormat
 	
 	public String format(Double d)
 	{
-		return String.format(m_format,d);
+		return String.format(Locale.ROOT,m_format,d);
 	}
 }
 
