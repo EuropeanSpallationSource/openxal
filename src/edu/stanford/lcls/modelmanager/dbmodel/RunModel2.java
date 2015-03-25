@@ -1,42 +1,62 @@
 package edu.stanford.lcls.modelmanager.dbmodel;
 
+import xal.model.IAlgorithm;
+import xal.model.ModelException;
+import xal.sim.scenario.AlgorithmFactory;
+import xal.sim.scenario.ProbeFactory;
 import xal.sim.scenario.Scenario;
+import xal.smf.Accelerator;
+import xal.smf.data.XMLDataManager;
 
 /* TODO OPENXAL Implement/port, version in SLAC library depends on XAL */
 public class RunModel2 {
-
+	private int modelMode;
+	private String emitNode;
+	private boolean refMode;
+	private String runMode;
+	
+	private Accelerator accelerator;
+	private Scenario scenario;
+	
 	public RunModel2(int modelMode) {
-		// TODO Auto-generated constructor stub
+		this.modelMode = modelMode;
 	}
 
 	public void setEmitNode(String refID) {
-		// TODO Auto-generated method stub
-		
+		this.emitNode = refID;
 	}
 
 	public void useDesignRef(boolean refMode) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public Object getAccelerator() {
-		// TODO Auto-generated method stub
-		return null;
+		this.refMode = refMode;
 	}
 
 	public void setRunMode(String syncModeDesign) {
-		// TODO Auto-generated method stub
+		this.runMode = syncModeDesign;
 		
 	}
 
 	public void run() {
-		// TODO Auto-generated method stub
+		try {
+			accelerator = XMLDataManager.loadDefaultAccelerator();
+			scenario = Scenario.newScenarioFor(accelerator);//, elementMapping);	
+			IAlgorithm tracker = AlgorithmFactory.createEnvTrackerAdapt( accelerator );
 		
+			scenario.setProbe(ProbeFactory.getEnvelopeProbe( accelerator.getSequence("mebt"), tracker ));
+							
+			scenario.setSynchronizationMode(Scenario.SYNC_MODE_DESIGN);					
+			scenario.resync();
+			scenario.run();
+		} catch (InstantiationException|ModelException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public Accelerator getAccelerator() {
+		return accelerator;
 	}
 
 	public Scenario getScenario() {
-		// TODO Auto-generated method stub
-		return null;
+		return scenario;
 	}
 	
 }
