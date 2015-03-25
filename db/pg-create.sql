@@ -125,14 +125,35 @@ CREATE TABLE "MACHINE_MODEL"."DEVICE_TYPES"
   );
 
 
--- TODO probaby a view
-  CREATE TABLE "MACHINE_MODEL"."V_GOLD_REPORT"
-  (
-    "ID"           SERIAL ,
-    "RUN_ID"      INTEGER REFERENCES "MACHINE_MODEL"."RUNS" ( "ID" ) ON DELETE CASCADE,
-    "GOLD_STATUS_NO_CSS"     VARCHAR (200) ,
-    PRIMARY KEY ( "ID" )
-  );
+-- displays all GOLD models, the last DESIGN and EXTAND marked with 'PRESENT'
+CREATE OR REPLACE VIEW "MACHINE_MODEL"."V_GOLD_REPORT" AS
+(SELECT G."ID", G."RUNS_ID" as "RUN_ID", 'PRESENT' as "GOLD_STATUS_NO_CSS", G."COMMENTS", G."CREATED_BY", G."DATE_CREATED", R."RUN_SOURCE_CHK"  FROM "MACHINE_MODEL"."GOLD" G, "MACHINE_MODEL"."RUNS" R
+WHERE 
+  G."RUNS_ID" = R."ID" and
+  R."RUN_SOURCE_CHK" = 'DESIGN'
+ORDER BY 
+  G."DATE_CREATED" DESC
+LIMIT 1)
+
+UNION
+
+(SELECT G."ID", G."RUNS_ID" as "RUN_ID", 'PRESENT' as "GOLD_STATUS_NO_CSS", G."COMMENTS", G."CREATED_BY", G."DATE_CREATED", R."RUN_SOURCE_CHK"  FROM "MACHINE_MODEL"."GOLD" G, "MACHINE_MODEL"."RUNS" R
+WHERE 
+  G."RUNS_ID" = R."ID" and
+  R."RUN_SOURCE_CHK" = 'EXTANT'
+ORDER BY 
+  G."DATE_CREATED" DESC
+LIMIT 1)
+
+UNION
+
+(SELECT G."ID", G."RUNS_ID" as "RUN_ID", 'PREVIOUS' as "GOLD_STATUS_NO_CSS", G."COMMENTS", G."CREATED_BY", G."DATE_CREATED", R."RUN_SOURCE_CHK"  FROM "MACHINE_MODEL"."GOLD" G, "MACHINE_MODEL"."RUNS" R
+WHERE 
+  G."RUNS_ID" = R."ID"
+ORDER BY 
+  G."DATE_CREATED" DESC
+);
+
 
 -- At SLAC this table makes a link between a device name and the model runs that have optics (Twiss and R-matrices) for that device, via a FK to device ids
 -- in the infrastructure DB. But for ESS that FK has been removed for now. In future you will need some mechanism like that
