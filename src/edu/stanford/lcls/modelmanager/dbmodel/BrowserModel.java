@@ -320,7 +320,8 @@ public class BrowserModel {
 						}
 					}
 				}
-				goldMachineModels.add(lastDesignMachineModel);
+				if (lastDesignMachineModel != null)
+					goldMachineModels.add(lastDesignMachineModel);
 			}
 		}
 		return goldMachineModels.toArray(new MachineModel[goldMachineModels
