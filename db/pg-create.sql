@@ -2,16 +2,16 @@
 CREATE TABLE "MACHINE_MODEL"."RUNS"
   (
     "ID"                   SERIAL ,
-    "HARDWARE_SETTINGS_ID" INTEGER ,
-    "XML_DOCS_ID"          INTEGER ,
+--    "HARDWARE_SETTINGS_ID" INTEGER , -- no written by anything. Original design over-engineering.
+--    "XML_DOCS_ID"          INTEGER , -- Original design over-engineering.
     "CREATED_BY"           VARCHAR (30) NOT NULL DEFAULT CURRENT_USER ,
     "DATE_CREATED"         TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "UPDATED_BY"           VARCHAR (30) ,
-    "DATE_UPDATED"         TIMESTAMP ,
+--    "UPDATED_BY"           VARCHAR (30) , -- Original design flaw.
+--    "DATE_UPDATED"         TIMESTAMP , -- Original design flaw.
     "RUN_SOURCE_CHK"       VARCHAR (60) ,
-    "RUN_ELEMENT_FILENAME" VARCHAR (60) ,
+--    "RUN_ELEMENT_FILENAME" VARCHAR (60) , --- Never updated, original design over-engineering.
     "RUN_ELEMENT_DATE"     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    "RUN_DEVICE_FILENAME"  VARCHAR (60) ,
+--    "RUN_DEVICE_FILENAME"  VARCHAR (60) , -- - Never updated, original design over-engineering.
     "RUN_DEVICE_DATE"      TIMESTAMP DEFAULT CURRENT_TIMESTAMP ,
     "COMMENTS"             VARCHAR (200) ,
     "MODEL_MODES_ID"       INTEGER,
@@ -39,11 +39,11 @@ CREATE TABLE "MACHINE_MODEL"."DEVICE_TYPES"
   (
     "ID"                       SERIAL,
     "RUNS_ID"                  INTEGER REFERENCES "MACHINE_MODEL"."RUNS" ( "ID" ) ON DELETE CASCADE,
-    "LCLS_ELEMENTS_ELEMENT_ID" INTEGER ,
+--    "LCLS_ELEMENTS_ELEMENT_ID" INTEGER , -- until ESS infrastructure db is created and want link to device specs.
     "CREATED_BY"               VARCHAR (30) NOT NULL DEFAULT CURRENT_USER,
     "DATE_CREATED"             TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    "UPDATED_BY"               VARCHAR (30) ,
-    "DATE_UPDATED"             TIMESTAMP ,
+--    "UPDATED_BY"               VARCHAR (30) , --  not used. Original design flaw
+--    "DATE_UPDATED"             TIMESTAMP , --  not used. Original design flaw
     "ELEMENT_NAME"             VARCHAR (60) ,
     "INDEX_SLICE_CHK"          INTEGER ,
     "ZPOS"                     DOUBLE PRECISION ,
@@ -110,8 +110,8 @@ CREATE TABLE "MACHINE_MODEL"."DEVICE_TYPES"
     "COMMENTS"     VARCHAR (200) ,
     "CREATED_BY"   VARCHAR (30) NOT NULL DEFAULT CURRENT_USER ,
     "DATE_CREATED" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
-    "UPDATED_BY"   VARCHAR (30) ,
-    "DATE_UPDATED" TIMESTAMP,
+--    "UPDATED_BY"   VARCHAR (30) , -- not used. Original design flaw. There is no rowwise modification of this table.
+--    "DATE_UPDATED" TIMESTAMP, -- not used. Original design flaw. There is no rowwise modification of this table.
     PRIMARY KEY ( "ID" )
   );
 
@@ -130,12 +130,12 @@ CREATE TABLE "MACHINE_MODEL"."MODEL_DEVICES"
   (
     "ID"                       SERIAL ,
     "RUNS_ID"                  INTEGER REFERENCES "MACHINE_MODEL"."RUNS" ( "ID" ) ON DELETE CASCADE,
-    "LCLS_ELEMENTS_ELEMENT_ID" INTEGER ,
+--    "LCLS_ELEMENTS_ELEMENT_ID" INTEGER , -- Until you have an infrastructure db, delete it.
     "DEVICE_TYPES_ID"          INTEGER REFERENCES "MACHINE_MODEL"."DEVICE_TYPES" ( "ID" ) ON DELETE CASCADE,
     "CREATED_BY"               VARCHAR (30) NOT NULL DEFAULT CURRENT_USER ,
     "DATE_CREATED"             TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "UPDATED_BY"               VARCHAR (30) ,
-    "DATE_UPDATED"             TIMESTAMP ,
+--    "UPDATED_BY"               VARCHAR (30) , -- not used. Original design flaw. There is no rowwise modification of this table.
+--    "DATE_UPDATED"             TIMESTAMP , -- not used. Original design flaw. There is no rowwise modification of this table.
     "DEVICE_PROPERTY"          VARCHAR (30) ,
     "DEVICE_VALUE"             DOUBLE PRECISION,
     PRIMARY KEY ( "ID" )
