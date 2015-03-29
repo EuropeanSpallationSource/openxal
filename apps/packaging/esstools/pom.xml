@@ -27,6 +27,8 @@
 							<requires version="current">%{codac_rpm_prefix}-openxal-ess-data</requires>												
 							<include type="script" file="lego2openxal.sh" scripttype="user" name="lego2openxal" />
 							<include type="script" file="lego2tracewin.sh" scripttype="user" name="lego2tracewin" />
+							<include type="script" file="jelsdemo.sh" scripttype="user" name="jelsdemo" />
+							<include type="script" file="linaclegodemo.sh" scripttype="user" name="linaclegodemo" />
 						</package>
 					</packaging>
 				</configuration>
