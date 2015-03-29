@@ -58,6 +58,7 @@
 									<include>ModelConfig.xml</include>
 									<include>xdxf.dtd</include>
 									<include>model.params</include>
+									<include>*.edz</include>
 								</resource>
 							</resources>
 						</configuration>
