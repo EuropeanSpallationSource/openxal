@@ -111,24 +111,24 @@
 			<attribute isPrimaryKey="false" name="beta" type="java.lang.Double" />
 			<attribute isPrimaryKey="false" name="emittance" type="java.lang.Double" />
 		</schema>		
-		<record name="mebt" coordinate="x" alpha="-5.195205E-02" beta="2.096286E-01" emittance="2.875932E-06"/>
-		<record name="mebt" coordinate="y" alpha="-3.115512E-01" beta="3.722608E-01" emittance="2.854225E-06"/>
-		<record name="mebt" coordinate="z" alpha="-4.851303E-01" beta="9.257819E-01" emittance="4.092417E-06"/>
-		<record name="dtl" coordinate="x" alpha="1.439587E+00" beta="2.350918E-01" emittance="2.875932E-06"/>
-		<record name="dtl" coordinate="y" alpha="-4.703029E+00" beta="8.585194E-01" emittance="2.854225E-06"/>
-		<record name="dtl" coordinate="z" alpha="1.337146E-01" beta="4.570561E-01" emittance="4.092417E-06"/>
-		<record name="spoke" coordinate="x" alpha="-4.029208E+00" beta="8.706328E+00" emittance="5.620628E-07"/>
-		<record name="spoke" coordinate="y" alpha="1.303162E+00" beta="5.132412E+00" emittance="5.578205E-07"/>
-		<record name="spoke" coordinate="z" alpha="1.855483E-01" beta="7.007885E+00" emittance="8.035079E-07"/>
-		<record name="mb" coordinate="x" alpha="-4.884415E+00" beta="2.848464E+01" emittance="3.511342E-07"/>
-		<record name="mb" coordinate="y" alpha="-2.068390E-01" beta="1.283389E+01" emittance="3.484839E-07"/>
-		<record name="mb" coordinate="z" alpha="3.514533E-01" beta="1.214353E+01" emittance="5.019754E-07"/>
-		<record name="hb" coordinate="x" alpha="-3.091177E+00" beta="2.648355E+01" emittance="2.002088E-07"/>
-		<record name="hb" coordinate="y" alpha="-4.486853E-01" beta="1.243587E+01" emittance="1.986977E-07"/>
-		<record name="hb" coordinate="z" alpha="1.628754E-01" beta="2.021320E+01" emittance="2.862163E-07"/>
-		<record name="hebt" coordinate="x" alpha="-8.502303E-01" beta="5.929186E+01" emittance="8.504491E-08"/>
-		<record name="hebt" coordinate="y" alpha="9.854880E-01" beta="4.481609E+01" emittance="8.440301E-08"/>
-		<record name="hebt" coordinate="z" alpha="-1.973368E-01" beta="5.634313E+01" emittance="1.215797E-07"/>
+		<record name="MEBT" coordinate="x" alpha="-5.195205E-02" beta="2.096286E-01" emittance="2.875932E-06"/>
+		<record name="MEBT" coordinate="y" alpha="-3.115512E-01" beta="3.722608E-01" emittance="2.854225E-06"/>
+		<record name="MEBT" coordinate="z" alpha="-4.851303E-01" beta="9.257819E-01" emittance="4.092417E-06"/>
+		<record name="DTL" coordinate="x" alpha="1.439587E+00" beta="2.350918E-01" emittance="2.875932E-06"/>
+		<record name="DTL" coordinate="y" alpha="-4.703029E+00" beta="8.585194E-01" emittance="2.854225E-06"/>
+		<record name="DTL" coordinate="z" alpha="1.337146E-01" beta="4.570561E-01" emittance="4.092417E-06"/>
+		<record name="SPOKE" coordinate="x" alpha="-4.029208E+00" beta="8.706328E+00" emittance="5.620628E-07"/>
+		<record name="SPOKE" coordinate="y" alpha="1.303162E+00" beta="5.132412E+00" emittance="5.578205E-07"/>
+		<record name="SPOKE" coordinate="z" alpha="1.855483E-01" beta="7.007885E+00" emittance="8.035079E-07"/>
+		<record name="MB" coordinate="x" alpha="-4.884415E+00" beta="2.848464E+01" emittance="3.511342E-07"/>
+		<record name="MB" coordinate="y" alpha="-2.068390E-01" beta="1.283389E+01" emittance="3.484839E-07"/>
+		<record name="MB" coordinate="z" alpha="3.514533E-01" beta="1.214353E+01" emittance="5.019754E-07"/>
+		<record name="HB" coordinate="x" alpha="-3.091177E+00" beta="2.648355E+01" emittance="2.002088E-07"/>
+		<record name="HB" coordinate="y" alpha="-4.486853E-01" beta="1.243587E+01" emittance="1.986977E-07"/>
+		<record name="HB" coordinate="z" alpha="1.628754E-01" beta="2.021320E+01" emittance="2.862163E-07"/>
+		<record name="HEBT" coordinate="x" alpha="-8.502303E-01" beta="5.929186E+01" emittance="8.504491E-08"/>
+		<record name="HEBT" coordinate="y" alpha="9.854880E-01" beta="4.481609E+01" emittance="8.440301E-08"/>
+		<record name="HEBT" coordinate="z" alpha="-1.973368E-01" beta="5.634313E+01" emittance="1.215797E-07"/>
 	</table>
     <table name="location">
         <schema>
@@ -140,12 +140,12 @@
             <attribute isPrimaryKey="false" name="t" type="java.lang.Double" defaultValue="0" />
         </schema>
         <record name="Accelerator" species="PROTON" W="3.621815E+06"/>
-		<record name="mebt" species="PROTON" W="3.621815E+06"/>
-		<record name="dtl" species="PROTON" W="3.621815E+06"/>
-		<record name="spoke" species="PROTON" W="8.983287E+07"/>
-		<record name="mb" species="PROTON" W="2.162657E+08"/>
-		<record name="hb" species="PROTON" W="5.692187E+08"/>
-		<record name="hebt" species="PROTON" W="1.993585E+09"/>
+		<record name="MEBT" species="PROTON" W="3.621815E+06"/>
+		<record name="DTL" species="PROTON" W="3.621815E+06"/>
+		<record name="SPOKE" species="PROTON" W="8.983287E+07"/>
+		<record name="MB" species="PROTON" W="2.162657E+08"/>
+		<record name="HB" species="PROTON" W="5.692187E+08"/>
+		<record name="HEBT" species="PROTON" W="1.993585E+09"/>
 	</table>
 </tablegroup>
 
