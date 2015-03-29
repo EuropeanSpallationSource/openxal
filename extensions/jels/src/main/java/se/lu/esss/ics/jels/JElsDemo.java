@@ -283,7 +283,7 @@ public class JElsDemo {
 
 	private static AcceleratorSeq loadAcceleratorSequence() {
 		/* Loading SMF model */				
-		Accelerator accelerator = XMLDataManager.acceleratorWithUrlSpec(JElsDemo.class.getResource("main.xal").toString());
+		Accelerator accelerator = XMLDataManager.loadDefaultAccelerator();
 				
 		
 		if (accelerator == null)
