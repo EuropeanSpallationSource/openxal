@@ -2,5 +2,4 @@
 CURRENT_DIR=`dirname $0`
 LINKTARGET=`readlink -f $CURRENT_DIR/lego2openxal`
 DIR=`dirname $LINKTARGET`
-cd $DIR/../lib/openxal && 
-java -cp ":*" org.openepics.discs.exporters.OpenXALExporter "$@"
+java -cp "$DIR/../lib/openxal/openxal.library-$OPENXAL_VERSION.jar" org.openepics.discs.exporters.OpenXALExporter "$@"
