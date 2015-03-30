@@ -109,7 +109,7 @@ CREATE TABLE "MACHINE_MODEL"."DEVICE_TYPES"
     PRIMARY KEY ( "ID" )
   );
 
-  ALTER TABLE "MACHINE_MODEL"."ELEMENT_MODELS" ADD CONSTRAINT CKC_INDEX_SLICE_CHK_ELEMENT_ CHECK ( "INDEX_SLICE_CHK" IS NULL OR ( "INDEX_SLICE_CHK" IN (0,1,2) )) ;
+--  ALTER TABLE "MACHINE_MODEL"."ELEMENT_MODELS" ADD CONSTRAINT CKC_INDEX_SLICE_CHK_ELEMENT_ CHECK ( "INDEX_SLICE_CHK" IS NULL OR ( "INDEX_SLICE_CHK" IN (0,1,2) )) ;
 
 -- Which model runs have been designated by operations to be good ones, both presently and in the past.
   CREATE TABLE "MACHINE_MODEL"."GOLD"
@@ -185,3 +185,159 @@ END
 $BODY$
 LANGUAGE plpgsql;
 
+
+CREATE OR REPLACE FUNCTION "MACHINE_MODEL"."UPLOAD_MODEL" (
+			IN "P_RUNS_ARRAY" 		VARCHAR[],
+                        IN "P_MODEL_DEVICES_ARRAY" 	VARCHAR[],
+                        IN "P_ELEMENT_MODELS_ARRAY" 	VARCHAR[],
+                        OUT P_RUNS_ID              	INTEGER,
+                        OUT P_ERRMSG               	VARCHAR) RETURNS RECORD AS
+$BODY$
+DECLARE
+  runs_id integer;
+  run VARCHAR[];
+  model_devices VARCHAR[];
+  element_models VARCHAR[];
+BEGIN
+  run := "P_RUNS_ARRAY";
+  INSERT INTO "MACHINE_MODEL"."RUNS" ("RUN_SOURCE_CHK", "COMMENTS", "MODEL_MODES_ID")
+    VALUES(run[1+4],
+	   run[1+9], 
+           CAST(run[1+10] AS INTEGER)) 
+    RETURNING "ID" INTO runs_id;
+    -- runs[2] = "MACHINE_MODEL";
+
+  model_devices := "P_MODEL_DEVICES_ARRAY";
+  FOR i IN 0..(ARRAY_LENGTH(model_devices,1)/4-1) LOOP
+	INSERT INTO "MACHINE_MODEL"."MODEL_DEVICES" ("RUNS_ID", "LCLS_ELEMENTS_ELEMENT_ID", "DEVICE_TYPES_ID", "DEVICE_PROPERTY", "DEVICE_VALUE")
+	  VALUES (runs_id,
+	     CAST(model_devices[1+i*4+0] AS INTEGER),
+	     CAST(model_devices[1+i*4+1] AS INTEGER),
+	     model_devices[1+i*4+2],
+	     CAST(model_devices[1+i*4+3] AS DOUBLE PRECISION));
+  END LOOP;
+
+  element_models := "P_ELEMENT_MODELS_ARRAY";
+  FOR i IN 0..(ARRAY_LENGTH(element_models,1)/55-1) LOOP
+	INSERT INTO "MACHINE_MODEL"."ELEMENT_MODELS" (
+    "RUNS_ID",
+    "LCLS_ELEMENTS_ELEMENT_ID",
+    "ELEMENT_NAME",
+    "INDEX_SLICE_CHK",
+    "ZPOS",
+    "EK"  ,
+    "ALPHA_X",
+    "ALPHA_Y",
+    "BETA_X" ,
+    "BETA_Y" ,
+    "PSI_X"  ,
+    "PSI_Y"  ,
+    "ETA_X"  ,
+    "ETA_Y"  ,
+    "ETAP_X" ,
+    "ETAP_Y" ,
+    "R11" ,
+    "R12" ,
+    "R13" ,
+    "R14" ,
+    "R15" ,
+    "R16" ,
+    "R21" ,
+    "R22" ,
+    "R23" ,
+    "R24" ,
+    "R25" ,
+    "R26" ,
+    "R31" ,
+    "R32" ,
+    "R33" ,
+    "R34" ,
+    "R35" ,
+    "R36" ,
+    "R41" ,
+    "R42" ,
+    "R43" ,
+    "R44" ,
+    "R45" ,
+    "R46" ,
+    "R51" ,
+    "R52" ,
+    "R53" ,
+    "R54" ,
+    "R55" ,
+    "R56" ,
+    "R61" ,
+    "R62" ,
+    "R63" ,
+    "R64" ,
+    "R65" ,
+    "R66" ,
+    "LEFF",
+    "SLEFF"  ,
+    "ORDINAL",
+    "SUML")
+	  VALUES (runs_id,
+	     CAST(element_models[1+i*55+0] AS INTEGER),
+	     element_models[1+i*55+1],
+	     CAST(element_models[1+i*55+2] AS INTEGER),
+	     CAST(element_models[1+i*55+3] AS DOUBLE PRECISION),
+	     CAST(element_models[1+i*55+4] AS DOUBLE PRECISION),
+	     CAST(element_models[1+i*55+5] AS DOUBLE PRECISION),
+	     CAST(element_models[1+i*55+6] AS DOUBLE PRECISION),
+	     CAST(element_models[1+i*55+7] AS DOUBLE PRECISION),
+	     CAST(element_models[1+i*55+8] AS DOUBLE PRECISION),
+	     CAST(element_models[1+i*55+9] AS DOUBLE PRECISION),
+	     CAST(element_models[1+i*55+10] AS DOUBLE PRECISION),
+	     CAST(element_models[1+i*55+11] AS DOUBLE PRECISION),
+	     CAST(element_models[1+i*55+12] AS DOUBLE PRECISION),
+	     CAST(element_models[1+i*55+13] AS DOUBLE PRECISION),
+	     CAST(element_models[1+i*55+14] AS DOUBLE PRECISION),
+	     CAST(element_models[1+i*55+15] AS DOUBLE PRECISION),
+	     CAST(element_models[1+i*55+16] AS DOUBLE PRECISION),
+	     CAST(element_models[1+i*55+17] AS DOUBLE PRECISION),
+	     CAST(element_models[1+i*55+18] AS DOUBLE PRECISION),
+	     CAST(element_models[1+i*55+19] AS DOUBLE PRECISION),
+	     CAST(element_models[1+i*55+20] AS DOUBLE PRECISION),
+	     CAST(element_models[1+i*55+21] AS DOUBLE PRECISION),
+	     CAST(element_models[1+i*55+22] AS DOUBLE PRECISION),
+	     CAST(element_models[1+i*55+23] AS DOUBLE PRECISION),
+	     CAST(element_models[1+i*55+24] AS DOUBLE PRECISION),
+	     CAST(element_models[1+i*55+25] AS DOUBLE PRECISION),
+	     CAST(element_models[1+i*55+26] AS DOUBLE PRECISION),
+	     CAST(element_models[1+i*55+27] AS DOUBLE PRECISION),
+	     CAST(element_models[1+i*55+28] AS DOUBLE PRECISION),
+	     CAST(element_models[1+i*55+29] AS DOUBLE PRECISION),
+	     CAST(element_models[1+i*55+30] AS DOUBLE PRECISION),
+	     CAST(element_models[1+i*55+31] AS DOUBLE PRECISION),
+	     CAST(element_models[1+i*55+32] AS DOUBLE PRECISION),
+	     CAST(element_models[1+i*55+33] AS DOUBLE PRECISION),
+	     CAST(element_models[1+i*55+34] AS DOUBLE PRECISION),
+	     CAST(element_models[1+i*55+35] AS DOUBLE PRECISION),
+	     CAST(element_models[1+i*55+36] AS DOUBLE PRECISION),
+	     CAST(element_models[1+i*55+37] AS DOUBLE PRECISION),
+	     CAST(element_models[1+i*55+38] AS DOUBLE PRECISION),
+	     CAST(element_models[1+i*55+39] AS DOUBLE PRECISION),
+	     CAST(element_models[1+i*55+40] AS DOUBLE PRECISION),
+	     CAST(element_models[1+i*55+41] AS DOUBLE PRECISION),
+	     CAST(element_models[1+i*55+42] AS DOUBLE PRECISION),
+	     CAST(element_models[1+i*55+43] AS DOUBLE PRECISION),
+	     CAST(element_models[1+i*55+44] AS DOUBLE PRECISION),
+	     CAST(element_models[1+i*55+45] AS DOUBLE PRECISION),
+	     CAST(element_models[1+i*55+46] AS DOUBLE PRECISION),
+	     CAST(element_models[1+i*55+47] AS DOUBLE PRECISION),
+	     CAST(element_models[1+i*55+48] AS DOUBLE PRECISION),
+	     CAST(element_models[1+i*55+49] AS DOUBLE PRECISION),
+	     CAST(element_models[1+i*55+50] AS DOUBLE PRECISION),
+	     CAST(element_models[1+i*55+51] AS DOUBLE PRECISION),
+	     CAST(element_models[1+i*55+52] AS DOUBLE PRECISION),
+	     CAST(element_models[1+i*55+53] AS DOUBLE PRECISION),
+	     CAST(element_models[1+i*55+54] AS DOUBLE PRECISION)
+	     );
+  END LOOP;
+
+  P_RUNS_ID := runs_id;
+END
+$BODY$
+LANGUAGE plpgsql;
+
+                        

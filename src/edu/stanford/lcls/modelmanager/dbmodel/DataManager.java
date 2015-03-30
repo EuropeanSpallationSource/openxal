@@ -25,12 +25,13 @@ package edu.stanford.lcls.modelmanager.dbmodel;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.Point;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.Array;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -49,7 +50,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.prefs.Preferences;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -62,11 +62,6 @@ import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import javax.swing.filechooser.FileFilter;
 
-import oracle.jdbc.pool.OracleDataSource;
-import oracle.sql.ARRAY;
-import oracle.sql.ArrayDescriptor;
-import edu.stanford.slac.Message.Message;
-import edu.stanford.lcls.xal.model.xml.NewTwissRMatXmlWriter;
 import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.model.IElement;
@@ -97,6 +92,7 @@ import xal.tools.beam.PhaseMatrix;
 import xal.tools.beam.PhaseVector;
 import xal.tools.beam.RelativisticParameterConverter;
 import xal.tools.beam.Twiss;
+import edu.stanford.slac.Message.Message;
 
 public class DataManager {
 	final static public SimpleDateFormat machineModelDateFormat = new SimpleDateFormat(
@@ -769,10 +765,10 @@ public class DataManager {
 				modelDetail[i*55+8] = runMachineModelDetail[i].getPropertyValue("BETA_Y").toString();
 				modelDetail[i*55+9] = runMachineModelDetail[i].getPropertyValue("PSI_X").toString();
 				modelDetail[i*55+10] = runMachineModelDetail[i].getPropertyValue("PSI_Y").toString();
-				modelDetail[i*55+11] = runMachineModelDetail[i].getPropertyValue("ETA_X").toString();
+				/*modelDetail[i*55+11] = runMachineModelDetail[i].getPropertyValue("ETA_X").toString();
 				modelDetail[i*55+12] = runMachineModelDetail[i].getPropertyValue("ETA_Y").toString();
 				modelDetail[i*55+13] = runMachineModelDetail[i].getPropertyValue("ETAP_X").toString();
-				modelDetail[i*55+14] = runMachineModelDetail[i].getPropertyValue("ETAP_Y").toString();
+				modelDetail[i*55+14] = runMachineModelDetail[i].getPropertyValue("ETAP_Y").toString();*/
 				modelDetail[i*55+15] = runMachineModelDetail[i].getPropertyValue("R11").toString();
 				modelDetail[i*55+16] = runMachineModelDetail[i].getPropertyValue("R12").toString();
 				modelDetail[i*55+17] = runMachineModelDetail[i].getPropertyValue("R13").toString();
@@ -831,26 +827,30 @@ public class DataManager {
 		try {
 			Message.info("Uploading model data to DB...");
 			cstmt1 = writeConnection.prepareCall(
-			"{call MACHINE_MODEL.MODEL_UPLOAD_PKG.UPLOAD_MODEL (?, ?, ?, ?, ?)}");
+			//TODO OPENXAL "{call MACHINE_MODEL.MODEL_UPLOAD_PKG.UPLOAD_MODEL (?, ?, ?, ?, ?)}");
+				"{call \"MACHINE_MODEL\".\"UPLOAD_MODEL\" (?, ?, ?, ?, ?)}");
 			cstmt1.registerOutParameter(4, java.sql.Types.INTEGER);
 			cstmt1.registerOutParameter(5, java.sql.Types.VARCHAR);
-			
-			ArrayDescriptor runs_descriptor =
+
+			/*ArrayDescriptor runs_descriptor =
 				ArrayDescriptor.createDescriptor( "RUNS_ARRAY_TYP", writeConnection );  
 			ARRAY runs_array =
-				new ARRAY( runs_descriptor, writeConnection, runs );
+				new ARRAY( runs_descriptor, writeConnection, runs );*/
+			Array runs_array = writeConnection.createArrayOf("varchar", runs);
 		    cstmt1.setArray(1, runs_array);
 
-			ArrayDescriptor model_devices_descriptor =
+			/*ArrayDescriptor model_devices_descriptor =
 				ArrayDescriptor.createDescriptor( "MODEL_DEVICES_ARRAY_TYP", writeConnection );  
 			ARRAY model_devices_array =
-				new ARRAY( model_devices_descriptor, writeConnection, modelDevices );
+				new ARRAY( model_devices_descriptor, writeConnection, modelDevices );*/
+		    Array model_devices_array = writeConnection.createArrayOf("varchar", modelDevices);
 		    cstmt1.setArray(2, model_devices_array);
 			
-			ArrayDescriptor element_models_descriptor =
+			/*ArrayDescriptor element_models_descriptor =
 				ArrayDescriptor.createDescriptor( "ELEMENT_MODELS_ARRAY_TYP", writeConnection );  
 			ARRAY element_models_array =
-				new ARRAY( element_models_descriptor, writeConnection, modelDetail );
+				new ARRAY( element_models_descriptor, writeConnection, modelDetail );*/
+		    Array element_models_array = writeConnection.createArrayOf("varchar", modelDetail);
 		    cstmt1.setArray(3, element_models_array);
 			
 			cstmt1.execute();
