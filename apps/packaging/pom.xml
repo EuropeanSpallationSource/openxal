@@ -5,13 +5,13 @@
 	<parent>
 		<groupId>org.xal</groupId>
 		<artifactId>openxal-packaging</artifactId>
-		<version>1.3</version>
+		<version>1.4</version>
 		<relativePath>../../packaging/pom.xml</relativePath>
 	</parent>
 		
 	<groupId>org.xal</groupId>
 	<artifactId>openxal.apps.packaging</artifactId>
-	<version>1.3</version>
+	<version>1.4</version>
 	
 	<packaging>pom</packaging>
 	
