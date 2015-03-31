@@ -123,6 +123,7 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
      */
     public IdealMagSectorDipole2() {
     	super(s_strType);
+    	ElsElementMapping.printWarning();
     };
     
     /** 
@@ -133,6 +134,7 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
      */
     public IdealMagSectorDipole2(String strId) {
         super(s_strType, strId);
+        ElsElementMapping.printWarning();
     };
     
     /** 
@@ -151,8 +153,10 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
                                 int enmOrient, double dblFld, 
                                 double dblGap, double dblFldInd) 
     {
-    super(s_strType, strId, dblLen);
+    	super(s_strType, strId, dblLen);
 
+    	ElsElementMapping.printWarning();
+    
         this.setGapHeight(dblGap);
         this.setMagField(dblFld);
         this.setFieldIndex(dblFldInd);

@@ -28,10 +28,10 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
 	private Map<String,AcceleratorSeqCombo> _comboSequences;    
     
     /** Map of main power supplies keyed by the power supply id */
-    private Map<String,MagnetMainSupply> magnetMainSupplies;
+    protected Map<String,MagnetMainSupply> magnetMainSupplies;
     
     /** Map of trim power supplies keyed by the power supply id */
-    private Map<String,MagnetTrimSupply> magnetTrimSupplies;
+    protected Map<String,MagnetTrimSupply> magnetTrimSupplies;
         
     /** edit context holds the dynamic data */
     private EditContext editContext;
@@ -62,12 +62,15 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
      */
     public void update( final DataAdaptor adaptor ) throws NumberFormatException {
         // only the primary optics should supply this data
-        if ( adaptor.hasAttribute("System") ) {
-            m_strSysId = adaptor.stringValue("system");
+        if ( adaptor.hasAttribute( "system" ) ) {
+            m_strSysId = adaptor.stringValue( "system" );
         }
-        if ( adaptor.hasAttribute("ver") ) {
-            m_strVer = adaptor.stringValue("ver");
+        if ( adaptor.hasAttribute( "ver" ) ) {
+            m_strVer = adaptor.stringValue( "ver" );
         }
+		if ( adaptor.hasAttribute( "date") ) {
+			m_strDate = adaptor.stringValue( "date" );
+		}
         
         DataAdaptor powerSuppliesAdaptor = adaptor.childAdaptor("powersupplies");
         if ( powerSuppliesAdaptor != null ) {
@@ -163,7 +166,7 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
 	 */
     @SuppressWarnings( { "unchecked", "rawtypes" } )
 	private AcceleratorSeqCombo instantiateComboSequence(String comboType, String comboID, DataAdaptor comboAdaptor) throws ClassNotFoundException {
-		if ( comboType == null || comboType == "" ) {
+		if ( comboType == null || comboType.isEmpty() ) {
 			return AcceleratorSeqCombo.getInstance(comboID, this, comboAdaptor);
 		}
 		try {

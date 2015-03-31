@@ -9,7 +9,7 @@
 package xal.app.knobs;
 
 import xal.extension.application.*;
-import xal.extension.smf.application.*;
+import xal.extension.application.smf.*;
 import xal.smf.*;
 import xal.tools.data.*;
 import xal.tools.xml.XmlDataAdaptor;
@@ -161,7 +161,7 @@ public class KnobsDocument extends AcceleratorDocument implements DataListener {
 	 * Register actions specific to this document instance.  
      * @param commander The commander with which to register the custom commands.
      */
-    protected void customizeCommands( final Commander commander ) {		
+    public void customizeCommands( final Commander commander ) {
         MAKE_HORIZONTAL_BUMP_ACTION = new AbstractAction( "make-horizontal-bumps" ) {
             /** serialization identifier */
             private static final long serialVersionUID = 1L;

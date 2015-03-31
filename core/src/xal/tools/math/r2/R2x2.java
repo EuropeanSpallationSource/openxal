@@ -11,6 +11,7 @@ package xal.tools.math.r2;
 
 import xal.tools.math.IIndex;
 import xal.tools.math.SquareMatrix;
+import xal.tools.math.r6.R6x6;
 
 
 
@@ -331,21 +332,11 @@ public class R2x2 extends SquareMatrix<R2x2> implements java.io.Serializable {
      * 
      * @param   matTarget   matrix to be copied
      * 
-     * @return              a deep copy of the argument object, 
-     *                      or <code>null</code> if there was an instantiation error
+     * @return              a deep copy of the argument object
      * 
      */
     public static R2x2  clone(R2x2 matTarget) {
-        try {
-            return matTarget.copy();
-            
-        } catch (InstantiationException e) {
-            
-            System.err.println("Error instatiating " + R2x2.class.getName());
-            e.printStackTrace();
-            
-            return null;
-        }
+    	return matTarget.copy();
     }
     
     /**
@@ -367,9 +358,22 @@ public class R2x2 extends SquareMatrix<R2x2> implements java.io.Serializable {
     }
     
     
+    /*
+     * Object Overrides
+     */
     
-    
-    
+    /**
+     * Creates and returns a deep copy of this matrix.
+     *
+     * @see xal.tools.math.BaseMatrix#clone()
+     *
+     * @author Christopher K. Allen
+     * @since  Jul 3, 2014
+     */
+    @Override
+    public R2x2 clone() {
+        return new R2x2(this);
+    }
     
     
     /*
@@ -532,6 +536,20 @@ public class R2x2 extends SquareMatrix<R2x2> implements java.io.Serializable {
      
         return new R2(x, y);
     }
+
+	/**
+     * Handles object creation required by the base class. 
+     *
+	 * @see xal.tools.math.BaseMatrix#newInstance()
+	 *
+	 * @author Ivo List
+	 * @author Christopher K. Allen
+	 * @since  Jun 17, 2014
+	 */
+	@Override
+	protected R2x2 newInstance() {
+		return new R2x2();
+	}
 
 //    /**
 //     *  Matrix multiplication.  

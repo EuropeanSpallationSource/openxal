@@ -12,7 +12,7 @@ package xal.app.pvlogger;
 
 import xal.service.pvlogger.*;
 import xal.extension.application.*;
-import xal.extension.smf.application.*;
+import xal.extension.application.smf.*;
 import xal.tools.database.*;
 import xal.tools.apputils.files.RecentFileTracker;
 import xal.service.pvlogger.apputils.browser.*;
@@ -467,7 +467,7 @@ public class BrowserWindow extends AcceleratorWindow implements SwingConstants, 
 			 * @param source  controller sending the event
 			 * @param selectedSignals  new collection of selected signals
 			 */
-			public void selectedSignalsChanged( final BrowserController source, final Collection selectedSignals ) {}
+			public void selectedSignalsChanged( final BrowserController source, final Collection<String> selectedSignals ) {}
 		});
 
 		return detailView;

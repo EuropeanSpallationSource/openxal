@@ -7,9 +7,9 @@
 package xal.tools.math;
 
 import java.io.PrintWriter;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
+import java.io.StringWriter;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.StringTokenizer;
 
 import xal.tools.beam.PhaseMatrix;
@@ -21,7 +21,7 @@ import Jama.Matrix;
 /**
  * <p>
  * Class <code>BaseMatrix</code>.  This is a base class for objects representing
- * real matrix objects.  Thus it contains basic matrix operations where the interacting
+ * real-number matrix objects.  Thus it contains basic matrix operations where the interacting
  * objects are all of type <code>M</code>, or vectors of the singular type <code>V</code>.
  * (If matrix and vectors are not of compatible dimensions the operations fail.)
  * The template parameter <code>M</code> is the type of the child class.  This 
@@ -52,10 +52,21 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      */
     
     
-   /** Attribute marker for data managed by IArchive interface */
+   /** The default character width of matrices when displayed using {@link #toStringMatrix()}  */
+    private static final int INT_COL_WD_DFLT = 15;
+
+
+    /** Attribute marker for data managed by IArchive interface */
     public static final String ATTR_DATA = "values";
     
+
+    /*
+     * Global Attributes
+     */
     
+    /** Text format for outputting debug info */
+    final static private DecimalFormat SCI_FORMAT = new DecimalFormat("0.000000E00");
+   
     
 //    /*
 //     * Internal Classes
@@ -73,8 +84,6 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
 //    }
 //
     
-
-    
     
     /*
      *  Local Attributes
@@ -86,17 +95,26 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
     /** number of matrix columns */
     private final int               cntCols;
     
-
-    /** class type of child class */
-    protected final Class<M>        clsType;
-    
-    /** zero-argument constructor for this type */
-    protected final Constructor<M>  ctrType;
-    
     /** internal matrix implementation */
     protected final Jama.Matrix     matImpl;
 
     
+    /*
+     * Object Overrides
+     */
+    
+    /**
+     * Base classes must override the clone operation in order to 
+     * make deep copies of the current object.  This operation cannot
+     * be done without the exact type.
+     *
+     * @see java.lang.Object#clone()
+     *
+     * @author Christopher K. Allen
+     * @since  Jul 3, 2014
+     */
+    @Override
+    public abstract M   clone();
     
     
     /*
@@ -302,10 +320,8 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * object is completely decoupled from the original.
      * 
      * @return  a deep copy object of this matrix
-     * 
-     * @throws InstantiationException error in new object construction
      */
-    public M copy() throws InstantiationException {
+    public M copy() {
     
         M  matClone = this.newInstance();
         ((BaseMatrix<M>)matClone).assignMatrix( this.getMatrix() );
@@ -356,19 +372,11 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      *                  or <code>null</code> if error
      */
     public M plus(M matAddend) {
-        try {
-            Jama.Matrix    impAdd = ((BaseMatrix<M>)matAddend).getMatrix();
-            Jama.Matrix    impSum = this.getMatrix().plus( impAdd );
-            M              matAns = this.newInstance(impSum);
-    
-            return matAns;
-    
-        } catch (InstantiationException e) {
-    
-            System.err.println("Unable to instantiate resultant vector");
-    
-            return null;
-        }
+        Jama.Matrix    impAdd = ((BaseMatrix<M>)matAddend).getMatrix();
+        Jama.Matrix    impSum = this.getMatrix().plus( impAdd );
+        M              matAns = this.newInstance(impSum);
+
+        return matAns;
     }
 
     /**
@@ -392,19 +400,11 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      *                      or <code>null</code> if an error occurred
      */
     public M minus(M matSub) {
-        try {
-            Jama.Matrix    impSub = ((BaseMatrix<M>)matSub).getMatrix();
-            Jama.Matrix    impDif = this.getMatrix().minus( impSub );
-            M              matAns = this.newInstance(impDif);
-    
-            return matAns;
-    
-        } catch (InstantiationException e) {
-    
-            System.err.println("Unable to instantiate resultant vector");
-            
-            return null;
-        }
+        Jama.Matrix    impSub = ((BaseMatrix<M>)matSub).getMatrix();
+        Jama.Matrix    impDif = this.getMatrix().minus( impSub );
+        M              matAns = this.newInstance(impDif);
+
+        return matAns;
     }
 
     /**
@@ -623,7 +623,8 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      */
     @Override
     public boolean equals(Object objTest) {
-        boolean bResult = this.equals(objTest);
+        //boolean bResult = this.equals(objTest);	// this code causes an infinite recursion
+		final boolean bResult = super.equals( objTest );
         
         return bResult;
     }
@@ -660,6 +661,64 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
         return strBuf.toString();
     }
 
+    /**
+     * Returns a string representation of this matrix.  The string contains 
+     * multiple lines, one for each row of the matrix.  Within each line the
+     * matrix entries are formatted.  Thus, the string should resemble the 
+     * usual matrix format when printed out.
+     * 
+     * @return  multiple line formatted string containing matrix elements in matrix format
+     *
+     * @author Christopher K. Allen
+     * @since  Feb 8, 2013
+     */
+    public String   toStringMatrix() {
+        
+        return this.toStringMatrix(SCI_FORMAT);
+    }
+
+    /**
+     * Returns a string representation of this matrix.  The string contains 
+     * multiple lines, one for each row of the matrix.  Within each line the
+     * matrix entries are formatted according to the given number format.  
+     * The default column width is used.
+     * The string should resemble the usual matrix format when printed out.
+     * 
+     * @param   fmt     <code>NumberFormat</code> object containing output format for matrix entries
+     * 
+     * @return  multiple line formatted string containing matrix elements in matrix format
+     *
+     * @author Christopher K. Allen
+     * @since  Feb 8, 2013
+     */
+    public String   toStringMatrix(NumberFormat fmt) {
+        return  this.toStringMatrix(fmt, INT_COL_WD_DFLT);
+    }
+    
+    /**
+     * Returns a string representation of this matrix.  The string contains 
+     * multiple lines, one for each row of the matrix.  Within each line the
+     * matrix entries are formatted according to the given number format.  
+     * The string should resemble the usual matrix format when printed out.
+     * 
+     * @param   fmt         <code>NumberFormat</code> object containing output format for matrix entries
+     * @param   intColWd    number of characters used for each column (padding is with spaces)
+     * 
+     * @return  multiple line formatted string containing matrix elements in matrix format
+     *
+     * @author Christopher K. Allen
+     * @since  Feb 8, 2013
+     */
+    public String   toStringMatrix(NumberFormat fmt, int intColWd) {
+        StringWriter sw = new StringWriter();
+        PrintWriter  pw = new PrintWriter(sw);
+        
+        matImpl.print(pw, fmt, intColWd);
+        
+        return  sw.toString();
+    }
+    
+    
     /**
      * "Borrowed" implementation from AffineTransform, since it is based on
      * double attribute values.  Must implement hashCode to be consistent with
@@ -712,30 +771,39 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
     }
 
     /**
+     * <p>
      * Creates a new, uninitialized instance of this matrix type.
+     * </p>
+     * <p>
+     * NOTE:
+     * &middot; This method was made abstract by Ivo List.  Rather than use 
+     * reflection to instantiate new objects, this function is now delegated
+     * to the concrete classes.  This architecture is more robust and allows
+     * the compiler to do more error checking.
+     * </p>
      * 
      * @return  uninitialized matrix object of type <code>M</code>
      * 
-     * @throws InstantiationException   error occurred in the reflection constructor
-     *
+     * @author Ivo List
      * @author Christopher K. Allen
      * @since  Oct 1, 2013
      */
-    protected M newInstance() throws InstantiationException {
-        try {
-            M matNewInst = this.ctrType.newInstance();
+    protected abstract M newInstance();
+//    protected M newInstance() throws InstantiationException {
+//        try {
+//            M matNewInst = this.ctrType.newInstance();
+//    
+//            return matNewInst;
+//    
+//        } catch (InstantiationException   | 
+//                IllegalAccessException   | 
+//                IllegalArgumentException | 
+//                InvocationTargetException e) {
+//    
+//            throw new InstantiationException("Unable to copy matrix " + this.getClass().getName());
+//        }
+//    }
     
-            return matNewInst;
-    
-        } catch (InstantiationException   | 
-                IllegalAccessException   | 
-                IllegalArgumentException | 
-                InvocationTargetException e) {
-    
-            throw new InstantiationException("Unable to copy matrix " + this.getClass().getName());
-        }
-    }
-
     /**
      * Creates a new instance of this matrix type initialized to the given
      * implementation matrix.
@@ -743,13 +811,11 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * @param   impInit implementation matrix containing initialization values    
      * 
      * @return          initialized matrix object of type <code>M</code>
-     * 
-     * @throws InstantiationException   error occurred in the reflection constructor
      *
      * @author Christopher K. Allen
      * @since  Oct 1, 2013
      */
-    protected M newInstance(Jama.Matrix impInit) throws InstantiationException {
+    protected M newInstance(Jama.Matrix impInit) {
         
         M   matNewInst = this.newInstance();
         
@@ -776,23 +842,10 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      *  
      * @throws UnsupportedOperationException  child class has not defined a public, zero-argument constructor
      */
-    @SuppressWarnings("unchecked")
-    protected BaseMatrix(int cntRows, int cntCols) throws UnsupportedOperationException {
-        
-        try {
-            this.clsType = (Class<M>) this.getClass();
-            
-            this.ctrType = this.clsType.getConstructor();
-            this.cntRows = cntRows;
-            this.cntCols = cntCols;
-            this.matImpl = new Jama.Matrix(cntRows, cntCols, 0.0);
-            
-        } catch (NoSuchMethodException | SecurityException e) {
-            
-            throw new UnsupportedOperationException("Could not find public, zero-argument constructor for " 
-                    + this.clsType.getName()
-                    );
-        }
+    protected BaseMatrix(int cntRows, int cntCols) /*throws UnsupportedOperationException*/ {
+        this.cntRows = cntRows;
+        this.cntCols = cntCols;
+        this.matImpl = new Jama.Matrix(cntRows, cntCols, 0.0);
     }
 
     /**
@@ -807,7 +860,7 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * @author Christopher K. Allen
      * @since  Sep 25, 2013
      */
-    protected BaseMatrix(M matParent) throws UnsupportedOperationException {
+    protected BaseMatrix(M matParent) {
         this(matParent.getRowCnt(), matParent.getColCnt());
         
         BaseMatrix<M> matBase = (BaseMatrix<M>)matParent;

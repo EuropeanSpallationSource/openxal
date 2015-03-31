@@ -3,14 +3,15 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>org.iter.codac.units</groupId>
-		<artifactId>maven-iter-settings</artifactId>
-		<version>4.1.0</version>
+		<groupId>org.xal</groupId>
+		<artifactId>openxal-packaging</artifactId>
+		<version>1.3</version>
+		<relativePath>../../packaging/pom.xml</relativePath>
 	</parent>
 		
 	<groupId>org.xal</groupId>
 	<artifactId>openxal.apps.packaging</artifactId>
-	<version>1.0.0</version>
+	<version>1.3</version>
 	
 	<packaging>pom</packaging>
 	
@@ -18,6 +19,7 @@
 		<module>bricks</module>
 		<module>dbbrowser</module>
 		<module>extlatgenerator</module>
+		<module>experimentautomator</module>
 		<module>knobs</module>
 		<module>launcher</module>
 		<module>machinesimulator</module>
@@ -30,7 +32,9 @@
 		<module>scan1d</module>
 		<module>scan2d</module>
 		<module>scope</module>
+		<module>score</module>
 		<module>virtualaccelerator</module>
-		<module>xyzcorrelator</module>				
+		<module>xyzcorrelator</module>
+		<module>esstools</module>
 	</modules>	
 </project>

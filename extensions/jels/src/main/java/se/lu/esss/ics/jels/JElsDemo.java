@@ -1,32 +1,27 @@
 package se.lu.esss.ics.jels;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 
 import se.lu.esss.ics.jels.model.alg.ElsTracker;
-import se.lu.esss.ics.jels.model.elem.els.ElsElementMapping;
-import se.lu.esss.ics.jels.model.elem.jels.JElsElementMapping;
 import se.lu.esss.ics.jels.model.probe.ElsProbe;
 import xal.model.Lattice;
 import xal.model.ModelException;
 import xal.model.alg.EnvelopeTracker;
 import xal.model.alg.Tracker;
 import xal.model.probe.EnvelopeProbe;
-import xal.model.probe.Probe;
 import xal.model.probe.traj.EnvelopeProbeState;
-import xal.model.probe.traj.ProbeState;
 import xal.model.probe.traj.Trajectory;
 import xal.model.xml.LatticeXmlWriter;
 import xal.model.xml.ParsingException;
 import xal.model.xml.ProbeXmlParser;
 import xal.model.xml.ProbeXmlWriter;
-import xal.sim.scenario.DefaultElementMapping;
-import xal.sim.scenario.ElementMapping;
 import xal.sim.scenario.Scenario;
 import xal.smf.Accelerator;
-import xal.smf.AcceleratorNode;
 import xal.smf.AcceleratorSeq;
 import xal.smf.data.XMLDataManager;
+import xal.tools.beam.PhaseVector;
 import xal.tools.beam.Twiss;
 import xal.tools.xml.XmlDataAdaptor;
 
@@ -35,25 +30,52 @@ public class JElsDemo {
 
 
 	public static void main(String[] args) throws InstantiationException, ModelException {
-		System.out.println("Running\n");
+		if (args.length > 0 && ("-h".equals(args[0]) || "--help".equals(args[0]))) {
+			System.out.println("Usage: [accelerator file main.xal] [probe file]");
+			return;
+		}
 		
-		// Setup (pick combination of elements and algorithm)
-		ElementMapping elementMapping = JElsElementMapping.getInstance(); // JELS element mapping - transfer matrices in OpenXal reference frame
-		//ElementMapping elementMapping = ElsElementMapping.getInstance(); // ELS element mapping - transfer matrices in TraceWin reference frame
-		//ElementMapping elementMapping = DefaultElementMapping.getInstance(); // OpenXAL element mapping - transfer matrices in OpenXal reference frame
+		AcceleratorSeq sequence;
+		EnvelopeProbe probe;
+		if (args.length == 0) {
+			// Loads accelerator
+			sequence = loadAcceleratorSequence();
+		} else { //	(args.length > 0) 
+			sequence = loadAcceleratorSequence(args[0]);
+		}
+		if (args.length > 1) {
+			probe = loadProbeFromXML(args[1]);
+		} else {
+			probe = defaultProbe();
+		}
 		
+		run(sequence, probe);
+	}
+
+	public static EnvelopeProbe defaultProbe() {
 		EnvelopeProbe probe = setupOpenXALProbe(); // OpenXAL probe & algorithm
 		//EnvelopeProbe probe = setupElsProbe(); // ELS probe & algorithm
 						
 		// Setup of initial parameters
 		setupInitialParameters(probe);
-        //loadInitialParameters(probe, "mebt-initial-state.xml");				
+        //loadInitialParameters(probe, "mebt-initial-state.xml");		
 		
-		// Loads accelerator
-		AcceleratorSeq sequence = loadAcceleratorSequence();
+		return probe;
+	}	
+		
+	public static void run(AcceleratorSeq sequence) throws ModelException {	
+		run(sequence, defaultProbe());
+	}
+		
+	public static void run(AcceleratorSeq sequence, EnvelopeProbe probe) throws ModelException {
+		// Setup (pick combination of elements and algorithm)
+		//ElementMapping elementMapping = JElsElementMapping.getInstance(); // JELS element mapping - transfer matrices in OpenXal reference frame
+		//ElementMapping elementMapping = ElsElementMapping.getInstance(); // ELS element mapping - transfer matrices in TraceWin reference frame
+		//ElementMapping elementMapping = DefaultElementMapping.getInstance(); // OpenXAL element mapping - transfer matrices in OpenXal reference frame
 				
+		
 		// Generates lattice from SMF accelerator
-		Scenario scenario = Scenario.newScenarioFor(sequence, elementMapping);		
+		Scenario scenario = Scenario.newScenarioFor(sequence);//, elementMapping);		
 		scenario.setProbe(probe);			
 						
 		// Setting up synchronization mode
@@ -77,15 +99,15 @@ public class JElsDemo {
 		//saveLattice(scenario.getLattice(), "lattice.xml");
 						
 		// Running simulation
-		scenario.setStartElementId("BEGIN_mebt");
+		//scenario.setStartElementId("BEGIN_mebt");
 		scenario.run();
 		
 		
 		// Getting results
-		Trajectory trajectory = probe.getTrajectory();
+		Trajectory<EnvelopeProbeState> trajectory = probe.getTrajectory();
 		
-		EnvelopeProbeState ps = (EnvelopeProbeState) trajectory.stateAtPosition(0); // I was forced to cast from ProbeState to EnvelopeProbeState		
-		Iterator<ProbeState> iterState= trajectory.stateIterator();
+		EnvelopeProbeState ps = trajectory.stateAtPosition(0); // I was forced to cast from ProbeState to EnvelopeProbeState		
+		Iterator<EnvelopeProbeState> iterState= trajectory.stateIterator();
      
 		/*ProbeState ps1 = trajectory.stateForElement("MEBT-PBI_BPM-2a");
 		ProbeState ps2 = trajectory.stateAtPosition(101.2);*/
@@ -102,7 +124,7 @@ public class JElsDemo {
 		int i = 0;
     	while (iterState.hasNext())
      	{
-    		ps = (EnvelopeProbeState) iterState.next();
+    		ps = iterState.next();
 		        
 		    s[i]= ps.getPosition() ;
 		    String elem=ps.getElementId() ;
@@ -115,23 +137,40 @@ public class JElsDemo {
 		    by[i] = twiss[1].getBeta();
 		    bz[i] = twiss[2].getBeta();
 		    w[i] = ps.getKineticEnergy()/1.e6;
-		    System.out.printf("%E %E %E %E %E %E %E %E %E %E %E\n", ps.getPosition(), ps.getGamma()-1, 
-		    		twiss[0].getEnvelopeRadius(),twiss[0].getBeta(),
-		    		twiss[1].getEnvelopeRadius(),twiss[1].getBeta(),
-		    		twiss[2].getEnvelopeRadius(),twiss[2].getBeta(),
-		    		twiss[2].getBeta()/Math.pow(ps.getGamma(), 2),
-		    		ps.getTime(), ps.getKineticEnergy());
-		    
-		    /*
-		    if (ps.getElementId().startsWith("BEGIN")) {
+		    PhaseVector mean = ps.phaseMean();
+			
+		    System.out.printf("%E %E %E %E %E %E %E %E %E %E %E %E %E %E %E %E %E %s\n", ps.getPosition(), ps.getGamma()-1, 		
+					twiss[0].getEnvelopeRadius(),
+					Math.sqrt(twiss[0].getGamma()*twiss[0].getEmittance()),
+					twiss[1].getEnvelopeRadius(),
+					Math.sqrt(twiss[1].getGamma()*twiss[1].getEmittance()),
+					twiss[2].getEnvelopeRadius()/ps.getGamma(),
+					Math.sqrt(twiss[2].getGamma()*twiss[2].getEmittance())*ps.getGamma(),
+					Math.sqrt(twiss[2].getGamma()*twiss[2].getEmittance())/ps.getGamma(),
+				
+					mean.getx(),
+					mean.getxp(),
+					mean.gety(),
+					mean.getyp(),
+					mean.getz(),
+					mean.getzp(),
+				
+					twiss[0].getBeta(),
+					twiss[1].getBeta(),
+					
+		    		ps.getElementId());
+		
+		    /*if (ps.getElementId().startsWith("BEGIN")) {
 		    	String sec = ps.getElementId().substring(6);
 		    	AcceleratorNode node = sequence.getNodeWithId(sec);
 		    	if (node instanceof AcceleratorSeq && ((AcceleratorSeq)node).getParent() instanceof Accelerator) {	
 			    	char[] axis = new char[]{'x','y','z'};
 			    	for (int j=0; j<3; j++) {
 			    		System.out.printf("<record name=\"%s\" coordinate=\"%c\" alpha=\"%E\" beta=\"%E\" emittance=\"%E\"/>\n", 
-			    				sec, axis[j], twiss[j].getAlpha(), twiss[j].getBeta(), twiss[j].getEmittance());	
+			    				sec, axis[j], twiss[j].getAlpha(), twiss[j].getBeta(), twiss[j].getEmittance());
 			    	}
+			    	System.out.printf("<record name=\"%s\" species=\"PROTON\" W=\"%E\"/>\n", 
+		    				sec, ps.getKineticEnergy());
 		    	}
 		    }*/
 		    i=i+1;
@@ -162,8 +201,8 @@ public class JElsDemo {
 		envelopeTracker.setRfGapPhaseCalculation(true);
 		envelopeTracker.setUseSpacecharge(true);
 		envelopeTracker.setEmittanceGrowth(false);
-		envelopeTracker.setStepSize(0.004);
-		envelopeTracker.setProbeUpdatePolicy(Tracker.UPDATE_EXIT);
+		envelopeTracker.setStepSize(0.01);
+		envelopeTracker.setProbeUpdatePolicy(Tracker.UPDATE_ALWAYS);
 		
 		EnvelopeProbe envelopeProbe = new EnvelopeProbe();
 		envelopeProbe.setAlgorithm(envelopeTracker);		
@@ -188,25 +227,23 @@ public class JElsDemo {
 
 
 	public static void setupInitialParameters(EnvelopeProbe probe) {
-		probe.setSpeciesCharge(-1);
-		probe.setSpeciesRestEnergy(9.3829431e8);
+		probe.setSpeciesCharge(1);
+		probe.setSpeciesRestEnergy(9.3827202900E8);
 		//elsProbe.setSpeciesRestEnergy(9.38272013e8);	
-		probe.setKineticEnergy(3e6);//energy
+		probe.setKineticEnergy(3.6218151e6);//energy
 		probe.setPosition(0.0);
 		probe.setTime(0.0);		
 				
 		double beta_gamma = probe.getBeta() * probe.getGamma();
 	
 		
-		probe.initFromTwiss(new Twiss[]{new Twiss(-0.1763,0.2442,0.2098*1e-6 / beta_gamma),
-										  new Twiss(-0.3247,0.3974,0.2091*1e-6 / beta_gamma),
-										  new Twiss(-0.5283,0.8684,0.2851*1e-6 / beta_gamma)});
-		probe.setBeamCurrent(0.0);
-		//probe.setBeamCurrent(50e-3);
-		
-		// probe.setBunchFrequency(4.025e8); 	
+		probe.initFromTwiss(new Twiss[]{new Twiss(-0.051952048,0.20962859,0.2529362*1e-6 / beta_gamma),
+										  new Twiss(-0.31155119,0.37226081,0.2510271*1e-6 / beta_gamma),
+										  new Twiss(-0.48513031,0.92578192,0.3599253*1e-6 / beta_gamma)});
+		probe.setBeamCurrent(62.5e-3);
+		probe.setBunchFrequency(352.21e6); 	
 	}
-	
+
 	public static void loadInitialParameters(EnvelopeProbe probe, String file) {
 		XmlDataAdaptor document = XmlDataAdaptor.adaptorForUrl( JElsDemo.class.getResource(file).toString(), false);
         EnvelopeProbeState state = new EnvelopeProbeState();
@@ -214,10 +251,9 @@ public class JElsDemo {
         probe.applyState(state);     
 	}
 	
-	private static Probe loadProbeFromXML(String file) {
+	public static EnvelopeProbe loadProbeFromXML(String file) {
 		try {			
-			Probe probe = ProbeXmlParser.parse(file);
-			
+			EnvelopeProbe probe = (EnvelopeProbe)ProbeXmlParser.parse(file);
 			return probe;
 		} catch (ParsingException e1) {
 			e1.printStackTrace();
@@ -225,7 +261,7 @@ public class JElsDemo {
 		return null;
 	}
 
-	private static void saveProbe(EnvelopeProbe probe, String file) {		
+	static void saveProbe(EnvelopeProbe probe, String file) {		
 		try {
 			probe.setSaveTwissFlag(true);
 			ProbeXmlWriter.writeXml(probe, file);			
@@ -235,7 +271,7 @@ public class JElsDemo {
 		}
 	}
 
-	private static void saveLattice(Lattice lattice, String file) {		
+	static void saveLattice(Lattice lattice, String file) {		
 		lattice.setAuthor(System.getProperty("user.name", "ESS"));		
 		try {
 			LatticeXmlWriter.writeXml(lattice, file);
@@ -247,8 +283,9 @@ public class JElsDemo {
 
 	private static AcceleratorSeq loadAcceleratorSequence() {
 		/* Loading SMF model */				
-		Accelerator accelerator = XMLDataManager.acceleratorWithUrlSpec(JElsDemo.class.getResource("main.xal").toString());
+		Accelerator accelerator = XMLDataManager.loadDefaultAccelerator();
 				
+		
 		if (accelerator == null)
 		{			
 			throw new Error("Accelerator is empty. Could not load the default accelerator.");
@@ -266,5 +303,17 @@ public class JElsDemo {
 */		
 		/* We can instead build lattice for the whole accelerator */
 		//return accelerator;
+	}
+	
+	private static AcceleratorSeq loadAcceleratorSequence(String path) {
+		/* Loading SMF model */				
+		Accelerator accelerator = XMLDataManager.acceleratorWithUrlSpec(new File(path).toURI().toString());
+				
+		
+		if (accelerator == null)
+		{			
+			throw new Error("Accelerator is empty. Could not load the accelerator.");
+		} 			
+		return accelerator;
 	}
 }

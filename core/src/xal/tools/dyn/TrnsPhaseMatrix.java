@@ -14,6 +14,7 @@ import xal.tools.beam.PhaseVector;
 import xal.tools.math.IIndex;
 import xal.tools.math.SquareMatrix;
 import xal.tools.math.r2.R2x2;
+import xal.tools.math.r6.R6x6;
 
 /**
  * <p>  
@@ -341,6 +342,24 @@ public class TrnsPhaseMatrix extends SquareMatrix<TrnsPhaseMatrix> {
 //    
     
     /*
+     * Object Overrides
+     */
+    
+    /**
+     * Creates and returns a deep copy of this matrix.
+     *
+     * @see xal.tools.math.BaseMatrix#clone()
+     *
+     * @author Christopher K. Allen
+     * @since  Jul 3, 2014
+     */
+    @Override
+    public TrnsPhaseMatrix clone() {
+        return new TrnsPhaseMatrix(this);
+    }
+
+    
+    /*
      * Initialization
      */
     
@@ -383,6 +402,20 @@ public class TrnsPhaseMatrix extends SquareMatrix<TrnsPhaseMatrix> {
         super(INT_SIZE, strValues);
         this.setElem(IND.HOM, IND.HOM, 1.0);
     }
+
+	/**
+     * Handles object creation required by the base class. 
+     *
+	 * @see xal.tools.math.BaseMatrix#newInstance()
+	 *
+	 * @author Ivo List
+	 * @author Christopher K. Allen
+	 * @since  Jun 17, 2014
+	 */
+	@Override
+	protected TrnsPhaseMatrix newInstance() {
+		return new TrnsPhaseMatrix();
+	}
     
 
 

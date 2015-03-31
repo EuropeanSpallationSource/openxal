@@ -19,6 +19,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import xal.tools.ResourceManager;
 import xal.tools.data.DataAdaptor;
 import xal.tools.database.ConnectionDictionary;
 import xal.tools.database.DBConfiguration;
@@ -50,7 +51,7 @@ public class PVLogger {
 		URL configurationURL = null;
 		DBConfiguration dbConfig = DBConfiguration.getInstance();
 		if (dbConfig != null) configurationURL = dbConfig.getSchemaURL("pvlogger");
-		if (configurationURL == null) configurationURL = getClass().getResource( "configuration.xml" );
+		if (configurationURL == null) configurationURL = ResourceManager.getResourceURL( getClass(), "configuration.xml" );
 		final DataAdaptor configurationAdaptor = XmlDataAdaptor.adaptorForUrl( configurationURL, false ).childAdaptor( "Configuration" );
 
 		final DataAdaptor persistentStoreAdaptor = configurationAdaptor.childAdaptor( "persistentStore" );
@@ -450,8 +451,14 @@ public class PVLogger {
 	}
 	
 	
-	/** sql connections should be closed manually */
-	protected void finalize(){
-		closeConnection();
+	/** sql connections should be closed manually 
+	 * @throws Throwable */
+	protected void finalize() throws Throwable{
+		try {
+			closeConnection();
+		}
+		finally {
+			super.finalize();
+		}
 	}
 }

@@ -22,20 +22,22 @@ import xal.model.alg.EnvelopeTracker;
 import xal.model.alg.Tracker;
 import xal.model.probe.EnvelopeProbe;
 import xal.model.probe.Probe;
+import xal.model.probe.traj.EnvelopeProbeState;
 import xal.model.probe.traj.ProbeState;
 import xal.model.probe.traj.Trajectory;
 import xal.model.xml.LatticeXmlWriter;
-import xal.sim.scenario.DefaultElementMapping;
 import xal.sim.scenario.ElementMapping;
 import xal.sim.scenario.Scenario;
 import xal.smf.AcceleratorSeq;
 import xal.tools.beam.CovarianceMatrix;
 import xal.tools.beam.PhaseMap;
 import xal.tools.beam.PhaseMatrix;
+import xal.tools.beam.PhaseVector;
 import xal.tools.beam.Twiss;
 import xal.tools.xml.XmlDataAdaptor;
 
 public abstract class TestCommon {
+	protected static double SpeciesCharge = 1;
 	protected Probe probe;
 	protected ElementMapping elementMapping;
 	protected Scenario scenario;
@@ -49,7 +51,6 @@ public abstract class TestCommon {
 		this.probe = probe;
 		this.elementMapping = elementMapping;
 	}
-	
 
 	@Parameters
 	public static Collection<Object[]> probes() {
@@ -63,17 +64,31 @@ public abstract class TestCommon {
 	}
 	
 	public static EnvelopeProbe setupOpenXALProbe(double energy, double frequency, double current) {
+		return setupOpenXALProbe(energy, frequency, current, 
+				new double[][]{{-0.1763,0.2442,0.2098e-6},
+				  	{-0.3247,0.3974,0.2091e-6},
+				  	{-0.5283,0.8684,0.2851e-6}});
+	}
+
+	public static EnvelopeProbe setupOpenXALProbe2(double energy, double frequency, double current) {
+		return setupOpenXALProbe(energy, frequency, current, 
+				new double[][]{{-0.1763,0.2442,0.2098},
+				  	{-0.3247,0.3974,0.2091},
+				  	{-0.5283,0.8684,0.2851}});
+	}
+	
+	public static EnvelopeProbe setupOpenXALProbe(double energy, double frequency, double current, double twiss[][]) {
 		// Envelope probe and tracker
 		EnvelopeTracker envelopeTracker = new EnvelopeTracker();			
 		envelopeTracker.setRfGapPhaseCalculation(true);
-		envelopeTracker.setUseSpacecharge(false);
+		envelopeTracker.setUseSpacecharge(true);
 		envelopeTracker.setEmittanceGrowth(false);
 		envelopeTracker.setStepSize(0.004);
 		envelopeTracker.setProbeUpdatePolicy(Tracker.UPDATE_EXIT);
 		
 		EnvelopeProbe envelopeProbe = new EnvelopeProbe();
 		envelopeProbe.setAlgorithm(envelopeTracker);
-		envelopeProbe.setSpeciesCharge(-1);
+		envelopeProbe.setSpeciesCharge(SpeciesCharge);
 		envelopeProbe.setSpeciesRestEnergy(9.3829431e8);
 		envelopeProbe.setKineticEnergy(energy);//energy
 		envelopeProbe.setPosition(0.0);
@@ -96,9 +111,9 @@ public abstract class TestCommon {
 		 */
 		double beta_gamma = envelopeProbe.getBeta() * envelopeProbe.getGamma();
 		
-		envelopeProbe.initFromTwiss(new Twiss[]{new Twiss(-0.1763,0.2442,0.2098e-6*1e-6 / beta_gamma),
-				  new Twiss(-0.3247,0.3974,0.2091e-6*1e-6 / beta_gamma),
-				  new Twiss(-0.5283,0.8684,0.2851e-6*1e-6 / beta_gamma)});
+		envelopeProbe.initFromTwiss(new Twiss[]{new Twiss(twiss[0][0], twiss[0][1], twiss[0][2]*1e-6 / beta_gamma),
+				  new Twiss(twiss[1][0], twiss[1][1], twiss[1][2]*1e-6 / beta_gamma),
+				  new Twiss(twiss[2][0], twiss[2][1], twiss[2][2]*1e-6 / beta_gamma)});
 		envelopeProbe.setBeamCurrent(current);
 		envelopeProbe.setBunchFrequency(frequency);//frequency
 		
@@ -110,6 +125,8 @@ public abstract class TestCommon {
 			for (int j=0; j<6; j++)
 				System.out.printf("%E ",cov.getElem(i,j));
 		}*/
+		
+		envelopeProbe.initialize();
 		
 		return envelopeProbe;
 	}
@@ -224,7 +241,9 @@ public abstract class TestCommon {
 				}
 			}
 		}
-		pm.getFirstOrder().print(new PrintWriter(System.out));
+		/*PrintWriter pw = new PrintWriter(System.out);
+		pm.getFirstOrder().print(pw);
+		pw.flush();*/
 	}
 	
 
@@ -281,43 +300,40 @@ public abstract class TestCommon {
 			b0+=Math.pow(elsBeta[i],2);
 		}		
 		
-		//System.out.printf("ELS results diff: %E %E %E\n", Math.abs(elsPosition-probe.getPosition())/elsPosition, Math.sqrt(e/e0), Math.sqrt(b/b0));
+		System.out.printf("ELS results diff: %E %E %E\n", Math.abs(elsPosition-probe.getPosition())/elsPosition, Math.sqrt(e/e0), Math.sqrt(b/b0));
 	}
 	
 	public void checkTWTransferMatrix(double T[][]) throws ModelException
 	{		
-		Iterator<IComponent> it = scenario.getLattice().globalIterator();		
-		Trajectory trajectory = probe.getTrajectory();
-		// TODO REMOVE WORKAROUND there's a bug in OpenXal trajectory iterator gives incorrect order of elements
-		//Iterator<ProbeState> it2 = trajectory.stateIterator();
+		Trajectory<EnvelopeProbeState> trajectory = probe.getTrajectory();
 		
-		Probe probe = this.probe.copy();
+		Iterator<EnvelopeProbeState> it = trajectory.stateIterator();
+		
+		Probe<EnvelopeProbeState> probe = this.probe.copy();
 		PhaseMap pm = PhaseMap.identity();		
 		
-		ProbeState initialState = null;
-		ProbeState ps = null;
+		EnvelopeProbeState initialState = null;
+		EnvelopeProbeState ps = null;
 		
 		while (it.hasNext()) {
-			IComponent comp = it.next();
-			if (comp instanceof IElement) {				
-				IElement el = (IElement)comp;				
-				//el.transferMap(probe, el.getLength()).getFirstOrder().print();
-				ProbeState psnext = trajectory.stateForElement(el.getId());
-				if (ps != null) {
-					probe.applyState(ps);
-					PhaseMap element_pm = el.transferMap(probe, el.getLength());
-					
-					if (!(elementMapping instanceof ElsElementMapping))
-						ROpenXal2TW(ps.getGamma(), psnext.getGamma(), element_pm);					
-					
-					pm = element_pm.compose(pm);
-				}
-				ps = psnext;
+			EnvelopeProbeState psnext = it.next();
+			
+			//el.transferMap(probe, el.getLength()).getFirstOrder().print();
+			if (ps != null) {
+				probe.applyState(ps);
+				PhaseMap element_pm = new PhaseMap(psnext.getResponseMatrix().times(ps.getResponseMatrix().inverse())); 
 				
-				if (initialState == null) initialState = ps;
+				if (!(elementMapping instanceof ElsElementMapping))
+					ROpenXal2TW(ps.getGamma(), psnext.getGamma(), element_pm);					
+				
+				pm = element_pm.compose(pm);
 			}
-		}
+			ps = psnext;
+			
+			if (initialState == null) initialState = ps;
 		
+		}
+	
 		// transform T
 	/*	if (!(elementMapping instanceof ElsElementMapping)) {
 			double gamma_start = initialState.getGamma();
@@ -330,7 +346,9 @@ public abstract class TestCommon {
 				T[5][i]/=gamma_end;
 			}			
 		}*/
-		//pm.getFirstOrder().print();
+		/*PrintWriter pw = new PrintWriter(System.out);
+		pm.getFirstOrder().print(pw);
+		pw.flush();*/
 		double T77[][] = new double[7][7];		
 		for (int i=0; i<6; i++)
 			for (int j=0; j<6; j++)
@@ -361,7 +379,11 @@ public abstract class TestCommon {
 		return (x-y)/y;
 	}
 	
-	protected void checkTWResults(double gamma, double[][] cov) {
+	protected void checkTWResults(double gammaTw, double[][] centCovTw66) {
+		checkTWResults(gammaTw, centCovTw66, new double[] {0.,0.,0.,0.,0.,0.});
+	}
+	
+	protected void checkTWResults(double gammaTw, double[][] centCovTw66, double[] meanTw6) {
 		/*double[] alpha = new double[3],beta=new double[3],emit=new double[3], det=new double[3], sigma=new double[3], gama=new double[3];
 			
 		for (int i=0; i<3; i++) 
@@ -387,26 +409,45 @@ public abstract class TestCommon {
 		for (int i = 0; i<3; i++) {
 			System.out.printf("%c:%.0g %.0g %.0g ",'x'+i, tr(t[i].getAlpha(),alpha[i]), tr(t[i].getBeta(),beta[i]), tr(t[i].getEmittance(),emit[i]));	
 		}*/
-		System.out.printf("TW gamma diff: %.2g\n", tr(probe.getGamma(),gamma));
+		System.out.printf("TW gamma diff: %.2g\n", tr(probe.getGamma(),gammaTw));
 		
 		
 		// transform cov
 		for (int i=0; i<6; i++) {
-			cov[i][4]*=gamma;
-			cov[i][5]/=gamma;
-			cov[4][i]*=gamma;				
-			cov[5][i]/=gamma;
+			centCovTw66[i][4]*=gammaTw;
+			centCovTw66[i][5]/=gammaTw;
+			centCovTw66[4][i]*=gammaTw;				
+			centCovTw66[5][i]/=gammaTw;
 		}
 
-		double cov77[][] = new double[7][7];		
+		double centCovTw77[][] = new double[7][7];	
+		double meanTw7[] = new double[7];
 		for (int i=0; i<6; i++)
 			for (int j=0; j<6; j++)
-				cov77[i][j] = cov[i][j];
-		CovarianceMatrix pcov = ((EnvelopeProbe)probe).getCovariance();
-		PhaseMatrix pcov77 = new PhaseMatrix(cov77);
-		double n = pcov.minus(new PhaseMatrix(cov77)).norm2()/pcov77.norm2();
+				centCovTw77[i][j] = centCovTw66[i][j];
+		for (int i=0; i<6; i++)
+			meanTw7[i] = meanTw6[i];
+		meanTw7[6] = 1.0;
+		
+		CovarianceMatrix centCovOx = ((EnvelopeProbe)probe).getCovariance().computeCentralCovariance();
+		PhaseVector meanOx = ((EnvelopeProbe)probe).getCovariance().getMean();
+		PhaseMatrix centCovTw = new PhaseMatrix(centCovTw77);
+		PhaseVector meanTw = new PhaseVector(meanTw7);
+		
+		PrintWriter pw = new PrintWriter(System.out);
+		/*centCovOx.print(pw);
+		meanOx.print(pw);
+		meanOx.minus(meanTw).print(pw);
+		pw.flush();*/
+		//centCovOx.print(pw);
+	//	centCovTw.print(pw);
+		pw.flush();
+		double n = centCovOx.minus(centCovTw).norm2()/centCovTw.norm2();
+		double n2 = meanOx.minus(meanTw).norm2();
+		if (meanTw.norm2()>0.) n2/=meanTw.norm2(); 
 		//pm.getFirstOrder().minus(new PhaseMatrix(new Matrix(T77))).print();
 		System.out.printf("TW cov matrix diff: %E\n",n);
+		System.out.printf("TW mean diff: %E\n",n2);
 	}
 
 }

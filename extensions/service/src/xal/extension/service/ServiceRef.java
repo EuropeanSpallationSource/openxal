@@ -86,7 +86,7 @@ public class ServiceRef {
     /** get the service address given the service info */
     private static String getHostAddress( final ServiceInfo info ) {
         final String[] hostAddresses = info.getHostAddresses();
-        final String hostAddress = hostAddresses.length > 0 ? hostAddresses[0] : null;
+        final String hostAddress = hostAddresses != null && hostAddresses.length > 0 ? hostAddresses[0] : null;
 		return hostAddress;
     }
 	
@@ -125,6 +125,12 @@ public class ServiceRef {
 	 */
 	public boolean equals(Object other) {
 		return _serviceInfo.equals( ((ServiceRef)other)._serviceInfo); 
+	}
+
+
+	/** override hashCode as required for consistency with equals */
+	public int hashCode() {
+		return _serviceInfo.hashCode();
 	}
 	
 	

@@ -5,11 +5,11 @@
     <parent>
         <groupId>org.xal</groupId>
         <artifactId>openxal</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.3</version>
     </parent>
 
     <artifactId>openxal.library</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.3</version>
 
     <packaging>jar</packaging>
 
@@ -38,6 +38,7 @@
             <!-- This will copy all applications jars to the target directory -->
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
+                <version>2.6</version>
                 <executions>
                     <execution>
                         <id>copy-applications</id>
@@ -51,6 +52,7 @@
 				    <resources>
 					<resource><directory>../apps/bricks/target</directory><includes><include>openxal.apps.bricks-${project.version}.jar</include></includes></resource>
 					<resource><directory>../apps/dbbrowser/target</directory><includes><include>openxal.apps.dbbrowser-${project.version}.jar</include></includes></resource>
+					<resource><directory>../apps/experimentautomator/target</directory><includes><include>openxal.apps.experimentautomator-${project.version}.jar</include></includes></resource>
 					<resource><directory>../apps/extlatgenerator/target</directory><includes><include>openxal.apps.extlatgenerator-${project.version}.jar</include></includes></resource>
 					<resource><directory>../apps/knobs/target</directory><includes><include>openxal.apps.knobs-${project.version}.jar</include></includes></resource>
 					<resource><directory>../apps/launcher/target</directory><includes><include>openxal.apps.launcher-${project.version}.jar</include></includes></resource>
@@ -72,89 +74,76 @@
 			</executions>
 		    </plugin>
 		</plugins>
-    </build>
+	</build>
 
-    <dependencies>
+	<dependencies>
 		<dependency>
 		    <groupId>org.xal</groupId>
 		    <artifactId>openxal.extensions.widgets</artifactId>
-		    <version>${project.version}</version>
 		</dependency>
 		<dependency>
 		    <groupId>org.xal</groupId>
 		    <artifactId>openxal.extensions.bricks</artifactId>
-		    <version>${project.version}</version>
 		</dependency>
 		<dependency>
 		    <groupId>org.xal</groupId>
 		    <artifactId>openxal.extensions.service</artifactId>
-		    <version>${project.version}</version>
 		</dependency>
 		<dependency>
 		    <groupId>org.xal</groupId>
 		    <artifactId>openxal.extensions.application</artifactId>
-		    <version>${project.version}</version>
 		</dependency>
 		<dependency>
 		    <groupId>org.xal</groupId>
 		    <artifactId>openxal.extensions.pvlogger</artifactId>
-		    <version>${project.version}</version>
 		</dependency>
 		<dependency>
 		    <groupId>org.xal</groupId>
 		    <artifactId>openxal.extensions.extlatgen</artifactId>
-		    <version>${project.version}</version>
 		</dependency>
 		<dependency>
 		    <groupId>org.xal</groupId>
 		    <artifactId>openxal.extensions.solver</artifactId>
-		    <version>${project.version}</version>
 		</dependency>
 		<dependency>
 		    <groupId>org.xal</groupId>
 		    <artifactId>openxal.extensions.fit</artifactId>
-		    <version>${project.version}</version>
 		</dependency>
 		<dependency>
 		    <groupId>org.xal</groupId>
 		    <artifactId>openxal.extensions.orbit</artifactId>
-		    <version>${project.version}</version>
 		</dependency>
 		<dependency>
 		    <groupId>org.xal</groupId>
 		    <artifactId>openxal.extensions.recordselector</artifactId>
-		    <version>${project.version}</version>
 		</dependency>
 		<dependency>
 		    <groupId>org.xal</groupId>
 		    <artifactId>openxal.extensions.scan</artifactId>
-		    <version>${project.version}</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.xal</groupId>
+		    <artifactId>openxal.extensions.twissobserver</artifactId>
 		</dependency>
 		<dependency>
 		    <groupId>org.xal</groupId>
 		    <artifactId>openxal.extensions.worker</artifactId>
-		    <version>${project.version}</version>
 		</dependency>
 		<dependency>
 		    <groupId>org.xal</groupId>
 		    <artifactId>openxal.plugins.jca</artifactId>
-		    <version>${project.version}</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.xal</groupId>
-		    <artifactId>openxal.plugins.postgres</artifactId>
-		    <version>${project.version}</version>
+			<groupId>org.xal</groupId>
+			<artifactId>openxal.plugins.postgres</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>postgresql</groupId>
-			<artifactId>postgresql</artifactId>
-			<version>9.1-901.jdbc4</version>
-			<scope>runtime</scope>
+			<groupId>se.lu.esss.ics.jels</groupId>
+			<artifactId>jels</artifactId>
 		</dependency>
 		<dependency>
-            <groupId>se.lu.esss.ics.jels</groupId>
-            <artifactId>jels</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-    </dependencies>
+			<groupId>se.lu.esss.ics.linaclego</groupId>
+			<artifactId>openxal.extensions.linaclego</artifactId>
+		</dependency>
+	</dependencies>
 </project>

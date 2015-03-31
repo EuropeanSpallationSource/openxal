@@ -13,6 +13,7 @@ import java.util.EnumSet;
 
 import xal.tools.math.IIndex;
 import xal.tools.math.SquareMatrix;
+import xal.tools.math.r6.R6x6;
 
 
 
@@ -395,18 +396,10 @@ public class R3x3 extends SquareMatrix<R3x3> implements java.io.Serializable {
      * object is completely decoupled from the original.
      * 
      * @param   matTarget   matrix to be copied
-     * @return              a deep copy of the argument object, or <code>null</code> if fail
+     * @return              a deep copy of the argument object
      */
     public static R3x3  copy(R3x3 matTarget)    {
-        try {
-            return matTarget.copy();
-            
-        } catch (InstantiationException e) {
-            
-            System.err.println("Base class failed to instantiate. " + e.getMessage());
-            
-            return null;
-        }
+    	return matTarget.copy();
     }
     
     /**  
@@ -429,6 +422,23 @@ public class R3x3 extends SquareMatrix<R3x3> implements java.io.Serializable {
     
     
     
+    /*
+     * Object Overrides
+     */
+    
+    /**
+     * Creates and returns a deep copy of this matrix.
+     *
+     * @see xal.tools.math.BaseMatrix#clone()
+     *
+     * @author Christopher K. Allen
+     * @since  Jul 3, 2014
+     */
+    @Override
+    public R3x3 clone() {
+        return new R3x3(this);
+    }
+
     
     /*
      * Initialization
@@ -808,6 +818,20 @@ public class R3x3 extends SquareMatrix<R3x3> implements java.io.Serializable {
      
         return new R3(x, y, z);
     }
+
+	/**
+     * Handles object creation required by the base class. 
+     *
+	 * @see xal.tools.math.BaseMatrix#newInstance()
+	 * 
+	 * @author Ivo List
+	 * @author Christopher K. Allen
+	 * @since  Jun 17, 2014
+	 */
+	@Override
+	protected R3x3 newInstance() {
+		return new R3x3();
+	}
 
 //    /**
 //     *  Matrix multiplication.  

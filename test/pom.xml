@@ -5,11 +5,11 @@
 	<parent>
 		<groupId>org.xal</groupId>
 		<artifactId>openxal</artifactId>
-		<version>1.0.0</version>
+		<version>1.0.3</version>
 	</parent>
 	
 	<artifactId>openxal.core.test</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.3</version>
 	
 	<build>
 
@@ -29,30 +29,20 @@
 			</plugin>
 
 			<!-- Add the correct tests classes -->
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>build-helper-maven-plugin</artifactId>
-				<version>1.8</version>
-				<executions>
-					<execution>
-						<phase>generate-sources</phase>
-						<goals><goal>add-test-source</goal></goals>
-						<configuration>
-						<sources>
-							<source>${project.parent.basedir}/core/test/src</source>
-						</sources>
-					</configuration>
-				</execution>
-				</executions>
-			</plugin>
-
-
-			<!-- Add the resources from core/test -->
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>build-helper-maven-plugin</artifactId>
-				<version>1.8</version>
-				<executions>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals><goal>add-test-source</goal></goals>
+                        <configuration>
+                            <sources>
+                            <source>${project.parent.basedir}/core/test/src</source>
+                            </sources>
+                        </configuration>
+                    </execution>
 					<execution>
 						<id>add-test-resource</id>
 						<phase>generate-test-sources</phase>
@@ -66,28 +56,28 @@
 							</resource>
 						</resources>
 						</configuration>
-					</execution> 
-				</executions>
-			</plugin>
-
+					</execution>                     
+                </executions>
+            </plugin>
 		</plugins>
 	</build>
 	<dependencies>
 		<dependency>
 			<groupId>gov.nist.math.jama</groupId>
 			<artifactId>jama</artifactId>
-			<version>1.0.2-openxal</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.jsci</groupId>
 			<artifactId>jsci</artifactId>
-			<version>1.1-openxal</version>	
 		</dependency>
 		<dependency>
 			<groupId>org.xal</groupId>
 			<artifactId>openxal.plugins.jca</artifactId>
-			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.xal</groupId>
+			<artifactId>openxal.extensions.widgets</artifactId>
+		</dependency>					
 	</dependencies>
 </project>

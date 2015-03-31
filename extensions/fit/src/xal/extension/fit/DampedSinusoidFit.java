@@ -117,7 +117,7 @@ final public class DampedSinusoidFit {
 		NUM_POINTS = count;
 		
 		_waveformError = new double[count];
-		
+
 		_initialOffsetCalculated = false;
 		_initialOffset = null;
 		_offset = Double.NaN;
@@ -147,6 +147,7 @@ final public class DampedSinusoidFit {
 		
 		_initialAmplitudeCalculated = false;
 		_initialAmplitude = Double.NaN;
+		_amplitude = Double.NaN;
     }
 	
 	
@@ -213,8 +214,8 @@ final public class DampedSinusoidFit {
 		
 		return amplitude * Math.pow( growthFactor, index ) * Math.sin( 2 * Math.PI * frequency * index + phase ) + offset;
 	}
-	
-	
+
+
 	/** calculate the initial waveform error */
 	private void fitInitialWaveformError() {
 		final double offset = getInitialOffset();
@@ -348,7 +349,13 @@ final public class DampedSinusoidFit {
 			};
 						
 //			System.out.println( "Algorithm: " + trial.getAlgorithm().getLabel() );
-//			System.out.println( "Scoring trial with offset: " + offset + ", cosmu: " + cosmu + ", growth: " + growthFactor + ", Square Score: " + sumSquareError ); 
+//			System.out.println( "Scoring trial with offset: " + offset + ", cosmu: " + cosmu + ", growth: " + growthFactor + ", Square Score: " + sumSquareError );
+
+			if ( Double.isNaN( sumSquareError ) ) {
+				trial.vetoTrial( new TrialVeto( trial, null, "error is NaN" ) );
+				return Double.POSITIVE_INFINITY;
+			}
+
 			return Math.sqrt( sumSquareError / waveformErrors.length );
 		}
 	}
@@ -667,9 +674,9 @@ final public class DampedSinusoidFit {
 	}
 	
 	
-	/** Get the optimized cosine-like phase. */
+	/** Get the optimized cosine-like phase (equivalent phase if the fitted equation were of the form of A * damping * cos( mu + phase ) ). */
 	public double getCosineLikePhase() {
-		return Math.PI / 2.0 + getPhase();
+		return toCosineLikePhase( getPhase() );
 	}
 	
 	
@@ -693,7 +700,14 @@ final public class DampedSinusoidFit {
 	
 	/** Get the cosine-like phase calculating it if necessary. Note that this estimation is relatively poor. */
 	public double getInitialCosineLikePhase() {
-		return Math.PI / 2.0 + getInitialPhase();
+		return toCosineLikePhase( getInitialPhase() );
+	}
+
+
+	/** Convert a sine like phase (default) to a cosine like phase (equivalent phase if the fitted equation were of the form of A * damping * cos( mu + phase )) */
+	private double toCosineLikePhase( final double sineLikePhase ) {
+		final double rawCosinePhase = sineLikePhase - Math.PI / 2.0;	// shift by pi/2
+		return rawCosinePhase < -Math.PI ? rawCosinePhase + 2 * Math.PI : rawCosinePhase;		// force the phase to be between -pi and pi
 	}
 	
 	
@@ -705,37 +719,13 @@ final public class DampedSinusoidFit {
 		
 		return _initialAmplitude;
 	}
-	
-	
-	/** Get the sine-like amplitude calculating it if necessary. Note that this estimation is relatively poor. */
-	public double getInitialSineLikeAmplitude() {
-		return getInitialAmplitude();
-	}
-	
-	
-	/** Get the cosine-like amplitude calculating it if necessary. Note that this estimation is relatively poor. */
-	public double getInitialCosineLikeAmplitude() {
-		return - getInitialAmplitude();
-	}
-	
-	
+
+
 	/** Get the optimized sine-like amplitude */
 	public double getAmplitude() {
 		return _amplitude;
 	}
-	
-	
-	/** Get the optimized sine-like amplitude. */
-	public double getSineLikeAmplitude() {
-		return getAmplitude();
-	}
-	
-	
-	/** Get the optimized cosine-like amplitude. */
-	public double getCosineLikeAmplitude() {
-		return - getAmplitude();
-	}
-	
+
 	
 	/** calculate the constant offset */
 	private void fitInitialOffset() {        
@@ -982,5 +972,36 @@ final public class DampedSinusoidFit {
 		}
 		_initialAmplitude = calculateAmplitude( gfactor, mu, phase, zeroedWaveform, getInitialWaveformError() );
 		_initialAmplitudeCalculated = true;
+	}
+
+
+	/**
+	 * Convenience method to calculate the fitted waveform over the specified positions
+	 * @param positions array of positions over which to calculate the waveform
+	 * @return array holding the calculated waveform over each of the positions
+	 */
+	public double[] getFittedWaveform( final double[] positions ) {
+		final double[] waveform = new double[positions.length];
+		calculateFittedWaveform( positions, waveform );
+		return waveform;
+	}
+
+
+	/** 
+	 * Convenience method to calculate the fitted waveform over the specified positions 
+	 * @param positions array of positions over which to calculate the waveform
+	 * @param array big enough to hold the calculated waveform over each of the positions
+	 */
+	public void calculateFittedWaveform( final double[] positions, double[] waveform ) {
+		final double offset = Double.isNaN( _offset ) ? getInitialOffset() : _offset;
+		final double growthFactor = Double.isNaN( _growthFactor ) ? getInitialGrowthFactor() : _growthFactor;
+		final double frequency = Double.isNaN( _frequency ) ? getInitialFrequency() : _frequency;
+		final double amplitude = Double.isNaN( _amplitude ) ? getInitialAmplitude() : _amplitude;
+		final double phase = Double.isNaN( _phase ) ? getInitialPhase() : _phase;
+
+		for ( int index = 0 ; index < waveform.length ; index++ ) {
+			final double position = positions[index];
+			waveform[index] = amplitude * Math.pow( growthFactor, position ) * Math.sin( 2 * Math.PI * frequency * position + phase ) + offset;
+		}
 	}
 }

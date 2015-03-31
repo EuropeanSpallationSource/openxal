@@ -7,8 +7,8 @@
 
     <!-- Initialization for the extensions builder -->
     <target name="init">
-		<property name="extension.compiler" value="${build.intermediates.extensions}/compiler.xml" />
-		<property name="extension.compile.root" value="${build.intermediates.extensions}/compile" />
+		<property name="extensions.compiler" value="${build.intermediates.extensions}/compiler.xml" />
+		<property name="extensions.compile.root" value="${build.intermediates.extensions}/compile" />
 
 		<!-- fileset for pure extensions' libraries -->
 		<fileset id="fileset.extensions.lib" dir="${extensions.root}">
@@ -42,7 +42,7 @@
 
 	<!-- Compile the extensions -->
 	<target name="compile" depends="generate-compiler, jar-lib">
-		<mkdir dir="${extension.compile.root}" />
+		<mkdir dir="${extensions.compile.root}" />
 
 		<!-- Compile every extension -->
 		<subant target="compile" antfile="compiler.xml">
@@ -50,21 +50,59 @@
 		</subant>
 
 		<!-- Merge the pure extensions' resources into the compile directory -->
-		<copy todir="${extension.compile.root}" quiet="true" failonerror="false" includeEmptyDirs="false">
-			<regexpmapper handledirsep="true" from="^[^/]+/resources/(.*)$$" to="\1" />
+		<copy todir="${extensions.compile.root}" quiet="true" failonerror="false" includeEmptyDirs="false">
+			<!-- mapper extracts the resource path relative to the resources directory -->
+			<regexpmapper handledirsep="true" from="^([^/]+)/resources/(.*)$$" to="xal/extension/\1/resources/\2" />
 			<fileset dir="${extensions.root}" includes="*/resources/**/*" />
 		</copy>
 
+		<!-- Merge the site specific pure extensions' resources into the compile directory -->
+		<copy todir="${extensions.compile.root}" quiet="true" failonerror="false" includeEmptyDirs="false">
+			<!-- mapper extracts the resource path relative to the resources directory -->
+			<regexpmapper handledirsep="true" from="^([^/]+)/resources/(.*)$$" to="xal/extension/\1/resources/\2" />
+			<fileset dir="${site.extensions.root}" includes="*/resources/**/*" />
+		</copy>
+
 		<!-- Merge the plugins' resources into the compile directory -->
-		<copy todir="${extension.compile.root}" quiet="true" failonerror="false" includeEmptyDirs="false">
-			<regexpmapper handledirsep="true" from="^[^/]+/resources/(.*)$$" to="\1" />
+		<copy todir="${extensions.compile.root}" quiet="true" failonerror="false" includeEmptyDirs="false">
+			<!-- mapper extracts the resource path relative to the resources directory -->
+			<regexpmapper handledirsep="true" from="^([^/]+)/resources/(.*)$$" to="xal/plugin/\1/resources/\2" />
 			<fileset dir="${plugins.root}" includes="*/resources/**/*" />
 		</copy>
 
+		<!-- Merge the site specific plugins' resources into the compile directory -->
+		<copy todir="${extensions.compile.root}" quiet="true" failonerror="false" includeEmptyDirs="false">
+			<!-- mapper extracts the resource path relative to the resources directory -->
+			<regexpmapper handledirsep="true" from="^([^/]+)/resources/(.*)$$" to="xal/plugin/\1/resources/\2" />
+			<fileset dir="${site.plugins.root}" includes="*/resources/**/*" />
+		</copy>
+
 		<!-- Merge the services extensions' resources into the compile directory -->
-		<copy todir="${extension.compile.root}" quiet="true" failonerror="false" includeEmptyDirs="false">
-			<regexpmapper handledirsep="true" from="^[^/]+/extension/resources/(.*)$$" to="\1" />
+		<copy todir="${extensions.compile.root}" quiet="true" failonerror="false" includeEmptyDirs="false">
+			<!-- mapper extracts the resource path relative to the resources directory -->
+			<regexpmapper handledirsep="true" from="^([^/]+)/extension/resources/(.*)$$" to="xal/service/\1/resources/\2" />
 			<fileset dir="${services.root}" includes="*/extension/resources/**/*" />
+		</copy>
+
+		<!-- Merge the site specific services extensions' resources into the compile directory -->
+		<copy todir="${extensions.compile.root}" quiet="true" failonerror="false" includeEmptyDirs="false">
+			<!-- mapper extracts the resource path relative to the resources directory -->
+			<regexpmapper handledirsep="true" from="^([^/]+)/extension/resources/(.*)$$" to="xal/service/\1/resources/\2" />
+			<fileset dir="${site.services.root}" includes="*/extension/resources/**/*" />
+		</copy>
+
+		<!-- Merge the applications extensions' resources into the compile directory -->
+		<copy todir="${extensions.compile.root}" quiet="true" failonerror="false" includeEmptyDirs="false">
+			<!-- mapper extracts the resource path relative to the resources directory -->
+			<regexpmapper handledirsep="true" from="^([^/]+)/extension/resources/(.*)$$" to="xal/app/\1/resources/\2" />
+			<fileset dir="${apps.root}" includes="*/extension/resources/**/*" />
+		</copy>
+
+		<!-- Merge the site specific applications extensions' resources into the compile directory -->
+		<copy todir="${extensions.compile.root}" quiet="true" failonerror="false" includeEmptyDirs="false">
+			<!-- mapper extracts the resource path relative to the resources directory -->
+			<regexpmapper handledirsep="true" from="^([^/]+)/extension/resources/(.*)$$" to="xal/app/\1/resources/\2" />
+			<fileset dir="${site.apps.root}" includes="*/extension/resources/**/*" />
 		</copy>
 	</target>
 
@@ -81,10 +119,34 @@
 			<fileset dir="${extensions.root}" includes="*/resources/**/*" />
 		</copy>
 
+		<!-- Merge the site specific pure extensions' resources into the extensions build intermedites resources directory -->
+		<copy todir="${extension.intermediates.resources}" quiet="true" failonerror="false" includeEmptyDirs="false">
+			<regexpmapper handledirsep="true" from="^[^/]+/resources/(.*)$$" to="\1" />
+			<fileset dir="${site.extensions.root}" includes="*/resources/**/*" />
+		</copy>
+
 		<!-- Merge the services extensions' resources into the extensions build intermedites resources directory -->
 		<copy todir="${extension.intermediates.resources}" quiet="true" failonerror="false" includeEmptyDirs="false">
 			<regexpmapper handledirsep="true" from="^[^/]+/extension/resources/(.*)$$" to="\1" />
 			<fileset dir="${services.root}" includes="*/extension/resources/**/*" />
+		</copy>
+
+		<!-- Merge the site specific services extensions' resources into the extensions build intermedites resources directory -->
+		<copy todir="${extension.intermediates.resources}" quiet="true" failonerror="false" includeEmptyDirs="false">
+			<regexpmapper handledirsep="true" from="^[^/]+/extension/resources/(.*)$$" to="\1" />
+			<fileset dir="${site.services.root}" includes="*/extension/resources/**/*" />
+		</copy>
+
+		<!-- Merge the applications extensions' resources into the extensions build intermedites resources directory -->
+		<copy todir="${extension.intermediates.resources}" quiet="true" failonerror="false" includeEmptyDirs="false">
+			<regexpmapper handledirsep="true" from="^[^/]+/extension/resources/(.*)$$" to="\1" />
+			<fileset dir="${apps.root}" includes="*/extension/resources/**/*" />
+		</copy>
+
+		<!-- Merge the site specific applications extensions' resources into the extensions build intermedites resources directory -->
+		<copy todir="${extension.intermediates.resources}" quiet="true" failonerror="false" includeEmptyDirs="false">
+			<regexpmapper handledirsep="true" from="^[^/]+/extension/resources/(.*)$$" to="\1" />
+			<fileset dir="${site.apps.root}" includes="*/extension/resources/**/*" />
 		</copy>
 
         <jar compress="true" jarfile="${build.intermediates.extensions}/resources.jar" index="true">
@@ -96,9 +158,9 @@
 
 	<!-- Archive the extensions -->
     <target  name="jar" depends="init, compile">
-        <mkdir dir="${extension.compile.root}" />
+        <mkdir dir="${extensions.compile.root}" />
         <mkdir dir="${build.intermediates.shared}" />
-        <jar compress="true" jarfile="${build.intermediates.shared}/xal-extensions.jar" index="true" basedir="${extension.compile.root}" includes="xal/**/*">
+        <jar compress="true" jarfile="${build.intermediates.shared}/xal-extensions.jar" index="true" basedir="${extensions.compile.root}" includes="xal/**/*">
 			<zipgroupfileset dir="${build.intermediates.extensions}">
 				<patternset>
 					<include name="lib.jar" />
@@ -126,6 +188,11 @@
 			<zipgroupfileset dir="${services.root}">
 				<include name="*/extension/lib/*.jar" />
 			</zipgroupfileset>
+
+			<!-- include jars from each app extension -->
+			<zipgroupfileset dir="${apps.root}">
+				<include name="*/extension/lib/*.jar" />
+			</zipgroupfileset>
         </jar>
     </target>
 
@@ -145,18 +212,19 @@
 
 	<!-- Generate the build file for compiling extensions. -->
 	<target name="generate-compiler" depends="init">
-		<touch file="${extension.compiler}" mkdirs="true" />
+		<touch file="${extensions.compiler}" mkdirs="true" />
 
-		<echo file="${extension.compiler}">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+		<echo file="${extensions.compiler}">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;project basedir="." default="compile" name="xal.extension-compiler"&gt;
 	&lt;target name="compile"&gt;
-		&lt;mkdir dir="${extension.compile.root}" /&gt;
-		&lt;javac debug="true" source="${build.compile.java.source}" target="${build.compile.java.target}" includeAntRuntime="no" deprecation="true" destdir="${extension.compile.root}" includes="**" sourcepath=""&gt;
+		&lt;mkdir dir="${extensions.compile.root}" /&gt;
+		&lt;javac debug="true" source="${build.compile.java.source}" target="${build.compile.java.target}" includeAntRuntime="no" deprecation="true" destdir="${extensions.compile.root}" includes="**" sourcepath=""&gt;
 
 			&lt;classpath&gt;
 				&lt;pathelement location="${build.intermediates.shared}/xal-core.jar" /&gt;
 				&lt;pathelement location="${build.intermediates.extensions}/lib.jar" /&gt;
 			&lt;/classpath&gt;
+			&lt;compilerarg value="-Xlint" /&gt;
 		</echo>
 
 		<!-- loop over every extension directory and add the source code -->
@@ -164,8 +232,9 @@
 			<dirset dir="${extensions.root}" includes="*" />
 			<dirset dir="${plugins.root}" includes="*" />
 			<dirset dir="${services.root}" includes="*/extension" />
+			<dirset dir="${apps.root}" includes="*/extension" />
 		</subant>
-		<echo file="${extension.compiler}" append="true">
+		<echo file="${extensions.compiler}" append="true">
 		&lt;/javac&gt;
 	&lt;/target&gt;
 &lt;/project&gt;&#10;</echo>
@@ -174,7 +243,7 @@
 
     <!-- Append the extension to the common extensions build file. -->
     <target name="append-extension" depends="init">
-		<echo file="${extension.compiler}" append="true">&lt;src path="${basedir}/src" /&gt;
+		<echo file="${extensions.compiler}" append="true">&lt;src path="${basedir}/src" /&gt;
 		</echo>
 		<echo message="Appending extension: ${basedir}" />
     </target>

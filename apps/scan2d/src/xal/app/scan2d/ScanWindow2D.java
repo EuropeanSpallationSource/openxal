@@ -11,7 +11,7 @@ import java.util.*;
 import java.awt.*;
 
 import xal.extension.application.*;
-import xal.extension.smf.application.*;
+import xal.extension.application.smf.*;
 
 /**
  * ScanWindow2D is a subclass of XalWindow used in the 2D scan. It has mainPanel
@@ -99,7 +99,7 @@ public class ScanWindow2D extends AcceleratorWindow {
      * Dispose of ScanWindow2D resources.  
      * This method overrides an empty superclass method.
      */
-    protected void freeCustomResources(){
+    public void freeCustomResources(){
 	mainPanel = null;  
     }  
 }

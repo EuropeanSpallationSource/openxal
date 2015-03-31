@@ -9,7 +9,7 @@
 package xal.app.knobs;
 
 import xal.extension.application.*;
-import xal.extension.smf.application.*;
+import xal.extension.application.smf.*;
 import xal.tools.messaging.MessageCenter;
 import xal.tools.IconLib;
 import xal.tools.IconLib.IconGroup;
@@ -89,7 +89,7 @@ public class KnobsWindow extends AcceleratorWindow {
 	 * Register actions specific to this document instance.  
      * @param commander The commander with which to register the custom commands.
      */
-    protected void customizeCommands( final Commander commander ) {		
+    public void customizeCommands( final Commander commander ) {
         final Action PROPORTIONAL_COEFFICIENTS_ACTION = new AbstractAction( "make-proportional-coefficents" ) {
             /** serialization identifier */
             private static final long serialVersionUID = 1L;

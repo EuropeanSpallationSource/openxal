@@ -7,7 +7,7 @@ import java.net.*;
 import java.io.*;
 
 import xal.extension.application.*;
-import xal.extension.smf.application.*;
+import xal.extension.application.smf.*;
 
 /**
  * The main program for the xio  app.
@@ -76,7 +76,7 @@ public class Main extends ApplicationAdaptor {
     /**
      * Register actions for the Special menu items
      */
-    protected void customizeCommands(Commander commander) {
+    public void customizeCommands(Commander commander) {
     }
     
     

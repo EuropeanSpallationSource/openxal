@@ -1,0 +1,17 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<probe time="2.3.2015 9:58:15" type="xal.model.probe.EnvelopeProbe">
+    <comment author="Ivo List" date="2015-03-02" text="Probe with spacecharge"/>
+    <algorithm type="xal.model.alg.EnvelopeTracker" ver="4">
+        <tracker calcRfGapPhase="true" debug="false" update="1"/>
+        <options emitgrowth="false" scheff="true" stepsize="0.1" useSpacecharge="true"/>
+    </algorithm>
+    <state id="" type="xal.model.probe.traj.EnvelopeProbeState">
+        <species Er="9.3827202900E8" q="1.0"/>
+	    <location W="3.621815E+06" elem="" s="0.0" t="0.0"/>
+	    <beam I="62.5e-3" f="352.21e6" phase="(0.0,0.0,0.0)"/>
+	    <envelope 
+	        alphaX="-5.195205E-02" betaX="2.096286E-01" emitX="2.875932E-06"
+			alphaY="-3.115512E-01" betaY="3.722608E-01" emitY="2.854225E-06"
+			alphaZ="-4.851303E-01" betaZ="9.257819E-01" emitZ="4.092417E-06"/>
+    </state>
+</probe>

@@ -11,7 +11,7 @@
 package xal.app.opticseditor;
 
 import xal.extension.application.*;
-import xal.extension.smf.application.*;
+import xal.extension.application.smf.*;
 import xal.smf.data.XMLDataManager;
 
 
@@ -41,7 +41,7 @@ public class Main extends ApplicationAdaptor {
     
     
     /** Indicates whether the welcome dialog should be displayed at launch. */
-    protected boolean showsWelcomeDialogAtLaunch() {
+    public boolean showsWelcomeDialogAtLaunch() {
         return false;
     }
         

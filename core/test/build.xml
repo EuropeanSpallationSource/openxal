@@ -30,7 +30,8 @@
             <batchtest todir="${build.tests.root}">
                 <fileset dir="${build.compile.core.test.root}"> 
                     <include name="**/*Test*.class"/> 
-                    <exclude name="xal/resources/**/*"/> 
+					<exclude name="**/*Test*$*.class"/>		<!-- exclude anonymous classes because they inherit the outer class name and would inadvertantly match -->
+                    <exclude name="xal/resources/**/*"/>
                 </fileset> 
                 
                 <formatter type="plain" usefile="true"/>
@@ -59,8 +60,9 @@
             <compilerarg value="-Xlint" />
         </javac>
         
-        <copy todir="${build.compile.core.test.root}/resources">
+        <copy todir="${build.compile.core.test.root}/resources" quiet="true" failonerror="false" overwrite="true">
             <fileset dir="resources" />
+            <fileset dir="${site.core.root}/test/resources" />
         </copy>
 	</target>
     
@@ -91,7 +93,7 @@
 	<!-- Jar the test resources -->
     <target  name="jar-resources" depends="init, compile">
         <mkdir dir="${build.intermediates.core}" />
-        <jar compress="true" jarfile="${build.intermediates.core.test}/resources.jar" index="true">
+        <jar compress="true" jarfile="${build.intermediates.core.test}/resources.jar" index="true" >
 			<!-- test resources are rooted in the "resources" directory and this prefix must be preserved in the jar file -->
 			<fileset dir="${build.compile.core.test.root}">
 				<include name="resources/**/*" />

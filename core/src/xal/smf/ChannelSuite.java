@@ -37,7 +37,7 @@ public class ChannelSuite implements DataListener {
 	final private ChannelFactory CHANNEL_FACTORY;
     
     /** Signal Suite */
-    final private SignalSuite SIGNAL_SUITE;
+    final protected SignalSuite SIGNAL_SUITE;
     
     
     /** Creates a new instance of ChannelSuite */

@@ -164,4 +164,49 @@ public class R4 extends BaseVector<R4> {
     public R4(double[] arrVals) {
         super(INT_SIZE, arrVals);
     }
+
+    /**
+     * Copy constructor for <code>R4</code>.  Creates a cloned copy of the 
+     * given parent object.
+     *
+     * @param matParent     template object for which the deep copy is performed
+     *
+     * @author Christopher K. Allen
+     * @since  Jul 3, 2014
+     */
+    public R4(R4 matParent) {
+        super(matParent);
+    }
+    
+    /*
+     * Object Method Overrides
+     */
+    
+    /**
+     * Creates and returns a deep copy of <b>this</b> vector.
+     * 
+     * @see xal.tools.math.BaseVector#clone()
+     * 
+     * @author Jonathan M. Freed
+     * @since Jul 3, 2014
+     */
+    @Override
+    public R4 clone(){
+    	return new R4(this);
+    }
+
+
+	/**
+     * Handles object creation required by the base class.
+     *
+	 * @see xal.tools.math.BaseVector#newInstance()
+	 *
+	 * @author Ivo List
+	 * @author Christopher K. Allen
+	 * @since  Jun 17, 2014
+	 */
+	@Override
+	protected R4 newInstance() {
+		return new R4();
+	}
 }

@@ -175,8 +175,6 @@ public class R6x6 extends SquareMatrix<R6x6> {
         return matSO6;
     }
     
-
-    
     /**
      *  <p>
      *  Create a new <code>R6x6</code> instance and initialize it
@@ -199,7 +197,25 @@ public class R6x6 extends SquareMatrix<R6x6> {
     {
         return new R6x6(strTokens);
     }
+
     
+    /*
+     * Object Overrides
+     */
+    
+    /**
+     * Creates and returns a deep copy of this matrix.
+     *
+     * @see xal.tools.math.BaseMatrix#clone()
+     *
+     * @author Christopher K. Allen
+     * @since  Jul 3, 2014
+     */
+    @Override
+    public R6x6 clone() {
+        return new R6x6(this);
+    }
+
     
     /*
      * Initialization
@@ -271,6 +287,20 @@ public class R6x6 extends SquareMatrix<R6x6> {
     public R6x6(R6x6 matParent) throws UnsupportedOperationException {
         super(matParent);
     }
+
+	/**
+     * Handles object creation required by the base class. 
+     *
+	 * @see xal.tools.math.BaseMatrix#newInstance()
+	 *
+	 * @author Ivo List
+	 * @author Christopher K. Allen
+	 * @since  Jun 17, 2014
+	 */
+	@Override
+	protected R6x6 newInstance() {
+		return new R6x6();
+	}
     
     
     

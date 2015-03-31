@@ -20,7 +20,7 @@ import java.util.*;
 import java.text.*;
 
 import xal.extension.application.*;
-import xal.extension.smf.application.*;
+import xal.extension.application.smf.*;
 import xal.extension.bricks.WindowReference;
 import xal.tools.data.*;
 import xal.extension.widgets.plot.*;
@@ -29,7 +29,6 @@ import xal.tools.text.FormattedNumber;
 import xal.tools.xml.XmlDataAdaptor;
 import xal.smf.*;
 import xal.smf.data.XMLDataManager;
-
 
 /**
  * Document for the orbit correction application
@@ -88,7 +87,7 @@ public class OrbitDocument extends AcceleratorDocument implements DataListener, 
 	
 	
 	/** Dispose of this document's resources. */
-	protected void freeCustomResources() {
+	public void freeCustomResources() {
 		if ( _model != null ) {
 			_model.dispose();
 			_model = null;
@@ -367,7 +366,7 @@ public class OrbitDocument extends AcceleratorDocument implements DataListener, 
 	 * Register actions specific to this document instance.
 	 * @param commander  The commander with which to register the custom commands.
 	 */
-	protected void customizeCommands( final Commander commander ) {
+	public void customizeCommands( final Commander commander ) {
 		final Action addLiveOrbitAction = new AbstractAction( "add-live-orbit" ) {
             
             private static final long serialVersionUID = 1L;

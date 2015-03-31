@@ -28,7 +28,8 @@ import xal.tools.apputils.pvselection.*;
 import xal.extension.widgets.swing.*;
 import xal.extension.scan.*;
 import xal.extension.scan.analysis.*;
-import xal.extension.smf.application.*;
+import xal.extension.application.util.PredefinedConfController;
+import xal.extension.application.smf.*;
 
 import xal.service.pvlogger.*;
 import xal.tools.database.*;
@@ -794,7 +795,7 @@ public class ScanDocument1D extends AcceleratorDocument {
 	 *  Dispose of ScanDocument1D resources. This method overrides an empty
 	 *  superclass method.
 	 */
-	protected void freeCustomResources() {
+	public void freeCustomResources() {
 		cleanUp();
 	}
 
@@ -1026,7 +1027,7 @@ public class ScanDocument1D extends AcceleratorDocument {
 	 *@param  commander  Description of the Parameter
 	 */
 
-	protected void customizeCommands(Commander commander) {
+	public void customizeCommands(Commander commander) {
 
 		// define the "show-scan-panel" setScanPanelAction action
 		setScanPanelAction =
@@ -1276,7 +1277,7 @@ public class ScanDocument1D extends AcceleratorDocument {
 	 *  Description of the Method
 	 */
 	private void makePredefinedConfigurationsPanel() {
-		predefinedConfController = new PredefinedConfController( this, "config", "predefinedConfiguration.scan1D" );
+		predefinedConfController = new PredefinedConfController( "config", "predefinedConfiguration.scan1D" );
 		configPanel = predefinedConfController.getJPanel();
 		ActionListener selectConfListener =
 			new ActionListener() {

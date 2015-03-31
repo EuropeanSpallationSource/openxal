@@ -11,7 +11,7 @@
 package xal.app.pvlogger;
 
 import xal.service.pvlogger.*;
-import xal.extension.smf.application.*;
+import xal.extension.application.smf.*;
 import xal.extension.application.*;
 import xal.tools.database.*;
 import xal.tools.apputils.PathPreferenceSelector;
@@ -94,7 +94,7 @@ class BrowserDocument extends AcceleratorDocument {
 	/**
 	 * Override the inherited method to dispose of the model before the document is closed.
 	 */
-	protected void willClose() {
+	public void willClose() {
 	}
 }
 

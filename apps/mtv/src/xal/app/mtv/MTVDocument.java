@@ -12,7 +12,7 @@ import java.awt.event.*;
 import java.util.*;
 
 import xal.extension.application.*;
-import xal.extension.smf.application.*;
+import xal.extension.application.smf.*;
 import xal.smf.*;
 
 /**
@@ -109,7 +109,7 @@ public class MTVDocument extends AcceleratorDocument {
 
 	// ------- the commands to listen to ------
 
-	protected void customizeCommands(Commander commander) {
+	public void customizeCommands(Commander commander) {
 
 	}
 

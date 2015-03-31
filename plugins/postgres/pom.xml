@@ -5,13 +5,21 @@
 	<parent>
 		<groupId>org.xal</groupId>
 		<artifactId>openxal.plugins</artifactId>
-		<version>1.0.0</version>
+		<version>1.0.3</version>
 	</parent>
 	
 	<artifactId>openxal.plugins.postgres</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.3</version>
 	
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 	</build>
+	
+	<dependencies>
+		<dependency>
+			<groupId>postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+	</dependencies>
 </project>

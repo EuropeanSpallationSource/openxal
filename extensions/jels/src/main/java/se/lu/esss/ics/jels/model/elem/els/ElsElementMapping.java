@@ -18,6 +18,7 @@ import xal.sim.scenario.ElementMapping;
  */
 public class ElsElementMapping extends ElementMapping {
 	protected static ElementMapping instance;	
+	private static boolean warning = false;
 
 	protected ElsElementMapping() {
 		initialize();
@@ -52,6 +53,14 @@ public class ElsElementMapping extends ElementMapping {
 		putMap("pq", IdealMagQuad.class);
 		putMap("rfgap", IdealRfGap.class);
 		putMap("marker", Marker.class);
+	}
+	
+	static void printWarning()
+	{
+		if (!warning) {
+			System.err.println("WARNING: USING ELS ELEMENTS!!! Please check to be sure this is correct.");
+			warning = true;
+		}
 	}
 
 }

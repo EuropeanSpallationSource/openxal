@@ -5,12 +5,12 @@
 	<parent>
 		<groupId>org.xal</groupId>
 		<artifactId>openxal.extensions</artifactId>
-		<version>1.0.0</version>
+		<version>1.0.3</version>
 		<relativePath>../../../extensions</relativePath>
 	</parent>
 	
 	<artifactId>openxal.extensions.worker</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.3</version>
 	
 	<build>
 		<sourceDirectory>src</sourceDirectory>
@@ -20,7 +20,6 @@
 		<dependency>		
 			<groupId>org.xal</groupId>
 			<artifactId>openxal.extensions.service</artifactId>
-			<version>${project.version}</version>			
 		</dependency>
 	</dependencies>
 </project>
