@@ -142,7 +142,7 @@ public class DataManager {
 	{
 		Connection connection = null;
 		try {
-			DriverManager.registerDriver(new oracle.jdbc.OracleDriver());
+			// DriverManager.registerDriver(new oracle.jdbc.OracleDriver());
 	        // DriverManager.setLoginTimeout(15);  // Set timeout to 15 seconds
 	        //OracleDataSource ods = new OracleDataSource(); 
 	        url = System.getProperty(DB_URL_PROPERTY_NAME);

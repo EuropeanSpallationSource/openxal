@@ -6,7 +6,9 @@
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
 <listEntry value="1"/>
 </listAttribute>
+<stringAttribute key="org.eclipse.jdt.launching.CLASSPATH_PROVIDER" value="org.eclipse.m2e.launchconfig.classpathProvider"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="edu.stanford.lcls.modelmanager.ModelManagerMain"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="opexal-gui"/>
-<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-DDB_CONNECTION=jdbc:postgresql://ics-services.esss.lu.se:5432/machinemodel&#13;&#10;-DDB_USERNAME=machinemodel&#13;&#10;-DDB_PASSWORD=physicsl1nacstuff"/>
+<stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.m2e.launchconfig.sourcepathProvider"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-DDB_CONNECTION=jdbc:postgresql://localhost:5432/machine_model&#13;&#10;-DDB_USERNAME=machinemodel&#13;&#10;-DDB_PASSWORD=physicsl1nacstuff"/>
 </launchConfiguration>

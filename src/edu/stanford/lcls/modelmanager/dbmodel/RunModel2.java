@@ -41,7 +41,7 @@ public class RunModel2 {
 			scenario = Scenario.newScenarioFor(accelerator);//, elementMapping);	
 			IAlgorithm tracker = AlgorithmFactory.createEnvTrackerAdapt( accelerator );
 		
-			scenario.setProbe(ProbeFactory.getEnvelopeProbe( accelerator.getSequence("mebt"), tracker ));
+			scenario.setProbe(ProbeFactory.getEnvelopeProbe( accelerator.getSequence("MEBT"), tracker ));
 							
 			scenario.setSynchronizationMode(Scenario.SYNC_MODE_DESIGN);					
 			scenario.resync();

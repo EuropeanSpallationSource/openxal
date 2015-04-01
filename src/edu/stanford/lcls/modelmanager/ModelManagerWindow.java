@@ -12,7 +12,7 @@ package edu.stanford.lcls.modelmanager;
 
 import java.awt.Dimension;
 
-import edu.stanford.slac.application.LclsXalWindow;
+//import edu.stanford.slac.application.LclsXalWindow;
 import edu.stanford.lcls.modelmanager.view.ModelManagerFeature;
 import edu.stanford.slac.Message.Message;
 
