@@ -12,11 +12,10 @@ package edu.stanford.lcls.modelmanager;
 
 import java.awt.Dimension;
 
+
 //import edu.stanford.slac.application.LclsXalWindow;
 import edu.stanford.lcls.modelmanager.view.ModelManagerFeature;
-import edu.stanford.slac.Message.Message;
-
-import xal.extension.application.XalWindow;
+import edu.stanford.slac.application.LclsXalWindow;
 
 import javax.swing.*;
 
@@ -26,8 +25,8 @@ import javax.swing.*;
  *
  * @author  somebody
  */
-/* TODO OPENXAL extends LclsXalWindow*/
-public class ModelManagerWindow extends XalWindow implements SwingConstants {
+
+public class ModelManagerWindow extends LclsXalWindow implements SwingConstants {
     /**
 	 * 
 	 */
@@ -72,11 +71,6 @@ public class ModelManagerWindow extends XalWindow implements SwingConstants {
 		return new ModelManagerFeature(this, this.getStateBar());
 	}
 	
-	private JPanel getStateBar() {
-		// TODO OPENXAL this is imported from LclsXalWindow
-		return new JPanel();
-	}
-
 /*	public Message getMessageLogger(){
 		return ModelManagerFeature.getMessageLogger();
 	}
