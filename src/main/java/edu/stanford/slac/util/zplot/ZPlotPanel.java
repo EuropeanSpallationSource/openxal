@@ -211,8 +211,8 @@ public class ZPlotPanel extends ChartPanel {
 	}
 
 	@Override
-	protected JPopupMenu createPopupMenu(boolean properties, boolean save,
-			boolean print, boolean zoom) {
+    protected JPopupMenu createPopupMenu(boolean properties,
+            boolean copy, boolean save, boolean print, boolean zoom) {
 		JPopupMenu result = new JPopupMenu("ZPlot:");
 		{
 			JMenuItem propertiesItem = new JMenuItem("Properties...");
