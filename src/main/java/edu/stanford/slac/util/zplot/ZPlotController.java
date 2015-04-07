@@ -5,6 +5,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ResourceBundle;
 
 import javax.swing.BorderFactory;
 import javax.swing.JCheckBox;
@@ -16,8 +17,8 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.editor.ChartEditor;
 import org.jfree.chart.editor.ChartEditorManager;
-import org.jfree.chart.editor.DefaultNumberAxisEditor;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.util.ResourceBundleWrapper;
 
 import edu.stanford.slac.util.zplot.cartoon.BeamlineCartoon;
 import edu.stanford.slac.util.zplot.cartoon.model.widget.BPMWidget;
@@ -488,7 +489,7 @@ class ZPlotController {
 		plotTabbedPane.insertTab("Devices", null, this.devicesPanel, null, 0);
 		plotTabbedPane.insertTab("Plot", null, plotPanel, null, 0);
 
-		String rangeAxisTabTitle = DefaultNumberAxisEditor.localizationResources
+		String rangeAxisTabTitle = ResourceBundle.getBundle("org.jfree.chart.editor.LocalizationBundle")
 				.getString("Range_Axis");
 		int rangeAxisTabIndex = plotTabbedPane.indexOfTab(rangeAxisTabTitle);
 
@@ -548,8 +549,9 @@ class ZPlotController {
 
 		};
 
-		new PropertiesDialog(this.zPlotPanel, ZPlotPanel.localizationResources
-				.getString("Chart_Properties"), (JPanel) editor, applyRunnable);
+		new PropertiesDialog(this.zPlotPanel, 
+				ResourceBundleWrapper.getBundle("org.jfree.chart.LocalizationBundle").getString("Chart_Properties"),
+				(JPanel) editor, applyRunnable);
 	}
 
 }
