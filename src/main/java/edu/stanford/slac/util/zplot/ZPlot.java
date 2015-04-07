@@ -7,6 +7,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 import org.jfree.chart.axis.AxisSpace;
 import org.jfree.chart.axis.NumberAxis;
@@ -67,70 +68,6 @@ public class ZPlot extends CombinedDomainXYPlot {
 	private Device[] labeledDevices;
 	private Beamline[] beamlines;
 	private ValueAxis selectedRangeAxis;
-
-	private void reallocateSubplotAreas() {
-
-		// top to bottom
-		double plotHeight = super.subplotAreas[getBeamlineCartoonIndex()]
-				.getMaxY()
-				- super.subplotAreas[0].getMinY();
-		double dataPlotsTotalHeight = 0;
-		boolean skipBeamlineCartoon = this.skippedSubplotIndices
-				.contains(getBeamlineCartoonIndex());
-		if (skipBeamlineCartoon) {
-			// no gap at the bottom
-			dataPlotsTotalHeight = plotHeight;
-		} else {
-			dataPlotsTotalHeight = plotHeight - CARTOON_HEIGHT - getGap();
-		}
-
-		int nrVisibleDataPlots = 0;
-
-		if (skipBeamlineCartoon) {
-			nrVisibleDataPlots = super.subplotAreas.length
-					- this.skippedSubplotIndices.size();
-		} else {
-			nrVisibleDataPlots = super.subplotAreas.length
-					- this.skippedSubplotIndices.size() - 1;
-		}
-
-		double visibleDataPlotHeight = 0;
-		if (nrVisibleDataPlots > 0) {
-			double gapsTotalSize = (nrVisibleDataPlots - 1) * getGap();
-			visibleDataPlotHeight = (dataPlotsTotalHeight - gapsTotalSize)
-					/ nrVisibleDataPlots;
-
-		}
-
-		final Rectangle2D EMPTY_RECTANGLE = new Rectangle2D.Double(0, 0, 0, 0);
-		final double Y_OFFSET = super.subplotAreas[0].getY();
-
-		double y = 0;
-		Rectangle2D lastVisibleDataPlotArea = null;
-		int i = 0;
-		int visibleDataPlotIndex = 0;
-		for (i = 0; i < super.subplotAreas.length - 1; i++) {
-			if (this.skippedSubplotIndices.contains(i)) {
-				super.subplotAreas[i] = EMPTY_RECTANGLE;
-				continue;
-			}
-
-			y = (visibleDataPlotHeight + getGap()) * visibleDataPlotIndex
-					+ Y_OFFSET;
-			lastVisibleDataPlotArea = super.subplotAreas[i];
-			lastVisibleDataPlotArea.setRect(lastVisibleDataPlotArea.getX(), y,
-					lastVisibleDataPlotArea.getWidth(), visibleDataPlotHeight);
-			visibleDataPlotIndex++;
-		}
-		// beamline cartoon
-		if (skipBeamlineCartoon) {
-			super.subplotAreas[i] = EMPTY_RECTANGLE;
-		} else {
-			super.subplotAreas[i].setRect(super.subplotAreas[i].getX(),
-					Y_OFFSET + dataPlotsTotalHeight + getGap(),
-					super.subplotAreas[i].getWidth(), CARTOON_HEIGHT);
-		}
-	}
 
 	private void drawBeamlines(Graphics2D g2, Rectangle2D dataArea) {
 		if (this.beamlines == null || this.beamlines.length < 1) {
@@ -311,10 +248,37 @@ public class ZPlot extends CombinedDomainXYPlot {
 		
 	@Override
 	protected AxisSpace calculateAxisSpace(Graphics2D g2, Rectangle2D plotArea) {
-		// TODO Auto-generated method stub
-		AxisSpace axisSpace = super.calculateAxisSpace(g2, plotArea);
-		reallocateSubplotAreas();
-		return axisSpace;
+		@SuppressWarnings("unchecked")
+		List<XYPlot> subplots = (List<XYPlot>)getSubplots();
+		
+		boolean skipBeamlineCartoon = this.skippedSubplotIndices
+				.contains(getBeamlineCartoonIndex());
+		
+		if (skipBeamlineCartoon) {
+			for (int i = 0; i<subplots.size(); i++)
+				subplots.get(i).setWeight(this.skippedSubplotIndices.contains(i) ? 0 : 1);
+		} else {
+			// first let's calculate the space we have
+			AxisSpace space = super.calculateAxisSpace(g2, plotArea);
+			Rectangle2D adjustedPlotArea = space.shrink(plotArea, null);
+			
+			// divide it into equal parts for visible plots without the cartoon
+	        int n = subplots.size() - this.skippedSubplotIndices.size() - 1;
+	        double usableSize = adjustedPlotArea.getHeight() - getGap() * n - CARTOON_HEIGHT;
+	        double plotSize = usableSize / n;
+	        
+	        // set weights so we get the right size of the cartoon
+	        for (int i = 0; i<subplots.size(); i++) {
+	        	XYPlot plot = subplots.get(i);
+				if (plot instanceof BeamlineCartoon)
+					plot.setWeight((int)(CARTOON_HEIGHT + getGap()/2)); 
+				else
+					plot.setWeight(this.skippedSubplotIndices.contains(i) ? 0 : (int)plotSize);
+			}
+		}
+		
+		// (rerun) the axis space computation with new weight
+		return super.calculateAxisSpace(g2, plotArea);
 	}
 
 	public ZPlot(final int nrDataPlots) {
