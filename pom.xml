@@ -40,11 +40,6 @@
   </build>
   <dependencies>
     <dependency>
-    	<groupId>org.jfree</groupId>
-    	<artifactId>jfreechart</artifactId>
-    	<version>1.0.19-slac</version>
-    </dependency>
-    <dependency>
       <groupId>org.xal</groupId>
       <artifactId>openxal.extensions.zplot</artifactId>
       <version>1.0.4-SNAPSHOT</version>
