@@ -1,9 +1,5 @@
 package edu.stanford.slac.util.zplot.model;
 
-import java.text.DecimalFormat;
-import java.util.Locale;
-
-
 /**
  * Device
  * 
@@ -67,26 +63,11 @@ public class Device implements Comparable<Device> {
 	}
 
 	public final double getZ() {
-		/*DecimalFormat decForm = new DecimalFormat("#.##");
-		
-		try {
-			return Double.valueOf(decForm.format(z));
-		} catch (NumberFormatException e) {
-			//System.out.println("ERROR: BAD Z for " + getName());
-			return 0;
-		}*/
-		return z;
+		return Math.floor(z*100.+0.5)/100.;
 	}
 
 	public final double getY() {
-		/*DecimalFormat decForm = new DecimalFormat("#.###");
-		try {
-			return Double.valueOf(decForm.format(y));
-		} catch (NumberFormatException e) {
-			//System.out.println("ERROR: BAD Y for " + getName());
-			return 0;
-		}*/
-		return y;
+		return Math.floor(y*100.+0.5)/100.;
 	}
 	
 

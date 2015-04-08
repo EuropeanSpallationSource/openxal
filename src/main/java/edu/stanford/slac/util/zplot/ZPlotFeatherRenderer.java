@@ -7,7 +7,6 @@ import java.awt.Paint;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
-import java.text.DecimalFormat;
 
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.entity.EntityCollection;
@@ -227,8 +226,7 @@ public class ZPlotFeatherRenderer extends XYBarRenderer {
 			//do nothing
 			return;
 		}
-		DecimalFormat decForm = new DecimalFormat("#.##");
-		yVal = Double.valueOf(decForm.format(yValue));
+		yVal = Math.floor(yValue * 100. + 0.5) / 100.;
 		markOutOfRangeValues(g2, s, x, y, info, dataset, series, item);
 	}
 }
