@@ -115,7 +115,7 @@ public class Trajectory<S extends ProbeState<S>> implements IArchive, Iterable<S
                 @Override
                 public int compare(String strId1, String strId2) {
                     
-                    if ( strId1.contentEquals(strId2) )
+                    /*if ( strId1.contentEquals(strId2) )
                         return 0;
                     
                     else if (strId2.contains(strId1) ) 
@@ -124,7 +124,7 @@ public class Trajectory<S extends ProbeState<S>> implements IArchive, Iterable<S
                     else if (strId1.contains(strId2))
                         return 0;
                     
-                    else
+                    else*/
                         return strId1.compareTo(strId2);
                 }
                 
