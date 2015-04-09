@@ -10,14 +10,14 @@
 
 package edu.stanford.lcls.modelmanager;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
-//import edu.stanford.slac.application.LclsXalWindow;
+import xal.extension.application.XalWindow;
 import edu.stanford.lcls.modelmanager.view.ModelManagerFeature;
-import edu.stanford.slac.application.LclsXalWindow;
-
-import javax.swing.*;
 
 
 /**
@@ -26,12 +26,13 @@ import javax.swing.*;
  * @author  somebody
  */
 
-public class ModelManagerWindow extends LclsXalWindow implements SwingConstants {
+public class ModelManagerWindow extends XalWindow implements SwingConstants {
     /**
 	 * 
 	 */
 	private static final long serialVersionUID = 1;
 	private ModelManagerFeature mmf;
+	private JPanel stateBar;
 
 	/** Creates a new instance of MainWindow */
     public ModelManagerWindow(final ModelManagerDocument aDocument) {
@@ -53,6 +54,16 @@ public class ModelManagerWindow extends LclsXalWindow implements SwingConstants 
 		this.setLocation((screenSize.width - frameWidth) / 2,
 				(screenSize.height - frameHeight) / 2);
 		return new ModelManagerFeature(this, this.getStateBar());
+	}
+
+	public void makeFrame() {
+		super.makeFrame();
+		stateBar = new JPanel(new BorderLayout());
+		getContentPane().add(stateBar, "South");
+	}
+	
+	public JPanel getStateBar(){
+		return stateBar;
 	}
 	
 /*	public Message getMessageLogger(){
