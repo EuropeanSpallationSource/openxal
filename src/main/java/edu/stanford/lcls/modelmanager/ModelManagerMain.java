@@ -10,9 +10,6 @@
 
 package edu.stanford.lcls.modelmanager;
 
-import edu.stanford.lcls.modelmanager.view.ModelManagerFeature;
-import edu.stanford.slac.Message.Message;
-
 import xal.extension.application.Application;
 import xal.extension.application.ApplicationAdaptor;
 import xal.extension.application.XalDocument;

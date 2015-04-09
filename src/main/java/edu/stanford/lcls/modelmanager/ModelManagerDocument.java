@@ -152,7 +152,6 @@ public class ModelManagerDocument extends AcceleratorDocument {
 //				try {
 //					hw.loadLink(new URL("https://confluence.slac.stanford.edu/display/LCLSHELP/Model+Manager#ModelManager-Introduction"));
 //				} catch (MalformedURLException e) {
-//					// TODO Auto-generated catch block
 //					e.printStackTrace();
 //				}
 

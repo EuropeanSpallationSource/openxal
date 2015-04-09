@@ -38,22 +38,6 @@ public class ModelManagerWindow extends LclsXalWindow implements SwingConstants 
         super(aDocument);
 		//  make the GUI
         mmf = makeContent();
-//		JButton helpButton = new JButton("Help", IconLib.getIcon( IconGroup.GENERAL, "Help24.gif" ));
-//		helpButton.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent event) {
-//				
-//			}
-//		});
-//		// use the framework one
-//		getToolBar().add(helpButton);
-
-//		JButton exitButton = new JButton("Exit");
-//		getToolBar().add(exitButton);
-//		exitButton.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent event) {
-//				System.exit(0);
-//			}
-//		});
    }
     
 	/**
