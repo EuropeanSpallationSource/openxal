@@ -328,13 +328,13 @@ public class DataManager {
 					
 					// trim off anything after ":"
 					// I forgot why we need this. --pc
-					String nodeId = null;
-					if (node.getId().contains(":")) {
+					String nodeId = node.getId();
+					/*if (node.getId().contains(":")) {
 						int k = node.getId().indexOf(":");
 						nodeId = node.getId().substring(0, k);
 					} else {
 						nodeId = node.getId();
-					}
+					}*/
 					machineModelDetail.setPropertyValue("ELEMENT_NAME", nodeId);
 					machineModelDetail.setPropertyValue("DEVICE_TYPE", deviceType
 							.getDeviceType(machineModelDetail.getPropertyValue("ELEMENT_NAME").toString()));
