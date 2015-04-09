@@ -2,6 +2,7 @@ package edu.stanford.lcls.modelmanager.view;
 
 import java.awt.*;
 import java.awt.event.*;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
@@ -14,7 +15,6 @@ import edu.stanford.slac.Save2Logbook.LogbookEntry;
 import edu.stanford.slac.Save2Logbook.SeverityEnum;
 
 import java.sql.SQLException;
-import java.text.ParseException;
 
 /**
  * QueryView is the view for querying the database for the machine models.
@@ -27,10 +27,10 @@ public class ToolBarView implements SwingConstants {
 	private JFrame parent;
 	private BrowserModel model;
 	private JButton elogButton;
-	private JComboBox beamlineSelector;
-	private JComboBox runModeSelector;
-	private JComboBox BPRPSelector; //Back Propagte Reference points
-	private JComboBox BPRPModeSelector;
+	private JComboBox<String> beamlineSelector;
+	private JComboBox<String> runModeSelector;
+	private JComboBox<ComboItem> BPRPSelector; //Back Propagte Reference points
+	private JComboBox<String> BPRPModeSelector;
 	private JButton setInitTiwissButton;
 	private JButton runModelButton;
 	private JButton upload2DBButton;
@@ -55,8 +55,9 @@ public class ToolBarView implements SwingConstants {
 //		toolBarView = new JToolBar();
 		toolBarView = ((ModelManagerWindow)_parent).getToolBar();
 		
+		// TODO HARDCODED
 		String[] beamlineSelections = { "CATHODE to DUMP", "CATHODE to 52SL2", "CATHODE to 135-MeV SPECT DUMP", "CATHODE to GUN SPECT DUMP", "Show All" };
-		beamlineSelector = new JComboBox(beamlineSelections);
+		beamlineSelector = new JComboBox<String>(beamlineSelections);
 		beamlineSelector.setToolTipText("select a beamline");
 		beamlineSelector.setMaximumSize(new Dimension(180, 28));
 		beamlineSelector.setSelectedIndex(0);
@@ -64,7 +65,7 @@ public class ToolBarView implements SwingConstants {
 		
 		toolBarView.addSeparator(new Dimension(20, 10));
 		String[] runModeSelections = { "Design", "Extant" };
-		runModeSelector = new JComboBox(runModeSelections);
+		runModeSelector = new JComboBox<String>(runModeSelections);
 		runModeSelector.setToolTipText("select to run either DESIGN or EXTANT model");
 		runModeSelector.setMaximumSize(new Dimension(100, 28));
 		runModeSelector.setSelectedIndex(1);
@@ -76,12 +77,13 @@ public class ToolBarView implements SwingConstants {
 		bp.setLayout(new BoxLayout(bp, BoxLayout.LINE_AXIS));
 		
 		toolBarView.addSeparator(new Dimension(10, 10));
+		// TODO HARDCODED
 //		final String[] BPRPSelections = { "WS02", "OTR2", "WS12", "WS28144", "WS32" };
-		final Object[] refPts = {new ComboItem("WS28144"), 
+		final ComboItem[] refPts = {new ComboItem("WS28144"), 
 			new ComboItem("WS02"), new ComboItem("OTR2"), new ComboItem("WS12"),
 			new ComboItem("WS32")
 		};
-		BPRPSelector = new JComboBox(refPts);
+		BPRPSelector = new JComboBox<ComboItem>(refPts);
 		BPRPSelector.setToolTipText("select Twiss back propagate reference point");
 		BPRPSelector.setMaximumSize(new Dimension(105, 28));
 //		BPRPSelector.setSelectedItem(new ComboItem("WS28144"));
@@ -100,7 +102,7 @@ public class ToolBarView implements SwingConstants {
 		BPRPSelector.addActionListener(new ComboListener(BPRPSelector));
 		
 		
-		BPRPModeSelector = new JComboBox(new String[]{"Measured", "Design"});
+		BPRPModeSelector = new JComboBox<String>(new String[]{"Measured", "Design"});
 		BPRPModeSelector.setToolTipText("select to use either Design or Measured Twiss at the reference point");
 		BPRPModeSelector.setSelectedIndex(1);
 		if (BPRPModeSelector.getSelectedIndex() != 0)
@@ -280,7 +282,7 @@ public class ToolBarView implements SwingConstants {
 		elogButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				// TODO
-				LogbookEntry logBookEntry = new LogbookEntry(true,
+				/*LogbookEntry logBookEntry =*/ new LogbookEntry(true,
 						((ModelManagerWindow) parent).getModelManagerFeature()
 								.getModelPlotPane(),
 						(ModelManagerWindow) parent, null, null,
@@ -424,7 +426,6 @@ public class ToolBarView implements SwingConstants {
 									break;
 								}
 							} catch (InterruptedException e) {
-								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
 						}
@@ -515,15 +516,16 @@ public class ToolBarView implements SwingConstants {
 	}
 
 	
-	class ComboRenderer extends JLabel implements ListCellRenderer {
+	@SuppressWarnings("serial")
+	class ComboRenderer extends JLabel implements ListCellRenderer<ComboItem> {
 
 		public ComboRenderer() {
 			setOpaque(true);
 			setBorder(new EmptyBorder(1, 1, 1, 1));
 		}
 
-		public Component getListCellRendererComponent( JList list, 
-				Object value, int index, boolean isSelected, boolean cellHasFocus) {
+		public Component getListCellRendererComponent( JList<? extends ComboItem> list, 
+				ComboItem value, int index, boolean isSelected, boolean cellHasFocus) {
 			if (isSelected) {
 				setBackground(list.getSelectionBackground());
 				setForeground(list.getSelectionForeground());
@@ -531,7 +533,7 @@ public class ToolBarView implements SwingConstants {
 				setBackground(list.getBackground());
 				setForeground(list.getForeground());
 			} 
-			if (! ((CanEnable)value).isEnabled()) {
+			if (! value.isEnabled()) {
 				setBackground(list.getBackground());
 				setForeground(UIManager.getColor("Label.disabledForeground"));
 			}
@@ -542,10 +544,10 @@ public class ToolBarView implements SwingConstants {
 	}
 
 	class ComboListener implements ActionListener {
-		JComboBox combo;
+		JComboBox<ComboItem> combo;
 		Object currentItem;
 
-		ComboListener(JComboBox combo) {
+		ComboListener(JComboBox<ComboItem> combo) {
 			this.combo  = combo;
 			combo.setSelectedIndex(0);
 			currentItem = combo.getSelectedItem();

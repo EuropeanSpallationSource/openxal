@@ -64,7 +64,7 @@ public class ModelPlotView implements SwingConstants {
 	private MachineModel _selectedMachineModel;
 	private MachineModelDetail[] _selectedMachineModelDetail;
 
-	private JList plotFunctionList;
+	private JList<String> plotFunctionList;
 	private JRadioButton plotOriginal;
 	private JRadioButton plotDifferent;
 	private JRadioButton plotZPosSign;
@@ -85,7 +85,7 @@ public class ModelPlotView implements SwingConstants {
 		plotSelectBox.add(new JLabel("Select A Plot Function :"),
 				BorderLayout.PAGE_START);
 		ListData ld = new ListData();
-		plotFunctionList = new JList(ld);
+		plotFunctionList = new JList<String>(ld);
 		plotFunctionList.setSelectedIndex(1);
 		Box listBox = new Box(BoxLayout.Y_AXIS);
 		listBox.add(new JScrollPane(plotFunctionList));
@@ -378,7 +378,7 @@ public class ModelPlotView implements SwingConstants {
 
 }
 
-class ListData extends AbstractListModel {
+class ListData extends AbstractListModel<String> {
 	/**
 	 * 
 	 */
@@ -399,7 +399,7 @@ class ListData extends AbstractListModel {
 		return PLOT_FUNCTION.size();
 	}
 
-	public Object getElementAt(int index) {
+	public String getElementAt(int index) {
 		return PLOT_FUNCTION.get(index);
 	}
 
