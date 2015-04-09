@@ -92,6 +92,8 @@ import xal.tools.beam.PhaseMatrix;
 import xal.tools.beam.PhaseVector;
 import xal.tools.beam.RelativisticParameterConverter;
 import xal.tools.beam.Twiss;
+import xal.tools.beam.calc.CalculationsOnBeams;
+import xal.tools.math.r3.R3;
 import edu.stanford.slac.Message.Message;
 
 public class DataManager {
@@ -288,6 +290,7 @@ public class DataManager {
 					new Integer(ordinal));
 			ordinal++;
 		}
+		CalculationsOnBeams cob = new CalculationsOnBeams(trajectory);
 		
 		// loop through all nodes
 		while (it.hasNext()) {
@@ -386,7 +389,7 @@ public class DataManager {
 					// get element length
 					machineModelDetail.setPropertyValue("LEFF", df.format(node_length));
 					machineModelDetail.setPropertyValue("SLEFF", df.format(elem.getLength()));
-
+					
 					// get state for the element
 					try {
 						List<? extends ProbeState<?>> states = scenario
@@ -406,18 +409,19 @@ public class DataManager {
 						if (state instanceof EnvelopeProbeState) {
 							Twiss[] twiss = ((EnvelopeProbeState) state)
 									.twissParameters();
-							PhaseVector betatronPhase = ((EnvelopeProbeState) state)
-									.phaseMean(); //getBetatronPhase();
+							R3 betatronPhase = cob.computeBetatronPhase((EnvelopeProbeState) state);
+									
 							machineModelDetail.setPropertyValue("BETA_X", df.format(twiss[0].getBeta()));
 							machineModelDetail.setPropertyValue("ALPHA_X", df.format(twiss[0].getAlpha()));
 							machineModelDetail.setPropertyValue("BETA_Y", df.format(twiss[1].getBeta()));
 							machineModelDetail.setPropertyValue("ALPHA_Y", df.format(twiss[1].getAlpha()));
-							/* TODO OPENXAL
-							machineModelDetail.setPropertyValue("ETA_X", df.format(((EnvelopeProbeState) state).getChromDispersionX()));
-							machineModelDetail.setPropertyValue("ETA_Y", df.format(((EnvelopeProbeState) state).getChromDispersionY()));
-							machineModelDetail.setPropertyValue("ETAP_X", df.format(((EnvelopeProbeState) state).getChromDispersionSlopeX()));
-							machineModelDetail.setPropertyValue("ETAP_Y", df.format(((EnvelopeProbeState) state).getChromDispersionSlopeY()));
-							*/
+							
+							PhaseVector chromDispersion = cob.computeChromDispersion((EnvelopeProbeState)state);
+							machineModelDetail.setPropertyValue("ETA_X", df.format(chromDispersion.getx()));
+							machineModelDetail.setPropertyValue("ETA_Y", df.format(chromDispersion.gety()));
+							machineModelDetail.setPropertyValue("ETAP_X", df.format(chromDispersion.getxp()));
+							machineModelDetail.setPropertyValue("ETAP_Y", df.format(chromDispersion.getyp()));
+							
 							machineModelDetail.setPropertyValue("PSI_X", df.format(betatronPhase.getx()));
 							machineModelDetail.setPropertyValue("PSI_Y", df.format(betatronPhase.gety()));
 							machineModelDetail.setPropertyValue("E", df.format(getTotalEnergyFromKinetic(state.getSpeciesRestEnergy() / 1.e9,state.getKineticEnergy() / 1.e9)));
