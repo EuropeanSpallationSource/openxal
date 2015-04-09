@@ -13,12 +13,15 @@ package edu.stanford.lcls.modelmanager;
 import edu.stanford.lcls.modelmanager.dbmodel.DataManager;
 import edu.stanford.lcls.modelmanager.view.ModelManagerFeature;
 import edu.stanford.slac.Message.Message;
-
 import xal.extension.application.Commander;
 import xal.extension.application.smf.AcceleratorDocument;
 import xal.tools.xml.XmlDataAdaptor;
 
+import java.awt.Desktop;
 import java.awt.event.ActionEvent;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 import javax.swing.AbstractAction;
@@ -155,11 +158,13 @@ public class ModelManagerDocument extends AcceleratorDocument {
 
 				// launch a web browser and use confluence URL as the help contents
 //            	System.out.println("launching firefox...");
-        		ExecShellCmd esc = new ExecShellCmd();
-        		String[] myCmd = new String[]{"firefox", "https://confluence.slac.stanford.edu/display/LCLSHELP/Model+Manager#ModelManager-Introduction"};
-        		esc.setCommand(myCmd);
-        		esc.start();
-            	
+        		try {
+					Desktop.getDesktop().browse(new URI("https://confluence.slac.stanford.edu/display/LCLSHELP/Model+Manager#ModelManager-Introduction"));
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (URISyntaxException e) {
+					e.printStackTrace();
+				}
             }
         };
         
