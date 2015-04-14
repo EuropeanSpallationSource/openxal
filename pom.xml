@@ -28,10 +28,10 @@
 			<configuration>
 				<archive>
 					<manifest>
-						<mainClass>edu.stanford.lcls.modelamanger.ModelManagerMain</mainClass>
+						<mainClass>edu.stanford.lcls.modelmanager.ModelManagerMain</mainClass>
 					</manifest>
 					<manifestEntries>
-						<Class-Path>openxal.library-${project.version}.jar</Class-Path>
+						<Class-Path>openxal.library-${project.version}.jar openxal.extensions.zplot-${project.version}.jar jfreechart-1.0.19.jar jcommon-1.0.23.jar</Class-Path>
 					</manifestEntries>
 				</archive>
 			</configuration>
