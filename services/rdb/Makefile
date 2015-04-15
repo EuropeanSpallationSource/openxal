@@ -31,7 +31,7 @@ JAR_NAME=meme_rdb.jar
 JAVAC=javac -Xlint
 
 # EPICS
-EPICS_PVJAVA?=/usr/local/esss/epics/base/epics-java
+EPICS_PVJAVA?=/usr/local/esss/epics/epics-java
 EPICS_CLASSPATH = $(EPICS_PVJAVA)/pvAccessJava.jar:$(EPICS_PVJAVA)/pvDataJava.jar
 
 # PostgressQL database access
