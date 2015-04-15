@@ -1,0 +1,1490 @@
+
+		MEME README
+ 
+This is the README file of the ESS implementation of the 
+MODEL EPICS MATLAB ENVIRONMENT (MEME). 
+
+It presently contains both system management and user guide information.
+
+------------------------------------------------------------------------------
+Auth: Greg White, 09-Apr-2015
+Mod: 
+==============================================================================
+
+Plan 
+ Rdb service 
+  x java
+  x startup file
+  create user from which to make acqusitions
+  file or db of transforms
+  test
+ Model Service
+  x java
+  x startup file
+  x prototype sql statements
+  x deploy sql in model service
+  test
+
+ Convert model service so it discovers pvs at runtime init
+ Convert rdb so discovers pvs at init
+
+
+0. DEVELOPMENT SETUP
+-------------------
+login to physics01.esss.lu.se
+export MEMEROOT=/home/gregorywhite/Development/meme
+source script/setup_epics.bash 
+make
+
+
+1. RUNTIME SETUP.
+
+server and client side
+login to physics01.esss.lu.se
+source setup_epics.bash 
+source envs_epics_prod.bash
+
+
+2. EPICS V4 NETWORK DIAGNOSTIC TOOLS
+
+pvinfo  - gets data about a given process variable.
+          Use -d to get network debug information.
+
+Eg 
+[gregorywhite@physics01 meme]$ pvinfo optics
+CHANNEL  : optics
+STATE    : CONNECTED
+ADDRESS  : 194.47.240.236:5075
+(null introspection data)
+
+pvlist  - gets data about PVs hosted by a PV access server (of any 
+type, eg IOC, RPC, pvDatabase). Use -d to get network debug information.
+
+Eg
+[gregorywhite@physics01 meme]$ pvlist localhost
+optics
+
+3. PROCESS DIAGNOSTICS
+
+MEME compl;icate Epics V4 processes are all named according to the
+pattern meme_<something>. Eg meme_optics.
+
+So, to list All Ev4 MEME compliant processes (all named meme_<something>)
+pgrep -fl meme
+
+To kill a Ev4 service on a host, use pkill -f (to search the full command)
+pkill -f optics
+
+4. BASIC SERVICE DEVELOPMENT LOOP
+$ pkill -f optics
+edit stuff
+$ make build
+$ ./bin/opticsServerRunner 
+
+4. SERVICE DEBUGGING.
+
+Increase the level of logging of a server by editing its loggin properties
+file and set .LEVEL to say "FINE". Eg
+.level=FINE
+Then "make build" (to make sure the properties file is installed where the
+runner expects it to be), and restart the service. Queries should now get
+logging to stdout and to the services log file.
+
+BUGS
+----
+optics
+------
+* Unknown element name gets poor message 
+Eg $ eget -s optics -a q=ST1-V
+[optics] failed to RPC: [ERROR] Unable to get optics data; String index out of range: -1
+
+* Unrecognized parameters are not warned about.
+
+
+SCRATCH
+=======
+DriverManager.getConnection(
+ "jdbc:postgresql://ics-services.esss.lu.se:5432/machinemodel",
+ "machinemodel", "physicsl1nacstuff" );
+
+SQL
+===
+get_runID()
+Get the run id of the most recent upload (should be, if sequences work,
+the highest numbered run id).
+ - element name (Suggest that in fact we don't find the latest specifically with
+   the given element, because then optics may be returned for a device from an
+   unexpected model, and it's not really necessary if there is only 1 mode)
+
+ - type (RUN_SOURCE_CHK) (extant or design)
+ - run latest any or latest gold
+ - mode (not used at ess)
+ALG:
+  if runs == 'latest' then
+    select max(e."RUNS_ID") from  
+       "MACHINE_MODEL"."ELEMENT_MODELS" e, "MACHINE_MODEL"."RUNS" r where 
+          r."RUN_SOURCE_CHK"='EXTANT' and e."RUNS_ID" = r."ID";
+  else (latest gold)
+    select max(e."RUNS_ID") from  
+       "MACHINE_MODEL"."ELEMENT_MODELS" e, "MACHINE_MODEL"."RUNS" r, "MACHINE_MODEL"."GOLD" g where 
+          r."RUN_SOURCE_CHK"='EXTANT' and e."RUNS_ID" = r."ID" and 
+          g."RUNS_ID" = r."ID";
+- checked, working
+
+get_twiss()
+- entity (QP1)
+- type ((RUN_SOURCE_CHK) (extant or design)
+- pos (begin, end, all). end = default. 
+- run latest any or latest gold
+- mode (not used at ess)
+
+ALG:
+pos=begin == min(INDEX_SLICE_CHK)
+pos=end  == max(INDEX_SLICE_CHK)
+pos=all  == any INDEX_SLICE_CHK
+
+
+SELECT *  FROM "MACHINE_MODEL"."ELEMENT_MODELS" WHERE "RUNS_ID"=4;
+
+SELECT MAX("RUNS_ID") FROM "MACHINE_MODEL"."ELEMENT_MODELS" ;
+
+-- Which runs are presently and past gold
+SELECT "RUN_ID", "GOLD_STATUS_NO_CSS", "RUN_SOURCE_CHK"
+ FROM "MACHINE_MODEL"."V_GOLD_REPORT";
+
+-- The presently gold model of each of extant and design
+SELECT "RUN_ID", "GOLD_STATUS_NO_CSS", "RUN_SOURCE_CHK"
+ FROM "MACHINE_MODEL"."V_GOLD_REPORT"
+   WHERE "GOLD_STATUS_NO_CSS"='PRESENT';
+
+-- The presently gold extant model
+SELECT "RUN_ID", "GOLD_STATUS_NO_CSS", "RUN_SOURCE_CHK"
+ FROM "MACHINE_MODEL"."V_GOLD_REPORT"
+   WHERE "GOLD_STATUS_NO_CSS"='PRESENT' AND "RUN_SOURCE_CHK"='EXTANT';
+
+
+*** Everything below here needs to be edited to reflect reality for ESS ****
+
+1. MEME SOFTWARE ON THE ESS FILESYSTEM
+======================================
+
+SOFTWARE:
+
+  CVS: MEME is in the LCLS cvs repository, under package/meme/.    
+
+  NFS:
+     EPICS V4 java                   /usr/local/lcls/epics/base/base-java-R4*
+     EPICS V4 c++                    /usr/local/lcls/epics/base/base-cpp-R4
+     MATLAB:                         matlab/toolbox/meme/
+                                     matlab/toolbox/emat/
+
+  WEB: /afs/slac/www/grp/ad/meme                     
+  URL: http://www.slac.stanford.edu/grp/ad/meme  
+
+MODEL:
+  CVS: Lattice files in LCLS cvs repository  
+     LCLS:                           optics/etc/lattice/lcls  
+     LCLS-II                         optics/etc/lattice/lcls2
+  Web:                               /afs/slac/www/grp/ad/model
+  Design output files                /afs/slac/www/grp/ad/model/output                 
+  URL: http://www.slac.stanford.edu/grp/ad/mode
+
+
+2. MEME HOSTS AND EPICS CONFIG
+==============================
+For basic network diagram see 
+  http://www.slac.stanford.edu/grp/ad/meme/documents/memeBasicArchitecture.html
+
+DEVELOPMENT SERVER HOST:  lcls-dev1.slac.stanford.edu
+PRODUCTION SERVER HOST:   lcls-prod01.slac.stanford.edu
+
+At SLAC we use port 5056 for PvAccess broadcast and 5055 for data.
+
+Hence, EPICS PVA clients wishing to use prod MEME services should set:
+  export EPICS_PVA_ADDR_LIST=lcls-prod01.slac.stanford.edu
+  export EPICS_PVA_BROADCAST_PORT=5056
+  
+to use dev:
+  export EPICS_PVA_ADDR_LIST=lcls-dev2.slac.stanford.edu
+  export EPICS_PVA_BROADCAST_PORT=5056
+
+You must be on the slac network to use either of these hosts.
+
+Server side executables should set environment:
+export EPICS_PVA_BROADCAST_PORT=5056
+export EPICS_PVA_SERVER_PORT=5055
+
+Server executables please follow the pattern for startup scripts in 
+/afs/slac/g/lcls/package/meme/services/{rdb,optics}/script/*ServerRunner.
+
+     
+3. EPICS BASE (V3) CLIENT SIDE CONFIG 
+=====================================
+
+PROD: 
+  All likely accounts eg physics and softegr have epics base set up by default
+
+DEV (AFS lcls-dev2): 
+  bash
+  paths:     source /afs/slac/g/lcls/package/meme/script/setup_epicsbase.bash  
+  CA config: source /afs/slac/g/lcls/package/meme/script/envs_epicsca_prod.bash
+
+MAC:
+Assuming CVS checkout into ~/Development/meme/lclscvs:
+  bash
+  cd ~/Development/meme/lclscvs
+  source package/meme/script/setup_epicsbase_hostDefaults_mac.bash
+  source package/meme/script/setup_epicsbase.bash
+  source package/meme/script/envs_epicsca_prod.bash
+
+Try it:
+  caget EVNT:SYS0:1:LCLSBEAMRATE
+  120
+
+ 
+4. EPICS V4 CLIENT SIDE CONFIG
+==============================
+
+PROD:
+  source ~softegr/greg/setup_epicsv4.bash
+  source ~softegr/greg/envs_epicspv_prod.bash    
+It's assumed they will soon be put in ENVS.bash.
+
+DEV: ( 
+  bash
+  source /afs/slac/g/lcls/package/meme/script/setup_epicsv4_hostDefaults_dev.bash 
+  source /afs/slac/g/lcls/package/meme/script/setup_epicsv4.bash
+  source /afs/slac/g/lcls/package/meme/script/envs_epicspv_prod.bash  (connect to dev servers) 
+       | /afs/slac/g/lcls/package/meme/script/envs_epicspv_dev.bash   (connect to prod servers)
+
+MAC:
+Assuming CVS checkout into ~/Development/meme/lclscvs:
+  bash
+  cd ~/Development/meme/lclscvs
+  source package/meme/script/setup_epicsv4_hostDefaults_mac.bash
+  source package/meme/script/setup_epicsv4.bash
+  source package/meme/script/envs_epicspv_prod.bash 
+       | package/meme/script/envs_epicspv_dev.bash
+
+   
+5. QUICK TESTS
+==============
+Do 4 above, then:
+  TEST TESTSERVER 
+  eget -s qm14:twiss
+  eget -s archiveservice -a entity=quad45:bdes/history  -a starttime=2011-09-16T02.12.00 -a endtime=2011-09-16T15.23.17
+  TEST OPTICS
+  eget -s optics -a q=QUAD:LTU1:880//twiss -a run=45976
+  TEST RDB
+  eget -s rdb -a q=model/modes
+  eget pva:///rdb?q=modelRmats/Extant.CathodeTo135MeVSpect
+
+---
+
+6. MEME DEVELOPMENT
+================
+
+DEVELOPMENT REFERENCES
+
+export CVSROOT=':ext:greg@noric05.slac.stanford.edu:/afs/slac/g/lcls/cvs'
+export CVS_RSH=ssh
+
+Make a service:
+Example:
+Do actions for item 0 above - SETUP DEVELOPMENT ENVIRONMENT, then
+$ cd meme/services/optics
+$ make
+$ make build
+
+Make all MEME:
+Do actions for item 0 above - SETUP DEVELOPMENT ENVIRONMENT, then
+cd meme
+ make
+ make build
+
+6.1 SETUP FOR DEVELOPMENT
+
+ON PROD
+   login greg on physics@lcls-srv01
+   source ~/greg/envs_prod.bash
+
+ON "DEV" (rhel6-64):  **Note, MUST override default MEMEROOT**
+   login rhel6-64 (NOT lcls-dev2 or other LCLS-DEV network host. Why? Because if you're on
+   lcls-dev2, and you set EPICS_PVA_ADDR_LIST to lcls-prod01, then a client like eget riunning
+   on lcls-dev2 may find MEME servers running on both lcls-dev2 and lcls-prod01, resulting in:
+     warning messages like [ChannelRequesterImpl] 
+    message(More than one channel with name 'optics' detected, additional response from: 134.79.151.21:45223, warning)). 
+   But remember, the default dev server host for meme is lcls-DEV1 (not DEV2), so if a client 
+   on dev2 does get a name conflict, then there is BOTH a test server running on dev2 (which is 
+   possible, since it's the test server) *and* the EPICS_PVA_ADDR_LIST has been set to lcls-prod01
+   (which is what you would do if you want prod on dev).
+   FIX: Develop on lcls-dev2. But make sure EPICS_PVA_ADDR_LIST is set to exclude 
+     lcls-dev1 and lcls-prod01. 
+
+  bash
+  cd /u/cd/greg/Development/meme/lclscvs/package/meme
+  export MEMEROOT=`pwd`
+  source script/setup_meme_hostDefaults_dev.bash
+  source script/setup_meme.bash
+  Then to connect to development services (see EPICS setup item 4 above)
+    (Check EPICS_PVA_ADDR_LIST does not inlcude lcls-prod01 if you wnat to test a server
+     on lcls-dev1 or lcls-dev2.)
+
+ON MY MAC:
+ bash
+ export MEMEROOT=~/Development/meme/lclscvs/package/meme
+ source $MEMEROOT/script/setup_meme_hostDefaults_mac.bash
+ source $MEMEROOT/script/setup_meme.bash (oracle and cvs setup)
+ source $MEMEROOT/script/envs_epicspv_prod.bash or envs_epicspv_dev.bash
+
+
+
+6.2. START TEST PVASERVER (testDbPv), PVACCESS TEST SERVER, AND PVACCESS TEST RPC SERVER 
+ On lcls-dev1
+   bash
+   cd /u/cd/greg/Development/epics/base/v4
+    ./startEpicsTestServers
+   See ~/Development/epics/base/v4/cpp/pvAccessCPP/DEMO
+
+ On My Mac
+   Start test server (2 above)
+   See ~Development/epicsV4/R4.3.0/cpp/pvAccessCPP/DEMO
+   eget testvalue
+
+6.3. RUN JUST PVACCESS TEST EPICS V4 SERVER.
+  Prerequisite: 1 above to set EPICS V4 env, then
+  cd cpp/pvAccessCPP/
+  ./runTestServer
+
+6.4. TEST AN MEME SERVER WITH EPICS V4 CLIENT
+   See DATA ACQUISITION FROM MEME below
+  
+
+6.5. COMPILE AN MEME SERVICE
+  Prerequiste: Do setup per 3 above, then
+  cd .../services/<service>
+  make [{clean,build}]
+  
+  Make all servers and support, and copy files to 'build' dirs.
+  cd $MEMEROOT
+  make build
+
+6.6. DEVELOPMENT WITH ECLIPSE
+   Follow the following steps to use Eclipse to develop a "make" based MEME service;
+   Create a workspace OUTSIDE the tree structure of service, eg .../meme/workspace
+   File->New->Project->Java Project
+       *Do the support/ folder first, since it will be a workspace project the others
+       will depend on*
+       Set: Project Name = eg testservice
+       *Unclick* "Use Default Location"
+       Set Location to (eg) ".../meme/services/testservice
+       -> Note the message at the bottom of the wizard window saying that it will import
+          the project from it's existing diectory structure.
+   Now either "Finish" and set External Libraries later, or "Next" and set external libs now.
+   Project->Properties-[Source]: 
+      Verify source folfers on the build path = <serviceroot>/src
+      Verify Default output folder = <service>/classes
+   Project->Properties->Java Build Path-[Libraries]:
+      Add dependency on the "support" project (as said above).
+      Add *External* Libraries for EPICS V4. Navigate to jar files of EPICS V4 and add jars
+      for of course at least pvDataJava and pvAccessJava. After you have added the java 
+      jars, expand the "triangle" tab and attach the sources and javadoc jars too.
+
+   Run Configuration: The env_var thing doesn't seem to work at all, so use literals.
+     -server -DMEME_MODE=DEV -DDATA_MODE=REAL
+     -DSERVICE_NAME=meme_optics
+     -DCONNECTION_URI_PROPERTY=jdbc:oracle:thin:@slacprod.slac.stanford.edu:1521:SLACPROD
+     -DCONNECTION_USERID_PROPERTY=MACHINE_MODEL
+     -DCONNECTION_PWD=<the password>
+     -Djava.util.logging.config.file=${project_loc:optics}/lib/opticslogging.properties
+
+
+6.7. CVS
+   (see services deployment below) 
+    CVS Matlab
+    Do 1 above, then
+    cvs -d $CVSROOT co -d matlab package/meme/matlab
+
+
+6.8. Switching version of EPICS V4 used.
+   1. Switch root env vars in setup_meme_hostDefaults_dev.bash
+   2. Switch services makefiles and support/
+	support/Makefile
+	services/testserver/Makefile
+	services/optics/Makefile
+   3. Switch services runner files.
+	services/testserver/script/testServerRunner
+	make build
+	services/optics/script/opticsServerRunner
+	make build (compile and move scripts from script/ to bin/)
+
+
+6.9. START SERVERS UNDER SW DEVELOPMENT ON LCLS-DEV2 (a "TEST" server)
+   *** startMemeTestServers was removed to the cvs attic ***
+   login lcls-dev2
+   bash
+   Kill the deployed dev server on lcls-dev1 before restarting your dev one.
+      ssh laci@lcls-dev1 pgrep -fl meme
+      ssh laci@lcls-dev1 pkill -f meme_optics_dev
+   
+   cd to your development dir (root of meme) eg 
+   cd /u/cd/greg/Development/meme/lclscvs/package/meme
+   export MEMEROOT=`pwd`
+   source script/setup_meme_hostDefaults_dev.bash 
+   source script/setup_meme.bash
+      ./services/testservice/bin/testServiceServerRunner -d
+      ./services/rdb/bin/rdbServerRunner -d
+      ./services/optics/script/opticsServerRunner -d
+
+6.10 TEST A SERVER UNDER SW DEVELOPMENT ON LCLS-DEV2
+   IN THEORY BUT DOESN'T WORK!
+   Set EPICS_PVA_ADDR_LIST and check EPICS_PVA_AUTO_ADDR_LIST=FALSE.
+   export EPICS_PVA_ADDR_LIST=lcls-dev2.slac.stanford.edu
+   eget -s rdb   
+
+6.11  START A SERVER UNDER SW DEVELOPMENT ON LCLS-DEV1 (AS A "DEV" SERVER)
+   Login to laci@lcls-dev1
+   Then do exactly as for 5 above. 
+   Test exactly as 5.5 above, except of course export EPICS_PVA_ADDR_LIST=lcls-dev1
+
+6.12 RELEASE MEME SERVICE SOFTWARE
+  
+  loginto lcls-dev1
+  bash
+  cd /afs/slac/g/lcls/package/meme
+  export MEMEROOT=`pwd`
+  source script/setup_meme_hostDefaults_dev.bash
+  source script/setup_meme.bash
+  cvs update
+  make build
+  [Check the libs you expected to be updated were in fact: ls -asl services/*/lib ]
+
+  Restart servers on dev (lcls-dev1) and prod (lcls-prod01): See 7..
+
+
+7. MEME SERVER EXECUTION 
+========================
+  (RE)START DEPLOYED DEV MEME SERVICE
+  login laci @ lcls-dev1   (** YES LCLS-DEV1 - the development MEME servers are on LCLS-DEV1)
+  Check if a server is running, eg:  pgrep -fl meme_rdb
+  Start dev instance of a server: 
+     /afs/slac/g/lcls/package/meme/services/rdb/bin/rdbServerRunner -d
+     /afs/slac/g/lcls/package/meme/services/testservice/bin/testServerRunner -d
+     /afs/slac/g/lcls/package/meme/services/optics/bin/opticsServerRunner -d
+
+  (RE)START DEPLOYED PROD MEME SERVICE
+  login laci@lcls-prod01
+   Optionally explicity kill all prod instances: pkill -f 'meme_.*_prod'
+   or explicitly kill a server: pkill -f meme_testserver
+   Note that Runner files are designed to kill any existing server anyway, but still.
+  Start prod instance of a server: 
+     /afs/slac/g/lcls/package/meme/services/testservice/bin/testServerRunner -p
+     /afs/slac/g/lcls/package/meme/services/rdb/bin/rdbServerRunner -p
+     /afs/slac/g/lcls/package/meme/services/optics/bin/opticsServerRunner -p
+
+  
+8. SYSTEM MANAGEMENT TIPS
+=========================
+* List all meme servers running:
+   [lcls-dev1]:u/cd/greg> pgrep -fl meme_
+  You can do the pgrep remotely over ssh, eg:
+   ssh laci@lcls-prod01 pgrep -fl meme
+
+* System hierarchy view (showing PIDs and parent PPIDs):
+    ps -HFp $(pgrep -f -d, meme_)
+To see whole command:
+    ps -HFwwp $(pgrep -f -d, meme_)        
+___
+* Kill processes of a specific server. 
+This kills both dev and sci of meme_optics:
+    pkill -f meme_optics
+* This kills just dev of meme_optics:
+    pkill -f meme_optics_dev
+
+* Kill all meme processes 
+pkill -f meme_
+
+* ls all the log files, latest first:
+ls -Rt /tmp/meme/
+
+PVA SERVER INFO
+---------------
+* What servers are known (to the subnet and to the EPICS_PVA_ADDR_LIST)
+[greg@lcls-dev2 meme]$ pvlist 
+GUID 0xC6CF2C83BB274F5CB3D8EF8A, version 1: tcp@[134.79.219.12:36102]
+GUID 0xE41E49102215408EAA44A912, version 1: tcp@[134.79.219.12:5075]
+
+* What PVs are known to a server 
+[greg@lcls-dev2 meme]$ pvlist 134.79.219.12
+bpm21301:twiss
+archiveservice
+qm14:twiss
+
+* Server at port:
+[greg@lcls-dev2 meme]$ pvlist 134.79.219.12:36102
+names
+rdb
+
+[greg@lcls-dev2 meme]$ pvinfo rdb
+CHANNEL  : rdb
+STATE    : CONNECTED
+ADDRESS  : 134.79.219.12:36102
+(null introspection data)
+
+vpn-g1-132-164:~ greg$ nslookup 134.79.219.12
+Server:         134.79.164.11
+Address:        134.79.164.11#53
+
+Non-authoritative answer:
+12.219.79.134.in-addr.arpa      name = lcls-dev2.slac.stanford.edu.
+
+ 
+DATA ACQUISITION FROM MEME
+==========================
+
+The following describes getting various kinds of accelerator releated data through the
+meme system at SLAC.
+
+0. LCLS CA PVs.
+
+   To get LCLS PV values through the gateway (as set up by CA_ADD_LIST in ENVS.bash above)
+   First VPN to SLAC, or login to lcls-dev2
+qm14:twiss
+  eget -s archiveser   Do steps of 4 above (or put in your bashrc), then:
+
+   $ eget ca:///EVNT:SYS0:1:LCLSBEAMRATE
+   0
+
+1. More EPICS PVS
+
+   Names:
+     $ eget -t -s names -a pattern=EVNT:SYS0:1:LCLSBEA%
+
+   Data:
+     $ eget ca:///EVNT:SYS0:1:LCLSBEAMRATE
+
+     Pipe names to data acq:
+     $ eget -t -s names -a pattern=EVNT:SYS0:1:LCLSBEA% | xargs -t -I {} eget ca:///{}
+     $ eget -ts names -a pattern=XCOR:LI21:%:BDES | xargs -t -I {} eget ca:///{}
+
+     Using pva URL form too (so all URL):
+     $ eget -t pva:///names?pattern=EVNT:SYS0:1:LCLSBEA% | xargs -t -I {} eget ca:///{}
+
+     How do I get a description, and the values?
+     $ eget -t -s names -a pattern=EVNT:SYS0:1:LCLSBEA% | xargs -I {} eget ca:///{}.{DESC,VAL}
+
+       [Would v. much like eget to take stream, so I can pipe a list of PV names to eget,
+        eg eget -t pva:///names?pattern=EVNT:SYS0:1:LCLSBEA% | eget]
+
+     What are the polynomial terms of all the klys 8 quads in the LTU? 
+     eget -ts names -a pattern=QUAD:LTU1:8%:POLYCOEF | xargs -tI{} eget ca:///{}.{A,B,C,D} 
+
+     
+     
+2. BEAMLINE ELEMENTS
+
+   Names:
+     $ eget -t -s names -a pattern=LCLS/%
+     $ eget -t -s names -a pattern=LCLS/elem%
+
+   Data:
+     What's are all the elements?
+     $ eget -t -s rdb -a q=LCLS/elementInfo.byS 
+
+     What's the device name of that quad element again?
+     $ eget -t -s rdb -a q=LCLS/elementInfo.byS | grep QM14
+
+
+3. GLOABL MODEL 
+
+   Names:
+
+     $ eget -t -s names -a pattern=model% 
+     $ eget -t -s names -a pattern=model%/%
+     $ eget -t -s names -a pattern=modelTwiss/%
+     $ eget -t -s names -a pattern=modelRmats/%
+     $ eget -t pva:///names?pattern=model%/%
+
+   Data:
+
+     $ eget -s rdb -a q=modelTwiss/Extant.CathodeTo135MeVSpect	 
+     $ eget -s rdb -a q=modelRmats/Extant.CathodeTo135MeVSpect
+     $ eget pva:///rdb?q=modelRmats/Extant.CathodeTo135MeVSpect
+
+     Gimme just the element name, device name, Z and Beta of all devices 
+     $ eget -s rdb -a q=modelTwiss/Extant.FullMachine -F"," | cut -d"," -f2,3,4,10
+
+
+4. OPTICS
+
+   Data:
+     $ eget -s optics device-name//R [-a pos={beg,mid,end}] [-a type={extant,design}] [-a runid={gold,<number>}]
+     $ eget -s optics device-name//twiss [-a pos={beg,mid,end}] [-a type={extant,design}] [-a runid={gold,<number>}]
+
+   Eg
+     eget -s optics -a q=QUAD:LI23:901//R -w 10  
+     eget -s optics -a q=QUAD:LI23:901//twiss -a type=design
+
+     eget -s optics -a q=QUAD:DMP1:380//R -a b=BPMS:DMP1:502 -a type=design -w 12
+     
+
+5. TESTSERVICE 
+
+   The MEME testService (named testservice just to make sure we have a name
+   conflict with the pvAccess TestServer!!!) simulates 2 services; an archive 
+   service and a model service: It's role is just a place to exercise ideas for 
+   code patterns and behaviour.
+ 
+   cd /Users/greg/Development/meme/services/testservice/script
+    ./testServiceServerRunner 
+
+   Then:
+
+   1.  eget -s archiveservice -a entity=quad45:bdes/history \
+      -a starttime=2011-09-16T02.12.00 -a endtime=2011-09-16T15.23.17
+  or by URL
+      eget "pva:///archiveservice?entity=quad45:bdes/history&starttime=2011-09-16T02.12.00&endtime=2011-09-16T15.23.17"
+
+In quotes because otherwise & of url query conjugation is interpretted by the unix shell.
+
+The test server also supports these to two test pvs for twiss
+      $ eget -s qm14:twiss
+      $ eget -s bpm21301:twiss
+
+    2. dhcpvisitor217117:R4.3.0 greg$ eget -s qm14:twiss
+    unsupported normative type
+    structure 
+      double energy 0.22 (GeV)
+      double psix 20.8572 (radians) 
+      double alphax 29.3321 
+      double betax 12.5804 (meters)
+      ....
+
+
+DEMO
+====
+IN 1 terminal on lcls-dev1:
+   cd /u/cd/greg/Development/epics/base/v4
+    ./startEpicsTestServers
+you may exit that terminal
+
+In another terminal - the demo terminal:
+bash  (EPICS V4 setup is in .bashrc)
+
+eget and pvget == caget.
+pvput == caput
+
+INTEROP
+
+V4 client <-> 3.14 IOC using CA on the wire:
+
+URL syntax
+  eget ca:///EVNT:SYS0:1:LCLSBEAMRATE
+  eget ca:///QUAD:LTU1:880:BACT
+
+  eget pva:///testValue
+  eget pva://lcls-dev1/testValue
+  eget -w 10 pva://lcls-dev1/optics?q=QUAD:LTU1:880//twiss
+
+  "." is still for a record field
+  eget ca:///SIOC:SYS0:ML00:AO820.DESC
+
+Monitor
+  eget -m ca:///SIOC:SYS0:ML00:AO820
+  eget -m ca:///QUAD:LTU1:880:BACT
+
+V4 client <-> 3.14 IOC using PVAccess on the wire
+
+  pvget float01
+  pvput float01 3423.3
+  pvput floatArray01 3 2342.323 23.23 11.234
+  pvput bigstring01 'This old man, he had three' 
+
+  pvput double01 324.2
+    - note limitHigh
+  pvget double01 -r 'field(display)'
+  pvget -r 'field(value,timeStamp,alarm)' double01 
+  pvinfo double01
+
+STRUCTURED DATA
+ 
+Twiss of one device
+  eget -w 10 -s optics -a q=QUAD:LTU1:880//twiss   !! Pay no attention to //
+
+What are the names of the LCLS Oracle Database queries? 
+  eget -t -s names -a pattern=LCLS/%
+  eget -t -s names -a pattern=LCLS/elem%
+
+What are all the elements?
+  eget -t -s rdb -a q=LCLS/elementInfo.byS 
+
+
+ARGUMENTS TO SERVICES
+
+Design twiss
+  eget -s optics -a q=QUAD:LTU1:880//twiss -a type=design
+
+Compare models, such as latest to a previous rn of the same energy
+  eget -s optics -a q=QUAD:LTU1:880//twiss -a run=45976 
+
+How does Twiss vary through a thick element
+  eget -s optics -a q=QUAD:LTU1:880//twiss -a pos=mid
+
+
+NORMATIVE TYPES 
+
+Examples using model data:
+
+Table of Twiss params of every element in the LCLS "full machine" model
+  eget -s rdb -a q=modelTwiss/Extant.FullMachine
+  eget -s rdb -a q=modelTwiss/Extant.FullMachine | grep QUM4
+
+Matrix
+R matrix of a given device
+  eget -s optics -a q=QUAD:LTU1:880//R
+
+
+NAMES in Two ways 
+
+1. Look at infrastructure database:
+
+What's the device name of that quad element again?
+  eget -t -s rdb -a q=LCLS/elementInfo.byS | grep QM14
+
+Names of Quadrupoles
+ eget -t -s rdb -a q=LCLS/elementInfo.byS | awk '$1 ~/^Q/'
+
+
+2. Look at PV specific db, like IRMIS or ChannelFinder (ie a NAMES SERVICE):
+
+One service may be a name service. Example for CA names
+  eget -ts names -a pattern=QUAD:LTU1:8%:POLYCOEF
+
+Pipe out names and get their value
+  eget -ts names -a pattern=QUAD:LTU1:8%:POLYCOEF | xargs -tI{} eget ca:///{}
+ 
+Ok, get the polynomials - What FJD and Howard asked for last night
+  eget -ts names -a pattern=QUAD:LTU1:8%:POLYCOEF | xargs -tI{} eget ca:///{}.A
+
+Ok, just being fancy
+  eget -ts names -a pattern=QUAD:LTU1:8%:POLYCOEF | xargs -tI{} eget ca:///{}.{A,B,C,D}
+
+The DESCription fields of a number of PVs
+  eget -t -s names -a pattern=SIOC:SYS0:ML00:AO82% | xargs -tI{} eget ca:///{}.DESC
+
+What are the names of the full accelerator models?
+  eget -s names -a pattern=modelTwiss%/% 
+
+
+
+MODEL USE CASE
+
+Response from one device to another.
+Quad to Prof (quad scan, emittance estimation):
+  eget -s optics -a q=QUAD:LTU1:880//R -a b=LI30:PROF:444 -a type=design -w 12
+
+Corrector to BPM (bumps, steering, feedback):
+  eget -s optics -a q=XCOR:LI24:900//R -a b=BPMS:LI25:901 -a type=design -w 10
+
+
+
+
+FINDINGS
+========
+
+    REQ: Symmetry with pvget/pvput with URL syntax is broken. pvget/put don't take URL. 
+    Eg: pvget pva:///testValue     
+             [pva:///testValue] connection timeout
+
+  - Re unsupported Normative Type message.
+    REQ: So, we need servers to be able to return any structure, which doesn't
+    cause eget to complain. Maybe it should be NTAny, or maybe it
+    should be simply a top level structure with no id.
+
+   REQ: I should be able to pipe to eget - so eget take from stream, ie:
+   eget -ts names -a pattern=QUAD:LTU1:8%:POLYCOEF | eget
+
+   REQ: And I should be able to specify CA by a eget option, not URL, since 
+   the URL implies an argument I want it to be ablet to get from a stream. ie:
+   eget -ts names -a pattern=QUAD:LTU1:8%:POLYCOEF | eget -c
+
+
+   REQ: But why do I have to use a "-s <service-name>" when that service is just
+   getting me data about elements? That is, why must the PV be:
+
+What I'd like, all 2 of these simultaneously:
+   1. eget QUAD:LTU1:880//twiss  = Gets fresh data where are args are default val, ie
+                                what is now "eget -s optics QUAD:LTU1:880//twiss" 
+   2. eget -m QUAD:LTU1:880//twiss = Monitor model data being continuously computed.
+   3. eget [-s] QUAD:LTU1:880//twiss -a pos=mid  = ChannelRPC giving arg pos=mid.
+
+But as I understand it, I can have 1&2 or 3, but not 1 & 2 & 3.
+
+REQ: Arguments given with -a should not require =. eget should take either 
+     "-a name=vaue" as now, or "-a name value". This would allow easier
+     pipe construction.   
+
+Want:
+   eget QUAD:LTU1:880//twiss -a type=design
+rather than:
+   eget -s optics -a q=QUAD:LTU1:880//twiss -a type=design
+
+1. the -s gives a service name to a *broadcast*, but 2 services might well have
+the same name (and in fact the pvAccess test server and the MEME test server
+did, without any planning, get a name conflict).
+
+  $ eget -s testservice -a entity=quad45:bdes/history \
+>    -a starttime=2011-09-16T02.12.00 -a endtime=2011-09-16T15.23.17
+[ChannelRequesterImpl] message(More than one channel with name 'testservice' detected, additional response from: 198.129.219.207:5075, warning)
+
+So, we need a namespace mechanism for services.
+
+2. really would like an eput, or an meme wrapper for eget and put generally.
+
+3. Need eget, pvget to take stream, so I can redirect.
+
+4. Would like pvAccess server startup to to give its Host as well as port etc. That
+way examination of log files of pvAccess servers can verify that the server was 
+started on the expected host. ie output of hostname -f; hostname -i
+Eg
+BROADCAST_PORT : 5076
+SERVER_PORT : 5075
+HOST : lcls-dev1.slac.stanford.edu, 134.79.219.12
+
+
+SERVICE NAME = PV NAME ISSUE
+============================
+If you hide the names behind a service PV, how would the poor physicist
+know that the name they got from the names service was a name known
+to another PV?! 
+ANS: Well, I guess you could output whole URLs. Like
+[greg@lcls-dev2 v4]$ eget -t -s names -a pattern=XCOR:LI23:%/twiss -a form=URL
+       pva:///optics?q=XCOR:LI23:802/twiss
+       pva:///optics?q=XCOR:LI23:202/twiss
+       pva:///optics?q=XCOR:LI23:402/twiss
+
+
+
+MEME BUGS AND ISSUES
+=====================
+
+BUG A: When a required argument isn't given, message must say which one it was.
+apples-MacBook-Pro:R4.3.0 greg$ eget -s memetestservice 
+[memetestservice] failed to RPC: [ERROR] Missing required argument
+STATUS: FIX, CLOSED
+
+BUG: Unexpected string in output of names service.
+[greg@lcls-dev2 ~]$ eget -s names -a pattern=QUAD:LI23:%/R
+  INSTANCE||'/'||ATTRIBUTE
+           QUAD:LI23:901/R
+           QUAD:LI23:401/R
+           QUAD:LI23:201/R
+           QUAD:LI23:301/R
+           QUAD:LI23:701/R
+           QUAD:LI23:801/R
+           QUAD:LI23:501/R
+           QUAD:LI23:601/R
+although this with same pattern immediately preceeding teh separator works fine:
+[greg@lcls-dev2 ~]$ eget -t -s names -a pattern=LCLS%/elementInfo
+          LCLS/elementInfo
+
+[greg@lcls-dev2 ~]$ eget -s names -a pattern=QUAD:LI23:%//R
+  INSTANCE||'/'||ATTRIBUTE
+
+BUG: executing the following eget prompts and "unexepcted exception" if the server
+is run from the command line, but not if run from ECLIPSE.
+[greg@lcls-dev2 v4]$ eget -s optics -a q=QUAD:DMP1:380//R -a b=BPMS:DMP1:502//R -a type=design 
+[optics] failed to RPC: [FATAL] Unexpected exception caught while calling RPCService.request(PVStructure).
+HYP: Different java versions in Eclipse exec compared to command line, causes diff behaviour
+TEST: set java version to 6 when running from command, as Eclipse uses Java 1.6
+METH: export JAVAVER=1.6 from command line
+      execute  services/optics/bin/opticsServerRunner &
+      eget -s optics -a q=QUAD:DMP1:380//R -a b=BPMS:DMP1:502 -a type=extant -a pos=mid -w 12
+RES: 
+[optics] failed to RPC: [FATAL] Unexpected exception caught while calling RPCService.request(PVStructure).
+CONC: HYP is FALSE, Use of java 1.6 for running server not causing problem
+
+In the case o Unexpected exceptions, the message should be the name of the exception, at
+least. better the line numer and context too.
+
+* For EPICS V4 issues see EPICSV4 MYREADME
+
+
+********************************************
+*** OLD README 
+********************************************
+
+README of MEME (MAD EPICS Matlab Environment) 
+======================================
+
+SETUPS
+
+1. SETUP EPICS V4 DEVELOPMENT AND EXECUTION ENVIRONMENT
+ On lcls-dev2:
+   bash
+   cd /u/cd/greg/Development/epics/base/v4
+   source epicsHostDefaults_lclsdev.bash
+   source ENVS.bash
+
+2. Setup to Access FACET ca data
+ Set up EPICS V4 per 1 above
+   export EPICS_CA_ADDR_LIST="172.27.75.255:5068 mcc-dmz 172.27.1.11:5070 lcls-prod01:5062"
+   eget ca:///LI18:QUAD:201:BDES
+   52.0591
+
+3. Interactive AFS DEV ON MAC.
+    bash
+    cd /afs/slac/u/cd/greg/Development/meme/lclscvs/optics/script
+    source  opticsHostDefaults_mac.bash
+    source opticsSetEnvDev.bash
+
+4. Matlab on AFS 
+   + Use of CA. Careful of the method you're using to talk CA.
+     - lcaGet and lcaGetSmart use the EPICS_CA_ADDR_LIST set in the shell environment
+       prior to starting matlab. So do 1 or 2 above.
+         FOR LCLS - done in epics setup, 
+           login to lcls-dev2
+           bash
+         FOR FACET First do CA setup per 2 above.
+     - easyPVA uses caj, whic takes its CA addr list from the Java property
+       com.cosylab.epics.caj.CAJContext.addr_list, commonly set in the obsure file
+       $HOME/.JCALibrary/JCALibrary.properties
+   So, at least be sure those agree.
+   + Use of PVA (ie services)
+     PVA uses the environment variable EPICS_PVA_ADDR_LIST. Presently that is
+     set in ENVS.bash (as above).
+     We may elect to put it also in people's individual java.opts on afs, or to set 
+     it dynamically using an m-file that sets the property.
+ 
+   + re CLASSPATH: cd $HOME # (to get my startup.m that does javaclasspath)
+                 (Equivalent of step 1 is done in ~/startup.m)
+   + /afs/slac/package/matlab/2012a/bin/matlab -nodesktop -nosplash 
+
+5. Matlab on laptop
+   Ensure that you're connecting to the "public" aida services. Put this in your java.opts,
+   and put the java.opts in your startup directory (eg on a mac typically ~/Documents/MATLAB).
+   java.opts
+-DEPICS_PVA_ADDR_LIST=lcls-prod01.slac.stanford.edu mcc-dmz.slac.stanford.edu  lcls-dev2.slac.stanford.edu:47237 lcls-dev2.slac.stanford.edu:47238  lcls-dev2.slac.stanford.edu:47239
+   
+
+% Setup for Getting a CA channel pv
+%
+import org.epics.pvaccess.easyPVA.*;
+easy = EasyPVAFactory.get();
+org.epics.ca.ClientFactory.start();
+
+% Get the CA PV value by channel, getter, get method:
+channel=easy.createChannel('QUAD:LI21:201:BDES',...
+  org.epics.ca.ClientFactory.PROVIDER_NAME);
+getter=channel.createGet();
+getter.getDouble()
+
+ans =
+
+   52.1775
+
+% Or as one line:
+easy.createChannel('EVNT:SYS0:1:LCLSBEAMRATE',...
+org.epics.ca.ClientFactory.PROVIDER_NAME).createGet().getDouble()
+ans =
+
+   120
+
+% Getting a simple scalar pvAccess channel pv.
+%
+import org.epics.pvaccess.easyPVA.*;
+% org.epics.pvaccess.ClientFactory.start();  - not required because it's done for you.
+easy = EasyPVAFactory.get();
+chan=easy.createChannel('double01');
+chanGetter=chan.createGet();
+chanPutter=chan.createPut();
+chanPutter.putDouble(2.6345);
+chanGetter.getDouble()      
+
+ans =
+
+    2.6345
+
+
+4. Matlab PVAccess (MPVA) 
+=========================
+
+%%  Get modelling element information (elem names, devices, Z etc)
+elementtable=rdbGet('LCLS/elementInfo.byS')
+elementtable.value
+
+ans = 
+
+              element: [1270x1 java.lang.String[]]
+         element_type: [1270x1 java.lang.String[]]
+    epics_device_name: [1270x1 java.lang.String[]]
+            s_display: [1270x1 double]
+          obstruction: [1270x1 java.lang.String[]]
+
+%% Get all Twiss of every element 
+twisstable=rdbGet('modelTwiss/Extant.FullMachine')
+twisstable.value
+
+ans = 
+
+                      ordinal: [2543x1 double]
+                 element_name: [2543x1 java.lang.String[]]
+    epics_channel_access_name: [2543x1 java.lang.String[]]
+                   z_position: [2543x1 double]
+               position_index: [2543x1 java.lang.String[]]
+                         leff: [2543x1 double]
+                 total_energy: [2543x1 double]
+                        psi_x: [2543x1 double]
+                       beta_x: [2543x1 double]
+                      alpha_x: [2543x1 double]
+                        eta_x: [2543x1 double]
+                       etap_x: [2543x1 double]
+                        psi_y: [2543x1 double]
+                       beta_y: [2543x1 double]
+                      alpha_y: [2543x1 double]
+                        eta_y: [2543x1 double]
+                       etap_y: [2543x1 double]
+
+% So what are the betas?
+twisstable.value.beta_x
+
+
+%% Plot extand and design betas
+
+% A nice way to get bigger plot
+figure('Position', [300,200,750,550]);
+set(gcf,'Color',[1 1 1]);
+
+% plot Extant beta in x and y
+clf
+plot(twisstable.value.z_position, twisstable.value.beta_x);
+hold on
+plot(twisstable.value.z_position, twisstable.value.beta_y,'--');
+
+% Compare above plotted extant to Design Betas
+dtwisstable=rdbGet('modelTwiss/Design.FullMachine');
+plot(dtwisstable.value.z_position,dtwisstable.value.beta_x,'m');
+plot(dtwisstable.value.z_position,dtwisstable.value.beta_y,'--m');
+
+% Add labels
+xlabel('Z (m)'); ylabel( 'Beta (m)'); title('Extant and Design Betas now in LCLS');
+
+
+%% Twiss of a single element
+
+% Get Twiss of a single element:
+twiss = twissGet( 'QUAD:LTU1:880//twiss' )
+
+% All the arguments of the service are supported:
+
+pos = {beg,mid,end} default is end
+type = {extant, design} default is extant
+mode = <timing mode> default is 5 (the main 13.5 GeV energy timing mode
+runid = <integer run id>|gold default is gold
+b     = name of device to which to calculate transfer matrix (Rmatrix A -> B)
+posb  = to where in b, if b is given. 
+
+% What are twiss at the middle position of the quad:
+twiss = twissGet( 'QUAD:LTU1:880//twiss','pos','mid' )
+
+% Compare it's twiss now to its design twiss
+twiss = twissGet( 'QUAD:LTU1:880//twiss','pos','mid','type','design' )
+
+
+%% R-matrix of a single element
+
+rmatGet( 'QUAD:LTU1:880//R' )
+
+% Again all args are suppored. 
+% Get the R-matrix at the beginig of the quad, 
+% under the 13 GeV timing mode (5) 
+%
+rmatGet( 'QUAD:LTU1:880//R','mode','5','pos','beg' )
+
+
+% R from A to B! 3 examples
+%
+rmatGet( 'QUAD:LTU1:880//R','b','BPMS:UND1:3190')
+
+% again, all normal argumments supported
+%
+rmatGet( 'QUAD:UND1:880//R','b','BPMS:UND1:3190','mode','5')
+rmatGet( 'QUAD:LTU1:880//R','b','BPMS:UND1:3190','mode','5','pos','mid')
+
+
+MATLAB PVA (MPVA) SUMMARY
+-------------------------
+Data getters:
+twissGet           Gets Model Optics twiss parameters data
+rdbGet             Gets data from Oracle db through rdb pvaccess server. S=working
+                     returns matlab struct
+rmatGet            Gets Model Optics R-mat data
+
+Utilities:
+pvstructure2struct Converts any PVStructure to a matrix struct
+nttable2struct     Converts an EPICS NTTable to a matlab struct of cell arrays.
+ntmatrix2matrix    Converts an EPICS NTTable to a matlab matrix
+
+
+
+
+MPVA / PVA Cheatsheet
+=====================
+For constructing pvdata structures general rule of thumb:
+  1. Create the introspection interface [1] first, from the leaf nodes of the structure
+     up to the structure itself. Eg, for NTURI, create the "query" substructure 
+     introspection interface first (giving names of arguments to the service) etc,
+     then attach that to a uriStructure. 
+
+     You'll be using methods of the FieldCreate interface [2] to make the fields to add
+     to your structure. So first just get a FieldCreate interface:
+     
+     private final static FieldCreate fieldCreate = FieldFactory.getFieldCreate();
+
+  2. The intrsopection interface uses "Structure" and "Field" classes, as opposed to
+     PVStructure and PVField (those are used for the "data" interface - see below).
+     
+     So, now starting with the substructues and their fields, build up your 
+     introspection interface from the bottom up:
+
+     // First the substructure called which will be called "query"
+     private final static Structure queryStructure = 
+        fieldCreate.createStructure(
+                                    new String[] {"entity", "starttime", "endtime"},
+                                    new Field[] 
+                                    { fieldCreate.createScalar(ScalarType.pvString),
+                                      fieldCreate.createScalar(ScalarType.pvString),
+                                      fieldCreate.createScalar(ScalarType.pvString)
+                                    });
+    // Then assemble that "query" substructure into my top level 
+    // structure of a Structure conforming to NTURI. My introspection interface instance
+    // is an object variable named uriStructure.
+    private final static Structure uriStructure =
+        fieldCreate.createStructure(
+            "uri:ev4:nt/2012/pwd:NTURI",
+            new String[] { "scheme", "query" },
+            new Field[] { fieldCreate.createScalar(ScalarType.pvString), queryStructure });
+
+  3. You can create the instrospection interface "static final" if appropriate, since
+     it's unlikey to change, and in fact, a pvData INtrsopection interfaces so constructed
+     is immutable.
+
+  4. Then in the part of teh code that executes "per call", use the Data interface.
+  
+      You'll be using methods of the PVDataCreate interface [2] to insdtantiate instances
+      of your introspection interface. In particular, for the "top level structure" you'll use createPVStructure:
+
+     PVStructure pvRequest =
+              PVDataFactory.getPVDataCreate().createPVStructure(uriStructure);
+  
+5.   Finally you'll be using methods of PVField and its derivatives (like PVStructure for substructures) to get access to the where to put your data, and put it there.
+Eg getStructureField and getStringField methods of PVStructure.
+
+     pvRequest.getStringField("scheme").put("pva");
+                PVStructure pvQuery = pvRequest.getStructureField("query");
+                if ( args[0] != null) pvQuery.getStringField("entity").put(args[0]);
+                if ( args[1] != null) pvQuery.getStringField("starttime").put(args[1]);
+                if ( args[2] != null) pvQuery.getStringField("endtime").put(args[2]);
+
+
+ 
+[1] http://epics-pvdata.sourceforge.net/docbuild/pvDataJava/4.3.0/documentation/pvDataJava.html#introspection_interfaces
+[2] http://epics-pvdata.sourceforge.net/docbuild/pvDataJava/4.3.0/documentation/pvDataJava.html#introspection_and_data_creation
+http://epics-pvdata.sourceforge.net/docbuild/pvDataJava/4.3.0/documentation/pvDataJava.html#pvfield_-_data_interfaces
+
+
+SUBPROJECTS
+
+- Upload FACET model to model database
+- Demo getting model through EPICS V4 service and easyPVA
+  (so easyPVA rpc)
+Phase 2:
+- Speed up getting control data to write patch file.
+
+Mad model -> database upload:
+Q: Develop where?
+ - not mac since VPN not working for Ev4, so can't demo getting data
+from model service
+- Can it be lcls-dev? Depends on availibility of lca - nless all lca/aida
+replaced by ev4.
+- better just do it on fphysics. Do we need Matlab database package?
+What implications are for licensing?
+
+TROUBLESHOOTING
+---------------
+Message :
+[greg@lcls-dev2 meme]$ eget -s optics -a q=QUAD:LI23:901//R
+[ChannelRequesterImpl] message(More than one channel with name 'optics' detected, additional response from: 134.79.151.21:45223, warning)
+Possible diagnosis: Is the PV you're accessing offered both by a server on host of the client, and elsewhere?
+For instance, you're on host lcls-dev2. You did -s optics, and optics is both at EPICS_PVA_ADDR_LIST=lcls-prod01.slac.stanford.edu and
+on lcls-dev2. You should be on a host like rhel6-64 to do prodondev work.
+
+
+
+ISSUES:
+ISSUES OF EASYPVA:
+------------------
+1. If no connection is made, just get NullPointerException and stacktrace!
+Error using org.epics.pvaccess.easyPVA.EasyPVAFactory$EasyChannelImpl/createGet
+Java exception occurred:
+java.lang.NullPointerException
+ ...
+
+2. The createGet on a CA channel puts the connection diagnostics in the matlab window. 
+That's great for programmers - but really wrong for physicists. 
+No physicist will ever want to see that and may even think there has been an error.
+But it is needed for connection diagnostics, so we have to redirect to a log.
+>> q201bdes_g=q201bdes_c.createGet();
+CaV3Client
+CLASS : com.cosylab.epics.caj.CAJContext
+ADDR_LIST : 134.79.151.21 mcc-dmz
+AUTO_ADDR_LIST : false
+CONNECTION_TIMEOUT : 30.0
+BEACON_PERIOD : 15.0
+REPEATER_PORT : 5069
+SERVER_PORT : 5068
+MAX_ARRAY_BYTES : 16384
+EVENT_DISPATCHER: gov.aps.jca.event.DirectEventDispatcher@1bf2e9a
+STATE : INITIALIZED
+
+3. Can't have messages like this come up
+status gov.aps.jca.CAStatus[UNRESPTMO=60,WARNING=0]=Virtual circuit connection unresponsive
+error EVNT:SYS0:1:LCLSBEAMRATE connection state DISCONNECTED
+error EVNT:SYS0:1:LCLSBEAMRATE connection state DISCONNECTED
+>> 
+
+4. When the network becomes unreachable, one gets repeated stack traces, not 
+error messages. I don't know how many times I have to keep saying this - 
+never ever ever stack trace user level code. Always always always issue
+a meaningful error message INSTEAD (not as well, INSTEAD).
+
+  1. This sort of thing issued even once is WRONG. 
+  2. Issuing it repeatedly (every 30 seconds) while the network is unavailable is an abomination against humanity! When I'm in matlab, and these messages come every 30
+seconds - makes you crazy!
+  3. There MUST be a way to stop the periodic issuance of the error. It just seems to go on forever. It's not enough to say "Well, gove a timeout". One has to be able to turn
+it off once it's started.
+
+Mar 28, 2014 6:34:59 PM com.cosylab.epics.caj.impl.BroadcastTransport send
+SEVERE: 
+java.io.IOException: Target address not resolved
+	at sun.nio.ch.DatagramChannelImpl.send(DatagramChannelImpl.java:425)
+	at com.cosylab.epics.caj.impl.BroadcastTransport.send(BroadcastTransport.java:238)
+	at com.cosylab.epics.caj.impl.ChannelSearchManager.flushSendBuffer(ChannelSearchManager.java:556)
+	at com.cosylab.epics.caj.impl.ChannelSearchManager.access$600(ChannelSearchManager.java:31)
+	at com.cosylab.epics.caj.impl.ChannelSearchManager$SearchTimer.timeout(ChannelSearchManager.java:335)
+	at com.cosylab.epics.caj.util.Timer$RunLoop.run(Timer.java:276)
+	at java.lang.Thread.run(Thread.java:722)
+
+
+
+5. Is there are a way to QUETLY retry to get PVs should the first try fail.
+Should try 2 or 3 times to get all PVs in a list quietly. - per lcaGetSmart.
+
+6. How can I ask PVA what the ADDR_LIST and other settings are, that it wants to
+use, programmatically? Important eg for diagnosing or checking setup prior to execution.
+Bear in mind querying "the environment" is not reliable, and in fact is completely
+bogus - see issue below.
+Bear in mind that we use lca and caj and pva. lca based on labca is getting its
+addr list from the shell env EPICS_CA_ADDR_LIST, caj is getting its addr list from
+the .JCALibrary/JCALibrary.preferences. PVA is getting it from java.opts. caj, jca 
+and pva could be getting it from either a preferences file, or java.opts. We need
+a way to definitiively ask the protocol code - "what are you using?"
+
+ISSUE: Can't do pva CA acquisitions through matlab execution on my mac
+OBS: ADDR_LIST reported by CA acq on mac is different to as defined by epicsEnv
+Ie:
+>> epicsEnv
+>> getenv('EPICS_CA_ADDR_LIST')
+
+ans =
+
+lcls-prod01.slac.stanford.edu
+
+>> getenv('EPICS_CA_REPEATER_PORT')
+
+ans =
+
+5069
+
+>> import org.epics.pvaccess.easyPVA.*;
+easy = EasyPVAFactory.get();
+org.epics.caV3.ClientFactory.start();
+>> q201bdes_c=easy.createChannel('QUAD:IN20:121:BDES',...
+  org.epics.caV3.ClientFactory.PROVIDER_NAME);
+q201bdes_g=q201bdes_c.createGet();
+error QUAD:IN20:121:BDES illegal connect state
+CaV3Client
+CLASS : com.cosylab.epics.caj.CAJContext
+ADDR_LIST : 134.79.151.21 mcc-dmz        !! - where did this come from? 134.79.151.21 
+                                              is "right" but mcc-dmz wasn't in that given.
+ AUTO_ADDR_LIST : false
+CONNECTION_TIMEOUT : 30.0
+BEACON_PERIOD : 15.0
+ REPEATER_PORT : 5068     !!   - Note not 5069 as set in the setenv above.
+SERVER_PORT : 5064       !!
+
+OBS: My mac has a .JCALibrary.properties file, in which there were:
+com.cosylab.epics.caj.CAJContext.addr_list = lcls-prod01.slac.stanford.edu mcc-dmz.slac.stanford.edu
+com.cosylab.epics.caj.CAJContext.auto_addr_list = false
+com.cosylab.epics.caj.CAJContext.repeater_port = 5068    <- A ha!
+com.cosylab.epics.caj.CAJContext.repeater_port = 5064    <-
+
+HYP: Changing the jni and CAJ properties in JCALibrary.properties to
+correct value will allow Matlab to use the correct values
+METH:
+com.cosylab.epics.caj.CAJContext.addr_list = lcls-prod01.slac.stanford.edu mcc-dmz.slac.stanford.edu
+com.cosylab.epics.caj.CAJContext.auto_addr_list = false
+com.cosylab.epics.caj.CAJContext.repeater_port = 5069
+com.cosylab.epics.caj.CAJContext.server_port = 5068
+ RES: Could get c=easy.createChannel('EVNT:SYS0:1:LCLSBEAMRATE',...
+org.epics.caV3.ClientFactory.PROVIDER_NAME);
+>> c.createGet().getDouble()
+120
+CONC: HYP was true. Fixed.
+
+
+MODELLING
+=========
+Why does FACET18_getModel get powwer supply set points and currents?
+That is, why doesn't it just use the B's in the magent EPICS PVs?
+
+
+
+I to B, B to I
+===============
+In FACET: for pslist including quadrupoles:
+>> pslist                              
+
+pslist = 
+
+    'LI20:LGPS:2130'
+    'LI20:LGPS:2131'
+    'LI20:LGPS:2150'
+
+Gives
+>> [Bps,Ips]=dbGetFast(pslist)         
+
+Bps =
+
+ -298.3828
+  -18.7604
+  208.3674
+
+
+Ips =
+
+  338.5312
+   20.1016
+  155.9038
+
+These LGPS correspond to;
+  'LI20:QUAS:2151'; ... % 20=Q3EL_1
+  'LI20:QUAS:2161'; ... % 21=Q3EL_2
+  'LI20:QUAS:2201'; ... % 22=Q4EL_1
+
+But the BACT of those are all 0!
+>> lcaGet({'LI20:QUAS:2151:BACT';'LI20:QUAS:2161:BACT';'LI20:QUAS:2201:BACT'})
+
+ans =
+
+     0
+     0
+     0
+
+
+IVB gives the polynomial defining the function to convert B field to current.
+Therefore, the inverse of the polynomial, gives I to B.
+
+[physics@lcls-srv01 ~/greg]$ caget QUAD:IN20:121:BDES
+QUAD:IN20:121:BDES             0.004564 
+[physics@lcls-srv01 ~/greg]$ caget QUAD:IN20:121:STATE.INP
+QUAD:IN20:121:STATE.INP        LGPS:IN20:2:STATE NPP NMS 
+[physics@lcls-srv01 ~/greg]$ caget LGPS:IN20:2:IVB
+LGPS:IN20:2:IVB 10 0 1 0 0 0 0 0 0 0 0 
+[physics@lcls-srv01 ~/greg]$ caget LGPS:IN20:2:IACT
+LGPS:IN20:2:IACT               40.7191 
+
+[physics@lcls-srv01 ~/greg]$ caget QUAD:IN20:121:IACT
+QUAD:IN20:121:IACT             3.03882 
+[physics@lcls-srv01 ~/greg]$ caget QUAD:IN20:121:IVB
+QUAD:IN20:121:IVB 10 0 665.7 0 0 0 0 0 0 0 0 
+
+
+>> BDESquery='LGPS:IN20:2:BDES'
+
+BDESquery =
+
+LGPS:IN20:2:BDES
+
+>> IVBUquery='LGPS:IN20:2:IVB'
+
+IVBUquery =
+
+LGPS:IN20:2:IVB
+
+
+>> Bps=lcaGet(BDESquery)
+
+Bps =
+
+    40
+--> So, as SLC per BUG, the BDES of the LGPS must be the desired current.
+--> But then what's the difference between an LGPS's BDES and its IDES, which
+also seems to be 40.
+
+
+>> ivb=lcaGet(IVBUquery)
+
+ivb =
+
+     0     1     0     0     0     0     0     0     0     0
+
+>> Ips=zeros(1,1)
+
+Ips =
+
+     0
+
+ 
+>> id=find(~isnan(ivb(1,:)))
+
+id =
+
+     1     2     3     4     5     6     7     8     9    10
+
+>> ivb_=fliplr(ivb(1,id))
+
+ivb_ =
+
+     0     0     0     0     0     0     0     0     1     0
+
+>> Ips(1)=polyval(ivb_,Bps)
+
+Ips =
+
+    40  - that is, only the linear term is non-0. 
+
+>> Bps
+
+Bps =
+
+    40
+
+
+
+Scratch
+[greg@lcls-dev2 meme]$ eget -s optics -a q=QUAD:LI23:901//R
+[ChannelRequesterImpl] message(More than one channel with name 'optics' detected, additional response from: 134.79.151.21:45223, warning)
+[ChannelRequesterImpl] message(More than one channel with name 'optics' detected, additional response from: 134.79.219.12:5055, warning)
+        0.1385    0.00924478             0             0     0.0223136   0.000338166
+     0.0337976     0.0128108             0             0    -0.0183859  -0.000219305
+             0             0      0.266491     -0.115525             0             0
+             0             0    -0.0101745     0.0099012             0             0
+   -0.00253089  -0.000289688             0             0      0.149173    0.00301085
+      0.113718      0.012493             0             0      -8.00732     -0.151808
+
+
+[greg@lcls-dev2 meme]$ printenv | grep EPICS_PVA
+EPICS_PVA_ADDR_LIST=lcls-prod01.slac.stanford.edu
+EPICS_PVA_BROADCAST_PORT=5056
+

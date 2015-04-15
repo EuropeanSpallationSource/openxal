@@ -1,0 +1,43 @@
+#!/bin/bash -x
+#!-*- sh -*-
+#
+# Abs: testServerClientRunner executes an MEME test service client instance.
+#
+# Rem: 
+#
+# Usage: See MEME root directory README for how to set up the environment
+# and execute an MEME service.
+#
+# Ref: ../../README
+#
+# ----------------------------------------------------------------------------
+# Auth: 13-Oct-2013, Greg White (greg@slac.stanford.edu)
+# Mod: 
+# ============================================================================
+
+# This MEME service's resources are located at:
+SERVICE_ROOTDIR=${AIDAROOT:-/Users/greg/Development/meme}/services/testservice
+
+# Set CLASSPATH to include EPICS and this service's classes.
+#
+E4_CLASSPATH=${E4_CLASSPATH:-/Users/greg/Development/epicsV4/R4.3.0/java-pre1/pvDataJava-3.0.0.jar:\
+/Users/greg/Development/epicsV4/R4.3.0/java-pre1/pvAccessJava-3.0.0.jar}
+export CLASSPATH=${E4_CLASSPATH}:${SERVICE_ROOTDIR}/classes
+
+# If the client is being executed in development mode, then use the 
+# development server and specific port number.
+#
+if [ x"$AIDA_MODE" = x"DEV" ]; then 
+    export MEME_TEST_SERVER_BROADCAST_PORT=47237
+    export EPICS_PVA_ADDR_LIST=lcls-dev2.slac.stanford.edu:${MEME_TEST_SERVER_BROADCAST_PORT}
+fi
+
+# Start the service as a pvaccess RPC server.  
+# Use exec -a to set the process name 
+# 
+echo "1. Give all arguments, with valid values"
+entity=quad45:bdes/history
+starttime="2011-09-16T02.12.00"
+endtime="2011-09-16T15.23.17"
+exec -a testServerClientRunner java -client \
+     edu.stanford.slac.meme.service.testservice.TestServiceClient $entity $starttime $endtime

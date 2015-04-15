@@ -1,0 +1,176 @@
+#!/bin/bash
+#!-*-sh-*-
+#
+# Abs: opticsServerRunner executes the MEME opticsServer. opticsServer hosts
+#      an MEME EPICS V4 service named "optics"
+#
+# Rem: The optics service gets accelerator mathematical model data out of a
+#      database such as Oracle or PostgresQL, and can compute 
+#      interelement response matrices.
+#
+# Usage:
+#      Example, starting in local mode (data will be fake in local mode). 
+#      bash
+#      (from meme/services/optics)
+#      ./bin/opticsServerRunner
+#
+# Tests: 
+#      eget -s optics -a q=QUAD:LTU1:880:twiss -a run=45976
+#
+# Ref: 
+# ----------------------------------------------------------------------------
+# Auth: 03-Sep-2014, Greg White (greg@slac.stanford.edu)
+# Mod:  14-Apr-2015, Adapted for ESS.
+#
+# ============================================================================
+
+function usage {
+echo "
+  Usage: 
+       opticsServerRunner [-{p,d,l}] [-n {fake, real}]
+ 
+       where:
+           -p  - Server is intended for production. 
+                   This script should be being executed for production 
+
+           -d   - Server is intended for software development and testing.  
+                   The server may contact a different data asources,
+                   or otherwise configured differently.
+
+           -l   - Server is intended for initial software development 
+                  and testing, on a localhost, like laptop. No connection 
+                   is made to the database and data mode is set to fake data.
+
+            ** Disambiguation of pvs for -p or -d is done by client 
+               side setting of EPICS_PVA_ADDR_LIST, since a development
+               ssytem will run on a development host, while production
+               runs on a production host, on the production network **
+
+           The default is -d, start a development server. 
+
+          -n The data mode; if given must be one of REAL or FAKE
+
+       if -l = local, then -n = fake is obligatory.
+
+     Examples
+       ./opticsServerRunner -p
+       ./opticsServerRunner -d -n fake
+
+
+"
+}
+
+# Process server execution environment args. 
+#
+emode=dev
+dmode=real
+while getopts pdln: opt
+do
+    case "$opt" in
+       p) emode=prod;;
+       d) emode=dev;;
+       l) emode=local;dbpwd=${OPTARG};;
+       n) dmode=${OPTARG};;
+       h) usage; exit 0;;
+       *) echo "Unknown option"; exit 1;;
+    esac
+done
+shift $((OPTIND-1))
+if [ $# -gt 0 ]; then
+	echo "Unknown argument $1"
+	exit 0
+fi
+
+# Define the name of the MEME server, used for logging, process
+# identification etc.
+#
+export SERVER_NAME=meme_optics
+export INSTANCE_NAME=${SERVER_NAME}_${emode}
+
+# Binary locations
+#
+SERVICE_ROOT=${MEMEROOT:-/usr/local/esss/package/meme}/services/optics
+SUPPORT_ROOTDIR=${MEMEROOT:-/usr/local/esss/package/meme}/support
+
+# EPICS
+EPICS_TOP=/usr/local/esss/epics
+EPICS_PVJAVA=${EPICS_TOP}/epics-java
+E4_CLASSPATH=${EPICS_PVJAVA}/pvDataJava.jar:${EPICS_PVJAVA}/pvAccessJava.jar
+
+# ESS does not override default EPICS_PVA_*_PORT
+#export EPICS_PVA_BROADCAST_PORT=5056
+#export EPICS_PVA_SERVER_PORT=5055
+  
+# Postgress 
+#
+JDBC_CLASSPATH=${SERVICE_ROOT}/ext/postgresql-9.4-1201.jdbc41.jar
+RDB_CONNECTION_URI=jdbc:postgresql://ics-services.esss.lu.se:5432/machinemodel
+
+# CLASSPATH
+#
+CLASSPATH=${SERVICE_ROOT}/lib/${SERVER_NAME}.jar
+CLASSPATH=${CLASSPATH}:${SERVICE_ROOT}/ext/Jama-1.0.3.jar
+CLASSPATH=${CLASSPATH}:${SUPPORT_ROOTDIR}/lib/memesupport.jar
+CLASSPATH=${CLASSPATH}:${E4_CLASSPATH}
+CLASSPATH=${CLASSPATH}:${JDBC_CLASSPATH}
+
+# "MODE" specfic options. Mode refers to whether this server instance is run
+# for development or for production.
+#
+MODE=`(echo $emode|tr '[[:lower:]]' '[[:upper:]]')`
+PORTOPT=""
+if [ x${MODE} == x"LOCAL" ]; then
+   echo Setting up local execution mode
+   dmode="FAKE"
+elif [ x$MODE == x"DEV" ]; then
+   echo Setting up development/test execution mode
+fi
+DATA_MODE=`(echo $dmode|tr '[[:lower:]]' '[[:upper:]]')`
+
+
+# Export runtime requirements
+#
+export CLASSPATH
+
+# Logging
+#
+# Write header environment under which server is being started.
+#
+function header()
+{
+    echo "******************************************************************"
+    echo Log file: ${log_file}
+    echo "Starting ${SERVER_NAME} at `date +'%FT-%H-%M-%S'`"
+    echo "from ${PWD} as $USER on"
+    echo "`uname -a`"
+    echo "******************************************************************" 
+    echo
+    echo 'WHOLE ENVIRONEMNT (see beneath for summary environment)'
+    env | sort
+    echo ----------------------------------------------------
+    echo SUMMARY ENVIRONMENT
+    echo 
+    echo CLASSPATH = $CLASSPATH
+    env | grep EPICS_
+    echo ----------------------------------------------------
+}  
+LOGGINGROOT=/tmp/meme/${INSTANCE_NAME}
+mkdir -p $LOGGINGROOT
+log_file=${LOGGINGROOT}/`date +"%FT-%H-%M-%S"`.log
+header 2>&1 | tee $log_file
+
+# Kill any existing instance of the same mode
+pkill -f "${INSTANCE_NAME}"  2>&1 | tee -a $log_file
+
+# Start the server 
+#
+exec -a ${INSTANCE_NAME} java -server  ${PORTOPT} \
+  -DMEME_MODE=${MODE} \
+  -DDATA_MODE=${DATA_MODE} \
+  -DSERVER_NAME=${SERVER_NAME} \
+  -DINSTANCE_NAME=${INSTANCE_NAME} \
+  -DCONNECTION_URI_PROPERTY=${RDB_CONNECTION_URI} \
+  -DCONNECTION_USERID_PROPERTY=machinemodel \
+  -DCONNECTION_PWD=physicsl1nacstuff \
+  -Djava.util.logging.config.file=${SERVICE_ROOT}/lib/opticslogging.properties \
+ edu/stanford/slac/meme/service/optics/OpticsService  2>&1 | tee -a $log_file &

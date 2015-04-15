@@ -1,0 +1,13 @@
+make table of pvs
+
+change sql select to get transform 
+        private static final String SQLSELECT = 
+	       "SELECT TRANSFORM FROM AIDA_NAMES WHERE UPPER(INSTANCE) = '%s' " +
+	       "AND UPPER(ATTRIBUTE) = '%s'";
+
+- with above changes, should be able to do eget -s rdb -a q=ess:twiss
+
+read table of pvs at init and make them all pvs
+
+- with that change, should be able to do : eget -s ess:twiss
+

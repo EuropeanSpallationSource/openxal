@@ -1,0 +1,175 @@
+#!/bin/bash
+#!-*- sh -*-
+#
+# Abs: rdbServerRunner executes the MEME rdbService.
+#
+# Rem: rdbServerRunner runs the rdb service, which is a simple service for 
+#      getting data out of a relational database. 
+#
+# Use Case: Execute rdbServerRunner to start the rdbServer prior to executing 
+#      pvget commands to get data by pv from Oracle.
+#      See usage function below
+# 
+# Usage example: 
+#      bash
+#      export MEMEROOT=/home/gregorywhite/Development/meme
+#      ./services/rdb/bin/rdbServerRunner -p
+#
+# Tests: 
+#      eget -s rdb -a q=LCLS/BSA.PVs.byZ
+#      eget -s names -a pattern=BPMS:IN20:%:Z
+# 
+# Ref: 
+# ----------------------------------------------------------------------------
+# Auth: 13-Oct-2011, Greg White (greg@slac.stanford.edu) while at PSI
+# Mod:  10-May-2014, Greg White (greg@slac.stanford.edu)
+#       Upgraded to passwordless authentication
+#       19-May-2014, Greg White (greg@slac.stanford.edu)
+#       Added starting under prod, dev, sci, local mode.
+#       10..20-Nov-2013, Greg White (greg@slac.stanford.edu)
+#       Major development
+# ============================================================================
+
+function usage {
+echo "
+  Usage: 
+       rdbServerRunner [-{p,d,l}] [-h]
+ 
+     eg
+       rdbServerRunner -p     - Starts the production instance
+
+       where:
+           -p  - Server is intended for production. 
+                   This script should be being executed on DMZ production network 
+                   host, and the executable will be set to broadcast 
+           -d   - Server is intended for software development and testing;
+                   and executable will be set to broadcast (ie exactly as production).
+                   The server may take different actions, such as contacting
+                   development data sources.
+           -l   - Server is intended for initial software development and testing, 
+                   on a localhost, like laptop.
+
+           The default is -p, start a production server.
+
+           ** Disambiguation of pvs for -p or -d is done by client side setting of                                 EPICS_PVA_ADDR_LIST **     
+
+        -h Prints this help.
+"
+}
+
+# Process server execution environment args. 
+#
+mode=prod
+while getopts psdl opt
+do
+    case "$opt" in
+       p) mode=prod;;
+       d) mode=dev;;
+       l) mode=local;;
+       h) usage; exit 0;;
+       *) echo "Unknown option"; exit 1;;
+    esac
+done
+shift $((OPTIND-1))
+if [ $# -gt 0 ]; then
+	echo "Unknown argument $1"
+	exit 0
+fi
+
+# Define the name of the MEME server, used for logging, process identification etc.
+#
+export SERVER_NAME=meme_rdb
+export INSTANCE_NAME=${SERVER_NAME}_${mode}
+#
+# Locations
+#
+
+# Service
+SERVICE_ROOT=${MEMEROOT:-/usr/local/esss/package/meme}/services/rdb
+SUPPORT_ROOTDIR=${MEMEROOT:-/usr/local/esss/package/meme}/support
+
+# EPICS 
+EPICS_TOP=/usr/local/esss/epics
+EPICS_PVJAVA=${EPICS_TOP}/epics-java
+E4_CLASSPATH=${EPICS_PVJAVA}/pvDataJava.jar:${EPICS_PVJAVA}/pvAccessJava.jar
+
+# Postgress 
+JDBC_CLASSPATH=${SERVICE_ROOT}/ext/postgresql-9.4-1201.jdbc41.jar
+
+# CLASSPATH
+#
+CLASSPATH=${SERVICE_ROOT}/lib/${SERVER_NAME}.jar
+CLASSPATH=${CLASSPATH}:${SUPPORT_ROOTDIR}/lib/memesupport.jar
+CLASSPATH=${CLASSPATH}:${E4_CLASSPATH}
+CLASSPATH=${CLASSPATH}:${JDBC_CLASSPATH}
+
+# Postgress JDBC connection config
+#
+RDB_CONNECTION_URI=jdbc:postgresql://ics-services.esss.lu.se:5432/machinemodel
+#CONNECTION_STRING="-DCONNECTION_URI_PROPERTY=${RDB_CONNECTION_URI}"
+
+# EPICS PVA Config.
+# SLAC overrides default EPICS_PVA_BROADCAST_PORT, but ESS doesn't.
+#export EPICS_PVA_BROADCAST_PORT=5056
+#export EPICS_PVA_SERVER_PORT=5055
+
+# Set execution options depending on mode.
+#
+# If the mode is "science", explicitly set the port number, which must be
+# known by a client too.
+MODE=`(echo $mode|tr '[[:lower:]]' '[[:upper:]]')`
+PORTOPT=""
+if [ x$MODE == x"LOCAL" ]; then
+   # options for running on a local host
+   echo Setting up local execution mode
+elif [ x$MODE == x"DEV" ]; then
+   # options for running in development mode
+   echo Setting up development mode
+fi
+
+# Export runtime requirements
+#
+export CLASSPATH
+export LD_LIBRARY_PATH
+
+# Logging
+#
+# Write header environment under which server is being started.
+function header()
+{
+    echo "*************************************************************************"
+    echo Log file: ${log_file}
+    echo "Starting ${SERVER_NAME} at `date +'%FT-%H-%M-%S'` from ${PWD} as $USER on"
+    echo "`uname -a`"
+    echo "*************************************************************************" 
+    echo
+    echo 'WHOLE ENVIRONEMNT (see beneath for summary environment)'
+    env | sort
+    echo ----------------------------------------------------
+    echo SUMMARY ENVIRONMENT
+    echo 
+    echo CLASSPATH = $CLASSPATH
+    echo LD_LIBRARY_PATH = $LD_LIBRARY_PATH
+    echo TNS_ADMIN = $TNS_ADMIN 
+    echo ----------------------------------------------------
+}  
+LOGGINGROOT=/tmp/meme/${INSTANCE_NAME}
+mkdir -p $LOGGINGROOT
+log_file=${LOGGINGROOT}/`date +"%FT-%H-%M-%S"`.log
+header 2>&1 | tee $log_file
+
+# Kill any existing instance of the same mode
+pkill -f "${INSTANCE_NAME}"  2>&1 | tee -a $log_file
+
+# Start the service as a pvaccess RPC server.  
+# Use exec -a to make the process name rdbservice (for ps, pgrep etc)
+# 
+exec -a ${INSTANCE_NAME} java -server ${PORTOPT} \
+  -DMEME_MODE=${MODE} \
+  -DSERVER_NAME=${SERVER_NAME} \
+  -DINSTANCE_NAME=${INSTANCE_NAME} \
+  -DCONNECTION_URI_PROPERTY=${RDB_CONNECTION_URI} \
+  -DCONNECTION_USERID_PROPERTY=machinemodel \
+  -DCONNECTION_PWD=physicsl1nacstuff \
+  -Djava.util.logging.config.file=${SERVICE_ROOT}/lib/rdbserverlogging.properties \
+     edu/stanford/slac/meme/service/rdb/RdbService 2>&1 | tee -a $log_file &
