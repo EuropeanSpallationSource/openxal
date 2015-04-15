@@ -81,7 +81,25 @@ edit stuff
 $ make build
 $ ./bin/opticsServerRunner 
 
-4. SERVICE DEBUGGING.
+5. GIT
+
+To clone from Bitbucket:
+
+$ git clone git@bitbucket.org:europeanspallationsource/meme.git
+
+After making changes to the project:
+
+$ git add <file(s) you have changed>
+$ git status   # review what you're going to commit
+$ git commit
+$ git push origin master
+
+To update the production clone of the repository:
+
+$ cd /usr/local/esss/packages/meme
+$ git pull
+
+6. SERVICE DEBUGGING.
 
 Increase the level of logging of a server by editing its loggin properties
 file and set .LEVEL to say "FINE". Eg
