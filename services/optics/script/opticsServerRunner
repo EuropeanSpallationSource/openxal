@@ -89,8 +89,8 @@ export INSTANCE_NAME=${SERVER_NAME}_${emode}
 
 # Binary locations
 #
-SERVICE_ROOT=${MEMEROOT:-/usr/local/esss/package/meme}/services/optics
-SUPPORT_ROOTDIR=${MEMEROOT:-/usr/local/esss/package/meme}/support
+SERVICE_ROOT=${MEMEROOT:-/usr/local/esss/packages/meme}/services/optics
+SUPPORT_ROOTDIR=${MEMEROOT:-/usr/local/esss/packages/meme}/support
 
 # EPICS
 EPICS_TOP=/usr/local/esss/epics

@@ -85,8 +85,8 @@ export INSTANCE_NAME=${SERVER_NAME}_${mode}
 #
 
 # Service
-SERVICE_ROOT=${MEMEROOT:-/usr/local/esss/package/meme}/services/rdb
-SUPPORT_ROOTDIR=${MEMEROOT:-/usr/local/esss/package/meme}/support
+SERVICE_ROOT=${MEMEROOT:-/usr/local/esss/packages/meme}/services/rdb
+SUPPORT_ROOTDIR=${MEMEROOT:-/usr/local/esss/packages/meme}/support
 
 # EPICS 
 EPICS_TOP=/usr/local/esss/epics
