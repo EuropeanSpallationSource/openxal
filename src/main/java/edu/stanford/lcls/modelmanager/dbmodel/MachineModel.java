@@ -54,11 +54,11 @@ public class MachineModel {
 	}
 	
 	public static void addPropertyType(int index, String propertyDBType, int propertyDBSize) {		
-		if(propertyDBType.equals("NUMBER"))
+		if(propertyDBType.equals("NUMBER") || propertyDBType.equals("seriaL") || propertyDBType.equals("int4"))
 			propertyType.add(index, "Double");
-		else if(propertyDBType.equals("DATE"))
+		else if(propertyDBType.equals("DATE") || propertyDBType.equals("timestamp"))
 			propertyType.add(index, "Date");
-		else if(propertyDBType.equals("VARCHAR2"))
+		else if(propertyDBType.equals("VARCHAR2") || propertyDBType.equals("varchar"))
 			propertyType.add(index, "String");
 		else
 			propertyType.add(index, "Other");
