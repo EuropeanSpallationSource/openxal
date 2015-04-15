@@ -566,10 +566,6 @@ public class BrowserModel {
 	public void runModel(int runModelMethod, String refID, boolean useDesignRef) throws SQLException {
 		rm = new RunModel2(modelMode);
 		//TODO Connect all channels for model use.  This may have to be done earlier, not here.
-		/* TODO OPENXAL ConnectionManager depends on XAL
-		ConnectionManager cm = new ConnectionManager(rm.getAccelerator());
-		Thread th = new Thread(cm);
-		th.start();*/
 		if (runModelMethod == 0) {
 			rm.setRunMode(Scenario.SYNC_MODE_DESIGN);
 		} else if (runModelMethod == 1) {

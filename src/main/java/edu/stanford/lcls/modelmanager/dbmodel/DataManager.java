@@ -38,8 +38,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-// import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -105,18 +103,9 @@ public class DataManager {
 	private static final String DB_PWD_PROPERTY_NAME = "DB_PASSWORD";
 	// for MCCO or SLACDEV (the primary one)
 	private static Connection writeConnection;
-	// for MCCQA
-	private static Connection writeConnection1;
-	static final protected String MCCQA_URL ="jdbc:oracle:oci:/@MCCQA";
-	// for SLACPROD
-	private static Connection writeConnection2;
-	static final protected String SLACPROD_URL ="jdbc:oracle:oci:/@SLACPROD";
-	static final protected String SLACDEV_URL ="jdbc:oracle:oci:/@SLACDEV";
-	static final protected String MCCO_URL = "jdbc:oracle:oci:/@MCCO";
-	public static String url = getUrl(); // Defaults to production
-	public static String dbusername = null;
-	public static String dbpwd = null;
-	
+
+	public static String url = null; // Defaults to production
+
 	private final static String autoRunID = "RUN";
 	private static String comment = "";
 
@@ -127,49 +116,25 @@ public class DataManager {
 
 	private static boolean useSDisplay = false;
 	
-	public static String getUrl()
-	{
-		url = System.getProperty(DB_URL_PROPERTY_NAME);
-		if ( url != null )
-		{
-			dbusername = System.getProperty(DB_USERNAME_PROPERTY_NAME);
-			dbpwd    = System.getProperty(DB_PWD_PROPERTY_NAME);
-		}
-		else
-			url = MCCO_URL;
-		return url;
-	}
-	
 	public static Connection getConnection() throws SQLException
 	{
 		Connection connection = null;
-		try {
-			// DriverManager.registerDriver(new oracle.jdbc.OracleDriver());
-	        // DriverManager.setLoginTimeout(15);  // Set timeout to 15 seconds
-	        //OracleDataSource ods = new OracleDataSource(); 
+		try { 
 	        url = System.getProperty(DB_URL_PROPERTY_NAME);
 			if ( url != null )
 			{
 				String username = System.getProperty(DB_USERNAME_PROPERTY_NAME); 
 				String password = System.getProperty(DB_PWD_PROPERTY_NAME);
-				/*ods.setURL(url);
-				ods.setUser(username);
-				ods.setPassword(password);
-				connection = ods.getConnection();*/
 				connection = DriverManager.getConnection(url, username, password);
 			}
 			else
 			{
-				url = MCCO_URL;
-				/*ods.setURL(url);
-				connection = ods.getConnection();*/
-				connection = DriverManager.getConnection(url);
+				Message.error("Unable to establish connection to database, no url given");
 			}	
 			
 		} catch (SQLException e) {
 			Message.error("Unable to establish connection to database, check driver and url" + 
 					e.toString());
-			// e.printStackTrace();
 		}	
 		return connection;
 	}
@@ -650,8 +615,6 @@ public class DataManager {
 		}
 		return runMachineModelDevice.toArray(new MachineModelDevice[runMachineModelDevice.size()]);
 	}
-	
-	static String database = null;
 
 	static String runID = null;
 	static boolean writeToModelDevicesDB_done = false;
@@ -747,84 +710,73 @@ public class DataManager {
 		}
 		// prepare for MACHINE_MODEL.ELEMENT_MODELS
 		String modelDetail[] = new String[runMachineModelDetail.length*55];
-//		try {
-			//Upload MACHINE_MODEL.ELEMENT_MODELS
-			deviceID1.clear();
-			for(int i=0; i<runMachineModelDetail.length; i++){
-				index = elementName.indexOf(runMachineModelDetail[i].getPropertyValue("ELEMENT_NAME").toString());
-				if(index >= 0){
-					deviceID1.add(elementID.get(index));
-				}else{
-					deviceID1.add(null);
-				}
-				
-				modelDetail[i*55] = deviceID1.get(i);
-				modelDetail[i*55+1] = runMachineModelDetail[i].getPropertyValue("ELEMENT_NAME").toString();
-				modelDetail[i*55+2] = runMachineModelDetail[i].getPropertyValue("INDEX_SLICE_CHK").toString();
-				modelDetail[i*55+3] = runMachineModelDetail[i].getPropertyValue("ZPOS").toString();
-				modelDetail[i*55+4] = runMachineModelDetail[i].getPropertyValue("E").toString();
-				modelDetail[i*55+5] = runMachineModelDetail[i].getPropertyValue("ALPHA_X").toString();
-				modelDetail[i*55+6] = runMachineModelDetail[i].getPropertyValue("ALPHA_Y").toString();
-				modelDetail[i*55+7] = runMachineModelDetail[i].getPropertyValue("BETA_X").toString();
-				modelDetail[i*55+8] = runMachineModelDetail[i].getPropertyValue("BETA_Y").toString();
-				modelDetail[i*55+9] = runMachineModelDetail[i].getPropertyValue("PSI_X").toString();
-				modelDetail[i*55+10] = runMachineModelDetail[i].getPropertyValue("PSI_Y").toString();
-				/*modelDetail[i*55+11] = runMachineModelDetail[i].getPropertyValue("ETA_X").toString();
-				modelDetail[i*55+12] = runMachineModelDetail[i].getPropertyValue("ETA_Y").toString();
-				modelDetail[i*55+13] = runMachineModelDetail[i].getPropertyValue("ETAP_X").toString();
-				modelDetail[i*55+14] = runMachineModelDetail[i].getPropertyValue("ETAP_Y").toString();*/
-				modelDetail[i*55+15] = runMachineModelDetail[i].getPropertyValue("R11").toString();
-				modelDetail[i*55+16] = runMachineModelDetail[i].getPropertyValue("R12").toString();
-				modelDetail[i*55+17] = runMachineModelDetail[i].getPropertyValue("R13").toString();
-				modelDetail[i*55+18] = runMachineModelDetail[i].getPropertyValue("R14").toString();
-				modelDetail[i*55+19] = runMachineModelDetail[i].getPropertyValue("R15").toString();
-				modelDetail[i*55+20] = runMachineModelDetail[i].getPropertyValue("R16").toString();
-				modelDetail[i*55+21] = runMachineModelDetail[i].getPropertyValue("R21").toString();
-				modelDetail[i*55+22] = runMachineModelDetail[i].getPropertyValue("R22").toString();
-				modelDetail[i*55+23] = runMachineModelDetail[i].getPropertyValue("R23").toString();
-				modelDetail[i*55+24] = runMachineModelDetail[i].getPropertyValue("R24").toString();
-				modelDetail[i*55+25] = runMachineModelDetail[i].getPropertyValue("R25").toString();
-				modelDetail[i*55+26] = runMachineModelDetail[i].getPropertyValue("R26").toString();
-				modelDetail[i*55+27] = runMachineModelDetail[i].getPropertyValue("R31").toString();
-				modelDetail[i*55+28] = runMachineModelDetail[i].getPropertyValue("R32").toString();
-				modelDetail[i*55+29] = runMachineModelDetail[i].getPropertyValue("R33").toString();
-				modelDetail[i*55+30] = runMachineModelDetail[i].getPropertyValue("R34").toString();
-				modelDetail[i*55+31] = runMachineModelDetail[i].getPropertyValue("R35").toString();
-				modelDetail[i*55+32] = runMachineModelDetail[i].getPropertyValue("R36").toString();
-				modelDetail[i*55+33] = runMachineModelDetail[i].getPropertyValue("R41").toString();
-				modelDetail[i*55+34] = runMachineModelDetail[i].getPropertyValue("R42").toString();
-				modelDetail[i*55+35] = runMachineModelDetail[i].getPropertyValue("R43").toString();
-				modelDetail[i*55+36] = runMachineModelDetail[i].getPropertyValue("R44").toString();
-				modelDetail[i*55+37] = runMachineModelDetail[i].getPropertyValue("R45").toString();
-				modelDetail[i*55+38] = runMachineModelDetail[i].getPropertyValue("R46").toString();
-				modelDetail[i*55+39] = runMachineModelDetail[i].getPropertyValue("R51").toString();
-				modelDetail[i*55+40] = runMachineModelDetail[i].getPropertyValue("R52").toString();
-				modelDetail[i*55+41] = runMachineModelDetail[i].getPropertyValue("R53").toString();
-				modelDetail[i*55+42] = runMachineModelDetail[i].getPropertyValue("R54").toString();
-				modelDetail[i*55+43] = runMachineModelDetail[i].getPropertyValue("R55").toString();
-				modelDetail[i*55+44] = runMachineModelDetail[i].getPropertyValue("R56").toString();
-				modelDetail[i*55+45] = runMachineModelDetail[i].getPropertyValue("R61").toString();
-				modelDetail[i*55+46] = runMachineModelDetail[i].getPropertyValue("R62").toString();
-				modelDetail[i*55+47] = runMachineModelDetail[i].getPropertyValue("R63").toString();
-				modelDetail[i*55+48] = runMachineModelDetail[i].getPropertyValue("R64").toString();
-				modelDetail[i*55+49] = runMachineModelDetail[i].getPropertyValue("R65").toString();
-				modelDetail[i*55+50] = runMachineModelDetail[i].getPropertyValue("R66").toString();
-				modelDetail[i*55+51] = runMachineModelDetail[i].getPropertyValue("LEFF").toString();
-				modelDetail[i*55+52] = runMachineModelDetail[i].getPropertyValue("SLEFF").toString();
-				modelDetail[i*55+53] = runMachineModelDetail[i].getPropertyValue("ORDINAL").toString();
-				modelDetail[i*55+54] = runMachineModelDetail[i].getPropertyValue("SUML").toString();
+
+		deviceID1.clear();
+		for(int i=0; i<runMachineModelDetail.length; i++){
+			index = elementName.indexOf(runMachineModelDetail[i].getPropertyValue("ELEMENT_NAME").toString());
+			if(index >= 0){
+				deviceID1.add(elementID.get(index));
+			}else{
+				deviceID1.add(null);
 			}
-//		} catch (Exception exception) {
-//			JOptionPane.showMessageDialog(parent, exception.getMessage(),
-//					"SQL Error! ", JOptionPane.ERROR_MESSAGE);
-//			Logger.getLogger("global").log(Level.SEVERE,
-//					"Database SQL error.", exception);
-//			Message.error("SQLException: " + exception.getMessage());
-//			if (runID != null)
-//				return runID;
-//			else
-//				return null;
-//		}
+			
+			modelDetail[i*55] = deviceID1.get(i);
+			modelDetail[i*55+1] = runMachineModelDetail[i].getPropertyValue("ELEMENT_NAME").toString();
+			modelDetail[i*55+2] = runMachineModelDetail[i].getPropertyValue("INDEX_SLICE_CHK").toString();
+			modelDetail[i*55+3] = runMachineModelDetail[i].getPropertyValue("ZPOS").toString();
+			modelDetail[i*55+4] = runMachineModelDetail[i].getPropertyValue("E").toString();
+			modelDetail[i*55+5] = runMachineModelDetail[i].getPropertyValue("ALPHA_X").toString();
+			modelDetail[i*55+6] = runMachineModelDetail[i].getPropertyValue("ALPHA_Y").toString();
+			modelDetail[i*55+7] = runMachineModelDetail[i].getPropertyValue("BETA_X").toString();
+			modelDetail[i*55+8] = runMachineModelDetail[i].getPropertyValue("BETA_Y").toString();
+			modelDetail[i*55+9] = runMachineModelDetail[i].getPropertyValue("PSI_X").toString();
+			modelDetail[i*55+10] = runMachineModelDetail[i].getPropertyValue("PSI_Y").toString();
+			modelDetail[i*55+11] = runMachineModelDetail[i].getPropertyValue("ETA_X").toString();
+			modelDetail[i*55+12] = runMachineModelDetail[i].getPropertyValue("ETA_Y").toString();
+			modelDetail[i*55+13] = runMachineModelDetail[i].getPropertyValue("ETAP_X").toString();
+			modelDetail[i*55+14] = runMachineModelDetail[i].getPropertyValue("ETAP_Y").toString();
+			modelDetail[i*55+15] = runMachineModelDetail[i].getPropertyValue("R11").toString();
+			modelDetail[i*55+16] = runMachineModelDetail[i].getPropertyValue("R12").toString();
+			modelDetail[i*55+17] = runMachineModelDetail[i].getPropertyValue("R13").toString();
+			modelDetail[i*55+18] = runMachineModelDetail[i].getPropertyValue("R14").toString();
+			modelDetail[i*55+19] = runMachineModelDetail[i].getPropertyValue("R15").toString();
+			modelDetail[i*55+20] = runMachineModelDetail[i].getPropertyValue("R16").toString();
+			modelDetail[i*55+21] = runMachineModelDetail[i].getPropertyValue("R21").toString();
+			modelDetail[i*55+22] = runMachineModelDetail[i].getPropertyValue("R22").toString();
+			modelDetail[i*55+23] = runMachineModelDetail[i].getPropertyValue("R23").toString();
+			modelDetail[i*55+24] = runMachineModelDetail[i].getPropertyValue("R24").toString();
+			modelDetail[i*55+25] = runMachineModelDetail[i].getPropertyValue("R25").toString();
+			modelDetail[i*55+26] = runMachineModelDetail[i].getPropertyValue("R26").toString();
+			modelDetail[i*55+27] = runMachineModelDetail[i].getPropertyValue("R31").toString();
+			modelDetail[i*55+28] = runMachineModelDetail[i].getPropertyValue("R32").toString();
+			modelDetail[i*55+29] = runMachineModelDetail[i].getPropertyValue("R33").toString();
+			modelDetail[i*55+30] = runMachineModelDetail[i].getPropertyValue("R34").toString();
+			modelDetail[i*55+31] = runMachineModelDetail[i].getPropertyValue("R35").toString();
+			modelDetail[i*55+32] = runMachineModelDetail[i].getPropertyValue("R36").toString();
+			modelDetail[i*55+33] = runMachineModelDetail[i].getPropertyValue("R41").toString();
+			modelDetail[i*55+34] = runMachineModelDetail[i].getPropertyValue("R42").toString();
+			modelDetail[i*55+35] = runMachineModelDetail[i].getPropertyValue("R43").toString();
+			modelDetail[i*55+36] = runMachineModelDetail[i].getPropertyValue("R44").toString();
+			modelDetail[i*55+37] = runMachineModelDetail[i].getPropertyValue("R45").toString();
+			modelDetail[i*55+38] = runMachineModelDetail[i].getPropertyValue("R46").toString();
+			modelDetail[i*55+39] = runMachineModelDetail[i].getPropertyValue("R51").toString();
+			modelDetail[i*55+40] = runMachineModelDetail[i].getPropertyValue("R52").toString();
+			modelDetail[i*55+41] = runMachineModelDetail[i].getPropertyValue("R53").toString();
+			modelDetail[i*55+42] = runMachineModelDetail[i].getPropertyValue("R54").toString();
+			modelDetail[i*55+43] = runMachineModelDetail[i].getPropertyValue("R55").toString();
+			modelDetail[i*55+44] = runMachineModelDetail[i].getPropertyValue("R56").toString();
+			modelDetail[i*55+45] = runMachineModelDetail[i].getPropertyValue("R61").toString();
+			modelDetail[i*55+46] = runMachineModelDetail[i].getPropertyValue("R62").toString();
+			modelDetail[i*55+47] = runMachineModelDetail[i].getPropertyValue("R63").toString();
+			modelDetail[i*55+48] = runMachineModelDetail[i].getPropertyValue("R64").toString();
+			modelDetail[i*55+49] = runMachineModelDetail[i].getPropertyValue("R65").toString();
+			modelDetail[i*55+50] = runMachineModelDetail[i].getPropertyValue("R66").toString();
+			modelDetail[i*55+51] = runMachineModelDetail[i].getPropertyValue("LEFF").toString();
+			modelDetail[i*55+52] = runMachineModelDetail[i].getPropertyValue("SLEFF").toString();
+			modelDetail[i*55+53] = runMachineModelDetail[i].getPropertyValue("ORDINAL").toString();
+			modelDetail[i*55+54] = runMachineModelDetail[i].getPropertyValue("SUML").toString();
+		}
+
 		
 		//invoke PL/SQL call
 		CallableStatement cstmt1 = null;
@@ -868,7 +820,6 @@ public class DataManager {
 					if (Integer.toString(cstmt1.getInt(4)) != null || Integer.toString(cstmt1.getInt(4)).equals("null"))
 						runIdReady = true;
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -909,449 +860,6 @@ public class DataManager {
 
 		return runID;
 	}		
-	
-	/**
-	 * Method used to upload model data to DB.
-	 * @param parent
-	 * @param model
-	 * @param runMachineModel
-	 * @param runMachineModelDetail
-	 * @param runMachineModelDevice
-	 * @return
-	 */
-	public static String uploadToDatabase(final JFrame parent,
-			BrowserModel model,
-			MachineModel runMachineModel,
-			final MachineModelDetail[] runMachineModelDetail,
-			final MachineModelDevice[] runMachineModelDevice) {
-		//String runID = null;
-		
-		status = 2; //status=pending
-		
-		long start_database = System.currentTimeMillis();
-		
-		// TODO remove password prompt
-//		PrefsConnectionDialog dialog = PrefsConnectionDialog.getInstance(parent, false, true);
-		try {
-//			writeConnection = dialog.showConnectionDialog(DatabaseAdaptor.getInstance());
-			writeConnection = DataManager.getConnection();
-			
-		} catch (Exception exception) {
-				JOptionPane.showMessageDialog(parent, exception.getMessage(),
-						"Connection Error!  Cannot connect to " + url, JOptionPane.ERROR_MESSAGE);
-				Logger.getLogger("global").log(Level.SEVERE,
-						"Database connection error.  Cannot connect to " + url, exception);
-				Message.error("Connection exception: Cannot connect to " + url, true);
-		}
-		if (writeConnection != null) {
-//			database = dialog.getDatabase();
-			if (url.equals(SLACDEV_URL)) {
-				database = "slacDEV";
-			} else {
-				database = "slacPROD";
-			}
-
-			if(database.equals("slacPROD")) {
-				// construct another 2 DB connections
-				try {
-//					writeConnection1 = DriverManager.getConnection(MCCQA_URL, dialog.getUser(), new String(dialog.getPassword()));
-					writeConnection1 = DriverManager.getConnection(MCCQA_URL);
-
-				} catch (Exception exception) {
-					JOptionPane.showMessageDialog(parent, exception.getMessage(),
-							"Connection Error! Cannot connect to " + MCCQA_URL, JOptionPane.ERROR_MESSAGE);
-					Logger.getLogger("global").log(Level.SEVERE,
-							"Database connection error.  Cannot connect to " + MCCQA_URL, exception);
-					Message.error("Connection exception: Cannot connect to " + MCCQA_URL, true);
-				}
-				try {
-					writeConnection2 = DriverManager.getConnection(SLACPROD_URL);
-
-				} catch (Exception exception) {
-					JOptionPane.showMessageDialog(parent, exception.getMessage(),
-							"Connection Error!  Cannot connect to " + SLACPROD_URL, JOptionPane.ERROR_MESSAGE);
-					Logger.getLogger("global").log(Level.SEVERE,
-							"Database connection error.  Cannot connect to " + SLACPROD_URL, exception);
-					Message.error("Connection exception: Cannot connect to " + SLACPROD_URL, true);
-				}
-			}
-			
-			ArrayList<String> elementName = new ArrayList<String>();
-			ArrayList<String> elementID = new ArrayList<String>();
-			ArrayList<String> elementTypeID = new ArrayList<String>();
-			int index;
-			ResultSet rs;
-
-			try {
-				//Upload MACHINE_MODEL.RUNS
-				Statement stmt1 = writeConnection.createStatement();
-//				System.out.println("INSERT INTO MACHINE_MODEL.RUNS (HARDWARE_SETTINGS_ID, " +
-//						"XML_DOCS_ID,  CREATED_BY, DATE_CREATED, RUN_SOURCE_CHK, " +
-//						"RUN_ELEMENT_FILENAME, RUN_ELEMENT_DATE, RUN_DEVICE_FILENAME, RUN_DEVICE_DATE, " +
-//						"COMMENTS, MODEL_MODES_ID ) " +
-//						"VALUES (1, NULL, 'MACHINE_MODEL', TO_DATE('" +
-//						runMachineModel.getPropertyValue("RUN_ELEMENT_DATE").toString() + 
-//						"','YYYY-MM-DD HH24:MI:SS'), '" + runMachineModel.getPropertyValue("RUN_SOURCE_CHK") + "', NULL, NULL, NULL, NULL, " +
-//						"'" + runMachineModel.getPropertyValue("COMMENTS").toString() + "', " +
-//						runMachineModel.getPropertyValue("MODEL_MODES_ID").toString() + " )" +
-//						new String[]{"ID"});
-				stmt1.executeUpdate("INSERT INTO MACHINE_MODEL.RUNS (HARDWARE_SETTINGS_ID, " +
-						"XML_DOCS_ID,  CREATED_BY, DATE_CREATED, RUN_SOURCE_CHK, " +
-						"RUN_ELEMENT_FILENAME, RUN_ELEMENT_DATE, RUN_DEVICE_FILENAME, RUN_DEVICE_DATE, " +
-						"COMMENTS, MODEL_MODES_ID ) " +
-						"VALUES (1, NULL, 'MACHINE_MODEL', TO_DATE('" +
-						runMachineModel.getPropertyValue("RUN_ELEMENT_DATE").toString() + 
-						"','YYYY-MM-DD HH24:MI:SS'), '" + runMachineModel.getPropertyValue("RUN_SOURCE_CHK") + "', NULL, NULL, NULL, NULL, " +
-						"'" + runMachineModel.getPropertyValue("COMMENTS").toString() + "', " +
-						runMachineModel.getPropertyValue("MODEL_MODES_ID").toString() + " )", 
-						new String[]{"ID"});
-				rs = stmt1.getGeneratedKeys();
-				if (rs.next())
-					runID = rs.getString(1);
-				System.out.println("Upload MACHINE_MODEL.RUNS Table Done!");
-				Message.info("Upload MACHINE_MODEL.RUNS Table Done!");
-				
-				// insert RUN info into another 2 DBs' RUNS tables with the RUN_ID obtained from MCCO 
-				if (database.equals("slacPROD")) {
-					// write to MCCQA
-					Statement stmt2 = writeConnection1.createStatement();
-//					System.out.println("INSERT INTO MACHINE_MODEL.RUNS (ID, HARDWARE_SETTINGS_ID, " +
-//							"XML_DOCS_ID,  CREATED_BY, DATE_CREATED, RUN_SOURCE_CHK, " +
-//							"RUN_ELEMENT_FILENAME, RUN_ELEMENT_DATE, RUN_DEVICE_FILENAME, RUN_DEVICE_DATE, " +
-//							"COMMENTS, MODEL_MODES_ID ) " +
-//							"VALUES (" + runID + ", 1, NULL, 'MACHINE_MODEL', TO_DATE('" +
-//							runMachineModel.getPropertyValue("RUN_ELEMENT_DATE").toString() + 
-//							"','YYYY-MM-DD HH24:MI:SS'), '" + runMachineModel.getPropertyValue("RUN_SOURCE_CHK") + "', NULL, NULL, NULL, NULL, " +
-//							"'" + runMachineModel.getPropertyValue("COMMENTS").toString() + "', " +
-//							runMachineModel.getPropertyValue("MODEL_MODES_ID").toString() + " )");
-					stmt2.executeUpdate("INSERT INTO MACHINE_MODEL.RUNS (ID, HARDWARE_SETTINGS_ID, " +
-							"XML_DOCS_ID,  CREATED_BY, DATE_CREATED, RUN_SOURCE_CHK, " +
-							"RUN_ELEMENT_FILENAME, RUN_ELEMENT_DATE, RUN_DEVICE_FILENAME, RUN_DEVICE_DATE, " +
-							"COMMENTS, MODEL_MODES_ID ) " +
-							"VALUES (" + runID + ", 1, NULL, 'MACHINE_MODEL', TO_DATE('" +
-							runMachineModel.getPropertyValue("RUN_ELEMENT_DATE").toString() + 
-							"','YYYY-MM-DD HH24:MI:SS'), '" + runMachineModel.getPropertyValue("RUN_SOURCE_CHK") + "', NULL, NULL, NULL, NULL, " +
-							"'" + runMachineModel.getPropertyValue("COMMENTS").toString() + "', " +
-							runMachineModel.getPropertyValue("MODEL_MODES_ID").toString() + " )"
-							);
-					
-					Statement stmt3 = writeConnection2.createStatement();
-//					System.out.println("INSERT INTO MACHINE_MODEL.RUNS (ID, HARDWARE_SETTINGS_ID, " +
-//							"XML_DOCS_ID,  CREATED_BY, DATE_CREATED, RUN_SOURCE_CHK, " +
-//							"RUN_ELEMENT_FILENAME, RUN_ELEMENT_DATE, RUN_DEVICE_FILENAME, RUN_DEVICE_DATE, " +
-//							"COMMENTS, MODEL_MODES_ID ) " +
-//							"VALUES (" + runID + ", 1, NULL, 'MACHINE_MODEL', TO_DATE('" +
-//							runMachineModel.getPropertyValue("RUN_ELEMENT_DATE").toString() + 
-//							"','YYYY-MM-DD HH24:MI:SS'), '" + runMachineModel.getPropertyValue("RUN_SOURCE_CHK") + "', NULL, NULL, NULL, NULL, " +
-//							"'" + runMachineModel.getPropertyValue("COMMENTS").toString() + "', " +
-//							runMachineModel.getPropertyValue("MODEL_MODES_ID").toString() + " )");
-					stmt3.executeUpdate("INSERT INTO MACHINE_MODEL.RUNS (ID, HARDWARE_SETTINGS_ID, " +
-							"XML_DOCS_ID,  CREATED_BY, DATE_CREATED, RUN_SOURCE_CHK, " +
-							"RUN_ELEMENT_FILENAME, RUN_ELEMENT_DATE, RUN_DEVICE_FILENAME, RUN_DEVICE_DATE, " +
-							"COMMENTS, MODEL_MODES_ID ) " +
-							"VALUES (" + runID + ", 1, NULL, 'MACHINE_MODEL', TO_DATE('" +
-							runMachineModel.getPropertyValue("RUN_ELEMENT_DATE").toString() + 
-							"','YYYY-MM-DD HH24:MI:SS'), '" + runMachineModel.getPropertyValue("RUN_SOURCE_CHK") + "', NULL, NULL, NULL, NULL, " +
-							"'" + runMachineModel.getPropertyValue("COMMENTS").toString() + "', " +
-							runMachineModel.getPropertyValue("MODEL_MODES_ID").toString() + " )"
-							);
-					stmt1.close();
-					stmt2.close();
-					stmt3.close();
-				}
-			} catch (Exception exception) {
-				JOptionPane.showMessageDialog(parent, exception.getMessage(),
-						"SQL Error!  Cannot execute SQL on one or more databases.", JOptionPane.ERROR_MESSAGE);
-				Logger.getLogger("global").log(Level.SEVERE,
-						"Database SQL error.  Cannot execute SQL on one or more databases.", exception);
-				Message.error("SQLException: Cannot execute SQL on one or more databases.", true);
-				if (runID == null)
-					return null;
-		}
-			
-				//Upload MACHINE_MODEL.MODEL_DEVICES
-			try {
-			PreparedStatement stmt2 = writeConnection.prepareStatement("SELECT L.ELEMENT, L.ELEMENT_ID, D.ID " +
-						"FROM MACHINE_MODEL.DEVICE_TYPES D, LCLS_INFRASTRUCTURE.LCLS_ELEMENTS L " +
-						"WHERE L.KEYWORD = D.DEVICE_TYPE");
-				rs = stmt2.executeQuery();
-				while(rs.next()){
-					elementName.add(rs.getString(1));
-					elementID.add(rs.getString(2));
-					elementTypeID.add(rs.getString(3));
-					}
-				
-				// reset deviceID
-				deviceID.clear();
-				for(int i=0; i<runMachineModelDevice.length; i++){
-					index = elementName.indexOf(runMachineModelDevice[i].getPropertyValue("ELEMENT_NAME").toString());
-					if(index >= 0){
-						deviceID.add(elementID.get(index));
-						deviceTypeID.add(elementTypeID.get(index));
-						}else{
-							deviceID.add(null);
-							deviceTypeID.add(null);
-							}
-					}
-			
-				long start1 = System.currentTimeMillis();
-				System.out.println("URL: " + url);
-				System.out.println("writeConnection: " + writeConnection);
-				writeToModelDevicesDB(writeConnection, runID, deviceID, deviceTypeID, runMachineModelDevice);
-				long finish1 = System.currentTimeMillis() - start1;
-				Message.debug("***** writeToModelDevicesDB_1: " + finish1 + "ms" + " *****");
-								
-//				PreparedStatement stmt3 = writeConnection.prepareStatement("INSERT INTO MACHINE_MODEL.MODEL_DEVICES " +
-//									"(RUNS_ID, LCLS_ELEMENTS_ELEMENT_ID, DEVICE_TYPES_ID, " +
-//									"DEVICE_PROPERTY, DEVICE_VALUE) " + "VALUES (?,?,?,?,?)",
-//									ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
-//				for(int i=0; i<runMachineModelDevice.length; i++){
-//					stmt3.setString(1, runID);
-//					stmt3.setString(2, deviceID.get(i));
-//					stmt3.setString(3, deviceTypeID.get(i));
-//					stmt3.setString(4, runMachineModelDevice[i].getPropertyValue("DEVICE_PROPERTY").toString());
-//					stmt3.setString(5, runMachineModelDevice[i].getPropertyValue("DEVICE_VALUE").toString());
-//					stmt3.addBatch();
-//					}
-//				stmt3.executeBatch();
-				
-				// populate data for another 2 DBs' MODEL_DEVICES tables
-				if (database.equals("slacPROD")) {
-					
-					Thread t = new Thread(new Runnable() {
-
-						public void run() {
-							try {
-								try {
-									writeToModelDevicesDB_done = false;
-									long start2 = System.currentTimeMillis();
-									DataManager.writeToModelDevicesDB(writeConnection1, runID, deviceID, deviceTypeID, runMachineModelDevice);
-									long finish2 = System.currentTimeMillis() - start2;
-									Message.debug("***** writeToModelDevicesDB_2: " + finish2 + "ms" + " *****");
-									start2 = System.currentTimeMillis();
-									DataManager.writeToModelDevicesDB(writeConnection2, runID, deviceID, deviceTypeID, runMachineModelDevice);
-									finish2 = System.currentTimeMillis() - start2;
-									Message.debug("***** writeToModelDevicesDB_3: " + finish2 + "ms" + " *****");
-									Message.debug("Finished writeToModelDevicesDB Thread");
-									writeToModelDevicesDB_done = true;
-									status = 1; // status=finished
-								} catch (IndexOutOfBoundsException e) {
-									//System.out.println("INDEX OUT OF BOUNDS EXCEPTION!!");
-									Message.error("INDEX OUT OF BOUNDS EXCEPTION!");
-									status = 0; // status = failed
-									e.printStackTrace();
-								}
-								
-							} catch (SQLException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-								//flag here if failed
-							}
-							
-						}
-
-					});
-					t.start(); 			
-				}
-				
-				System.out.println("Upload MACHINE_MODEL.MODEL_DEVICES Table Done!");
-				Message.info("Upload MACHINE_MODEL.MODEL_DEVICES Table Done!");		
-				
-//				stmt1.close();
-				stmt2.close();
-
-			} catch (Exception exception) {
-				JOptionPane.showMessageDialog(parent, exception.getMessage(),
-						"SQL Error!  Cannot execute SQL on one or more databases.", JOptionPane.ERROR_MESSAGE);
-				Logger.getLogger("global").log(Level.SEVERE,
-						"Database SQL error.  Cannot execute SQL on one or more databases.", exception);
-				Message.error("SQLException: Cannot execute SQL on one or more databases.", true);
-				if (runID == null)
-					return null;
-		}
-
-			try {
-				//Upload MACHINE_MODEL.ELEMENT_MODELS
-				deviceID1.clear();
-				for(int i=0; i<runMachineModelDetail.length; i++){
-					index = elementName.indexOf(runMachineModelDetail[i].getPropertyValue("ELEMENT_NAME").toString());
-					if(index >= 0){
-						deviceID1.add(elementID.get(index));
-						}else{
-							deviceID1.add(null);
-							}
-					}
-			
-				long start3_1 = System.currentTimeMillis();
-				DataManager.writeToElementModelsDB(writeConnection, runID, deviceID1, runMachineModelDetail);
-				long finish3_1 = System.currentTimeMillis() - start3_1;
-				Message.debug("***** writeToElementModelsDB_1: " + finish3_1 + "ms" + " *****");
-				// populate data for another 2 DBs' ELEMENT_MODELS tables
-				if (database.equals("slacPROD")) {
-					
-					Thread t = new Thread(new Runnable() {
-
-						public void run() {
-							long sleepBegin = System.currentTimeMillis();
-							long sleepEnd = 0;
-							while (!writeToModelDevicesDB_done) {
-								try {
-									if (sleepEnd < 30000 && status != 0) {
-										Message.debug("Sleeping!");
-										Thread.sleep(1000); //sleep for 30s max
-										sleepEnd = System.currentTimeMillis() - sleepBegin;
-										Message.debug("Sleep Time: " + sleepEnd);
-									}
-									else {
-										Message.debug("Timed out!");
-										status = 0; // status=failed
-										break;
-									}
-								} catch (InterruptedException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-							}
-							if (status == 0) { // status=failed
-								JOptionPane.showMessageDialog(parent, "Could not successfully upload model data to dataBase !",
-										"Upload DataBase", JOptionPane.INFORMATION_MESSAGE);
-								Message.error("ERROR: could not complete subthreads");
-								}
-							if (writeToModelDevicesDB_done) {
-								try {
-									writeToElementModelsDB_done = false;
-									Message.debug("Made it to thread for writeToElementModelsDB");
-									long start3_2 = System.currentTimeMillis();
-									DataManager.writeToElementModelsDB(writeConnection1, runID, deviceID1, runMachineModelDetail);
-									long finish3 = System.currentTimeMillis() - start3_2;
-									Message.debug("***** writeToElementModelsDB_2: " + finish3 + "ms" + " *****");
-									long start3_3 = System.currentTimeMillis();
-									DataManager.writeToElementModelsDB(writeConnection2, runID, deviceID1, runMachineModelDetail);
-									finish3 = System.currentTimeMillis() - start3_3;
-									Message.debug("***** writeToElementModelsDB_3: " + finish3 + "ms" + " *****");
-									writeToElementModelsDB_done = true;
-								} catch (SQLException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-							} //end if
-							
-							
-						}
-
-					});
-					t.start();
-					
-				}
-
-//				PreparedStatement stmt3 = writeConnection.prepareStatement("INSERT INTO MACHINE_MODEL.ELEMENT_MODELS (RUNS_ID, " +
-//						"LCLS_ELEMENTS_ELEMENT_ID, ELEMENT_NAME, INDEX_SLICE_CHK, ZPOS, EK, " +
-//						"ALPHA_X, ALPHA_Y, BETA_X, BETA_Y, PSI_X, PSI_Y, ETA_X, ETA_Y, ETAP_X, ETAP_Y, " +
-//						"R11, R12, R13, R14, R15, R16, R21, R22, R23, R24, R25, R26, " +
-//						"R31, R32, R33, R34, R35, R36, R41, R42, R43, R44, R45, R46, " +
-//						"R51, R52, R53, R54, R55, R56, R61, R62, R63, R64, R65, R66, " +
-//						"LEFF, SLEFF, ORDINAL, SUML ) " +
-//						"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, " +
-//						"?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, " +
-//						"?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )", //56
-//						ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
-//				for(int i=0; i<runMachineModelDetail.length; i++){
-//					stmt3.setString(1, runID);
-//					stmt3.setString(2, deviceID.get(i));
-//					stmt3.setString(3, runMachineModelDetail[i].getPropertyValue("ELEMENT_NAME").toString());
-//					stmt3.setString(4, runMachineModelDetail[i].getPropertyValue("INDEX_SLICE_CHK").toString());
-//					stmt3.setString(5, runMachineModelDetail[i].getPropertyValue("ZPOS").toString());
-//					stmt3.setString(6, runMachineModelDetail[i].getPropertyValue("E").toString());
-//					stmt3.setString(7, runMachineModelDetail[i].getPropertyValue("ALPHA_X").toString());
-//					stmt3.setString(8, runMachineModelDetail[i].getPropertyValue("ALPHA_Y").toString());
-//					stmt3.setString(9, runMachineModelDetail[i].getPropertyValue("BETA_X").toString());
-//					stmt3.setString(10, runMachineModelDetail[i].getPropertyValue("BETA_Y").toString());
-//					stmt3.setString(11, runMachineModelDetail[i].getPropertyValue("PSI_X").toString());
-//					stmt3.setString(12, runMachineModelDetail[i].getPropertyValue("PSI_Y").toString());
-//					stmt3.setString(13, runMachineModelDetail[i].getPropertyValue("ETA_X").toString());
-//					stmt3.setString(14, runMachineModelDetail[i].getPropertyValue("ETA_Y").toString());
-//					stmt3.setString(15, runMachineModelDetail[i].getPropertyValue("ETAP_X").toString());
-//					stmt3.setString(16, runMachineModelDetail[i].getPropertyValue("ETAP_Y").toString());
-//					stmt3.setString(17, runMachineModelDetail[i].getPropertyValue("R11").toString());
-//					stmt3.setString(18, runMachineModelDetail[i].getPropertyValue("R12").toString());
-//					stmt3.setString(19, runMachineModelDetail[i].getPropertyValue("R13").toString());
-//					stmt3.setString(20, runMachineModelDetail[i].getPropertyValue("R14").toString());
-//					stmt3.setString(21, runMachineModelDetail[i].getPropertyValue("R15").toString());
-//					stmt3.setString(22, runMachineModelDetail[i].getPropertyValue("R16").toString());
-//					stmt3.setString(23, runMachineModelDetail[i].getPropertyValue("R21").toString());
-//					stmt3.setString(24, runMachineModelDetail[i].getPropertyValue("R22").toString());
-//					stmt3.setString(25, runMachineModelDetail[i].getPropertyValue("R23").toString());
-//					stmt3.setString(26, runMachineModelDetail[i].getPropertyValue("R24").toString());
-//					stmt3.setString(27, runMachineModelDetail[i].getPropertyValue("R25").toString());
-//					stmt3.setString(28, runMachineModelDetail[i].getPropertyValue("R26").toString());
-//					stmt3.setString(29, runMachineModelDetail[i].getPropertyValue("R31").toString());
-//					stmt3.setString(30, runMachineModelDetail[i].getPropertyValue("R32").toString());
-//					stmt3.setString(31, runMachineModelDetail[i].getPropertyValue("R33").toString());
-//					stmt3.setString(32, runMachineModelDetail[i].getPropertyValue("R34").toString());
-//					stmt3.setString(33, runMachineModelDetail[i].getPropertyValue("R35").toString());
-//					stmt3.setString(34, runMachineModelDetail[i].getPropertyValue("R36").toString());
-//					stmt3.setString(35, runMachineModelDetail[i].getPropertyValue("R41").toString());
-//					stmt3.setString(36, runMachineModelDetail[i].getPropertyValue("R42").toString());
-//					stmt3.setString(37, runMachineModelDetail[i].getPropertyValue("R43").toString());
-//					stmt3.setString(38, runMachineModelDetail[i].getPropertyValue("R44").toString());
-//					stmt3.setString(39, runMachineModelDetail[i].getPropertyValue("R45").toString());
-//					stmt3.setString(40, runMachineModelDetail[i].getPropertyValue("R46").toString());
-//					stmt3.setString(41, runMachineModelDetail[i].getPropertyValue("R51").toString());
-//					stmt3.setString(42, runMachineModelDetail[i].getPropertyValue("R52").toString());
-//					stmt3.setString(43, runMachineModelDetail[i].getPropertyValue("R53").toString());
-//					stmt3.setString(44, runMachineModelDetail[i].getPropertyValue("R54").toString());
-//					stmt3.setString(45, runMachineModelDetail[i].getPropertyValue("R55").toString());
-//					stmt3.setString(46, runMachineModelDetail[i].getPropertyValue("R56").toString());
-//					stmt3.setString(47, runMachineModelDetail[i].getPropertyValue("R61").toString());
-//					stmt3.setString(48, runMachineModelDetail[i].getPropertyValue("R62").toString());
-//					stmt3.setString(49, runMachineModelDetail[i].getPropertyValue("R63").toString());
-//					stmt3.setString(50, runMachineModelDetail[i].getPropertyValue("R64").toString());
-//					stmt3.setString(51, runMachineModelDetail[i].getPropertyValue("R65").toString());
-//					stmt3.setString(52, runMachineModelDetail[i].getPropertyValue("R66").toString());
-//					stmt3.setString(53, runMachineModelDetail[i].getPropertyValue("LEFF").toString());
-//					stmt3.setString(54, runMachineModelDetail[i].getPropertyValue("SLEFF").toString());
-//					stmt3.setString(55, runMachineModelDetail[i].getPropertyValue("ORDINAL").toString());
-//					stmt3.setString(56, runMachineModelDetail[i].getPropertyValue("SUML").toString());
-//					stmt3.addBatch();
-//					}
-//				stmt3.executeBatch();
-				System.out.println("Upload MACHINE_MODEL.ELEMENT_MODELS Table Done!");
-				Message.info("Upload MACHINE_MODEL.ELEMENT_MODELS Table Done!");
-//				stmt1.close();
-//				stmt2.close();
-//				stmt3.close();
-				
-				// automatically update the table after a model is uploaded
-				model.removeRunModelFromFetchedModels(runID);
-
-				long finish_database = System.currentTimeMillis() - start_database;
-				Message.debug("***** uploadToDatabase: " + finish_database + " *****");
-				
-				if (status != 0) {
-					JOptionPane.showMessageDialog(parent, "Successfully uploaded model data to dataBase !",
-						"Upload DataBase", JOptionPane.INFORMATION_MESSAGE);
-					Message.info("Application uploaded a new machine model.");
-				}
-
-
-				return runID;
-			} catch (Exception exception) {
-					JOptionPane.showMessageDialog(parent, exception.getMessage(),
-							"SQL Error!  Model data upload failed.", JOptionPane.ERROR_MESSAGE);
-					Logger.getLogger("global").log(Level.SEVERE,
-							"Database SQL error.  Model data upload failed.", exception);
-					Message.error("SQLException:  Model data upload failed.", true);
-					if (runID != null)
-						return runID;
-					else
-						return null;
-			}
-		} else{
-			System.out.println(	"Data upload cancelled.");
-			Message.info("Data upload cancelled.");
-			return null;
-		}
-	}
 	
 	private static void writeToModelDevicesDB(Connection connection, 			
 			String runID, ArrayList<String> deviceID, ArrayList<String> deviceTypeID,
@@ -1472,64 +980,6 @@ public class DataManager {
 		stmt3.close();
 	}
 	
-	public static void updateAIDA() {
-		//Call AIDA_XALSERV_NAMES_UPDATE
-		Thread thread = new Thread(new Runnable() {
-			public void run() {
-				if(database.equals("slacPROD")) {
-
-					// for MCCQA, AIDA
-					CallableStatement cstmt1 = null;
-					try {
-						Message.info("Updating AIDA XAL names on MCCQA...");
-						cstmt1 = writeConnection1.prepareCall(
-						"{call MACHINE_MODEL.ONLINE_MODEL_PKG.AIDA_XALSERV_NAMES_UPDATE ('AIDA', '202', '202', 'Y')}");
-						cstmt1.execute();
-						System.out.println("AIDA_XALSERV_NAMES_UPDATE finished successfully!");
-						cstmt1.close();
-						Message.info("AIDA_XALSERV_NAMES_UPDATE finished for MCCQA successfully!");
-						writeConnection1.close();
-					} catch (SQLException e) {
-						Message.error("SQLException: AIDA_XALSERV_NAMES_UPDATE failed on MCCQA.", true);
-						e.printStackTrace();
-					}	
-					
-					// for SLACPROD, AIDAPROD
-					CallableStatement cstmt = null;
-					try {
-						Message.info("Updating AIDA XAL names on SLACPROD/AIDAPROD...");
-						cstmt = writeConnection2.prepareCall(
-						"{call MACHINE_MODEL.ONLINE_MODEL_PKG.AIDA_XALSERV_NAMES_UPDATE ('AIDAPROD', '202', '202', 'Y')}");
-						cstmt.execute();
-						Message.info("AIDA_XALSERV_NAMES_UPDATE finished for SLACPROD/AIDAPROD successfully!");
-					} catch (SQLException e) {
-						Message.error("SQLException: AIDA_XALSERV_NAMES_UPDATE failed on SLACPROD/AIDAPROD.", true);
-						e.printStackTrace();
-					}
-
-					// for SLACPROD, AIDADEV
-					try {
-						Message.info("Updating AIDA XAL names on SLACPROD/AIDADEV...");
-						cstmt = writeConnection2.prepareCall(
-						"{call MACHINE_MODEL.ONLINE_MODEL_PKG.AIDA_XALSERV_NAMES_UPDATE ('AIDADEV', '202', '202', 'Y')}");
-						cstmt.execute();
-						System.out.println("AIDA_XALSERV_NAMES_UPDATE finished successfully!");
-						cstmt.close();
-						Message.info("AIDA_XALSERV_NAMES_UPDATE finished for SLACPROD/AIDADEV successfully!");
-						writeConnection2.close();
-					} catch (SQLException e) {
-						Message.error("SQLException: AIDA_XALSERV_NAMES_UPDATE failed on SLACPROD/AIDADEV.", true);
-						e.printStackTrace();
-					}
-					
-
-				}
-			}
-		});
-		thread.start();
-		
-	}
-	
 	public static void exportDetailData(JFrame parent, MachineModelDetail[] selectedMachineModelDetail) {
 		RecentFileTracker _savedFileTracker = new RecentFileTracker(1, parent.getClass(),
 				"recent_saved_file");
@@ -1591,15 +1041,6 @@ public class DataManager {
 //			writeConnection = dialog.showConnectionDialog(DatabaseAdaptor
 //					.getInstance());
 			writeConnection = DataManager.getConnection();
-
-			if (writeConnection != null) {
-//				database = dialog.getDatabase();
-				if (url.equals(SLACDEV_URL)) {
-					database = "slacDEV";
-				} else {
-					database = "slacPROD";
-				}
-			}
 		} catch (Exception exception) {
 			Message.error("Connection Exception: Cannot connect to " + url, true);			
 				JOptionPane.showMessageDialog(parent, exception.getMessage(),
@@ -1658,56 +1099,15 @@ public class DataManager {
 
 				cstmt.close();
 //				Message.info("A new GOLD Model is tagged!");
-				writeConnection.close();
-
-/*				Statement stmt1 = writeConnection.createStatement();
-				stmt1.executeUpdate("INSERT INTO MACHINE_MODEL.GOLD ( RUNS_ID, COMMENTS) VALUES ( " +
-						selectedMachineModel.getPropertyValue("ID").toString() + ", '" +
-						comment + "' )" );
-				
-				// if it's for production, also update the SLACPROD
-				if(database.equals("slacPROD")) {
-					try {
-//						writeConnection1 = DriverManager.getConnection(MCCQA_URL, dialog.getUser(), new String(dialog.getPassword()));
-						writeConnection1 = DriverManager.getConnection(MCCQA_URL, user, password);
-
-						Statement stmt3 = writeConnection1.createStatement();
-						stmt3.executeUpdate("INSERT INTO MACHINE_MODEL.GOLD ( RUNS_ID, COMMENTS) VALUES ( " +
-								selectedMachineModel.getPropertyValue("ID").toString() + ", '" +
-								comment + "' )" );
-					} catch (Exception exception) {
-						JOptionPane.showMessageDialog(parent, exception.getMessage(),
-								"Connection Error!", JOptionPane.ERROR_MESSAGE);
-						Logger.getLogger("global").log(Level.SEVERE,
-								"Database connection error.", exception);
-						Message.error("Connection exception: " + exception.getMessage());
-					}
-					try {
-//						writeConnection2 = DriverManager.getConnection(SLACPROD_URL, dialog.getUser(), new String(dialog.getPassword()));
-						writeConnection2 = DriverManager.getConnection(SLACPROD_URL, user, password);
-
-						Statement stmt2 = writeConnection2.createStatement();
-						stmt2.executeUpdate("INSERT INTO MACHINE_MODEL.GOLD ( RUNS_ID, COMMENTS) VALUES ( " +
-								selectedMachineModel.getPropertyValue("ID").toString() + ", '" +
-								comment + "' )" );
-					} catch (Exception exception) {
-						JOptionPane.showMessageDialog(parent, exception.getMessage(),
-								"Connection Error!", JOptionPane.ERROR_MESSAGE);
-						Logger.getLogger("global").log(Level.SEVERE,
-								"Database connection error.", exception);
-						Message.error("Connection exception: " + exception.getMessage());
-					}
-					
-				}
-*/				
-			}catch (Exception exception) {
+				writeConnection.close();			
+			} catch (Exception exception) {
 				Message.error("SQL Exception: " + exception.getMessage(), true);			
 				Message.error("Gold tag operation failed!", true);			
 				JOptionPane.showMessageDialog(parent, exception.getMessage(),
 						"SQL Error: Gold tag operation failed!", JOptionPane.ERROR_MESSAGE);
 				Logger.getLogger("global").log(Level.SEVERE,
 						"SQL Error: Gold tag operation failed!", exception);
-		}
+				}
 		}
 	}
 	
@@ -1759,12 +1159,7 @@ public class DataManager {
 		try {
 			if (writeConnection != null)
 				writeConnection.close();
-			if (writeConnection1 != null)
-				writeConnection1.close();
-			if (writeConnection2 != null)
-				writeConnection2.close();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
