@@ -66,7 +66,7 @@ optics
 
 3. PROCESS DIAGNOSTICS
 
-MEME compl;icate Epics V4 processes are all named according to the
+MEME complicate Epics V4 processes are all named according to the
 pattern meme_<something>. Eg meme_optics.
 
 So, to list All Ev4 MEME compliant processes (all named meme_<something>)
