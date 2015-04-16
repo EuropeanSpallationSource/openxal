@@ -1,6 +1,6 @@
 #-*-bash-*-
 #
-# Name: setup_epicsbase.bash
+# Name: setup_epics.bash
 #
 # Summary: This script mich be sourced prior to running EPICS 
 # client and service software. 
@@ -13,18 +13,19 @@
 #
 # NOTE: EPICS network specifics, such as EPICS_CA_ADDR_LIST,
 # are NOT defined in this file, so that the same filesystem 
-# setup canbe used with different network configs (such as for
+# setup can be used with different network configs (such as for
 # dev and prod EPICS networks).
 #
 # Referenced environment variables named <something>HOSTDEF,
 # for example EPICS_HOST_ARCH_HOSTDEF, are used in case
 # a user wants to source a configuration file prior to
-# sourcing this file, which sets computer specific defaults,
-# for instance to setup both a Mac based and a Linux based 
-# enviornment, set the HOSTDEF thinsg first, and then run this
+# sourcing this file. That other file would set computer specific 
+# defaults.
+#    For instance to setup both a Mac based and a Linux based 
+# enviornment, set the HOSTDEF things first, and then run this
 # file. This file would be constant between architectures.
 #
-# See: envs_epics.bash to set EPICS network configutation.
+# See: envs_epics*.bash to set EPICS network configutation.
 # 
 # -----------------------------------------------------------
 # Auth: Greg White, 9-Apr-2015.

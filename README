@@ -75,7 +75,9 @@ pgrep -fl meme
 To kill a Ev4 service on a host, use pkill -f (to search the full command)
 pkill -f optics
 
+
 4. BASIC SERVICE DEVELOPMENT LOOP
+
 $ pkill -f optics
 edit stuff
 $ make build
@@ -121,6 +123,23 @@ Eg $ eget -s optics -a q=ST1-V
 
 SCRATCH
 =======
+2015-04-16T11:39:30.437 Configured TCP port 5075 is unavailable, trying to assign it dynamically. 
+
+netstat -tulpn
+
+$ netstat -tulpn | grep 5075
+(Not all processes could be identified, non-owned process info
+ will not be shown, you would have to be root to see it all.)
+tcp        0      0 :::5075                     :::*                        LISTEN      4675/meme_optics_de 
+
+Shows a previous instance of meme_optics is using 5075 (it should have been killed by the startup - why wasn't it?)
+
+$ ls -l /proc/4675/exe
+lrwxrwxrwx 1 gregorywhite domain users 0 Apr 15 18:01 /proc/4675/exe -> /usr/lib/jvm/java-1.7.0-openjdk-1.7.0.75.x86_64/jre/bin/java (deleted)
+
+$ kill -9 4675
+
+
 DriverManager.getConnection(
  "jdbc:postgresql://ics-services.esss.lu.se:5432/machinemodel",
  "machinemodel", "physicsl1nacstuff" );
