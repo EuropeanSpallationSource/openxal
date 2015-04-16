@@ -140,8 +140,8 @@ public class MachineModelTable {
 	protected PreparedStatement getQueryByTimerangeStatement(
 			final Connection connection) throws SQLException {
 		return connection.prepareStatement("SELECT * FROM " + escape(SCHEMA_NAME) + "."
-				+ escape(TABLE_NAME) + " WHERE " + DB_TABLE_COLUMN_NAME.get(1)
-				+ " > ? AND " + DB_TABLE_COLUMN_NAME.get(1) + " < ?");
+				+ escape(TABLE_NAME) + " WHERE " + escape(DB_TABLE_COLUMN_NAME.get(1))
+				+ " > ? AND " + escape(DB_TABLE_COLUMN_NAME.get(1)) + " < ?");
 	}
 	
 
