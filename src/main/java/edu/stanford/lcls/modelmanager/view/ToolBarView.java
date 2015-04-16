@@ -35,7 +35,6 @@ public class ToolBarView implements SwingConstants {
 	private JToolBar toolBarView;
 	private JFrame parent;
 	private BrowserModel model;
-	private JButton elogButton;
 	private JComboBox<String> beamlineSelector;
 	private JComboBox<String> runModeSelector;
 	private JComboBox<ComboItem> BPRPSelector; //Back Propagte Reference points
@@ -270,25 +269,6 @@ public class ToolBarView implements SwingConstants {
 //		toolBarView.add(export2MADButton);
 		
 		toolBarView.add(Box.createGlue());
-		elogButton = new JButton(" -> Log Book ");
-		elogButton.setToolTipText("capture data plot panel and save it to the e-log");
-		elogButton.setBackground(Color.cyan);
-		elogButton.setEnabled(false);
-		toolBarView.add(elogButton);
-		elogButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
-				// TODO
-				/*LogbookEntry logBookEntry =*/ new LogbookEntry(true,
-						((ModelManagerWindow) parent).getModelManagerFeature()
-								.getModelPlotPane(),
-						(ModelManagerWindow) parent, null, null,
-						"Model Manager GUI", "XAL Online Model",
-						"screen capture from online model app",
-						SeverityEnum.NONE, LocationEnum.NOTSET,
-						KeywordEnum.NONE);
-			}
-		});
-		
 		toolBarView.addSeparator(new Dimension(10, 10));
 //		helpButton = new JButton("Help", IconLib.getIcon( IconGroup.GENERAL, "Help24.gif" ));
 //		// use the framework one
@@ -489,7 +469,6 @@ public class ToolBarView implements SwingConstants {
 			BPRPModeSelector.setEnabled(false);
 			BPRPSelector.setEnabled(false);			
 		}
-		elogButton.setEnabled(enabled);
 		beamlineSelector.setEnabled(enabled);
 		runModeSelector.setEnabled(enabled);
 		setInitTiwissButton.setEnabled(enabled);
