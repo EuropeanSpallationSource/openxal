@@ -12,16 +12,11 @@ import xal.model.probe.Probe;
 import xal.model.probe.traj.EnvelopeProbeState;
 import xal.sim.scenario.AlgorithmFactory;
 import xal.sim.scenario.ProbeFactory;
-import xal.sim.scenario.Scenario;
 import xal.smf.Accelerator;
 import xal.smf.data.XMLDataManager;
 import edu.stanford.lcls.modelmanager.dbmodel.*;
 import edu.stanford.lcls.modelmanager.*;
 import edu.stanford.slac.Message.Message;
-import edu.stanford.slac.Save2Logbook.KeywordEnum;
-import edu.stanford.slac.Save2Logbook.LocationEnum;
-import edu.stanford.slac.Save2Logbook.LogbookEntry;
-import edu.stanford.slac.Save2Logbook.SeverityEnum;
 
 import java.sql.SQLException;
 
