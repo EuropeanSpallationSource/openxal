@@ -14,6 +14,7 @@ import xal.extension.application.Application;
 import xal.extension.application.ApplicationAdaptor;
 import xal.extension.application.XalDocument;
 import xal.extension.application.smf.AcceleratorApplication;
+import xal.smf.data.XMLDataManager;
 
 /**
  * Main is the ApplicationAdaptor for the Template application.
@@ -25,11 +26,12 @@ public class ModelManagerMain extends ApplicationAdaptor {
     // --------- Document management -------------------------------------------
     
     /**
-     * Returns the text file suffixes of files this application can open.
-     * @return Suffixes of readable files
+     * Returns no suffices, so no open/new document dialog appears
+     * @return String[0]
      */
-    public String[] readableDocumentTypes() {
-        return new String[] {"mm"};
+    @Override
+	public String[] readableDocumentTypes() {
+        return new String[0];
     }
     
     
@@ -37,8 +39,9 @@ public class ModelManagerMain extends ApplicationAdaptor {
      * Returns the text file suffixes of files this application can write.
      * @return Suffixes of writable files
      */
+    @Override
     public String[] writableDocumentTypes() {
-        return new String[] {"mm"};
+        return new String[0];
     }
     
     
@@ -46,8 +49,11 @@ public class ModelManagerMain extends ApplicationAdaptor {
      * Implement this method to return an instance of my custom document.
      * @return An instance of my custom document.
      */
+    @Override
     public XalDocument newEmptyDocument() {
         modelManagerDocument = new ModelManagerDocument();
+        // Following line prevents application from asking to pick default accelerator
+		modelManagerDocument.applySelectedAcceleratorWithDefaultPath( XMLDataManager.defaultPath() );
         return modelManagerDocument;
     }
     
@@ -58,6 +64,7 @@ public class ModelManagerMain extends ApplicationAdaptor {
      * @param url The URL of the file to open.
      * @return An instance of my custom document.
      */
+    @Override
     public XalDocument newDocument(java.net.URL url) {
         modelManagerDocument = new ModelManagerDocument(url);
         return modelManagerDocument;
