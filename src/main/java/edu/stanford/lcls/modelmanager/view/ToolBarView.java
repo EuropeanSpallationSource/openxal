@@ -6,6 +6,15 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
+import xal.extension.widgets.apputils.SimpleProbeEditor;
+import xal.model.IAlgorithm;
+import xal.model.probe.Probe;
+import xal.model.probe.traj.EnvelopeProbeState;
+import xal.sim.scenario.AlgorithmFactory;
+import xal.sim.scenario.ProbeFactory;
+import xal.sim.scenario.Scenario;
+import xal.smf.Accelerator;
+import xal.smf.data.XMLDataManager;
 import edu.stanford.lcls.modelmanager.dbmodel.*;
 import edu.stanford.lcls.modelmanager.*;
 import edu.stanford.slac.Message.Message;
@@ -55,13 +64,39 @@ public class ToolBarView implements SwingConstants {
 //		toolBarView = new JToolBar();
 		toolBarView = ((ModelManagerWindow)_parent).getToolBar();
 		
-		// TODO HARDCODED
-		String[] beamlineSelections = { "CATHODE to DUMP", "CATHODE to 52SL2", "CATHODE to 135-MeV SPECT DUMP", "CATHODE to GUN SPECT DUMP", "Show All" };
+		
+		// usually a beamline selector would be here, but we put in probe editor
+		
+		// TODO OPENXAL beamline selections
+		String[] beamlineSelections = {};
 		beamlineSelector = new JComboBox<String>(beamlineSelections);
 		beamlineSelector.setToolTipText("select a beamline");
 		beamlineSelector.setMaximumSize(new Dimension(180, 28));
-		beamlineSelector.setSelectedIndex(0);
-		toolBarView.add(beamlineSelector);
+		beamlineSelector.setEnabled(false);
+		//toolBarView.add(beamlineSelector);
+		
+		setInitTiwissButton = new JButton("Edit Init Twiss...");
+		setInitTiwissButton.addActionListener(new ActionListener() {			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {					
+					Accelerator accelerator = XMLDataManager.loadDefaultAccelerator();
+						
+					IAlgorithm tracker;
+						tracker = AlgorithmFactory.createEnvTrackerAdapt( accelerator );
+					
+					Probe<EnvelopeProbeState> probe = ProbeFactory.getEnvelopeProbe( accelerator.getSequence("MEBT"), tracker );
+					
+					final SimpleProbeEditor probeEditor = new SimpleProbeEditor( parent, probe );
+				} catch (InstantiationException e1) {
+					e1.printStackTrace();
+				}
+			
+			}
+		});
+		setInitTiwissButton.setEnabled(false);
+		toolBarView.add(setInitTiwissButton);		
+
 		
 		toolBarView.addSeparator(new Dimension(20, 10));
 		String[] runModeSelections = { "Design", "Extant" };
@@ -77,18 +112,12 @@ public class ToolBarView implements SwingConstants {
 		bp.setLayout(new BoxLayout(bp, BoxLayout.LINE_AXIS));
 		
 		toolBarView.addSeparator(new Dimension(10, 10));
-		// TODO HARDCODED
-//		final String[] BPRPSelections = { "WS02", "OTR2", "WS12", "WS28144", "WS32" };
-		final ComboItem[] refPts = {new ComboItem("WS28144"), 
-			new ComboItem("WS02"), new ComboItem("OTR2"), new ComboItem("WS12"),
-			new ComboItem("WS32")
-		};
+
+		final ComboItem[] refPts = { new ComboItem("WS000") }; 
 		BPRPSelector = new JComboBox<ComboItem>(refPts);
 		BPRPSelector.setToolTipText("select Twiss back propagate reference point");
 		BPRPSelector.setMaximumSize(new Dimension(105, 28));
-//		BPRPSelector.setSelectedItem(new ComboItem("WS28144"));
-		BPRPSelector.setSelectedIndex(3);
-		refID = refPts[BPRPSelector.getSelectedIndex()].toString();
+//		refID = refPts[BPRPSelector.getSelectedIndex()].toString();
 //		bprpMethod = 0;
 		BPRPSelector.addActionListener(new ActionListener() { 
 			public void actionPerformed(ActionEvent e) {
@@ -148,35 +177,6 @@ public class ToolBarView implements SwingConstants {
 					for (int i=0; i< refPts.length; i++)
 						((ComboItem) refPts[i]).setEnabled(true);
 				}
-				else if (beamlineSelector.getSelectedIndex() == 1) {
-					modelModesID = 53;
-					BPRPSelector.setEnabled(true);
-					for (int i=0; i< (refPts.length -1); i++)
-						((ComboItem) refPts[i]).setEnabled(true);
-
-					((ComboItem) refPts[4]).setEnabled(false);
-				}
-				else if (beamlineSelector.getSelectedIndex() == 2) {
-					modelModesID = 52;
-					BPRPSelector.setEnabled(false);
-					((ComboItem) refPts[0]).setEnabled(true);
-					((ComboItem) refPts[1]).setEnabled(true);
-					((ComboItem) refPts[2]).setEnabled(false);
-					((ComboItem) refPts[3]).setEnabled(false);
-					((ComboItem) refPts[4]).setEnabled(false);
-					
-				}
-				else if (beamlineSelector.getSelectedIndex() == 3) {
-					modelModesID = 51;
-					BPRPSelector.setEnabled(false);
-					for (int i=0; i< refPts.length; i++)
-						((ComboItem) refPts[i]).setEnabled(false);
-				}
-				else if (beamlineSelector.getSelectedIndex() == 4) {
-					modelModesID = 0;
-					for (int i=0; i< refPts.length; i++)
-						((ComboItem) refPts[i]).setEnabled(true);
-				}
 				
 				thread1 = new Thread(new Runnable() {
 					public void run() {
@@ -205,11 +205,7 @@ public class ToolBarView implements SwingConstants {
 			}
 		});
 
-		toolBarView.addSeparator(new Dimension(10, 10));
-		setInitTiwissButton = new JButton("Edit Init Twiss...");
-		setInitTiwissButton.setEnabled(false);
-//TODO to be added later for editing Twiss manually
-//		toolBarView.add(setInitTiwissButton);
+		toolBarView.addSeparator(new Dimension(10, 10));		
 		
 		toolBarView.addSeparator(new Dimension(5, 10));
 		runModelButton = new JButton("Run Model");
@@ -496,7 +492,7 @@ public class ToolBarView implements SwingConstants {
 		elogButton.setEnabled(enabled);
 		beamlineSelector.setEnabled(enabled);
 		runModeSelector.setEnabled(enabled);
-		//setInitTiwissButton.setEnabled(enabled);
+		setInitTiwissButton.setEnabled(enabled);
 		runModelButton.setEnabled(enabled);
 		upload2DBButton.setEnabled(enabled && !model.isRunMachineModelNull());
 		makeGoldButton.setEnabled(enabled);
