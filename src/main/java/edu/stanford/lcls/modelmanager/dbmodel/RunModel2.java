@@ -2,6 +2,7 @@ package edu.stanford.lcls.modelmanager.dbmodel;
 
 import xal.model.IAlgorithm;
 import xal.model.ModelException;
+import xal.model.probe.EnvelopeProbe;
 import xal.model.probe.Probe;
 import xal.sim.scenario.AlgorithmFactory;
 import xal.sim.scenario.ProbeFactory;
@@ -19,15 +20,18 @@ public class RunModel2 {
 	private Accelerator accelerator;
 	private Scenario scenario;
 	
+	private EnvelopeProbe probe;
+	
 	public RunModel2() { 
 		try {
 			accelerator = XMLDataManager.loadDefaultAccelerator();
 			
 			scenario = Scenario.newScenarioFor(accelerator);//, elementMapping);
 		
-			IAlgorithm tracker = AlgorithmFactory.createEnvTrackerAdapt( accelerator );
-	
-			scenario.setProbe(ProbeFactory.getEnvelopeProbe( accelerator.getSequence("MEBT"), tracker ));
+			//IAlgorithm tracker = AlgorithmFactory.createEnvTrackerAdapt( accelerator );
+			IAlgorithm tracker = AlgorithmFactory.createEnvelopeTracker( accelerator );
+			
+			probe = ProbeFactory.getEnvelopeProbe( accelerator.getSequence("MEBT"), tracker );
 		} catch (ModelException | InstantiationException e) {
 			e.printStackTrace();
 		}	
@@ -56,7 +60,7 @@ public class RunModel2 {
 
 	public void run() {
 		try {
-							
+			scenario.setProbe(probe.copy());
 			scenario.setSynchronizationMode(runMode);					
 			scenario.resync();
 			scenario.run();
@@ -75,7 +79,7 @@ public class RunModel2 {
 
 	public Probe<?> getProbe() {
 
-		return scenario.getProbe();
+		return probe;
 	}
 	
 }
