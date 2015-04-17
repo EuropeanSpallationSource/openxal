@@ -2,6 +2,7 @@ package edu.stanford.lcls.modelmanager.dbmodel;
 
 import xal.model.IAlgorithm;
 import xal.model.ModelException;
+import xal.model.probe.Probe;
 import xal.sim.scenario.AlgorithmFactory;
 import xal.sim.scenario.ProbeFactory;
 import xal.sim.scenario.Scenario;
@@ -18,18 +19,36 @@ public class RunModel2 {
 	private Accelerator accelerator;
 	private Scenario scenario;
 	
-	public RunModel2(int modelMode) {
-		this.modelMode = modelMode;
+	public RunModel2() { 
+		try {
+			accelerator = XMLDataManager.loadDefaultAccelerator();
+			
+			scenario = Scenario.newScenarioFor(accelerator);//, elementMapping);
+		
+			IAlgorithm tracker = AlgorithmFactory.createEnvTrackerAdapt( accelerator );
+	
+			scenario.setProbe(ProbeFactory.getEnvelopeProbe( accelerator.getSequence("MEBT"), tracker ));
+		} catch (ModelException | InstantiationException e) {
+			e.printStackTrace();
+		}	
 	}
 
+	/** Beamline selection */
+	public void setModelMode(int modelMode) {
+		this.modelMode = modelMode;
+	}
+	
+	/** Wirescanner to use for initial parameters (via backpropagation) */
 	public void setEmitNode(String refID) {
 		this.emitNode = refID;
 	}
 
+	/** Use measurement data (true) or design data (false) on that wirescanner */
 	public void useDesignRef(boolean refMode) {
 		this.refMode = refMode;
 	}
 
+	/** scenario synchronization mode */
 	public void setRunMode(String syncModeDesign) {
 		this.runMode = syncModeDesign;
 		
@@ -37,16 +56,11 @@ public class RunModel2 {
 
 	public void run() {
 		try {
-			accelerator = XMLDataManager.loadDefaultAccelerator();
-			scenario = Scenario.newScenarioFor(accelerator);//, elementMapping);	
-			IAlgorithm tracker = AlgorithmFactory.createEnvTrackerAdapt( accelerator );
-		
-			scenario.setProbe(ProbeFactory.getEnvelopeProbe( accelerator.getSequence("MEBT"), tracker ));
 							
-			scenario.setSynchronizationMode(Scenario.SYNC_MODE_DESIGN);					
+			scenario.setSynchronizationMode(runMode);					
 			scenario.resync();
 			scenario.run();
-		} catch (InstantiationException|ModelException e) {
+		} catch (ModelException e) {
 			e.printStackTrace();
 		}
 	}
@@ -57,6 +71,11 @@ public class RunModel2 {
 
 	public Scenario getScenario() {
 		return scenario;
+	}
+
+	public Probe<?> getProbe() {
+
+		return scenario.getProbe();
 	}
 	
 }

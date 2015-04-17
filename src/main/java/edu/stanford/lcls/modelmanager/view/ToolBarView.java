@@ -73,19 +73,7 @@ public class ToolBarView implements SwingConstants {
 		setInitTiwissButton.addActionListener(new ActionListener() {			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				try {					
-					Accelerator accelerator = XMLDataManager.loadDefaultAccelerator();
-						
-					IAlgorithm tracker;
-						tracker = AlgorithmFactory.createEnvTrackerAdapt( accelerator );
-					
-					Probe<EnvelopeProbeState> probe = ProbeFactory.getEnvelopeProbe( accelerator.getSequence("MEBT"), tracker );
-					
-					final SimpleProbeEditor probeEditor = new SimpleProbeEditor( parent, probe );
-				} catch (InstantiationException e1) {
-					e1.printStackTrace();
-				}
-			
+				new SimpleProbeEditor( parent, model.getRunModel().getProbe() );
 			}
 		});
 		setInitTiwissButton.setEnabled(false);

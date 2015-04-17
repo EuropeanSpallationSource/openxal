@@ -56,7 +56,7 @@ public class BrowserModel {
 	protected MachineModelDetail[] _goldMachineModelDetail;
 	private int plotFunctionID1;
 	private int plotFunctionID2;
-	protected RunModel2 rm;
+	protected RunModel2 rm = new RunModel2();
 	protected Scenario scenario;
 	protected JFrame _parent;
 	private final String autoRunID = "RUN";
@@ -202,16 +202,19 @@ public class BrowserModel {
 		return modelMode;
 	}
 
+	/** beamline selection */
 	public void setModelMode(int _modelMode) throws SQLException {
 		modelMode = _modelMode;
 		filterMachineModelInMode(_allMachineModels, _goldMachineModels,
 				modelMode);
 	}
 
+	/** Wirescanner to use for initial parameters (via backpropagation) */
 	public void setModelRef(String refID) {
 		rm.setEmitNode(refID);
 	}
 
+	/** Use measurement data (true) or design data (false) on that wirescanner */
 	public void setModelRefDesign(boolean refMode) {
 		rm.useDesignRef(refMode);
 	}
@@ -564,7 +567,8 @@ public class BrowserModel {
 	}
 	
 	public void runModel(int runModelMethod, String refID, boolean useDesignRef) throws SQLException {
-		rm = new RunModel2(modelMode);
+		// beamline selection
+		rm.setModelMode(modelMode);
 		//TODO Connect all channels for model use.  This may have to be done earlier, not here.
 		if (runModelMethod == 0) {
 			rm.setRunMode(Scenario.SYNC_MODE_DESIGN);
