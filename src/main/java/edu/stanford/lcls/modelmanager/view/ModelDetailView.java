@@ -136,7 +136,7 @@ public class ModelDetailView implements SwingConstants {
 				modelName.setText(title);
 				modelCreatDate.setText((String)runMachineModel.getPropertyValue("DATE_CREATED"));
 
-				commentText.addActionListener(new ActionListener() {
+				commentText.addActionListener(new ActionListener() { // TODO event handler pile up in here
 
 					public void actionPerformed(ActionEvent e) {
 						runMachineModel.setPropertyValue("COMMENTS", commentText.getText());

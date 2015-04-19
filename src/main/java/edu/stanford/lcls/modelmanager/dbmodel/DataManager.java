@@ -107,7 +107,7 @@ public class DataManager {
 	public static String url = null; // Defaults to production
 
 	private final static String autoRunID = "RUN";
-	private static String comment = "";
+	private static String comment = ""; // TODO this variable should not be global!
 
 	
 	static ArrayList<String> deviceID = new ArrayList<String>();
