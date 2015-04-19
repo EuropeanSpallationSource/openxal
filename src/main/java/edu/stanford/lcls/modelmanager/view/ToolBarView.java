@@ -73,7 +73,14 @@ public class ToolBarView implements SwingConstants {
 		setInitTiwissButton.addActionListener(new ActionListener() {			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				new SimpleProbeEditor( parent, model.getRunModel().getProbe() );
+				SimpleProbeEditor spe = null;
+				try {
+					spe = new SimpleProbeEditor( parent, model.getRunModel().getProbe(), false );
+					spe.setTitle("Edit Init Twiss");
+					spe.setVisible(true);
+				} finally {
+					if (spe != null) spe.dispose();
+				}
 			}
 		});
 		setInitTiwissButton.setEnabled(false);
