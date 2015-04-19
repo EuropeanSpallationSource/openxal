@@ -69,7 +69,7 @@ public class ModelPlotView implements SwingConstants {
 	private JRadioButton plotDifferent;
 	private JRadioButton plotZPosSign;
 	private JRadioButton plotMADNameSign;
-	private JRadioButton plotEPICSNameSign;
+	//private JRadioButton plotEPICSNameSign;
 	private JCheckBox plotNode;
 	private JButton refreshButton;
 	private JButton SnapshotButton;
@@ -106,8 +106,8 @@ public class ModelPlotView implements SwingConstants {
 					plotSignMethod = 0;
 				else if (e.getSource() == plotMADNameSign)
 					plotSignMethod = 1;
-				else if (e.getSource() == plotEPICSNameSign)
-					plotSignMethod = 2;
+				//else if (e.getSource() == plotEPICSNameSign)
+				//	plotSignMethod = 2;
 				else if (e.getSource() == plotNode)
 					plotNodeMethod = plotNode.isSelected();
 				plotAction();
@@ -137,23 +137,23 @@ public class ModelPlotView implements SwingConstants {
 		plotZPosSign = new JRadioButton("Show Z Position");
 		plotZPosSign.setToolTipText("show Z position at the bottom of the plot");
 		plotZPosSign.setSelected(true);
-		plotMADNameSign = new JRadioButton("Show MAD Names");
-		plotMADNameSign.setToolTipText("show MAD names at the bottom of the plot");
-		plotEPICSNameSign = new JRadioButton("Show EPICS Names");
-		plotEPICSNameSign.setToolTipText("show EPICS names at the bottom of the plot");
+		plotMADNameSign = new JRadioButton("Show Element Names");
+		plotMADNameSign.setToolTipText("show element names at the bottom of the plot");
+		//plotEPICSNameSign = new JRadioButton("Show EPICS Names");
+		//plotEPICSNameSign.setToolTipText("show EPICS names at the bottom of the plot");
 		ButtonGroup buttonGroup1 = new ButtonGroup();
 		buttonGroup1.add(plotZPosSign);
 		buttonGroup1.add(plotMADNameSign);
-		buttonGroup1.add(plotEPICSNameSign);
+		//buttonGroup1.add(plotEPICSNameSign);
 		plotNode = new JCheckBox("Show Device Points");
 		plotNode.setToolTipText("show/hide symbol for each data point in the plot");
 		plotConfigurePanel.add(plotZPosSign);
 		plotConfigurePanel.add(plotMADNameSign);
-		plotConfigurePanel.add(plotEPICSNameSign);
+		//plotConfigurePanel.add(plotEPICSNameSign);
 		plotConfigurePanel.add(plotNode);
 		plotZPosSign.addActionListener(plotListener);
 		plotMADNameSign.addActionListener(plotListener);
-		plotEPICSNameSign.addActionListener(plotListener);
+		//plotEPICSNameSign.addActionListener(plotListener);
 		plotNode.addActionListener(plotListener);
 		buttonView.add(plotConfigurePanel);
 		
@@ -366,7 +366,7 @@ public class ModelPlotView implements SwingConstants {
 		plotDifferent.setEnabled(enabled);
 		plotZPosSign.setEnabled(enabled);
 		plotMADNameSign.setEnabled(enabled);
-		plotEPICSNameSign.setEnabled(enabled);
+		//plotEPICSNameSign.setEnabled(enabled);
 		plotNode.setEnabled(enabled);
 		refreshButton.setEnabled(enabled);
 		SnapshotButton.setEnabled(enabled);
