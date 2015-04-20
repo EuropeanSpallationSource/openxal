@@ -10,6 +10,22 @@ package edu.stanford.slac.meme.service.rdb;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+// DOM XML Parser
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.DocumentBuilder;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.Node;
+import org.w3c.dom.Element;
+import java.io.File;
+
+// Hashtable
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Set;
+
+// EPICS
 import org.epics.pvaccess.PVAException;
 import org.epics.pvaccess.server.rpc.RPCRequestException;
 import org.epics.pvaccess.server.rpc.RPCServer;
@@ -26,6 +42,7 @@ import org.epics.pvdata.pv.ScalarType;
 import org.epics.pvdata.pv.Structure;
 import org.epics.pvdata.pv.Status.StatusType;
 
+// MEME
 import edu.stanford.slac.meme.support.sys.MemeNormativeTypes;
 
 /**
@@ -77,10 +94,10 @@ public class RdbService
 		Logger.getLogger(RdbService.class.getPackage().getName());
     
         private final static String SERVER_NAME_DEFAULT = "rdbserver";
-
+	private final static String RPCQUERIES_FILENAME_DEFAULT = "rdb.xdb";
+	
 	// The advertised name of the service - that is, the EPICS V4 PV name of
 	// this RPC service.
-	private static final String NAMES_SERVICE_CHANNEL_NAME = "names";
 	private static final String RDB_SERVICE_CHANNEL_NAME = "rdb";
     
        	// Factories for creating the data and introspection interfaces of data
@@ -92,14 +109,7 @@ public class RdbService
 
 	// Default console logging level.
 	private static final Level LOG_LEVEL_DEFAULT = Level.INFO;
-	
-	private static String 
-          INSTANCE_NAMESQUERY = 
-		"SELECT DISTINCT INSTANCE FROM AIDA_NAMES WHERE INSTANCE LIKE \'%s\'", 
-          INSTANCE_AND_ATTRIBUTE_NAMESQUERY = 
-		"SELECT DISTINCT INSTANCE||\'/\'||ATTRIBUTE FROM AIDA_NAMES "+
-		"WHERE INSTANCE LIKE \'%s\' AND ATTRIBUTE LIKE \'%s\'"; 
-	
+		
  
 	// Error Messages
 	private static final String NOTEXPECTEDNTID =
@@ -110,104 +120,10 @@ public class RdbService
 		"Missing required argument %s rvalue";
 	private static final String NORETURNEDDATA = 
 		"Failed to get data from the database. Check service name and arguments";
-
-	/**
-	 * The implementation class of the namesService RPCService, which
-	 * gets the names of EPICS PVs matching a given pattern provided by the user.
-	 *  
-	 * @author Greg White, 9-Nov-2012.
-	 * @version Greg White, 11-Sep-2013, modified to be MEME rdb service. 
-	 */
-	private static class NamesServiceImpl implements RPCService
-	{
-
-		// The pvAccess connection delegate for the RDB service.
-		private final RdbServiceConnection connection;
-
-		NamesServiceImpl(RdbServiceConnection connection)
-		{
-			this.connection = connection;
-		}
-
-		/**
-		 * Construct and return the requested database data, given an NTURI
-		 * that encodes the name of a relational database query, as
-		 * understood by this service.
-		 */
-		public PVStructure request(PVStructure pvUri)
-				throws RPCRequestException
-		{
-			// Retrieve the (required) pattern argument 
-			// TODO: Make efficient by extracting query and acting on that.
-			//
-			PVString pvPatternArg =
-			    pvUri.getStructureField("query").getStringField("pattern");
-			if (pvPatternArg == null)
-				throw new RPCRequestException(StatusType.ERROR,
-			     	      String.format(MISSINGREQUIREDARGLVAL,"pattern"));
-			String pattern = pvPatternArg.get();
-			if (pattern == null)
-				throw new RPCRequestException(StatusType.ERROR,
-			      	      String.format(MISSINGREQUIREDARGRVAL,"pattern"));
-
-			// Retieve the (optional) service name argument, if present
-			String serviceName = null;
-                        if ( pvUri.getStructureField("query").getSubField("service")!=null )
-			{
-				PVString pvServiceNameArg =
-			      	pvUri.getStructureField("query").getStringField("service");
-				if (pvServiceNameArg != null)
-					serviceName = pvServiceNameArg.get();
-			}
-
-
-			// Parse the name to see if we were given both an instance 
-			// part (device name) and an attribute part or not. Then lookup
-			// matching names appropriately in AIDA_NAMES.
-			//
-			PVStructure pvTop = null;			
-			try
-			{
-				int firstSlash = pattern.indexOf('/');
-				int parts = (firstSlash == -1) ? 1 : 2;
-				
-				String query = null;
-				if ( firstSlash == -1 && serviceName == null)
-					query = String.format(INSTANCE_NAMESQUERY,pattern);
-				else 
-				{
-					String instance=pattern.substring(0,firstSlash);
-					String attribute=pattern.substring(firstSlash+1);
-					query = String.format(
-						INSTANCE_AND_ATTRIBUTE_NAMESQUERY,
-						instance, attribute );
-				}
-
-				// All gone well, so, pass the pvTop introspection
-				// interface and the query string to getData, which
-				// will populate the pvTop for us with the data in
-				// Oracle.
-				//
-				pvTop = connection.getData(query);
-
-				logger.finer("pvTop = " + pvTop);
-
-				// Return the data from Oracle, in the pvTop, to the client.
-				return pvTop;
-				
-			} catch (UnableToGetDataException ex)
-			{
-				
-				String issueMsg = 
-					"Failed to get data from the database; "+
-					ex.getMessage();
-				logger.info(String.format(
-					"Server request returns: [%s]\'%s\'", 
-					StatusType.ERROR, issueMsg)); 
-				throw new RPCRequestException(StatusType.ERROR, issueMsg);
-			}
-		}
-	}
+	private static final String SERVERINIT_SUCCESSFUL =
+		"SERVICE %s initializaton successful.";
+	private static final String SERVERINIT_FAILED =
+		"SERVICE %s initializaton FAILED.";
 
 	/**
 	 * The implementation class of the namesService RPCService, which
@@ -224,11 +140,14 @@ public class RdbService
 
 		// The pvAccess connection delegate for the RDB service.
 		private final RdbServiceConnection connection;
-
-		RdbServiceImpl(RdbServiceConnection connection)
+	        private final Hashtable<String, String> queries_ht;
+		
+		RdbServiceImpl(RdbServiceConnection connection, Hashtable<String,String> queries_ht)
 		{
 			this.connection = connection;
+			this.queries_ht = queries_ht;
 		}
+
 
 		/**
 		 * Construct and return the requested database data, given an NTURI
@@ -270,7 +189,7 @@ public class RdbService
 			try
 			{
 				// Look up sql query for queryname given.
-				String sqlquery = connection.instanceToQuery( rdbqueryname );
+				String sqlquery = queries_ht.get( rdbqueryname );
 
 				// Execute sql query and serialize to pvTop PVStructure
 				pvTop = connection.getData(sqlquery);
@@ -290,38 +209,94 @@ public class RdbService
 		}
 	}
 
+	/* Not needed if we only keep hashtable of sqlStatements, rather than
+	   all meta data of a query or all meatdata of a channel.
+
+	protected static String getString(String tagName, Element element)
+	{
+		NodeList list = element.getElementsByTagName(tagName);
+		if (list != null && list.getLength() > 0)
+		{
+			NodeList subList = list.item(0).getChildNodes();
+			
+			if (subList != null && subList.getLength() > 0)
+			{
+				return subList.item(0).getNodeValue();
+			}
+		}
+		return null;
+	}*/
+
+
 	public static void main(String[] args) throws PVAException
 	{
 		// Get service name from property if given.
 		String server_name = System.getProperty( "SERVER_NAME",
 							  SERVER_NAME_DEFAULT );
+		String rpcchannelsxml_fn = System.getProperty( "RPCQUERIES_FILENAME",
+							       RPCQUERIES_FILENAME_DEFAULT );
 
 		// Initialize console logging.
 		logger.info("SERVICES OF \""+server_name +"\" is/are initializing...");
 
-		// Initialize database connection.
-		RdbServiceConnection namesConnection =
-		    new RdbServiceConnection(NAMES_SERVICE_CHANNEL_NAME);
-		RdbServiceConnection rdbConnection = 
-		    new RdbServiceConnection(RDB_SERVICE_CHANNEL_NAME);
+		try
+		{
+			// Initialize database connection.
+			RdbServiceConnection rdbConnection = 
+				new RdbServiceConnection(RDB_SERVICE_CHANNEL_NAME);
 
-		// Instantiate ChannelRPC service instances of this pvAccess server.
-		RPCServer server = new RPCServer();
-		logger.info("SERVICES OF \""+server_name +"\" is/are initializing...");
+			// Instantiate ChannelRPC service instances of this pvAccess server.
+			RPCServer server = new RPCServer();
+			logger.info("SERVICES OF \""+server_name +"\" is/are initializing...");
 
-		// Register channels to which this service should respond over pvAccess.
-		server.registerService(NAMES_SERVICE_CHANNEL_NAME, 
-				       new NamesServiceImpl(namesConnection));
-		logger.info("SERVICE \""+NAMES_SERVICE_CHANNEL_NAME+"\" is operational.");
-	    
-		server.registerService(RDB_SERVICE_CHANNEL_NAME, 
-				       new RdbServiceImpl(rdbConnection));
-		logger.info("SERVICE \""+RDB_SERVICE_CHANNEL_NAME+"\" is operational.");
+			// Make hashtable of sql queries keyed by query name. 
+			Hashtable<String, String> rpcqueries_ht = new Hashtable<String, String>();
 
-		server.printInfo();
+			// XML open file best practice. XML file of sql queries fetched by this service.
+			File fXmlFile = new File(rpcchannelsxml_fn);
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			Document doc = dBuilder.parse(fXmlFile);
+			doc.getDocumentElement().normalize();
+			
+			// Read through xml file, and build the hashtable of queries
+			NodeList nList = doc.getElementsByTagName("query");
+			for (int temp = 0; temp < nList.getLength(); temp++)
+			{
+				Node nNode = nList.item(temp);
+				logger.info("Adding Channel metadata :" + nNode.getNodeName());
+				if (nNode.getNodeType() == Node.ELEMENT_NODE)
+				{
+					Element element = (Element) nNode;
+					String queryName =
+						element.getElementsByTagName("name").item(0).getTextContent();
+			
+					String sqlStatement = // getString("sqlStatement", element);
+						element.getElementsByTagName("sqlStatement").item(0).
+						getTextContent().trim();
+					logger.info(queryName + " : " + sqlStatement);
+					rpcqueries_ht.put(queryName, sqlStatement);
+				}
+			}
+
+			// Register the rpc channel name "rdb" (eget -s rdb) and give db connection
+			// and hashtable of queries as the meta data of that channel.
+			server.registerService("rdb", new RdbServiceImpl(rdbConnection, rpcqueries_ht));
+
+			server.printInfo();
+			logger.info(String.format(SERVERINIT_SUCCESSFUL, server_name));
+
+			// Start the service.
+			server.run(0);
+
+		}
+		catch ( Exception e)
+		{
+			logger.severe(e.toString());
+			logger.severe(String.format(SERVERINIT_FAILED, server_name));
+			
+		}
 		
-		// Start the service.
-		server.run(0);
 	}
 
 }

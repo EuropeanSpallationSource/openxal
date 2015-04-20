@@ -1,10 +1,10 @@
 #!/bin/bash
 #!-*- sh -*-
 #
-# Abs: rdbServerRunner executes the MEME rdbService.
-#
-# Rem: rdbServerRunner runs the rdb service, which is a simple service for 
-#      getting data out of a relational database. 
+# Abs: rdbServerRunner executes the MEME "rdb" service. The rdb service
+#      is a general purpose EPICS V4 rpc style service for 
+#      efficiently getting data out of a relational database and returning
+#      is to an EPICS PVA client (such as an IOC or user). 
 #
 # Use Case: Execute rdbServerRunner to start the rdbServer prior to executing 
 #      pvget commands to get data by pv from Oracle.
@@ -49,9 +49,12 @@ echo "
            -l   - Server is intended for initial software development and testing, 
                    on a localhost, like laptop.
 
-           The default is -p, start a production server.
+            ** Disambiguation of pvs for -p or -d is done by client 
+               side setting of EPICS_PVA_ADDR_LIST, since a development
+               ssytem will run on a development host, while production
+               runs on a production host, on the production network **
 
-           ** Disambiguation of pvs for -p or -d is done by client side setting of                                 EPICS_PVA_ADDR_LIST **     
+           The default is -d, start a development server. 
 
         -h Prints this help.
 "
@@ -60,7 +63,7 @@ echo "
 # Process server execution environment args. 
 #
 mode=prod
-while getopts psdl opt
+while getopts pdl opt
 do
     case "$opt" in
        p) mode=prod;;
@@ -80,6 +83,7 @@ fi
 #
 export SERVER_NAME=meme_rdb
 export INSTANCE_NAME=${SERVER_NAME}_${mode}
+
 #
 # Locations
 #
@@ -89,12 +93,13 @@ SERVICE_ROOT=${MEMEROOT:-/usr/local/esss/packages/meme}/services/rdb
 SUPPORT_ROOTDIR=${MEMEROOT:-/usr/local/esss/packages/meme}/support
 
 # EPICS 
-EPICS_TOP=/usr/local/esss/epics
-EPICS_PVJAVA=${EPICS_TOP}/epics-java
+EPICS_BASE=${EPICS_BASE:-/usr/local/esss/epics}
+EPICS_PVJAVA=${EPICS_PVJAVA:-${EPICS_BASE}/epics-java}
 E4_CLASSPATH=${EPICS_PVJAVA}/pvDataJava.jar:${EPICS_PVJAVA}/pvAccessJava.jar
 
 # Postgress 
 JDBC_CLASSPATH=${SERVICE_ROOT}/ext/postgresql-9.4-1201.jdbc41.jar
+RDB_CONNECTION_URI=jdbc:postgresql://ics-services.esss.lu.se:5432/machinemodel
 
 # CLASSPATH
 #
@@ -102,11 +107,6 @@ CLASSPATH=${SERVICE_ROOT}/lib/${SERVER_NAME}.jar
 CLASSPATH=${CLASSPATH}:${SUPPORT_ROOTDIR}/lib/memesupport.jar
 CLASSPATH=${CLASSPATH}:${E4_CLASSPATH}
 CLASSPATH=${CLASSPATH}:${JDBC_CLASSPATH}
-
-# Postgress JDBC connection config
-#
-RDB_CONNECTION_URI=jdbc:postgresql://ics-services.esss.lu.se:5432/machinemodel
-#CONNECTION_STRING="-DCONNECTION_URI_PROPERTY=${RDB_CONNECTION_URI}"
 
 # EPICS PVA Config.
 # SLAC overrides default EPICS_PVA_BROADCAST_PORT, but ESS doesn't.
@@ -130,7 +130,6 @@ fi
 # Export runtime requirements
 #
 export CLASSPATH
-export LD_LIBRARY_PATH
 
 # Logging
 #
@@ -139,7 +138,8 @@ function header()
 {
     echo "*************************************************************************"
     echo Log file: ${log_file}
-    echo "Starting ${SERVER_NAME} at `date +'%FT-%H-%M-%S'` from ${PWD} as $USER on"
+    echo "Starting ${SERVER_NAME} at `date +'%FT-%H-%M-%S'`"
+    echo "from ${PWD} as ${USER} on "
     echo "`uname -a`"
     echo "*************************************************************************" 
     echo
@@ -171,5 +171,6 @@ exec -a ${INSTANCE_NAME} java -server ${PORTOPT} \
   -DCONNECTION_URI_PROPERTY=${RDB_CONNECTION_URI} \
   -DCONNECTION_USERID_PROPERTY=machinemodel \
   -DCONNECTION_PWD=physicsl1nacstuff \
+  -DRPCQUERIES_FILENAME=${SERVICE_ROOT}/lib/rdb.xdb \
   -Djava.util.logging.config.file=${SERVICE_ROOT}/lib/rdbserverlogging.properties \
      edu/stanford/slac/meme/service/rdb/RdbService 2>&1 | tee -a $log_file &

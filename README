@@ -28,6 +28,12 @@ Plan
  Convert model service so it discovers pvs at runtime init
  Convert rdb so discovers pvs at init
 
+use a service which is running on your own machine
+ 501  cd Development/ess/meme
+  502  source script/setup_epics_hostDefaults_mac.bash
+  503  source script/setup_epics.bash
+  504  export EPICS_PVA_ADDR_LIST=localhost
+
 
 0. DEVELOPMENT SETUP
 -------------------

@@ -7,11 +7,14 @@
 #      of a relational databaseand make it available as a
 #      EPICS V4 PV value.
 #
-# Usage:  
-#         cd top level meme directory - containing services/ support/ etc
-#         export MEMEROOT=`pwd`
-#         source script/setup_epics.bash
-#         make [clean build]
+# Usage:
+# Usage: IN BASH
+#        export MEMEROOT=<pathname of meme dir, containing support/ dir>
+#        [optionally source script/setup_meme_HostDefaults_mac.bash  (or other personal host defaults file)]
+#        source script/setup_meme.bash
+#        cd ../support/
+#        [make sure to set Java to at least 1.7. Eg on mac export JAVA_HOME=`/usr/libexec/java_home -v 1.7`]
+#        make
 #
 # Ref: 
 # ----------------------------------------------------------------------------
@@ -43,11 +46,12 @@ CLASSPATH = $(MEMEROOT)/support/classes:${EPICS_CLASSPATH}:${JDBC_CLASSPATH}
 sources = $(wildcard src/edu/stanford/slac/meme/service/rdb/*.java)
 classfiles = $(patsubst src/%.java, classes/%.class, $(sources))
 scripts = script/rdbServerRunner
-configs = script/rdbserverlogging.properties
+configs = script/rdbserverlogging.properties script/rdb.xdb
 jarfile = $(SERVICE_ROOT)/lib/$(JAR_NAME)
 
 classes/%.class : src/%.java
 	$(JAVAC) -sourcepath src -classpath $(CLASSPATH) -d classes $<
+
 
 $(jarfile) : $(classfiles) | lib
 	jar -cvf $(jarfile) -C classes/ . 

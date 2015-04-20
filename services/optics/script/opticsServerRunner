@@ -1,12 +1,12 @@
 #!/bin/bash
 #!-*-sh-*-
 #
-# Abs: opticsServerRunner executes the MEME opticsServer. opticsServer hosts
-#      an MEME EPICS V4 service named "optics"
+# Abs: opticsServerRunner executes the MEME optics server. The optics server is
+#      an EPICS V4 service, named "optics", which gets model data out of a database.
 #
 # Rem: The optics service gets accelerator mathematical model data out of a
 #      database such as Oracle or PostgresQL, and can compute 
-#      interelement response matrices.
+#      inter-element response matrices and process other arguments
 #
 # Usage:
 #      Example, starting in local mode (data will be fake in local mode). 
@@ -62,7 +62,7 @@ echo "
 
 # Process server execution environment args. 
 #
-emode=dev
+emode=prod
 dmode=real
 while getopts pdln: opt
 do
@@ -120,9 +120,11 @@ CLASSPATH=${CLASSPATH}:${JDBC_CLASSPATH}
 MODE=`(echo $emode|tr '[[:lower:]]' '[[:upper:]]')`
 PORTOPT=""
 if [ x${MODE} == x"LOCAL" ]; then
+    # options for running on a local host 
    echo Setting up local execution mode
    dmode="FAKE"
 elif [ x$MODE == x"DEV" ]; then
+   # options for running in development mode 
    echo Setting up development/test execution mode
 fi
 DATA_MODE=`(echo $dmode|tr '[[:lower:]]' '[[:upper:]]')`

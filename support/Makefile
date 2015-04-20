@@ -7,8 +7,10 @@
 #
 # Usage: IN BASH
 #        export MEMEROOT=<pathname of meme dir, containing support/ dir>
-#        source script/memeHostDefaults_mac.bash  (or other personal host defaults file)
+#        [optionally source script/setup_meme_HostDefaults_mac.bash  (or other personal host defaults file)]
+#        source script/setup_meme.bash
 #        cd ../support/
+#        [make sure to set Java to at least 1.7. Eg on mac export JAVA_HOME=`/usr/libexec/java_home -v 1.7`]
 #        make
 #
 # Ref: 
