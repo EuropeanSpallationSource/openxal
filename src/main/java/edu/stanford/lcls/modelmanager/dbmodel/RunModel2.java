@@ -58,15 +58,11 @@ public class RunModel2 {
 		
 	}
 
-	public void run() {
-		try {
-			scenario.setProbe(probe.copy());
-			scenario.setSynchronizationMode(runMode);					
-			scenario.resync();
-			scenario.run();
-		} catch (ModelException e) {
-			e.printStackTrace();
-		}
+	public void run() throws ModelException {
+		scenario.setProbe(probe.copy());
+		scenario.setSynchronizationMode(runMode);					
+		scenario.resync();
+		scenario.run();
 	}
 
 	public Accelerator getAccelerator() {

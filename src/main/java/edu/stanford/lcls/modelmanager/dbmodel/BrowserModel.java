@@ -5,9 +5,9 @@ import edu.stanford.slac.Message.Message;
 //import edu.stanford.lcls.xal.tools.ca.ConnectionManager;
 import edu.stanford.lcls.modelmanager.view.ModelPlotData;
 import edu.stanford.lcls.modelmanager.view.ModelStateView;
-
 import xal.tools.data.DataAdaptor;
 import xal.tools.xml.XmlDataAdaptor;
+import xal.model.ModelException;
 import xal.sim.scenario.Scenario;
 import xal.tools.messaging.MessageCenter;
 
@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
@@ -566,7 +567,7 @@ public class BrowserModel {
 				_selectedMachineModelDetail, _goldMachineModelDetail);
 	}
 	
-	public void runModel(int runModelMethod, String refID, boolean useDesignRef) throws SQLException {
+	public void runModel(int runModelMethod, String refID, boolean useDesignRef) throws SQLException, ModelException {
 		// beamline selection
 		rm.setModelMode(modelMode);
 		//TODO Connect all channels for model use.  This may have to be done earlier, not here.
