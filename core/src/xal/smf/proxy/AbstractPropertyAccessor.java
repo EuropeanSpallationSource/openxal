@@ -38,14 +38,20 @@ abstract public class AbstractPropertyAccessor implements PropertyAccessor {
 		final Map<String,Double> valueMap = new HashMap<String,Double>();
 		for( final String propertyName : propertyNames	) {
 			final Channel[] propertyChannels = node.getLivePropertyChannels( propertyName );
-			final double[] propertyChannelValues = new double[propertyChannels.length];
+			double[] propertyChannelValues = new double[propertyChannels.length];
 			for ( int index = 0 ; index < propertyChannels.length ; index++ ) {
 				final Channel channel = propertyChannels[index];
+				if (!channelValues.containsKey(channel)) {
+					propertyChannelValues = null;
+					break;
+				}
 				propertyChannelValues[index] = channelValues.get( channel );
 			}
-			final double scale = getPropertyScale( propertyName );
-			final double propertyValue = scale * node.getLivePropertyValue( propertyName, propertyChannelValues );
-			valueMap.put( propertyName, propertyValue );
+			if (propertyChannelValues != null) {
+				final double scale = getPropertyScale( propertyName );
+				final double propertyValue = scale * node.getLivePropertyValue( propertyName, propertyChannelValues );
+				valueMap.put( propertyName, propertyValue );
+			}
 		}
 
 		return valueMap;
