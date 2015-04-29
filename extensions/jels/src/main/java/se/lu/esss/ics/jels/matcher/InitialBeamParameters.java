@@ -91,4 +91,34 @@ public class InitialBeamParameters {
 	public List<Variable> getVariables() {
 		return variables;
 	}
+
+
+	public Variable getAx() {
+		return ax;
+	}
+
+
+	public Variable getBx() {
+		return bx;
+	}
+
+
+	public Variable getAy() {
+		return ay;
+	}
+
+
+	public Variable getBy() {
+		return by;
+	}
+
+
+	public Variable getAz() {
+		return az;
+	}
+
+
+	public Variable getBz() {
+		return bz;
+	}
 }
