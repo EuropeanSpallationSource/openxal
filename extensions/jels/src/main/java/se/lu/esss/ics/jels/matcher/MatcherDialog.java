@@ -9,6 +9,7 @@ import javax.swing.JButton;
 import javax.swing.JProgressBar;
 
 import xal.extension.widgets.beaneditor.SimpleBeanEditor;
+import xal.model.probe.EnvelopeProbe;
 
 
 
@@ -34,6 +35,6 @@ public class MatcherDialog extends SimpleBeanEditor<MatcherConfiguration> {
 
 	public static void main(String args[])
 	{
-		new MatcherDialog(null, new MatcherConfiguration(), true);
+		new MatcherDialog(null, new MatcherConfiguration(new EnvelopeProbe()), true);
 	}
 }
