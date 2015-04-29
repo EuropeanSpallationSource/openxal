@@ -10,13 +10,13 @@
 		
 	<groupId>org.xal</groupId>
 	<artifactId>openxal-packaging</artifactId>
-	<version>1.3</version>
+	<version>1.4</version>
 	
 	<packaging>pom</packaging>
 
 	<properties>
 		<unit.type>module</unit.type>
-		<openxal.version>1.0.3-SNAPSHOT</openxal.version>
+		<openxal.version>1.0.4-SNAPSHOT</openxal.version>
 	</properties>
 	
 	<developers>

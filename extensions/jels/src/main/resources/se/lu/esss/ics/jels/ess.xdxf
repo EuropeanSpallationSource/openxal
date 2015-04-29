@@ -3,14 +3,14 @@
  	xsi:noNamespaceSchemaLocation="http://sourceforge.net/p/xaldev/openxal/ci/master/tree/core/resources/xal/schemas/xdxf.xsd?format=raw"
     date="07.01.2014" system="ESS" ver="">
 	<comboseq id="from-mebt">
-		<sequence id="mebt"/>
-		<sequence id="dtl"/>
-		<sequence id="spoke"/>
-		<sequence id="mb"/>
-		<sequence id="hb"/>
-		<sequence id="hebt"/>
+		<sequence id="MEBT"/>
+		<sequence id="DTL"/>
+		<sequence id="SPOKE"/>
+		<sequence id="MB"/>
+		<sequence id="HB"/>
+		<sequence id="HEBT"/>
 	</comboseq>
-	<sequence id="mebt" len="3.840000000069995" pos="0.0">
+	<sequence id="MEBT" len="3.840000000069995" pos="0.0">
         <node id="BPM1" len="0.0" pos="0.16" type="BPM">
             <attributes>
                 <bpm frequency="3.5221E8" length="1.0" orientation="1"/>
@@ -503,9 +503,9 @@
             <ps main="ST10-HC-PS"/>
         </node>
     </sequence>
-    <sequence id="dtl" len="38.88074500001001" pos="3.840000000069995">
+    <sequence id="DTL" len="38.88074500001001" pos="3.840000000069995">
         <attributes>
-            <sequence predecessors="mebt"/>
+            <sequence predecessors="MEBT"/>
         </attributes>
         <node id="QP12" len="0.025" pos="0.0125" type="Q">
             <attributes>
@@ -7427,9 +7427,9 @@
         </sequence>
         <node id="LATTICE-END-5" len="0.0" pos="38.88074500000001" type="marker"/>
     </sequence>
-    <sequence id="spoke" len="55.85999999999996" pos="42.72074500008">
+    <sequence id="SPOKE" len="55.85999999999996" pos="42.72074500008">
         <attributes>
-            <sequence predecessors="dtl"/>
+            <sequence predecessors="DTL"/>
         </attributes>
         <node id="LATTICE-POINT-46" len="0.0" pos="0.0" type="marker"/>
         <node id="LATTICE-START-6" len="0.0" pos="0.0" type="marker"/>
@@ -8511,9 +8511,9 @@
         </node>
         <node id="LATTICE-POINT-59" len="0.0" pos="55.85999999999996" type="marker"/>
     </sequence>
-    <sequence id="mb" len="76.67999999999998" pos="98.58074500007996">
+    <sequence id="MB" len="76.67999999999998" pos="98.58074500007996">
         <attributes>
-            <sequence predecessors="spoke"/>
+            <sequence predecessors="SPOKE"/>
         </attributes>
         <node id="LATTICE-START-7" len="0.0" pos="0.0" type="marker"/>
         <node id="BPM39" len="0.0" pos="0.2562" type="BPM">
@@ -9381,9 +9381,9 @@
         </node>
         <node id="LATTICE-POINT-68" len="0.0" pos="76.67999999999998" type="marker"/>
     </sequence>
-    <sequence id="hb" len="178.92000000001002" pos="175.26074500007994">
+    <sequence id="HB" len="178.92000000001002" pos="175.26074500007994">
         <attributes>
-            <sequence predecessors="mb"/>
+            <sequence predecessors="MB"/>
         </attributes>
         <node id="LATTICE-START-8" len="0.0" pos="0.0" type="marker"/>
         <node id="BPM48" len="0.0" pos="0.2562" type="BPM">
@@ -11404,9 +11404,9 @@
         <node id="LATTICE-POINT-89" len="0.0" pos="178.92000000000002" type="marker"/>
         <node id="LATTICE-END-8" len="0.0" pos="178.92000000000002" type="marker"/>
     </sequence>
-    <sequence id="hebt" len="241.40569689096785" pos="354.1807450000899">
+    <sequence id="HEBT" len="241.40569689096785" pos="354.1807450000899">
         <attributes>
-            <sequence predecessors="hb"/>
+            <sequence predecessors="HB"/>
         </attributes>
         <node id="LATTICE-POINT-90" len="0.0" pos="0.0" type="marker"/>
         <node id="LATTICE-START-9" len="0.0" pos="0.0" type="marker"/>

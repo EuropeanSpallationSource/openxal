@@ -15,6 +15,7 @@ import java.util.List;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import xal.model.IComponent;
@@ -52,6 +53,7 @@ import xal.tools.beam.PhaseVector;
  * @author Christopher K. Allen
  * @since  Sep 8, 2014
  */
+@Ignore /* Ivo List, 13.3.2015, disabled because we don't have virtual accelerator running on test slaves (but this could be done) */
 public class TestCompareLiveAccelerator {
     
 

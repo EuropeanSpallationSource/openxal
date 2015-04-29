@@ -7,8 +7,9 @@
     </elements>
     
     <associations>
-		<map smf="fm" model="se.lu.esss.ics.jels.model.elem.jels.FieldMap"/>  
 		<map smf="fm" model="se.lu.esss.ics.jels.model.elem.jels.FieldMapNCells"/>
+		<map smf="fm" model="se.lu.esss.ics.jels.model.elem.jels.FieldMap"/>  
+   		
 		
 		<map smf="fm" model="se.lu.esss.ics.jels.model.elem.jels.FakeElement"/>
 		<!--<map smf="fm" model="se.lu.esss.ics.jels.model.elem.jels.DriftGapDrift"/>--> 

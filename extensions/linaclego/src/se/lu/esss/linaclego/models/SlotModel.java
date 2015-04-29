@@ -55,11 +55,11 @@ public class SlotModel {
         return id;
     }
 
-	public Slot apply(String id, Parameters arguments) {
-		Slot slotout = new Slot(id);
+	public Slot apply(Parameters arguments) {
+		Slot slotout = new Slot();
 		List<BeamlineElement> bleout = slotout.getBeamlineElements();
 		for (BeamlineElement blein1 : this.ble) {
-			BeamlineElement bleout1 = blein1.apply(arguments);
+			BeamlineElement bleout1 = blein1.apply(slotout, arguments);
 			bleout.add(bleout1);
 		}
 		return slotout;

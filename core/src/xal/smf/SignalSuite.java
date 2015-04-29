@@ -86,6 +86,8 @@ public class SignalSuite {
             channelAdaptor.setValue( "signal", signalEntry.signal() );
             channelAdaptor.setValue( "settable", signalEntry.settable() );
             channelAdaptor.setValue( "valid", signalEntry.isValid() );
+            if (signalEntry.getTransformKey() != null)
+            	channelAdaptor.setValue( "transform", signalEntry.getTransformKey());
         }
     }
     
@@ -175,6 +177,18 @@ public class SignalSuite {
      */
 	private SignalEntry getSignalEntry( final String handle ) {
 		return _signalMap.get( handle );
+	}
+	
+	/**
+	 * Adds a signal to this signal suite
+	 * @param handle The handle to add
+	 * @param signal PV signal associated with the handle
+	 * @param transformKey Key of the signal's transformation
+	 * @param settable Is this PV settable
+	 */
+	public void addChannel(String handle, String signal, String transformKey, boolean settable)
+	{
+		_signalMap.put(handle, new SignalEntry(signal, settable, transformKey));
 	}
 }
 

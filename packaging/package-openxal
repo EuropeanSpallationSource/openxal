@@ -66,6 +66,7 @@ declare -a RPM_DIRS=(
     "$PROJECTDIR/apps/packaging/score"
     "$PROJECTDIR/apps/packaging/virtualaccelerator"
     "$PROJECTDIR/apps/packaging/xyzcorrelator"
+    "$PROJECTDIR/apps/packaging/esstools"
            
     # The OpenXAL meta-package
     "$PROJECTDIR/packaging/openxal-meta"

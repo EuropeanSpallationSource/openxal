@@ -1626,6 +1626,36 @@
 	
 					</xs:complexType>
 				</xs:element>
+				<xs:element name="fieldmap" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>
+							Implementation: xal.smf.impl.ESSFieldMap<br/>
+							A bucket to hold Information about fieldmaps.
+						</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:attribute name="xelmax" type="xs:double" use="required">
+							<xs:annotation>
+								<xs:documentation>Electric field intensity factor</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="phase" type="xs:double" use="required">
+							<xs:annotation>
+								<xs:documentation>Default (design) cavity RF phase (deg)</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="freq" type="xs:double" use="required">
+							<xs:annotation>
+								<xs:documentation>Design cavity resonant frequency (MHz)</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="fieldMapFile" type="xs:string" use="required">
+							<xs:annotation>
+								<xs:documentation>FieldMap file</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+					</xs:complexType>
+				</xs:element>
 			</xs:all>
 		</xs:complexType>
 	</xs:element>

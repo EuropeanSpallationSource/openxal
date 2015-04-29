@@ -10,7 +10,7 @@
 		
 	<groupId>org.xal</groupId>
 	<artifactId>openxal</artifactId>
-	<version>1.0.3-SNAPSHOT</version>
+	<version>1.0.4-SNAPSHOT</version>
 	
 	<packaging>pom</packaging>
 	
@@ -138,6 +138,11 @@
 			<dependency>
 				<groupId>se.lu.esss.ics.jels</groupId>
 				<artifactId>jels</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>se.lu.esss.ics.linaclego</groupId>
+				<artifactId>openxal.extensions.linaclego</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 		</dependencies>

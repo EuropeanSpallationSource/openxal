@@ -2,6 +2,7 @@ package se.lu.esss.ics.jels.model.elem.jels;
 
 import se.lu.esss.ics.jels.model.elem.els.IdealDrift;
 import se.lu.esss.ics.jels.smf.impl.ESSFieldMap;
+import se.lu.esss.ics.jels.smf.impl.FieldProfile;
 import se.lu.esss.ics.jels.tools.math.TTFIntegrator;
 import xal.model.IProbe;
 import xal.model.elem.ElementSeq;
@@ -30,7 +31,8 @@ public class DriftGapDrift extends ElementSeq {
 	public void initializeFrom(LatticeElement latticeElement) {
 		super.initializeFrom(latticeElement);
 	    final ESSFieldMap fm = (ESSFieldMap)latticeElement.getNode();
-	    final TTFIntegrator intgr = TTFIntegrator.getInstance(fm.getFieldMapFile()+".edz", fm.getFrequency()*1e6);
+	    FieldProfile fp = fm.getFieldProfile();
+	    final TTFIntegrator intgr = new TTFIntegrator(fp.getLength(), fp.getField(), fm.getFrequency()*1e6, false);
 	    
     	final double pho;	
     	
@@ -49,10 +51,9 @@ public class DriftGapDrift extends ElementSeq {
 	    		double inputphase = fm.getPhase()*Math.PI/180.;
 	    		double phim = 2*Math.PI*getFrequency() * fm.getLength()/2. / probe.getBeta()/LightSpeed;
 	    		setPhase(inputphase + phim + pho);
+	    		setTTFFit(intgr);
 	    	}
 	    };
-	    
-	    gap.setTTFFit(intgr.integratorWithOffset(fm.getLength()/2., pho));
 		gap.setFirstGap(true);
 		gap.setCellLength(fm.getLength());
 		gap.setE0(fm.getXelmax());

@@ -9,6 +9,7 @@ public class Edge extends BeamlineElement {
 	@Override
 	public void accept(BLEVisitor visitor) {
 		visitor.visit(this);
+		visitLegoMonitors(visitor);
 	}
 	
 	public double getPoleFaceRotationAngle()

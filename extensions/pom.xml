@@ -5,11 +5,11 @@
 	<parent>
 		<groupId>org.xal</groupId>
 		<artifactId>openxal</artifactId>
-		<version>1.0.3-SNAPSHOT</version>
+		<version>1.0.4-SNAPSHOT</version>
 	</parent>
 			
 	<artifactId>openxal.extensions</artifactId>
-	<version>1.0.3-SNAPSHOT</version>
+	<version>1.0.4-SNAPSHOT</version>
 	
 	<packaging>pom</packaging>
 	
@@ -26,6 +26,7 @@
 		<module>twissobserver</module>
 		<module>widgets</module>
 		<module>jels</module>
+		<module>linaclego</module>
 		<module>../services/pvlogger/extension</module>			
 		<module>../services/worker/extension</module>					
 	</modules>

@@ -13,6 +13,7 @@ import xal.model.alg.Tracker;
 import xal.model.probe.EnvelopeProbe;
 import xal.smf.Accelerator;
 import xal.smf.AcceleratorSeq;
+import xal.smf.data.XMLDataManager;
 
 public class SpaceChargeTest {
 	
@@ -45,7 +46,7 @@ public class SpaceChargeTest {
 			EnvelopeProbe probe = TestCommon.setupOpenXALProbe2( 3e6, frequency, 30e-3); 
 			((EnvelopeTracker)probe.getAlgorithm()).setProbeUpdatePolicy(Tracker.UPDATE_ALWAYS);
 			((EnvelopeTracker)probe.getAlgorithm()).setStepSize(1./i);
-			double dataOX[][] = GeneralTest.run(probe);
+			double dataOX[][] = GeneralTest.run(probe, XMLDataManager.acceleratorWithUrlSpec(JElsDemo.class.getResource("test/main.xal").toString()));
 			GeneralTest.saveResults(RESULTS_DIR + "/openxal.s"+i+".txt", dataOX);
 		}
 	}

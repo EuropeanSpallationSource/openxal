@@ -3,6 +3,7 @@ package se.lu.esss.linaclego;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -11,6 +12,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+import se.lu.esss.linaclego.Parameters.D;
 import se.lu.esss.linaclego.models.CellModel;
 
 
@@ -33,19 +35,31 @@ public class Cell {
     @XmlTransient
     protected Cell cellInstance;
 
+    @XmlTransient
+    private Section parent;
+    
     public Cell()
     {
     	
     }
     
-    public Cell(String id) {
+    public Cell(String id, Section parent) {
     	this.id = id;
+    	this.parent = parent;
 	}
 
+    public Section getParent()
+    {
+    	return parent;
+    }
+    
 	public List<Slot> getSlots() {
     	if (model != null) {
-    		if (cellInstance == null)
-    			cellInstance = model.apply(id, d);
+    		if (cellInstance == null) {
+    			cellInstance = model.apply(d);
+    			cellInstance.id = id;
+    			cellInstance.parent = parent;
+    		}
     		return cellInstance.getSlots();  
     	} else
     		return this.slot;
@@ -73,5 +87,24 @@ public class Cell {
 		for (Slot s : getSlots())
 			n += s.getBeamlineElements().size();
 		return n;
+	}
+
+	public void beforeUnmarshal(Unmarshaller u, Object parent) {
+		this.parent = (Section)parent;
+	}
+	
+	public void afterUnmarshal(Unmarshaller u, Object parent) {
+		Section section = (Section)parent;
+		Linac linac = section.getParent();
+		
+		//load lego sets
+		for (LegoSet s : linac.getLegoSets(section, this)) {
+			String dataId = s.getDataId();
+			D data = d.get(dataId);
+			if (data == null) System.err.println("Warning: there is no dataId = " + dataId + " in " + section.getId() + "." + getId());
+			else
+				data.legoSet = s;
+		}
+		
 	}
 }

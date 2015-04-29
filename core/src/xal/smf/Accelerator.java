@@ -28,10 +28,10 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
 	private Map<String,AcceleratorSeqCombo> _comboSequences;    
     
     /** Map of main power supplies keyed by the power supply id */
-    private Map<String,MagnetMainSupply> magnetMainSupplies;
+    protected Map<String,MagnetMainSupply> magnetMainSupplies;
     
     /** Map of trim power supplies keyed by the power supply id */
-    private Map<String,MagnetTrimSupply> magnetTrimSupplies;
+    protected Map<String,MagnetTrimSupply> magnetTrimSupplies;
         
     /** edit context holds the dynamic data */
     private EditContext editContext;

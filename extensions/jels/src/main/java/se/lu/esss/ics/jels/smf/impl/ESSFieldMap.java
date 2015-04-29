@@ -1,7 +1,10 @@
 package se.lu.esss.ics.jels.smf.impl;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 
 import se.lu.esss.ics.jels.smf.attr.ESSFieldMapBucket;
 import xal.smf.attr.AttributeBucket;
@@ -24,6 +27,7 @@ public class ESSFieldMap extends Electrostatic {
      */
 
     protected ESSFieldMapBucket           m_bucFieldMap;           // FieldMap parameters
+    protected FieldProfile	fieldProfile; // field profile
     
     static {
         registerType();
@@ -97,15 +101,20 @@ public class ESSFieldMap extends Electrostatic {
     /** FieldMap file */
     public void setFieldMapFile(String strVal)  { m_bucFieldMap.setFieldMapFile(strVal); }
 
+    /** Field profile */
+    public FieldProfile getFieldProfile() { return fieldProfile; }
+    
+    /** Field profile */
+    public void setFieldProfile(FieldProfile fieldProfile) { this.fieldProfile = fieldProfile; }
+    
     /**
-     * Updates fieldMap file attribute to point to the right file. Note, after loading it is not 
-     * possible to access absolute path to the file.
+     * Loads the field profile if necessary
      */
 	@Override
 	public void update(DataAdaptor adaptor) throws NumberFormatException {
 		super.update(adaptor);
 		try {
-			setFieldMapFile(new URI(((XmlDataAdaptor)adaptor).document().getDocumentURI()).resolve(getFieldMapFile()).toString());
+			fieldProfile = FieldProfile.getInstance(new URI(((XmlDataAdaptor)adaptor).document().getDocumentURI()).resolve(getFieldMapFile()+".edz").toString());			
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		}

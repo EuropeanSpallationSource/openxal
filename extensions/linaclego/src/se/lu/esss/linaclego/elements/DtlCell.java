@@ -3,12 +3,14 @@ package se.lu.esss.linaclego.elements;
 import javax.xml.bind.annotation.XmlType;
 
 import se.lu.esss.linaclego.BLEVisitor;
+import se.lu.esss.linaclego.LegoSet;
 
 @XmlType(name = "dtlCell")
 public class DtlCell extends RfGap {
 	@Override
 	public void accept(BLEVisitor visitor) {
 		visitor.visit(this);
+		visitLegoMonitors(visitor);
 	}
 	
 	@Override
@@ -37,9 +39,23 @@ public class DtlCell extends RfGap {
 		return getParameters().getDoubleValue("grad1Tpm");
 	}
 	
+	public String getQ1DevName()
+	{
+		LegoSet s = getParameters().get("grad1Tpm").getLegoSet();
+		if (s == null) System.err.println("Warning: there's no devNames for "+getEssId());
+		return s != null ? s.getDevName() : getEssId().replace('-', ':') + "Q1.CURR";
+	}
+	
 	public double getQ2FieldGradient()
 	{
 		return getParameters().getDoubleValue("grad2Tpm");
+	}
+	
+	public String getQ2DevName()
+	{
+		LegoSet s = getParameters().get("grad2Tpm").getLegoSet();
+		if (s == null) System.err.println("Warning: there's no devNames for "+getEssId());
+		return s != null ? s.getDevName() : getEssId().replace('-', ':') + "Q2.CURR";
 	}
 	
 	public double getVoltageMult()
@@ -52,4 +68,4 @@ public class DtlCell extends RfGap {
 		return getParameters().getDoubleValue("rfPhaseAdd");
 	}
 	
-	}
+}

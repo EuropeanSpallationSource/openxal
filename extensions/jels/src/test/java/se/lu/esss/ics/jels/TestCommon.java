@@ -22,6 +22,7 @@ import xal.model.alg.EnvelopeTracker;
 import xal.model.alg.Tracker;
 import xal.model.probe.EnvelopeProbe;
 import xal.model.probe.Probe;
+import xal.model.probe.traj.EnvelopeProbeState;
 import xal.model.probe.traj.ProbeState;
 import xal.model.probe.traj.Trajectory;
 import xal.model.xml.LatticeXmlWriter;
@@ -124,6 +125,8 @@ public abstract class TestCommon {
 			for (int j=0; j<6; j++)
 				System.out.printf("%E ",cov.getElem(i,j));
 		}*/
+		
+		envelopeProbe.initialize();
 		
 		return envelopeProbe;
 	}
@@ -302,36 +305,33 @@ public abstract class TestCommon {
 	
 	public void checkTWTransferMatrix(double T[][]) throws ModelException
 	{		
-		Iterator<IComponent> it = scenario.getLattice().globalIterator();		
-		Trajectory trajectory = probe.getTrajectory();
-		// TODO REMOVE WORKAROUND there's a bug in OpenXal trajectory iterator gives incorrect order of elements
-		//Iterator<ProbeState> it2 = trajectory.stateIterator();
+		Trajectory<EnvelopeProbeState> trajectory = probe.getTrajectory();
 		
-		Probe probe = this.probe.copy();
+		Iterator<EnvelopeProbeState> it = trajectory.stateIterator();
+		
+		Probe<EnvelopeProbeState> probe = this.probe.copy();
 		PhaseMap pm = PhaseMap.identity();		
 		
-		ProbeState initialState = null;
-		ProbeState ps = null;
+		EnvelopeProbeState initialState = null;
+		EnvelopeProbeState ps = null;
 		
 		while (it.hasNext()) {
-			IComponent comp = it.next();
-			if (comp instanceof IElement) {				
-				IElement el = (IElement)comp;				
-				//el.transferMap(probe, el.getLength()).getFirstOrder().print();
-				ProbeState psnext = trajectory.stateForElement(el.getId());
-				if (ps != null) {
-					probe.applyState(ps);
-					PhaseMap element_pm = el.transferMap(probe, el.getLength());
-					
-					if (!(elementMapping instanceof ElsElementMapping))
-						ROpenXal2TW(ps.getGamma(), psnext.getGamma(), element_pm);					
-					
-					pm = element_pm.compose(pm);
-				}
-				ps = psnext;
+			EnvelopeProbeState psnext = it.next();
+			
+			//el.transferMap(probe, el.getLength()).getFirstOrder().print();
+			if (ps != null) {
+				probe.applyState(ps);
+				PhaseMap element_pm = new PhaseMap(psnext.getResponseMatrix().times(ps.getResponseMatrix().inverse())); 
 				
-				if (initialState == null) initialState = ps;
+				if (!(elementMapping instanceof ElsElementMapping))
+					ROpenXal2TW(ps.getGamma(), psnext.getGamma(), element_pm);					
+				
+				pm = element_pm.compose(pm);
 			}
+			ps = psnext;
+			
+			if (initialState == null) initialState = ps;
+		
 		}
 	
 		// transform T

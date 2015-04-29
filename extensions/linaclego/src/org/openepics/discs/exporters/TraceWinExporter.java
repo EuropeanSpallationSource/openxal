@@ -2,34 +2,32 @@ package org.openepics.discs.exporters;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParserFactory;
-import javax.xml.transform.sax.SAXSource;
 
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
 
 import se.lu.esss.linaclego.BLEVisitor;
 import se.lu.esss.linaclego.Cell;
 import se.lu.esss.linaclego.Linac;
+import se.lu.esss.linaclego.LinacLego;
 import se.lu.esss.linaclego.Section;
 import se.lu.esss.linaclego.Slot;
+import se.lu.esss.linaclego.elements.BeamlineElement;
 import se.lu.esss.linaclego.elements.Bend;
-import se.lu.esss.linaclego.elements.ControlPoint;
+import se.lu.esss.linaclego.elements.LegoMonitor;
 import se.lu.esss.linaclego.elements.Drift;
 import se.lu.esss.linaclego.elements.DtlCell;
 import se.lu.esss.linaclego.elements.DtlDriftTube;
 import se.lu.esss.linaclego.elements.DtlRfGap;
 import se.lu.esss.linaclego.elements.Edge;
 import se.lu.esss.linaclego.elements.FieldMap;
+import se.lu.esss.linaclego.elements.Monitor;
 import se.lu.esss.linaclego.elements.Quad;
 import se.lu.esss.linaclego.elements.RfGap;
 import se.lu.esss.linaclego.elements.ThinSteering;
@@ -37,13 +35,11 @@ import se.lu.esss.linaclego.elements.ThinSteering;
 public class TraceWinExporter implements BLEVisitor {
 	private String fileName;
 	private PrintWriter pw;
-	private boolean printIdInTraceWin = true;
+	private boolean printIdInTraceWin = false;
 	private boolean printControlPoints = true;
 	
 	private Linac linac;
 	private Section section;
-	private Cell cell;
-	private Slot slot;
 	
 	public static final String space = "\t";
 	public static final String newline = System.getProperty("line.separator");
@@ -85,28 +81,31 @@ public class TraceWinExporter implements BLEVisitor {
 	
 	public void visit(Cell cell)
 	{
-		this.cell = cell;
 	}
 	
 	public void visit(Slot slot)
 	{
-		this.slot = slot;
 	}
 	
-	public void println(String id, String command, Object... params) 
+	public void println(BeamlineElement ble, String command, Object... params) 
 	{
-		printCommand(id, command);
+		printCommand(ble, command);
 		printParams(params);
 		pw.println();
 	}
 	
-	public void printCommand(String id, String command) 
+	public void printCommand(BeamlineElement ble, String command) 
 	{
 		StringBuilder sb = new StringBuilder();
-		if (printIdInTraceWin && id != null) 
+		if (printIdInTraceWin && ble != null && ble.getId() != null) { 
+			Slot slot = ble.getParent();
+			Cell cell = slot.getParent();
+			Section section = cell.getParent();
+		
 			sb.append(section.getId()).append('-').append(cell.getId()).append('-')
-				.append(slot.getId()).append('-').append(id)
+				.append(slot.getId()).append('-').append(ble.getId())
 				.append(":").append(space);
+		}
 		sb.append(command);
 		pw.print(sb);
 	}
@@ -122,25 +121,23 @@ public class TraceWinExporter implements BLEVisitor {
 
 	@Override
 	public void visit(Drift drift) {
-		println(drift.getId(), "DRIFT",
+		println(drift, "DRIFT",
 				fourPlaces.format(drift.getLength()),
 				fourPlaces.format(drift.getApertureR()),
 				fourPlaces.format(drift.getApertureY()));
-		visitControlPoints(drift.getId());
 	}
 
 
 
 	@Override
 	public void visit(Quad quad) {
-		println(quad.getId(), "QUAD",
+		println(quad, "QUAD",
 				quad.getLength(),quad.getFieldGradient(), quad.getApertureR());
-		visitControlPoints(quad.getId());
 	}
 
 	@Override
 	public void visit(RfGap rfGap) {
-		println(rfGap.getId(),"GAP",
+		println(rfGap,"GAP",
 				rfGap.getVoltage(),
 				rfGap.getRFPhase(),
 				rfGap.getApertureR(),
@@ -151,23 +148,21 @@ public class TraceWinExporter implements BLEVisitor {
 				rfGap.getTTF().getK2Ts(),
 				rfGap.getTTF().getKS(),
 				rfGap.getTTF().getK2S());
-		visitControlPoints(rfGap.getId());
 	}
 
 	@Override
 	public void visit(Bend bend) {
-		println(bend.getId(), "BEND", 
+		println(bend, "BEND", 
 				bend.getBendAngle(),
 				bend.getCurvatureRadius(),
 				bend.getFieldIndex(),
 				bend.getApertureR(),
 				bend.getHVFlag());
-		visitControlPoints(bend.getId());
 	}
 
 	@Override
 	public void visit(Edge edge) {
-		println(edge.getId(), "EDGE",
+		println(edge, "EDGE",
 				edge.getPoleFaceRotationAngle(),
 				edge.getCurvatureRadius(),
 				edge.getGap(),
@@ -175,17 +170,15 @@ public class TraceWinExporter implements BLEVisitor {
 				edge.getK2(),
 				edge.getApertureR(),
 				edge.getHVFlag());
-		visitControlPoints(edge.getId());
 	}
 	
 	@Override
 	public void visit(ThinSteering thinSteering) {
-		println(thinSteering.getId(), "THIN_STEERING",
+		println(thinSteering, "THIN_STEERING",
 				thinSteering.getXKick(),
 				thinSteering.getYKick(),
 				thinSteering.getApertureR(),
 				thinSteering.getKickType());
-		visitControlPoints(thinSteering.getId());
 	}
 /*
 	@Override
@@ -221,7 +214,7 @@ public class TraceWinExporter implements BLEVisitor {
 */
 	@Override
 	public void visit(FieldMap fieldMap) {
-		println(fieldMap.getId(), "FIELD_MAP",
+		println(fieldMap, "FIELD_MAP",
 				100,
 				fourPlaces.format(fieldMap.getLength()),
 				fourPlaces.format(fieldMap.getRFPhase()),
@@ -231,12 +224,11 @@ public class TraceWinExporter implements BLEVisitor {
 				0,
 				0,
 				fieldMap.getFieldmapFile().split("\\.")[0]);
-		visitControlPoints(fieldMap.getId());
 	}
 
 	@Override
 	public void visit(DtlCell dtlCell) {
-		println(dtlCell.getId(), "DTL_CEL",
+		println(dtlCell, "DTL_CEL",
 				dtlCell.getLength(),
 				dtlCell.getQ1Length(),
 				dtlCell.getQ2Length(),
@@ -251,13 +243,12 @@ public class TraceWinExporter implements BLEVisitor {
 				dtlCell.getTTF().getTs(),
 				dtlCell.getTTF().getKTs(),
 				dtlCell.getTTF().getK2Ts());
-		visitControlPoints(dtlCell.getId());
 	}
 
 
 	@Override
 	public void visit(DtlDriftTube dtlDriftTube) {
-		println(dtlDriftTube.getId(), "DRIFT",
+		println(dtlDriftTube, "DRIFT",
 				fourPlaces.format(dtlDriftTube.getNoseConeUpLength()),
 				fourPlaces.format(dtlDriftTube.getApertureR()),
 				0.0);
@@ -269,12 +260,11 @@ public class TraceWinExporter implements BLEVisitor {
 				fourPlaces.format(dtlDriftTube.getNoseConeDnLength()),
 				fourPlaces.format(dtlDriftTube.getApertureR()),
 				0.0);
-		visitControlPoints(dtlDriftTube.getId());
 	}
 
 	@Override
 	public void visit(DtlRfGap dtlRfGap) {
-		println(dtlRfGap.getId(), "DRIFT",
+		println(dtlRfGap, "DRIFT",
 				fourPlaces.format(dtlRfGap.getLength() / 2.0),
 				fourPlaces.format(dtlRfGap.getApertureR()),
 				0.0);
@@ -293,46 +283,35 @@ public class TraceWinExporter implements BLEVisitor {
 				fourPlaces.format(dtlRfGap.getLength() / 2.0),
 				fourPlaces.format(dtlRfGap.getApertureR()),
 				0.0);
-		visitControlPoints(dtlRfGap.getId());
 	}
 
-	
-	private void visitControlPoints(String id) {
-		for (ControlPoint cp : linac.getControlPoints(section.getId(), cell.getId(), slot.getId(), id))
-		{
-			visit(cp);
+	@Override
+	public void visit(LegoMonitor legoMonitor) {
+		if (printControlPoints) {
+			println(null, ";" + legoMonitor.getEssId());
 		}
 	}
 	
 	@Override
-	public void visit(ControlPoint controlPoint) {
-		if (printControlPoints) {
-			println(null, ";" + controlPoint.getDevName().replace(":", "-"),
-				 "dxmm=" + Double.toString(controlPoint.getPosition()[0] * 1000.0),
-				 "dymm=" + Double.toString(controlPoint.getPosition()[1] * 1000.0),
-				 "dzmm=" + Double.toString(controlPoint.getPosition()[2] * 1000.0));
-		}
+	public void visit(Monitor monitor) {
+		//println(null, ";" + monitor.getMonitorType());
+		println(monitor, "DRIFT",
+				fourPlaces.format(monitor.getLength()),
+				fourPlaces.format(monitor.getApertureR()),
+				fourPlaces.format(monitor.getApertureY()));
 	}
 	
 	
-	public static void main(String[] args) throws JAXBException, SAXException, ParserConfigurationException, FileNotFoundException {
+	public static void main(String[] args) throws JAXBException, SAXException, ParserConfigurationException, FileNotFoundException, MalformedURLException {
 		if (args.length < 2) {
 			System.out.println("Usage: TraceWinExporter <linaclego.xml> <tracewin.dat>");
 			System.exit(-1);
 		}
 		
-		JAXBContext context = JAXBContext.newInstance(Linac.class, Drift.class, Quad.class);
-		Unmarshaller um = context.createUnmarshaller();
+		System.out.printf("Loading linac lego file: %s\n", args[0]);
+		Linac ll = LinacLego.load(args[0]);
 		
-		SAXParserFactory spf = SAXParserFactory.newInstance();
-		spf.setXIncludeAware(true);
-		spf.setNamespaceAware(true);
-		spf.setValidating(true);
-
-		XMLReader xr = spf.newSAXParser().getXMLReader();
-		SAXSource source = new SAXSource(xr, new InputSource(args[0]));
-		Linac ll = um.unmarshal(source, Linac.class).getValue();
-		
+		System.out.printf("Exporting TraceWin file: %s\n", args[1]);
 		TraceWinExporter twe = new TraceWinExporter(args[1]);
 		twe.export(ll);
 	}

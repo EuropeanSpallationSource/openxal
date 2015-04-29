@@ -1,5 +1,6 @@
 package se.lu.esss.ics.jels;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 
@@ -10,7 +11,6 @@ import xal.model.ModelException;
 import xal.model.alg.EnvelopeTracker;
 import xal.model.alg.Tracker;
 import xal.model.probe.EnvelopeProbe;
-import xal.model.probe.Probe;
 import xal.model.probe.traj.EnvelopeProbeState;
 import xal.model.probe.traj.Trajectory;
 import xal.model.xml.LatticeXmlWriter;
@@ -30,23 +30,50 @@ public class JElsDemo {
 
 
 	public static void main(String[] args) throws InstantiationException, ModelException {
-		System.out.println("Running\n");
+		if (args.length > 0 && ("-h".equals(args[0]) || "--help".equals(args[0]))) {
+			System.out.println("Usage: [accelerator file main.xal] [probe file]");
+			return;
+		}
 		
-		// Setup (pick combination of elements and algorithm)
-		//ElementMapping elementMapping = JElsElementMapping.getInstance(); // JELS element mapping - transfer matrices in OpenXal reference frame
-		//ElementMapping elementMapping = ElsElementMapping.getInstance(); // ELS element mapping - transfer matrices in TraceWin reference frame
-		//ElementMapping elementMapping = DefaultElementMapping.getInstance(); // OpenXAL element mapping - transfer matrices in OpenXal reference frame
+		AcceleratorSeq sequence;
+		EnvelopeProbe probe;
+		if (args.length == 0) {
+			// Loads accelerator
+			sequence = loadAcceleratorSequence();
+		} else { //	(args.length > 0) 
+			sequence = loadAcceleratorSequence(args[0]);
+		}
+		if (args.length > 1) {
+			probe = loadProbeFromXML(args[1]);
+		} else {
+			probe = defaultProbe();
+		}
 		
+		run(sequence, probe);
+	}
+
+	public static EnvelopeProbe defaultProbe() {
 		EnvelopeProbe probe = setupOpenXALProbe(); // OpenXAL probe & algorithm
 		//EnvelopeProbe probe = setupElsProbe(); // ELS probe & algorithm
 						
 		// Setup of initial parameters
 		setupInitialParameters(probe);
-        //loadInitialParameters(probe, "mebt-initial-state.xml");				
+        //loadInitialParameters(probe, "mebt-initial-state.xml");		
 		
-		// Loads accelerator
-		AcceleratorSeq sequence = loadAcceleratorSequence();
+		return probe;
+	}	
+		
+	public static void run(AcceleratorSeq sequence) throws ModelException {	
+		run(sequence, defaultProbe());
+	}
+		
+	public static void run(AcceleratorSeq sequence, EnvelopeProbe probe) throws ModelException {
+		// Setup (pick combination of elements and algorithm)
+		//ElementMapping elementMapping = JElsElementMapping.getInstance(); // JELS element mapping - transfer matrices in OpenXal reference frame
+		//ElementMapping elementMapping = ElsElementMapping.getInstance(); // ELS element mapping - transfer matrices in TraceWin reference frame
+		//ElementMapping elementMapping = DefaultElementMapping.getInstance(); // OpenXAL element mapping - transfer matrices in OpenXal reference frame
 				
+		
 		// Generates lattice from SMF accelerator
 		Scenario scenario = Scenario.newScenarioFor(sequence);//, elementMapping);		
 		scenario.setProbe(probe);			
@@ -69,7 +96,7 @@ public class JElsDemo {
 		scenario.resync();  // all rfgaps are updated*/		
 		
 		// Outputting lattice elements
-		saveLattice(scenario.getLattice(), "lattice.xml");
+		//saveLattice(scenario.getLattice(), "lattice.xml");
 						
 		// Running simulation
 		//scenario.setStartElementId("BEGIN_mebt");
@@ -132,8 +159,7 @@ public class JElsDemo {
 					twiss[1].getBeta(),
 					
 		    		ps.getElementId());
-		    
-		    
+		
 		    /*if (ps.getElementId().startsWith("BEGIN")) {
 		    	String sec = ps.getElementId().substring(6);
 		    	AcceleratorNode node = sequence.getNodeWithId(sec);
@@ -225,10 +251,9 @@ public class JElsDemo {
         probe.applyState(state);     
 	}
 	
-	private static Probe loadProbeFromXML(String file) {
+	public static EnvelopeProbe loadProbeFromXML(String file) {
 		try {			
-			Probe probe = ProbeXmlParser.parse(file);
-			
+			EnvelopeProbe probe = (EnvelopeProbe)ProbeXmlParser.parse(file);
 			return probe;
 		} catch (ParsingException e1) {
 			e1.printStackTrace();
@@ -258,8 +283,9 @@ public class JElsDemo {
 
 	private static AcceleratorSeq loadAcceleratorSequence() {
 		/* Loading SMF model */				
-		Accelerator accelerator = XMLDataManager.acceleratorWithUrlSpec(JElsDemo.class.getResource("main.xal").toString());
+		Accelerator accelerator = XMLDataManager.loadDefaultAccelerator();
 				
+		
 		if (accelerator == null)
 		{			
 			throw new Error("Accelerator is empty. Could not load the default accelerator.");
@@ -277,5 +303,17 @@ public class JElsDemo {
 */		
 		/* We can instead build lattice for the whole accelerator */
 		//return accelerator;
+	}
+	
+	private static AcceleratorSeq loadAcceleratorSequence(String path) {
+		/* Loading SMF model */				
+		Accelerator accelerator = XMLDataManager.acceleratorWithUrlSpec(new File(path).toURI().toString());
+				
+		
+		if (accelerator == null)
+		{			
+			throw new Error("Accelerator is empty. Could not load the accelerator.");
+		} 			
+		return accelerator;
 	}
 }

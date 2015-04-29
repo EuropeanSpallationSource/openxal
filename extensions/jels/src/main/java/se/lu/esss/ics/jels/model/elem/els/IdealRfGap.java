@@ -116,6 +116,7 @@ public class IdealRfGap extends ThinElement implements IRfGap {
      */
     public IdealRfGap(String strId, double dblETL, double dblPhase, double dblFreq) {
         super(s_strType, strId);
+        ElsElementMapping.printWarning();
         
         this.setETL(dblETL);
         this.setPhase(dblPhase);
@@ -129,6 +130,7 @@ public class IdealRfGap extends ThinElement implements IRfGap {
      */
     public IdealRfGap() {
         super(s_strType);
+        ElsElementMapping.printWarning();
     };
     
     

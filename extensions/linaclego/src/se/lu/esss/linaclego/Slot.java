@@ -3,6 +3,7 @@ package se.lu.esss.linaclego;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -34,20 +35,32 @@ public class Slot {
     @XmlTransient
     protected Slot slotInstance;
 
+    @XmlTransient
+    private Cell parent;
+    
     public Slot()
     {
     	
     }
     
-    public Slot(String id)
+    public Slot(String id, Cell parent)
     {
     	this.id = id;
+    	this.parent = parent;
+    }
+    
+    public Cell getParent()
+    {
+    	return parent;
     }
     
     public List<BeamlineElement> getBeamlineElements() {
     	if (model != null) {
-    		if (slotInstance == null)
-    			slotInstance =  model.apply(id, getParameters());    		 
+    		if (slotInstance == null) {
+    			slotInstance =  model.apply(getParameters());
+    			slotInstance.id = id;
+    			slotInstance.parent = parent;
+    		}
     		return slotInstance.getBeamlineElements();
     	} else {
     		return this.ble;
@@ -71,25 +84,35 @@ public class Slot {
 		for (BeamlineElement ble : getBeamlineElements()) ble.accept(visitor);
 	}
 
-	public Slot apply(Parameters arguments) {
+	public Slot apply(Cell parent, Parameters arguments) {
 		if (model != null) {
 			Parameters pout = new Parameters();
 			for (Parameters.D param : getParameters()) {
 				Parameters.D arg = arguments.get(param.getValue());
 				if (arg != null) {
-					pout.add(new Parameters.D(param.getId(), arg.getValue()));
+					pout.add(new Parameters.D(param.getId(), arg));
 				} else
 					pout.add(param);
 			}
-			return model.apply(id, pout); 
+			Slot instance = model.apply(pout);
+			instance.id = id;
+			instance.parent = parent;
+			return instance;
 		}
 		else {
 			Slot s = new Slot();
 			s.id = id;
+			s.parent = parent;
 			List<BeamlineElement> bleout = s.getBeamlineElements();
-			for (BeamlineElement blein : ble)
-				bleout.add(blein.apply(arguments));
+			for (BeamlineElement blein : ble) {
+				bleout.add(blein.apply(s, arguments));
+			}
 			return s;
 		}
+	}
+	
+	public void beforeUnmarshal(Unmarshaller u, Object parent) {
+		if (parent instanceof Cell)
+			this.parent = (Cell)parent;
 	}
 }

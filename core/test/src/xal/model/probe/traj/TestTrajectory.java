@@ -30,6 +30,7 @@ import xal.sim.sync.SynchronizationException;
 import xal.smf.Accelerator;
 import xal.smf.AcceleratorSeq;
 import xal.smf.data.XMLDataManager;
+import xal.test.ResourceManager;
 import xal.tools.beam.PhaseVector;
 
 /**
@@ -100,7 +101,7 @@ public class TestTrajectory {
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
         try {
-            ACCEL_TEST = XMLDataManager.loadDefaultAccelerator();
+            ACCEL_TEST =  ResourceManager.getTestAccelerator();;
             SEQ_TEST   = ACCEL_TEST.getSequence(STR_ACCL_SEQ_ID);
             MODEL_TEST = Scenario.newScenarioFor(SEQ_TEST);
             

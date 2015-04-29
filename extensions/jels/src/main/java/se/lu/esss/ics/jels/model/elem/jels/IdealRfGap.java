@@ -40,7 +40,7 @@ public class IdealRfGap extends ThinElement implements IRfGap {
 	/**
 	 *  the string type identifier for all IdealRfGap objects
 	 */
-	public final static String s_strType = "IdealRfGap";
+	public final static String s_strType = "JELS.IdealRfGap";
     
 	/*
 	 *  Defining Attributes

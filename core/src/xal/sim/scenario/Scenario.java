@@ -517,4 +517,8 @@ public class Scenario {
     public void unsetStopNode() {
         idElemStop = null;
     }
+
+	public AcceleratorSeq getSequence() {
+		return _sequence;
+	}
 }

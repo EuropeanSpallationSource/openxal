@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
 
@@ -42,19 +43,29 @@ public class Parameters extends AbstractList<Parameters.D> {
 	    "value"
 	})
 	public static class D {
-	
 	    @XmlValue
 	    protected String value;
+	    
 	    @XmlAttribute(name = "id", required = true)
 	    protected String id;
 	    @XmlAttribute(name = "type")
 	    protected String type;
 	    @XmlAttribute(name = "unit")
 	    protected String unit;
+	    
+	    @XmlTransient
+	    protected LegoSet legoSet;
 	
 	    public D()
 	    {
 	    	
+	    }
+	    
+	    public D(String id, D value)
+	    {
+	    	this.id = id;
+	    	this.value = value.value;
+	    	this.legoSet = value.legoSet;
 	    }
 	    
 	    public D(String id, String value)
@@ -72,7 +83,12 @@ public class Parameters extends AbstractList<Parameters.D> {
 	    }
 	    
 	    public String getValue() {
-	        return value;
+	    	return value;
+	    }
+	    
+		
+		public LegoSet getLegoSet() {
+			return legoSet;
 	    }
 	
 	    public String getId() {
