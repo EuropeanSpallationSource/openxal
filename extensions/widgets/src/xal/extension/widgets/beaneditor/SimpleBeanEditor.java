@@ -10,6 +10,7 @@
 package xal.extension.widgets.beaneditor;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -175,6 +176,16 @@ public class SimpleBeanEditor<T> extends JDialog {
 
 				if ( value == null ) {
 					return super.getCellEditor( row, col );
+				} else if (value instanceof Enum) {
+					return new DefaultCellEditor(new JComboBox<Object>(((Enum<?>)value).getDeclaringClass().getEnumConstants())
+						{
+							private static final long serialVersionUID = 1L;
+
+							{
+								setForeground(getSelectionForeground());
+								setBackground(getSelectionBackground());
+							}
+						}); 
 				} else {
                     return getDefaultEditor( value.getClass() );
 				}
@@ -194,6 +205,25 @@ public class SimpleBeanEditor<T> extends JDialog {
 				}
 				else if ( value == null ) {
                     return super.getCellRenderer( row, column );
+				}
+				else if ( value instanceof Enum) {
+					return new TableCellRenderer() {
+						JComboBox<Object> combo = new JComboBox<Object>(((Enum<?>)value).getDeclaringClass().getEnumConstants());
+
+						public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+								boolean hasFocus, int row, int column) {
+
+							if (isSelected) {
+								combo.setForeground(table.getSelectionForeground());
+								combo.setBackground(table.getSelectionBackground());
+							} else {
+								combo.setForeground(table.getForeground());
+								combo.setBackground(table.getBackground());
+							}
+							combo.setSelectedItem(value);
+							return combo;
+						}
+					};
 				}
 				else {
 					final TableCellRenderer renderer = getDefaultRenderer( value.getClass() );
@@ -219,7 +249,9 @@ public class SimpleBeanEditor<T> extends JDialog {
         //Set the table to allow one-click edit
         ((DefaultCellEditor) propertyTable.getDefaultEditor(Object.class)).setClickCountToStart(1);
         propertyTable.setDefaultRenderer(Double.class, new DefaultTableCellRenderer() {
-        	{
+			private static final long serialVersionUID = 1L;
+
+			{
         		setHorizontalAlignment(JLabel.RIGHT);
         	}
         	

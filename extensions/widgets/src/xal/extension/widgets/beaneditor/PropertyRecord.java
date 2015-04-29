@@ -56,7 +56,7 @@ public class PropertyRecord {
 
 
 	/** set the pending value */
-	public void setValueAsObject( final Object value ) {
+	public void setValue( final Object value ) {
 		if ( isEditable() ) {
 			_value = value;
 
@@ -77,7 +77,7 @@ public class PropertyRecord {
 
 	/** set the pending value */
 	public void setValue( final boolean value ) {
-		setValueAsObject( Boolean.valueOf( value ) );
+		setValue( Boolean.valueOf( value ) );
 	}
 
 
@@ -85,13 +85,13 @@ public class PropertyRecord {
 	public void setValue( final String value ) {
 		final Class<?> rawType = getPropertyType();
 		if ( rawType == String.class ) {
-			setValueAsObject( value );
+			setValue( (Object)value );
 		}
 		else {
 			try {
 				final Class<?> type = rawType.isPrimitive() ? _value.getClass() : rawType;	// convert to wrapper type (e.g. double.class to Double.class) if necessary
 				final Object objectValue = toObjectOfType( value, type );
-				setValueAsObject( objectValue );
+				setValue( objectValue );
 			}
 			catch( Exception exception ) {
 				System.err.println( "Exception: " + exception );
