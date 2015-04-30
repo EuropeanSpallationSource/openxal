@@ -1,6 +1,5 @@
 package se.lu.esss.ics.jels.matcher;
 
-import xal.model.probe.EnvelopeProbe;
 import xal.model.probe.Probe;
 import xal.tools.annotation.AProperty.Units;
 
@@ -71,5 +70,10 @@ enum ModelEvaluatorEnum
 	
 	ModelEvaluatorEnum(Class<? extends OnlineModelEvaluator> c) {
 		this.c = c;
+	}
+	
+	public Class<? extends OnlineModelEvaluator> getEvaluatorClass()
+	{
+		return c;
 	}
 }

@@ -3,6 +3,7 @@ package se.lu.esss.ics.jels.matcher;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Formatter;
 import java.util.Locale;
 
@@ -19,15 +20,20 @@ import xal.extension.solver.hint.ExcursionHint;
 import xal.extension.solver.market.AlgorithmStrategy;
 import xal.model.Lattice;
 import xal.model.ModelException;
+import xal.model.alg.EnvelopeTracker;
+import xal.model.alg.Tracker;
+import xal.model.probe.EnvelopeProbe;
 import xal.model.xml.LatticeXmlWriter;
 import xal.smf.Accelerator;
 import xal.smf.data.XMLDataManager;
 
-public class Matcher {
-	private InitialBeamParameters initialParameters = new InitialBeamParameters();	
-	private Accelerator accelerator = loadAccelerator();
+public class Matcher extends Thread {
+	private MatcherConfiguration matcherConfig;
+	
+	/*private InitialBeamParameters initialParameters = new InitialBeamParameters();	
+	private Accelerator accelerator = loadAccelerator();*/
 	//private OnlineModelEvaluator evaluator = new MinimiseOscillations(accelerator, initialParameters);
-	private OnlineModelEvaluator evaluator = new PhaseAdvEvaluator(accelerator, initialParameters);
+	private OnlineModelEvaluator evaluator; // = new PhaseAdvEvaluator(accelerator, initialParameters);
 	
 	
 	private static Accelerator loadAccelerator() {
@@ -51,10 +57,20 @@ public class Matcher {
 		}
 	}
 	
-
+	public Matcher(MatcherConfiguration matcherConfig) {
+		this.matcherConfig = matcherConfig;
+		try {
+			evaluator = matcherConfig.getCriteria().getEvaluatorClass().getConstructor(Accelerator.class, EnvelopeProbe.class, InitialBeamParameters.class)
+					.newInstance(loadAccelerator(), matcherConfig.getProbe(), matcherConfig.getInitialBeamParameters());
+		} catch (IllegalArgumentException | InvocationTargetException
+				| NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	public void run()
-	{	
+	{
+		InitialBeamParameters initialParameters = matcherConfig.getInitialBeamParameters();
 		for (Variable v : initialParameters.getVariables()) {
 			System.out.printf("%s: %f\n", v.getName(), v.getInitialValue());
 		}
@@ -110,9 +126,24 @@ public class Matcher {
 		
 	}
 	
+	public static EnvelopeProbe setupOpenXALProbe() {
+		EnvelopeTracker envelopeTracker = new EnvelopeTracker();			
+		envelopeTracker.setRfGapPhaseCalculation(true);
+		envelopeTracker.setUseSpacecharge(true);
+		envelopeTracker.setEmittanceGrowth(false);
+		envelopeTracker.setStepSize(0.1);
+		envelopeTracker.setProbeUpdatePolicy(Tracker.UPDATE_EXIT);
+		
+		EnvelopeProbe envelopeProbe = new EnvelopeProbe();
+		envelopeProbe.setAlgorithm(envelopeTracker);		
+		
+		return envelopeProbe;
+	}
+		
+	
 	public static void main(String args[]) throws ModelException
 	{
-		Matcher me = new Matcher();
+		Matcher me = new Matcher(new MatcherConfiguration(setupOpenXALProbe()));
 		me.run();
 	}
 }

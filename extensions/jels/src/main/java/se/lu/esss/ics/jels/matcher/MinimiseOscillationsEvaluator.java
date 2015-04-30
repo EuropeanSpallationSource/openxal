@@ -6,6 +6,7 @@ import xal.extension.solver.Objective;
 import xal.extension.solver.SatisfactionCurve;
 import xal.extension.solver.Trial;
 import xal.model.ModelException;
+import xal.model.probe.EnvelopeProbe;
 import xal.model.probe.traj.EnvelopeProbeState;
 import xal.model.probe.traj.Trajectory;
 import xal.smf.Accelerator;
@@ -13,8 +14,8 @@ import xal.smf.AcceleratorSeq;
 import xal.tools.beam.Twiss;
 
 public class MinimiseOscillationsEvaluator extends OnlineModelEvaluator {	
-	public MinimiseOscillationsEvaluator(Accelerator accelerator, InitialBeamParameters initialParameters) {
-		super(accelerator, initialParameters);
+	public MinimiseOscillationsEvaluator(Accelerator accelerator, EnvelopeProbe probe, InitialBeamParameters initialParameters) {
+		super(accelerator, probe, initialParameters);
 		for (AcceleratorSeq seq : accelerator.getSequences()) {
 			objectives.add(new MinimizeOscillationsObjective(seq));
 			System.out.printf("%s %f %f\n",seq.getId(), seq.getPosition(), seq.getPosition()+seq.getLength());

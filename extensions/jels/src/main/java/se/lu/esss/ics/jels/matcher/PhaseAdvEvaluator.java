@@ -7,6 +7,7 @@ import java.util.List;
 import xal.extension.solver.Objective;
 import xal.extension.solver.Trial;
 import xal.model.ModelException;
+import xal.model.probe.EnvelopeProbe;
 import xal.model.probe.traj.EnvelopeProbeState;
 import xal.model.probe.traj.ProbeState;
 import xal.model.probe.traj.Trajectory;
@@ -14,8 +15,8 @@ import xal.smf.Accelerator;
 import xal.tools.beam.Twiss;
 
 public class PhaseAdvEvaluator extends OnlineModelEvaluator {
-	public PhaseAdvEvaluator(Accelerator accelerator, InitialBeamParameters initialParameters) {
-		super(accelerator, initialParameters);
+	public PhaseAdvEvaluator(Accelerator accelerator, EnvelopeProbe probe, InitialBeamParameters initialParameters) {
+		super(accelerator, probe, initialParameters);
 		objectives.add(new Objective("vcr") {
 			@Override
 			public double satisfaction(double value) {

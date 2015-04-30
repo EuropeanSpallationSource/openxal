@@ -15,6 +15,7 @@ import xal.model.ModelException;
 import xal.model.alg.EnvelopeTracker;
 import xal.model.alg.Tracker;
 import xal.model.probe.EnvelopeProbe;
+import xal.model.probe.Probe;
 import xal.model.probe.traj.EnvelopeProbeState;
 import xal.model.probe.traj.ProbeState;
 import xal.model.probe.traj.Trajectory;
@@ -25,14 +26,15 @@ import xal.tools.beam.Twiss;
 
 public abstract class OnlineModelEvaluator implements Evaluator {
 	protected InitialBeamParameters initialParameters;
-	protected EnvelopeProbe probe = setupOpenXALProbe(); // OpenXAL probe & algorithm
-	//EnvelopeProbe probe = setupElsProbe(); // ELS probe & algorithm
-					
+	protected EnvelopeProbe probe; // = setupOpenXALProbe(); // OpenXAL probe & algorithm
+		
+	
 	// Setup of initial parameters
 	protected Scenario scenario; 
 	protected List<Objective> objectives = new ArrayList<>();
 	
-	public OnlineModelEvaluator(Accelerator accelerator, InitialBeamParameters initialParameters) {
+	public OnlineModelEvaluator(Accelerator accelerator, EnvelopeProbe probe, InitialBeamParameters initialParameters) {
+		this.probe = probe;
 		this.initialParameters = initialParameters;
 		try {
 			scenario = Scenario.newScenarioFor(accelerator);
@@ -51,23 +53,7 @@ public abstract class OnlineModelEvaluator implements Evaluator {
 			e.printStackTrace();
 		}
 	}
-	
-	private EnvelopeProbe setupOpenXALProbe() {
-		EnvelopeTracker envelopeTracker = new EnvelopeTracker();			
-		envelopeTracker.setRfGapPhaseCalculation(true);
-		envelopeTracker.setUseSpacecharge(true);
-		envelopeTracker.setEmittanceGrowth(false);
-		envelopeTracker.setStepSize(0.1);
-		envelopeTracker.setProbeUpdatePolicy(Tracker.UPDATE_EXIT);
 		
-		EnvelopeProbe envelopeProbe = new EnvelopeProbe();
-		envelopeProbe.setAlgorithm(envelopeTracker);		
-		
-		return envelopeProbe;
-	}
-		
-	
-	
 	public void printSolution(String file, TrialPoint trial) {	
 		
 		initialParameters.setupInitialParameters(probe, trial);
