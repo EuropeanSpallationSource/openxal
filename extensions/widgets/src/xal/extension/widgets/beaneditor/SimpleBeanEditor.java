@@ -44,13 +44,13 @@ public class SimpleBeanEditor<T> extends JDialog {
 	final private int PROPERTY_TABLE_VALUE_COLUMN;
 
 	 public SimpleBeanEditor( final Frame owner, final String dialogTitle, final String beanName, final T bean ) {
-		 this(owner, dialogTitle, beanName, bean, true);
+		 this(owner, dialogTitle, beanName, bean, true, true);
 	 }
 	 
     /* Constructor that takes a window parent
      * and a bean to fetch properties from
      */
-    public SimpleBeanEditor( final Frame owner, final String dialogTitle, final String beanName, final T bean, boolean visible ) {
+    public SimpleBeanEditor( final Frame owner, final String dialogTitle, final String beanName, final T bean, boolean bottomButtons, boolean visible ) {
         super( owner, dialogTitle, true );	//Set JDialog's owner, title, and modality
         
         BEAN = bean;					// Set the bean to edit
@@ -68,7 +68,7 @@ public class SimpleBeanEditor<T> extends JDialog {
 		PROPERTY_TABLE_VALUE_COLUMN = PROPERTY_TABLE_MODEL.getColumnForKeyPath( "value" );	// store the column for the "value" key path
 
         setSize( 600, 600 );			// Set the window size
-        initializeComponents();			// Set up each component in the editor
+        initializeComponents(bottomButtons);			// Set up each component in the editor
         setLocationRelativeTo( owner );	// Center the editor in relation to the frame that constructed the editor
         setVisible(visible);				// Make the window visible
     }
@@ -102,63 +102,9 @@ public class SimpleBeanEditor<T> extends JDialog {
 
     
     /** Initialize the components of the bean editor */
-    protected void initializeComponents() {
+    protected void initializeComponents(boolean bottomButtons) {
         //main view containing all components
         final Box mainContainer = new Box( BoxLayout.Y_AXIS );
-
-        // button to revert changes back to last saved state
-        final JButton revertButton = new JButton( "Revert" );
-		revertButton.setToolTipText( "Revert values back." );
-        revertButton.setEnabled( false );
-
-        // button to publish changes
-        final JButton publishButton = new JButton( "Publish" );
-		publishButton.setToolTipText( "Publish values." );
-        publishButton.setEnabled( false );
-
-        // button to publish changes and dismiss the panel
-        final JButton okayButton = new JButton( "Okay" );
-		okayButton.setToolTipText( "Publish values and dismiss the dialog." );
-        okayButton.setEnabled( true );
-
-        //Add the action listener as the ApplyButtonListener
-        revertButton.addActionListener( new ActionListener() {
-			public void actionPerformed( final ActionEvent event ) {
-				revertFromBean();
-				revertButton.setEnabled( false );
-				publishButton.setEnabled( false );
-			}
-		});
-
-        //Add the action listener as the ApplyButtonListener
-        publishButton.addActionListener( new ActionListener() {
-			public void actionPerformed( final ActionEvent event ) {
-				publishToBean();
-				revertButton.setEnabled( false );
-				publishButton.setEnabled( false );
-			}
-		});
-
-        //Add the action listener as the ApplyButtonListener
-        okayButton.addActionListener( new ActionListener() {
-			public void actionPerformed( final ActionEvent event ) {
-				try {
-					publishToBean();
-					dispose();
-				}
-				catch( Exception exception ) {
-					JOptionPane.showMessageDialog( SimpleBeanEditor.this, exception.getMessage(), "Error Publishing", JOptionPane.ERROR_MESSAGE );
-					System.err.println( "Exception publishing values: " + exception );
-				}
-			}
-		});
-
-		PROPERTY_TABLE_MODEL.addKeyValueRecordListener( new KeyValueRecordListener<KeyValueTableModel<PropertyRecord>,PropertyRecord>() {
-			public void recordModified( final KeyValueTableModel<PropertyRecord> source, final PropertyRecord record, final String keyPath, final Object value ) {
-				revertButton.setEnabled( true );
-				publishButton.setEnabled( true );
-			}
-		});
 
         //Table containing the properties that can be modified
         final JTable propertyTable = new JTable() {
@@ -280,15 +226,81 @@ public class SimpleBeanEditor<T> extends JDialog {
         final JScrollPane scrollPane = new JScrollPane( propertyTable, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED );
         mainContainer.add( scrollPane );
 
-        //Add the buttons to the bottom of the dialog
+        
+        //Add everything to the dialog
+        add( mainContainer );
+        
+        if (bottomButtons) {
+        	mainContainer.add( initializeControlPanel() );
+        }
+    }
+    
+    
+    protected Box initializeControlPanel()
+    {
+
+        // button to revert changes back to last saved state
+        final JButton revertButton = new JButton( "Revert" );
+		revertButton.setToolTipText( "Revert values back." );
+        revertButton.setEnabled( false );
+
+        // button to publish changes
+        final JButton publishButton = new JButton( "Publish" );
+		publishButton.setToolTipText( "Publish values." );
+        publishButton.setEnabled( false );
+
+        // button to publish changes and dismiss the panel
+        final JButton okayButton = new JButton( "Okay" );
+		okayButton.setToolTipText( "Publish values and dismiss the dialog." );
+        okayButton.setEnabled( true );
+
+        //Add the action listener as the ApplyButtonListener
+        revertButton.addActionListener( new ActionListener() {
+			public void actionPerformed( final ActionEvent event ) {
+				revertFromBean();
+				revertButton.setEnabled( false );
+				publishButton.setEnabled( false );
+			}
+		});
+
+        //Add the action listener as the ApplyButtonListener
+        publishButton.addActionListener( new ActionListener() {
+			public void actionPerformed( final ActionEvent event ) {
+				publishToBean();
+				revertButton.setEnabled( false );
+				publishButton.setEnabled( false );
+			}
+		});
+
+        //Add the action listener as the ApplyButtonListener
+        okayButton.addActionListener( new ActionListener() {
+			public void actionPerformed( final ActionEvent event ) {
+				try {
+					publishToBean();
+					dispose();
+				}
+				catch( Exception exception ) {
+					JOptionPane.showMessageDialog( SimpleBeanEditor.this, exception.getMessage(), "Error Publishing", JOptionPane.ERROR_MESSAGE );
+					System.err.println( "Exception publishing values: " + exception );
+				}
+			}
+		});
+        
+
+		PROPERTY_TABLE_MODEL.addKeyValueRecordListener( new KeyValueRecordListener<KeyValueTableModel<PropertyRecord>,PropertyRecord>() {
+			public void recordModified( final KeyValueTableModel<PropertyRecord> source, final PropertyRecord record, final String keyPath, final Object value ) {
+				revertButton.setEnabled( true );
+				publishButton.setEnabled( true );
+			}
+		});
+
+		//Add the buttons to the bottom of the dialog
         final Box controlPanel = new Box( BoxLayout.X_AXIS );
 		controlPanel.add( revertButton );
 		controlPanel.add( Box.createHorizontalGlue() );
         controlPanel.add( publishButton );
         controlPanel.add( okayButton );
-        mainContainer.add( controlPanel );
-
-        //Add everything to the dialog
-        add( mainContainer );
-    }    
+        
+        return controlPanel;
+    }
 }

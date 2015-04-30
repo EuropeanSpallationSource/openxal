@@ -25,7 +25,7 @@ public class SimpleProbeEditor extends SimpleBeanEditor<Probe<?>> {
 	}
 
 	public SimpleProbeEditor(Frame owner, Probe<?> bean, boolean visible) {
-		super(owner, "Probe Editor", "Probe", bean, visible);
+		super(owner, "Probe Editor", "Probe", bean, true, visible);
 	}
 
 	/** 
