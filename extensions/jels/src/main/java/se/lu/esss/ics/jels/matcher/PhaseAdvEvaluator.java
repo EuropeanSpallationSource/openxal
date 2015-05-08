@@ -15,8 +15,8 @@ import xal.smf.Accelerator;
 import xal.tools.beam.Twiss;
 
 public class PhaseAdvEvaluator extends OnlineModelEvaluator {
-	public PhaseAdvEvaluator(Accelerator accelerator, EnvelopeProbe probe, InitialBeamParameters initialParameters) {
-		super(accelerator, probe, initialParameters);
+	public PhaseAdvEvaluator(Matcher matcher) {
+		super(matcher);
 		objectives.add(new Objective("vcr") {
 			@Override
 			public double satisfaction(double value) {
@@ -96,8 +96,9 @@ public class PhaseAdvEvaluator extends OnlineModelEvaluator {
 
 	@Override
 	public void evaluate(Trial trial) {
-		initialParameters.setupInitialParameters(probe, trial.getTrialPoint());
+		EnvelopeProbe probe = matcher.getInitialBeamParameters().getProbe(trial.getTrialPoint());
 		
+		scenario.setProbe(probe);
 		try {
 			scenario.run();
 		} catch (ModelException e) {

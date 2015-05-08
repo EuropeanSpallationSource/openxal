@@ -16,7 +16,6 @@ import xal.extension.solver.SolveStopperFactory;
 import xal.extension.solver.Solver;
 import xal.extension.solver.Trial;
 import xal.extension.solver.Variable;
-import xal.extension.solver.hint.ExcursionHint;
 import xal.extension.solver.market.AlgorithmStrategy;
 import xal.model.Lattice;
 import xal.model.ModelException;
@@ -26,9 +25,10 @@ import xal.model.probe.EnvelopeProbe;
 import xal.model.xml.LatticeXmlWriter;
 import xal.smf.Accelerator;
 import xal.smf.data.XMLDataManager;
+import xal.tools.annotation.AProperty.NoEdit;
+import xal.tools.annotation.AProperty.Units;
 
-public class Matcher extends Thread {
-	private MatcherConfiguration matcherConfig;
+public class Matcher implements Runnable {
 	
 	/*private InitialBeamParameters initialParameters = new InitialBeamParameters();	
 	private Accelerator accelerator = loadAccelerator();*/
@@ -36,7 +36,66 @@ public class Matcher extends Thread {
 	private OnlineModelEvaluator evaluator; // = new PhaseAdvEvaluator(accelerator, initialParameters);
 	
 	
-	private static Accelerator loadAccelerator() {
+	private ModelEvaluatorEnum criteria = ModelEvaluatorEnum.MinimiseOscillations;
+	
+	private double timeLimit = 1.;
+	
+	private InitialBeamParameters initialBeamParameters = new InitialBeamParameters();
+	
+	private boolean showScore;
+	private boolean showSimulation;
+	
+	private Accelerator accelerator;
+	
+	public Matcher(Accelerator accelerator) {
+		this.accelerator = accelerator;
+	}
+
+	public ModelEvaluatorEnum getCriteria() {
+		return criteria;
+	}
+	
+	public void setCriteria(ModelEvaluatorEnum criteria) {
+		this.criteria = criteria;
+	}	
+	
+	@Units("min")
+	public double getTimeLimit() {
+		return timeLimit;
+	}
+	
+	public void setTimeLimit(double timeLimit) {
+		this.timeLimit = timeLimit;
+	}
+	
+	public InitialBeamParameters getInitialBeamParameters() {
+		return initialBeamParameters;
+	}
+	
+	public boolean isShowScore() {
+		return showScore;
+	}
+	
+	public void setShowScore(boolean showScore) {
+		this.showScore = showScore;
+	}
+	
+	public boolean isShowSimulation() {
+		return showSimulation;
+	}
+	
+	public void setShowSimulation(boolean showSimulation) {
+		this.showSimulation = showSimulation;
+	}
+	
+	@NoEdit
+	public Accelerator getAccelerator()
+	{
+		return accelerator;
+	}
+	
+	
+	public static Accelerator loadAccelerator() {
 		/* Loading SMF model */				
 		Accelerator accelerator = XMLDataManager.acceleratorWithUrlSpec(JElsDemo.class.getResource("main.xal").toString());
 				
@@ -57,20 +116,16 @@ public class Matcher extends Thread {
 		}
 	}
 	
-	public Matcher(MatcherConfiguration matcherConfig) {
-		this.matcherConfig = matcherConfig;
+	public void run()
+	{
 		try {
-			evaluator = matcherConfig.getCriteria().getEvaluatorClass().getConstructor(Accelerator.class, EnvelopeProbe.class, InitialBeamParameters.class)
-					.newInstance(loadAccelerator(), matcherConfig.getProbe(), matcherConfig.getInitialBeamParameters());
+			evaluator = getCriteria().getEvaluatorClass().getConstructor(Matcher.class).newInstance(this);
 		} catch (IllegalArgumentException | InvocationTargetException
 				| NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException e) {
 			e.printStackTrace();
 		}
-	}
-	
-	public void run()
-	{
-		InitialBeamParameters initialParameters = matcherConfig.getInitialBeamParameters();
+		
+		InitialBeamParameters initialParameters = getInitialBeamParameters();
 		for (Variable v : initialParameters.getVariables()) {
 			System.out.printf("%s: %f\n", v.getName(), v.getInitialValue());
 		}
@@ -143,7 +198,26 @@ public class Matcher extends Thread {
 	
 	public static void main(String args[]) throws ModelException
 	{
-		Matcher me = new Matcher(new MatcherConfiguration(setupOpenXALProbe()));
+		Matcher me = new Matcher(loadAccelerator());
 		me.run();
 	}
 }
+
+
+enum ModelEvaluatorEnum 
+{
+	MinimiseOscillations(MinimiseOscillationsEvaluator.class), 
+	PhaseAdvance(PhaseAdvEvaluator.class);
+	
+	private  Class<? extends OnlineModelEvaluator> c;
+	
+	ModelEvaluatorEnum(Class<? extends OnlineModelEvaluator> c) {
+		this.c = c;
+	}
+	
+	public Class<? extends OnlineModelEvaluator> getEvaluatorClass()
+	{
+		return c;
+	}
+}
+

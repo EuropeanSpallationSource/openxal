@@ -11,17 +11,14 @@ import javax.swing.JButton;
 import javax.swing.JProgressBar;
 
 import xal.extension.widgets.beaneditor.SimpleBeanEditor;
-import xal.model.probe.EnvelopeProbe;
 
-
-
-public class MatcherDialog extends SimpleBeanEditor<MatcherConfiguration> {
+public class MatcherDialog extends SimpleBeanEditor<Matcher> {
 	private static final long serialVersionUID = 1L;
 	   
 	private JProgressBar progressBar = new JProgressBar();
 	private JButton match = new JButton("Match");
 	
-	public MatcherDialog(final Frame owner, final MatcherConfiguration conf, boolean visible)
+	public MatcherDialog(final Frame owner, final Matcher conf, boolean visible)
 	{
 		 
 		 super( owner, "Matcher", null, conf, false, false );	//Set JDialog's owner, title, and modality
@@ -34,7 +31,7 @@ public class MatcherDialog extends SimpleBeanEditor<MatcherConfiguration> {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				new Matcher(getBean()).start();
+				new Thread(getBean()).start();
 				progressBar.setIndeterminate(true);
 			}
 			 
@@ -47,6 +44,6 @@ public class MatcherDialog extends SimpleBeanEditor<MatcherConfiguration> {
 
 	public static void main(String args[])
 	{
-		new MatcherDialog(null, new MatcherConfiguration(Matcher.setupOpenXALProbe()), true);
+		new MatcherDialog(null, new Matcher(Matcher.loadAccelerator()), true);
 	}
 }

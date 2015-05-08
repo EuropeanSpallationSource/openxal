@@ -25,24 +25,24 @@ import xal.smf.Accelerator;
 import xal.tools.beam.Twiss;
 
 public abstract class OnlineModelEvaluator implements Evaluator {
-	protected InitialBeamParameters initialParameters;
-	protected EnvelopeProbe probe; // = setupOpenXALProbe(); // OpenXAL probe & algorithm
-		
+//	protected InitialBeamParameters initialParameters;
+//	protected EnvelopeProbe probe; // = setupOpenXALProbe(); // OpenXAL probe & algorithm
+	protected Matcher matcher;
 	
 	// Setup of initial parameters
 	protected Scenario scenario; 
 	protected List<Objective> objectives = new ArrayList<>();
 	
-	public OnlineModelEvaluator(Accelerator accelerator, EnvelopeProbe probe, InitialBeamParameters initialParameters) {
-		this.probe = probe;
-		this.initialParameters = initialParameters;
+	public OnlineModelEvaluator(Matcher matcher) {
+		this.matcher = matcher;
+		
 		try {
-			scenario = Scenario.newScenarioFor(accelerator);
+			scenario = Scenario.newScenarioFor(matcher.getAccelerator());
 		} catch (ModelException e1) {
 			e1.printStackTrace();
 		}	
 		
-		scenario.setProbe(probe);			
+			
 		
 		// Setting up synchronization mode
 		scenario.setSynchronizationMode(Scenario.SYNC_MODE_DESIGN);					
@@ -56,8 +56,9 @@ public abstract class OnlineModelEvaluator implements Evaluator {
 		
 	public void printSolution(String file, TrialPoint trial) {	
 		
-		initialParameters.setupInitialParameters(probe, trial);
-	
+		EnvelopeProbe probe = matcher.getInitialBeamParameters().getProbe(trial);
+		scenario.setProbe(probe);		
+		
 		try {
 			scenario.run();
 		} catch (ModelException e) {

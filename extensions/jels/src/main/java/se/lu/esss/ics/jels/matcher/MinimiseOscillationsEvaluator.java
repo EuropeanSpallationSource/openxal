@@ -14,9 +14,9 @@ import xal.smf.AcceleratorSeq;
 import xal.tools.beam.Twiss;
 
 public class MinimiseOscillationsEvaluator extends OnlineModelEvaluator {	
-	public MinimiseOscillationsEvaluator(Accelerator accelerator, EnvelopeProbe probe, InitialBeamParameters initialParameters) {
-		super(accelerator, probe, initialParameters);
-		for (AcceleratorSeq seq : accelerator.getSequences()) {
+	public MinimiseOscillationsEvaluator(Matcher matcher) {
+		super(matcher);
+		for (AcceleratorSeq seq : matcher.getAccelerator().getSequences()) {
 			objectives.add(new MinimizeOscillationsObjective(seq));
 			System.out.printf("%s %f %f\n",seq.getId(), seq.getPosition(), seq.getPosition()+seq.getLength());
 		}
@@ -25,8 +25,9 @@ public class MinimiseOscillationsEvaluator extends OnlineModelEvaluator {
 	
 	@Override
 	public void evaluate(Trial trial) {	
-		initialParameters.setupInitialParameters(probe, trial.getTrialPoint());
+		EnvelopeProbe probe = matcher.getInitialBeamParameters().getProbe(trial.getTrialPoint());
 	
+		scenario.setProbe(probe);
 		try {
 			scenario.run();
 		} catch (ModelException e) {

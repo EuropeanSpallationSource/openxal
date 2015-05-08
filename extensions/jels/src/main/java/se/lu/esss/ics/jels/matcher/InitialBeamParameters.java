@@ -3,6 +3,7 @@ package se.lu.esss.ics.jels.matcher;
 import java.util.Arrays;
 import java.util.List;
 
+import xal.extension.solver.MutableTrialPoint;
 import xal.extension.solver.TrialPoint;
 import xal.extension.solver.Variable;
 import xal.model.probe.EnvelopeProbe;
@@ -53,9 +54,20 @@ public class InitialBeamParameters {
 	
 	final List<Variable> variables = Arrays.asList(ax,bx,ay,by,az,bz);
 	
+	EnvelopeProbe probe = Matcher.setupOpenXALProbe();
 	
-	public void setupInitialParameters(EnvelopeProbe probe,
-			TrialPoint trialPoint) {
+	public EnvelopeProbe getInitialProbe() {
+		final MutableTrialPoint trialPoint = new MutableTrialPoint( variables.size() );
+		
+		for ( final Variable variable : variables ) {
+			final double value = variable.getInitialValue();
+			trialPoint.setValue( variable, value );
+		}			 
+		
+		return getProbe(trialPoint);
+	}
+	
+	public EnvelopeProbe getProbe(TrialPoint trialPoint) {
 		probe.reset();
 		
 		double Ax = trialPoint.getValue(ax),
@@ -85,6 +97,7 @@ public class InitialBeamParameters {
 		probe.setBeamCurrent(62.5e-3);
 		probe.setBunchFrequency(352.21e6); 	
 		
+		return probe;		
 	}
 
 
