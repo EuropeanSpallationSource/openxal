@@ -132,7 +132,7 @@ public class Matcher implements Runnable {
 		
 		Problem problem = new Problem(evaluator.getObjectives(), initialParameters.getVariables(), evaluator);
 		
-		Solver solver = new Solver(SolveStopperFactory.maxElapsedTimeStopper(300));
+		Solver solver = new Solver(SolveStopperFactory.maxElapsedTimeStopper(timeLimit*60));
 
 		solver.getAlgorithmSchedule().addAlgorithmScheduleListener(new AlgorithmScheduleListener() {	
 			@Override

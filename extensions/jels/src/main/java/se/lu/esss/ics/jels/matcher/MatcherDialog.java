@@ -31,10 +31,25 @@ public class MatcherDialog extends SimpleBeanEditor<Matcher> {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				new Thread(getBean()).start();
+				publishToBean();
+				setEnabled(false);
+				final Thread matcher = new Thread(getBean());
+				matcher.start();
 				progressBar.setIndeterminate(true);
+				new Thread() {
+					public void run() {
+						try {
+							matcher.join();
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						} finally {
+							progressBar.setIndeterminate(false);
+							revertFromBean();
+							setEnabled(true);
+						}
+					}
+				}.start();
 			}
-			 
 		 });
 		
 		 add(bottomPane, BorderLayout.SOUTH);
