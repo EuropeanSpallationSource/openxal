@@ -84,7 +84,7 @@ public class SimpleBeanEditor<T> extends JDialog {
 
 
 	/** publish record values to the bean */
-	private void publishToBean() {
+	protected void publishToBean() {
 		for ( final PropertyRecord record : BEAN_PROPERTY_RECORDS ) {
 			record.publishIfNeeded();
 		}
@@ -93,7 +93,7 @@ public class SimpleBeanEditor<T> extends JDialog {
 
 
 	/** revert the record values from the bean */
-	private void revertFromBean() {
+	protected void revertFromBean() {
 		for ( final PropertyRecord record : BEAN_PROPERTY_RECORDS ) {
 			record.revertIfNeeded();
 		}
