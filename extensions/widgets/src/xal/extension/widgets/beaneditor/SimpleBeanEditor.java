@@ -152,9 +152,12 @@ public class SimpleBeanEditor<T> extends JDialog {
 				else if ( value == null ) {
                     return super.getCellRenderer( row, column );
 				}
-				else if ( value instanceof Enum) {
+				else if ( value instanceof Enum) {					
+					final JComboBox<Object> combo = new JComboBox<Object>(((Enum<?>)value).getDeclaringClass().getEnumConstants());
+					setRowHeight(row, (int)combo.getPreferredSize().getHeight());
+					
 					return new TableCellRenderer() {
-						JComboBox<Object> combo = new JComboBox<Object>(((Enum<?>)value).getDeclaringClass().getEnumConstants());
+						
 
 						public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
 								boolean hasFocus, int row, int column) {
