@@ -44,7 +44,7 @@ public class MatcherDialog extends SimpleBeanEditor<Matcher> {
 							e.printStackTrace();
 						} finally {
 							progressBar.setIndeterminate(false);
-							revertFromBean();
+							reloadBean();
 							setEnabled(true);
 						}
 					}

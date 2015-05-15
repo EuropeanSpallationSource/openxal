@@ -161,6 +161,10 @@ public class Matcher implements Runnable {
 		
 		evaluator.printSolution("best-fm-5min-off", solver.getScoreBoard().getBestSolution().getTrialPoint());
 	
+		// set back final values to initial
+		for (Variable v : initialParameters.getVariables()) {
+			v.setInitialValue(solver.getScoreBoard().getBestSolution().getTrialPoint().getValue(v));
+		}
 	
 		try {
 			Formatter f1  = new Formatter("best-fm-5min-off.txt", "UTF8", Locale.ENGLISH);

@@ -92,10 +92,18 @@ public class SimpleBeanEditor<T> extends JDialog {
 	}
 
 
-	/** revert the record values from the bean */
+	/** revert the record values from the bean (if changed by the user) */
 	protected void revertFromBean() {
 		for ( final PropertyRecord record : BEAN_PROPERTY_RECORDS ) {
 			record.revertIfNeeded();
+		}
+		PROPERTY_TABLE_MODEL.fireTableDataChanged();
+	}
+	
+	/** reload all the record values from the bean (changed by external code) */
+	protected void reloadBean() {
+		for ( final PropertyRecord record : BEAN_PROPERTY_RECORDS ) {
+			record.revert();
 		}
 		PROPERTY_TABLE_MODEL.fireTableDataChanged();
 	}
