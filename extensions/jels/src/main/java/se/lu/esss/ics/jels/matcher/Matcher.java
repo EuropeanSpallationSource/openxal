@@ -36,7 +36,7 @@ public class Matcher implements Runnable {
 	private OnlineModelEvaluator evaluator; // = new PhaseAdvEvaluator(accelerator, initialParameters);
 	
 	
-	private ModelEvaluatorEnum criteria = ModelEvaluatorEnum.MinimiseOscillations;
+	private ModelEvaluatorEnum criteria = ModelEvaluatorEnum.PhaseAdvance;
 	
 	private double timeLimit = 1.;
 	
@@ -44,6 +44,9 @@ public class Matcher implements Runnable {
 	
 	private boolean showScore;
 	private boolean showSimulation;
+	
+	private String outputInitialRun = null;
+	private String outputBestRun = null;
 	
 	private Accelerator accelerator;
 	
@@ -155,34 +158,34 @@ public class Matcher implements Runnable {
 			}
 		});
 		
-		evaluator.printSolution("initial-sc", problem.generateInitialTrialPoint());
+		if (outputInitialRun != null) evaluator.printSolution(outputInitialRun, problem.generateInitialTrialPoint());
 		
 		solver.solve(problem);
 		
-		evaluator.printSolution("best-fm-5min-off", solver.getScoreBoard().getBestSolution().getTrialPoint());
+		if (outputBestRun != null) {
+			evaluator.printSolution(outputBestRun, solver.getScoreBoard().getBestSolution().getTrialPoint());
+			try {
+				Formatter f1  = new Formatter(outputBestRun+".txt", "UTF8", Locale.ENGLISH);
+				
+				for (Variable v : initialParameters.getVariables()) {					
+					f1.format("%s: %f\n", v.getName(), solver.getScoreBoard().getBestSolution().getTrialPoint().getValue(v));
+				}
+				
+				System.out.printf("best score: %f\n", solver.getScoreBoard().getBestSolution().getSatisfaction());
+				f1.format("best score: %f\n", solver.getScoreBoard().getBestSolution().getSatisfaction());
+				f1.close();
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+		}
 	
 		// set back final values to initial
 		for (Variable v : initialParameters.getVariables()) {
+			System.out.printf("%s: %f\n", v.getName(), solver.getScoreBoard().getBestSolution().getTrialPoint().getValue(v));
 			v.setInitialValue(solver.getScoreBoard().getBestSolution().getTrialPoint().getValue(v));
 		}
-	
-		try {
-			Formatter f1  = new Formatter("best-fm-5min-off.txt", "UTF8", Locale.ENGLISH);
-			
-			for (Variable v : initialParameters.getVariables()) {
-				System.out.printf("%s: %f\n", v.getName(), solver.getScoreBoard().getBestSolution().getTrialPoint().getValue(v));
-				f1.format("%s: %f\n", v.getName(), solver.getScoreBoard().getBestSolution().getTrialPoint().getValue(v));
-			}
-			
-			System.out.printf("best score: %f\n", solver.getScoreBoard().getBestSolution().getSatisfaction());
-			f1.format("best score: %f\n", solver.getScoreBoard().getBestSolution().getSatisfaction());
-			f1.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
-		
 	}
 	
 	public static EnvelopeProbe setupOpenXALProbe() {
@@ -210,8 +213,9 @@ public class Matcher implements Runnable {
 
 enum ModelEvaluatorEnum 
 {
-	MinimiseOscillations(MinimiseOscillationsEvaluator.class), 
-	PhaseAdvance(PhaseAdvEvaluator.class);
+	PhaseAdvance(PhaseAdvEvaluator.class),
+	MinimiseOscillations(MinimiseOscillationsEvaluator.class); 
+	
 	
 	private  Class<? extends OnlineModelEvaluator> c;
 	
