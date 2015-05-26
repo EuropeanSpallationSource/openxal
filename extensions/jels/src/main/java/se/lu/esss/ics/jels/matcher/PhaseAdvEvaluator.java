@@ -108,6 +108,8 @@ public class PhaseAdvEvaluator extends OnlineModelEvaluator {
 		Trajectory trajectory = probe.getTrajectory();
 
 		trial.setScore(objectives.get(0), calcVcr(getPhases(trajectory)));
+		
+		fireEvaluationListeners(trajectory);
 	}
 	
 }

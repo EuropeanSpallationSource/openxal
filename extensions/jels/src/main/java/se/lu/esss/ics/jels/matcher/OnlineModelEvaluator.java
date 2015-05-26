@@ -33,6 +33,8 @@ public abstract class OnlineModelEvaluator implements Evaluator {
 	protected Scenario scenario; 
 	protected List<Objective> objectives = new ArrayList<>();
 	
+	protected List<EvaluationListener> evaluationListeners = new ArrayList<>();
+	
 	public OnlineModelEvaluator(Matcher matcher) {
 		this.matcher = matcher;
 		
@@ -120,4 +122,23 @@ public abstract class OnlineModelEvaluator implements Evaluator {
 	public List<Objective> getObjectives() {
 		return objectives;
 	}
+	
+	public void addEvaluationListener(EvaluationListener l) {
+		evaluationListeners.add(l);
+	}
+	
+	protected void fireEvaluationListeners(Trajectory t)
+	{
+		for (EvaluationListener l : evaluationListeners)
+			l.onEvaluation(t);
+	}
+	
+	public void removeEvaluationListener(EvaluationListener l) {
+		evaluationListeners.remove(l);
+	}
+}
+
+
+interface EvaluationListener {
+	void onEvaluation(Trajectory t);
 }

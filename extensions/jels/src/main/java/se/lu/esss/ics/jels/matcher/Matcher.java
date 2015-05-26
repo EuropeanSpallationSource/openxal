@@ -6,6 +6,9 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Formatter;
 import java.util.Locale;
+import java.util.Vector;
+
+import javax.swing.JFrame;
 
 import se.lu.esss.ics.jels.JElsDemo;
 import xal.extension.solver.AlgorithmSchedule;
@@ -17,11 +20,16 @@ import xal.extension.solver.Solver;
 import xal.extension.solver.Trial;
 import xal.extension.solver.Variable;
 import xal.extension.solver.market.AlgorithmStrategy;
+import xal.extension.widgets.olmplot.EnvelopeCurve;
+import xal.extension.widgets.olmplot.PLANE;
+import xal.extension.widgets.plot.BasicGraphData;
+import xal.extension.widgets.plot.FunctionGraphsJPanel;
 import xal.model.Lattice;
 import xal.model.ModelException;
 import xal.model.alg.EnvelopeTracker;
 import xal.model.alg.Tracker;
 import xal.model.probe.EnvelopeProbe;
+import xal.model.probe.traj.Trajectory;
 import xal.model.xml.LatticeXmlWriter;
 import xal.smf.Accelerator;
 import xal.smf.data.XMLDataManager;
@@ -119,13 +127,80 @@ public class Matcher implements Runnable {
 		}
 	}
 	
+	Vector<EnvelopeCurve> data = new Vector<>(2);
+	
+	public void showSimulationPlot()
+	{
+		final JFrame frame = new JFrame();
+		FunctionGraphsJPanel plot = new FunctionGraphsJPanel();
+     	plot.setVisible(true);
+     	
+     	data.add(new EnvelopeCurve(PLANE.HOR));
+     	data.add(new EnvelopeCurve(PLANE.VER));
+     	//data.add(new EnvelopeCurve(PLANE.LNG));
+    
+  	 	plot.addGraphData(data);
+  	 	
+     	plot.setAxisNames("position", "sigma");
+     	
+     	plot.refreshGraphJPanel();
+     	frame.setSize(500,500);
+        frame.add(plot);
+        frame.setVisible(true);
+        frame.setDefaultCloseOperation(frame.DISPOSE_ON_CLOSE);
+	}
+	
+	public void updateSimulationPlot(Trajectory t)
+	{
+		for (EnvelopeCurve c : data) {
+			c.removeAllPoints();
+			c.loadCurve(t);
+		}
+	}
+	
+	BasicGraphData scorePlot = new BasicGraphData();
+	
+	public void showScorePlot()
+	{
+		final JFrame frame = new JFrame();
+		FunctionGraphsJPanel plot = new FunctionGraphsJPanel();
+     	plot.setVisible(true);
+     	    
+  	 	plot.addGraphData(scorePlot);
+  	 	
+     	plot.setAxisNames("trial", "score");
+     	
+     	plot.refreshGraphJPanel();
+     	frame.setSize(500,500);
+        frame.add(plot);
+        frame.setVisible(true);
+        frame.setDefaultCloseOperation(frame.DISPOSE_ON_CLOSE);
+	}
+	
 	public void run()
 	{
+		
+		
 		try {
 			evaluator = getCriteria().getEvaluatorClass().getConstructor(Matcher.class).newInstance(this);
 		} catch (IllegalArgumentException | InvocationTargetException
 				| NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException e) {
 			e.printStackTrace();
+		}
+		
+		if (showSimulation) {
+			showSimulationPlot();
+		
+			evaluator.addEvaluationListener(new EvaluationListener() {
+				@Override
+				public void onEvaluation(Trajectory t) {
+					updateSimulationPlot(t);
+				}
+			});
+		}
+		
+		if (showScore) {
+			showScorePlot();
 		}
 		
 		InitialBeamParameters initialParameters = getInitialBeamParameters();
@@ -137,7 +212,9 @@ public class Matcher implements Runnable {
 		
 		Solver solver = new Solver(SolveStopperFactory.maxElapsedTimeStopper(timeLimit*60));
 
-		solver.getAlgorithmSchedule().addAlgorithmScheduleListener(new AlgorithmScheduleListener() {	
+		solver.getAlgorithmSchedule().addAlgorithmScheduleListener(new AlgorithmScheduleListener() {
+			int i = 0;
+			
 			@Override
 			public void trialVetoed(AlgorithmSchedule algorithmSchedule, Trial trial) {
 			}
@@ -145,6 +222,7 @@ public class Matcher implements Runnable {
 			@Override
 			public void trialScored(AlgorithmSchedule algorithmSchedule, Trial trial) {
 				System.out.printf("score: %f algo: %s\n", trial.getSatisfaction(), trial.getAlgorithm().getClass());			
+				if (showScore) scorePlot.addPoint(i++, trial.getSatisfaction());
 			}
 			
 			@Override
