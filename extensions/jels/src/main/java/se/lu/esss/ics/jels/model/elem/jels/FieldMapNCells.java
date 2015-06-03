@@ -64,7 +64,7 @@ public class FieldMapNCells extends ElementSeq {
 			
 			gaps[i].setFirstGap(i==0);
 			gaps[i].setCellLength(fm.getLength());
-			gaps[i].setE0(fm.getXelmax());
+			gaps[i].setE0(splitIntgrs[i].getE0TL()*fm.getXelmax()/fm.getLength());
 			gaps[i].setStructureMode(1);
 			gaps[i].setPosition(startPos + l1);
 			

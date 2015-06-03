@@ -280,9 +280,9 @@ public class IdealRfGap extends ThinElement implements IRfGap {
     		}
     	}
     	
-    	double E0TL = getETL();
     	
-    	if (E0TL==0)
+    	
+    	if (getETL()==0)
     	{
     		matPhi = PhaseMatrix.identity();    		
     	}
@@ -305,6 +305,7 @@ public class IdealRfGap extends ThinElement implements IRfGap {
         	
     		if (TTFFit.getCoef(0)!=0)
     		{
+    			double E0TL = getE0() * getCellLength();
     			double gamma_middle=gamma_start+E0TL/mass*Math.cos(Phis)/2;    			
     			double beta_middle= computeBetaFromGamma(gamma_middle);
     			
@@ -327,7 +328,8 @@ public class IdealRfGap extends ThinElement implements IRfGap {
     			C=Math.sqrt((beta_start*gamma_start)/(beta_end*gamma_end*kx*ky));
     		}
     		else
-    		{   
+    		{  
+    			double E0TL = getETL();
     			energyGain = E0TL*Math.cos(Phis);
     			gamma_end=gamma_start+energyGain/mass;    			
     			beta_end = computeBetaFromGamma(gamma_end);
