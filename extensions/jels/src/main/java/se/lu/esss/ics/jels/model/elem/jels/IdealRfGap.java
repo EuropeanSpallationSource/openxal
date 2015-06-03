@@ -7,6 +7,7 @@ package se.lu.esss.ics.jels.model.elem.jels;
 
 import java.io.PrintWriter;
 
+import se.lu.esss.ics.jels.tools.math.MeanFieldPolynomial;
 import xal.model.IProbe;
 import xal.model.ModelException;
 import xal.model.elem.IRfGap;
@@ -409,7 +410,13 @@ public class IdealRfGap extends ThinElement implements IRfGap {
 	    initialGap = rfgap.isFirstGap();
 	    cellLength = rfgap.getGapLength();
 	    gapOffset = rfgap.getGapOffset();
-	    TTFFit = rfgap.getTTFFit();	
+	    if (rfgap.getSFit().getCoef(0) != 0) { //TODO
+	    	TTFFit = new MeanFieldPolynomial(rfgap.getTTFFit(), rfgap.getTTFPrimeFit(), rfgap.getSFit(), rfgap.getSPrimeFit());
+	    } else {
+	    	TTFFit = rfgap.getTTFFit();
+
+	    }
+
 	    structureMode = rfgap.getStructureMode();
 	}
 
