@@ -277,7 +277,12 @@ public class IdealRfGap extends ThinElement implements IRfGap {
     		} else {
     			Phis = probe.getLastGapPhase();
 	    		Phis += 2*Math.PI*(position - lastGapPosition)/(lambda*probe.getBeta());
-	    		if (structureMode == 1) Phis += Math.PI;
+	    		if (structureMode == 1) {
+	    			// This code is used to "guess" how far the gaps are apart at SNS; ESS in such cases always uses multiple cavities, so +PI is always correct
+	    			Phis += Math.PI*(int)Math.round(2*(position - lastGapPosition)/(lambda*probe.getBeta()));
+	    			//Phis += Math.PI;
+	    		}
+
 	    		setPhase(Phis);
     		}
     	}
