@@ -4,11 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 
-import se.lu.esss.ics.jels.model.alg.ElsTracker;
-import se.lu.esss.ics.jels.model.probe.ElsProbe;
 import xal.model.Lattice;
 import xal.model.ModelException;
-import xal.model.alg.EnvelopeTracker;
 import xal.model.alg.Tracker;
 import xal.model.probe.EnvelopeProbe;
 import xal.model.probe.traj.EnvelopeProbeState;
@@ -17,6 +14,8 @@ import xal.model.xml.LatticeXmlWriter;
 import xal.model.xml.ParsingException;
 import xal.model.xml.ProbeXmlParser;
 import xal.model.xml.ProbeXmlWriter;
+import xal.sim.scenario.AlgorithmFactory;
+import xal.sim.scenario.ProbeFactory;
 import xal.sim.scenario.Scenario;
 import xal.smf.Accelerator;
 import xal.smf.AcceleratorSeq;
@@ -31,28 +30,65 @@ public class JElsDemo {
 
 	public static void main(String[] args) throws InstantiationException, ModelException {
 		if (args.length > 0 && ("-h".equals(args[0]) || "--help".equals(args[0]))) {
-			System.out.println("Usage: [accelerator file main.xal] [probe file]");
+			System.out.println("Usage: [-a] [combo sequence] [accelerator file main.xal] [probe file]");
+			System.out.println("	-a	use adaptive tracker");
+			System.out.println("	If no combo sequence is given, the first one is choosen");
 			return;
 		}
 		
+		Accelerator accelerator;
 		AcceleratorSeq sequence;
 		EnvelopeProbe probe;
-		if (args.length == 0) {
-			// Loads accelerator
-			sequence = loadAcceleratorSequence();
-		} else { //	(args.length > 0) 
-			sequence = loadAcceleratorSequence(args[0]);
+		String comboSequence = null;
+		
+		boolean adaptiveTracker = false;
+		
+		int argspos = 0;
+		
+		// Option -a
+		if (args.length > argspos && args[argspos].equals("-a")) {
+			adaptiveTracker = true;
+			argspos++;
 		}
-		if (args.length > 1) {
-			probe = loadProbeFromXML(args[1]);
+		
+		// combo sequence
+		if (args.length > argspos) {
+			comboSequence = args[argspos++];
+		}
+
+		// path to accelerator
+		if (args.length > argspos) {
+			accelerator = loadAccelerator(args[argspos++]);
 		} else {
-			probe = defaultProbe();
+			accelerator = loadAccelerator();
+		} 
+		
+		
+		// now load the sequence
+		if (comboSequence == null) {
+			sequence = accelerator.getComboSequences().get(0);
+			System.out.println("Selecting combo sequence "+sequence.getId());
+		} else {
+			sequence = accelerator.getComboSequence(comboSequence);
+		}
+		
+		
+		// path to probe
+		if (args.length > argspos) {
+			probe = loadProbeFromXML(args[argspos++]);
+		} else {
+			Tracker tracker;
+			if (adaptiveTracker)
+				tracker = AlgorithmFactory.createEnvTrackerAdapt(sequence);
+			else
+				tracker = AlgorithmFactory.createEnvelopeTracker(sequence);
+			probe = ProbeFactory.getEnvelopeProbe(sequence, tracker);
 		}
 		
 		run(sequence, probe);
 	}
 
-	public static EnvelopeProbe defaultProbe() {
+	/*public static EnvelopeProbe defaultProbe() {
 		EnvelopeProbe probe = setupOpenXALProbe(); // OpenXAL probe & algorithm
 		//EnvelopeProbe probe = setupElsProbe(); // ELS probe & algorithm
 						
@@ -61,14 +97,10 @@ public class JElsDemo {
         //loadInitialParameters(probe, "mebt-initial-state.xml");		
 		
 		return probe;
-	}	
-		
-	public static void run(AcceleratorSeq sequence) throws ModelException {	
-		run(sequence, defaultProbe());
-	}
+	}*/	
 		
 	public static void run(AcceleratorSeq sequence, EnvelopeProbe probe) throws ModelException {
-		// Setup (pick combination of elements and algorithm)
+		// Setup (pick combination  of elements and algorithm)
 		//ElementMapping elementMapping = JElsElementMapping.getInstance(); // JELS element mapping - transfer matrices in OpenXal reference frame
 		//ElementMapping elementMapping = ElsElementMapping.getInstance(); // ELS element mapping - transfer matrices in TraceWin reference frame
 		//ElementMapping elementMapping = DefaultElementMapping.getInstance(); // OpenXAL element mapping - transfer matrices in OpenXal reference frame
@@ -196,7 +228,7 @@ public class JElsDemo {
         frame.setDefaultCloseOperation(frame.DISPOSE_ON_CLOSE);*/      	
 	}
 
-	private static EnvelopeProbe setupOpenXALProbe() {
+	/*private static EnvelopeProbe setupOpenXALProbe() {
 		EnvelopeTracker envelopeTracker = new EnvelopeTracker();			
 		envelopeTracker.setRfGapPhaseCalculation(true);
 		envelopeTracker.setUseSpacecharge(true);
@@ -214,9 +246,9 @@ public class JElsDemo {
 		// Envelope probe and tracker
 		ElsTracker elsTracker = new ElsTracker();			
 		elsTracker.setRfGapPhaseCalculation(false);
-		/*envelopeTracker.setUseSpacecharge(false);
-		envelopeTracker.setEmittanceGrowth(false);
-		envelopeTracker.setStepSize(0.004);*/
+		//envelopeTracker.setUseSpacecharge(false);
+		//envelopeTracker.setEmittanceGrowth(false);
+		//envelopeTracker.setStepSize(0.004);
 		elsTracker.setProbeUpdatePolicy(Tracker.UPDATE_EXIT);
 		
 		ElsProbe elsProbe = new ElsProbe();
@@ -242,7 +274,7 @@ public class JElsDemo {
 										  new Twiss(-0.48513031,0.92578192,0.3599253*1e-6 / beta_gamma)});
 		probe.setBeamCurrent(62.5e-3);
 		probe.setBunchFrequency(352.21e6); 	
-	}
+	}*/
 
 	public static void loadInitialParameters(EnvelopeProbe probe, String file) {
 		XmlDataAdaptor document = XmlDataAdaptor.adaptorForUrl( JElsDemo.class.getResource(file).toString(), false);
@@ -281,7 +313,7 @@ public class JElsDemo {
 		}
 	}
 
-	private static AcceleratorSeq loadAcceleratorSequence() {
+	private static Accelerator loadAccelerator() {
 		/* Loading SMF model */				
 		Accelerator accelerator = XMLDataManager.loadDefaultAccelerator();
 				
@@ -305,7 +337,7 @@ public class JElsDemo {
 		//return accelerator;
 	}
 	
-	private static AcceleratorSeq loadAcceleratorSequence(String path) {
+	private static Accelerator loadAccelerator(String path) {
 		/* Loading SMF model */				
 		Accelerator accelerator = XMLDataManager.acceleratorWithUrlSpec(new File(path).toURI().toString());
 				
