@@ -66,6 +66,8 @@ public class IdealRfGap extends ThinElement implements IRfGap {
 	 */
 	private double m_dblFreq = 0.0;
 
+    /** the separation of the gap center from the cell center (m) */
+    private double gapOffset = 0.;
     
     /** the on axis accelerating field (V) */
     private double E0 = 0.;
@@ -269,7 +271,7 @@ public class IdealRfGap extends ThinElement implements IRfGap {
     	}
     	else {    		 
     		double lastGapPosition = probe.getLastGapPosition();
-    		double position = probe.getPosition();
+    		double position = probe.getPosition() + gapOffset;
     		if (lastGapPosition == position) {
     			Phis = getPhase(); // we are visiting gap for the second time
     		} else {
@@ -363,7 +365,7 @@ public class IdealRfGap extends ThinElement implements IRfGap {
     	}    	
             
     	probe.setLastGapPhase(Phis + deltaPhi);
-    	probe.setLastGapPosition(probe.getPosition());
+    	probe.setLastGapPosition(probe.getPosition() + gapOffset);
     	matPhi.setElem(6,6,1);
         return new PhaseMap(matPhi);
     }
@@ -401,6 +403,7 @@ public class IdealRfGap extends ThinElement implements IRfGap {
 	    // Initialize from source values
 	    initialGap = rfgap.isFirstGap();
 	    cellLength = rfgap.getGapLength();
+	    gapOffset = rfgap.getGapOffset();
 	    TTFFit = rfgap.getTTFFit();	
 	    structureMode = rfgap.getStructureMode();
 	}
