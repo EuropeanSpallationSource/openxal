@@ -266,7 +266,7 @@ public class IdealRfGap extends ThinElement implements IRfGap {
      	double lambda=LightSpeed/getFrequency();
     	
     	double Phis;
-    	if (isFirstGap()) {
+    	if (isFirstGap() || !probe.getAlgorithm().getRfGapPhaseCalculation()) {
     		calculatePhase(probe);
     		Phis = getPhase();
     	}
