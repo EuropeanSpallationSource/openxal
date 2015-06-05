@@ -584,6 +584,7 @@ public class IdealMagWedgeDipole2 extends ElectromagnetSeq {
 		if (element.getPartNr() == 0) // first piece
 		{
 			setEntrPoleAngle(magnet.getEntrRotAngle() * Math.PI / 180.);
+	    	if (fld_ind0 < 0. || fld_ind0 > 1.0) System.err.println("FieldIndex of a bend not in [0,1]. Element: "+getId()+" N="+fld_ind0); 
 		}
 		if (element.getParts()-1 == element.getPartNr()) // last piece					
 		{

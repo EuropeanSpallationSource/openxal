@@ -423,9 +423,9 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
     	double alfa = dblLen/rho;
     	double N = getFieldIndex();
     	
-    	double h=Math.signum(alfa)/Math.abs(rho);
-    	double kx=Math.sqrt(1-N)*Math.abs(h);
-    	double ky=Math.sqrt(N)*Math.abs(h);
+    	double h=Math.signum(alfa)/Math.abs(rho);    	
+    	double kx=Math.sqrt(Math.abs(1-N))*Math.abs(h);
+    	double ky=Math.sqrt(Math.abs(N))*Math.abs(h);
     	double gamma = probe.getGamma();
     	double Deltas=dblLen;
  
