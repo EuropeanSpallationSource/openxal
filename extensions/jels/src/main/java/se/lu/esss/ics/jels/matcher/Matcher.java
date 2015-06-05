@@ -91,13 +91,13 @@ public class Matcher implements Runnable {
 		this.showScore = showScore;
 	}
 	
-	public boolean isShowSimulation() {
+/*	public boolean isShowSimulation() {
 		return showSimulation;
 	}
 	
 	public void setShowSimulation(boolean showSimulation) {
 		this.showSimulation = showSimulation;
-	}
+	}*/
 	
 	@NoEdit
 	public Accelerator getAccelerator()
@@ -128,11 +128,12 @@ public class Matcher implements Runnable {
 	}
 	
 	Vector<EnvelopeCurve> data = new Vector<>(2);
-	
+	FunctionGraphsJPanel plot;
+			
 	public void showSimulationPlot()
 	{
 		final JFrame frame = new JFrame();
-		FunctionGraphsJPanel plot = new FunctionGraphsJPanel();
+		plot = new FunctionGraphsJPanel();
      	plot.setVisible(true);
      	
      	data.add(new EnvelopeCurve(PLANE.HOR));
@@ -152,29 +153,48 @@ public class Matcher implements Runnable {
 	
 	public void updateSimulationPlot(Trajectory t)
 	{
-		for (EnvelopeCurve c : data) {
-			c.removeAllPoints();
-			c.loadCurve(t);
-		}
+		Vector<EnvelopeCurve> data = new Vector<>(2);
+		EnvelopeCurve cx = new EnvelopeCurve(PLANE.HOR, t);
+     	data.add(cx);
+     	
+     	EnvelopeCurve cy = new EnvelopeCurve(PLANE.VER, t);
+     	data.add(cy);
+     	
+     	plot.removeGraphData(0);
+     	plot.addGraphData(data);		
 	}
 	
-	BasicGraphData scorePlot = new BasicGraphData();
+	JFrame scoreFrame; 
+	BasicGraphData scorePlot;
 	
-	public void showScorePlot()
+	public void showScorePlot(boolean show)
 	{
-		final JFrame frame = new JFrame();
-		FunctionGraphsJPanel plot = new FunctionGraphsJPanel();
-     	plot.setVisible(true);
-     	    
-  	 	plot.addGraphData(scorePlot);
-  	 	
-     	plot.setAxisNames("trial", "score");
-     	
-     	plot.refreshGraphJPanel();
-     	frame.setSize(500,500);
-        frame.add(plot);
-        frame.setVisible(true);
-        frame.setDefaultCloseOperation(frame.DISPOSE_ON_CLOSE);
+		if (scoreFrame == null && show) {
+			scoreFrame = new JFrame(); 
+			scorePlot = new BasicGraphData();
+
+			FunctionGraphsJPanel plot = new FunctionGraphsJPanel();
+		
+			plot.setVisible(true);
+	  	 	plot.addGraphData(scorePlot);
+	     	plot.setAxisNames("trial", "score");	     	
+	     	plot.refreshGraphJPanel();
+			
+			scoreFrame.setSize(500,500);
+			scoreFrame.add(plot);
+			scoreFrame.setVisible(true);
+			scoreFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		}
+		
+		if (show) 
+			scorePlot.removeAllPoints();
+		
+		if (!show && scoreFrame != null) {
+			scoreFrame.dispose();
+			scoreFrame = null;
+			scorePlot = null;
+		}
+		
 	}
 	
 	public void run()
@@ -199,9 +219,8 @@ public class Matcher implements Runnable {
 			});
 		}
 		
-		if (showScore) {
-			showScorePlot();
-		}
+		showScorePlot(showScore);
+		
 		
 		InitialBeamParameters initialParameters = getInitialBeamParameters();
 		for (Variable v : initialParameters.getVariables()) {
