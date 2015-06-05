@@ -559,7 +559,7 @@ public class IdealMagWedgeDipole2 extends ElectromagnetSeq {
 	public void initializeFrom(LatticeElement element) {
 		super.initializeFrom(element);
 		
-		ESSBend magnet = (ESSBend) element.getNode();
+		Bend magnet = (Bend) element.getNode();
 		setPosition(element.getCenter(), element.getLength());
 
 		// First retrieve all the physical parameters for a bending dipole				
@@ -580,19 +580,29 @@ public class IdealMagWedgeDipole2 extends ElectromagnetSeq {
 		setDesignPathLength(len_path);		
 		setFieldIndex(fld_ind0);
 		setDesignBendAngle(ang_bend);
-		setGapSize(magnet.getGap());
 		
 		if (element.getPartNr() == 0) // first piece
 		{
 			setEntrPoleAngle(magnet.getEntrRotAngle() * Math.PI / 180.);
-			setEntrFringeIntegral(magnet.getEntrK1());
-			setEntrFringeIntegral2(magnet.getEntrK2());
 		}
 		if (element.getParts()-1 == element.getPartNr()) // last piece					
 		{
 			setExitPoleAngle(magnet.getExitRotAngle() * Math.PI / 180.);
-			setExitFringeIntegral(magnet.getExitK1());
-			setExitFringeIntegral2(magnet.getExitK2());
-		}		
+		}
+		
+		if (magnet instanceof ESSBend) {
+			ESSBend magnet2 = (ESSBend)magnet;
+			setGapSize(magnet2.getGap());
+			if (element.getPartNr() == 0) // first piece
+			{
+				setEntrFringeIntegral(magnet2.getEntrK1());
+				setEntrFringeIntegral2(magnet2.getEntrK2());
+			}
+			if (element.getParts()-1 == element.getPartNr()) // last piece					
+			{
+				setExitFringeIntegral(magnet2.getExitK1());
+				setExitFringeIntegral2(magnet2.getExitK2());
+			}
+		}
 	}
 }
