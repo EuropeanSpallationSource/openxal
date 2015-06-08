@@ -16,6 +16,21 @@
 	<name>ESS JElS</name>
 	<url>http://europeanspallationsource.se/</url>
 
+	<build>
+		<sourceDirectory>src</sourceDirectory>
+		<testSourceDirectory>test/java</testSourceDirectory>
+		<resources>
+			<resource>
+				<directory>resources</directory>
+			</resource>
+		</resources>
+		<testResources>
+			<testResource>
+				<directory>test/resources</directory>
+			</testResource>
+		</testResources>
+	</build>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.xal</groupId>
