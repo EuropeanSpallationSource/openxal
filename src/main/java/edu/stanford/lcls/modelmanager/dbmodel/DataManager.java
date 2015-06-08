@@ -811,14 +811,12 @@ public class DataManager {
 			
 			cstmt1.execute();
 			// wait and check to see if the RUN ID is available
-			boolean runIdReady = false;
-			while (!runIdReady) {
+			while (true) {
 				try {
 					// check once every 0.5 sec
-					Thread.sleep(500);
 					Message.info("RUN_ID = " + Integer.toString(cstmt1.getInt(4)));
-					if (Integer.toString(cstmt1.getInt(4)) != null || Integer.toString(cstmt1.getInt(4)).equals("null"))
-						runIdReady = true;
+					if (Integer.toString(cstmt1.getInt(4)) != null || Integer.toString(cstmt1.getInt(4)).equals("null")) break;						
+					Thread.sleep(500);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
