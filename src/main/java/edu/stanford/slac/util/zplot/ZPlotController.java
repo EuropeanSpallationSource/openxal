@@ -286,12 +286,10 @@ class ZPlotController {
 		}
 		int i = 0;
 		for (i = 0; i < labels.length - 1; i++) {
-			this.devicePlotsPanel.dataPlotLabelCheckBoxes[i].setSelected(!zPlot
-					.getSkippedSubplotIndices().contains(i));
+			this.devicePlotsPanel.dataPlotLabelCheckBoxes[i].setSelected(zPlot.getSubplotVisible(i));
 		}
 
-		boolean showBeamlineCartoon = !zPlot.getSkippedSubplotIndices()
-				.contains(i);
+		boolean showBeamlineCartoon = zPlot.getSubplotVisible(i);
 
 		this.devicePlotsPanel.showCartoonCheckBox
 				.addActionListener(new ActionListener() {
@@ -387,21 +385,14 @@ class ZPlotController {
 	protected void processSubplotsSelection() {
 		ZPlot zPlot = (ZPlot) this.zPlotPanel.getChart().getPlot();
 
-		zPlot.getSkippedSubplotIndices().clear();
-
 		JCheckBox checkBox = null;
 		int i = 0;
 		for (i = 0; i < this.devicePlotsPanel.dataPlotLabelCheckBoxes.length; i++) {
 			checkBox = this.devicePlotsPanel.dataPlotLabelCheckBoxes[i];
-			if (!checkBox.isSelected()) {
-				zPlot.getSkippedSubplotIndices().add(i);
-			}
+			zPlot.setSubplotVisible(i, checkBox.isSelected());
 		}
 
-		if (!this.devicePlotsPanel.showCartoonCheckBox.isSelected()) {
-			zPlot.getSkippedSubplotIndices().add(i);
-		}
-
+		zPlot.setSubplotVisible(i, this.devicePlotsPanel.showCartoonCheckBox.isSelected());
 	}
 
 	protected void processCartoonFilter() {

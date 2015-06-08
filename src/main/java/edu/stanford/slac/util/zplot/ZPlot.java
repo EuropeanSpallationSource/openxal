@@ -69,6 +69,8 @@ public class ZPlot extends CombinedDomainXYPlot {
 	private Beamline[] beamlines;
 	private ValueAxis selectedRangeAxis;
 
+	private boolean updateWeights;
+	
 	private void drawBeamlines(Graphics2D g2, Rectangle2D dataArea) {
 		if (this.beamlines == null || this.beamlines.length < 1) {
 			return;
@@ -248,38 +250,36 @@ public class ZPlot extends CombinedDomainXYPlot {
 		
 	@Override
 	protected AxisSpace calculateAxisSpace(Graphics2D g2, Rectangle2D plotArea) {
-		@SuppressWarnings("unchecked")
-		List<XYPlot> subplots = (List<XYPlot>)getSubplots();
-		
-		boolean skipBeamlineCartoon = this.skippedSubplotIndices
-				.contains(getBeamlineCartoonIndex());
-		
-		if (skipBeamlineCartoon) {
-			for (int i = 0; i<subplots.size(); i++) {
-				int newWeight = this.skippedSubplotIndices.contains(i) ? 0 : 1;
-				int oldWeight = subplots.get(i).getWeight(); 
-				if (oldWeight != newWeight) subplots.get(i).setWeight(this.skippedSubplotIndices.contains(i) ? 0 : 1);
-			}
-		} else {
-			// first let's calculate the space we have
-			AxisSpace space = super.calculateAxisSpace(g2, plotArea);
-			Rectangle2D adjustedPlotArea = space.shrink(plotArea, null);
+		if (updateWeights) {
+			@SuppressWarnings("unchecked")
+			List<XYPlot> subplots = (List<XYPlot>)getSubplots();
 			
-			// divide it into equal parts for visible plots without the cartoon
-	        int n = subplots.size() - this.skippedSubplotIndices.size() - 1;
-	        double usableSize = adjustedPlotArea.getHeight() - getGap() * n - CARTOON_HEIGHT;
-	        double plotSize = usableSize / n;
-	        
-	        // set weights so we get the right size of the cartoon
-	        for (int i = 0; i<subplots.size(); i++) {
-	        	XYPlot plot = subplots.get(i);
-	        	int newWeight;
-				if (plot instanceof BeamlineCartoon)
-					newWeight = (int)(CARTOON_HEIGHT + getGap()/2); 
-				else
-					newWeight = this.skippedSubplotIndices.contains(i) ? 0 : (int)plotSize;
-				int oldWeight = plot.getWeight();
-				if (oldWeight != newWeight) plot.setWeight(newWeight);
+			boolean skipBeamlineCartoon = this.skippedSubplotIndices
+					.contains(getBeamlineCartoonIndex());
+			
+			if (skipBeamlineCartoon) {
+				for (int i = 0; i<subplots.size(); i++) {
+					subplots.get(i).setWeight(this.skippedSubplotIndices.contains(i) ? 0 : 1);
+				}
+			} else {
+				// first let's calculate the space we have
+				AxisSpace space = super.calculateAxisSpace(g2, plotArea);
+				Rectangle2D adjustedPlotArea = space.shrink(plotArea, null);
+				
+				// divide it into equal parts for visible plots without the cartoon
+		        int n = subplots.size() - this.skippedSubplotIndices.size() - 1;
+		        double usableSize = adjustedPlotArea.getHeight() - getGap() * n - CARTOON_HEIGHT;
+		        double plotSize = usableSize / n;
+		        
+		        // set weights so we get the right size of the cartoon
+		        for (int i = 0; i<subplots.size(); i++) {
+		        	XYPlot plot = subplots.get(i);
+		        	int newWeight;
+					if (plot instanceof BeamlineCartoon)
+						plot.setWeight((int)(CARTOON_HEIGHT + getGap()/2)); 
+					else
+						plot.setWeight(this.skippedSubplotIndices.contains(i) ? 0 : (int)plotSize);
+				}
 			}
 		}
 		
@@ -483,9 +483,20 @@ public class ZPlot extends CombinedDomainXYPlot {
 	public String[] getSubplotLabels() {
 		return this.subplotLabels;
 	}
-
-	public HashSet<Integer> getSkippedSubplotIndices() {
-		return this.skippedSubplotIndices;
+	
+	public void setSubplotVisible(int plotIndex, boolean visible) {
+		boolean changed;
+		if (visible) {
+			changed = skippedSubplotIndices.remove(plotIndex);
+		}
+		else {
+			changed = skippedSubplotIndices.add(plotIndex);
+		}
+		if (changed) updateWeights = true;
+	}
+	
+	public boolean getSubplotVisible(int plotIndex) {
+		return !skippedSubplotIndices.contains(plotIndex);
 	}
 
 	public BeamlineCartoon getBeamlineCartoon() {

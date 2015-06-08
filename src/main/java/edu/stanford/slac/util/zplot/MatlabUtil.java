@@ -16,6 +16,6 @@ public class MatlabUtil {
 	}
 	
 	public static void skipSubplot(ZPlot zPlot, int index){
-		zPlot.getSkippedSubplotIndices().add(index);
+		zPlot.setSubplotVisible(index,  false);
 	}
 }
