@@ -255,8 +255,11 @@ public class ZPlot extends CombinedDomainXYPlot {
 				.contains(getBeamlineCartoonIndex());
 		
 		if (skipBeamlineCartoon) {
-			for (int i = 0; i<subplots.size(); i++)
-				subplots.get(i).setWeight(this.skippedSubplotIndices.contains(i) ? 0 : 1);
+			for (int i = 0; i<subplots.size(); i++) {
+				int newWeight = this.skippedSubplotIndices.contains(i) ? 0 : 1;
+				int oldWeight = subplots.get(i).getWeight(); 
+				if (oldWeight != newWeight) subplots.get(i).setWeight(this.skippedSubplotIndices.contains(i) ? 0 : 1);
+			}
 		} else {
 			// first let's calculate the space we have
 			AxisSpace space = super.calculateAxisSpace(g2, plotArea);
@@ -270,10 +273,13 @@ public class ZPlot extends CombinedDomainXYPlot {
 	        // set weights so we get the right size of the cartoon
 	        for (int i = 0; i<subplots.size(); i++) {
 	        	XYPlot plot = subplots.get(i);
+	        	int newWeight;
 				if (plot instanceof BeamlineCartoon)
-					plot.setWeight((int)(CARTOON_HEIGHT + getGap()/2)); 
+					newWeight = (int)(CARTOON_HEIGHT + getGap()/2); 
 				else
-					plot.setWeight(this.skippedSubplotIndices.contains(i) ? 0 : (int)plotSize);
+					newWeight = this.skippedSubplotIndices.contains(i) ? 0 : (int)plotSize;
+				int oldWeight = plot.getWeight();
+				if (oldWeight != newWeight) plot.setWeight(newWeight);
 			}
 		}
 		
