@@ -4,12 +4,12 @@
 	<parent>
 		<groupId>org.xal</groupId>
 		<artifactId>openxal.apps.packaging</artifactId>
-		<version>1.4</version>
+		<version>1.5</version>
 	</parent>
 
 	<groupId>se.esss.codac.units</groupId>
 	<artifactId>openxal-experimentautomator</artifactId>
-	<version>1.4</version>
+	<version>1.5</version>
 
 	<packaging>codac</packaging>
 	<name>Experiment Automator</name>
