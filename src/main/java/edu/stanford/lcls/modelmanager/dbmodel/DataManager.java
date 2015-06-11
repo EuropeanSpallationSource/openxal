@@ -31,13 +31,13 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.sql.Array;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -110,9 +110,9 @@ public class DataManager {
 	private static String comment = ""; // TODO this variable should not be global!
 
 	
-	static ArrayList<String> deviceID = new ArrayList<String>();
-	static ArrayList<String> deviceID1 = new ArrayList<String>();
-	static ArrayList<String> deviceTypeID = new ArrayList<String>();
+	static ArrayList<Integer> deviceID = new ArrayList<>();
+	static ArrayList<Integer> deviceID1 = new ArrayList<>();
+	static ArrayList<Integer> deviceTypeID = new ArrayList<>();
 
 	private static boolean useSDisplay = false;
 	
@@ -616,7 +616,7 @@ public class DataManager {
 		return runMachineModelDevice.toArray(new MachineModelDevice[runMachineModelDevice.size()]);
 	}
 
-	static String runID = null;
+	static Integer runID = null;
 	static boolean writeToModelDevicesDB_done = false;
 	static boolean writeToElementModelsDB_done = false;
 	
@@ -647,28 +647,30 @@ public class DataManager {
 		}
 
 		ArrayList<String> elementName = new ArrayList<String>();
-		ArrayList<String> elementID = new ArrayList<String>();
-		ArrayList<String> elementTypeID = new ArrayList<String>();
+		ArrayList<Integer> elementID = new ArrayList<>();
+		ArrayList<Integer> elementTypeID = new ArrayList<>();
 		int index;
 		ResultSet rs;
 
 		// prepare for MACHINE_MODEL.RUNS
-		String runs[] = new String[11];
-		runs[0] = "1";
-		runs[1] = null;
-		runs[2] = "MACHINE_MODEL";
-		runs[3] = null;
-		runs[4] = runMachineModel.getPropertyValue("RUN_SOURCE_CHK").toString();
-		runs[5] = null;
-		runs[6] = null;
-		runs[7] = null;
-		runs[8] = null;
-		runs[9] = runMachineModel.getPropertyValue("COMMENTS").toString();
-		runs[10]= runMachineModel.getPropertyValue("MODEL_MODES_ID").toString();		
+		PreparedStatement stmt1 = null;
 		
-		// prepare for MACHINE_MODEL.MODEL_DEVICES
-		String modelDevices[] = new String[runMachineModelDevice.length * 4];
-		try{
+		try {
+			writeConnection.setAutoCommit(false);
+			
+			stmt1 = writeConnection.prepareStatement("INSERT INTO \"MACHINE_MODEL\".\"RUNS\" (\"RUN_SOURCE_CHK\", \"COMMENTS\", \"MODEL_MODES_ID\")"
+				+"	VALUES(?,?,?) RETURNING \"ID\"");
+			stmt1.setString(1, (String)runMachineModel.getPropertyValue("RUN_SOURCE_CHK"));
+			stmt1.setString(2, (String)runMachineModel.getPropertyValue("COMMENTS"));
+			stmt1.setInt(3, Integer.parseInt((String)runMachineModel.getPropertyValue("MODEL_MODES_ID")));
+			
+			ResultSet rs1 = stmt1.executeQuery();
+			rs1.next();
+			Message.info("RUN_ID = " + rs1.getInt(1));
+			
+			// update the RUN ID
+			runID = rs1.getInt(1);
+			
 			/*PreparedStatement stmt2 = writeConnection.prepareStatement("SELECT L.\"ELEMENT\", L.\"ELEMENT_ID\", D.\"ID\" " +
 					"FROM \"MACHINE_MODEL\".\"DEVICE_TYPES\" D, \"LCLS_INFRASTRUCTURE\".\"LCLS_ELEMENTS\" L " +
 			"WHERE L.\"KEYWORD\" = D.\"DEVICE_TYPE\"");*/
@@ -678,10 +680,14 @@ public class DataManager {
 			rs = stmt2.executeQuery();
 			while(rs.next()){
 				elementName.add(rs.getString(1));
-				elementID.add(rs.getString(2));
-				elementTypeID.add(rs.getString(3));
+				elementID.add(rs.getInt(2));
+				elementTypeID.add(rs.getInt(3));
 			}
 
+			PreparedStatement stmt3 = writeConnection.prepareStatement("INSERT INTO \"MACHINE_MODEL\".\"MODEL_DEVICES\" (\"RUNS_ID\", \"LCLS_ELEMENTS_ELEMENT_ID\", \"DEVICE_TYPES_ID\", \"DEVICE_PROPERTY\", \"DEVICE_VALUE\") "+
+			  "VALUES (?,?,?,?,?)");
+			stmt3.setInt(1, runID);
+			
 			// reset deviceID
 			deviceID.clear();
 			for(int i=0; i<runMachineModelDevice.length; i++){
@@ -689,16 +695,121 @@ public class DataManager {
 				if(index >= 0){
 					deviceID.add(elementID.get(index));
 					deviceTypeID.add(elementTypeID.get(index));
+					stmt3.setInt(2, deviceID.get(i));
+					stmt3.setInt(3, deviceTypeID.get(i));
 				}else{
 					deviceID.add(null);
 					deviceTypeID.add(null);
+					stmt3.setNull(2, Types.INTEGER);
+					stmt3.setNull(3, Types.INTEGER);
 				}
-				
-				modelDevices[i*4] = deviceID.get(i);
-				modelDevices[i*4+1] = deviceTypeID.get(i);
-				modelDevices[i*4+2] = runMachineModelDevice[i].getPropertyValue("DEVICE_PROPERTY").toString();
-				modelDevices[i*4+3] = runMachineModelDevice[i].getPropertyValue("DEVICE_VALUE").toString();				
+				stmt3.setString(4, (String)runMachineModelDevice[i].getPropertyValue("DEVICE_PROPERTY"));
+				stmt3.setDouble(5, Double.parseDouble((String)runMachineModelDevice[i].getPropertyValue("DEVICE_VALUE")));
+				stmt3.addBatch();
 			}
+			stmt3.executeBatch();
+
+			PreparedStatement stmt4 = writeConnection.prepareStatement("	INSERT INTO \"MACHINE_MODEL\".\"ELEMENT_MODELS\" ( " +
+    " \"RUNS_ID\", \"LCLS_ELEMENTS_ELEMENT_ID\", \"ELEMENT_NAME\", \"INDEX_SLICE_CHK\", " +
+    "\"ZPOS\", \"EK\", \"ALPHA_X\", \"ALPHA_Y\", \"BETA_X\", \"BETA_Y\" , \"PSI_X\"  , \"PSI_Y\", \"ETA_X\", \"ETA_Y\", \"ETAP_X\", \"ETAP_Y\","+
+    "\"R11\", \"R12\", \"R13\", \"R14\", \"R15\", \"R16\", \"R21\", \"R22\", \"R23\", \"R24\", \"R25\", \"R26\" , \"R31\" , \"R32\" , \"R33\" , \"R34\" , \"R35\" , \"R36\" ,"+
+    "\"R41\" , \"R42\" , \"R43\" , \"R44\" , \"R45\" , \"R46\" , \"R51\" , \"R52\" , \"R53\" , \"R54\" , \"R55\" , \"R56\" , \"R61\" , \"R62\" , \"R63\" , \"R64\" , \"R65\" , \"R66\" ,"+ 
+    "\"LEFF\", \"SLEFF\" , \"ORDINAL\", \"SUML\") " + 
+    " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+			deviceID1.clear();
+			for(int i=0; i<runMachineModelDetail.length; i++){
+				index = elementName.indexOf(runMachineModelDetail[i].getPropertyValue("ELEMENT_NAME").toString());
+				if(index >= 0){
+					deviceID1.add(elementID.get(index));
+					stmt4.setInt(2, deviceID1.get(i));
+				}else{
+					deviceID1.add(null);
+					stmt4.setNull(2, Types.INTEGER);
+				}
+				stmt4.setInt(1, runID);
+				
+				stmt4.setString(3, (String)runMachineModelDetail[i].getPropertyValue("ELEMENT_NAME"));
+				stmt4.setInt(4, Integer.parseInt((String)runMachineModelDetail[i].getPropertyValue("INDEX_SLICE_CHK")));
+				stmt4.setDouble(5, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("ZPOS")));
+				stmt4.setDouble(6, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("E")));
+				stmt4.setDouble(7, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("ALPHA_X")));
+				stmt4.setDouble(8, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("ALPHA_Y")));
+				stmt4.setDouble(9, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("BETA_X")));
+				stmt4.setDouble(10, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("BETA_Y")));
+				stmt4.setDouble(11, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("PSI_X")));
+				stmt4.setDouble(12, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("PSI_Y")));
+				stmt4.setDouble(13, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("ETA_X")));
+				stmt4.setDouble(14, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("ETA_Y")));
+				stmt4.setDouble(15, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("ETAP_X")));
+				stmt4.setDouble(16, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("ETAP_Y")));
+				stmt4.setDouble(17, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R11")));
+				stmt4.setDouble(18, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R12")));
+				stmt4.setDouble(19, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R13")));
+				stmt4.setDouble(20, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R14")));
+				stmt4.setDouble(21, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R15")));
+				stmt4.setDouble(22, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R16")));
+				stmt4.setDouble(23, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R21")));
+				stmt4.setDouble(24, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R22")));
+				stmt4.setDouble(25, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R23")));
+				stmt4.setDouble(26, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R24")));
+				stmt4.setDouble(27, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R25")));
+				stmt4.setDouble(28, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R26")));
+				stmt4.setDouble(29, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R31")));
+				stmt4.setDouble(30, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R32")));
+				stmt4.setDouble(31, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R33")));
+				stmt4.setDouble(32, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R34")));
+				stmt4.setDouble(33, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R35")));
+				stmt4.setDouble(34, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R36")));
+				stmt4.setDouble(35, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R41")));
+				stmt4.setDouble(36, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R42")));
+				stmt4.setDouble(37, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R43")));
+				stmt4.setDouble(38, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R44")));
+				stmt4.setDouble(39, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R45")));
+				stmt4.setDouble(40, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R46")));
+				stmt4.setDouble(41, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R51")));
+				stmt4.setDouble(42, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R52")));
+				stmt4.setDouble(43, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R53")));
+				stmt4.setDouble(44, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R54")));
+				stmt4.setDouble(45, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R55")));
+				stmt4.setDouble(46, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R56")));
+				stmt4.setDouble(47, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R61")));
+				stmt4.setDouble(48, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R62")));
+				stmt4.setDouble(49, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R63")));
+				stmt4.setDouble(50, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R64")));
+				stmt4.setDouble(51, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R65")));
+				stmt4.setDouble(52, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R66")));
+				stmt4.setDouble(53, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("LEFF")));
+				stmt4.setDouble(54, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("SLEFF")));
+				stmt4.setDouble(55, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("ORDINAL")));
+				stmt4.setDouble(56, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("SUML")));
+
+				stmt4.addBatch();
+			}
+		
+			stmt4.executeBatch();
+			
+			status = 1; // status=finished
+
+			writeConnection.commit();
+			
+			String msg = "Model data upload finished successfully";
+			Message.info(msg, true);
+
+			// automatically update the table after a model is uploaded
+			try {
+				model.removeRunModelFromFetchedModels(runID.toString());
+			} catch (ParseException e) {
+				Message.error("Cannot update MODEL RUN table!");
+				e.printStackTrace();
+			}
+
+			
+			writeConnection.close();
+
+		} catch (SQLException e) {
+			status = 0; // status=failed
+			Message.error("SQLException: failed to execute PL/SQL call on " + url, true);
+			e.printStackTrace();	
 		} catch (Exception exception) {
 			JOptionPane.showMessageDialog(parent, exception.getMessage(),
 					"SQL Error!  Query failed on" + url, JOptionPane.ERROR_MESSAGE);
@@ -708,155 +819,7 @@ public class DataManager {
 			if (runID == null)
 				return null;
 		}
-		// prepare for MACHINE_MODEL.ELEMENT_MODELS
-		String modelDetail[] = new String[runMachineModelDetail.length*55];
-
-		deviceID1.clear();
-		for(int i=0; i<runMachineModelDetail.length; i++){
-			index = elementName.indexOf(runMachineModelDetail[i].getPropertyValue("ELEMENT_NAME").toString());
-			if(index >= 0){
-				deviceID1.add(elementID.get(index));
-			}else{
-				deviceID1.add(null);
-			}
-			
-			modelDetail[i*55] = deviceID1.get(i);
-			modelDetail[i*55+1] = runMachineModelDetail[i].getPropertyValue("ELEMENT_NAME").toString();
-			modelDetail[i*55+2] = runMachineModelDetail[i].getPropertyValue("INDEX_SLICE_CHK").toString();
-			modelDetail[i*55+3] = runMachineModelDetail[i].getPropertyValue("ZPOS").toString();
-			modelDetail[i*55+4] = runMachineModelDetail[i].getPropertyValue("E").toString();
-			modelDetail[i*55+5] = runMachineModelDetail[i].getPropertyValue("ALPHA_X").toString();
-			modelDetail[i*55+6] = runMachineModelDetail[i].getPropertyValue("ALPHA_Y").toString();
-			modelDetail[i*55+7] = runMachineModelDetail[i].getPropertyValue("BETA_X").toString();
-			modelDetail[i*55+8] = runMachineModelDetail[i].getPropertyValue("BETA_Y").toString();
-			modelDetail[i*55+9] = runMachineModelDetail[i].getPropertyValue("PSI_X").toString();
-			modelDetail[i*55+10] = runMachineModelDetail[i].getPropertyValue("PSI_Y").toString();
-			modelDetail[i*55+11] = runMachineModelDetail[i].getPropertyValue("ETA_X").toString();
-			modelDetail[i*55+12] = runMachineModelDetail[i].getPropertyValue("ETA_Y").toString();
-			modelDetail[i*55+13] = runMachineModelDetail[i].getPropertyValue("ETAP_X").toString();
-			modelDetail[i*55+14] = runMachineModelDetail[i].getPropertyValue("ETAP_Y").toString();
-			modelDetail[i*55+15] = runMachineModelDetail[i].getPropertyValue("R11").toString();
-			modelDetail[i*55+16] = runMachineModelDetail[i].getPropertyValue("R12").toString();
-			modelDetail[i*55+17] = runMachineModelDetail[i].getPropertyValue("R13").toString();
-			modelDetail[i*55+18] = runMachineModelDetail[i].getPropertyValue("R14").toString();
-			modelDetail[i*55+19] = runMachineModelDetail[i].getPropertyValue("R15").toString();
-			modelDetail[i*55+20] = runMachineModelDetail[i].getPropertyValue("R16").toString();
-			modelDetail[i*55+21] = runMachineModelDetail[i].getPropertyValue("R21").toString();
-			modelDetail[i*55+22] = runMachineModelDetail[i].getPropertyValue("R22").toString();
-			modelDetail[i*55+23] = runMachineModelDetail[i].getPropertyValue("R23").toString();
-			modelDetail[i*55+24] = runMachineModelDetail[i].getPropertyValue("R24").toString();
-			modelDetail[i*55+25] = runMachineModelDetail[i].getPropertyValue("R25").toString();
-			modelDetail[i*55+26] = runMachineModelDetail[i].getPropertyValue("R26").toString();
-			modelDetail[i*55+27] = runMachineModelDetail[i].getPropertyValue("R31").toString();
-			modelDetail[i*55+28] = runMachineModelDetail[i].getPropertyValue("R32").toString();
-			modelDetail[i*55+29] = runMachineModelDetail[i].getPropertyValue("R33").toString();
-			modelDetail[i*55+30] = runMachineModelDetail[i].getPropertyValue("R34").toString();
-			modelDetail[i*55+31] = runMachineModelDetail[i].getPropertyValue("R35").toString();
-			modelDetail[i*55+32] = runMachineModelDetail[i].getPropertyValue("R36").toString();
-			modelDetail[i*55+33] = runMachineModelDetail[i].getPropertyValue("R41").toString();
-			modelDetail[i*55+34] = runMachineModelDetail[i].getPropertyValue("R42").toString();
-			modelDetail[i*55+35] = runMachineModelDetail[i].getPropertyValue("R43").toString();
-			modelDetail[i*55+36] = runMachineModelDetail[i].getPropertyValue("R44").toString();
-			modelDetail[i*55+37] = runMachineModelDetail[i].getPropertyValue("R45").toString();
-			modelDetail[i*55+38] = runMachineModelDetail[i].getPropertyValue("R46").toString();
-			modelDetail[i*55+39] = runMachineModelDetail[i].getPropertyValue("R51").toString();
-			modelDetail[i*55+40] = runMachineModelDetail[i].getPropertyValue("R52").toString();
-			modelDetail[i*55+41] = runMachineModelDetail[i].getPropertyValue("R53").toString();
-			modelDetail[i*55+42] = runMachineModelDetail[i].getPropertyValue("R54").toString();
-			modelDetail[i*55+43] = runMachineModelDetail[i].getPropertyValue("R55").toString();
-			modelDetail[i*55+44] = runMachineModelDetail[i].getPropertyValue("R56").toString();
-			modelDetail[i*55+45] = runMachineModelDetail[i].getPropertyValue("R61").toString();
-			modelDetail[i*55+46] = runMachineModelDetail[i].getPropertyValue("R62").toString();
-			modelDetail[i*55+47] = runMachineModelDetail[i].getPropertyValue("R63").toString();
-			modelDetail[i*55+48] = runMachineModelDetail[i].getPropertyValue("R64").toString();
-			modelDetail[i*55+49] = runMachineModelDetail[i].getPropertyValue("R65").toString();
-			modelDetail[i*55+50] = runMachineModelDetail[i].getPropertyValue("R66").toString();
-			modelDetail[i*55+51] = runMachineModelDetail[i].getPropertyValue("LEFF").toString();
-			modelDetail[i*55+52] = runMachineModelDetail[i].getPropertyValue("SLEFF").toString();
-			modelDetail[i*55+53] = runMachineModelDetail[i].getPropertyValue("ORDINAL").toString();
-			modelDetail[i*55+54] = runMachineModelDetail[i].getPropertyValue("SUML").toString();
-		}
-
-		
-		//invoke PL/SQL call
-		CallableStatement cstmt1 = null;
-		try {
-			Message.info("Uploading model data to DB...");
-			cstmt1 = writeConnection.prepareCall(
-			//TODO OPENXAL "{call MACHINE_MODEL.MODEL_UPLOAD_PKG.UPLOAD_MODEL (?, ?, ?, ?, ?)}");
-				"{call \"MACHINE_MODEL\".\"UPLOAD_MODEL\" (?, ?, ?, ?, ?)}");
-			cstmt1.registerOutParameter(4, java.sql.Types.INTEGER);
-			cstmt1.registerOutParameter(5, java.sql.Types.VARCHAR);
-
-			/*ArrayDescriptor runs_descriptor =
-				ArrayDescriptor.createDescriptor( "RUNS_ARRAY_TYP", writeConnection );  
-			ARRAY runs_array =
-				new ARRAY( runs_descriptor, writeConnection, runs );*/
-			Array runs_array = writeConnection.createArrayOf("varchar", runs);
-		    cstmt1.setArray(1, runs_array);
-
-			/*ArrayDescriptor model_devices_descriptor =
-				ArrayDescriptor.createDescriptor( "MODEL_DEVICES_ARRAY_TYP", writeConnection );  
-			ARRAY model_devices_array =
-				new ARRAY( model_devices_descriptor, writeConnection, modelDevices );*/
-		    Array model_devices_array = writeConnection.createArrayOf("varchar", modelDevices);
-		    cstmt1.setArray(2, model_devices_array);
-			
-			/*ArrayDescriptor element_models_descriptor =
-				ArrayDescriptor.createDescriptor( "ELEMENT_MODELS_ARRAY_TYP", writeConnection );  
-			ARRAY element_models_array =
-				new ARRAY( element_models_descriptor, writeConnection, modelDetail );*/
-		    Array element_models_array = writeConnection.createArrayOf("varchar", modelDetail);
-		    cstmt1.setArray(3, element_models_array);
-			
-			cstmt1.execute();
-			// wait and check to see if the RUN ID is available
-			while (true) {
-				try {
-					// check once every 0.5 sec
-					Message.info("RUN_ID = " + Integer.toString(cstmt1.getInt(4)));
-					if (Integer.toString(cstmt1.getInt(4)) != null || Integer.toString(cstmt1.getInt(4)).equals("null")) break;						
-					Thread.sleep(500);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-			
-			// update the RUN ID
-			runID = Integer.toString(cstmt1.getInt(4));
-			
-			String msg = cstmt1.getString(5);
-			if (msg == null) {
-				msg = "Model data upload finished successfully";
-				Message.info(msg, true);
-
-				// automatically update the table after a model is uploaded
-				try {
-					model.removeRunModelFromFetchedModels(runID);
-				} catch (ParseException e) {
-					Message.error("Cannot update MODEL RUN table!");
-					e.printStackTrace();
-				}
-			}
-			// if something goes wrong
-			else {
-				Message.error(msg, true);
-			}
-			
-//			System.out.println("MODEL data upload finished successfully!");
-			cstmt1.close();
-//			Message.info("Model data uploaded to database successfully!", true);
-			status = 1; // status=finished
-			
-			writeConnection.close();
-
-		} catch (SQLException e) {
-			status = 0; // status=failed
-			Message.error("SQLException: failed to execute PL/SQL call on " + url, true);
-			e.printStackTrace();
-		}	
-
-		return runID;
+		return runID.toString();
 	}		
 	
 	private static void writeToModelDevicesDB(Connection connection, 			
