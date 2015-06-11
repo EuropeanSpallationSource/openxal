@@ -101,18 +101,11 @@ public class DataManager {
 	private static final String DB_URL_PROPERTY_NAME="DB_CONNECTION";
 	private static final String DB_USERNAME_PROPERTY_NAME = "DB_USERNAME";	
 	private static final String DB_PWD_PROPERTY_NAME = "DB_PASSWORD";
-	// for MCCO or SLACDEV (the primary one)
-	private static Connection writeConnection;
 
 	public static String url = null; // Defaults to production
 
 	private final static String autoRunID = "RUN";
 	private static String comment = ""; // TODO this variable should not be global!
-
-	
-	static ArrayList<Integer> deviceID = new ArrayList<>();
-	static ArrayList<Integer> deviceID1 = new ArrayList<>();
-	static ArrayList<Integer> deviceTypeID = new ArrayList<>();
 
 	private static boolean useSDisplay = false;
 	
@@ -615,16 +608,6 @@ public class DataManager {
 		}
 		return runMachineModelDevice.toArray(new MachineModelDevice[runMachineModelDevice.size()]);
 	}
-
-	static Integer runID = null;
-	static boolean writeToModelDevicesDB_done = false;
-	static boolean writeToElementModelsDB_done = false;
-	
-	public static boolean getElementModelsDB_done() {
-		return writeToElementModelsDB_done;
-	}
-	
-	public static int status; // 0 = failed , 1=finished , 2=pending
 	
 	public static String newUploadToDatabase(final JFrame parent,
 			BrowserModel model,
@@ -632,30 +615,24 @@ public class DataManager {
 			final MachineModelDetail[] runMachineModelDetail,
 			final MachineModelDevice[] runMachineModelDevice) {
 		
-		status = 2; //status=pending
+		Integer runID = null;
+				
+		Connection writeConnection;
 		
 		try {
 //			writeConnection = dialog.showConnectionDialog(DatabaseAdaptor.getInstance());
 			writeConnection = DataManager.getConnection();
 			
-		} catch (Exception exception) {
-				JOptionPane.showMessageDialog(parent, exception.getMessage(),
-						"Connection Error!  Cannot connect to " + url, JOptionPane.ERROR_MESSAGE);
-				Logger.getLogger("global").log(Level.SEVERE,
-						"Database connection error.  Cannot connect to " + url, exception);
-				Message.error("Connection exception: Cannot connect to database" + url, true);
-		}
-
-		ArrayList<String> elementName = new ArrayList<String>();
-		ArrayList<Integer> elementID = new ArrayList<>();
-		ArrayList<Integer> elementTypeID = new ArrayList<>();
-		int index;
-		ResultSet rs;
-
-		// prepare for MACHINE_MODEL.RUNS
-		PreparedStatement stmt1 = null;
+			ArrayList<String> elementName = new ArrayList<String>();
+			ArrayList<Integer> elementID = new ArrayList<>();
+			ArrayList<Integer> elementTypeID = new ArrayList<>();
+			int index;
+			ResultSet rs;
+	
+			// prepare for MACHINE_MODEL.RUNS
+			PreparedStatement stmt1 = null;
+			
 		
-		try {
 			writeConnection.setAutoCommit(false);
 			
 			stmt1 = writeConnection.prepareStatement("INSERT INTO \"MACHINE_MODEL\".\"RUNS\" (\"RUN_SOURCE_CHK\", \"COMMENTS\", \"MODEL_MODES_ID\")"
@@ -688,18 +665,12 @@ public class DataManager {
 			  "VALUES (?,?,?,?,?)");
 			stmt3.setInt(1, runID);
 			
-			// reset deviceID
-			deviceID.clear();
 			for(int i=0; i<runMachineModelDevice.length; i++){
 				index = elementName.indexOf(runMachineModelDevice[i].getPropertyValue("ELEMENT_NAME").toString());
 				if(index >= 0){
-					deviceID.add(elementID.get(index));
-					deviceTypeID.add(elementTypeID.get(index));
-					stmt3.setInt(2, deviceID.get(i));
-					stmt3.setInt(3, deviceTypeID.get(i));
+					stmt3.setInt(2, elementID.get(index));
+					stmt3.setInt(3, elementTypeID.get(index));
 				}else{
-					deviceID.add(null);
-					deviceTypeID.add(null);
 					stmt3.setNull(2, Types.INTEGER);
 					stmt3.setNull(3, Types.INTEGER);
 				}
@@ -716,14 +687,11 @@ public class DataManager {
     "\"R41\" , \"R42\" , \"R43\" , \"R44\" , \"R45\" , \"R46\" , \"R51\" , \"R52\" , \"R53\" , \"R54\" , \"R55\" , \"R56\" , \"R61\" , \"R62\" , \"R63\" , \"R64\" , \"R65\" , \"R66\" ,"+ 
     "\"LEFF\", \"SLEFF\" , \"ORDINAL\", \"SUML\") " + 
     " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-			deviceID1.clear();
 			for(int i=0; i<runMachineModelDetail.length; i++){
 				index = elementName.indexOf(runMachineModelDetail[i].getPropertyValue("ELEMENT_NAME").toString());
 				if(index >= 0){
-					deviceID1.add(elementID.get(index));
-					stmt4.setInt(2, deviceID1.get(i));
+					stmt4.setInt(2, elementID.get(index));
 				}else{
-					deviceID1.add(null);
 					stmt4.setNull(2, Types.INTEGER);
 				}
 				stmt4.setInt(1, runID);
@@ -788,7 +756,7 @@ public class DataManager {
 		
 			stmt4.executeBatch();
 			
-			status = 1; // status=finished
+
 
 			writeConnection.commit();
 			
@@ -805,21 +773,29 @@ public class DataManager {
 
 			
 			writeConnection.close();
-
+			
+			return runID.toString();
 		} catch (SQLException e) {
-			status = 0; // status=failed
 			Message.error("SQLException: failed to execute PL/SQL call on " + url, true);
-			e.printStackTrace();	
+			e.printStackTrace();
+			
+			return null;
 		} catch (Exception exception) {
 			JOptionPane.showMessageDialog(parent, exception.getMessage(),
 					"SQL Error!  Query failed on" + url, JOptionPane.ERROR_MESSAGE);
 			Logger.getLogger("global").log(Level.SEVERE,
 					"Database SQL error.", exception);
 			Message.error("SQLException: Query failed on " + url, true);
-			if (runID == null)
-				return null;
+			
+			return null;
 		}
-		return runID.toString();
+		/* catch (Exception exception) {
+			JOptionPane.showMessageDialog(parent, exception.getMessage(),
+					"Connection Error!  Cannot connect to " + url, JOptionPane.ERROR_MESSAGE);
+			Logger.getLogger("global").log(Level.SEVERE,
+					"Database connection error.  Cannot connect to " + url, exception);
+			Message.error("Connection exception: Cannot connect to database" + url, true);
+		}*/
 	}		
 	
 	public static void exportDetailData(JFrame parent, MachineModelDetail[] selectedMachineModelDetail) {
@@ -996,16 +972,7 @@ public class DataManager {
 			}
 		}
 	}
-	
-	public static void closeDBConnection() {
-		try {
-			if (writeConnection != null)
-				writeConnection.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
-	
+		
 	public static String escape(String s)
 	{
 		return "\"" + s + "\"";

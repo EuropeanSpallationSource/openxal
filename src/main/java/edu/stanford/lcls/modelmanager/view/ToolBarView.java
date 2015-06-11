@@ -1,24 +1,38 @@
 package edu.stanford.lcls.modelmanager.view;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.SQLException;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JToolBar;
+import javax.swing.ListCellRenderer;
+import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
 import xal.extension.widgets.apputils.SimpleProbeEditor;
-import xal.model.IAlgorithm;
-import xal.model.probe.Probe;
-import xal.model.probe.traj.EnvelopeProbeState;
-import xal.sim.scenario.AlgorithmFactory;
-import xal.sim.scenario.ProbeFactory;
-import xal.smf.Accelerator;
-import xal.smf.data.XMLDataManager;
-import edu.stanford.lcls.modelmanager.dbmodel.*;
-import edu.stanford.lcls.modelmanager.*;
+import edu.stanford.lcls.modelmanager.ModelManagerWindow;
+import edu.stanford.lcls.modelmanager.dbmodel.BrowserModel;
+import edu.stanford.lcls.modelmanager.dbmodel.BrowserModelListener;
+import edu.stanford.lcls.modelmanager.dbmodel.DataManager;
+import edu.stanford.lcls.modelmanager.dbmodel.MachineModel;
+import edu.stanford.lcls.modelmanager.dbmodel.MachineModelDetail;
+import edu.stanford.lcls.modelmanager.dbmodel.MachineModelDevice;
 import edu.stanford.slac.Message.Message;
-
-import java.sql.SQLException;
 
 /**
  * QueryView is the view for querying the database for the machine models.
@@ -357,7 +371,7 @@ public class ToolBarView implements SwingConstants {
 
 		upload2DBButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
-				thread1 = new Thread(new Runnable() {
+				thread2 = new Thread(new Runnable() {
 					public void run() {
 						System.out.println("Save start!");
 						upload2DBButton.setEnabled(false);
@@ -367,35 +381,12 @@ public class ToolBarView implements SwingConstants {
 						ModelStateView.getProgressBar().setString("Uploading ...");
 						ModelStateView.getProgressBar().setIndeterminate(true);
 						Message.info("Uploading model RUN data to database...");;
-					}
-				});
-				thread2 = new Thread(new Runnable() {
-					public void run() {
+						
 						String uploadID= model.uploadToDatabase(parent);
-						long sleepBegin = System.currentTimeMillis();
-						long sleepEnd = 0;
-						while (!DataManager.getElementModelsDB_done()) {
-							if (DataManager.status == 0) {
-								Message.error("Application failed to correctly upload the model data !");
-								break;
-							}
-							try {
-								if (sleepEnd < 120000 && DataManager.status == 2) {
-									Message.debug("Sleeping before Run Button Enabled!");
-									Thread.sleep(1000); //sleep for 2mins max
-									sleepEnd = System.currentTimeMillis() - sleepBegin;
-									Message.debug("Sleep Time: " + sleepEnd);
-								}
-								else {
-									Message.debug("Timed out!");
-									DataManager.status = 0;
-									break;
-								}
-							} catch (InterruptedException e) {
-								e.printStackTrace();
-							}
-						}
-						if (DataManager.status == 1) {
+						
+						if (uploadID == null) {
+							Message.error("Application failed to correctly upload the model data !");
+						} else {
 							ModelStateView.getMachineModelState().setText(
 							"Application has finished uploading the model data !");
 						}
@@ -407,9 +398,8 @@ public class ToolBarView implements SwingConstants {
 						Message.info("Uploading model data finished!");
 						// no need to call AIDA name update from this app
 						// DataManager.updateAIDA();
-						}
+					}
 				});
-				thread1.start();
 				thread2.start();
 			}
 		});

@@ -203,7 +203,6 @@ public class ModelManagerDocument extends AcceleratorDocument {
 	 */
 	public void willClose() {
 		//TODO clear all DB connections
-		DataManager.closeDBConnection();
 		ModelManagerFeature.getBrowserModel().closeDBConnection();
 	}
 }
