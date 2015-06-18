@@ -128,12 +128,14 @@ public class SimpleBeanEditor<T> extends JDialog {
             
             //Get the cell editor for the table
             @Override
-            public TableCellEditor getCellEditor( final int row, final int col ) {
+            public TableCellEditor getCellEditor( final int row, final int column ) {
                 //Value at [row, col] of the table
-                final Object value = getValueAt( row, col );
+            	final int recordIndex = this.convertRowIndexToModel( row );
+				final PropertyRecord record = PROPERTY_TABLE_MODEL.getRecordAtRow( recordIndex );
+				final Object value = getValueAt( row, column );                
 
 				if ( value == null ) {
-					return super.getCellEditor( row, col );
+					return super.getCellEditor( row, column );
 				} else if (value instanceof Enum) {
 					return new DefaultCellEditor(new JComboBox<Object>(((Enum<?>)value).getDeclaringClass().getEnumConstants())
 						{
