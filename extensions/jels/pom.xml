@@ -41,6 +41,10 @@
 			<groupId>org.xal</groupId>
 			<artifactId>openxal.extensions.solver</artifactId>
 			<scope>runtime</scope>			
-		</dependency>			
+		</dependency>
+		<dependency>
+			<groupId>org.xal</groupId>
+			<artifactId>openxal.extensions.widgets</artifactId>
+		</dependency>						
 	</dependencies>
 </project>
