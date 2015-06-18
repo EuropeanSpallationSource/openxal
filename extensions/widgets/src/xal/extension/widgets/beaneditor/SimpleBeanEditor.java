@@ -43,6 +43,10 @@ public class SimpleBeanEditor<T> extends JDialog {
 	/** model column for the value in the property table */
 	final private int PROPERTY_TABLE_VALUE_COLUMN;
 
+	private JTable propertyTable;
+	private Box controlPanel; 
+			 
+	
 	 public SimpleBeanEditor( final Frame owner, final String dialogTitle, final String beanName, final T bean ) {
 		 this(owner, dialogTitle, beanName, bean, true, true);
 	 }
@@ -115,7 +119,7 @@ public class SimpleBeanEditor<T> extends JDialog {
         final Box mainContainer = new Box( BoxLayout.Y_AXIS );
 
         //Table containing the properties that can be modified
-        final JTable propertyTable = new JTable() {
+        propertyTable = new JTable() {
             /** Serializable version ID */
             private static final long serialVersionUID = 1L;
 
@@ -246,7 +250,6 @@ public class SimpleBeanEditor<T> extends JDialog {
         }
     }
     
-    
     protected Box initializeControlPanel()
     {
 
@@ -306,7 +309,7 @@ public class SimpleBeanEditor<T> extends JDialog {
 		});
 
 		//Add the buttons to the bottom of the dialog
-        final Box controlPanel = new Box( BoxLayout.X_AXIS );
+        controlPanel = new Box( BoxLayout.X_AXIS );
 		controlPanel.add( revertButton );
 		controlPanel.add( Box.createHorizontalGlue() );
         controlPanel.add( publishButton );
@@ -314,4 +317,10 @@ public class SimpleBeanEditor<T> extends JDialog {
         
         return controlPanel;
     }
+
+	@Override
+	public void setEnabled(boolean enabled) {
+		propertyTable.setEnabled(enabled);
+		if (controlPanel != null) controlPanel.setEnabled(enabled);
+	}
 }
