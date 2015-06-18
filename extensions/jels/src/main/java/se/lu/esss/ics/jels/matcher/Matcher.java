@@ -17,6 +17,7 @@ import xal.extension.solver.Problem;
 import xal.extension.solver.ScoreBoard;
 import xal.extension.solver.SolveStopperFactory;
 import xal.extension.solver.Solver;
+import xal.extension.solver.Stopper;
 import xal.extension.solver.Trial;
 import xal.extension.solver.Variable;
 import xal.extension.solver.market.AlgorithmStrategy;
@@ -36,7 +37,7 @@ import xal.smf.data.XMLDataManager;
 import xal.tools.annotation.AProperty.NoEdit;
 import xal.tools.annotation.AProperty.Units;
 
-public class Matcher implements Runnable {
+public class Matcher implements Runnable, Stopper {
 	
 	/*private InitialBeamParameters initialParameters = new InitialBeamParameters();	
 	private Accelerator accelerator = loadAccelerator();*/
@@ -57,6 +58,8 @@ public class Matcher implements Runnable {
 	private String outputBestRun = null;
 	
 	private Accelerator accelerator;
+	
+	private boolean aborted;
 	
 	public Matcher(Accelerator accelerator) {
 		this.accelerator = accelerator;
@@ -197,9 +200,17 @@ public class Matcher implements Runnable {
 		
 	}
 	
+	private double progress = 0.;
+	
+	public double getProgress() {
+		return progress;
+	}
+	
+	
 	public void run()
 	{
-		
+		aborted = false;
+		progress = 0.;
 		
 		try {
 			evaluator = getCriteria().getEvaluatorClass().getConstructor(Matcher.class).newInstance(this);
@@ -229,8 +240,8 @@ public class Matcher implements Runnable {
 		
 		Problem problem = new Problem(evaluator.getObjectives(), initialParameters.getVariables(), evaluator);
 		
-		Solver solver = new Solver(SolveStopperFactory.maxElapsedTimeStopper(timeLimit*60));
-
+		final Solver solver = new Solver((Stopper)this);
+		
 		solver.getAlgorithmSchedule().addAlgorithmScheduleListener(new AlgorithmScheduleListener() {
 			int i = 0;
 			
@@ -242,6 +253,8 @@ public class Matcher implements Runnable {
 			public void trialScored(AlgorithmSchedule algorithmSchedule, Trial trial) {
 				System.out.printf("score: %f algo: %s\n", trial.getSatisfaction(), trial.getAlgorithm().getClass());			
 				if (showScore) scorePlot.addPoint(i++, trial.getSatisfaction());
+				progress = solver.getScoreBoard().getElapsedTime() / (timeLimit*60); 
+
 			}
 			
 			@Override
@@ -304,6 +317,15 @@ public class Matcher implements Runnable {
 	{
 		Matcher me = new Matcher(loadAccelerator());
 		me.run();
+	}
+
+	public void abort() {
+		aborted = true;
+	}
+
+	@Override
+	public boolean shouldStop(Solver solver) {
+		return aborted || solver.getScoreBoard().getElapsedTime() >= timeLimit*60;
 	}
 }
 

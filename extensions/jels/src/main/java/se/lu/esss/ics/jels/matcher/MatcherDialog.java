@@ -9,6 +9,8 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JProgressBar;
+import javax.swing.JSeparator;
+import javax.swing.Timer;
 
 import xal.extension.widgets.beaneditor.SimpleBeanEditor;
 
@@ -17,6 +19,7 @@ public class MatcherDialog extends SimpleBeanEditor<Matcher> {
 	   
 	private JProgressBar progressBar = new JProgressBar();
 	private JButton match = new JButton("Match");
+	private JButton abort = new JButton("Abort");
 	
 	public MatcherDialog(final Frame owner, final Matcher conf, boolean visible)
 	{
@@ -25,33 +28,60 @@ public class MatcherDialog extends SimpleBeanEditor<Matcher> {
 		 
 		 Box bottomPane = new Box(BoxLayout.X_AXIS);
 		 bottomPane.add(progressBar);
+		 bottomPane.add(new JSeparator());
 		 bottomPane.add(match);
+		 bottomPane.add(abort);
+		 
+		 progressBar.setVisible(false);
+		 abort.setEnabled(false);
 		 
 		 match.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				publishToBean();
+				match.setEnabled(false);
 				setEnabled(false);
+				
+				publishToBean();
+		
 				final Thread matcher = new Thread(getBean());
 				matcher.start();
-				progressBar.setIndeterminate(true);
+				//progressBar.setIndeterminate(true);
+				
+				progressBar.setMaximum(100);
+				progressBar.setValue(0);
+				progressBar.setVisible(true);
+				abort.setEnabled(true);
+				
 				new Thread() {
 					public void run() {
 						try {
-							matcher.join();
+							while (matcher.isAlive()) {
+								matcher.join(500);
+								progressBar.setValue((int)(getBean().getProgress()*100));
+							}
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						} finally {
-							progressBar.setIndeterminate(false);
+							progressBar.setVisible(false);
 							reloadBean();
 							setEnabled(true);
+							match.setEnabled(true);
+							abort.setEnabled(false);
 						}
 					}
 				}.start();
 			}
 		 });
 		
+		 
+		 abort.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				getBean().abort();
+			}
+		});
+		 
 		 add(bottomPane, BorderLayout.SOUTH);
 		 
 		 setVisible(true);
