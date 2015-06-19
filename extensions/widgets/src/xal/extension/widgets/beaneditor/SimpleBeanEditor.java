@@ -106,10 +106,11 @@ public class SimpleBeanEditor<T> extends JDialog {
 	
 	/** reload all the record values from the bean (changed by external code) */
 	protected void reloadBean() {
-		for ( final PropertyRecord record : BEAN_PROPERTY_RECORDS ) {
-			record.revert();
-		}
-		PROPERTY_TABLE_MODEL.fireTableDataChanged();
+		final EditablePropertyContainer probePropertyTree = EditableProperty.getInstanceWithRoot( "", BEAN );
+		BEAN_PROPERTY_RECORDS.clear();
+		//PROPERTY_TABLE_MODEL.fireTableDataChanged();
+		BEAN_PROPERTY_RECORDS.addAll(PropertyRecord.toRecords( probePropertyTree ));
+		PROPERTY_TABLE_MODEL.setRecords(BEAN_PROPERTY_RECORDS);
 	}
 
     
