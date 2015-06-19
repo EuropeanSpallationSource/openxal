@@ -25,6 +25,7 @@ import xal.extension.widgets.olmplot.EnvelopeCurve;
 import xal.extension.widgets.olmplot.PLANE;
 import xal.extension.widgets.plot.BasicGraphData;
 import xal.extension.widgets.plot.FunctionGraphsJPanel;
+import xal.model.IAlgorithm;
 import xal.model.Lattice;
 import xal.model.ModelException;
 import xal.model.alg.EnvelopeTracker;
@@ -32,6 +33,8 @@ import xal.model.alg.Tracker;
 import xal.model.probe.EnvelopeProbe;
 import xal.model.probe.traj.Trajectory;
 import xal.model.xml.LatticeXmlWriter;
+import xal.sim.scenario.AlgorithmFactory;
+import xal.sim.scenario.ProbeFactory;
 import xal.smf.Accelerator;
 import xal.smf.data.XMLDataManager;
 import xal.tools.annotation.AProperty.NoEdit;
@@ -49,7 +52,7 @@ public class Matcher implements Runnable, Stopper {
 	
 	private double timeLimit = 1.;
 	
-	private InitialBeamParameters initialBeamParameters = new InitialBeamParameters();
+	private InitialBeamParameters initialBeamParameters;
 	
 	private boolean showScore;
 	private boolean showSimulation;
@@ -61,8 +64,9 @@ public class Matcher implements Runnable, Stopper {
 	
 	private boolean aborted;
 	
-	public Matcher(Accelerator accelerator) {
+	public Matcher(Accelerator accelerator, EnvelopeProbe probe) {
 		this.accelerator = accelerator;
+		this.initialBeamParameters = new InitialBeamParameters(probe);
 	}
 
 	public ModelEvaluatorEnum getCriteria() {
@@ -292,30 +296,21 @@ public class Matcher implements Runnable, Stopper {
 		}
 	
 		// set back final values to initial
+		initialParameters.setInitialProbe(initialParameters.getProbe(solver.getScoreBoard().getBestSolution().getTrialPoint()));
 		for (Variable v : initialParameters.getVariables()) {
 			System.out.printf("%s: %f\n", v.getName(), solver.getScoreBoard().getBestSolution().getTrialPoint().getValue(v));
-			v.setInitialValue(solver.getScoreBoard().getBestSolution().getTrialPoint().getValue(v));
 		}
 	}
-	
-	public static EnvelopeProbe setupOpenXALProbe() {
-		EnvelopeTracker envelopeTracker = new EnvelopeTracker();			
-		envelopeTracker.setRfGapPhaseCalculation(true);
-		envelopeTracker.setUseSpacecharge(true);
-		envelopeTracker.setEmittanceGrowth(false);
-		envelopeTracker.setStepSize(0.1);
-		envelopeTracker.setProbeUpdatePolicy(Tracker.UPDATE_EXIT);
 		
-		EnvelopeProbe envelopeProbe = new EnvelopeProbe();
-		envelopeProbe.setAlgorithm(envelopeTracker);		
-		
-		return envelopeProbe;
-	}
-		
-	
-	public static void main(String args[]) throws ModelException
+	public static void main(String args[]) throws ModelException, InstantiationException
 	{
-		Matcher me = new Matcher(loadAccelerator());
+		Accelerator accelerator = loadAccelerator();
+		//IAlgorithm tracker = AlgorithmFactory.createEnvTrackerAdapt( accelerator );
+		IAlgorithm tracker = AlgorithmFactory.createEnvelopeTracker( accelerator );
+		
+		EnvelopeProbe probe = ProbeFactory.getEnvelopeProbe( accelerator.getSequence("MEBT"), tracker );
+				
+		Matcher me = new Matcher(accelerator, probe);
 		me.run();
 	}
 

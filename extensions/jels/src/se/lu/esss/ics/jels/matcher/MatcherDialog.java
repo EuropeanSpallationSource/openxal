@@ -13,6 +13,11 @@ import javax.swing.JSeparator;
 import javax.swing.Timer;
 
 import xal.extension.widgets.beaneditor.SimpleBeanEditor;
+import xal.model.IAlgorithm;
+import xal.model.probe.EnvelopeProbe;
+import xal.sim.scenario.AlgorithmFactory;
+import xal.sim.scenario.ProbeFactory;
+import xal.smf.Accelerator;
 
 public class MatcherDialog extends SimpleBeanEditor<Matcher> {
 	private static final long serialVersionUID = 1L;
@@ -87,8 +92,14 @@ public class MatcherDialog extends SimpleBeanEditor<Matcher> {
 		 setVisible(true);
 	}
 
-	public static void main(String args[])
+	public static void main(String args[]) throws InstantiationException
 	{
-		new MatcherDialog(null, new Matcher(Matcher.loadAccelerator()), true);
+		Accelerator accelerator = Matcher.loadAccelerator();
+		//IAlgorithm tracker = AlgorithmFactory.createEnvTrackerAdapt( accelerator );
+		IAlgorithm tracker = AlgorithmFactory.createEnvelopeTracker( accelerator );
+		
+		EnvelopeProbe probe = ProbeFactory.getEnvelopeProbe( accelerator.getSequence("MEBT"), tracker );
+		
+		new MatcherDialog(null, new Matcher(accelerator, probe), true);
 	}
 }
