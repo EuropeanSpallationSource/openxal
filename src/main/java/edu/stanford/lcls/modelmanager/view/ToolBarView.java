@@ -24,6 +24,8 @@ import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
+import se.lu.esss.ics.jels.matcher.Matcher;
+import se.lu.esss.ics.jels.matcher.MatcherDialog;
 import xal.extension.widgets.apputils.SimpleProbeEditor;
 import edu.stanford.lcls.modelmanager.ModelManagerWindow;
 import edu.stanford.lcls.modelmanager.dbmodel.BrowserModel;
@@ -49,6 +51,7 @@ public class ToolBarView implements SwingConstants {
 	private JComboBox<ComboItem> BPRPSelector; //Back Propagte Reference points
 	private JComboBox<String> BPRPModeSelector;
 	private JButton setInitTiwissButton;
+	private JButton matcherButton; 
 	private JButton runModelButton;
 	private JButton upload2DBButton;
 	private JButton makeGoldButton;
@@ -98,7 +101,18 @@ public class ToolBarView implements SwingConstants {
 			}
 		});
 		setInitTiwissButton.setEnabled(false);
-		toolBarView.add(setInitTiwissButton);		
+		toolBarView.add(setInitTiwissButton);
+		
+		matcherButton = new JButton("Matching...");
+		matcherButton.addActionListener(new ActionListener() {			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Matcher matcher = new Matcher(model.getRunModel().getAccelerator(), model.getRunModel().getProbe());
+				MatcherDialog md = new MatcherDialog(parent, matcher, true);			
+			}
+		});
+		matcherButton.setEnabled(false);
+		toolBarView.add(matcherButton);		 
 
 		
 		toolBarView.addSeparator(new Dimension(20, 10));
@@ -452,6 +466,7 @@ public class ToolBarView implements SwingConstants {
 		beamlineSelector.setEnabled(enabled);
 		runModeSelector.setEnabled(enabled);
 		setInitTiwissButton.setEnabled(enabled);
+		matcherButton.setEnabled(enabled);
 		runModelButton.setEnabled(enabled);
 		upload2DBButton.setEnabled(enabled && !model.isRunMachineModelNull());
 		makeGoldButton.setEnabled(enabled);

@@ -73,7 +73,7 @@ public class RunModel2 {
 		return scenario;
 	}
 
-	public Probe<?> getProbe() {
+	public EnvelopeProbe getProbe() {
 
 		return probe;
 	}
