@@ -9,9 +9,7 @@ import xal.extension.solver.Trial;
 import xal.model.ModelException;
 import xal.model.probe.EnvelopeProbe;
 import xal.model.probe.traj.EnvelopeProbeState;
-import xal.model.probe.traj.ProbeState;
 import xal.model.probe.traj.Trajectory;
-import xal.smf.Accelerator;
 import xal.tools.beam.Twiss;
 
 public class PhaseAdvEvaluator extends OnlineModelEvaluator {
@@ -46,10 +44,10 @@ public class PhaseAdvEvaluator extends OnlineModelEvaluator {
 		
 	}
 	
-	public List<PhaseAdv> getPhases(Trajectory trajectory) {
+	public List<PhaseAdv> getPhases(Trajectory<EnvelopeProbeState> trajectory) {
 		List<PhaseAdv> phaseAdv = new ArrayList<>();
 		
-		Iterator<ProbeState> i = trajectory.stateIterator();
+		Iterator<EnvelopeProbeState> i = trajectory.stateIterator();
 		
 		double pos = 0;
 		double[] phi = new double[3];
@@ -58,8 +56,8 @@ public class PhaseAdvEvaluator extends OnlineModelEvaluator {
 		double[] phiLp0 = null;
 		
 		while (i.hasNext()) {
-			ProbeState ps = i.next();	
-			Twiss[] t = ((EnvelopeProbeState)ps).twissParameters();
+			EnvelopeProbeState ps = i.next();	
+			Twiss[] t = ps.twissParameters();
 	
 			for (int k = 0; k<3; k++) phi[k] += (ps.getPosition() - pos) / (t[k].getBeta());
 			pos = ps.getPosition();
@@ -105,7 +103,7 @@ public class PhaseAdvEvaluator extends OnlineModelEvaluator {
 			e.printStackTrace();
 		}
 		
-		Trajectory trajectory = probe.getTrajectory();
+		Trajectory<EnvelopeProbeState> trajectory = probe.getTrajectory();
 
 		trial.setScore(objectives.get(0), calcVcr(getPhases(trajectory)));
 		

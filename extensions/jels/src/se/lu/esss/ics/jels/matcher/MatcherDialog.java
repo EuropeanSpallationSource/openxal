@@ -4,13 +4,14 @@ import java.awt.BorderLayout;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JProgressBar;
 import javax.swing.JSeparator;
-import javax.swing.Timer;
 
 import xal.extension.widgets.beaneditor.SimpleBeanEditor;
 import xal.model.IAlgorithm;
@@ -31,6 +32,8 @@ public class MatcherDialog extends SimpleBeanEditor<Matcher> {
 		 
 		 super( owner, "Matcher", null, conf, false, false );	//Set JDialog's owner, title, and modality
 		 
+		 setModal(false);
+		 
 		 Box bottomPane = new Box(BoxLayout.X_AXIS);
 		 bottomPane.add(progressBar);
 		 bottomPane.add(new JSeparator());
@@ -50,6 +53,7 @@ public class MatcherDialog extends SimpleBeanEditor<Matcher> {
 				publishToBean();
 		
 				final Thread matcher = new Thread(getBean());
+			
 				matcher.start();
 				//progressBar.setIndeterminate(true);
 				
@@ -85,6 +89,15 @@ public class MatcherDialog extends SimpleBeanEditor<Matcher> {
 			public void actionPerformed(ActionEvent e) {
 				getBean().abort();
 			}
+		});
+		 
+		 addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				getBean().abort();
+				getBean().dispose();
+				dispose();
+			}			
 		});
 		 
 		 add(bottomPane, BorderLayout.SOUTH);

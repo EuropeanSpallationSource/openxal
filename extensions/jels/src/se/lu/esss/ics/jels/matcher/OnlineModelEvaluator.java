@@ -12,16 +12,11 @@ import xal.extension.solver.Evaluator;
 import xal.extension.solver.Objective;
 import xal.extension.solver.TrialPoint;
 import xal.model.ModelException;
-import xal.model.alg.EnvelopeTracker;
-import xal.model.alg.Tracker;
 import xal.model.probe.EnvelopeProbe;
-import xal.model.probe.Probe;
 import xal.model.probe.traj.EnvelopeProbeState;
-import xal.model.probe.traj.ProbeState;
 import xal.model.probe.traj.Trajectory;
 import xal.sim.scenario.Scenario;
 import xal.sim.sync.SynchronizationException;
-import xal.smf.Accelerator;
 import xal.tools.beam.Twiss;
 
 public abstract class OnlineModelEvaluator implements Evaluator {
@@ -73,9 +68,9 @@ public abstract class OnlineModelEvaluator implements Evaluator {
 			Formatter f1  = new Formatter(file+".dat", "UTF8", Locale.ENGLISH);
 			Formatter f2  = new Formatter(file+".phi.dat", "UTF8", Locale.ENGLISH);
 			
-			Trajectory trajectory = probe.getTrajectory();
+			Trajectory<EnvelopeProbeState> trajectory = probe.getTrajectory();
 
-			Iterator<ProbeState> i = trajectory.stateIterator();
+			Iterator<EnvelopeProbeState> i = trajectory.stateIterator();
 			
 			double[] phix = new double[3];
 			double pos0 = 0;
@@ -83,7 +78,7 @@ public abstract class OnlineModelEvaluator implements Evaluator {
 			double posl = 0;
 			
 			while (i.hasNext()) {
-				ProbeState ps = i.next();
+				EnvelopeProbeState ps = i.next();
 				
 				Twiss[] t2 = ((EnvelopeProbeState)ps).twissParameters();
 
@@ -127,7 +122,7 @@ public abstract class OnlineModelEvaluator implements Evaluator {
 		evaluationListeners.add(l);
 	}
 	
-	protected void fireEvaluationListeners(Trajectory t)
+	protected void fireEvaluationListeners(Trajectory<EnvelopeProbeState> t)
 	{
 		for (EvaluationListener l : evaluationListeners)
 			l.onEvaluation(t);
@@ -140,5 +135,5 @@ public abstract class OnlineModelEvaluator implements Evaluator {
 
 
 interface EvaluationListener {
-	void onEvaluation(Trajectory t);
+	void onEvaluation(Trajectory<EnvelopeProbeState> t);
 }

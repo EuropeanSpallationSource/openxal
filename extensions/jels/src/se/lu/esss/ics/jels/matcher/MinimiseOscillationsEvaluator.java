@@ -9,7 +9,6 @@ import xal.model.ModelException;
 import xal.model.probe.EnvelopeProbe;
 import xal.model.probe.traj.EnvelopeProbeState;
 import xal.model.probe.traj.Trajectory;
-import xal.smf.Accelerator;
 import xal.smf.AcceleratorSeq;
 import xal.tools.beam.Twiss;
 

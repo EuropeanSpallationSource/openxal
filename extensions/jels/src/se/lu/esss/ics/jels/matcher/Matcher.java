@@ -15,7 +15,6 @@ import xal.extension.solver.AlgorithmSchedule;
 import xal.extension.solver.AlgorithmScheduleListener;
 import xal.extension.solver.Problem;
 import xal.extension.solver.ScoreBoard;
-import xal.extension.solver.SolveStopperFactory;
 import xal.extension.solver.Solver;
 import xal.extension.solver.Stopper;
 import xal.extension.solver.Trial;
@@ -28,9 +27,8 @@ import xal.extension.widgets.plot.FunctionGraphsJPanel;
 import xal.model.IAlgorithm;
 import xal.model.Lattice;
 import xal.model.ModelException;
-import xal.model.alg.EnvelopeTracker;
-import xal.model.alg.Tracker;
 import xal.model.probe.EnvelopeProbe;
+import xal.model.probe.traj.EnvelopeProbeState;
 import xal.model.probe.traj.Trajectory;
 import xal.model.xml.LatticeXmlWriter;
 import xal.sim.scenario.AlgorithmFactory;
@@ -63,6 +61,13 @@ public class Matcher implements Runnable, Stopper {
 	private Accelerator accelerator;
 	
 	private boolean aborted;
+
+	private Vector<EnvelopeCurve> data = new Vector<>(2);
+	private FunctionGraphsJPanel plot;
+
+	private JFrame scoreFrame; 
+	private BasicGraphData scorePlot;
+	
 	
 	public Matcher(Accelerator accelerator, EnvelopeProbe probe) {
 		this.accelerator = accelerator;
@@ -133,9 +138,7 @@ public class Matcher implements Runnable, Stopper {
 			return;
 		}
 	}
-	
-	Vector<EnvelopeCurve> data = new Vector<>(2);
-	FunctionGraphsJPanel plot;
+
 			
 	public void showSimulationPlot()
 	{
@@ -155,10 +158,10 @@ public class Matcher implements Runnable, Stopper {
      	frame.setSize(500,500);
         frame.add(plot);
         frame.setVisible(true);
-        frame.setDefaultCloseOperation(frame.DISPOSE_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	}
 	
-	public void updateSimulationPlot(Trajectory t)
+	public void updateSimulationPlot(Trajectory<EnvelopeProbeState> t)
 	{
 		Vector<EnvelopeCurve> data = new Vector<>(2);
 		EnvelopeCurve cx = new EnvelopeCurve(PLANE.HOR, t);
@@ -171,12 +174,9 @@ public class Matcher implements Runnable, Stopper {
      	plot.addGraphData(data);		
 	}
 	
-	JFrame scoreFrame; 
-	BasicGraphData scorePlot;
-	
 	public void showScorePlot(boolean show)
 	{
-		if (scoreFrame == null && show) {
+		if ((scoreFrame == null || !scoreFrame.isDisplayable()) && show) {
 			scoreFrame = new JFrame(); 
 			scorePlot = new BasicGraphData();
 
@@ -228,7 +228,7 @@ public class Matcher implements Runnable, Stopper {
 		
 			evaluator.addEvaluationListener(new EvaluationListener() {
 				@Override
-				public void onEvaluation(Trajectory t) {
+				public void onEvaluation(Trajectory<EnvelopeProbeState> t) {
 					updateSimulationPlot(t);
 				}
 			});
@@ -321,6 +321,14 @@ public class Matcher implements Runnable, Stopper {
 	@Override
 	public boolean shouldStop(Solver solver) {
 		return aborted || solver.getScoreBoard().getElapsedTime() >= timeLimit*60;
+	}
+	
+	public void dispose()
+	{
+		if (scoreFrame != null) {
+			scoreFrame.dispose();
+			scoreFrame = null;
+		}
 	}
 }
 
