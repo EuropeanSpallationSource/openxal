@@ -652,27 +652,32 @@ public class DataManager {
 					"FROM \"MACHINE_MODEL\".\"DEVICE_TYPES\" D, \"LCLS_INFRASTRUCTURE\".\"LCLS_ELEMENTS\" L " +
 			"WHERE L.\"KEYWORD\" = D.\"DEVICE_TYPE\"");*/
 			// TODO OPENXAL
-			PreparedStatement stmt2 = writeConnection.prepareStatement("SELECT D.\"DEVICE_TYPE\", D.\"ID\", D.\"ID\" " +
+			/*PreparedStatement stmt2 = writeConnection.prepareStatement("SELECT D.\"DEVICE_TYPE\", D.\"ID\", D.\"ID\" " +
 					"FROM \"MACHINE_MODEL\".\"DEVICE_TYPES\" D");
 			rs = stmt2.executeQuery();
 			while(rs.next()){
 				elementName.add(rs.getString(1));
 				elementID.add(rs.getInt(2));
 				elementTypeID.add(rs.getInt(3));
-			}
+			}*/
 
 			PreparedStatement stmt3 = writeConnection.prepareStatement("INSERT INTO \"MACHINE_MODEL\".\"MODEL_DEVICES\" (\"RUNS_ID\", \"LCLS_ELEMENTS_ELEMENT_ID\", \"DEVICE_TYPES_ID\", \"DEVICE_PROPERTY\", \"DEVICE_VALUE\") "+
 			  "VALUES (?,?,?,?,?)");
 			stmt3.setInt(1, runID);
 			
+			int deviceIndex = 0;
 			for(int i=0; i<runMachineModelDevice.length; i++){
 				index = elementName.indexOf(runMachineModelDevice[i].getPropertyValue("ELEMENT_NAME").toString());
 				if(index >= 0){
 					stmt3.setInt(2, elementID.get(index));
 					stmt3.setInt(3, elementTypeID.get(index));
-				}else{
-					stmt3.setNull(2, Types.INTEGER);
-					stmt3.setNull(3, Types.INTEGER);
+				}else{					
+					stmt3.setInt(2, deviceIndex);
+					stmt3.setInt(3, deviceIndex);
+					elementName.add(runMachineModelDevice[i].getPropertyValue("ELEMENT_NAME").toString());
+					elementID.add(deviceIndex);
+					elementTypeID.add(deviceIndex);
+					deviceIndex++;
 				}
 				stmt3.setString(4, (String)runMachineModelDevice[i].getPropertyValue("DEVICE_PROPERTY"));
 				stmt3.setDouble(5, Double.parseDouble((String)runMachineModelDevice[i].getPropertyValue("DEVICE_VALUE")));
