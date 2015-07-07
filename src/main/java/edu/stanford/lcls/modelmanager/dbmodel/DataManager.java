@@ -625,7 +625,7 @@ public class DataManager {
 			
 			ArrayList<String> elementName = new ArrayList<String>();
 			ArrayList<Integer> elementID = new ArrayList<>();
-			ArrayList<Integer> elementTypeID = new ArrayList<>();
+			//ArrayList<Integer> elementTypeID = new ArrayList<>();
 			int index;
 			ResultSet rs;
 	
@@ -661,26 +661,26 @@ public class DataManager {
 				elementTypeID.add(rs.getInt(3));
 			}*/
 
-			PreparedStatement stmt3 = writeConnection.prepareStatement("INSERT INTO \"MACHINE_MODEL\".\"MODEL_DEVICES\" (\"RUNS_ID\", \"LCLS_ELEMENTS_ELEMENT_ID\", \"DEVICE_TYPES_ID\", \"DEVICE_PROPERTY\", \"DEVICE_VALUE\") "+
-			  "VALUES (?,?,?,?,?)");
+			PreparedStatement stmt3 = writeConnection.prepareStatement("INSERT INTO \"MACHINE_MODEL\".\"MODEL_DEVICES\" (\"RUNS_ID\", \"LCLS_ELEMENTS_ELEMENT_ID\", \"ELEMENT_NAME\", \"DEVICE_TYPES_ID\", \"DEVICE_PROPERTY\", \"DEVICE_VALUE\", \"ZPOS\") "+
+			  "VALUES (?,?,?,?,?,?,?)");
 			stmt3.setInt(1, runID);
 			
 			int deviceIndex = 0;
 			for(int i=0; i<runMachineModelDevice.length; i++){
 				index = elementName.indexOf(runMachineModelDevice[i].getPropertyValue("ELEMENT_NAME").toString());
 				if(index >= 0){
-					stmt3.setInt(2, elementID.get(index));
-					stmt3.setInt(3, elementTypeID.get(index));
+					stmt3.setInt(2, elementID.get(index));					
 				}else{					
-					stmt3.setInt(2, deviceIndex);
-					stmt3.setInt(3, deviceIndex);
+					stmt3.setInt(2, deviceIndex);					
 					elementName.add(runMachineModelDevice[i].getPropertyValue("ELEMENT_NAME").toString());
-					elementID.add(deviceIndex);
-					elementTypeID.add(deviceIndex);
+					elementID.add(deviceIndex);					
 					deviceIndex++;
 				}
-				stmt3.setString(4, (String)runMachineModelDevice[i].getPropertyValue("DEVICE_PROPERTY"));
-				stmt3.setDouble(5, Double.parseDouble((String)runMachineModelDevice[i].getPropertyValue("DEVICE_VALUE")));
+				stmt3.setString(3, (String)runMachineModelDevice[i].getPropertyValue("ELEMENT_NAME"));
+				stmt3.setNull(4, Types.INTEGER);			
+				stmt3.setString(5, (String)runMachineModelDevice[i].getPropertyValue("DEVICE_PROPERTY"));
+				stmt3.setDouble(6, Double.parseDouble((String)runMachineModelDevice[i].getPropertyValue("DEVICE_VALUE")));
+				stmt3.setDouble(7, Double.parseDouble((String)runMachineModelDevice[i].getPropertyValue("ZPOS")));			
 				stmt3.addBatch();
 			}
 			stmt3.executeBatch();
