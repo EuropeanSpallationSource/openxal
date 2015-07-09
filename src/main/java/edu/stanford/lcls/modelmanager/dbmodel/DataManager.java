@@ -191,22 +191,24 @@ public class DataManager {
 	
 	public static MachineModel getRunMachineModel(int runModelMethod, int modelMode) {
 		MachineModel runMachineModel = new MachineModel();
-		runMachineModel.addPropertyValue("ID", autoRunID);
-		runMachineModel.addPropertyValue("RUN_ELEMENT_DATE", machineModelDateFormat.format(new java.util.Date()));
+		runMachineModel.setPropertyValue("ID", autoRunID);
+		runMachineModel.setPropertyValue("RUN_ELEMENT_DATE", machineModelDateFormat.format(new java.util.Date()));
 		if(runModelMethod == 0){
-			runMachineModel.addPropertyValue("RUN_SOURCE_CHK", "DESIGN");
+			runMachineModel.setPropertyValue("RUN_SOURCE_CHK", "DESIGN");
 		}else if(runModelMethod == 1){
-			runMachineModel.addPropertyValue("RUN_SOURCE_CHK", "EXTANT");
+			runMachineModel.setPropertyValue("RUN_SOURCE_CHK", "EXTANT");
+		} else if(runModelMethod == 2){
+			runMachineModel.setPropertyValue("RUN_SOURCE_CHK", "PVLOGGER");
 		}
 		if(modelMode == 0)
-			runMachineModel.addPropertyValue("MODEL_MODES_ID", "5");
+			runMachineModel.setPropertyValue("MODEL_MODES_ID", "5");
 		else
-			runMachineModel.addPropertyValue("MODEL_MODES_ID", Integer.valueOf(modelMode).toString());
-		runMachineModel.addPropertyValue("COMMENTS", "");
-		runMachineModel.addPropertyValue("DATE_CREATED", machineModelDateFormat.format(new java.util.Date()));
-		runMachineModel.addPropertyValue("GOLD", "RUN");
-		runMachineModel.addPropertyValue("REF", false);
-		runMachineModel.addPropertyValue("SEL", true);
+			runMachineModel.setPropertyValue("MODEL_MODES_ID", Integer.valueOf(modelMode).toString());
+		runMachineModel.setPropertyValue("COMMENTS", "");
+		runMachineModel.setPropertyValue("DATE_CREATED", machineModelDateFormat.format(new java.util.Date()));
+		runMachineModel.setPropertyValue("GOLD", "RUN");
+		runMachineModel.setPropertyValue("REF", false);
+		runMachineModel.setPropertyValue("SEL", true);
 		return runMachineModel;
 	}
 	

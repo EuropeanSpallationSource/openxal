@@ -50,12 +50,12 @@ public class MachineModelTable {
 		while (modelResult.next()) {
 			machineModel = new MachineModel();
 			for (int i = 0; i < TABLE_SIZE; i++) {
-				machineModel.addPropertyValue(i, modelResult
+				machineModel.setPropertyValue(i, modelResult
 						.getString(DB_TABLE_COLUMN_NAME.get(i)));
 			}
-			machineModel.addPropertyValue(6, "");
-			machineModel.addPropertyValue(7, false);
-			machineModel.addPropertyValue(8, false);
+			machineModel.setPropertyValue(6, "");
+			machineModel.setPropertyValue(7, false);
+			machineModel.setPropertyValue(8, false);
 			models.add(machineModel);
 		}
 		queryStatement.close();
@@ -81,12 +81,12 @@ public class MachineModelTable {
 		while (modelResult.next()) {
 			machineModel = new MachineModel();
 			for (int i = 0; i < TABLE_SIZE; i++) {
-				machineModel.addPropertyValue(i, modelResult
+				machineModel.setPropertyValue(i, modelResult
 						.getString(DB_TABLE_COLUMN_NAME.get(i)));
 			}
-			machineModel.addPropertyValue(6, "");
-			machineModel.addPropertyValue(7, false);
-			machineModel.addPropertyValue(8, false);
+			machineModel.setPropertyValue(6, "");
+			machineModel.setPropertyValue(7, false);
+			machineModel.setPropertyValue(8, false);
 			models.add(machineModel);
 		}
 		queryStatement.close();
@@ -110,12 +110,12 @@ public class MachineModelTable {
 		}
 		for (int i = 0; i < TABLE_SIZE; i++) {
 			int index = columnName.indexOf(MachineModel.getPropertyName(i));
-			MachineModel.addPropertyType(i, columnType.get(index), columnSize
+			MachineModel.setPropertyType(i, columnType.get(index), columnSize
 					.get(index).intValue());
 		}
-		MachineModel.addPropertyType(6, "VARCHAR2", 10);
-		MachineModel.addPropertyType(7, "Boolean", 1);
-		MachineModel.addPropertyType(8, "Boolean", 1);
+		MachineModel.setPropertyType(6, "VARCHAR2", 10);
+		MachineModel.setPropertyType(7, "Boolean", 1);
+		MachineModel.setPropertyType(8, "Boolean", 1);
 		typeResult.close();
 	}
 	
