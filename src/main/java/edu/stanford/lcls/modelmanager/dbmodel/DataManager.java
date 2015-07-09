@@ -71,6 +71,7 @@ import xal.model.probe.traj.Trajectory;
 import xal.model.probe.traj.TransferMapState;
 import xal.sim.scenario.Scenario;
 import xal.sim.sync.SynchronizationException;
+import xal.sim.sync.SynchronizationManager;
 import xal.smf.AcceleratorNode;
 import xal.smf.AcceleratorSeq;
 import xal.smf.AcceleratorSeqCombo;
@@ -527,7 +528,7 @@ public class DataManager {
 					Message.error("Model Synchronization Exception: Cannot synchronize device data for model run.", true);
 					e.printStackTrace();
 				}
-				if (runMode == "DESIGN") {
+				if (Scenario.SYNC_MODE_DESIGN.equals("DESIGN")) {
 					MachineModelDevice tmp2 = new MachineModelDevice();
 					tmp2.addPropertyValue("ELEMENT_NAME", node.getId());
 					tmp2.addPropertyValue("DEVICE_PROPERTY", "BACT");
@@ -587,7 +588,7 @@ public class DataManager {
 					Message.error("Model Synchronization Exception: Cannot synchronize device data for model run.", true);
 					e.printStackTrace();
 				}
-				if (runMode == "DESIGN") {
+				if (Scenario.SYNC_MODE_DESIGN.equals("DESIGN")) {
 					MachineModelDevice tmp8 = new MachineModelDevice();
 					tmp8.addPropertyValue("ELEMENT_NAME", node.getId());
 					tmp8.addPropertyValue("DEVICE_PROPERTY", "PDES");
