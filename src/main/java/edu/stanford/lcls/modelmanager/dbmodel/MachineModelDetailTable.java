@@ -64,18 +64,18 @@ public class MachineModelDetailTable {
 				int index = columnName.indexOf(MachineModelDetail
 						.getPropertyName(i));
 				if(index < 0) index = 4; // "EK" to "E" mistake
-				MachineModelDetail.addPropertyType(i, columnType.get(index),
+				MachineModelDetail.setPropertyType(i, columnType.get(index),
 						columnSize.get(index).intValue());
 			}
-			MachineModelDetail.addPropertyType(MachineModelDetail
+			MachineModelDetail.setPropertyType(MachineModelDetail
 					.getPropertySize() - 5, "VARCHAR2", 50); // DEVICE_TYPE
-			MachineModelDetail.addPropertyType(MachineModelDetail
+			MachineModelDetail.setPropertyType(MachineModelDetail
 					.getPropertySize() - 4, "VARCHAR2", 50); // EPICS_NAME
-			MachineModelDetail.addPropertyType(MachineModelDetail
+			MachineModelDetail.setPropertyType(MachineModelDetail
 					.getPropertySize() - 3, "NUMBER", 22); // P
-			MachineModelDetail.addPropertyType(MachineModelDetail
+			MachineModelDetail.setPropertyType(MachineModelDetail
 					.getPropertySize() - 2, "NUMBER", 22); // Bmag_X
-			MachineModelDetail.addPropertyType(MachineModelDetail
+			MachineModelDetail.setPropertyType(MachineModelDetail
 					.getPropertySize() - 1, "NUMBER", 22); // Bmag_Y
 			typeResult.close();
 
@@ -93,33 +93,33 @@ public class MachineModelDetailTable {
 				machineModelDetail = new MachineModelDetail();
 				// add TableColume
 				for (int i = 0; i < TABLE_SIZE; i++) {
-					machineModelDetail.addPropertyValue(i, modelResult
+					machineModelDetail.setPropertyValue(i, modelResult
 							.getString(DB_TABLE_COLUMN_NAME.get(i)));
 				}
 				// add Device length
 				if (machineModelDetail.getPropertyValue("SLEFF") == null) {
-					machineModelDetail.addPropertyValue("SLEFF", deviceType
+					machineModelDetail.setPropertyValue("SLEFF", deviceType
 							.getDeviceLength(machineModelDetail.getPropertyValue(
 									"ELEMENT_NAME").toString()));
 				}
 				// add Device Type
-				machineModelDetail.addPropertyValue("DEVICE_TYPE", deviceType
+				machineModelDetail.setPropertyValue("DEVICE_TYPE", deviceType
 						.getDeviceType(machineModelDetail.getPropertyValue(
 								"ELEMENT_NAME").toString()));
 				
 				// add EPICS name
-				machineModelDetail.addPropertyValue("EPICS_NAME", deviceType
+				machineModelDetail.setPropertyValue("EPICS_NAME", deviceType
 						.getEPICSName(machineModelDetail.getPropertyValue(
 								"ELEMENT_NAME").toString()));
 				
 				// add P
 				E = Double.parseDouble(machineModelDetail.getPropertyValue("E").toString());
 				P = Math.sqrt(1+2/(E/0.000511-1))*E;
-				machineModelDetail.addPropertyValue("P", P.toString());
+				machineModelDetail.setPropertyValue("P", P.toString());
 				
 				// add Bmag_X & Bmag_Y
-				machineModelDetail.addPropertyValue("Bmag_X", "1");
-				machineModelDetail.addPropertyValue("Bmag_Y", "1");
+				machineModelDetail.setPropertyValue("Bmag_X", "1");
+				machineModelDetail.setPropertyValue("Bmag_Y", "1");
 				
 				// If Device ORDINAL is null, set ZPOS to it
 				if (machineModelDetail.getPropertyValue("ORDINAL") == null) {

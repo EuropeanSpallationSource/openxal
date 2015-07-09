@@ -6,7 +6,7 @@ import java.util.List;
 
 public class MachineModelDevice {
 	static final private List<String> PROPERTY_NAME;
-	static final private int PROPERTY_SIZE = 4;
+	static final private int PROPERTY_SIZE;
 	static private List<String> propertyType;
 	private List<Object> propertyValue;
 	
@@ -14,9 +14,10 @@ public class MachineModelDevice {
 	 * Static initializer 
 	 */
 	static {
-		PROPERTY_NAME = new ArrayList<String>(Arrays.asList(new String[] {
-				"ELEMENT_NAME", "DEVICE_PROPERTY", "DEVICE_VALUE", "ZPOS" }));
-		propertyType = new ArrayList<String>(PROPERTY_SIZE);
+		PROPERTY_NAME = Arrays.asList(new String[] {
+				"ELEMENT_NAME", "DEVICE_PROPERTY", "DEVICE_VALUE", "ZPOS" });
+		PROPERTY_SIZE = PROPERTY_NAME.size();
+		propertyType = Arrays.asList(new String[PROPERTY_SIZE]);
 	}
 	
 	/**
@@ -32,7 +33,7 @@ public class MachineModelDevice {
 	}
 
 	public MachineModelDevice() {
-		this(new ArrayList<Object>(PROPERTY_SIZE));
+		this(Arrays.asList(new Object[PROPERTY_SIZE]));
 	}
 
 	//About propertyName
@@ -57,15 +58,15 @@ public class MachineModelDevice {
 		return propertyType;
 	}
 	
-	public static void addPropertyType(int index, String propertyDBType, int propertyDBSize) {		
+	public static void setPropertyType(int index, String propertyDBType, int propertyDBSize) {		
 		if(propertyDBType.equals("NUMBER"))
-			propertyType.add(index, "Double");
+			propertyType.set(index, "Double");
 		else if(propertyDBType.equals("DATE"))
-			propertyType.add(index, "Date");
+			propertyType.set(index, "Date");
 		else if(propertyDBType.equals("VARCHAR2"))
-			propertyType.add(index, "String");
+			propertyType.set(index, "String");
 		else
-			propertyType.add(index, "Other");
+			propertyType.set(index, "Other");
 	}
 
 	public static void setPropertyType(int index, String propertyType) {
@@ -88,14 +89,6 @@ public class MachineModelDevice {
 
 	public List<Object> getAllPropertyValue() {
 		return propertyValue;
-	}
-
-	public void addPropertyValue(int index, Object propertyValue) {
-		this.propertyValue.add(index, propertyValue);
-	}
-	
-	public void addPropertyValue(String propertyName, Object propertyValue) {
-		this.propertyValue.add(PROPERTY_NAME.indexOf(propertyName), propertyValue);
 	}
 
 	public void setPropertyValue(int index, Object propertyValue) {

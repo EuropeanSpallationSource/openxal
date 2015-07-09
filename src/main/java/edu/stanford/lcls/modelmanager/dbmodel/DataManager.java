@@ -71,7 +71,6 @@ import xal.model.probe.traj.Trajectory;
 import xal.model.probe.traj.TransferMapState;
 import xal.sim.scenario.Scenario;
 import xal.sim.sync.SynchronizationException;
-import xal.sim.sync.SynchronizationManager;
 import xal.smf.AcceleratorNode;
 import xal.smf.AcceleratorSeq;
 import xal.smf.AcceleratorSeqCombo;
@@ -284,7 +283,7 @@ public class DataManager {
 					// reset machineModelDetail
 					MachineModelDetail machineModelDetail = new MachineModelDetail();
 					for(int j=0; j<MachineModelDetail.getPropertySize(); j++)
-						machineModelDetail.addPropertyValue(j, null);
+						machineModelDetail.setPropertyValue(j, null);
 					machineModelDetail.setPropertyValue("RUNS_ID", autoRunID);
 					
 					// trim off anything after ":"
@@ -518,11 +517,11 @@ public class DataManager {
 			if (node.isKindOf("emag")) {
 				try {
 					MachineModelDevice tmp1 = new MachineModelDevice();
-					tmp1.addPropertyValue("ELEMENT_NAME", node.getId());
-					tmp1.addPropertyValue("DEVICE_PROPERTY", "B");
-					tmp1.addPropertyValue("DEVICE_VALUE", scenario.propertiesForNode(node)
+					tmp1.setPropertyValue("ELEMENT_NAME", node.getId());
+					tmp1.setPropertyValue("DEVICE_PROPERTY", "B");
+					tmp1.setPropertyValue("DEVICE_VALUE", scenario.propertiesForNode(node)
 									.get(ElectromagnetPropertyAccessor.PROPERTY_FIELD).toString());
-					tmp1.addPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : seq.getPosition(node)));
+					tmp1.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : seq.getPosition(node)));
 					runMachineModelDevice.add(tmp1);
 				} catch (SynchronizationException e) {
 					Message.error("Model Synchronization Exception: Cannot synchronize device data for model run.", true);
@@ -530,32 +529,32 @@ public class DataManager {
 				}
 				if (Scenario.SYNC_MODE_DESIGN.equals("DESIGN")) {
 					MachineModelDevice tmp2 = new MachineModelDevice();
-					tmp2.addPropertyValue("ELEMENT_NAME", node.getId());
-					tmp2.addPropertyValue("DEVICE_PROPERTY", "BACT");
-					tmp2.addPropertyValue("DEVICE_VALUE", Double.toString(((Electromagnet) node).getDesignField()));
-					tmp2.addPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : seq.getPosition(node)));
+					tmp2.setPropertyValue("ELEMENT_NAME", node.getId());
+					tmp2.setPropertyValue("DEVICE_PROPERTY", "BACT");
+					tmp2.setPropertyValue("DEVICE_VALUE", Double.toString(((Electromagnet) node).getDesignField()));
+					tmp2.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : seq.getPosition(node)));
 					runMachineModelDevice.add(tmp2);
 					
 					MachineModelDevice tmp3 = new MachineModelDevice();
-					tmp3.addPropertyValue("ELEMENT_NAME", node.getId());
-					tmp3.addPropertyValue("DEVICE_PROPERTY", "BDES");
-					tmp3.addPropertyValue("DEVICE_VALUE", Double.toString(((Electromagnet) node).getDesignField()));
-					tmp3.addPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : seq.getPosition(node)));
+					tmp3.setPropertyValue("ELEMENT_NAME", node.getId());
+					tmp3.setPropertyValue("DEVICE_PROPERTY", "BDES");
+					tmp3.setPropertyValue("DEVICE_VALUE", Double.toString(((Electromagnet) node).getDesignField()));
+					tmp3.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : seq.getPosition(node)));
 					runMachineModelDevice.add(tmp3);
 				} else {
 					try {
 						MachineModelDevice tmp4 = new MachineModelDevice();
-						tmp4.addPropertyValue("ELEMENT_NAME", node.getId());
-						tmp4.addPropertyValue("DEVICE_PROPERTY", "BACT");
-						tmp4.addPropertyValue("DEVICE_VALUE", Double.toString(((Electromagnet) node).getFieldReadback()));
-						tmp4.addPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : seq.getPosition(node)));
+						tmp4.setPropertyValue("ELEMENT_NAME", node.getId());
+						tmp4.setPropertyValue("DEVICE_PROPERTY", "BACT");
+						tmp4.setPropertyValue("DEVICE_VALUE", Double.toString(((Electromagnet) node).getFieldReadback()));
+						tmp4.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : seq.getPosition(node)));
 						runMachineModelDevice.add(tmp4);
 						
 						MachineModelDevice tmp5 = new MachineModelDevice();
-						tmp5.addPropertyValue("ELEMENT_NAME", node.getId());
-						tmp5.addPropertyValue("DEVICE_PROPERTY", "BDES");
-						tmp5.addPropertyValue("DEVICE_VALUE", Double.toString(((Electromagnet) node).getFieldSetting()));
-						tmp5.addPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : seq.getPosition(node)));
+						tmp5.setPropertyValue("ELEMENT_NAME", node.getId());
+						tmp5.setPropertyValue("DEVICE_PROPERTY", "BDES");
+						tmp5.setPropertyValue("DEVICE_VALUE", Double.toString(((Electromagnet) node).getFieldSetting()));
+						tmp5.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : seq.getPosition(node)));
 						runMachineModelDevice.add(tmp5);
 					} catch (ConnectionException e) {
 						Message.error("Connection Exception: Cannot connect to magnet PV for " + ((Electromagnet) node).getEId(), true);
@@ -570,19 +569,19 @@ public class DataManager {
 			else if (node.isKindOf("Bnch")) {
 				try {
 					MachineModelDevice tmp6 = new MachineModelDevice();
-					tmp6.addPropertyValue("ELEMENT_NAME", node.getId());
-					tmp6.addPropertyValue("DEVICE_PROPERTY", "P");
-					tmp6.addPropertyValue("DEVICE_VALUE", scenario.propertiesForNode(node).get(
+					tmp6.setPropertyValue("ELEMENT_NAME", node.getId());
+					tmp6.setPropertyValue("DEVICE_PROPERTY", "P");
+					tmp6.setPropertyValue("DEVICE_VALUE", scenario.propertiesForNode(node).get(
 							RfCavityPropertyAccessor.PROPERTY_PHASE).toString());
-					tmp6.addPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : seq.getPosition(node)));
+					tmp6.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : seq.getPosition(node)));
 					runMachineModelDevice.add(tmp6);
 					
 					MachineModelDevice tmp7 = new MachineModelDevice();
-					tmp7.addPropertyValue("ELEMENT_NAME", node.getId());
-					tmp7.addPropertyValue("DEVICE_PROPERTY", "A");
-					tmp7.addPropertyValue("DEVICE_VALUE", scenario.propertiesForNode(node)
+					tmp7.setPropertyValue("ELEMENT_NAME", node.getId());
+					tmp7.setPropertyValue("DEVICE_PROPERTY", "A");
+					tmp7.setPropertyValue("DEVICE_VALUE", scenario.propertiesForNode(node)
 							.get(RfCavityPropertyAccessor.PROPERTY_AMPLITUDE).toString());
-					tmp7.addPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : seq.getPosition(node)));
+					tmp7.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : seq.getPosition(node)));
 					runMachineModelDevice.add(tmp7);
 				} catch (SynchronizationException e) {
 					Message.error("Model Synchronization Exception: Cannot synchronize device data for model run.", true);
@@ -590,17 +589,17 @@ public class DataManager {
 				}
 				if (Scenario.SYNC_MODE_DESIGN.equals("DESIGN")) {
 					MachineModelDevice tmp8 = new MachineModelDevice();
-					tmp8.addPropertyValue("ELEMENT_NAME", node.getId());
-					tmp8.addPropertyValue("DEVICE_PROPERTY", "PDES");
-					tmp8.addPropertyValue("DEVICE_VALUE", Double.toString(((RfCavity) node).getDfltAvgCavPhase()));
-					tmp8.addPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : seq.getPosition(node)));
+					tmp8.setPropertyValue("ELEMENT_NAME", node.getId());
+					tmp8.setPropertyValue("DEVICE_PROPERTY", "PDES");
+					tmp8.setPropertyValue("DEVICE_VALUE", Double.toString(((RfCavity) node).getDfltAvgCavPhase()));
+					tmp8.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : seq.getPosition(node)));
 					runMachineModelDevice.add(tmp8);
 					
 					MachineModelDevice tmp9 = new MachineModelDevice();
-					tmp9.addPropertyValue("ELEMENT_NAME", node.getId());
-					tmp9.addPropertyValue("DEVICE_PROPERTY", "ADES");
-					tmp9.addPropertyValue("DEVICE_VALUE", Double.toString(((RfCavity) node).getDfltCavAmp()));
-					tmp9.addPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : seq.getPosition(node)));
+					tmp9.setPropertyValue("ELEMENT_NAME", node.getId());
+					tmp9.setPropertyValue("DEVICE_PROPERTY", "ADES");
+					tmp9.setPropertyValue("DEVICE_VALUE", Double.toString(((RfCavity) node).getDfltCavAmp()));
+					tmp9.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : seq.getPosition(node)));
 					runMachineModelDevice.add(tmp9);
 				}
 				// We use "design" values for both cases for now because we

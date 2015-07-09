@@ -1,6 +1,5 @@
 package edu.stanford.lcls.modelmanager.dbmodel;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -11,7 +10,7 @@ public class MachineModelDetail {
 	private List<Object> propertyValue;
 
 	static {
-		PROPERTY_NAME = new ArrayList<String>(Arrays.asList(new String[] {
+		PROPERTY_NAME = Arrays.asList(new String[] {
 				"RUNS_ID", "ELEMENT_NAME", "INDEX_SLICE_CHK", "ZPOS", "E", 
 				"ALPHA_X", "ALPHA_Y", "BETA_X", "BETA_Y", "PSI_X", "PSI_Y",
 				"ETA_X", "ETA_Y", "ETAP_X", "ETAP_Y",
@@ -20,24 +19,14 @@ public class MachineModelDetail {
 				"R41", "R42", "R43", "R44", "R45", "R46", "R51", "R52", "R53",
 				"R54", "R55", "R56", "R61", "R62", "R63", "R64", "R65", "R66",
 				"LEFF", "SLEFF", "ORDINAL", "SUML", "DEVICE_TYPE", "EPICS_NAME",
-				"P" , "Bmag_X", "Bmag_Y"}));
+				"P" , "Bmag_X", "Bmag_Y"});
 		PROPERTY_SIZE = PROPERTY_NAME.size(); // 58
-		propertyType = new ArrayList<String>(PROPERTY_SIZE);
+		propertyType = Arrays.asList(new String[PROPERTY_SIZE]);
 	}
 
 	// Construction
-	public MachineModelDetail(List<Object> propertyValue,
-			List<String> propertyType) {
-		this.propertyValue = propertyValue;
-		MachineModelDetail.propertyType = propertyType;
-	}
-
-	public MachineModelDetail(List<Object> propertyValue) {
-		this(propertyValue, propertyType);
-	}
-
 	public MachineModelDetail() {
-		this(new ArrayList<Object>(PROPERTY_SIZE));
+		this.propertyValue = Arrays.asList(new Object[PROPERTY_SIZE]);
 	}
 
 	// About propertyName
@@ -62,22 +51,16 @@ public class MachineModelDetail {
 		return propertyType;
 	}
 
-	public static void addPropertyType(int index, String propertyDBType,
+	public static void setPropertyType(int index, String propertyDBType,
 			int propertyDBSize) {
 		if (propertyDBType.equals("NUMBER"))
-			propertyType.add(index, "Double");
+			propertyType.set(index, "Double");
 		else if (propertyDBType.equals("DATE"))
-			propertyType.add(index, "Date");
+			propertyType.set(index, "Date");
 		else if (propertyDBType.equals("VARCHAR2"))
-			propertyType.add(index, "String");
+			propertyType.set(index, "String");
 		else
-			propertyType.add(index, "Other");
-	}
-
-	public static void addPropertyType(String propertyName,
-			String propertyDBType, int propertyDBSize) {
-		addPropertyType(PROPERTY_NAME.indexOf(propertyName), propertyDBType,
-				propertyDBSize);
+			propertyType.set(index, "Other");
 	}
 
 	public static void setPropertyType(int index, String propertyType) {
@@ -100,14 +83,6 @@ public class MachineModelDetail {
 
 	public List<Object> getAllPropertyValue() {
 		return propertyValue;
-	}
-
-	public void addPropertyValue(int index, Object propertyValue) {
-		this.propertyValue.add(index, propertyValue);
-	}
-
-	public void addPropertyValue(String propertyName, Object propertyValue) {
-		addPropertyValue(PROPERTY_NAME.indexOf(propertyName), propertyValue);
 	}
 
 	public void setPropertyValue(int index, Object propertyValue) {

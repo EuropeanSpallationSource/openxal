@@ -40,10 +40,10 @@ public class MachineModelDeviceTable {
 		final List<MachineModelDevice> modelDevices = new ArrayList<MachineModelDevice>();
 		try {
 			// get data type
-			MachineModelDevice.addPropertyType(0, "VARCHAR2", 60);
-			MachineModelDevice.addPropertyType(1, "VARCHAR2", 30);
-			MachineModelDevice.addPropertyType(2, "NUMBER", 22);
-			MachineModelDevice.addPropertyType(3, "NUMBER", 22);
+			MachineModelDevice.setPropertyType(0, "VARCHAR2", 60);
+			MachineModelDevice.setPropertyType(1, "VARCHAR2", 30);
+			MachineModelDevice.setPropertyType(2, "NUMBER", 22);
+			MachineModelDevice.setPropertyType(3, "NUMBER", 22);
 
 			// get data value
 			
@@ -64,7 +64,7 @@ public class MachineModelDeviceTable {
 				machineModelDevice = new MachineModelDevice();
 				// add TableColume
 				for (int i = 0; i < TABLE_SIZE; i++) {
-					machineModelDevice.addPropertyValue(i, modelResult
+					machineModelDevice.setPropertyValue(i, modelResult
 							.getString(DB_TABLE_COLUMN_NAME.get(i)));
 				}
 
