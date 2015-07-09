@@ -13,6 +13,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -27,13 +28,17 @@ import javax.swing.border.EmptyBorder;
 import se.lu.esss.ics.jels.matcher.Matcher;
 import se.lu.esss.ics.jels.matcher.MatcherDialog;
 import xal.extension.widgets.apputils.SimpleProbeEditor;
+import xal.service.pvlogger.apputils.browser.PVLogSnapshotChooser;
 import edu.stanford.lcls.modelmanager.ModelManagerWindow;
 import edu.stanford.lcls.modelmanager.dbmodel.BrowserModel;
 import edu.stanford.lcls.modelmanager.dbmodel.BrowserModelListener;
-import edu.stanford.lcls.modelmanager.dbmodel.DataManager;
 import edu.stanford.lcls.modelmanager.dbmodel.MachineModel;
 import edu.stanford.lcls.modelmanager.dbmodel.MachineModelDetail;
 import edu.stanford.lcls.modelmanager.dbmodel.MachineModelDevice;
+import edu.stanford.lcls.xal.model.RunModelConfiguration;
+import edu.stanford.lcls.xal.model.RunModelConfigurationDesign;
+import edu.stanford.lcls.xal.model.RunModelConfigurationExtant;
+import edu.stanford.lcls.xal.model.RunModelConfigurationPVLogger;
 import edu.stanford.slac.Message.Message;
 
 /**
@@ -62,9 +67,9 @@ public class ToolBarView implements SwingConstants {
 	private Thread thread1;
 	private Thread thread2;
 	private int modelModesID;
-	private String refID;
-	private int runModelMethod;
-	private boolean refMode = true;
+	
+	private PVLogSnapshotChooser plsc;
+	private JDialog pvLogSelector;
 
 //	private int bprpMethod;
 
@@ -116,12 +121,11 @@ public class ToolBarView implements SwingConstants {
 
 		
 		toolBarView.addSeparator(new Dimension(20, 10));
-		String[] runModeSelections = { "Design", "Extant" };
+		String[] runModeSelections = { "Design", "Extant", "PVLogger" };
 		runModeSelector = new JComboBox<String>(runModeSelections);
 		runModeSelector.setToolTipText("select to run either DESIGN or EXTANT model");
 		runModeSelector.setMaximumSize(new Dimension(100, 28));
 		runModeSelector.setSelectedIndex(1);
-		runModelMethod = runModeSelector.getSelectedIndex();
 		toolBarView.add(runModeSelector);
 		
 		JPanel bp = new JPanel();
@@ -136,14 +140,7 @@ public class ToolBarView implements SwingConstants {
 		BPRPSelector.setMaximumSize(new Dimension(105, 28));
 //		refID = refPts[BPRPSelector.getSelectedIndex()].toString();
 //		bprpMethod = 0;
-		BPRPSelector.addActionListener(new ActionListener() { 
-			public void actionPerformed(ActionEvent e) {
-//				bprpMethod = runModeSelector.getSelectedIndex();
-				refID = refPts[BPRPSelector.getSelectedIndex()].toString();
-				if (model.getRunModel() != null)
-					model.setModelRef(refID);
-			}
-		});
+
 		BPRPSelector.setRenderer(new ComboRenderer());
 		BPRPSelector.addActionListener(new ComboListener(BPRPSelector));
 		
@@ -151,22 +148,8 @@ public class ToolBarView implements SwingConstants {
 		BPRPModeSelector = new JComboBox<String>(new String[]{"Measured", "Design"});
 		BPRPModeSelector.setToolTipText("select to use either Design or Measured Twiss at the reference point");
 		BPRPModeSelector.setSelectedIndex(1);
-		if (BPRPModeSelector.getSelectedIndex() != 0)
-			refMode = false;
-		else
-			refMode = true;
 		
 		BPRPModeSelector.setMaximumSize(new Dimension(100, 28));
-		BPRPModeSelector.addActionListener(new ActionListener() { 
-			public void actionPerformed(ActionEvent e) {
-				if (BPRPModeSelector.getSelectedIndex() != 0)
-					refMode = false;
-				else
-					refMode = true;
-				
-				model.setModelRefDesign(refMode);
-			}
-		});
 		
 //		toolBarView.add(BPRPSelector);
 		bp.add(BPRPSelector);
@@ -175,13 +158,18 @@ public class ToolBarView implements SwingConstants {
 		toolBarView.add(bp);
 		runModeSelector.addActionListener(new ActionListener() { 
 			public void actionPerformed(ActionEvent e) {
-				runModelMethod = runModeSelector.getSelectedIndex();
-				if (runModelMethod == 0) {
-					BPRPSelector.setEnabled(false);
-					BPRPModeSelector.setEnabled(false);
-				} else {					
-					BPRPSelector.setEnabled(true);
-					BPRPModeSelector.setEnabled(true);
+				int runModelMethod = runModeSelector.getSelectedIndex();
+				BPRPSelector.setEnabled(runModelMethod == 1);
+				BPRPModeSelector.setEnabled(runModelMethod == 1);		
+				if (runModelMethod == 2) {
+					// show pvlogger selector
+					if (pvLogSelector == null) {
+						// for PV Logger snapshot chooser
+						plsc = new PVLogSnapshotChooser();
+						pvLogSelector = plsc.choosePVLogId();
+					} else
+						pvLogSelector.setVisible(true);
+					
 				}
 			}
 		});
@@ -320,15 +308,20 @@ public class ToolBarView implements SwingConstants {
 						try {
 							// model.setModelRef(refID);
 							
-							boolean useDesignRefInd = false;
-							if (BPRPModeSelector.getSelectedIndex() == 0)
-								useDesignRefInd = false;
-							else
-								useDesignRefInd = true;
+							boolean useDesignRefInd = BPRPModeSelector.getSelectedIndex() != 0;
 							
-							model.runModel(runModelMethod, refID, useDesignRefInd);
-							ModelStateView.getMachineModelState().setText(
-							"The new XAL machine model's ID is \"RUN\" !");
+							RunModelConfiguration config;
+							if (runModeSelector.getSelectedIndex() == 1) {
+								config = new RunModelConfigurationExtant(refPts[BPRPSelector.getSelectedIndex()].toString(), useDesignRefInd);
+							} else if (runModeSelector.getSelectedIndex() == 2) {
+								config = new RunModelConfigurationPVLogger(plsc.getPVLogId());								
+							} else {
+								config = new RunModelConfigurationDesign();					
+							}
+							
+							model.runModel(config);
+							
+							ModelStateView.getMachineModelState().setText("The new XAL machine model's ID is \"RUN\" !");
 							ModelStateView.getProgressBar().setString("Done !");
 							ModelStateView.getProgressBar().setIndeterminate(false);
 							setQueryViewEnable(true);

@@ -1,28 +1,21 @@
-package edu.stanford.lcls.modelmanager.dbmodel;
+package edu.stanford.lcls.xal.model;
 
 import xal.model.IAlgorithm;
 import xal.model.ModelException;
 import xal.model.probe.EnvelopeProbe;
-import xal.model.probe.Probe;
 import xal.sim.scenario.AlgorithmFactory;
 import xal.sim.scenario.ProbeFactory;
 import xal.sim.scenario.Scenario;
 import xal.smf.Accelerator;
 import xal.smf.data.XMLDataManager;
 
-/* TODO OPENXAL Implement/port, version in SLAC library depends on XAL */
-public class RunModel2 {
-	private int modelMode;
-	private String emitNode;
-	private boolean refMode;
-	private String runMode;
-	
+public class RunModel {	
 	private Accelerator accelerator;
 	private Scenario scenario;
-	
+	protected int modelMode = 5;
 	private EnvelopeProbe probe;
 	
-	public RunModel2() { 
+	public RunModel() { 
 		try {
 			accelerator = XMLDataManager.loadDefaultAccelerator();
 			
@@ -37,31 +30,13 @@ public class RunModel2 {
 		}	
 	}
 
-	/** Beamline selection */
-	public void setModelMode(int modelMode) {
-		this.modelMode = modelMode;
-	}
-	
-	/** Wirescanner to use for initial parameters (via backpropagation) */
-	public void setEmitNode(String refID) {
-		this.emitNode = refID;
-	}
 
-	/** Use measurement data (true) or design data (false) on that wirescanner */
-	public void useDesignRef(boolean refMode) {
-		this.refMode = refMode;
-	}
 
-	/** scenario synchronization mode */
-	public void setRunMode(String syncModeDesign) {
-		this.runMode = syncModeDesign;
+	public void run(RunModelConfiguration config) throws ModelException {
+		config.initialize(scenario);
 		
-	}
-
-	public void run() throws ModelException {
 		scenario.setProbe(probe.copy());
-		scenario.setSynchronizationMode(runMode);					
-		scenario.resync();
+		
 		scenario.run();
 	}
 
@@ -74,8 +49,12 @@ public class RunModel2 {
 	}
 
 	public EnvelopeProbe getProbe() {
-
 		return probe;
+	}
+
+	/** beamline selection */
+	public void setModelMode(int _modelMode) {
+		modelMode = _modelMode;
 	}
 	
 }

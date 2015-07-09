@@ -5,6 +5,8 @@ import edu.stanford.slac.Message.Message;
 //import edu.stanford.lcls.xal.tools.ca.ConnectionManager;
 import edu.stanford.lcls.modelmanager.view.ModelPlotData;
 import edu.stanford.lcls.modelmanager.view.ModelStateView;
+import edu.stanford.lcls.xal.model.RunModel;
+import edu.stanford.lcls.xal.model.RunModelConfiguration;
 import xal.tools.data.DataAdaptor;
 import xal.tools.xml.XmlDataAdaptor;
 import xal.model.ModelException;
@@ -57,7 +59,7 @@ public class BrowserModel {
 	protected MachineModelDetail[] _goldMachineModelDetail;
 	private int plotFunctionID1;
 	private int plotFunctionID2;
-	protected RunModel2 rm = new RunModel2();
+	protected RunModel rm = new RunModel();
 	protected Scenario scenario;
 	protected JFrame _parent;
 	private final String autoRunID = "RUN";
@@ -187,7 +189,7 @@ public class BrowserModel {
 		return plotFunctionID1;
 	}
 
-	public RunModel2 getRunModel() {
+	public RunModel getRunModel() {
 		return rm;
 	}
 
@@ -208,16 +210,6 @@ public class BrowserModel {
 		modelMode = _modelMode;
 		filterMachineModelInMode(_allMachineModels, _goldMachineModels,
 				modelMode);
-	}
-
-	/** Wirescanner to use for initial parameters (via backpropagation) */
-	public void setModelRef(String refID) {
-		rm.setEmitNode(refID);
-	}
-
-	/** Use measurement data (true) or design data (false) on that wirescanner */
-	public void setModelRefDesign(boolean refMode) {
-		rm.useDesignRef(refMode);
 	}
 
 	public boolean isGold() {
@@ -567,28 +559,17 @@ public class BrowserModel {
 				_selectedMachineModelDetail, _goldMachineModelDetail);
 	}
 	
-	public void runModel(int runModelMethod, String refID, boolean useDesignRef) throws SQLException, ModelException {
+	public void runModel(RunModelConfiguration config) throws SQLException, ModelException {
 		// beamline selection
 		rm.setModelMode(modelMode);
-		//TODO Connect all channels for model use.  This may have to be done earlier, not here.
-		if (runModelMethod == 0) {
-			rm.setRunMode(Scenario.SYNC_MODE_DESIGN);
-		} else if (runModelMethod == 1) {
-			rm.setRunMode(Scenario.SYNC_MODE_RF_DESIGN);
-			// System.out.println("Use reference pt.: " + refID +
-			// " for Twiss.");
-			Message.info("Use reference pt.: " + refID +
-					 " for Twiss back propagate.");
-			// do Twiss back propagate
-			rm.setEmitNode(refID);
-			rm.useDesignRef(useDesignRef);
-		}
-		rm.run();
+
+		rm.run(config);
+		
 		scenario = rm.getScenario();
-		_runMachineModel = DataManager.getRunMachineModel(runModelMethod,
+		_runMachineModel = DataManager.getRunMachineModel(config.getRunModelMethod(),
 				modelMode); // add runMachineMode to _fetchedMachineModels
 		_runMachineModelDetail = DataManager.getRunMachineModeDetail(_parent,
-				runModelMethod, scenario);
+				config.getRunModelMethod(), scenario);
 		_runMachineModelDevice = DataManager.getRunMachineModeDevice(scenario);
 		createRunModelComment(_runMachineModel, _runMachineModelDetail);
 
