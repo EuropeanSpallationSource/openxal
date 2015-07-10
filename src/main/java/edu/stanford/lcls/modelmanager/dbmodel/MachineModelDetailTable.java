@@ -60,23 +60,6 @@ public class MachineModelDetailTable {
 				columnType.add(typeResult.getString("TYPE_NAME"));
 				columnSize.add(typeResult.getInt("COLUMN_SIZE"));
 			}
-			for (int i = 0; i < TABLE_SIZE; i++) {
-				int index = columnName.indexOf(MachineModelDetail
-						.getPropertyName(i));
-				if(index < 0) index = 4; // "EK" to "E" mistake
-				MachineModelDetail.setPropertyType(i, columnType.get(index),
-						columnSize.get(index).intValue());
-			}
-			MachineModelDetail.setPropertyType(MachineModelDetail
-					.getPropertySize() - 5, "VARCHAR2", 50); // DEVICE_TYPE
-			MachineModelDetail.setPropertyType(MachineModelDetail
-					.getPropertySize() - 4, "VARCHAR2", 50); // EPICS_NAME
-			MachineModelDetail.setPropertyType(MachineModelDetail
-					.getPropertySize() - 3, "NUMBER", 22); // P
-			MachineModelDetail.setPropertyType(MachineModelDetail
-					.getPropertySize() - 2, "NUMBER", 22); // Bmag_X
-			MachineModelDetail.setPropertyType(MachineModelDetail
-					.getPropertySize() - 1, "NUMBER", 22); // Bmag_Y
 			typeResult.close();
 
 			// get data value

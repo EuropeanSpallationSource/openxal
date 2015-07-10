@@ -8,7 +8,7 @@ import java.util.List;
 public class MachineModel {
 	static final private List<String> PROPERTY_NAME;
 	static final private int PROPERTY_SIZE;
-	static private List<String> propertyType;
+	static final private List<String> propertyType;
 	private List<Object> propertyValue;
 	
 	/**
@@ -16,9 +16,9 @@ public class MachineModel {
 	 */
 	static {
 		PROPERTY_NAME = Arrays.asList(new String[] {
-				"ID", "RUN_ELEMENT_DATE", "RUN_SOURCE_CHK", "MODEL_MODES_ID", "COMMENTS", "DATE_CREATED", "GOLD", "REF", "SEL", "B1", "B2" });
+				"ID", "RUN_ELEMENT_DATE", "RUN_SOURCE_CHK", "MODEL_MODES_ID", "COMMENTS", "DATE_CREATED", "GOLD", "REF", "SEL", "B1", "B2" });		
+		propertyType = Arrays.asList(new String[]{"Double", "Date", "String", "Double", "String", "Date", "String", "Other", "Other", "Double", "Double"});
 		PROPERTY_SIZE = PROPERTY_NAME.size();
-		propertyType = Arrays.asList(new String[PROPERTY_SIZE]);
 	}
 	
 	/**
@@ -55,25 +55,6 @@ public class MachineModel {
 		return propertyType;
 	}
 	
-	public static void setPropertyType(int index, String propertyDBType, int propertyDBSize) {		
-		if(propertyDBType.equals("NUMBER") || propertyDBType.equals("seriaL") || propertyDBType.equals("int4"))
-			propertyType.set(index, "Double");
-		else if(propertyDBType.equals("DATE") || propertyDBType.equals("timestamp"))
-			propertyType.set(index, "Date");
-		else if(propertyDBType.equals("VARCHAR2") || propertyDBType.equals("varchar"))
-			propertyType.set(index, "String");
-		else
-			propertyType.set(index, "Other");
-	}
-
-	public static void setPropertyType(int index, String propertyType) {
-		MachineModel.propertyType.set(index, propertyType);
-	}
-
-	public static void setPropertyType(String propertyName, String propertyType) {
-		MachineModel.propertyType.set(PROPERTY_NAME.indexOf(propertyName),
-				propertyType);
-	}
 
 	//About PropertyValue
 	public Object getPropertyValue(int index) {

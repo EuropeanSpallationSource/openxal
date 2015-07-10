@@ -7,7 +7,7 @@ import java.util.List;
 public class MachineModelDevice {
 	static final private List<String> PROPERTY_NAME;
 	static final private int PROPERTY_SIZE;
-	static private List<String> propertyType;
+	static final private List<String> propertyType;
 	private List<Object> propertyValue;
 	
 	/**
@@ -16,8 +16,8 @@ public class MachineModelDevice {
 	static {
 		PROPERTY_NAME = Arrays.asList(new String[] {
 				"ELEMENT_NAME", "DEVICE_PROPERTY", "DEVICE_VALUE", "ZPOS" });
+		propertyType = Arrays.asList(new String[] { "String", "String", "Double", "Double" });
 		PROPERTY_SIZE = PROPERTY_NAME.size();
-		propertyType = Arrays.asList(new String[PROPERTY_SIZE]);
 	}
 	
 	/**
@@ -58,21 +58,6 @@ public class MachineModelDevice {
 		return propertyType;
 	}
 	
-	public static void setPropertyType(int index, String propertyDBType, int propertyDBSize) {		
-		if(propertyDBType.equals("NUMBER"))
-			propertyType.set(index, "Double");
-		else if(propertyDBType.equals("DATE"))
-			propertyType.set(index, "Date");
-		else if(propertyDBType.equals("VARCHAR2"))
-			propertyType.set(index, "String");
-		else
-			propertyType.set(index, "Other");
-	}
-
-	public static void setPropertyType(int index, String propertyType) {
-		MachineModelDevice.propertyType.set(index, propertyType);
-	}
-
 	public static void setPropertyType(String propertyName, String propertyType) {
 		MachineModelDevice.propertyType.set(PROPERTY_NAME.indexOf(propertyName),
 				propertyType);

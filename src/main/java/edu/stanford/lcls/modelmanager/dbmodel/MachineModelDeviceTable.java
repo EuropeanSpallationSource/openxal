@@ -39,12 +39,6 @@ public class MachineModelDeviceTable {
 			final Connection connection, final Long id) throws SQLException {
 		final List<MachineModelDevice> modelDevices = new ArrayList<MachineModelDevice>();
 		try {
-			// get data type
-			MachineModelDevice.setPropertyType(0, "VARCHAR2", 60);
-			MachineModelDevice.setPropertyType(1, "VARCHAR2", 30);
-			MachineModelDevice.setPropertyType(2, "NUMBER", 22);
-			MachineModelDevice.setPropertyType(3, "NUMBER", 22);
-
 			// get data value
 			
 			/*final PreparedStatement queryStatement = connection.prepareStatement("SELECT E.\"ELEMENT_NAME\", D.\"DEVICE_PROPERTY\", D.\"DEVICE_VALUE\", E.\"ZPOS\" " +

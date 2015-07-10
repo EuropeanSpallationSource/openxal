@@ -20,8 +20,10 @@ public class MachineModelDetail {
 				"R54", "R55", "R56", "R61", "R62", "R63", "R64", "R65", "R66",
 				"LEFF", "SLEFF", "ORDINAL", "SUML", "DEVICE_TYPE", "EPICS_NAME",
 				"P" , "Bmag_X", "Bmag_Y"});
+		propertyType = Arrays.asList(new String[] {"Double", "String", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", 
+				"Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double",
+				"Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "String", "String", "Double", "Double", "Double"});
 		PROPERTY_SIZE = PROPERTY_NAME.size(); // 58
-		propertyType = Arrays.asList(new String[PROPERTY_SIZE]);
 	}
 
 	// Construction
@@ -49,27 +51,6 @@ public class MachineModelDetail {
 
 	public static List<String> getAllPropertyType() {
 		return propertyType;
-	}
-
-	public static void setPropertyType(int index, String propertyDBType,
-			int propertyDBSize) {
-		if (propertyDBType.equals("NUMBER"))
-			propertyType.set(index, "Double");
-		else if (propertyDBType.equals("DATE"))
-			propertyType.set(index, "Date");
-		else if (propertyDBType.equals("VARCHAR2"))
-			propertyType.set(index, "String");
-		else
-			propertyType.set(index, "Other");
-	}
-
-	public static void setPropertyType(int index, String propertyType) {
-		MachineModelDetail.propertyType.set(index, propertyType);
-	}
-
-	public static void setPropertyType(String propertyName, String propertyType) {
-		MachineModelDetail.propertyType.set(
-				PROPERTY_NAME.indexOf(propertyName), propertyType);
 	}
 
 	// About PropertyValue

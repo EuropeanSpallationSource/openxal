@@ -108,14 +108,7 @@ public class MachineModelTable {
 			columnType.add(typeResult.getString("TYPE_NAME"));
 			columnSize.add(typeResult.getInt("COLUMN_SIZE"));
 		}
-		for (int i = 0; i < TABLE_SIZE; i++) {
-			int index = columnName.indexOf(MachineModel.getPropertyName(i));
-			MachineModel.setPropertyType(i, columnType.get(index), columnSize
-					.get(index).intValue());
-		}
-		MachineModel.setPropertyType(6, "VARCHAR2", 10);
-		MachineModel.setPropertyType(7, "Boolean", 1);
-		MachineModel.setPropertyType(8, "Boolean", 1);
+		
 		typeResult.close();
 	}
 	
