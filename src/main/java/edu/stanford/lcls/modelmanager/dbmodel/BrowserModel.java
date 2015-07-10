@@ -42,26 +42,33 @@ public class BrowserModel {
 	protected boolean _hasConnected = false;
 	protected String _user="MACHINE_MODEL";
 	protected String _databaseURL;
+	
 	protected MachineModel[] _allMachineModels;
 	protected MachineModel[] _fetchedMachineModels;
 	protected MachineModel[] _goldMachineModels;
+	
 	protected String _referenceMachineModelID;
 	protected MachineModel _referenceMachineModel;
 	protected MachineModelDetail[] _referenceMachineModelDetail;
 	protected MachineModelDevice[] _referenceMachineModelDevice;
+	
 	protected String _selectedMachineModelID;
 	protected MachineModel _selectedMachineModel;
 	protected MachineModelDetail[] _selectedMachineModelDetail;
 	protected MachineModelDevice[] _selectedMachineModelDevice;
+	
 	protected MachineModel _runMachineModel;
 	protected MachineModelDetail[] _runMachineModelDetail;
 	protected MachineModelDevice[] _runMachineModelDevice;
+	
 	protected MachineModel _goldMachineModel;
 	protected MachineModelDetail[] _goldMachineModelDetail;
+	
 	private int plotFunctionID1;
 	private int plotFunctionID2;
-	protected RunModel rm;;
-	protected Scenario scenario;
+	
+	protected RunModel rm;
+	
 	private final String autoRunID = "RUN";
 	protected List<Integer> modelModes = new ArrayList<Integer>(Arrays
 			.asList(new Integer[] { 5, 53, 52, 51 }));
@@ -556,7 +563,7 @@ public class BrowserModel {
 
 		rm.run(config);
 		
-		scenario = rm.getScenario();
+		Scenario scenario = rm.getScenario();
 		_runMachineModel = DataManager.getRunMachineModel(config.getRunModelMethod(),
 				modelMode); // add runMachineMode to _fetchedMachineModels
 		_runMachineModelDetail = DataManager.getRunMachineModeDetail(config.getRunModelMethod(), scenario);
@@ -664,7 +671,7 @@ public class BrowserModel {
 	}
 
 	public void exportToXML(final JFrame parent) {
-		DataManager.exportToXML(parent, _runMachineModel, scenario);
+		DataManager.exportToXML(parent, _runMachineModel, rm.getScenario());
 	}
 
 	public String uploadToDatabase(final JFrame parent) {
