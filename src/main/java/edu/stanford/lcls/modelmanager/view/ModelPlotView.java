@@ -232,6 +232,10 @@ public class ModelPlotView implements SwingConstants {
 				_selectedMachineModelDetail = runMachineModelDetail;
 				plotAction();
 			}
+			@Override
+			public void editMachineParameters(BrowserModel browserModel,
+					MachineModelDevice[] _selectedMachineModelDevice) {
+			}
 		});
 
 		plotFunctionList.getSelectionModel().addListSelectionListener(

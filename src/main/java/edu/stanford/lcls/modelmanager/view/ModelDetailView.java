@@ -144,6 +144,10 @@ public class ModelDetailView implements SwingConstants {
 					
 				});
 			}
+			@Override
+			public void editMachineParameters(BrowserModel browserModel,
+					MachineModelDevice[] _selectedMachineModelDevice) {
+			}
 		});
 
 		modelDetailView = new JSplitPane(JSplitPane.VERTICAL_SPLIT,

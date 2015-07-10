@@ -52,4 +52,5 @@ public interface BrowserModelListener {
 			MachineModelDetail[] runMachineModelDetail,
 			MachineModelDevice[] runMachineModelDevice);
 
+	public void editMachineParameters(BrowserModel browserModel, MachineModelDevice[] _selectedMachineModelDevice);
 }

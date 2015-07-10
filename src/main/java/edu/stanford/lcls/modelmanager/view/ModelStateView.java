@@ -103,6 +103,11 @@ public class ModelStateView extends Thread implements SwingConstants {
 				progressBar.setIndeterminate(false);
 				progressBar.setString("Running Success !");
 			}
+
+			@Override
+			public void editMachineParameters(BrowserModel browserModel,
+					MachineModelDevice[] _selectedMachineModelDevice) {
+			}
 		});
 		modelStateView.repaint();
 	}

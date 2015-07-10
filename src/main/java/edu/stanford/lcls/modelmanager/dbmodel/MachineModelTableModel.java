@@ -175,4 +175,9 @@ public class MachineModelTableModel extends AbstractTableModel implements
 		this.selectedMachineModel = runMachineModel;
 		setMachineModels(fetchedMachineModel);
 	}
+
+	@Override
+	public void editMachineParameters(BrowserModel browserModel,
+			MachineModelDevice[] _selectedMachineModelDevice) {
+	}
 }

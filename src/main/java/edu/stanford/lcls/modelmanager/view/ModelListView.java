@@ -383,6 +383,10 @@ public class ModelListView {
 					});
 				modelTable.repaint();
 			}
+			@Override
+			public void editMachineParameters(BrowserModel browserModel,
+					MachineModelDevice[] _selectedMachineModelDevice) {
+			}
 		});
 	}
 

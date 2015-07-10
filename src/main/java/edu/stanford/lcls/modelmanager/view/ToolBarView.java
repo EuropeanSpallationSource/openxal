@@ -28,10 +28,12 @@ import javax.swing.border.EmptyBorder;
 import se.lu.esss.ics.jels.matcher.Matcher;
 import se.lu.esss.ics.jels.matcher.MatcherDialog;
 import xal.extension.widgets.apputils.SimpleProbeEditor;
+import xal.model.ModelException;
 import xal.service.pvlogger.apputils.browser.PVLogSnapshotChooser;
 import edu.stanford.lcls.modelmanager.ModelManagerWindow;
 import edu.stanford.lcls.modelmanager.dbmodel.BrowserModel;
 import edu.stanford.lcls.modelmanager.dbmodel.BrowserModelListener;
+import edu.stanford.lcls.modelmanager.dbmodel.DataManager;
 import edu.stanford.lcls.modelmanager.dbmodel.MachineModel;
 import edu.stanford.lcls.modelmanager.dbmodel.MachineModelDetail;
 import edu.stanford.lcls.modelmanager.dbmodel.MachineModelDevice;
@@ -56,7 +58,9 @@ public class ToolBarView implements SwingConstants {
 	private JComboBox<ComboItem> BPRPSelector; //Back Propagte Reference points
 	private JComboBox<String> BPRPModeSelector;
 	private JButton setInitTiwissButton;
+	
 	private JButton matcherButton; 
+	private JButton editMachineParametersButton;
 	private JButton runModelButton;
 	private JButton upload2DBButton;
 	private JButton makeGoldButton;
@@ -213,6 +217,11 @@ public class ToolBarView implements SwingConstants {
 		toolBarView.addSeparator(new Dimension(10, 10));		
 		
 		toolBarView.addSeparator(new Dimension(5, 10));
+		editMachineParametersButton = new JButton("Edit machine parameters...");
+		editMachineParametersButton.setToolTipText("Fetch and edit machine parameters.");
+		toolBarView.add(editMachineParametersButton);
+		
+		toolBarView.addSeparator(new Dimension(5, 10));
 		runModelButton = new JButton("Run Model");
 		runModelButton.setToolTipText("run XAL online model");
 		toolBarView.add(runModelButton);
@@ -291,6 +300,32 @@ public class ToolBarView implements SwingConstants {
 		
 		setQueryViewEnable(false);
 		
+		editMachineParametersButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				
+				RunModelConfiguration config;
+				if (runModeSelector.getSelectedIndex() == 1) {
+					boolean useDesignRefInd = BPRPModeSelector.getSelectedIndex() != 0;
+					config = new RunModelConfigurationExtant(refPts[BPRPSelector.getSelectedIndex()].toString(), useDesignRefInd);
+				} else if (runModeSelector.getSelectedIndex() == 2) {
+					config = new RunModelConfigurationPVLogger(plsc.getPVLogId());								
+				} else {
+					config = new RunModelConfigurationDesign();					
+				}
+				
+				try {
+					model.editMachineParameters(config);
+				} catch (ModelException e1) {
+					e1.printStackTrace();
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
+		
 		runModelButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				thread1 = new Thread(new Runnable() {
@@ -307,11 +342,10 @@ public class ToolBarView implements SwingConstants {
 					public void run() {
 						try {
 							// model.setModelRef(refID);
-							
-							boolean useDesignRefInd = BPRPModeSelector.getSelectedIndex() != 0;
-							
+														
 							RunModelConfiguration config;
 							if (runModeSelector.getSelectedIndex() == 1) {
+								boolean useDesignRefInd = BPRPModeSelector.getSelectedIndex() != 0;
 								config = new RunModelConfigurationExtant(refPts[BPRPSelector.getSelectedIndex()].toString(), useDesignRefInd);
 							} else if (runModeSelector.getSelectedIndex() == 2) {
 								config = new RunModelConfigurationPVLogger(plsc.getPVLogId());								
@@ -431,6 +465,10 @@ public class ToolBarView implements SwingConstants {
 					MachineModel runMachineModel,
 					MachineModelDetail[] runMachineModelDetail,
 					MachineModelDevice[] runMachineModelDevice){
+			}
+			@Override
+			public void editMachineParameters(BrowserModel browserModel,
+					MachineModelDevice[] _selectedMachineModelDevice) {
 			}
 		});
 		

@@ -579,6 +579,19 @@ public class BrowserModel {
 				_selectedMachineModel, _selectedMachineModelDetail,
 				_selectedMachineModelDevice);
 	}
+	
+	public void editMachineParameters(RunModelConfiguration config) throws SQLException, ModelException {
+		
+		Scenario scenario = getRunModel().getScenario();
+		config.initialize(scenario);
+		
+		_runMachineModelDevice = DataManager.getRunMachineModeDevice(scenario);
+		//createRunModelComment(_runMachineModel, _runMachineModelDetail);
+		//_selectedMachineModelDetail = _runMachineModelDetail;
+		_selectedMachineModelDevice = _runMachineModelDevice;
+		
+		EVENT_PROXY.editMachineParameters(this, _selectedMachineModelDevice);
+	}
 
 	public void createRunModelComment(MachineModel runMachineModel,
 			MachineModelDetail[] runMachineModelDetail) {

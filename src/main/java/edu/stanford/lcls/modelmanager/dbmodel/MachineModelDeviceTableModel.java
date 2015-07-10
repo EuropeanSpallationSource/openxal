@@ -14,6 +14,7 @@ public class MachineModelDeviceTableModel extends AbstractTableModel implements
 	static final protected int TABLE_SIZE = MachineModelDevice.getPropertySize();
 
 	protected MachineModelDevice[] _modelDevices;
+	private boolean editable;
 
 	public MachineModelDeviceTableModel(MachineModelDevice[] modelDevices) {
 		GUI_TABLE_COLUMN_NAME = MachineModelDevice.getAllPropertyName();
@@ -75,6 +76,7 @@ public class MachineModelDeviceTableModel extends AbstractTableModel implements
 			MachineModelDetail[] referenceMachineModelDetail,
 			MachineModelDevice[] referenceMachineModelDevice) {
 		setMachineModelDevice(referenceMachineModelDevice);
+		editable = false;
 	}
 
 	public void modelSelected(BrowserModel model,
@@ -82,6 +84,7 @@ public class MachineModelDeviceTableModel extends AbstractTableModel implements
 			MachineModelDetail[] selectedMachineModelDetail,
 			MachineModelDevice[] selectedMachineModelDevice) {
 		setMachineModelDevice(selectedMachineModelDevice);
+		editable = false;
 	}
 	
 	public void runModel(BrowserModel model,
@@ -90,6 +93,19 @@ public class MachineModelDeviceTableModel extends AbstractTableModel implements
 			MachineModelDetail[] runMachineModelDetail,
 			MachineModelDevice[] runMachineModelDevice){
 		setMachineModelDevice(runMachineModelDevice);
+		editable = false;
+	}
+
+	@Override
+	public void editMachineParameters(BrowserModel browserModel,
+			MachineModelDevice[] _selectedMachineModelDevice) {
+		setMachineModelDevice(_selectedMachineModelDevice);
+		editable = true;
+	}
+
+	@Override
+	public boolean isCellEditable(int rowIndex, int columnIndex) {
+		return editable && (columnIndex == 2);
 	}
 
 }

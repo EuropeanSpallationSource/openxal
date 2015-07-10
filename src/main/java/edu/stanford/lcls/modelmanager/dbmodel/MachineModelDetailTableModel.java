@@ -92,4 +92,8 @@ public class MachineModelDetailTableModel extends AbstractTableModel implements
 			MachineModelDevice[] runMachineModelDevice){
 		setMachineModelDetails(runMachineModelDetail);
 	}
+
+	@Override
+	public void editMachineParameters(BrowserModel browserModel, MachineModelDevice[] _selectedMachineModelDevice) {
+	}
 }
