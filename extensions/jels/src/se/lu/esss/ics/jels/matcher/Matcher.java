@@ -34,6 +34,7 @@ import xal.model.xml.LatticeXmlWriter;
 import xal.sim.scenario.AlgorithmFactory;
 import xal.sim.scenario.ProbeFactory;
 import xal.smf.Accelerator;
+import xal.smf.AcceleratorSeq;
 import xal.smf.data.XMLDataManager;
 import xal.tools.annotation.AProperty.NoEdit;
 import xal.tools.annotation.AProperty.Units;
@@ -58,7 +59,7 @@ public class Matcher implements Runnable, Stopper {
 	private String outputInitialRun = null;
 	private String outputBestRun = null;
 	
-	private Accelerator accelerator;
+	private AcceleratorSeq accelerator;
 	
 	private boolean aborted;
 
@@ -69,7 +70,7 @@ public class Matcher implements Runnable, Stopper {
 	private BasicGraphData scorePlot;
 	
 	
-	public Matcher(Accelerator accelerator, EnvelopeProbe probe) {
+	public Matcher(AcceleratorSeq accelerator, EnvelopeProbe probe) {
 		this.accelerator = accelerator;
 		this.initialBeamParameters = new InitialBeamParameters(probe);
 	}
@@ -112,7 +113,7 @@ public class Matcher implements Runnable, Stopper {
 	}*/
 	
 	@NoEdit
-	public Accelerator getAccelerator()
+	public AcceleratorSeq getAccelerator()
 	{
 		return accelerator;
 	}
