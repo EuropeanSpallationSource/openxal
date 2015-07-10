@@ -1,27 +1,19 @@
 package edu.stanford.lcls.modelmanager.dbmodel;
 
-import javax.swing.JFrame;
-
-import edu.stanford.lcls.modelmanager.view.ModelManagerFeature;
-import edu.stanford.slac.Message.Message;
-
-import xal.extension.application.Application;
-import xal.smf.Accelerator;
 import xal.smf.AcceleratorNode;
-import xal.smf.data.OpticsSwitcher;
-import xal.smf.data.XMLDataManager;
+import xal.smf.AcceleratorSeq;
 import xal.smf.impl.Quadrupole;
 
 public class DeviceType {
-	private Accelerator defaultAccelerator;
+	private AcceleratorSeq defaultAccelerator;
 	//static final private String[] COMBO_SEQ = { "FULL MACHINE",
 	//		"CATHODE TO GUN SPECT DUMP", "CATHODE TO 135-MEV SPECT DUMP",
 	//		"CATHODE TO 52SL2" };
 	//private AcceleratorSeq seq;
 	//private java.util.List<AcceleratorNode> allNodes;
 
-	public DeviceType(JFrame parent) {
-		loadDefaultAccelerator(parent);
+	public DeviceType(AcceleratorSeq acc) {
+		defaultAccelerator = acc;
 		//seq = defaultAccelerator.getSequence(COMBO_SEQ[0]);
 		//allNodes = seq.getAllNodes();
 		// defaultAccelerator = XMLDataManager.loadDefaultAccelerator();
@@ -102,30 +94,4 @@ public class DeviceType {
 			return null;
 		}
 	}
-
-	protected boolean loadDefaultAccelerator(JFrame parent) {
-		Accelerator defaultAccelerator = null;
-		try {
-			defaultAccelerator = XMLDataManager.loadDefaultAccelerator();
-		} catch (Exception exception) {
-			Message.error("Exception: Cannot open default XAL accelerator for loading.", true);			
-			Application.displayError("Exception thrown while loading the default accelerator",
-					"Failed to load default accelerator", exception);
-		}
-
-		if (defaultAccelerator != null) {
-			// setAccelerator( defaultAccelerator, XMLDataManager.defaultPath()
-			// );
-			this.defaultAccelerator = defaultAccelerator;
-			return true;
-		} else {
-			OpticsSwitcher switcher = OpticsSwitcher.getInstance();
-			switcher.showDialogNearOwner(parent);
-			if (switcher.getDefaultOpticsPath() != null) {
-				return loadDefaultAccelerator(parent);
-			}
-		}
-		return false;
-	}
-
 }

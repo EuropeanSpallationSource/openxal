@@ -213,10 +213,9 @@ public class DataManager {
 	}
 	
 	
-	public static MachineModelDetail[] getRunMachineModeDetail(JFrame parent, 
-			int runModelMethod, Scenario scenario ) {
+	public static MachineModelDetail[] getRunMachineModeDetail(int runModelMethod, Scenario scenario ) {
 		List<MachineModelDetail> runMachineModelDetail = new ArrayList<MachineModelDetail>();
-		DeviceType deviceType = new DeviceType(parent);
+		DeviceType deviceType = new DeviceType(scenario.getSequence());
 		// DecimalFormat df = new DecimalFormat("##0.000000"); - see Mod 1-Mar-2011.
 		ModelFormat df = new ModelFormat("%17.12g");
 		Trajectory trajectory = scenario.getTrajectory();
@@ -856,83 +855,44 @@ public class DataManager {
 		}
 	}
 	
-	public static void makeGold(JFrame parent, MachineModel selectedMachineModel) {
+	public static void makeGold(String comment, MachineModel selectedMachineModel) throws SQLException {
 		// TODO also update other DB instances, if necessary
 		
 //		PrefsConnectionDialog dialog = PrefsConnectionDialog.getInstance(parent, false, true);
 		Connection writeConnection = null;
 		
-		try {
 //			writeConnection = dialog.showConnectionDialog(DatabaseAdaptor
 //					.getInstance());
-			writeConnection = DataManager.getConnection();
-		} catch (Exception exception) {
-			Message.error("Connection Exception: Cannot connect to " + url, true);			
-				JOptionPane.showMessageDialog(parent, exception.getMessage(),
-						"Connection Error!  Cannot connect to " + url, JOptionPane.ERROR_MESSAGE);
-				Logger.getLogger("global").log(Level.SEVERE,
-						"Database connection error.  Cannot connect to " + url, exception);
-		}
-		if (writeConnection != null) {
-			try {
-				final JDialog goldComment = new JDialog(parent, "Gold Machine Model Comment", true);
-				goldComment.getContentPane().add(new JLabel("Enter the Comment:"), BorderLayout.NORTH);
-				final JTextField commentText = new JTextField();
-				commentText.setPreferredSize(new Dimension(500, 26));
-				goldComment.getContentPane().add(commentText, BorderLayout.CENTER);
-				JPanel buttonPane = new JPanel();
-				JButton commitComment = new JButton("OK");
-				buttonPane.add(commitComment);
-				goldComment.getContentPane().add(buttonPane, BorderLayout.SOUTH);
-				commitComment.addActionListener(new ActionListener(){
-					public void actionPerformed(ActionEvent e) {
-						comment = commentText.getText();
-						goldComment.dispose();
-					}
-				});
-				goldComment.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-				goldComment.pack();
-				Dimension parentSize = parent.getSize();
-				Dimension dialogSize = goldComment.getSize();
-				Point p = parent.getLocation();
-				goldComment.setLocation(p.x + parentSize.width / 2 - dialogSize.width/2, p.y + parentSize.height / 2 - dialogSize.height/2);
-				goldComment.setVisible(true);
-				
-				// use PL/SQL for GOLD
-				CallableStatement cstmt = null;
-				
-				// TODO OPENXAL there's no packages in pgsql MACHINE_MODEL.MODEL_UPLOAD_PKG.GOLD_THIS_MODEL
-				cstmt = writeConnection.prepareCall(
-				"{call \"MACHINE_MODEL\".\"GOLD_THIS_MODEL\" ('" 
-						+ selectedMachineModel.getPropertyValue("ID").toString() 
-						+ "', '" + comment + "', ?)}");
-				Message.info("Run " + selectedMachineModel.getPropertyValue("ID").toString()
-						+ " is set to GOLD", true);
-				
-				cstmt.registerOutParameter(1, java.sql.Types.VARCHAR);
+		writeConnection = DataManager.getConnection();
+		
+		if (writeConnection != null) {			
+			// use PL/SQL for GOLD
+			CallableStatement cstmt = null;
+			
+			// TODO OPENXAL there's no packages in pgsql MACHINE_MODEL.MODEL_UPLOAD_PKG.GOLD_THIS_MODEL
+			cstmt = writeConnection.prepareCall(
+			"{call \"MACHINE_MODEL\".\"GOLD_THIS_MODEL\" ('" 
+					+ selectedMachineModel.getPropertyValue("ID").toString() 
+					+ "', '" + comment + "', ?)}");
+			Message.info("Run " + selectedMachineModel.getPropertyValue("ID").toString()
+					+ " is set to GOLD", true);
+			
+			cstmt.registerOutParameter(1, java.sql.Types.VARCHAR);
 
-				cstmt.execute();
+			cstmt.execute();
 //				System.out.println("A new GOLD Model tagged!");
-				String msg = cstmt.getString(1);
-				
-				if (msg == null) {
-					msg = "A new GOLD Model is tagged successfully!";
-					Message.info(msg, true);
-				} else {
-					Message.error(msg, true);
-				}
+			String msg = cstmt.getString(1);
+			
+			if (msg == null) {
+				msg = "A new GOLD Model is tagged successfully!";
+				Message.info(msg, true);
+			} else {
+				Message.error(msg, true);
+			}
 
-				cstmt.close();
+			cstmt.close();
 //				Message.info("A new GOLD Model is tagged!");
-				writeConnection.close();			
-			} catch (Exception exception) {
-				Message.error("SQL Exception: " + exception.getMessage(), true);			
-				Message.error("Gold tag operation failed!", true);			
-				JOptionPane.showMessageDialog(parent, exception.getMessage(),
-						"SQL Error: Gold tag operation failed!", JOptionPane.ERROR_MESSAGE);
-				Logger.getLogger("global").log(Level.SEVERE,
-						"SQL Error: Gold tag operation failed!", exception);
-				}
+			writeConnection.close();					
 		}
 	}
 	

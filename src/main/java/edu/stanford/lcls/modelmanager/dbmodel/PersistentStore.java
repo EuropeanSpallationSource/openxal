@@ -7,6 +7,7 @@ import java.sql.*;
 
 import javax.swing.JFrame;
 
+import xal.smf.AcceleratorSeq;
 import xal.tools.data.DataAdaptor;
 
 /** contains information about the persistent storage */
@@ -45,11 +46,11 @@ class PersistentStore {
 		return MACHINE_MODEL_TABLE.fetchAllMachineModels( connection );
 	}
 
-	public MachineModelDetail[] fetchMachineModelDetails(JFrame parent, final Connection connection, final Long id) throws SQLException {
-		return MACHINE_MODEL_DETAIL_TABLE.fetchMachineModelDetails(parent, connection, id);
+	public MachineModelDetail[] fetchMachineModelDetails(AcceleratorSeq acc, final Connection connection, final Long id) throws SQLException {
+		return MACHINE_MODEL_DETAIL_TABLE.fetchMachineModelDetails(acc, connection, id);
 	}
 
-	public MachineModelDevice[] fetchMachineModelDevices(JFrame parent, final Connection connection, final Long id) throws SQLException {
-		return MACHINE_MODEL_DEVICE_TABLE.fetchMachineModelDevices(parent, connection, id);
+	public MachineModelDevice[] fetchMachineModelDevices(final Connection connection, final Long id) throws SQLException {
+		return MACHINE_MODEL_DEVICE_TABLE.fetchMachineModelDevices(connection, id);
 	}
 }

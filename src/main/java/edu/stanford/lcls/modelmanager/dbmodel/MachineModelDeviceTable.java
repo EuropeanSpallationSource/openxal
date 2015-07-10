@@ -35,8 +35,7 @@ public class MachineModelDeviceTable {
 	 * Fetch the machine models within the specified time range.
 	 */
 
-	protected MachineModelDevice[] fetchMachineModelDevices(JFrame parent,
-			final Connection connection, final Long id) throws SQLException {
+	protected MachineModelDevice[] fetchMachineModelDevices(final Connection connection, final Long id) throws SQLException {
 		final List<MachineModelDevice> modelDevices = new ArrayList<MachineModelDevice>();
 		try {
 			// get data value

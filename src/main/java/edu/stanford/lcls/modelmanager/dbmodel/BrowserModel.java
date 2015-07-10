@@ -1,20 +1,8 @@
 package edu.stanford.lcls.modelmanager.dbmodel;
 
-import edu.stanford.slac.Message.Message;
-//import edu.stanford.lcls.xal.model.RunModel;
-//import edu.stanford.lcls.xal.tools.ca.ConnectionManager;
-import edu.stanford.lcls.modelmanager.view.ModelPlotData;
-import edu.stanford.lcls.modelmanager.view.ModelStateView;
-import edu.stanford.lcls.xal.model.RunModel;
-import edu.stanford.lcls.xal.model.RunModelConfiguration;
-import xal.tools.data.DataAdaptor;
-import xal.tools.xml.XmlDataAdaptor;
-import xal.model.ModelException;
-import xal.sim.scenario.Scenario;
-import xal.tools.messaging.MessageCenter;
-
 import java.net.URL;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -23,7 +11,20 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
+
+import xal.model.ModelException;
+import xal.sim.scenario.Scenario;
+import xal.smf.Accelerator;
+import xal.tools.data.DataAdaptor;
+import xal.tools.messaging.MessageCenter;
+import xal.tools.xml.XmlDataAdaptor;
+//import edu.stanford.lcls.xal.model.RunModel;
+//import edu.stanford.lcls.xal.tools.ca.ConnectionManager;
+import edu.stanford.lcls.modelmanager.view.ModelPlotData;
+import edu.stanford.lcls.modelmanager.view.ModelStateView;
+import edu.stanford.lcls.xal.model.RunModel;
+import edu.stanford.lcls.xal.model.RunModelConfiguration;
+import edu.stanford.slac.Message.Message;
 
 /**
  * BrowserModel is the main document model.
@@ -59,9 +60,8 @@ public class BrowserModel {
 	protected MachineModelDetail[] _goldMachineModelDetail;
 	private int plotFunctionID1;
 	private int plotFunctionID2;
-	protected RunModel rm = new RunModel();
+	protected RunModel rm;;
 	protected Scenario scenario;
-	protected JFrame _parent;
 	private final String autoRunID = "RUN";
 	protected List<Integer> modelModes = new ArrayList<Integer>(Arrays
 			.asList(new Integer[] { 5, 53, 52, 51 }));
@@ -71,12 +71,14 @@ public class BrowserModel {
 					"CATHODE to GUN SPECT DUMP" }));
 	protected int modelMode = 5;
 	protected boolean isGold;
-
+	protected Accelerator acc;
+	
 	/**
 	 * Constructor
 	 */
-	public BrowserModel(JFrame parent) {
-		_parent = parent;
+	public BrowserModel(Accelerator acc) {
+		this.acc = acc;
+		rm = new RunModel(acc);
 		MESSAGE_CENTER = new MessageCenter("Browser Model");
 		EVENT_PROXY = MESSAGE_CENTER.registerSource(this,
 				BrowserModelListener.class);
@@ -401,7 +403,7 @@ public class BrowserModel {
 		_fetchedMachineModels = fetchedMachineModels;
 		_goldMachineModel = getGoldMachineModel(goldMachineModels, modelMode,
 				"DESIGN");
-		setGoldModel(_parent, _goldMachineModel);
+		setGoldModel(_goldMachineModel);
 		_referenceMachineModel = getGoldMachineModel(goldMachineModels,
 				modelMode, "EXTANT");
 		_referenceMachineModel.setPropertyValue("REF", true);
@@ -410,7 +412,7 @@ public class BrowserModel {
 		_selectedMachineModel = null;
 		_selectedMachineModelDetail = null;
 		_selectedMachineModelDevice = null;
-		setReferenceModel(_parent, _referenceMachineModel);
+		setReferenceModel(_referenceMachineModel);
 		ModelPlotData.clearRange();
 		EVENT_PROXY.machineModelFetched(this, _fetchedMachineModels,
 				_referenceMachineModel, _referenceMachineModelDetail,
@@ -434,7 +436,7 @@ public class BrowserModel {
 		} else if (_selectedMachineModel == null
 				&& selectedMachineModel != null) {
 			_fetchedMachineModels = fetchedMachineModels;
-			setSelectedModel(_parent, selectedMachineModel);
+			setSelectedModel(selectedMachineModel);
 			EVENT_PROXY.modelSelected(this, _selectedMachineModel,
 					_selectedMachineModelDetail, _selectedMachineModelDevice);
 			return;
@@ -443,7 +445,7 @@ public class BrowserModel {
 				&& !(_selectedMachineModel.getPropertyValue("ID")
 						.equals(selectedMachineModel.getPropertyValue("ID")))) {
 			_fetchedMachineModels = fetchedMachineModels;
-			setSelectedModel(_parent, selectedMachineModel);
+			setSelectedModel(selectedMachineModel);
 			EVENT_PROXY.modelSelected(this, _selectedMachineModel,
 					_selectedMachineModelDetail, _selectedMachineModelDevice);
 			return;
@@ -451,7 +453,7 @@ public class BrowserModel {
 				.equals(referenceMachineModel.getPropertyValue("ID")))
 				&& _selectedMachineModel == null) {
 			_fetchedMachineModels = fetchedMachineModels;
-			setReferenceModel(_parent, referenceMachineModel);
+			setReferenceModel(referenceMachineModel);
 			EVENT_PROXY.machineModelFetched(this, _fetchedMachineModels,
 					_referenceMachineModel, _referenceMachineModelDetail,
 					_referenceMachineModelDevice);
@@ -460,8 +462,8 @@ public class BrowserModel {
 				.equals(referenceMachineModel.getPropertyValue("ID")))
 				&& _selectedMachineModel != null) {
 			_fetchedMachineModels = fetchedMachineModels;
-			setReferenceModel(_parent, referenceMachineModel);
-			setSelectedModel(_parent, _selectedMachineModel);
+			setReferenceModel(referenceMachineModel);
+			setSelectedModel(_selectedMachineModel);
 			EVENT_PROXY.modelSelected(this, _selectedMachineModel,
 					_selectedMachineModelDetail, _selectedMachineModelDevice);
 			return;
@@ -471,38 +473,31 @@ public class BrowserModel {
 		}
 	}
 
-	public void setGoldModel(JFrame parent, MachineModel goldMachineModel)
+	public void setGoldModel(MachineModel goldMachineModel)
 			throws SQLException {
 		_goldMachineModel = goldMachineModel;
-		_goldMachineModelDetail = PERSISTENT_STORE.fetchMachineModelDetails(
-				parent, _connection, Long.valueOf((String) _goldMachineModel
-						.getPropertyValue("ID")));
+		_goldMachineModelDetail = PERSISTENT_STORE.fetchMachineModelDetails(acc, _connection,
+				Long.valueOf((String) _goldMachineModel.getPropertyValue("ID")));
 	}
 
-	public void setReferenceModel(JFrame parent,
-			MachineModel referenceMachineModel) throws SQLException {
+	public void setReferenceModel(MachineModel referenceMachineModel) throws SQLException {
 		_referenceMachineModel = referenceMachineModel;
 		if (referenceMachineModel.getPropertyValue("ID").toString().equals(
 				autoRunID)) {
 			_referenceMachineModelDetail = _runMachineModelDetail;
 			_referenceMachineModelDevice = _runMachineModelDevice;
 		} else {
-			_referenceMachineModelDetail = PERSISTENT_STORE
-					.fetchMachineModelDetails(parent, _connection, Long
-							.valueOf((String) _referenceMachineModel
-									.getPropertyValue("ID")));
-			_referenceMachineModelDevice = PERSISTENT_STORE
-					.fetchMachineModelDevices(parent, _connection, Long
-							.valueOf((String) _referenceMachineModel
-									.getPropertyValue("ID")));
+			_referenceMachineModelDetail = PERSISTENT_STORE.fetchMachineModelDetails(acc, _connection,
+					Long.valueOf((String) _referenceMachineModel.getPropertyValue("ID")));
+			_referenceMachineModelDevice = PERSISTENT_STORE.fetchMachineModelDevices(_connection, 
+							Long.valueOf((String) _referenceMachineModel.getPropertyValue("ID")));
 		}
 		_referenceMachineModelDetail = DataManager.calculateBmag(
 				_referenceMachineModelDetail, _goldMachineModelDetail);
 
 	}
 
-	public void setSelectedModel(JFrame parent,
-			MachineModel selectedMachineModel) throws SQLException {
+	public void setSelectedModel(MachineModel selectedMachineModel) throws SQLException {
 		if (selectedMachineModel == null)
 			return;
 		if (_selectedMachineModel == null
@@ -516,14 +511,10 @@ public class BrowserModel {
 				_selectedMachineModelDetail = _runMachineModelDetail;
 				_selectedMachineModelDevice = _runMachineModelDevice;
 			} else {
-				_selectedMachineModelDetail = PERSISTENT_STORE
-						.fetchMachineModelDetails(parent, _connection, Long
-								.valueOf((String) selectedMachineModel
-										.getPropertyValue("ID")));
-				_selectedMachineModelDevice = PERSISTENT_STORE
-						.fetchMachineModelDevices(parent, _connection, Long
-								.valueOf((String) selectedMachineModel
-										.getPropertyValue("ID")));
+				_selectedMachineModelDetail = PERSISTENT_STORE.fetchMachineModelDetails(acc, _connection,
+						Long.valueOf((String) selectedMachineModel.getPropertyValue("ID")));
+				_selectedMachineModelDevice = PERSISTENT_STORE.fetchMachineModelDevices(_connection, 
+						Long.valueOf((String) selectedMachineModel.getPropertyValue("ID")));
 				// Correct some models' ZPOS
 				String startElementName = _selectedMachineModelDetail[0]
 						.getPropertyValue("ELEMENT_NAME").toString();
@@ -568,13 +559,12 @@ public class BrowserModel {
 		scenario = rm.getScenario();
 		_runMachineModel = DataManager.getRunMachineModel(config.getRunModelMethod(),
 				modelMode); // add runMachineMode to _fetchedMachineModels
-		_runMachineModelDetail = DataManager.getRunMachineModeDetail(_parent,
-				config.getRunModelMethod(), scenario);
+		_runMachineModelDetail = DataManager.getRunMachineModeDetail(config.getRunModelMethod(), scenario);
 		_runMachineModelDevice = DataManager.getRunMachineModeDevice(scenario);
 		createRunModelComment(_runMachineModel, _runMachineModelDetail);
 
 		addRunModelToFetchedModels(_runMachineModel);
-		setSelectedModel(_parent, _runMachineModel);
+		setSelectedModel(_runMachineModel);
 		EVENT_PROXY.runModel(this, _fetchedMachineModels,
 				_selectedMachineModel, _selectedMachineModelDetail,
 				_selectedMachineModelDevice);
@@ -691,19 +681,8 @@ public class BrowserModel {
 			DataManager.exportDetailData(parent, _selectedMachineModelDetail);
 	}
 
-	public void makeGold() {
-		if (_selectedMachineModel == null)
-			JOptionPane
-					.showMessageDialog(
-							_parent,
-							"You need to select a machine model from SEL column first!",
-							"Make Gold Error", JOptionPane.ERROR_MESSAGE);
-		else if (_selectedMachineModel.getPropertyValue("ID").equals(autoRunID))
-			JOptionPane.showMessageDialog(_parent,
-					"You need to save the RUN machine model first!",
-					"Make Gold Error", JOptionPane.ERROR_MESSAGE);
-		else
-			DataManager.makeGold(_parent, _selectedMachineModel);
+	public void makeGold(String comment) throws SQLException {
+		DataManager.makeGold(comment, _selectedMachineModel);
 	}
 	
 	public void closeDBConnection() {

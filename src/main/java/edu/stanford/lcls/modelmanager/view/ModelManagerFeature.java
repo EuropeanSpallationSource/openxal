@@ -11,6 +11,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
 
+import xal.smf.Accelerator;
 import edu.stanford.lcls.modelmanager.dbmodel.BrowserModel;
 import edu.stanford.slac.Message.Message;
 
@@ -27,9 +28,9 @@ public class ModelManagerFeature  implements SwingConstants {
 	private ModelListView modelListView;
 //	private static Message logger = Message.getInstance();
 
-	public ModelManagerFeature(JFrame _frame, JPanel stateBar) {
+	public ModelManagerFeature(JFrame _frame, JPanel stateBar, Accelerator acc) {
 		frame =_frame;
-		model = new BrowserModel(frame);
+		model = new BrowserModel(acc);
 		ModelStateView modelStateView = new ModelStateView(frame, model);
 		modelStateBox = ModelStateView.getInstance();
 		modelStateView.start();

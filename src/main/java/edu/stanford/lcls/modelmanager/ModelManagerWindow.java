@@ -17,6 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 import xal.extension.application.XalWindow;
+import xal.extension.application.smf.AcceleratorDocument;
 import edu.stanford.lcls.modelmanager.view.ModelManagerFeature;
 
 
@@ -53,7 +54,7 @@ public class ModelManagerWindow extends XalWindow implements SwingConstants {
 		this.setSize(frameWidth, frameHeight);
 		this.setLocation((screenSize.width - frameWidth) / 2,
 				(screenSize.height - frameHeight) / 2);
-		return new ModelManagerFeature(this, this.getStateBar());
+		return new ModelManagerFeature(this, this.getStateBar(), ((AcceleratorDocument)document).getAccelerator());
 	}
 
 	public void makeFrame() {

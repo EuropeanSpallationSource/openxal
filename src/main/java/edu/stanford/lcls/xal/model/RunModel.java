@@ -7,17 +7,18 @@ import xal.sim.scenario.AlgorithmFactory;
 import xal.sim.scenario.ProbeFactory;
 import xal.sim.scenario.Scenario;
 import xal.smf.Accelerator;
+import xal.smf.AcceleratorSeq;
 import xal.smf.data.XMLDataManager;
 
 public class RunModel {	
-	private Accelerator accelerator;
+	private AcceleratorSeq accelerator;
 	private Scenario scenario;
 	protected int modelMode = 5;
 	private EnvelopeProbe probe;
 	
-	public RunModel() { 
+	public RunModel(AcceleratorSeq acc) { 
 		try {
-			accelerator = XMLDataManager.loadDefaultAccelerator();
+			accelerator = acc;
 			
 			scenario = Scenario.newScenarioFor(accelerator);//, elementMapping);
 		
@@ -40,7 +41,7 @@ public class RunModel {
 		scenario.run();
 	}
 
-	public Accelerator getAccelerator() {
+	public AcceleratorSeq getAccelerator() {
 		return accelerator;
 	}
 

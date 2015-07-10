@@ -1,12 +1,16 @@
 package edu.stanford.lcls.modelmanager.view;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -19,10 +23,12 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.ListCellRenderer;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
+import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
 import se.lu.esss.ics.jels.matcher.Matcher;
@@ -251,14 +257,53 @@ public class ToolBarView implements SwingConstants {
 				thread2 = new Thread(new Runnable() {
 					public void run() {
 						try {
-							model.makeGold();
-							ModelStateView.getMachineModelState().setText(
-							"The selected machine model has been set to GOLD !");
-							ModelStateView.getProgressBar().setString("Done !");
-							ModelStateView.getProgressBar().setIndeterminate(false);
-							setQueryViewEnable(true);
-							Message.info("The selected machine model has been set to GOLD!");
+							if (model.getSelectedMachineModel() == null)
+								JOptionPane
+										.showMessageDialog(
+												parent,
+												"You need to select a machine model from SEL column first!",
+												"Make Gold Error", JOptionPane.ERROR_MESSAGE);
+							else if (model.getSelectedMachineModel().getPropertyValue("ID").equals("RUN"))
+								JOptionPane.showMessageDialog(parent,
+										"You need to save the RUN machine model first!",
+										"Make Gold Error", JOptionPane.ERROR_MESSAGE);
+							else {
+								final JDialog goldComment = new JDialog(parent, "Gold Machine Model Comment", true);
+								goldComment.getContentPane().add(new JLabel("Enter the Comment:"), BorderLayout.NORTH);
+								final JTextField commentText = new JTextField();
+								commentText.setPreferredSize(new Dimension(500, 26));
+								goldComment.getContentPane().add(commentText, BorderLayout.CENTER);
+								JPanel buttonPane = new JPanel();
+								JButton commitComment = new JButton("OK");
+								buttonPane.add(commitComment);
+								goldComment.getContentPane().add(buttonPane, BorderLayout.SOUTH);
+								commitComment.addActionListener(new ActionListener(){
+									public void actionPerformed(ActionEvent e) {
+										goldComment.dispose();
+									}
+								});
+								goldComment.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+								goldComment.pack();
+								Dimension parentSize = parent.getSize();
+								Dimension dialogSize = goldComment.getSize();
+								Point p = parent.getLocation();
+								goldComment.setLocation(p.x + parentSize.width / 2 - dialogSize.width/2, p.y + parentSize.height / 2 - dialogSize.height/2);
+								goldComment.setVisible(true);
+								
+								model.makeGold(commentText.getText());
+								ModelStateView.getMachineModelState().setText("The selected machine model has been set to GOLD !");
+								ModelStateView.getProgressBar().setString("Done !");
+								Message.info("The selected machine model has been set to GOLD!");
+							}
+			
 							modelListView.connectDefault();
+						} catch (SQLException exception) {				
+							Message.error("SQL Exception: " + exception.getMessage(), true);			
+							Message.error("Gold tag operation failed!", true);			
+							JOptionPane.showMessageDialog(parent, exception.getMessage(),
+									"SQL Error: Gold tag operation failed!", JOptionPane.ERROR_MESSAGE);
+							Logger.getLogger("global").log(Level.SEVERE,
+									"SQL Error: Gold tag operation failed!", exception);
 						} catch (Exception exception) {
 							exception.printStackTrace();
 							JOptionPane.showMessageDialog(parent, exception.getMessage(),
@@ -270,7 +315,9 @@ public class ToolBarView implements SwingConstants {
 							setQueryViewEnable(true);
 							Message.error("Failed to set gold model!");
 						}
-						}
+						ModelStateView.getProgressBar().setIndeterminate(false);
+						setQueryViewEnable(true);
+					}
 					});
 				thread1.start();
 				thread2.start();

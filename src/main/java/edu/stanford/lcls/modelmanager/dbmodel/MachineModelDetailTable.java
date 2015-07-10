@@ -11,6 +11,7 @@ import java.util.List;
 
 import javax.swing.JFrame;
 
+import xal.smf.AcceleratorSeq;
 import edu.stanford.lcls.modelmanager.view.ModelManagerFeature;
 import edu.stanford.slac.Message.Message;
 import static edu.stanford.lcls.modelmanager.dbmodel.DataManager.escape;
@@ -44,7 +45,7 @@ public class MachineModelDetailTable {
 	 * Fetch the machine models within the specified time range.
 	 */
 
-	protected MachineModelDetail[] fetchMachineModelDetails(JFrame parent,
+	protected MachineModelDetail[] fetchMachineModelDetails(AcceleratorSeq acc,
 			final Connection connection, final Long id) throws SQLException {
 		final List<MachineModelDetail> modelDetails = new ArrayList<MachineModelDetail>();
 		try {
@@ -67,7 +68,7 @@ public class MachineModelDetailTable {
 					+ escape(TABLE_NAME) + " WHERE \"RUNS_ID\" = ? ");
 			queryStatement.setLong(1, id);
 			final ResultSet modelResult = queryStatement.executeQuery();		
-			DeviceType deviceType = new DeviceType(parent);
+			DeviceType deviceType = new DeviceType(acc);
 			MachineModelDetail machineModelDetail;
 			Double E;
 			Double P;
