@@ -45,11 +45,22 @@ public class MachineModelDeviceTableModel extends AbstractTableModel implements
 				return Long.valueOf((String) modelDevice
 						.getPropertyValue(columnIndex));
 			else if (type.equals("Double"))
-				return (String) modelDevice.getPropertyValue(columnIndex);
+				return Double.valueOf((String)modelDevice.getPropertyValue(columnIndex));
 			else
 				return (String) modelDevice.getPropertyValue(columnIndex);
 		} else
-			return "";
+			return null;
+	}
+	
+	@Override
+	public Class<?> getColumnClass(int columnIndex) {
+		String type = MachineModelDevice.getPropertyType(columnIndex);
+		if (type.equals("Long")) 
+			return Long.class;
+		else if (type.equals("Double"))
+			return Double.class; 
+		else 
+			return String.class;
 	}
 
 	public String getColumnName(int columnIndex) {

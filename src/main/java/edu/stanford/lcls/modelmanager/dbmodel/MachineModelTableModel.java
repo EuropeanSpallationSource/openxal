@@ -3,6 +3,7 @@ package edu.stanford.lcls.modelmanager.dbmodel;
 
 import java.sql.SQLException;
 import java.util.List;
+
 import javax.swing.table.AbstractTableModel;
 
 import edu.stanford.lcls.modelmanager.view.ModelManagerFeature;
@@ -59,23 +60,23 @@ public class MachineModelTableModel extends AbstractTableModel implements
 	}
 
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		MachineModel model = fetchedMachineModels[rowIndex];
+		if (columnIndex >= 5) columnIndex++;
+		
+		MachineModel modelDetail = fetchedMachineModels[rowIndex];
 		String type = MachineModel.getPropertyType(columnIndex);
-		if (model.getPropertyValue(columnIndex) != null & columnIndex < 5) {
-			if (type.equals("Long")) {
-				return Long.valueOf((String)model.getPropertyValue(columnIndex));
-			}
-			else if (type.equals("Double")){
-				return (String)model.getPropertyValue(columnIndex);
-			}
-			else
-				return (String) model.getPropertyValue(columnIndex);
-		} else if (columnIndex == 5){
-			return (String)model.getPropertyValue(columnIndex + 1);
-		} else if (columnIndex > 5){
-			return (Boolean)model.getPropertyValue(columnIndex + 1);
-		} else			
+		
+		if (modelDetail.getPropertyValue(columnIndex) != null) {
+			if (type.equals("Long")) 
+				return Long.valueOf((String)modelDetail.getPropertyValue(columnIndex));
+			else if (type.equals("Double"))
+				return Double.valueOf((String)modelDetail.getPropertyValue(columnIndex)); 
+			else if (type.equals("Boolean"))
+				return (Boolean)modelDetail.getPropertyValue(columnIndex); 
+			else  
+				return (String)modelDetail.getPropertyValue(columnIndex);
+		} else
 			return "";
+		
 	}
 
 	public String getColumnName(int columnIndex) {
@@ -85,8 +86,19 @@ public class MachineModelTableModel extends AbstractTableModel implements
 			return GUI_TABLE_COLUMN_NAME.get(columnIndex + 1);
 	}
 	
-	public Class<? extends Object> getColumnClass(int column) {
-		return (getValueAt(0, column).getClass());
+	@Override
+	public Class<?> getColumnClass(int columnIndex) {
+		if (columnIndex >= 5) columnIndex++;
+		
+		String type = MachineModel.getPropertyType(columnIndex);
+		if (type.equals("Long")) 
+			return Long.class;
+		else if (type.equals("Double"))
+			return Double.class; 
+		else if (type.equals("Boolean"))
+			return Boolean.class;
+		else
+			return String.class;
 	}
 	
 	public boolean isCellEditable(int row, int column) {

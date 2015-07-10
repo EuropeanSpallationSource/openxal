@@ -20,7 +20,7 @@ public class MachineModelDetail {
 				"R54", "R55", "R56", "R61", "R62", "R63", "R64", "R65", "R66",
 				"LEFF", "SLEFF", "ORDINAL", "SUML", "DEVICE_TYPE", "EPICS_NAME",
 				"P" , "Bmag_X", "Bmag_Y"});
-		propertyType = Arrays.asList(new String[] {"Double", "String", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", 
+		propertyType = Arrays.asList(new String[] {"String", "String", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", 
 				"Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double",
 				"Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "String", "String", "Double", "Double", "Double"});
 		PROPERTY_SIZE = PROPERTY_NAME.size(); // 58

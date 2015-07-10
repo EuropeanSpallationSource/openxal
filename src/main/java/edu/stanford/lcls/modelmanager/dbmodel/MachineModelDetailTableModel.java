@@ -36,6 +36,19 @@ public class MachineModelDetailTableModel extends AbstractTableModel implements
 	public int getRowCount() {
 		return _modelDetails.length;
 	}
+	
+
+	@Override
+	public Class<?> getColumnClass(int columnIndex) {
+		String type = MachineModelDetail.getPropertyType(columnIndex);
+		if (type.equals("Long")) 
+			return Long.class;
+		else if (type.equals("Double"))
+			return Double.class; 
+		else 
+			return String.class;
+	}
+	
 
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		MachineModelDetail modelDetail = _modelDetails[rowIndex];
@@ -44,7 +57,7 @@ public class MachineModelDetailTableModel extends AbstractTableModel implements
 			if (type.equals("Long")) 
 				return Long.valueOf((String)modelDetail.getPropertyValue(columnIndex));
 			else if (type.equals("Double"))
-				return (String)modelDetail.getPropertyValue(columnIndex); 
+				return Double.valueOf((String)modelDetail.getPropertyValue(columnIndex)); 
 			else 
 				return (String)modelDetail.getPropertyValue(columnIndex);
 		} else
@@ -79,5 +92,4 @@ public class MachineModelDetailTableModel extends AbstractTableModel implements
 			MachineModelDevice[] runMachineModelDevice){
 		setMachineModelDetails(runMachineModelDetail);
 	}
-	
 }
