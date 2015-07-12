@@ -65,48 +65,29 @@ public class ModelStateView extends Thread implements SwingConstants {
 		progressBar.setString("Conecting...");
 		
 		_model.addBrowserModelListener(new BrowserModelListener() {
-			public void connectionChanged(BrowserModel model) {
-				int lastColonIndex = _model.getDataBaseURL().lastIndexOf(":");
-				dataBaseState.setText("User \"" + _model.getConnectUser()
-						+ "\" connected to \""
-						+ _model.getDataBaseURL().substring(lastColonIndex + 1)
-						+ "\" Database.");
-				machineModelState.setText("Retrieving machine models from database ...");
-				progressBar.setString("Loading ...");
-			}
-			
-			public void machineModelFetched(BrowserModel model,
-					MachineModel[] fetchedMachineModel, MachineModel referenceMachineModel,
-					MachineModelDetail[] referenceMachineModelDetail,
-					MachineModelDevice[] referenceMachineModelDevice) {
-				machineModelState.setText("Find " + _model.getFetchedMachineModel().length
-						+ " machine models in the database!");
-				progressBar.setIndeterminate(false);
-				progressBar.setString("Loading successful!");
-			}
-
-			public void modelSelected(BrowserModel model,
-					MachineModel selectedMachineModel,
-					MachineModelDetail[] selectedMachineModelDetail,
-					MachineModelDevice[] selectedMachineModelDevice) {
-				machineModelState.setText("You can now plot or export the selected machine model data...");
-				progressBar.setIndeterminate(false);
-				progressBar.setString("Loading Success !");
-			}
-			
-			public void runModel(BrowserModel model,
-					MachineModel[] fetchedMachineModel,
-					MachineModel runMachineModel,
-					MachineModelDetail[] runMachineModelDetail,
-					MachineModelDevice[] runMachineModelDevice){
-				machineModelState.setText("You can now plot or export the running machine model data...");
-				progressBar.setIndeterminate(false);
-				progressBar.setString("Running Success !");
-			}
-
 			@Override
-			public void editMachineParameters(BrowserModel browserModel,
-					MachineModelDevice[] _selectedMachineModelDevice) {
+			public void modelStateChanged(BrowserModel model) {
+				if (!model.getStateReady()) {
+					int lastColonIndex = _model.getDataBaseURL().lastIndexOf(":");
+					dataBaseState.setText("User \"" + _model.getConnectUser()
+							+ "\" connected to \""
+							+ _model.getDataBaseURL().substring(lastColonIndex + 1)
+							+ "\" Database.");
+					machineModelState.setText("Retrieving machine models from database ...");
+					progressBar.setString("Loading ...");
+				} else {
+					if (model.getSelectedMachineModel() != null) {
+						
+						machineModelState.setText("You can now plot or export the running machine model data...");
+						progressBar.setIndeterminate(false);
+						progressBar.setString("Running Success !");
+					}
+					machineModelState.setText("Find " + _model.getFetchedMachineModel().length
+							+ " machine models in the database!");
+					progressBar.setIndeterminate(false);
+					progressBar.setString("Loading successful!");					
+				}
+				
 			}
 		});
 		modelStateView.repaint();

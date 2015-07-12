@@ -198,43 +198,19 @@ public class ModelPlotView implements SwingConstants {
 				});
 
 		_model.addBrowserModelListener(new BrowserModelListener() {
-			public void connectionChanged(BrowserModel model) {
-			}			
-			public void machineModelFetched(BrowserModel model,
-					MachineModel[] fetchedMachineModel, MachineModel referenceMachineModel,
-					MachineModelDetail[] referenceMachineModelDetail,
-					MachineModelDevice[] referenceMachineModelDevice){
-				setPlotPanelEnable(true);
-				_referenceMachineModel = referenceMachineModel;
-				_referenceMachineModelDetail = referenceMachineModelDetail;
-				_selectedMachineModel = null;
-				_selectedMachineModelDetail = null;
-				plotAction();
-			}
-			public void modelSelected(BrowserModel model,
-					MachineModel selectedMachineModel,
-					MachineModelDetail[] selectedMachineModelDetail,
-					MachineModelDevice[] selectedMachineModelDevice) {
-				setPlotPanelEnable(true);
-				_referenceMachineModel = model.getReferenceMachineModel();
-				_referenceMachineModelDetail = model.getReferenceMachineModelDetail();
-				_selectedMachineModel = selectedMachineModel;
-				_selectedMachineModelDetail = selectedMachineModelDetail;
-				plotAction();
-			}
-			public void runModel(BrowserModel model,
-					MachineModel[] fetchedMachineModel,
-					MachineModel runMachineModel,
-					MachineModelDetail[] runMachineModelDetail,
-					MachineModelDevice[] runMachineModelDevice){
-				setPlotPanelEnable(true);
-				_selectedMachineModel = runMachineModel;
-				_selectedMachineModelDetail = runMachineModelDetail;
-				plotAction();
-			}
 			@Override
-			public void editMachineParameters(BrowserModel browserModel,
-					MachineModelDevice[] _selectedMachineModelDevice) {
+			public void modelStateChanged(BrowserModel model) {
+				if (model.getStateReady()) {
+					setPlotPanelEnable(true);
+					_referenceMachineModel = model.getReferenceMachineModel();
+					_referenceMachineModelDetail = model.getReferenceMachineModelDetail();
+					_selectedMachineModel = model.getSelectedMachineModel();
+					_selectedMachineModelDetail = model.getSelectedMachineModelDetail();
+					plotAction();
+				} else {
+					setPlotPanelEnable(false);
+				}
+				
 			}
 		});
 

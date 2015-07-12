@@ -6,7 +6,6 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
-import edu.stanford.lcls.modelmanager.view.ModelManagerFeature;
 import edu.stanford.lcls.modelmanager.view.ModelStateView;
 import edu.stanford.slac.Message.Message;
 
@@ -19,18 +18,14 @@ public class MachineModelTableModel extends AbstractTableModel implements
 	protected BrowserModel model;
 	protected final List<String> GUI_TABLE_COLUMN_NAME;
 	static final protected int TABLE_SIZE = 8;
-	protected MachineModel[] fetchedMachineModels;
+	protected MachineModel[] fetchedMachineModels = new MachineModel[0];
 	private MachineModel referenceMachineModel;
 	private MachineModel selectedMachineModel;
 	private Thread thread1;
 	
-	public MachineModelTableModel(MachineModel[] models) {
+	public MachineModelTableModel(BrowserModel model) {	
+		this.model = model;
 		GUI_TABLE_COLUMN_NAME = MachineModel.getAllPropertyName();
-		fetchedMachineModels = models;
-	}
-
-	public MachineModelTableModel() {	
-		this(new MachineModel[0]);
 	}
 
 	public void setMachineModels(MachineModel[] models) {
@@ -146,38 +141,15 @@ public class MachineModelTableModel extends AbstractTableModel implements
 		});
 		thread1.start();
 	}
-
-	public void connectionChanged(BrowserModel model) {
-		this.model = model;
-	}
 	
-	public void machineModelFetched(BrowserModel model,
-			MachineModel[] fetchedMachineModel, MachineModel referenceMachineModel,
-			MachineModelDetail[] referenceMachineModelDetail,
-			MachineModelDevice[] referenceMachineModelDevice){
-		setMachineModels(fetchedMachineModel);
-		this.referenceMachineModel = referenceMachineModel;
-		this.selectedMachineModel = null;
-	}
-
-	public void modelSelected(BrowserModel model,
-			MachineModel selectedMachineModel,
-			MachineModelDetail[] selectedMachineModelDetail,
-			MachineModelDevice[] selectedMachineModelDevice) {
-		this.selectedMachineModel = selectedMachineModel;
-	}
-	
-	public void runModel(BrowserModel model,
-			MachineModel[] fetchedMachineModel,
-			MachineModel runMachineModel,
-			MachineModelDetail[] runMachineModelDetail,
-			MachineModelDevice[] runMachineModelDevice){
-		this.selectedMachineModel = runMachineModel;
-		setMachineModels(fetchedMachineModel);
-	}
-
 	@Override
-	public void editMachineParameters(BrowserModel browserModel,
-			MachineModelDevice[] _selectedMachineModelDevice) {
+	public void modelStateChanged(BrowserModel model){
+		if (model.getStateReady()) {
+			setMachineModels(model.getFetchedMachineModel());
+			this.referenceMachineModel = model.getReferenceMachineModel();
+			this.selectedMachineModel = model.getSelectedMachineModel();
+		} else {
+			setMachineModels(new MachineModel[0]);
+		}
 	}
 }

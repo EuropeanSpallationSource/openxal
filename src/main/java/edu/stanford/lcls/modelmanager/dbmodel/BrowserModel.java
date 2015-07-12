@@ -32,6 +32,8 @@ import edu.stanford.slac.Message.Message;
  * @author 
  */
 public class BrowserModel {
+
+
 	final protected MessageCenter MESSAGE_CENTER;
 	final protected BrowserModelListener EVENT_PROXY;
 	final static public SimpleDateFormat machineModelDateFormat = new SimpleDateFormat(
@@ -80,6 +82,8 @@ public class BrowserModel {
 	protected boolean isGold;
 	protected Accelerator acc;
 	
+	protected boolean stateReady = false;
+	
 	/**
 	 * Constructor
 	 */
@@ -92,6 +96,10 @@ public class BrowserModel {
 	
 		// The following object instantiation is unnecessary.
 //		rm = new RunModel(modelMode);
+	}
+	
+	public boolean getStateReady() {
+		return stateReady;
 	}
 
 	/**
@@ -138,7 +146,8 @@ public class BrowserModel {
 		final DataAdaptor persistentStoreAdaptor = configurationAdaptor
 				.childAdaptor("persistentStore");
 		PERSISTENT_STORE = new PersistentStore(persistentStoreAdaptor);
-		EVENT_PROXY.connectionChanged(this);
+		
+		EVENT_PROXY.modelStateChanged(this);;
 		fetchAllMachineModel();
 	}	
 
@@ -186,8 +195,16 @@ public class BrowserModel {
 		return _selectedMachineModelDetail;
 	}
 
+	public MachineModelDevice[] getSelectedMachineModelDevice() {
+		return _selectedMachineModelDevice;
+	}
+	
 	public MachineModelDetail[] getReferenceMachineModelDetail() {
 		return _referenceMachineModelDetail;
+	}
+	
+	public MachineModelDevice[] getReferenceMachineModelDevice() {
+		return _referenceMachineModelDevice;
 	}
 
 	public void setPlotFunctionID1(int plotFunctionID1) {
@@ -421,9 +438,9 @@ public class BrowserModel {
 		_selectedMachineModelDevice = null;
 		setReferenceModel(_referenceMachineModel);
 		ModelPlotData.clearRange();
-		EVENT_PROXY.machineModelFetched(this, _fetchedMachineModels,
-				_referenceMachineModel, _referenceMachineModelDetail,
-				_referenceMachineModelDevice);
+		
+		stateReady = true;
+		EVENT_PROXY.modelStateChanged(this);
 	}
 
 	public void setSelectedMachineModel(MachineModel[] fetchedMachineModels,
@@ -436,16 +453,13 @@ public class BrowserModel {
 			_selectedMachineModel = null;
 			_selectedMachineModelDetail = null;
 			_selectedMachineModelDevice = null;
-			EVENT_PROXY.machineModelFetched(this, _fetchedMachineModels,
-					_referenceMachineModel, _referenceMachineModelDetail,
-					_referenceMachineModelDevice);
+			EVENT_PROXY.modelStateChanged(this);
 			return;
 		} else if (_selectedMachineModel == null
 				&& selectedMachineModel != null) {
 			_fetchedMachineModels = fetchedMachineModels;
 			setSelectedModel(selectedMachineModel);
-			EVENT_PROXY.modelSelected(this, _selectedMachineModel,
-					_selectedMachineModelDetail, _selectedMachineModelDevice);
+			EVENT_PROXY.modelStateChanged(this);
 			return;
 		} else if (_selectedMachineModel != null
 				&& selectedMachineModel != null
@@ -453,17 +467,14 @@ public class BrowserModel {
 						.equals(selectedMachineModel.getPropertyValue("ID")))) {
 			_fetchedMachineModels = fetchedMachineModels;
 			setSelectedModel(selectedMachineModel);
-			EVENT_PROXY.modelSelected(this, _selectedMachineModel,
-					_selectedMachineModelDetail, _selectedMachineModelDevice);
+			EVENT_PROXY.modelStateChanged(this);
 			return;
 		} else if (!(_referenceMachineModel.getPropertyValue("ID")
 				.equals(referenceMachineModel.getPropertyValue("ID")))
 				&& _selectedMachineModel == null) {
 			_fetchedMachineModels = fetchedMachineModels;
 			setReferenceModel(referenceMachineModel);
-			EVENT_PROXY.machineModelFetched(this, _fetchedMachineModels,
-					_referenceMachineModel, _referenceMachineModelDetail,
-					_referenceMachineModelDevice);
+			EVENT_PROXY.modelStateChanged(this);
 			return;
 		} else if (!(_referenceMachineModel.getPropertyValue("ID")
 				.equals(referenceMachineModel.getPropertyValue("ID")))
@@ -471,8 +482,7 @@ public class BrowserModel {
 			_fetchedMachineModels = fetchedMachineModels;
 			setReferenceModel(referenceMachineModel);
 			setSelectedModel(_selectedMachineModel);
-			EVENT_PROXY.modelSelected(this, _selectedMachineModel,
-					_selectedMachineModelDetail, _selectedMachineModelDevice);
+			EVENT_PROXY.modelStateChanged(this);
 			return;
 		} else {
 			ModelStateView.getProgressBar().setString("Loading Success !");
@@ -572,22 +582,7 @@ public class BrowserModel {
 
 		addRunModelToFetchedModels(_runMachineModel);
 		setSelectedModel(_runMachineModel);
-		EVENT_PROXY.runModel(this, _fetchedMachineModels,
-				_selectedMachineModel, _selectedMachineModelDetail,
-				_selectedMachineModelDevice);
-	}
-	
-	public void editMachineParameters(RunModelConfiguration config) throws SQLException, ModelException {
-		
-		Scenario scenario = getRunModel().getScenario();
-		config.initialize(scenario);
-		
-		_runMachineModelDevice = DataManager.getRunMachineModeDevice(scenario);
-		//createRunModelComment(_runMachineModel, _runMachineModelDetail);
-		//_selectedMachineModelDetail = _runMachineModelDetail;
-		_selectedMachineModelDevice = _runMachineModelDevice;
-		
-		EVENT_PROXY.editMachineParameters(this, _selectedMachineModelDevice);
+		EVENT_PROXY.modelStateChanged(this);
 	}
 
 	public void createRunModelComment(MachineModel runMachineModel,
@@ -665,9 +660,8 @@ public class BrowserModel {
 		_runMachineModel = null;
 		_runMachineModelDetail = null;
 		_runMachineModelDevice = null;
-		EVENT_PROXY.runModel(this, _fetchedMachineModels,
-				_selectedMachineModel, _selectedMachineModelDetail,
-				_selectedMachineModelDevice);
+		
+		EVENT_PROXY.modelStateChanged(this);
 	}
 
 	public void exportToXML(final JFrame parent) {

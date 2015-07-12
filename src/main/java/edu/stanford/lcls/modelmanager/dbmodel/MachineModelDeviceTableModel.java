@@ -13,16 +13,10 @@ public class MachineModelDeviceTableModel extends AbstractTableModel implements
 	protected final List<String> GUI_TABLE_COLUMN_NAME;
 	static final protected int TABLE_SIZE = MachineModelDevice.getPropertySize();
 
-	protected MachineModelDevice[] _modelDevices;
-	private boolean editable;
-
-	public MachineModelDeviceTableModel(MachineModelDevice[] modelDevices) {
-		GUI_TABLE_COLUMN_NAME = MachineModelDevice.getAllPropertyName();
-		_modelDevices = modelDevices;
-	}
+	protected MachineModelDevice[] _modelDevices = new MachineModelDevice[0];
 
 	public MachineModelDeviceTableModel() {
-		this(new MachineModelDevice[0]);
+		GUI_TABLE_COLUMN_NAME = MachineModelDevice.getAllPropertyName();
 	}
 
 	public void setMachineModelDevice(MachineModelDevice[] modelDevices) {
@@ -68,44 +62,14 @@ public class MachineModelDeviceTableModel extends AbstractTableModel implements
 		return GUI_TABLE_COLUMN_NAME.get(columnIndex);
 	}
 
-	public void connectionChanged(BrowserModel model) {
-	}
 	
-	public void machineModelFetched(BrowserModel model,
-			MachineModel[] fetchedMachineModel, MachineModel referenceMachineModel,
-			MachineModelDetail[] referenceMachineModelDetail,
-			MachineModelDevice[] referenceMachineModelDevice) {
-		setMachineModelDevice(referenceMachineModelDevice);
-		editable = false;
+	public void modelStateChanged(BrowserModel model) {
+		if (model.getStateReady()) {
+			MachineModelDevice[] machineModelDevices = model.getSelectedMachineModelDevice();
+			if (machineModelDevices == null) machineModelDevices = model.getReferenceMachineModelDevice();
+			setMachineModelDevice(machineModelDevices);
+		} else {
+			setMachineModelDevice(new MachineModelDevice[0]);
+		}
 	}
-
-	public void modelSelected(BrowserModel model,
-			MachineModel selectedMachineModel,
-			MachineModelDetail[] selectedMachineModelDetail,
-			MachineModelDevice[] selectedMachineModelDevice) {
-		setMachineModelDevice(selectedMachineModelDevice);
-		editable = false;
-	}
-	
-	public void runModel(BrowserModel model,
-			MachineModel[] fetchedMachineModel,
-			MachineModel runMachineModel,
-			MachineModelDetail[] runMachineModelDetail,
-			MachineModelDevice[] runMachineModelDevice){
-		setMachineModelDevice(runMachineModelDevice);
-		editable = false;
-	}
-
-	@Override
-	public void editMachineParameters(BrowserModel browserModel,
-			MachineModelDevice[] _selectedMachineModelDevice) {
-		setMachineModelDevice(_selectedMachineModelDevice);
-		editable = true;
-	}
-
-	@Override
-	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		return editable && (columnIndex == 2);
-	}
-
 }

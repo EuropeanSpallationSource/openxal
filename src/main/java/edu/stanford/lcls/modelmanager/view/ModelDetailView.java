@@ -102,51 +102,29 @@ public class ModelDetailView implements SwingConstants {
 		tableBox.add(new JScrollPane(detailTable));
 
 		model.addBrowserModelListener(new BrowserModelListener() {
-			public void connectionChanged(BrowserModel model) {
-			}
-			public void machineModelFetched(BrowserModel model,
-					MachineModel[] fetchedMachineModel, final MachineModel referenceMachineModel,
-					MachineModelDetail[] referenceMachineModelDetail,
-					MachineModelDevice[] referenceMachineModelDevice){
-				commentText.setText((String)referenceMachineModel.getPropertyValue("COMMENTS"));
-				String title = "The reference machine model has "
-					+ referenceMachineModelDetail.length + " records logged.";
-				modelName.setText(title);
-				modelCreatDate.setText((String)referenceMachineModel.getPropertyValue("DATE_CREATED"));	
-				
-			}
-			public void modelSelected(BrowserModel model,
-					final MachineModel selectedMachineModel,
-					MachineModelDetail[] selectedMachineModelDetail,
-					MachineModelDevice[] selectedMachineModelDevice) {
-				commentText.setText((String)selectedMachineModel.getPropertyValue("COMMENTS"));
-				String title = "The selected machine model has "
-							+ selectedMachineModelDetail.length + " records logged.";
-				modelName.setText(title);
-				modelCreatDate.setText((String)selectedMachineModel.getPropertyValue("DATE_CREATED"));
-			}
-			public void runModel(BrowserModel model,
-					MachineModel[] fetchedMachineModel,
-					final MachineModel runMachineModel,
-					MachineModelDetail[] runMachineModelDetail,
-					MachineModelDevice[] runMachineModelDevice){
-				commentText.setText((String)runMachineModel.getPropertyValue("COMMENTS"));
-				String title = "The run machine model has "
-							+ runMachineModelDetail.length + " records logged.";
-				modelName.setText(title);
-				modelCreatDate.setText((String)runMachineModel.getPropertyValue("DATE_CREATED"));
-
-				commentText.addActionListener(new ActionListener() { // TODO event handler pile up in here
-
-					public void actionPerformed(ActionEvent e) {
-						runMachineModel.setPropertyValue("COMMENTS", commentText.getText());
-					}
-					
-				});
-			}
 			@Override
-			public void editMachineParameters(BrowserModel browserModel,
-					MachineModelDevice[] _selectedMachineModelDevice) {
+			public void modelStateChanged(BrowserModel model) {	
+				String selectedModelType = "selected"; // TODO "reference", "run"
+				final MachineModel selectedMachineModel = model.getSelectedMachineModel();
+				
+				if (selectedMachineModel != null) {
+					MachineModelDetail[] selectedMachineModelDetail = model.getSelectedMachineModelDetail();
+					commentText.setText((String)selectedMachineModel.getPropertyValue("COMMENTS"));
+					String title = "The "+ selectedModelType +" machine model has "
+								+ selectedMachineModelDetail.length + " records logged.";
+					modelName.setText(title);
+					modelCreatDate.setText((String)selectedMachineModel.getPropertyValue("DATE_CREATED"));
+	
+					if (selectedModelType.equals("run")) {
+						commentText.addActionListener(new ActionListener() { // TODO event handler pile up in here
+	
+							public void actionPerformed(ActionEvent e) {
+								selectedMachineModel.setPropertyValue("COMMENTS", commentText.getText());
+							}					
+						});
+					}
+				}
+				
 			}
 		});
 

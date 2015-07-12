@@ -39,9 +39,6 @@ import javax.swing.table.TableColumn;
 import edu.stanford.lcls.modelmanager.dbmodel.BrowserModel;
 import edu.stanford.lcls.modelmanager.dbmodel.BrowserModelListener;
 import edu.stanford.lcls.modelmanager.dbmodel.DataManager;
-import edu.stanford.lcls.modelmanager.dbmodel.MachineModel;
-import edu.stanford.lcls.modelmanager.dbmodel.MachineModelDetail;
-import edu.stanford.lcls.modelmanager.dbmodel.MachineModelDevice;
 import edu.stanford.lcls.modelmanager.dbmodel.MachineModelTableModel;
 import edu.stanford.slac.Message.Message;
 
@@ -186,7 +183,7 @@ public class ModelListView {
 		
 		Box tableView = new Box(BoxLayout.Y_AXIS);
 		modelListView.add(tableView, BorderLayout.CENTER);
-		final MachineModelTableModel machineModelTableModel = new MachineModelTableModel();
+		final MachineModelTableModel machineModelTableModel = new MachineModelTableModel(model);
 		model.addBrowserModelListener(machineModelTableModel);
 		modelTable = new JTable(machineModelTableModel);
 
@@ -248,22 +245,12 @@ public class ModelListView {
 		tableView.add(new JScrollPane(modelTable));
 		setModelListViewEnable(false);
 
-		modelTable.getTableHeader().addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent e) {
-				modelTable.setDefaultRenderer(Object.class,
-						new DefaultTableCellRenderer() {
+		modelTable.setDefaultRenderer(Object.class,
+				new DefaultTableCellRenderer() {
 					private static final long serialVersionUID = 1L;
-					public Component getTableCellRendererComponent(
-							JTable table, Object value,	boolean isSelected,
-							boolean hasFocus, int row, int column) {
-						Component cell = super
-						.getTableCellRendererComponent(
-								modelTable, value,
-								isSelected,
-								hasFocus, row,
-								column);
-						if (modelTable.getValueAt(row, 0).toString()
-								.equals(selectedMachineModelID))
+					public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+						Component cell = super.getTableCellRendererComponent(modelTable, value, isSelected, hasFocus, row, column);
+						if (modelTable.getValueAt(row, 0).toString().equals(selectedMachineModelID))
 							cell.setBackground(Color.GREEN);
 						else if(modelTable.getValueAt(row, 5).toString()
 								.equals("PRESENT"))
@@ -274,118 +261,26 @@ public class ModelListView {
 						else
 							cell.setBackground(Color.WHITE);
 						return cell;
-						}
-					});
-				modelTable.repaint();
-			}
-		});
+					}
+				});
 
 
-		
-
-		model.addBrowserModelListener(new BrowserModelListener() {
-			public void connectionChanged(BrowserModel model) {
-			}
-			public void machineModelFetched(BrowserModel model,
-					MachineModel[] fetchedMachineModel, MachineModel referenceMachineModel,
-					MachineModelDetail[] referenceMachineModelDetail,
-					MachineModelDevice[] referenceMachineModelDevice) {
-				referenceMachineModelID = referenceMachineModel.getPropertyValue("ID").toString();
-				modelTable.setDefaultRenderer(Object.class,
-						new DefaultTableCellRenderer() {
-							private static final long serialVersionUID = 1L;
-							public Component getTableCellRendererComponent(
-									JTable table, Object value,
-									boolean isSelected, boolean hasFocus,
-									int row, int column) {
-								Component cell = super
-										.getTableCellRendererComponent(
-												modelTable, value, isSelected,
-												hasFocus, row, column);
-								if(modelTable.getValueAt(row, 5).toString()
-										.equals("PRESENT"))
-									cell.setBackground(Color.ORANGE);
-								else if (modelTable.getValueAt(row, 0).toString()
-										.equals(referenceMachineModelID))
-									cell.setBackground(Color.CYAN);
-								else
-									cell.setBackground(Color.WHITE);
-								return cell;
-								}
-						});
+		model.addBrowserModelListener(new BrowserModelListener() {		
+			@Override
+			public void modelStateChanged(BrowserModel model) {
+				if (!model.getStateReady()) return;
+				
+				if ( model.getReferenceMachineModel() != null)
+					referenceMachineModelID = model.getReferenceMachineModel().getPropertyValue("ID").toString();
+				else 
+					referenceMachineModelID = null;
+				if (model.getSelectedMachineModel() != null)
+					selectedMachineModelID = model.getSelectedMachineModel().getPropertyValue("ID").toString();
+				else
+					selectedMachineModelID = null;
 				setModelListViewEnable(true);
 				modelTable.repaint();
-			}
-			public void modelSelected(BrowserModel model,
-					MachineModel selectedMachineModel,
-					MachineModelDetail[] machineModelDetail,
-					MachineModelDevice[] machineModelDevice) {
-				referenceMachineModelID = model.getReferenceMachineModel().getPropertyValue("ID").toString();
-				selectedMachineModelID = selectedMachineModel.getPropertyValue("ID").toString();				
-				modelTable.setDefaultRenderer(Object.class,
-						new DefaultTableCellRenderer() {
-					private static final long serialVersionUID = 1L;
-					public Component getTableCellRendererComponent(
-							JTable table, Object value,	boolean isSelected,
-							boolean hasFocus, int row, int column) {
-						Component cell = super
-						.getTableCellRendererComponent(
-								modelTable, value,
-								isSelected,
-								hasFocus, row,
-								column);
-						if (modelTable.getValueAt(row, 0).toString()
-								.equals(selectedMachineModelID))
-							cell.setBackground(Color.GREEN);
-						else if(modelTable.getValueAt(row, 5).toString()
-								.equals("PRESENT"))
-							cell.setBackground(Color.ORANGE);
-						else if (modelTable.getValueAt(row, 0).toString()
-								.equals(referenceMachineModelID))
-							cell.setBackground(Color.CYAN);						
-						else
-							cell.setBackground(Color.WHITE);
-						return cell;
-						}
-					});
-				modelTable.repaint();
-			}
-			public void runModel(BrowserModel model,
-					MachineModel[] fetchedMachineModel,
-					MachineModel runMachineModel,
-					MachineModelDetail[] runMachineModelDetail,
-					MachineModelDevice[] runMachineModelDevice){
-				selectedMachineModelID = runMachineModel.getPropertyValue("ID").toString();				
-				modelTable.setDefaultRenderer(Object.class,
-						new DefaultTableCellRenderer() {
-					private static final long serialVersionUID = 1L;
-					public Component getTableCellRendererComponent(
-							JTable table, Object value,	boolean isSelected,
-							boolean hasFocus, int row, int column) {
-						Component cell = super.getTableCellRendererComponent(
-								modelTable, value,
-								isSelected,
-								hasFocus, row,
-								column);
-						if (modelTable.getValueAt(row, 0).toString()
-								.equals(selectedMachineModelID))
-							cell.setBackground(Color.GREEN);
-						else if(modelTable.getValueAt(row, 5).toString()
-								.equals("PRESENT"))
-							cell.setBackground(Color.ORANGE);
-						else if (modelTable.getValueAt(row, 0).toString()
-								.equals(referenceMachineModelID))
-							cell.setBackground(Color.CYAN);
-						else
-							cell.setBackground(Color.WHITE);
-						return cell;
-						}
-					});
-				modelTable.repaint();
-			}
-			@Override
-			public void editMachineParameters(BrowserModel browserModel,
-					MachineModelDevice[] _selectedMachineModelDevice) {
+				
 			}
 		});
 	}

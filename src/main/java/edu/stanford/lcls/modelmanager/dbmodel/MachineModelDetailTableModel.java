@@ -13,15 +13,10 @@ public class MachineModelDetailTableModel extends AbstractTableModel implements
 	protected final List<String> GUI_TABLE_COLUMN_NAME;
 	static final protected int TABLE_SIZE = MachineModelDetail.getPropertySize();
 
-	protected MachineModelDetail[] _modelDetails;
-
-	public MachineModelDetailTableModel(MachineModelDetail[] modelDetails) {
-		GUI_TABLE_COLUMN_NAME = MachineModelDetail.getAllPropertyName();
-		_modelDetails = modelDetails;
-	}
+	protected MachineModelDetail[] _modelDetails = new MachineModelDetail[0];
 
 	public MachineModelDetailTableModel() {
-		this(new MachineModelDetail[0]);
+		GUI_TABLE_COLUMN_NAME = MachineModelDetail.getAllPropertyName();
 	}
 
 	public void setMachineModelDetails(MachineModelDetail[] modelDetails) {
@@ -68,32 +63,13 @@ public class MachineModelDetailTableModel extends AbstractTableModel implements
 		return GUI_TABLE_COLUMN_NAME.get(columnIndex);
 	}
 
-	public void connectionChanged(BrowserModel model) {
-	}
-	
-	public void machineModelFetched(BrowserModel model,
-			MachineModel[] fetchedMachineModel, MachineModel referenceMachineModel,
-			MachineModelDetail[] referenceMachineModelDetail,
-			MachineModelDevice[] referenceMachineModelDevice) {
-		setMachineModelDetails(referenceMachineModelDetail);
-	}
-
-	public void modelSelected(BrowserModel model,
-			MachineModel selectedMachineModel,
-			MachineModelDetail[] selectedMachineModelDetail,
-			MachineModelDevice[] selectedMachineModelDevice) {
-		setMachineModelDetails(selectedMachineModelDetail);
-	}
-	
-	public void runModel(BrowserModel model,
-			MachineModel[] fetchedMachineModel,
-			MachineModel runMachineModel,
-			MachineModelDetail[] runMachineModelDetail,
-			MachineModelDevice[] runMachineModelDevice){
-		setMachineModelDetails(runMachineModelDetail);
-	}
-
-	@Override
-	public void editMachineParameters(BrowserModel browserModel, MachineModelDevice[] _selectedMachineModelDevice) {
+	public void modelStateChanged(BrowserModel model) {
+		if (model.getStateReady()) {
+			MachineModelDetail[] machineModelDetails = model.getSelectedMachineModelDetail();
+			if (machineModelDetails == null) machineModelDetails = model.getReferenceMachineModelDetail();
+			setMachineModelDetails(machineModelDetails);
+		} else {
+			setMachineModelDetails(new MachineModelDetail[0]);
+		}
 	}
 }

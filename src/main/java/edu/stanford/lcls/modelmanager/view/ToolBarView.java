@@ -66,7 +66,7 @@ public class ToolBarView implements SwingConstants {
 	private JButton setInitTiwissButton;
 	
 	private JButton matcherButton; 
-	private JButton editMachineParametersButton;
+	//private JButton editMachineParametersButton;
 	private JButton runModelButton;
 	private JButton upload2DBButton;
 	private JButton makeGoldButton;
@@ -222,10 +222,10 @@ public class ToolBarView implements SwingConstants {
 
 		toolBarView.addSeparator(new Dimension(10, 10));		
 		
-		toolBarView.addSeparator(new Dimension(5, 10));
+		/*toolBarView.addSeparator(new Dimension(5, 10));
 		editMachineParametersButton = new JButton("Edit machine parameters...");
 		editMachineParametersButton.setToolTipText("Fetch and edit machine parameters.");
-		toolBarView.add(editMachineParametersButton);
+		toolBarView.add(editMachineParametersButton);*/
 		
 		toolBarView.addSeparator(new Dimension(5, 10));
 		runModelButton = new JButton("Run Model");
@@ -347,7 +347,7 @@ public class ToolBarView implements SwingConstants {
 		
 		setQueryViewEnable(false);
 		
-		editMachineParametersButton.addActionListener(new ActionListener() {
+		/*editMachineParametersButton.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -371,7 +371,7 @@ public class ToolBarView implements SwingConstants {
 					e1.printStackTrace();
 				}
 			}
-		});
+		});*/
 		
 		runModelButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
@@ -493,29 +493,9 @@ public class ToolBarView implements SwingConstants {
 		});
 		
 		model.addBrowserModelListener(new BrowserModelListener() {
-			public void connectionChanged(BrowserModel model) {
-				
-			}
-			public void machineModelFetched(BrowserModel model,
-					MachineModel[] fetchedMachineModel, MachineModel referenceMachineModel,
-					MachineModelDetail[] referenceMachineModelDetail,
-					MachineModelDevice[] referenceMachineModelDevice) {
-				setQueryViewEnable(true);
-			}
-			public void modelSelected(BrowserModel model,
-					MachineModel selectedMachineModel,
-					MachineModelDetail[] selectedMachineModelDetail,
-					MachineModelDevice[] selectedMachineModelDevice) {
-			}
-			public void runModel(BrowserModel model,
-					MachineModel[] fetchedMachineModel,
-					MachineModel runMachineModel,
-					MachineModelDetail[] runMachineModelDetail,
-					MachineModelDevice[] runMachineModelDevice){
-			}
 			@Override
-			public void editMachineParameters(BrowserModel browserModel,
-					MachineModelDevice[] _selectedMachineModelDevice) {
+			public void modelStateChanged(BrowserModel model) {
+				if (model.getStateReady()) setQueryViewEnable(true);		
 			}
 		});
 		
