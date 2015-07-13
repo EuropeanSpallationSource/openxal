@@ -183,6 +183,10 @@ public class BrowserModel {
 		return _selectedMachineModel;
 	}
 
+	public MachineModel getRunMachineModel() {
+		return _runMachineModel;
+	}
+	
 	public MachineModel getGoldMachineModel() {
 		return _goldMachineModel;
 	}
@@ -241,7 +245,7 @@ public class BrowserModel {
 	public boolean isGold() {
 		return isGold;
 	}
-
+	
 	/**
 	 * Fetch the machine models
 	 */
@@ -377,16 +381,11 @@ public class BrowserModel {
 	/**
 	 * filter machine models
 	 */
-
-	public Boolean isRunMachineModelNull() {
-		return _runMachineModel == null;
-	}
-
 	public void filterMachineModelInMode(MachineModel[] allMachineModels,
 			MachineModel[] goldMachineModels, int modelMode)
 			throws SQLException {
 		// add run if run is not null
-		if (!isRunMachineModelNull()) {
+		if (_runMachineModel != null) {
 			MachineModel[] tmp = allMachineModels;
 			allMachineModels = new MachineModel[tmp.length + 1];
 			for (int i = 0; i < tmp.length; i++) {
@@ -702,7 +701,7 @@ public class BrowserModel {
 		// switch fetch Machine model
 		_runMachineModelDevice = _selectedMachineModelDevice;
 		_runMachineModel.setPropertyValue("COMMENTS", "Prerun machine parameters.");
-		
+		_runMachineModel.setPropertyValue("RUN_SOURCE_CHK", "PRERUN");
 		addRunModelToFetchedModels(_runMachineModel);
 		setSelectedModel(_runMachineModel);
 		EVENT_PROXY.modelStateChanged(this);

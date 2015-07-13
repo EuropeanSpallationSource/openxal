@@ -101,30 +101,39 @@ public class ModelDetailView implements SwingConstants {
 		tableBox.add(detailTable.getTableHeader());
 		tableBox.add(new JScrollPane(detailTable));
 
+		commentText.addActionListener(new ActionListener() { 	
+			public void actionPerformed(ActionEvent e) {
+				if (commentText.isEditable())
+					model.getRunMachineModel().setPropertyValue("COMMENTS", commentText.getText());
+			}					
+		});
+		
 		model.addBrowserModelListener(new BrowserModelListener() {
 			@Override
-			public void modelStateChanged(BrowserModel model) {	
-				String selectedModelType = "selected"; // TODO "reference", "run"
-				final MachineModel selectedMachineModel = model.getSelectedMachineModel();
+			public void modelStateChanged(BrowserModel model) {					
+				commentText.setEditable(false);
+				MachineModel selectedMachineModel = model.getSelectedMachineModel();
 				MachineModelDetail[] selectedMachineModelDetail = model.getSelectedMachineModelDetail();
+				String selectedModelType = "selected";
 				
-				if (selectedMachineModelDetail != null) {
-					
-					commentText.setText((String)selectedMachineModel.getPropertyValue("COMMENTS"));
-					String title = "The "+ selectedModelType +" machine model has "
-								+ selectedMachineModelDetail.length + " records logged.";
-					modelName.setText(title);
-					modelCreatDate.setText((String)selectedMachineModel.getPropertyValue("DATE_CREATED"));
-	
-					if (selectedModelType.equals("run")) {
-						commentText.addActionListener(new ActionListener() { // TODO event handler pile up in here
-	
-							public void actionPerformed(ActionEvent e) {
-								selectedMachineModel.setPropertyValue("COMMENTS", commentText.getText());
-							}					
-						});
+				
+				if (selectedMachineModel != null && selectedMachineModelDetail != null) {
+					if (selectedMachineModel == model.getRunMachineModel()) {
+						selectedModelType = "run";
+						commentText.setEditable(true);
 					}
+				} else {
+					selectedMachineModel = model.getReferenceMachineModel();
+					selectedMachineModelDetail = model.getReferenceMachineModelDetail();
+					selectedModelType = "reference";
 				}
+				
+				
+				commentText.setText((String)selectedMachineModel.getPropertyValue("COMMENTS"));
+				String title = "The "+ selectedModelType +" machine model has "
+								+ selectedMachineModelDetail.length + " records logged.";
+				modelName.setText(title);
+				modelCreatDate.setText((String)selectedMachineModel.getPropertyValue("DATE_CREATED"));			
 				
 			}
 		});

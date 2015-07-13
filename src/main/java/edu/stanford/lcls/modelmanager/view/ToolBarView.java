@@ -515,7 +515,7 @@ public class ToolBarView implements SwingConstants {
 		setInitTiwissButton.setEnabled(enabled);
 		matcherButton.setEnabled(enabled);
 		runModelButton.setEnabled(enabled);
-		upload2DBButton.setEnabled(enabled && !model.isRunMachineModelNull());
+		upload2DBButton.setEnabled(enabled && model.getRunMachineModel()!=null);
 		makeGoldButton.setEnabled(enabled);
 		//export2MADButton.setEnabled(enabled && !model.isRunMachineModelNull());
 //		helpButton.setEnabled(enabled);
