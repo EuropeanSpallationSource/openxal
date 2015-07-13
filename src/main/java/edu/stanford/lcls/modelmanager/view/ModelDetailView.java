@@ -106,9 +106,10 @@ public class ModelDetailView implements SwingConstants {
 			public void modelStateChanged(BrowserModel model) {	
 				String selectedModelType = "selected"; // TODO "reference", "run"
 				final MachineModel selectedMachineModel = model.getSelectedMachineModel();
+				MachineModelDetail[] selectedMachineModelDetail = model.getSelectedMachineModelDetail();
 				
-				if (selectedMachineModel != null) {
-					MachineModelDetail[] selectedMachineModelDetail = model.getSelectedMachineModelDetail();
+				if (selectedMachineModelDetail != null) {
+					
 					commentText.setText((String)selectedMachineModel.getPropertyValue("COMMENTS"));
 					String title = "The "+ selectedModelType +" machine model has "
 								+ selectedMachineModelDetail.length + " records logged.";

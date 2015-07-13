@@ -206,7 +206,7 @@ public class BrowserModel {
 	public MachineModelDevice[] getReferenceMachineModelDevice() {
 		return _referenceMachineModelDevice;
 	}
-
+	
 	public void setPlotFunctionID1(int plotFunctionID1) {
 		this.plotFunctionID1 = plotFunctionID1;
 	}
@@ -563,8 +563,8 @@ public class BrowserModel {
 				}
 			}
 		}
-		_selectedMachineModelDetail = DataManager.calculateBmag(
-				_selectedMachineModelDetail, _goldMachineModelDetail);
+		if (_selectedMachineModelDetail != null)
+			_selectedMachineModelDetail = DataManager.calculateBmag(_selectedMachineModelDetail, _goldMachineModelDetail);
 	}
 	
 	public void runModel(RunModelConfiguration config) throws SQLException, ModelException {
@@ -693,5 +693,18 @@ public class BrowserModel {
 			Message.error("Unable to close connection to database. "+
 					e.getMessage());
 		}
+	}
+
+	public void fetchRunData(int fetchOption) throws SQLException {
+		_runMachineModel = DataManager.getRunMachineModel(3, modelMode); // add runMachineMode to _fetchedMachineModels
+		
+		_runMachineModelDetail = null;
+		// switch fetch Machine model
+		_runMachineModelDevice = _selectedMachineModelDevice;
+		_runMachineModel.setPropertyValue("COMMENTS", "Prerun machine parameters.");
+		
+		addRunModelToFetchedModels(_runMachineModel);
+		setSelectedModel(_runMachineModel);
+		EVENT_PROXY.modelStateChanged(this);
 	}
 }

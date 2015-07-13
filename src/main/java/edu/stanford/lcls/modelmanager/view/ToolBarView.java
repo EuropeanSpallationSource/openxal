@@ -34,18 +34,15 @@ import javax.swing.border.EmptyBorder;
 import se.lu.esss.ics.jels.matcher.Matcher;
 import se.lu.esss.ics.jels.matcher.MatcherDialog;
 import xal.extension.widgets.apputils.SimpleProbeEditor;
-import xal.model.ModelException;
 import xal.service.pvlogger.apputils.browser.PVLogSnapshotChooser;
 import edu.stanford.lcls.modelmanager.ModelManagerWindow;
 import edu.stanford.lcls.modelmanager.dbmodel.BrowserModel;
 import edu.stanford.lcls.modelmanager.dbmodel.BrowserModelListener;
-import edu.stanford.lcls.modelmanager.dbmodel.DataManager;
-import edu.stanford.lcls.modelmanager.dbmodel.MachineModel;
-import edu.stanford.lcls.modelmanager.dbmodel.MachineModelDetail;
 import edu.stanford.lcls.modelmanager.dbmodel.MachineModelDevice;
 import edu.stanford.lcls.xal.model.RunModelConfiguration;
 import edu.stanford.lcls.xal.model.RunModelConfigurationDesign;
 import edu.stanford.lcls.xal.model.RunModelConfigurationExtant;
+import edu.stanford.lcls.xal.model.RunModelConfigurationManual;
 import edu.stanford.lcls.xal.model.RunModelConfigurationPVLogger;
 import edu.stanford.slac.Message.Message;
 
@@ -131,7 +128,7 @@ public class ToolBarView implements SwingConstants {
 
 		
 		toolBarView.addSeparator(new Dimension(20, 10));
-		String[] runModeSelections = { "Design", "Extant", "PVLogger" };
+		String[] runModeSelections = { "Design", "Extant", "PVLogger", "Manual" };
 		runModeSelector = new JComboBox<String>(runModeSelections);
 		runModeSelector.setToolTipText("select to run either DESIGN or EXTANT model");
 		runModeSelector.setMaximumSize(new Dimension(100, 28));
@@ -180,6 +177,16 @@ public class ToolBarView implements SwingConstants {
 					} else
 						pvLogSelector.setVisible(true);
 					
+				} else if (runModelMethod == 3) {
+					// show fetch dialog
+					// options: design, extant, pvlogger, selected model
+					int fetchOption = showFetchMachineConfigDialogBox();
+					// fetch the data
+					try {
+						model.fetchRunData(fetchOption);
+					} catch (SQLException e1) {
+						e1.printStackTrace();
+					}
 				}
 			}
 		});
@@ -268,29 +275,9 @@ public class ToolBarView implements SwingConstants {
 										"You need to save the RUN machine model first!",
 										"Make Gold Error", JOptionPane.ERROR_MESSAGE);
 							else {
-								final JDialog goldComment = new JDialog(parent, "Gold Machine Model Comment", true);
-								goldComment.getContentPane().add(new JLabel("Enter the Comment:"), BorderLayout.NORTH);
-								final JTextField commentText = new JTextField();
-								commentText.setPreferredSize(new Dimension(500, 26));
-								goldComment.getContentPane().add(commentText, BorderLayout.CENTER);
-								JPanel buttonPane = new JPanel();
-								JButton commitComment = new JButton("OK");
-								buttonPane.add(commitComment);
-								goldComment.getContentPane().add(buttonPane, BorderLayout.SOUTH);
-								commitComment.addActionListener(new ActionListener(){
-									public void actionPerformed(ActionEvent e) {
-										goldComment.dispose();
-									}
-								});
-								goldComment.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-								goldComment.pack();
-								Dimension parentSize = parent.getSize();
-								Dimension dialogSize = goldComment.getSize();
-								Point p = parent.getLocation();
-								goldComment.setLocation(p.x + parentSize.width / 2 - dialogSize.width/2, p.y + parentSize.height / 2 - dialogSize.height/2);
-								goldComment.setVisible(true);
+								final String commentText = showGoldCommentDialogBox();
 								
-								model.makeGold(commentText.getText());
+								model.makeGold(commentText);
 								ModelStateView.getMachineModelState().setText("The selected machine model has been set to GOLD !");
 								ModelStateView.getProgressBar().setString("Done !");
 								Message.info("The selected machine model has been set to GOLD!");
@@ -396,6 +383,8 @@ public class ToolBarView implements SwingConstants {
 								config = new RunModelConfigurationExtant(refPts[BPRPSelector.getSelectedIndex()].toString(), useDesignRefInd);
 							} else if (runModeSelector.getSelectedIndex() == 2) {
 								config = new RunModelConfigurationPVLogger(plsc.getPVLogId());								
+							} else if (runModeSelector.getSelectedIndex() == 3) { 
+								config = new RunModelConfigurationManual(new MachineModelDevice[0]);
 							} else {
 								config = new RunModelConfigurationDesign();					
 							}
@@ -544,6 +533,57 @@ public class ToolBarView implements SwingConstants {
 	}
 
 	
+	private String showGoldCommentDialogBox() {
+		final JDialog goldComment = new JDialog(parent, "Gold Machine Model Comment", true);
+		goldComment.getContentPane().add(new JLabel("Enter the Comment:"), BorderLayout.NORTH);
+		final JTextField commentText = new JTextField();
+		commentText.setPreferredSize(new Dimension(500, 26));
+		goldComment.getContentPane().add(commentText, BorderLayout.CENTER);
+		JPanel buttonPane = new JPanel();
+		JButton commitComment = new JButton("OK");
+		buttonPane.add(commitComment);
+		goldComment.getContentPane().add(buttonPane, BorderLayout.SOUTH);
+		commitComment.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e) {
+				goldComment.dispose();
+			}
+		});
+		goldComment.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		goldComment.pack();
+		Dimension parentSize = parent.getSize();
+		Dimension dialogSize = goldComment.getSize();
+		Point p = parent.getLocation();
+		goldComment.setLocation(p.x + parentSize.width / 2 - dialogSize.width/2, p.y + parentSize.height / 2 - dialogSize.height/2);
+		goldComment.setVisible(true);
+		return commentText.getText();
+	}
+	
+	private int showFetchMachineConfigDialogBox() {
+		final JDialog fetchMachineConfig = new JDialog(parent, "Fetch machine parameters for manual configuration", true);
+		fetchMachineConfig.getContentPane().add(new JLabel("Select the source of machine parameters:"), BorderLayout.NORTH);
+		final JComboBox<String> dataSource = new JComboBox<>(new String[]{"Design", "Extant", "PVLogger", "Selected model"});
+		
+		fetchMachineConfig.getContentPane().add(dataSource, BorderLayout.CENTER);
+		JPanel buttonPane = new JPanel();
+		JButton fetchButton = new JButton("Fetch");
+		buttonPane.add(fetchButton);
+		fetchMachineConfig.getContentPane().add(buttonPane, BorderLayout.SOUTH);
+		fetchButton.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e) {
+				fetchMachineConfig.dispose();
+			}
+		});
+		fetchMachineConfig.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		fetchMachineConfig.pack();
+		Dimension parentSize = parent.getSize();
+		Dimension dialogSize = fetchMachineConfig.getSize();
+		Point p = parent.getLocation();
+		fetchMachineConfig.setLocation(p.x + parentSize.width / 2 - dialogSize.width/2, p.y + parentSize.height / 2 - dialogSize.height/2);
+		fetchMachineConfig.setVisible(true);
+		return dataSource.getSelectedIndex();
+	}	
+
+
 	@SuppressWarnings("serial")
 	class ComboRenderer extends JLabel implements ListCellRenderer<ComboItem> {
 

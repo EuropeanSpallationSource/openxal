@@ -206,6 +206,7 @@ public class ModelPlotView implements SwingConstants {
 					_referenceMachineModelDetail = model.getReferenceMachineModelDetail();
 					_selectedMachineModel = model.getSelectedMachineModel();
 					_selectedMachineModelDetail = model.getSelectedMachineModelDetail();
+					if (_selectedMachineModelDetail == null) _selectedMachineModel = null;
 					plotAction();
 				} else {
 					setPlotPanelEnable(false);
