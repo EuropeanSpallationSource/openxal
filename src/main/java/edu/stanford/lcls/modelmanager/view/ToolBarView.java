@@ -35,6 +35,7 @@ import javax.swing.border.EmptyBorder;
 import se.lu.esss.ics.jels.matcher.Matcher;
 import se.lu.esss.ics.jels.matcher.MatcherDialog;
 import xal.extension.widgets.apputils.SimpleProbeEditor;
+import xal.model.ModelException;
 import xal.service.pvlogger.apputils.browser.PVLogSnapshotChooser;
 import edu.stanford.lcls.modelmanager.ModelManagerWindow;
 import edu.stanford.lcls.modelmanager.dbmodel.BrowserModel;
@@ -230,7 +231,11 @@ public class ToolBarView implements SwingConstants {
 		bp.add(BPRPModeSelector);*/
 
 		//toolBarView.add(bp);
-		
+		// System.out.println("Use reference pt.: " + emitNode +
+				// " for Twiss.");
+				//Message.info("Use reference pt.: " + emitNode + " for Twiss back propagate.");
+				// do Twiss back propagate
+				
 		
 		runModeSelector.addActionListener(new ActionListener() { 
 			public void actionPerformed(ActionEvent e) {
@@ -245,17 +250,6 @@ public class ToolBarView implements SwingConstants {
 						pvLogSelector = plsc.choosePVLogId();
 					} else
 						pvLogSelector.setVisible(true);
-					
-				} else if (runModelMethod == 3) {
-					// show fetch dialog
-					// options: design, extant, pvlogger, selected model
-					int fetchOption = showFetchMachineConfigDialogBox();
-					// fetch the data
-					try {
-						model.fetchRunData(fetchOption);
-					} catch (SQLException e1) {
-						e1.printStackTrace();
-					}
 				}
 			}
 		});
@@ -303,28 +297,16 @@ public class ToolBarView implements SwingConstants {
 		editMachineParametersButton.setToolTipText("Fetch and edit machine parameters.");
 		mp.add(editMachineParametersButton);
 		
-		/*editMachineParametersButton.addActionListener(new ActionListener() {		
+		editMachineParametersButton.addActionListener(new ActionListener() {		
 			@Override
 			public void actionPerformed(ActionEvent e) {	
-				RunModelConfiguration config;
-				if (runModeSelector.getSelectedIndex() == 1) {
-					boolean useDesignRefInd = BPRPModeSelector.getSelectedIndex() != 0;
-					config = new RunModelConfigurationExtant();
-				} else if (runModeSelector.getSelectedIndex() == 2) {
-					config = new RunModelConfigurationPVLogger(plsc.getPVLogId());								
-				} else {
-					config = new RunModelConfigurationDesign();					
-				}
-				
 				try {
-					model.editMachineParameters(config);
-				} catch (ModelException e1) {
-					e1.printStackTrace();
-				} catch (SQLException e1) {
+					model.fetchRunData(getRunModelConfiguration());		
+				} catch (ModelException | SQLException e1) {
 					e1.printStackTrace();
 				}
 			}
-		});*/
+		});
 		
 		mp.add(new JToolBar.Separator(small));
 		
@@ -449,18 +431,13 @@ public class ToolBarView implements SwingConstants {
 					public void run() {
 						try {
 							// model.setModelRef(refID);
-														
+													
 							RunModelConfiguration config;
-							if (runModeSelector.getSelectedIndex() == 1) {
-								//boolean useDesignRefInd = BPRPModeSelector.getSelectedIndex() != 0;
-								//config = new RunModelConfigurationExtant(refPts[BPRPSelector.getSelectedIndex()].toString(), useDesignRefInd);
-								config = new RunModelConfigurationDesign();			
-							} else if (runModeSelector.getSelectedIndex() == 2) {
-								config = new RunModelConfigurationPVLogger(plsc.getPVLogId());								
-							} else if (runModeSelector.getSelectedIndex() == 3) { 
-								config = new RunModelConfigurationManual(new MachineModelDevice[0]);
+							// if prefetched data
+							if (model.getRunState().equals(BrowserModel.RunState.FETCHED_DATA)) {
+								config = new RunModelConfigurationManual(model.getRunMachineModelDevice());
 							} else {
-								config = new RunModelConfigurationDesign();					
+								config = getRunModelConfiguration();
 							}
 							
 							model.runModel(config);
@@ -486,6 +463,7 @@ public class ToolBarView implements SwingConstants {
 							Message.error("Application failed to run model !");
 						}
 						}
+
 					});
 				thread1.start();
 				thread2.start();
@@ -664,7 +642,20 @@ public class ToolBarView implements SwingConstants {
 		return dataSource.getSelectedIndex();
 	}	
 
-
+	private RunModelConfiguration getRunModelConfiguration() {
+		RunModelConfiguration config;
+		if (runModeSelector.getSelectedIndex() == 1) {
+			config = new RunModelConfigurationExtant();			
+		} else if (runModeSelector.getSelectedIndex() == 2) {
+			config = new RunModelConfigurationPVLogger(plsc.getPVLogId());								
+		} else if (runModeSelector.getSelectedIndex() == 3) { 
+			config = new RunModelConfigurationManual(model.getSelectedMachineModelDevice());
+		} else {
+			config = new RunModelConfigurationDesign();					
+		}
+		return config;
+	}
+	
 	@SuppressWarnings("serial")
 	class ComboRenderer extends JLabel implements ListCellRenderer<ComboItem> {
 

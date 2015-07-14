@@ -83,6 +83,12 @@ public class BrowserModel {
 	protected Accelerator acc;
 	
 	protected boolean stateReady = false;
+	protected RunState runState = RunState.NONE;
+	
+	public static enum RunState {
+		NONE, FETCHED_DATA, RUN
+	}
+	
 	
 	/**
 	 * Constructor
@@ -209,6 +215,10 @@ public class BrowserModel {
 	
 	public MachineModelDevice[] getReferenceMachineModelDevice() {
 		return _referenceMachineModelDevice;
+	}
+	
+	public MachineModelDevice[] getRunMachineModelDevice() {
+		return _runMachineModelDevice;
 	}
 	
 	public void setPlotFunctionID1(int plotFunctionID1) {
@@ -581,6 +591,7 @@ public class BrowserModel {
 
 		addRunModelToFetchedModels(_runMachineModel);
 		setSelectedModel(_runMachineModel);
+		runState = RunState.RUN;
 		EVENT_PROXY.modelStateChanged(this);
 	}
 
@@ -626,7 +637,7 @@ public class BrowserModel {
 		machineModelSort.toArray(_fetchedMachineModels);
 	}
 
-	public void removeRunModelFromFetchedModels(String uploadID) throws SQLException, ParseException {
+	public void removeRunModelFromFetchedModels(String uploadID) {
 		//add upload machine model to all machine models.
 		_runMachineModel.setPropertyValue("ID", uploadID);
 		_runMachineModel.setPropertyValue("GOLD", "");
@@ -670,8 +681,12 @@ public class BrowserModel {
 	public String uploadToDatabase(final JFrame parent) {
 //		return DataManager.uploadToDatabase(parent, this, _runMachineModel,
 //				_runMachineModelDetail, _runMachineModelDevice);
-		return DataManager.newUploadToDatabase(parent, this, _runMachineModel,
+		String runID = DataManager.newUploadToDatabase(parent, this, _runMachineModel,
 				_runMachineModelDetail, _runMachineModelDevice);
+		// automatically update the table after a model is uploaded
+		removeRunModelFromFetchedModels(runID);
+		runState = RunState.NONE;
+		return runID;
 	}
 
 	public void exportDetailData(JFrame parent) {
@@ -694,16 +709,26 @@ public class BrowserModel {
 		}
 	}
 
-	public void fetchRunData(int fetchOption) throws SQLException {
-		_runMachineModel = DataManager.getRunMachineModel(3, modelMode); // add runMachineMode to _fetchedMachineModels
+	public void fetchRunData(RunModelConfiguration config) throws SQLException, ModelException {
+		Scenario scenario = rm.getScenario();
+		config.initialize(scenario);
+		
+		_runMachineModel = DataManager.getRunMachineModel(config.getRunModelMethod(), modelMode); // add runMachineMode to _fetchedMachineModels
 		
 		_runMachineModelDetail = null;
 		// switch fetch Machine model
-		_runMachineModelDevice = _selectedMachineModelDevice;
-		_runMachineModel.setPropertyValue("COMMENTS", "Prerun machine parameters.");
+		_runMachineModelDevice = DataManager.getRunMachineModeDevice(scenario);
+		_runMachineModel.setPropertyValue("COMMENTS", "Fetched machine parameters.");
 		_runMachineModel.setPropertyValue("RUN_SOURCE_CHK", "PRERUN");
 		addRunModelToFetchedModels(_runMachineModel);
 		setSelectedModel(_runMachineModel);
+		
+		runState = RunState.FETCHED_DATA;
 		EVENT_PROXY.modelStateChanged(this);
+	}
+	
+	public RunState getRunState()
+	{
+		return runState;
 	}
 }

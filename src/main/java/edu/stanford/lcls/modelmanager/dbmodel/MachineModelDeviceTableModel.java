@@ -53,7 +53,8 @@ public class MachineModelDeviceTableModel extends AbstractTableModel implements	
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
 		if (editable && columnIndex == 2) {
 			MachineModelDevice modelDevice = _modelDevices[rowIndex];
-			return "BACT".equals(modelDevice.getPropertyValue("DEVICE_PROPERTY"));
+			Object prop = modelDevice.getPropertyValue("DEVICE_PROPERTY");
+			return "B".equals(prop) || "P".equals(prop) || 	"A".equals(prop);
 		}
 		return false;
 	}
@@ -82,10 +83,11 @@ public class MachineModelDeviceTableModel extends AbstractTableModel implements	
 
 	
 	public void modelStateChanged(BrowserModel model) {
+		editable = false;
 		if (model.getStateReady()) {
 			MachineModelDevice[] machineModelDevices = model.getSelectedMachineModelDevice();
 			if (machineModelDevices != null) {
-				if (model.getSelectedMachineModel() == model.getRunMachineModel() && "PRERUN".equals(model.getRunMachineModel().getPropertyValue("RUN_SOURCE_CHK"))) {
+				if (model.getSelectedMachineModel() == model.getRunMachineModel() && model.getRunState().equals(BrowserModel.RunState.FETCHED_DATA)) {
 					editable = true;
 				}
 			} else {

@@ -200,7 +200,7 @@ public class DataManager {
 		} else if(runModelMethod == 2){
 			runMachineModel.setPropertyValue("RUN_SOURCE_CHK", "PVLOGGER");
 		} else if(runModelMethod == 3){
-			runMachineModel.setPropertyValue("RUN_SOURCE_CHK", "MANUAL");
+			runMachineModel.setPropertyValue("RUN_SOURCE_CHK", "MODEL");
 		}
 		if(modelMode == 0)
 			runMachineModel.setPropertyValue("MODEL_MODES_ID", "5");
@@ -515,7 +515,7 @@ public class DataManager {
 			AcceleratorNode node = it.next();
 			String runMode = scenario.getSynchronizationMode();
 			// for magnets
-			if (node.isKindOf("emag")) {
+			if (node instanceof Electromagnet) {
 				try {
 					MachineModelDevice tmp1 = new MachineModelDevice();
 					tmp1.setPropertyValue("ELEMENT_NAME", node.getId());
@@ -528,7 +528,7 @@ public class DataManager {
 					Message.error("Model Synchronization Exception: Cannot synchronize device data for model run.", true);
 					e.printStackTrace();
 				}
-				if (Scenario.SYNC_MODE_DESIGN.equals("DESIGN")) {
+				if (Scenario.SYNC_MODE_DESIGN.equals(runMode)) {
 					MachineModelDevice tmp2 = new MachineModelDevice();
 					tmp2.setPropertyValue("ELEMENT_NAME", node.getId());
 					tmp2.setPropertyValue("DEVICE_PROPERTY", "BACT");
@@ -567,7 +567,7 @@ public class DataManager {
 				}
 			}
 			// for RF cavities
-			else if (node.isKindOf("Bnch")) {
+			else if (node instanceof RfCavity) {
 				try {
 					MachineModelDevice tmp6 = new MachineModelDevice();
 					tmp6.setPropertyValue("ELEMENT_NAME", node.getId());
@@ -770,16 +770,7 @@ public class DataManager {
 			
 			String msg = "Model data upload finished successfully";
 			Message.info(msg, true);
-
-			// automatically update the table after a model is uploaded
-			try {
-				model.removeRunModelFromFetchedModels(runID.toString());
-			} catch (ParseException e) {
-				Message.error("Cannot update MODEL RUN table!");
-				e.printStackTrace();
-			}
-
-			
+	
 			writeConnection.close();
 			
 			return runID.toString();
