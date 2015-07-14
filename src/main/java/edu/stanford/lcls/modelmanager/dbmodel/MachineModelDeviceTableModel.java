@@ -4,15 +4,16 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
-public class MachineModelDeviceTableModel extends AbstractTableModel implements
-		BrowserModelListener {
+public class MachineModelDeviceTableModel extends AbstractTableModel implements	BrowserModelListener {
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	protected final List<String> GUI_TABLE_COLUMN_NAME;
 	static final protected int TABLE_SIZE = MachineModelDevice.getPropertySize();
-
+	private boolean editable = false;
+	
 	protected MachineModelDevice[] _modelDevices = new MachineModelDevice[0];
 
 	public MachineModelDeviceTableModel() {
@@ -47,6 +48,23 @@ public class MachineModelDeviceTableModel extends AbstractTableModel implements
 			return null;
 	}
 	
+
+	@Override
+	public boolean isCellEditable(int rowIndex, int columnIndex) {
+		if (editable && columnIndex == 2) {
+			MachineModelDevice modelDevice = _modelDevices[rowIndex];
+			return "BACT".equals(modelDevice.getPropertyValue("DEVICE_PROPERTY"));
+		}
+		return false;
+	}
+
+
+	@Override
+	public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+		MachineModelDevice modelDevice = _modelDevices[rowIndex];
+		modelDevice.setPropertyValue(columnIndex, aValue.toString());
+	}
+	
 	@Override
 	public Class<?> getColumnClass(int columnIndex) {
 		String type = MachineModelDevice.getPropertyType(columnIndex);
@@ -66,10 +84,19 @@ public class MachineModelDeviceTableModel extends AbstractTableModel implements
 	public void modelStateChanged(BrowserModel model) {
 		if (model.getStateReady()) {
 			MachineModelDevice[] machineModelDevices = model.getSelectedMachineModelDevice();
-			if (machineModelDevices == null) machineModelDevices = model.getReferenceMachineModelDevice();
+			if (machineModelDevices != null) {
+				if (model.getSelectedMachineModel() == model.getRunMachineModel() && "PRERUN".equals(model.getRunMachineModel().getPropertyValue("RUN_SOURCE_CHK"))) {
+					editable = true;
+				}
+			} else {
+				machineModelDevices = model.getReferenceMachineModelDevice();
+			}
 			setMachineModelDevice(machineModelDevices);
+		
 		} else {
 			setMachineModelDevice(new MachineModelDevice[0]);
 		}
 	}
+	
+	
 }
