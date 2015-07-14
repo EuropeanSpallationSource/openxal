@@ -23,6 +23,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JSeparator;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.ListCellRenderer;
@@ -57,13 +58,18 @@ public class ToolBarView implements SwingConstants {
 	private JFrame parent;
 	private BrowserModel model;
 	private JComboBox<String> beamlineSelector;
-	private JComboBox<String> runModeSelector;
-	private JComboBox<ComboItem> BPRPSelector; //Back Propagte Reference points
-	private JComboBox<String> BPRPModeSelector;
-	private JButton setInitTiwissButton;
 	
+	/*private JComboBox<ComboItem> BPRPSelector; //Back Propagte Reference points
+	private JComboBox<String> BPRPModeSelector;*/
+	
+	private JButton setInitTiwissButton;
 	private JButton matcherButton; 
-	//private JButton editMachineParametersButton;
+	private JButton resetInitialParametersButton;
+	private JButton runWirescanner;
+	
+	private JComboBox<String> runModeSelector;
+	private JButton editMachineParametersButton;
+	
 	private JButton runModelButton;
 	private JButton upload2DBButton;
 	private JButton makeGoldButton;
@@ -87,9 +93,29 @@ public class ToolBarView implements SwingConstants {
 //		toolBarView = new JToolBar();
 		toolBarView = ((ModelManagerWindow)_parent).getToolBar();
 		
+		Dimension small = new Dimension(5,10);
+		Dimension big = new Dimension(10,10);
 		
-		// usually a beamline selector would be here, but we put in probe editor
+		/*
+		    beamline selection 
+		 
+			initial parameters:
+			Edit...
+			Matching...
+			Reset
+			Run WS... (move wirescanner configuration to a dialog box/window)
+			
+			Machine parameters:
+			Source:
+			- design
+			- extant
+			- pvlogger
+			- selected model
+			Fetch
+		 */
 		
+		
+		// usually a beamline selector would be here, but we put in probe editor		
 		// TODO OPENXAL beamline selections
 		String[] beamlineSelections = {};
 		beamlineSelector = new JComboBox<String>(beamlineSelections);
@@ -97,6 +123,14 @@ public class ToolBarView implements SwingConstants {
 		beamlineSelector.setMaximumSize(new Dimension(180, 28));
 		beamlineSelector.setEnabled(false);
 		//toolBarView.add(beamlineSelector);
+		
+		
+		// initial parameters
+		JPanel ip = new JPanel();
+		ip.setOpaque(false);
+		ip.setBorder(BorderFactory.createTitledBorder("Initial parameters"));
+		ip.setLayout(new BoxLayout(ip, BoxLayout.LINE_AXIS));
+		
 		
 		setInitTiwissButton = new JButton("Edit Init Twiss...");
 		setInitTiwissButton.addActionListener(new ActionListener() {			
@@ -113,7 +147,8 @@ public class ToolBarView implements SwingConstants {
 			}
 		});
 		setInitTiwissButton.setEnabled(false);
-		toolBarView.add(setInitTiwissButton);
+		ip.add(setInitTiwissButton);
+		ip.add(new JToolBar.Separator(small));
 		
 		matcherButton = new JButton("Matching...");
 		matcherButton.addActionListener(new ActionListener() {			
@@ -124,18 +159,50 @@ public class ToolBarView implements SwingConstants {
 			}
 		});
 		matcherButton.setEnabled(false);
-		toolBarView.add(matcherButton);		 
-
+		ip.add(matcherButton);		 
+		ip.add(new JToolBar.Separator(small));
 		
-		toolBarView.addSeparator(new Dimension(20, 10));
-		String[] runModeSelections = { "Design", "Extant", "PVLogger", "Manual" };
+		resetInitialParametersButton = new JButton("Reset");
+		ip.add(resetInitialParametersButton);
+		ip.add(new JToolBar.Separator(small));
+		resetInitialParametersButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				model.getRunModel().resetProbe();
+			}
+		});
+		
+		runWirescanner = new JButton("Run WS");
+		runWirescanner.setEnabled(false);
+		ip.add(runWirescanner);
+		ip.add(new JToolBar.Separator(small));
+		
+		toolBarView.add(ip);
+		toolBarView.addSeparator(big);
+		
+		
+		// machine parameters
+		
+		JPanel mp = new JPanel();
+		mp.setOpaque(false);
+		mp.setBorder(BorderFactory.createTitledBorder("Machine parameters"));
+		mp.setLayout(new BoxLayout(mp, BoxLayout.LINE_AXIS));
+		
+		mp.add(new JLabel("Source:"));
+		mp.add(new JToolBar.Separator(small));
+		
+		String[] runModeSelections = { "Design", "Extant", "PVLogger", "Selected model" };
 		runModeSelector = new JComboBox<String>(runModeSelections);
 		runModeSelector.setToolTipText("select to run either DESIGN or EXTANT model");
 		runModeSelector.setMaximumSize(new Dimension(100, 28));
 		runModeSelector.setSelectedIndex(1);
-		toolBarView.add(runModeSelector);
 		
-		JPanel bp = new JPanel();
+		mp.add(runModeSelector);
+		mp.add(new JToolBar.Separator(big));
+		
+		 // TODO move into a dialog box 
+		/*JPanel bp = new JPanel();
 		bp.setBorder(BorderFactory.createTitledBorder("Back Prop. Twiss from"));
 		bp.setLayout(new BoxLayout(bp, BoxLayout.LINE_AXIS));
 		
@@ -160,14 +227,16 @@ public class ToolBarView implements SwingConstants {
 		
 //		toolBarView.add(BPRPSelector);
 		bp.add(BPRPSelector);
-		bp.add(BPRPModeSelector);
+		bp.add(BPRPModeSelector);*/
 
-		toolBarView.add(bp);
+		//toolBarView.add(bp);
+		
+		
 		runModeSelector.addActionListener(new ActionListener() { 
 			public void actionPerformed(ActionEvent e) {
 				int runModelMethod = runModeSelector.getSelectedIndex();
-				BPRPSelector.setEnabled(runModelMethod == 1);
-				BPRPModeSelector.setEnabled(runModelMethod == 1);		
+				//BPRPSelector.setEnabled(runModelMethod == 1);
+				//BPRPModeSelector.setEnabled(runModelMethod == 1);		
 				if (runModelMethod == 2) {
 					// show pvlogger selector
 					if (pvLogSelector == null) {
@@ -191,6 +260,7 @@ public class ToolBarView implements SwingConstants {
 			}
 		});
 		
+		/*
 		beamlineSelector.addActionListener(new ActionListener() { 
 			public void actionPerformed(ActionEvent e) {
 				if(beamlineSelector.getSelectedIndex() == 0) {
@@ -225,27 +295,54 @@ public class ToolBarView implements SwingConstants {
 				thread1.start();
 				thread2.start();
 			}
-		});
+		});*/
 
-		toolBarView.addSeparator(new Dimension(10, 10));		
-		
-		/*toolBarView.addSeparator(new Dimension(5, 10));
-		editMachineParametersButton = new JButton("Edit machine parameters...");
+
+		//mp.addSeparator(new Dimension(5, 10));
+		editMachineParametersButton = new JButton("Fetch and Edit");
 		editMachineParametersButton.setToolTipText("Fetch and edit machine parameters.");
-		toolBarView.add(editMachineParametersButton);*/
+		mp.add(editMachineParametersButton);
 		
-		toolBarView.addSeparator(new Dimension(5, 10));
+		/*editMachineParametersButton.addActionListener(new ActionListener() {		
+			@Override
+			public void actionPerformed(ActionEvent e) {	
+				RunModelConfiguration config;
+				if (runModeSelector.getSelectedIndex() == 1) {
+					boolean useDesignRefInd = BPRPModeSelector.getSelectedIndex() != 0;
+					config = new RunModelConfigurationExtant();
+				} else if (runModeSelector.getSelectedIndex() == 2) {
+					config = new RunModelConfigurationPVLogger(plsc.getPVLogId());								
+				} else {
+					config = new RunModelConfigurationDesign();					
+				}
+				
+				try {
+					model.editMachineParameters(config);
+				} catch (ModelException e1) {
+					e1.printStackTrace();
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
+			}
+		});*/
+		
+		mp.add(new JToolBar.Separator(small));
+		
+		toolBarView.add(mp);
+		toolBarView.addSeparator(big);		
+		
+
 		runModelButton = new JButton("Run Model");
 		runModelButton.setToolTipText("run XAL online model");
 		toolBarView.add(runModelButton);
 		
-		toolBarView.addSeparator(new Dimension(5, 10));
+		toolBarView.addSeparator(small);
 		upload2DBButton = new JButton("Save");
 		upload2DBButton.setToolTipText("save the model data in memory to database");
 		upload2DBButton.setEnabled(false);
 		toolBarView.add(upload2DBButton);
 		
-		toolBarView.addSeparator(new Dimension(5, 10));
+		toolBarView.addSeparator(small);
 		makeGoldButton = new JButton("Make SEL Gold");
 		makeGoldButton.setToolTipText("tag the selected model (in SEL column from the table) as the GOLD one");
 		toolBarView.add(makeGoldButton);
@@ -311,14 +408,14 @@ public class ToolBarView implements SwingConstants {
 			}
 		});
 		
-		toolBarView.addSeparator(new Dimension(5, 10));
+		toolBarView.addSeparator(small);
 		export2MADButton = new JButton("Export to MAD");
 		export2MADButton.setEnabled(false);
 		//TODO to be added later for exporting to MAD file
 //		toolBarView.add(export2MADButton);
 		
 		toolBarView.add(Box.createGlue());
-		toolBarView.addSeparator(new Dimension(10, 10));
+		toolBarView.addSeparator(big);
 //		helpButton = new JButton("Help", IconLib.getIcon( IconGroup.GENERAL, "Help24.gif" ));
 //		// use the framework one
 //		//		toolBarView.add(helpButton);
@@ -334,31 +431,7 @@ public class ToolBarView implements SwingConstants {
 		
 		setQueryViewEnable(false);
 		
-		/*editMachineParametersButton.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				
-				
-				RunModelConfiguration config;
-				if (runModeSelector.getSelectedIndex() == 1) {
-					boolean useDesignRefInd = BPRPModeSelector.getSelectedIndex() != 0;
-					config = new RunModelConfigurationExtant(refPts[BPRPSelector.getSelectedIndex()].toString(), useDesignRefInd);
-				} else if (runModeSelector.getSelectedIndex() == 2) {
-					config = new RunModelConfigurationPVLogger(plsc.getPVLogId());								
-				} else {
-					config = new RunModelConfigurationDesign();					
-				}
-				
-				try {
-					model.editMachineParameters(config);
-				} catch (ModelException e1) {
-					e1.printStackTrace();
-				} catch (SQLException e1) {
-					e1.printStackTrace();
-				}
-			}
-		});*/
+
 		
 		runModelButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
@@ -379,8 +452,9 @@ public class ToolBarView implements SwingConstants {
 														
 							RunModelConfiguration config;
 							if (runModeSelector.getSelectedIndex() == 1) {
-								boolean useDesignRefInd = BPRPModeSelector.getSelectedIndex() != 0;
-								config = new RunModelConfigurationExtant(refPts[BPRPSelector.getSelectedIndex()].toString(), useDesignRefInd);
+								//boolean useDesignRefInd = BPRPModeSelector.getSelectedIndex() != 0;
+								//config = new RunModelConfigurationExtant(refPts[BPRPSelector.getSelectedIndex()].toString(), useDesignRefInd);
+								config = new RunModelConfigurationDesign();			
 							} else if (runModeSelector.getSelectedIndex() == 2) {
 								config = new RunModelConfigurationPVLogger(plsc.getPVLogId());								
 							} else if (runModeSelector.getSelectedIndex() == 3) { 
@@ -495,6 +569,7 @@ public class ToolBarView implements SwingConstants {
 		toolBarView.remove(comp2);
 		
 		toolBarView.add(comp1);
+		toolBarView.addSeparator(small);
 		toolBarView.add(comp2);
 	}
 
@@ -503,20 +578,26 @@ public class ToolBarView implements SwingConstants {
 	}
 	
 	public void setQueryViewEnable(boolean enabled) {
-		if (!((String)runModeSelector.getSelectedItem()).equals("Design")) {
+		/*if (!((String)runModeSelector.getSelectedItem()).equals("Design")) {
 			BPRPModeSelector.setEnabled(enabled);
 			BPRPSelector.setEnabled(enabled);
 		} else {
 			BPRPModeSelector.setEnabled(false);
 			BPRPSelector.setEnabled(false);			
-		}
+		}*/
 		beamlineSelector.setEnabled(enabled);
-		runModeSelector.setEnabled(enabled);
+		
 		setInitTiwissButton.setEnabled(enabled);
 		matcherButton.setEnabled(enabled);
+		resetInitialParametersButton.setEnabled(enabled);
+		runWirescanner.setEnabled(false);
+		
+		runModeSelector.setEnabled(enabled);
+		editMachineParametersButton.setEnabled(enabled);
+		
 		runModelButton.setEnabled(enabled);
 		upload2DBButton.setEnabled(enabled && model.getRunMachineModel()!=null);
-		makeGoldButton.setEnabled(enabled);
+		makeGoldButton.setEnabled(enabled && model.getSelectedMachineModel() != null);
 		//export2MADButton.setEnabled(enabled && !model.isRunMachineModelNull());
 //		helpButton.setEnabled(enabled);
 	}

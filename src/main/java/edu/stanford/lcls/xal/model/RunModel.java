@@ -57,5 +57,17 @@ public class RunModel {
 	public void setModelMode(int _modelMode) {
 		modelMode = _modelMode;
 	}
+
+
+
+	public void resetProbe() {
+		IAlgorithm tracker;
+		try {
+			tracker = AlgorithmFactory.createEnvelopeTracker( accelerator );
+			probe = ProbeFactory.getEnvelopeProbe( accelerator.getSequence("MEBT"), tracker );
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		}
+	}
 	
 }
