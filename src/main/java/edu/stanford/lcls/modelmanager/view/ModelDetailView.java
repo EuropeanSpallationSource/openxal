@@ -128,13 +128,13 @@ public class ModelDetailView implements SwingConstants {
 					selectedModelType = "reference";
 				}
 				
-				
-				commentText.setText((String)selectedMachineModel.getPropertyValue("COMMENTS"));
-				String title = "The "+ selectedModelType +" machine model has "
-								+ selectedMachineModelDetail.length + " records logged.";
-				modelName.setText(title);
-				modelCreatDate.setText((String)selectedMachineModel.getPropertyValue("DATE_CREATED"));			
-				
+				if (selectedMachineModel != null) {
+					commentText.setText((String)selectedMachineModel.getPropertyValue("COMMENTS"));
+					String title = "The "+ selectedModelType +" machine model has "
+									+ selectedMachineModelDetail.length + " records logged.";
+					modelName.setText(title);
+					modelCreatDate.setText((String)selectedMachineModel.getPropertyValue("DATE_CREATED"));			
+				}
 			}
 		});
 

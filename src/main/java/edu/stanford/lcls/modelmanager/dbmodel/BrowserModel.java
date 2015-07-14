@@ -147,7 +147,7 @@ public class BrowserModel {
 				.childAdaptor("persistentStore");
 		PERSISTENT_STORE = new PersistentStore(persistentStoreAdaptor);
 		
-		EVENT_PROXY.modelStateChanged(this);;
+		EVENT_PROXY.modelStateChanged(this);
 		fetchAllMachineModel();
 	}	
 
