@@ -41,6 +41,7 @@ import edu.stanford.lcls.modelmanager.ModelManagerWindow;
 import edu.stanford.lcls.modelmanager.dbmodel.BrowserModel;
 import edu.stanford.lcls.modelmanager.dbmodel.BrowserModelListener;
 import edu.stanford.lcls.modelmanager.dbmodel.MachineModelDevice;
+import edu.stanford.lcls.modelmanager.dbmodel.BrowserModel.RunState;
 import edu.stanford.lcls.xal.model.RunModelConfiguration;
 import edu.stanford.lcls.xal.model.RunModelConfigurationDesign;
 import edu.stanford.lcls.xal.model.RunModelConfigurationExtant;
@@ -70,6 +71,7 @@ public class ToolBarView implements SwingConstants {
 	
 	private JComboBox<String> runModeSelector;
 	private JButton editMachineParametersButton;
+	private JButton resetMachineParametersButton;
 	
 	private JButton runModelButton;
 	private JButton upload2DBButton;
@@ -296,6 +298,13 @@ public class ToolBarView implements SwingConstants {
 		editMachineParametersButton = new JButton("Fetch and Edit");
 		editMachineParametersButton.setToolTipText("Fetch and edit machine parameters.");
 		mp.add(editMachineParametersButton);
+		mp.add(new JToolBar.Separator(small));
+		
+		resetMachineParametersButton = new JButton("Reset");
+		resetMachineParametersButton.setToolTipText("Reset machine parameters.");
+		mp.add(resetMachineParametersButton);
+		mp.add(new JToolBar.Separator(small));
+		
 		
 		editMachineParametersButton.addActionListener(new ActionListener() {		
 			@Override
@@ -308,7 +317,14 @@ public class ToolBarView implements SwingConstants {
 			}
 		});
 		
-		mp.add(new JToolBar.Separator(small));
+		resetMachineParametersButton.addActionListener(new ActionListener() {		
+			@Override
+			public void actionPerformed(ActionEvent e) {	
+				model.resetRunData();		
+			}
+		});
+		
+		
 		
 		toolBarView.add(mp);
 		toolBarView.addSeparator(big);		
@@ -570,8 +586,9 @@ public class ToolBarView implements SwingConstants {
 		resetInitialParametersButton.setEnabled(enabled);
 		runWirescanner.setEnabled(false);
 		
-		runModeSelector.setEnabled(enabled);
-		editMachineParametersButton.setEnabled(enabled);
+		runModeSelector.setEnabled(enabled && !model.getRunState().equals(RunState.FETCHED_DATA));
+		editMachineParametersButton.setEnabled(enabled && !model.getRunState().equals(RunState.FETCHED_DATA));
+		resetMachineParametersButton.setEnabled(enabled && model.getRunState().equals(RunState.FETCHED_DATA));
 		
 		runModelButton.setEnabled(enabled);
 		upload2DBButton.setEnabled(enabled && model.getRunMachineModel()!=null);

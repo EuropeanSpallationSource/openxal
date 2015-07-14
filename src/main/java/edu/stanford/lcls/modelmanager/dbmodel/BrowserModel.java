@@ -731,4 +731,29 @@ public class BrowserModel {
 	{
 		return runState;
 	}
+
+	public void resetRunData() {
+		if (_selectedMachineModel == _runMachineModel) {
+			_selectedMachineModel = null;
+			_selectedMachineModelDetail = null;
+			_selectedMachineModelDevice = null;
+		}
+
+		if (_fetchedMachineModels[0].getPropertyValue("ID").toString().equals(
+				autoRunID)) {
+			MachineModel[] tmp = _fetchedMachineModels;
+			_fetchedMachineModels = new MachineModel[tmp.length-1];
+			
+			for (int i = 0; i < _fetchedMachineModels.length; i++) {
+				_fetchedMachineModels[i] = tmp[i+1];
+			}
+		}
+		
+		_runMachineModel = null;
+		_runMachineModelDetail = null;
+		_runMachineModelDevice = null;		
+		
+		runState = RunState.NONE;
+		EVENT_PROXY.modelStateChanged(this);
+	}
 }
