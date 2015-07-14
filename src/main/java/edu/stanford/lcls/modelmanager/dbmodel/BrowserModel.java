@@ -45,9 +45,9 @@ public class BrowserModel {
 	protected String _user="MACHINE_MODEL";
 	protected String _databaseURL;
 	
-	protected MachineModel[] _allMachineModels;
-	protected MachineModel[] _fetchedMachineModels;
-	protected MachineModel[] _goldMachineModels;
+	protected List<MachineModel> _allMachineModels;
+	protected List<MachineModel> _fetchedMachineModels;
+	protected List<MachineModel> _goldMachineModels;
 	
 	protected String _referenceMachineModelID;
 	protected MachineModel _referenceMachineModel;
@@ -173,11 +173,11 @@ public class BrowserModel {
 	/**
 	 * Get the array of machine model that had been fetched.
 	 */
-	public MachineModel[] getAllMachineModel() {
+	public List<MachineModel>getAllMachineModel() {
 		return _allMachineModels;
 	}
 
-	public MachineModel[] getFetchedMachineModel() {
+	public List<MachineModel> getFetchedMachineModel() {
 		return _fetchedMachineModels;
 	}
 
@@ -197,7 +197,7 @@ public class BrowserModel {
 		return _goldMachineModel;
 	}
 
-	public MachineModel[] getGoldMachineModels() {
+	public List<MachineModel> getGoldMachineModels() {
 		return _goldMachineModels;
 	}
 
@@ -263,38 +263,24 @@ public class BrowserModel {
 	public void fetchMachineModelInRange(final java.util.Date startTime,
 			final java.util.Date endTime, final int modelMode)
 			throws SQLException {
-		MachineModel[] _machineModel_tmp1 = PERSISTENT_STORE
+		List<MachineModel> _machineModel_tmp1 = PERSISTENT_STORE
 				.fetchMachineModelsInRange(_connection, startTime, endTime);
-		MachineModel[] _machineModel_tmp2 = new MachineModel[_machineModel_tmp1.length
-				+ _goldMachineModels.length];
 		// If goldMachineModel isn't in, add it into the _machineModel
-		int index = 0;
-		for (int i = 0; i < _machineModel_tmp1.length; i++) {
-			_machineModel_tmp2[index] = _machineModel_tmp1[i];
-			index++;
-		}
-		for (int j = 0; j < _goldMachineModels.length; j++) {
-			if (_goldMachineModels[j] != null) {
-				String goldMachineModelID = (String) _goldMachineModels[j]
-						.getPropertyValue("ID");
-				boolean isIncludeLastDesignMachineModel = false;
-				for (int i = 0; i < _machineModel_tmp1.length; i++) {
-					if (_machineModel_tmp1[i].getPropertyValue("ID").equals(
-							goldMachineModelID))
-						isIncludeLastDesignMachineModel = true;
-				}
-				if (!isIncludeLastDesignMachineModel) {
-					_machineModel_tmp2[index] = _goldMachineModels[j];
-					index++;
-				}
+		
+		int originalSize = _machineModel_tmp1.size();
+		for (int j = 0; j < _goldMachineModels.size(); j++) {
+			String goldMachineModelID = (String) _goldMachineModels.get(j)
+					.getPropertyValue("ID");
+			boolean isIncludeLastDesignMachineModel = false;
+			for (int i = 0; i < originalSize; i++) {
+				if (_machineModel_tmp1.get(i).getPropertyValue("ID").equals(
+						goldMachineModelID))
+					isIncludeLastDesignMachineModel = true;
 			}
+			if (!isIncludeLastDesignMachineModel) _machineModel_tmp1.add(_goldMachineModels.get(j));
 		}
-		_allMachineModels = new MachineModel[index];
-		for (int i = 0; i < index; i++) {
-			_allMachineModels[i] = _machineModel_tmp2[i];
-		}
-		filterMachineModelInMode(_allMachineModels, _goldMachineModels,
-				modelMode);
+		_allMachineModels = _machineModel_tmp1;
+		filterMachineModelInMode(_allMachineModels, _goldMachineModels,	modelMode);
 	}
 
 	public void fetchAllMachineModel() throws SQLException, ParseException {
@@ -307,12 +293,12 @@ public class BrowserModel {
 	/**
 	 * get the last design machine model
 	 */
-	public MachineModel[] fetchGoldMachineModel(MachineModel[] allMachineModel)
+	public List<MachineModel> fetchGoldMachineModel(List<MachineModel> allMachineModel)
 			throws ParseException, SQLException {
 		List<MachineModel> goldMachineModels = new ArrayList<MachineModel>();
-		for (int i = 0; i < allMachineModel.length; i++) {
-			if (allMachineModel[i].getPropertyValue("GOLD").equals("PRESENT"))
-				goldMachineModels.add(allMachineModel[i]);
+		for (int i = 0; i < allMachineModel.size(); i++) {
+			if (allMachineModel.get(i).getPropertyValue("GOLD").equals("PRESENT"))
+				goldMachineModels.add(allMachineModel.get(i));
 		}
 		boolean containDesignGold;
 		for (int i = 0; i < modelModes.size(); i++) {
@@ -330,21 +316,21 @@ public class BrowserModel {
 			// gold.
 			if (!containDesignGold) {
 				MachineModel lastDesignMachineModel = null;
-				for (int j = 0; j < allMachineModel.length; j++) {
-					if (!allMachineModel[j].getPropertyValue("ID").equals(
+				for (int j = 0; j < allMachineModel.size(); j++) {
+					if (!allMachineModel.get(j).getPropertyValue("ID").equals(
 							autoRunID)
-							&& allMachineModel[j].getPropertyValue(
+							&& allMachineModel.get(j).getPropertyValue(
 									"RUN_SOURCE_CHK").equals("DESIGN")
-							&& allMachineModel[j]
+							&& allMachineModel.get(j)
 									.getPropertyValue("MODEL_MODES_ID") != null
-							&& allMachineModel[j].getPropertyValue(
+							&& allMachineModel.get(j).getPropertyValue(
 									"MODEL_MODES_ID").equals(
 									String.valueOf(modelModes.get(i)))) {
 						if (lastDesignMachineModel == null)
-							lastDesignMachineModel = allMachineModel[j];
+							lastDesignMachineModel = allMachineModel.get(j);
 						else {
 							java.util.Date d1 = machineModelDateFormat
-									.parse(allMachineModel[j].getPropertyValue(
+									.parse(allMachineModel.get(j).getPropertyValue(
 											"RUN_ELEMENT_DATE").toString());
 							java.util.Date d2 = machineModelDateFormat
 									.parse(lastDesignMachineModel
@@ -352,7 +338,7 @@ public class BrowserModel {
 													"RUN_ELEMENT_DATE")
 											.toString());
 							if (d1.after(d2))
-								lastDesignMachineModel = allMachineModel[j];
+								lastDesignMachineModel = allMachineModel.get(j);
 						}
 					}
 				}
@@ -360,29 +346,28 @@ public class BrowserModel {
 					goldMachineModels.add(lastDesignMachineModel);
 			}
 		}
-		return goldMachineModels.toArray(new MachineModel[goldMachineModels
-				.size()]);
+		return goldMachineModels;
 	}
 
-	public MachineModel getGoldMachineModel(MachineModel[] goldMachineModels,
+	public MachineModel getGoldMachineModel(List<MachineModel> goldMachineModels,
 			int modelMode, String runSource) throws SQLException {
 		if (modelMode == 0)
 			modelMode = 5;
 		MachineModel goldModel = null;
-		for (int i = 0; i < goldMachineModels.length; i++) {
-			if (goldMachineModels[i].getPropertyValue("MODEL_MODES_ID").equals(
+		for (int i = 0; i < goldMachineModels.size(); i++) {
+			if (goldMachineModels.get(i).getPropertyValue("MODEL_MODES_ID").equals(
 					String.valueOf(modelMode))
-					&& goldMachineModels[i].getPropertyValue("RUN_SOURCE_CHK")
+					&& goldMachineModels.get(i).getPropertyValue("RUN_SOURCE_CHK")
 							.equals(runSource))
-				goldModel = goldMachineModels[i];
+				goldModel = goldMachineModels.get(i);
 		}
 		if (goldModel == null && runSource.equals("EXTANT")) {
-			for (int i = 0; i < goldMachineModels.length; i++) {
-				if (goldMachineModels[i].getPropertyValue("MODEL_MODES_ID")
+			for (int i = 0; i < goldMachineModels.size(); i++) {
+				if (goldMachineModels.get(i).getPropertyValue("MODEL_MODES_ID")
 						.equals(String.valueOf(modelMode))
-						&& goldMachineModels[i].getPropertyValue(
+						&& goldMachineModels.get(i).getPropertyValue(
 								"RUN_SOURCE_CHK").equals("DESIGN"))
-					goldModel = goldMachineModels[i];
+					goldModel = goldMachineModels.get(i);
 			}
 		}
 		return goldModel;
@@ -391,47 +376,34 @@ public class BrowserModel {
 	/**
 	 * filter machine models
 	 */
-	public void filterMachineModelInMode(MachineModel[] allMachineModels,
-			MachineModel[] goldMachineModels, int modelMode)
+	public void filterMachineModelInMode(List<MachineModel> allMachineModels,
+			List<MachineModel> goldMachineModels, int modelMode)
 			throws SQLException {
 		// add run if run is not null
 		if (_runMachineModel != null) {
-			MachineModel[] tmp = allMachineModels;
-			allMachineModels = new MachineModel[tmp.length + 1];
-			for (int i = 0; i < tmp.length; i++) {
-				allMachineModels[i] = tmp[i];
-			}
-			allMachineModels[tmp.length] = _runMachineModel;
+			allMachineModels.add(_runMachineModel);
 		}
-		for (int i = 0; i < allMachineModels.length; i++) {
-			allMachineModels[i].setPropertyValue("REF", false);
-			allMachineModels[i].setPropertyValue("SEL", false);
+		for (int i = 0; i < allMachineModels.size(); i++) {
+			allMachineModels.get(i).setPropertyValue("REF", false);
+			allMachineModels.get(i).setPropertyValue("SEL", false);
 		}
-		MachineModel[] fetchedMachineModels;
+		List<MachineModel> fetchedMachineModels;
 		if (modelMode == 0) {
 			fetchedMachineModels = allMachineModels;
 		} else {
-			MachineModel[] tmp = new MachineModel[allMachineModels.length];
-			int index = 0;
-			for (int i = 0; i < allMachineModels.length; i++) {
-				if (allMachineModels[i].getPropertyValue("MODEL_MODES_ID") != null) {
-					if ((Integer.valueOf((String) allMachineModels[i]
+			fetchedMachineModels = new ArrayList<>();
+			
+			for (int i = 0; i < allMachineModels.size(); i++) {
+				MachineModel machineModel = allMachineModels.get(i);
+				if (machineModel.getPropertyValue("MODEL_MODES_ID") != null) {
+					if ((Integer.valueOf((String)machineModel
 							.getPropertyValue("MODEL_MODES_ID"))).intValue() == modelMode) {
-						tmp[index] = allMachineModels[i];
-						index++;
+						fetchedMachineModels.add(machineModel);						
 					}
 				}
 			}
-			fetchedMachineModels = new MachineModel[index];
-			for (int i = 0; i < index; i++) {
-				fetchedMachineModels[i] = tmp[i];
-			}
-
 		}
-		ArrayList<MachineModel> machineModelSort = new ArrayList<MachineModel>(
-				Arrays.asList(fetchedMachineModels));
-		Collections.sort(machineModelSort, new Sort(Sort.DOWM));
-		machineModelSort.toArray(fetchedMachineModels);
+		Collections.sort(fetchedMachineModels, new Sort(Sort.DOWM)); // TODO check if correct
 
 		_fetchedMachineModels = fetchedMachineModels;
 		_goldMachineModel = getGoldMachineModel(goldMachineModels, modelMode,
@@ -452,13 +424,10 @@ public class BrowserModel {
 		EVENT_PROXY.modelStateChanged(this);
 	}
 
-	public void setSelectedMachineModel(MachineModel[] fetchedMachineModels,
-			MachineModel referenceMachineModel,
-			MachineModel selectedMachineModel) throws SQLException {
+	public void setSelectedMachineModel(MachineModel referenceMachineModel, MachineModel selectedMachineModel) throws SQLException {
 		isGold = referenceMachineModel.getPropertyValue("GOLD").equals(
 				"PRESENT");
 		if (_selectedMachineModel != null && selectedMachineModel == null) {
-			_fetchedMachineModels = fetchedMachineModels;
 			_selectedMachineModel = null;
 			_selectedMachineModelDetail = null;
 			_selectedMachineModelDevice = null;
@@ -466,7 +435,6 @@ public class BrowserModel {
 			return;
 		} else if (_selectedMachineModel == null
 				&& selectedMachineModel != null) {
-			_fetchedMachineModels = fetchedMachineModels;
 			setSelectedModel(selectedMachineModel);
 			EVENT_PROXY.modelStateChanged(this);
 			return;
@@ -474,21 +442,18 @@ public class BrowserModel {
 				&& selectedMachineModel != null
 				&& !(_selectedMachineModel.getPropertyValue("ID")
 						.equals(selectedMachineModel.getPropertyValue("ID")))) {
-			_fetchedMachineModels = fetchedMachineModels;
 			setSelectedModel(selectedMachineModel);
 			EVENT_PROXY.modelStateChanged(this);
 			return;
 		} else if (!(_referenceMachineModel.getPropertyValue("ID")
 				.equals(referenceMachineModel.getPropertyValue("ID")))
 				&& _selectedMachineModel == null) {
-			_fetchedMachineModels = fetchedMachineModels;
 			setReferenceModel(referenceMachineModel);
 			EVENT_PROXY.modelStateChanged(this);
 			return;
 		} else if (!(_referenceMachineModel.getPropertyValue("ID")
 				.equals(referenceMachineModel.getPropertyValue("ID")))
 				&& _selectedMachineModel != null) {
-			_fetchedMachineModels = fetchedMachineModels;
 			setReferenceModel(referenceMachineModel);
 			setSelectedModel(_selectedMachineModel);
 			EVENT_PROXY.modelStateChanged(this);
@@ -617,43 +582,31 @@ public class BrowserModel {
 	}
 
 	public void addRunModelToFetchedModels(MachineModel runMachineModel) {
-		for (int i = 0; i < _fetchedMachineModels.length; i++) {
-			_fetchedMachineModels[i].setPropertyValue("SEL", Boolean.FALSE);
+		for (int i = 0; i < _fetchedMachineModels.size(); i++) {
+			_fetchedMachineModels.get(i).setPropertyValue("SEL", Boolean.FALSE);
 		}
-		MachineModel[] tmp = _fetchedMachineModels;
-		if (_fetchedMachineModels[0].getPropertyValue("ID").toString().equals(
+		if (_fetchedMachineModels.get(0).getPropertyValue("ID").toString().equals(
 				autoRunID))
-			_fetchedMachineModels[0] = runMachineModel;
+			_fetchedMachineModels.set(0, runMachineModel);
 		else {
-			_fetchedMachineModels = new MachineModel[tmp.length + 1];
-			for (int i = 0; i < tmp.length; i++) {
-				_fetchedMachineModels[i] = tmp[i];
-			}
-			_fetchedMachineModels[tmp.length] = runMachineModel;
+			_fetchedMachineModels.add(runMachineModel);
 		}
-		ArrayList<MachineModel> machineModelSort = new ArrayList<MachineModel>(
-				Arrays.asList(_fetchedMachineModels));
-		Collections.sort(machineModelSort, new Sort(Sort.DOWM));
-		machineModelSort.toArray(_fetchedMachineModels);
+		Collections.sort(_fetchedMachineModels, new Sort(Sort.DOWM));
 	}
 
 	public void removeRunModelFromFetchedModels(String uploadID) {
 		//add upload machine model to all machine models.
 		_runMachineModel.setPropertyValue("ID", uploadID);
 		_runMachineModel.setPropertyValue("GOLD", "");
-		MachineModel[] tmp = _allMachineModels;
-		_allMachineModels = new MachineModel[tmp.length + 1];
-		for (int i = 0; i < tmp.length; i++) {
-			_allMachineModels[i] = tmp[i];
-		}
-		_allMachineModels[tmp.length] = _runMachineModel;
+		
+		_allMachineModels.add(_runMachineModel);
 		
 		//refresh model list
-		for (int i = 0; i < _fetchedMachineModels.length; i++) {
-			if (_fetchedMachineModels[i].getPropertyValue("ID").toString().equals(
+		for (int i = 0; i < _fetchedMachineModels.size(); i++) {
+			if (_fetchedMachineModels.get(i).getPropertyValue("ID").toString().equals(
 					autoRunID)){
-				_fetchedMachineModels[i].setPropertyValue("ID", uploadID);
-				_fetchedMachineModels[i].setPropertyValue("GOLD", "");
+				_fetchedMachineModels.get(i).setPropertyValue("ID", uploadID);
+				_fetchedMachineModels.get(i).setPropertyValue("GOLD", "");
 				break;
 			}
 		}
@@ -739,14 +692,8 @@ public class BrowserModel {
 			_selectedMachineModelDevice = null;
 		}
 
-		if (_fetchedMachineModels[0].getPropertyValue("ID").toString().equals(
-				autoRunID)) {
-			MachineModel[] tmp = _fetchedMachineModels;
-			_fetchedMachineModels = new MachineModel[tmp.length-1];
-			
-			for (int i = 0; i < _fetchedMachineModels.length; i++) {
-				_fetchedMachineModels[i] = tmp[i+1];
-			}
+		if (_fetchedMachineModels.get(0).getPropertyValue("ID").toString().equals(autoRunID)) {			
+			_fetchedMachineModels.remove(0);
 		}
 		
 		_runMachineModel = null;

@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.sql.*;
 
-import javax.swing.JFrame;
-
 import xal.smf.AcceleratorSeq;
 import xal.tools.data.DataAdaptor;
 
@@ -38,11 +36,11 @@ class PersistentStore {
 	}	
 
 	
-	public MachineModel[] fetchMachineModelsInRange( final Connection connection, final java.util.Date startTime, final java.util.Date endTime ) throws SQLException {
+	public List<MachineModel> fetchMachineModelsInRange( final Connection connection, final java.util.Date startTime, final java.util.Date endTime ) throws SQLException {
 		return MACHINE_MODEL_TABLE.fetchMachineModelsInRange( connection, startTime, endTime );
 	}
 	
-	public MachineModel[] fetchAllMachineModels(final Connection connection) throws SQLException {
+	public List<MachineModel> fetchAllMachineModels(final Connection connection) throws SQLException {
 		return MACHINE_MODEL_TABLE.fetchAllMachineModels( connection );
 	}
 

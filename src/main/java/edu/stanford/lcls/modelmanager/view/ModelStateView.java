@@ -82,7 +82,7 @@ public class ModelStateView extends Thread implements SwingConstants {
 						progressBar.setIndeterminate(false);
 						progressBar.setString("Running Success !");
 					}
-					machineModelState.setText("Find " + _model.getFetchedMachineModel().length
+					machineModelState.setText("Find " + _model.getFetchedMachineModel().size()
 							+ " machine models in the database!");
 					progressBar.setIndeterminate(false);
 					progressBar.setString("Loading successful!");					

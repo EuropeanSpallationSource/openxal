@@ -34,7 +34,7 @@ public class MachineModelTable {
 	 * Fetch the machine models within the specified time range.
 	 */
 
-	protected MachineModel[] fetchMachineModelsInRange(
+	protected List<MachineModel> fetchMachineModelsInRange(
 			final Connection connection, final java.util.Date startTime,
 			final java.util.Date endTime) throws SQLException {
 
@@ -61,14 +61,14 @@ public class MachineModelTable {
 		queryStatement.close();
 		modelResult.close();
 		models = setGold(connection, models);
-		return models.toArray(new MachineModel[models.size()]);
+		return models;
 	}
 	
 	/**
 	 * Fetch all the machine models.
 	 */
 
-	protected MachineModel[] fetchAllMachineModels(final Connection connection) throws SQLException {
+	protected List<MachineModel> fetchAllMachineModels(final Connection connection) throws SQLException {
 
 		// get data type
 		fetchMachineModelsDataType(connection);
@@ -92,7 +92,7 @@ public class MachineModelTable {
 		queryStatement.close();
 		modelResult.close();
 		models = setGold(connection, models);
-		return models.toArray(new MachineModel[models.size()]);
+		return models;
 	}
 	
 	protected void fetchMachineModelsDataType(final Connection connection) throws SQLException {
