@@ -11,55 +11,95 @@ package xal.app.virtualaccelerator;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Shape;
-import java.awt.event.*;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
-import javax.swing.*;
-import javax.swing.text.*;
-import javax.swing.event.*;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.JToggleButton.ToggleButtonModel;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.PlainDocument;
 
-import java.util.*;
-
-import xal.extension.application.smf.*;
-import xal.extension.application.*;
+import xal.ca.Channel;
+import xal.ca.ChannelFactory;
+import xal.ca.ConnectionException;
+import xal.ca.GetException;
+import xal.ca.PutException;
+import xal.ca.PutListener;
+import xal.extension.application.Commander;
+import xal.extension.application.XalWindow;
+import xal.extension.application.smf.AcceleratorDocument;
 import xal.extension.bricks.WindowReference;
-import xal.ca.*;
-import xal.smf.*;
-import xal.smf.attr.*;
-import xal.smf.data.*;
-import xal.smf.impl.*;
-import xal.smf.impl.qualify.*;
-import xal.model.*;
-import xal.model.probe.*;  // Probe for t3d header
-import xal.model.alg.*;
-import xal.model.probe.traj.TransferMapState;
-import xal.model.probe.traj.ProbeState;
-import xal.model.probe.traj.EnvelopeProbeState;
-import xal.sim.scenario.*;
-import xal.smf.*;
-import xal.model.xml.*;
-import xal.tools.beam.calc.*;
-import xal.tools.xml.*;
-import xal.tools.data.*;
-import xal.tools.beam.Twiss;
-import xal.tools.beam.PhaseVector;
+import xal.extension.widgets.apputils.SimpleProbeEditor;
 import xal.extension.widgets.plot.BasicGraphData;
 import xal.extension.widgets.plot.FunctionGraphsJPanel;
-import xal.extension.widgets.swing.KeyValueFilteredTableModel;
 import xal.extension.widgets.swing.DecimalField;
-import xal.tools.apputils.files.*;
-import xal.extension.widgets.apputils.SimpleProbeEditor;
+import xal.extension.widgets.swing.KeyValueFilteredTableModel;
+import xal.model.IAlgorithm;
+import xal.model.ModelException;
+import xal.model.alg.TransferMapTracker;
+import xal.model.probe.EnvelopeProbe;
+import xal.model.probe.Probe;  // Probe for t3d header
+import xal.model.probe.TransferMapProbe;
+import xal.model.probe.traj.EnvelopeProbeState;
+import xal.model.probe.traj.ProbeState;
 import xal.service.pvlogger.apputils.browser.PVLogSnapshotChooser;
 import xal.service.pvlogger.sim.PVLoggerDataSource;
-import xal.tools.dispatch.*;
+import xal.sim.scenario.AlgorithmFactory;
+import xal.sim.scenario.ProbeFactory;
+import xal.sim.scenario.Scenario;
+import xal.smf.AcceleratorNode;
+import xal.smf.AcceleratorSeq;
+import xal.smf.AcceleratorSeqCombo;
+import xal.smf.NoSuchChannelException;
+import xal.smf.Ring;
+import xal.smf.TimingCenter;
+import xal.smf.attr.BPMBucket;
+import xal.smf.impl.BPM;
+import xal.smf.impl.Bend;
+import xal.smf.impl.Electromagnet;
+import xal.smf.impl.HDipoleCorr;
+import xal.smf.impl.MagnetMainSupply;
+import xal.smf.impl.MagnetTrimSupply;
+import xal.smf.impl.ProfileMonitor;
+import xal.smf.impl.Quadrupole;
+import xal.smf.impl.RfCavity;
+import xal.smf.impl.RingBPM;
+import xal.smf.impl.SCLCavity;
+import xal.smf.impl.Solenoid;
+import xal.smf.impl.TrimmedQuadrupole;
+import xal.smf.impl.VDipoleCorr;
+import xal.smf.impl.qualify.QualifierFactory;
+import xal.smf.impl.qualify.TypeQualifier;
+import xal.tools.beam.PhaseVector;
+import xal.tools.beam.Twiss;
+import xal.tools.beam.calc.SimpleSimResultsAdaptor;
+import xal.tools.data.DataAdaptor;
+import xal.tools.dispatch.DispatchQueue;
+import xal.tools.dispatch.DispatchTimer;
 //TODO: CKA - Many unused imports
+import xal.tools.xml.XmlDataAdaptor;
 
 /**
  * <p>
@@ -74,8 +114,9 @@ import xal.tools.dispatch.*;
  * </p>
  * 
  * VADocument is a custom AcceleratorDocument for virtual accelerator application.
- * @version 1.5 15 Jul 2004
+ * @version 1.6 13 Jul 2015
  * @author Paul Chu
+ * @author Blaž Kranjc <blaz.kranjc@cosylab.com>
  */
 public class VADocument extends AcceleratorDocument implements ActionListener, PutListener {
     /** default BPM waveform size */
@@ -167,6 +208,8 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 	private LinkedHashMap<Channel, Double> ch_offsetMap;
 	
 	private VAServer _vaServer;
+	
+    protected Commander commander;
     
 //	private RecentFileTracker _probeFileTracker;
     
@@ -497,6 +540,7 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 	public void customizeCommands(Commander commander) {
 		// open probe editor
         // TODO: implement probe editor support
+	    this.commander = commander;
 		Action probeEditorAction = new AbstractAction("probe-editor") {
 			static final long serialVersionUID = 0;
 			public void actionPerformed(ActionEvent event) {
