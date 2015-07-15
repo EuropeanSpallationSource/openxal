@@ -9,7 +9,6 @@ package xal.plugin.jcaserver;
 import gov.aps.jca.CAException;
 import gov.aps.jca.JCALibrary;
 import gov.aps.jca.cas.ServerContext;
-import gov.aps.jca.dbr.DBRType;
 
 import com.cosylab.epics.caj.cas.util.DefaultServerImpl;
 
@@ -50,9 +49,8 @@ public class JcaServer{
         if (!initialArray.getClass().isArray()){
             initialArray = new Object[]{initialArray};
         }
-        final ServerMemoryProcessVariable serverMemoryProcessVariable = new ServerMemoryProcessVariable(pv, null,
-                DBRType.DOUBLE, initialArray);
-        // TODO SET DBRType to automatically set itself (not hardcoded DOUBLE).
+        
+        final ServerMemoryProcessVariable serverMemoryProcessVariable = new ServerMemoryProcessVariable(pv, null, initialArray);
         SERVER.registerProcessVaribale(serverMemoryProcessVariable);
         return serverMemoryProcessVariable;
     }

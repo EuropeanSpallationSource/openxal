@@ -218,7 +218,7 @@ public class JcaServerChannel extends Channel {
 
             @Override
             public ArrayValue getStore() {
-                return ArrayValue.doubleStore((double[]) pv.getValue());
+                return ArrayValue.arrayValueFromArray(pv.getValue());
             }
         });
     }
@@ -326,7 +326,6 @@ public class JcaServerChannel extends Channel {
     @Override
     public void putRawValCallback(String newVal, PutListener listener) throws ConnectionException, PutException {
         putRawValCallback(new String[] { newVal }, listener);
-
     }
 
     @Override
