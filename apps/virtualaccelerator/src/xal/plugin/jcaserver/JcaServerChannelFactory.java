@@ -25,7 +25,6 @@ public class JcaServerChannelFactory extends ChannelFactory {
         try {
             CHANNEL_SERVER = new JcaServer();
         } catch (CAException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
