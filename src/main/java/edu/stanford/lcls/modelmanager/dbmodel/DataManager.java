@@ -200,7 +200,7 @@ public class DataManager {
 		} else if(runModelMethod == 2){
 			runMachineModel.setPropertyValue("RUN_SOURCE_CHK", "PVLOGGER");
 		} else if(runModelMethod == 3){
-			runMachineModel.setPropertyValue("RUN_SOURCE_CHK", "MODEL");
+			runMachineModel.setPropertyValue("RUN_SOURCE_CHK", "MANUAL");
 		}
 		if(modelMode == 0)
 			runMachineModel.setPropertyValue("MODEL_MODES_ID", "5");

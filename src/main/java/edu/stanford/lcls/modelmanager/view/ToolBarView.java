@@ -310,6 +310,10 @@ public class ToolBarView implements SwingConstants {
 			@Override
 			public void actionPerformed(ActionEvent e) {	
 				try {
+					if (runModeSelector.getSelectedIndex() == 3 && model.getSelectedMachineModelDevice() == null) {
+						JOptionPane.showMessageDialog(parent, "You need to select a model.", "Run model Error", JOptionPane.ERROR_MESSAGE);
+						return;
+					}
 					model.fetchRunData(getRunModelConfiguration());		
 				} catch (ModelException | SQLException e1) {
 					e1.printStackTrace();
@@ -433,6 +437,11 @@ public class ToolBarView implements SwingConstants {
 		
 		runModelButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
+				if (runModeSelector.getSelectedIndex() == 3 && model.getSelectedMachineModelDevice() == null) {
+					JOptionPane.showMessageDialog(parent, "You need to select a model.", "Run model Error", JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+				
 				thread1 = new Thread(new Runnable() {
 					public void run() {
 						setQueryViewEnable(false);
