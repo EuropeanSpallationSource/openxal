@@ -1,6 +1,10 @@
-package xal.plugin.jca;
+package xal.plugin.jcaserver;
 
-import gov.aps.jca.dbr.DBR_Double;
+import gov.aps.jca.dbr.Severity;
+import gov.aps.jca.dbr.Status;
+
+import java.math.BigDecimal;
+
 import xal.ca.Channel;
 import xal.ca.ChannelRecord;
 import xal.ca.ChannelStatusRecord;
@@ -38,7 +42,7 @@ public class JcaServerChannel extends Channel {
     /** connection lock for wait and notify actions */
     protected Object _connectionLock;
 
-    JcaServerChannel(String signal,JcaVaChannelServer channelServer) {
+    JcaServerChannel(String signal, JcaServer channelServer) {
         super(signal);
         m_strId = signal;
         size = signal.matches(".*(TBT|A)") ? DEFAULT_ARRAY_SIZE : 1;
@@ -257,18 +261,42 @@ public class JcaServerChannel extends Channel {
     @Override
     public void getRawValueCallback(IEventSinkValue listener, boolean attemptConnection) throws ConnectionException,
             GetException {
-        DbrValueAdaptor adaptor = new DbrValueAdaptor(new DBR_Double((double[]) pv.getValue()));
         if (listener != null) {
-            listener.eventValue(new ChannelRecord(adaptor), this);
+            listener.eventValue(new ChannelRecord(new ValueAdaptor() {				
+				@Override
+				public ArrayValue getStore() {
+					return ArrayValue.arrayValueFromArray(pv.getValue());
+				}
+			}), this);
         }
     }
 
     @Override
     public void getRawValueTimeCallback(IEventSinkValTime listener, boolean attemptConnection)
-            throws ConnectionException, GetException {
-        TimeAdaptor adaptor = new DbrTimeAdaptor(new DBR_Double((double[]) pv.getValue()));
+            throws ConnectionException, GetException {        
         if (listener != null) {
-            listener.eventValue(new ChannelTimeRecord(adaptor), this);
+            listener.eventValue(new ChannelTimeRecord(new TimeAdaptor() {
+				@Override
+				public int status() {					
+					return Status.NO_ALARM.getValue();
+				}
+
+				@Override
+				public int severity() {
+					return Severity.NO_ALARM.getValue();
+				}
+
+				@Override
+				public ArrayValue getStore() {
+					return ArrayValue.arrayValueFromArray(pv.getValue());				
+				}
+
+				@Override
+				public BigDecimal getTimestamp() {					
+					return null; // TODO implement timestamp
+				}
+            	
+            }), this);
         }
 
     }
@@ -370,8 +398,6 @@ public class JcaServerChannel extends Channel {
             listener.putCompleted(this);
         }
     }
-
-  
 
     protected ServerMemoryProcessVariable getPV() {
         return pv;

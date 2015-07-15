@@ -1,5 +1,6 @@
-package xal.plugin.jca;
+package xal.plugin.jcaserver;
 
+import gov.aps.jca.CAException;
 import xal.ca.ChannelFactory;
 import xal.ca.ChannelSystem;
 
@@ -9,21 +10,21 @@ import xal.ca.ChannelSystem;
  * @version 0.1 13 Jul 2015
  * @author Blaž Kranjc <blaz.kranjc@cosylab.com>
  */
-public class JcaChannelFactory extends ChannelFactory {
+public class JcaServerChannelFactory extends ChannelFactory {
     /** JCA channel system */
-    final private JcaServerSystem JCA_SERVER_SYSTEM;
+    final private JcaServerChannelSystem JCA_SERVER_SYSTEM;
     
     /**
      * Channel server for creating and holding PVs. Made static to all channels.
      */
-    static private JcaVaChannelServer CHANNEL_SERVER;
+    static private JcaServer CHANNEL_SERVER;
      
     /** Constructor */
-    public JcaChannelFactory() {
-        JCA_SERVER_SYSTEM = new JcaServerSystem();
+    public JcaServerChannelFactory() {
+        JCA_SERVER_SYSTEM = new JcaServerChannelSystem();
         try {
-            CHANNEL_SERVER = new JcaVaChannelServer();
-        } catch (Exception e) {
+            CHANNEL_SERVER = new JcaServer();
+        } catch (CAException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
@@ -36,7 +37,7 @@ public class JcaChannelFactory extends ChannelFactory {
      *            The name of the PV signal
      */
     protected xal.ca.Channel newChannel(final String signalName) {
-        return (xal.ca.Channel) new JcaServerChannel(signalName,CHANNEL_SERVER);
+        return (xal.ca.Channel) new JcaServerChannel(signalName, CHANNEL_SERVER);
     }
 
     /**

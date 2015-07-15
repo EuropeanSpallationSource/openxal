@@ -4,7 +4,7 @@
  * Created on August 27, 2002, 2:38 PM
  */
 
-package xal.plugin.jca;
+package xal.plugin.jcaserver;
 
 import gov.aps.jca.CAException;
 import gov.aps.jca.Context;
@@ -17,13 +17,13 @@ import xal.ca.ChannelServer;
 import xal.ca.ChannelSystem;
 
 /**
- * JcaServerSystem is initially the same as JcaSystem but returns ChannelServer instead of JcaChannelServer in
+ * JcaServerChannelSystem is initially the same as JcaSystem but returns ChannelServer instead of JcaChannelServer in
  * newChannelServer method and does not contain .
  * 
  * @version 0.1 13 Jul 2015
  * @author Blaž Kranjc <blaz.kranjc@cosylab.com>
  */
-class JcaServerSystem extends ChannelSystem {
+class JcaServerChannelSystem extends ChannelSystem {
 
     /** Java Channel Access Context */
     private Context JCA_CONTEXT;
@@ -32,11 +32,11 @@ class JcaServerSystem extends ChannelSystem {
     private JCALibrary JCA_LIBRARY;
 
     /** Constructor */
-    public JcaServerSystem() {
+    public JcaServerChannelSystem() {
         this(null);
     }
 
-    public JcaServerSystem(final String contextName) {
+    public JcaServerChannelSystem(final String contextName) {
         try {
             JCA_LIBRARY = JCALibrary.getInstance();
 
@@ -59,8 +59,7 @@ class JcaServerSystem extends ChannelSystem {
 
     @Override
     public void setDebugMode(boolean debugFlag) {
-        JcaChannel.setDebugMode(debugFlag);
-
+        // not used
     }
 
     /**
@@ -82,7 +81,7 @@ class JcaServerSystem extends ChannelSystem {
                     return contextEnvironment;
                 } else {
                     // check the user's preferences
-                    final Preferences prefs = xal.tools.apputils.Preferences.nodeForPackage(JcaSystem.class);
+                    final Preferences prefs = xal.tools.apputils.Preferences.nodeForPackage(JcaServerChannelSystem.class);
                     final String preferredContext = prefs.get("Context", "");
                     return preferredContext;
                 }

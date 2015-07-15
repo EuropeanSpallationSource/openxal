@@ -4,8 +4,9 @@
  * Created on October 21, 2013, 9:37 AM
  */
 
-package xal.plugin.jca;
+package xal.plugin.jcaserver;
 
+import gov.aps.jca.CAException;
 import gov.aps.jca.JCALibrary;
 import gov.aps.jca.cas.ServerContext;
 import gov.aps.jca.dbr.DBRType;
@@ -18,7 +19,7 @@ import com.cosylab.epics.caj.cas.util.DefaultServerImpl;
  * @version 0.1 13 Jul 2015
  * @author Blaž Kranjc <blaz.kranjc@cosylab.com>
  */
-public class JcaVaChannelServer{
+public class JcaServer{
 
     /** CA Server context */
     final private ServerContext CONTEXT;
@@ -26,8 +27,9 @@ public class JcaVaChannelServer{
     /** CA Server */
     final private DefaultServerImpl SERVER;
 
-    /** Constructor */
-    public JcaVaChannelServer() throws Exception {
+    /** Constructor 
+     * @throws CAException exception while creating server context */
+    public JcaServer() throws CAException  {
         // Create server implementation
         SERVER = new DefaultServerImpl();
 

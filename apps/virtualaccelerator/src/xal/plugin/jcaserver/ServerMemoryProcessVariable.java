@@ -11,7 +11,7 @@
  * _NO_ RESPONSIBILITY FOR ANY CONSEQUENCE RESULTING FROM THE USE, MODIFICATION,
  * OR REDISTRIBUTION OF THIS SOFTWARE.
  */
-package xal.plugin.jca;
+package xal.plugin.jcaserver;
 
 import gov.aps.jca.CAException;
 import gov.aps.jca.CAStatus;
