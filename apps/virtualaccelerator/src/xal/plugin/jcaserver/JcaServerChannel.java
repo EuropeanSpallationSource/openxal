@@ -276,6 +276,8 @@ public class JcaServerChannel extends Channel {
             throws ConnectionException, GetException {        
         if (listener != null) {
             listener.eventValue(new ChannelTimeRecord(new TimeAdaptor() {
+            	final BigDecimal EPOCH_SECONDS_OFFSET = new BigDecimal( 7305*24*3600 );     // offset from standard Java epoch
+
 				@Override
 				public int status() {					
 					return Status.NO_ALARM.getValue();
@@ -293,9 +295,8 @@ public class JcaServerChannel extends Channel {
 
 				@Override
 				public BigDecimal getTimestamp() {					
-					return null; // TODO implement timestamp
-				}
-            	
+					return pv.getTimestamp().asBigDecimal().add( EPOCH_SECONDS_OFFSET ).setScale( 9, BigDecimal.ROUND_HALF_UP );
+				}            	
             }), this);
         }
 

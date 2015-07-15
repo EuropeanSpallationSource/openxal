@@ -20,6 +20,7 @@ import gov.aps.jca.cas.ProcessVariableWriteCallback;
 import gov.aps.jca.cas.ServerChannel;
 import gov.aps.jca.dbr.DBR;
 import gov.aps.jca.dbr.DBRType;
+import gov.aps.jca.dbr.TimeStamp;
 
 import com.cosylab.epics.caj.cas.util.MemoryProcessVariable;
 
@@ -65,8 +66,13 @@ public class ServerMemoryProcessVariable extends MemoryProcessVariable {
      */
     public synchronized CAStatus write(DBR value, ProcessVariableWriteCallback asyncWriteCallback) throws CAException {
 
-        if (writable) {
-            return super.write(value, asyncWriteCallback);
+        if (writable) {        	
+    	    try {
+    	    	return super.write(value, asyncWriteCallback);
+    	    } finally {
+    	    	this.count = java.lang.reflect.Array.getLength(this.value);
+        	    this.timestamp = new TimeStamp();	
+    	    }
         } else {
             return CAStatus.NOWTACCESS;
         }
@@ -80,6 +86,8 @@ public class ServerMemoryProcessVariable extends MemoryProcessVariable {
      */
     public synchronized void setValue(Object value) {
         this.value = value;
+        this.count = java.lang.reflect.Array.getLength(this.value);
+	    this.timestamp = new TimeStamp();
     }
 
     /**
@@ -107,4 +115,13 @@ public class ServerMemoryProcessVariable extends MemoryProcessVariable {
         return value;
     }
 
+    /**
+     * Returns PV's timestamp.
+     * 
+     * @return timestamp
+     */
+    public TimeStamp getTimestamp()
+    {
+    	return timestamp;
+    }
 }
