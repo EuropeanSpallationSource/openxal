@@ -54,8 +54,6 @@ public class MachineModelTable {
 						.getString(DB_TABLE_COLUMN_NAME.get(i)));
 			}
 			machineModel.setPropertyValue(6, "");
-			machineModel.setPropertyValue(7, false);
-			machineModel.setPropertyValue(8, false);
 			models.add(machineModel);
 		}
 		queryStatement.close();
@@ -85,8 +83,6 @@ public class MachineModelTable {
 						.getString(DB_TABLE_COLUMN_NAME.get(i)));
 			}
 			machineModel.setPropertyValue(6, "");
-			machineModel.setPropertyValue(7, false);
-			machineModel.setPropertyValue(8, false);
 			models.add(machineModel);
 		}
 		queryStatement.close();

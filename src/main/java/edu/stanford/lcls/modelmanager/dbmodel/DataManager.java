@@ -209,8 +209,6 @@ public class DataManager {
 		runMachineModel.setPropertyValue("COMMENTS", "");
 		runMachineModel.setPropertyValue("DATE_CREATED", machineModelDateFormat.format(new java.util.Date()));
 		runMachineModel.setPropertyValue("GOLD", "RUN");
-		runMachineModel.setPropertyValue("REF", false);
-		runMachineModel.setPropertyValue("SEL", true);
 		return runMachineModel;
 	}
 	

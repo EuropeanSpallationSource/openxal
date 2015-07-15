@@ -50,8 +50,14 @@ public class MachineModelTableModel extends AbstractTableModel implements
 		if (columnIndex >= 5) columnIndex++;
 		
 		MachineModel modelDetail = fetchedMachineModels.get(rowIndex);
-		String type = MachineModel.getPropertyType(columnIndex);
 		
+		if (columnIndex == 7) {
+			return modelDetail == referenceMachineModel;
+		} else if (columnIndex == 8) {
+			return modelDetail == selectedMachineModel;
+		}
+		
+		String type = MachineModel.getPropertyType(columnIndex);		
 		if (modelDetail.getPropertyValue(columnIndex) != null) {
 			if (type.equals("Long")) 
 				return Long.valueOf((String)modelDetail.getPropertyValue(columnIndex));
@@ -67,15 +73,22 @@ public class MachineModelTableModel extends AbstractTableModel implements
 	}
 
 	public String getColumnName(int columnIndex) {
-		if(columnIndex < 5)
+		if (columnIndex >= 5) columnIndex++;
+		
+		if(columnIndex < 7)
 			return GUI_TABLE_COLUMN_NAME.get(columnIndex);
-		else
-			return GUI_TABLE_COLUMN_NAME.get(columnIndex + 1);
+		else if (columnIndex == 7)
+			return "REF";
+		else if (columnIndex == 8)
+			return "SEL";
+		return null;
 	}
 	
 	@Override
 	public Class<?> getColumnClass(int columnIndex) {
 		if (columnIndex >= 5) columnIndex++;
+		
+		if (columnIndex > 6) return Boolean.class;
 		
 		String type = MachineModel.getPropertyType(columnIndex);
 		if (type.equals("Long")) 
@@ -95,25 +108,11 @@ public class MachineModelTableModel extends AbstractTableModel implements
 			return false;
 	}
 	
-	public void setValueAt(Object value, int row, int column) {
-		if (column == 6){
-			for (int i=0;i<fetchedMachineModels.size();i++){
-				fetchedMachineModels.get(i).setPropertyValue("REF", false);
-			}
-			fetchedMachineModels.get(row).setPropertyValue("REF", true);			
+	public void setValueAt(Object value, int row, final int column) {
+		if (column == 6){			
 			referenceMachineModel = fetchedMachineModels.get(row);
 		} else if (column == 7){
-			fetchedMachineModels.get(row).setPropertyValue("SEL", value);
-			if (selectedMachineModel != null){
-				for (int i=0;i<fetchedMachineModels.size();i++){
-					if (fetchedMachineModels.get(i).getPropertyValue("ID").toString()
-							.equals(selectedMachineModel.getPropertyValue("ID").toString())){
-						fetchedMachineModels.get(i).setPropertyValue("SEL", false);
-						break;
-						}
-					}
-			}
-			if ((Boolean)fetchedMachineModels.get(row).getPropertyValue("SEL"))
+			if ((Boolean)value)
 				selectedMachineModel = fetchedMachineModels.get(row);
 			else
 				selectedMachineModel = null;
@@ -142,6 +141,8 @@ public class MachineModelTableModel extends AbstractTableModel implements
 			this.selectedMachineModel = model.getSelectedMachineModel();
 		} else {
 			setMachineModels(new ArrayList<MachineModel>(0));
+			this.referenceMachineModel = null;
+			this.selectedMachineModel = null;
 		}
 	}
 }

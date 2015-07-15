@@ -16,8 +16,8 @@ public class MachineModel {
 	 */
 	static {
 		PROPERTY_NAME = Arrays.asList(new String[] {
-				"ID", "RUN_ELEMENT_DATE", "RUN_SOURCE_CHK", "MODEL_MODES_ID", "COMMENTS", "DATE_CREATED", "GOLD", "REF", "SEL"});		
-		propertyType = Arrays.asList(new String[]{"String", "Date", "String", "Long", "String", "Date", "String", "Boolean", "Boolean"});
+				"ID", "RUN_ELEMENT_DATE", "RUN_SOURCE_CHK", "MODEL_MODES_ID", "COMMENTS", "DATE_CREATED", "GOLD"});		
+		propertyType = Arrays.asList(new String[]{"String", "Date", "String", "Long", "String", "Date", "String"});
 		PROPERTY_SIZE = PROPERTY_NAME.size();
 	}
 	

@@ -99,9 +99,6 @@ public class BrowserModel {
 		MESSAGE_CENTER = new MessageCenter("Browser Model");
 		EVENT_PROXY = MESSAGE_CENTER.registerSource(this,
 				BrowserModelListener.class);
-	
-		// The following object instantiation is unnecessary.
-//		rm = new RunModel(modelMode);
 	}
 	
 	public boolean getStateReady() {
@@ -383,10 +380,6 @@ public class BrowserModel {
 		if (_runMachineModel != null) {
 			allMachineModels.add(_runMachineModel);
 		}
-		for (int i = 0; i < allMachineModels.size(); i++) {
-			allMachineModels.get(i).setPropertyValue("REF", false);
-			allMachineModels.get(i).setPropertyValue("SEL", false);
-		}
 		List<MachineModel> fetchedMachineModels;
 		if (modelMode == 0) {
 			fetchedMachineModels = allMachineModels;
@@ -411,7 +404,6 @@ public class BrowserModel {
 		setGoldModel(_goldMachineModel);
 		_referenceMachineModel = getGoldMachineModel(goldMachineModels,
 				modelMode, "EXTANT");
-		_referenceMachineModel.setPropertyValue("REF", true);
 		isGold = _referenceMachineModel.getPropertyValue("GOLD").equals(
 				"PRESENT");
 		_selectedMachineModel = null;
@@ -582,11 +574,7 @@ public class BrowserModel {
 	}
 
 	public void addRunModelToFetchedModels(MachineModel runMachineModel) {
-		for (int i = 0; i < _fetchedMachineModels.size(); i++) {
-			_fetchedMachineModels.get(i).setPropertyValue("SEL", Boolean.FALSE);
-		}
-		if (_fetchedMachineModels.get(0).getPropertyValue("ID").toString().equals(
-				autoRunID))
+		if (_fetchedMachineModels.get(0).getPropertyValue("ID").toString().equals(autoRunID))
 			_fetchedMachineModels.set(0, runMachineModel);
 		else {
 			_fetchedMachineModels.add(runMachineModel);
