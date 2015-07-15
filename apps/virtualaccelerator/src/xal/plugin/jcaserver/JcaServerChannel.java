@@ -96,8 +96,7 @@ public class JcaServerChannel extends Channel {
 
     @Override
     public Class<?> elementType() throws ConnectionException {
-        // Nothing to do here not used
-        return null;
+        return pv.getValue().getClass().getComponentType();
     }
 
     @Override
