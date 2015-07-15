@@ -44,9 +44,6 @@ public class JcaServerChannel extends Channel {
 
     private final int size;
 
-    /** connection lock for wait and notify actions */
-    protected Object _connectionLock;
-
     JcaServerChannel(String signal, JcaServer channelServer) {
         super(signal);
         m_strId = signal;
@@ -86,19 +83,9 @@ public class JcaServerChannel extends Channel {
     }
 
     public void requestConnection() {
-        connectionFlag = true;
-        proceedFromConnection();
+        connectionFlag = true;        
         if (connectionProxy != null) {
             connectionProxy.connectionMade(this);
-        }
-    }
-
-    /**
-     * Proceed forward since the connection has been made.
-     */
-    private void proceedFromConnection() {
-        synchronized (_connectionLock) {
-            _connectionLock.notify();
         }
     }
 
