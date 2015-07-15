@@ -209,31 +209,22 @@ public class JcaServerChannel extends Channel {
 
     @Override
     public ChannelRecord getRawValueRecord() throws ConnectionException, GetException {
-        return new ChannelRecord(new ValueAdaptor() {
-
-            @Override
-            public ArrayValue getStore() {
-                return ArrayValue.arrayValueFromArray(pv.getValue());
-            }
-        });
+        return getRawTimeRecord();
     }
 
     @Override
     protected ChannelRecord getRawStringValueRecord() throws ConnectionException, GetException {
-        // nothing to do here. Not used.
-        return null;
+        return getRawTimeRecord();
     }
 
     @Override
     protected ChannelStatusRecord getRawStringStatusRecord() throws ConnectionException, GetException {
-        // nothing to do here. Not used.
-        return null;
+        return getRawTimeRecord();
     }
 
     @Override
     protected ChannelTimeRecord getRawStringTimeRecord() throws ConnectionException, GetException {
-        // nothing to do here. Not used.
-        return null;
+        return getRawTimeRecord();
     }
 
     @Override
@@ -246,7 +237,7 @@ public class JcaServerChannel extends Channel {
         return new ChannelTimeRecord(new TimeAdaptor() {
         	final BigDecimal EPOCH_SECONDS_OFFSET = new BigDecimal( 7305*24*3600 );     // offset from standard Java epoch
 
-        	private Object value = pv.getValue();
+        	private ArrayValue value = ArrayValue.arrayValueFromArray(pv.getValue());
         	private BigDecimal timestamp = pv.getTimestamp().asBigDecimal().add( EPOCH_SECONDS_OFFSET ).setScale( 9, BigDecimal.ROUND_HALF_UP );
         	
 			@Override
@@ -261,7 +252,7 @@ public class JcaServerChannel extends Channel {
 
 			@Override
 			public ArrayValue getStore() {
-				return ArrayValue.arrayValueFromArray(value);				
+				return value;
 			}
 
 			@Override
