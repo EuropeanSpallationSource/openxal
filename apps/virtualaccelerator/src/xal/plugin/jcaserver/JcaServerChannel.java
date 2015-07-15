@@ -1,9 +1,13 @@
 package xal.plugin.jcaserver;
 
+import gov.aps.jca.cas.ProcessVariableEventCallback;
+import gov.aps.jca.dbr.DBR;
 import gov.aps.jca.dbr.Severity;
 import gov.aps.jca.dbr.Status;
 
 import java.math.BigDecimal;
+
+import com.cosylab.epics.caj.cas.ProcessVariableEventDispatcher;
 
 import xal.ca.Channel;
 import xal.ca.ChannelRecord;
@@ -33,6 +37,7 @@ public class JcaServerChannel extends Channel {
 
 
     private ServerMemoryProcessVariable pv;
+    private ProcessVariableEventDispatcher pved;;
 
     /** size for array PVs */
     public static final int DEFAULT_ARRAY_SIZE = 1024;
@@ -48,11 +53,15 @@ public class JcaServerChannel extends Channel {
         size = signal.matches(".*(TBT|A)") ? DEFAULT_ARRAY_SIZE : 1;
         pv = channelServer.registerRawPV(signal, new double[size]);
         pv.setUnits("units");
+        
+        pved = new ProcessVariableEventDispatcher(pv);
+        pv.setEventCallback(pved);
+        
         connectionFlag = true;
 
         if (size == 1) {
             final String[] warningPVs = getWarningLimitPVs();
-            channelServer.registerRawPV(warningPVs[0], 0);
+            channelServer.registerRawPV(warningPVs[0], 0); // TODO is this really needed? 
             channelServer.registerRawPV(warningPVs[1], 0);
 
             final String[] alarmPVs = getAlarmLimitPVs();
@@ -243,14 +252,37 @@ public class JcaServerChannel extends Channel {
 
     @Override
     public ChannelStatusRecord getRawStatusRecord() throws ConnectionException, GetException {
-        // nothing to do here. Not used.
-        return null;
+        return getRawTimeRecord();
     }
 
     @Override
-    public ChannelTimeRecord getRawTimeRecord() throws ConnectionException, GetException {
-        // nothing to do here. Not used.
-        return null;
+    public ChannelTimeRecord getRawTimeRecord() {
+        return new ChannelTimeRecord(new TimeAdaptor() {
+        	final BigDecimal EPOCH_SECONDS_OFFSET = new BigDecimal( 7305*24*3600 );     // offset from standard Java epoch
+
+        	private Object value = pv.getValue();
+        	private BigDecimal timestamp = pv.getTimestamp().asBigDecimal().add( EPOCH_SECONDS_OFFSET ).setScale( 9, BigDecimal.ROUND_HALF_UP );
+        	
+			@Override
+			public int status() {					
+				return Status.NO_ALARM.getValue();
+			}
+
+			@Override
+			public int severity() {
+				return Severity.NO_ALARM.getValue();
+			}
+
+			@Override
+			public ArrayValue getStore() {
+				return ArrayValue.arrayValueFromArray(value);				
+			}
+
+			@Override
+			public BigDecimal getTimestamp() {					
+				return timestamp;
+			}            	
+        });
     }
 
     @Override
@@ -275,52 +307,38 @@ public class JcaServerChannel extends Channel {
     public void getRawValueTimeCallback(IEventSinkValTime listener, boolean attemptConnection)
             throws ConnectionException, GetException {        
         if (listener != null) {
-            listener.eventValue(new ChannelTimeRecord(new TimeAdaptor() {
-            	final BigDecimal EPOCH_SECONDS_OFFSET = new BigDecimal( 7305*24*3600 );     // offset from standard Java epoch
-
-				@Override
-				public int status() {					
-					return Status.NO_ALARM.getValue();
-				}
-
-				@Override
-				public int severity() {
-					return Severity.NO_ALARM.getValue();
-				}
-
-				@Override
-				public ArrayValue getStore() {
-					return ArrayValue.arrayValueFromArray(pv.getValue());				
-				}
-
-				@Override
-				public BigDecimal getTimestamp() {					
-					return pv.getTimestamp().asBigDecimal().add( EPOCH_SECONDS_OFFSET ).setScale( 9, BigDecimal.ROUND_HALF_UP );
-				}            	
-            }), this);
+            listener.eventValue(getRawTimeRecord(), this);
         }
 
     }
 
+    
     @Override
-    public Monitor addMonitorValTime(IEventSinkValTime listener, int intMaskFire) throws ConnectionException,
+    public Monitor addMonitorValTime(final IEventSinkValTime listener, final int intMaskFire) throws ConnectionException,
             MonitorException {
-        return null;
-        // TODO check if ok.
+    	return new JcaServerMonitor(listener, intMaskFire);
     }
 
     @Override
-    public Monitor addMonitorValStatus(IEventSinkValStatus listener, int intMaskFire) throws ConnectionException,
+    public Monitor addMonitorValStatus(final IEventSinkValStatus listener, int intMaskFire) throws ConnectionException,
             MonitorException {
-        return null;
-        // TODO check if ok.
+    	return new JcaServerMonitor(new IEventSinkValTime() {
+			@Override
+			public void eventValue(ChannelTimeRecord record, Channel chan) {
+				listener.eventValue(record, chan);
+			}
+    	}, intMaskFire);
     }
 
     @Override
-    public Monitor addMonitorValue(IEventSinkValue listener, int intMaskFire) throws ConnectionException,
+    public Monitor addMonitorValue(final IEventSinkValue listener, int intMaskFire) throws ConnectionException,
             MonitorException {
-        return null;
-        // TODO check if ok.
+    	return new JcaServerMonitor(new IEventSinkValTime() {
+			@Override
+			public void eventValue(ChannelTimeRecord record, Channel chan) {
+				listener.eventValue(record, chan);
+			}
+    	}, intMaskFire);
     }
 
     @Override
@@ -398,9 +416,36 @@ public class JcaServerChannel extends Channel {
             listener.putCompleted(this);
         }
     }
+    
+    private class JcaServerMonitor extends Monitor implements ProcessVariableEventCallback {
+    	private int maskEvent;
+    	private IEventSinkValTime listener;
+		
+    	protected JcaServerMonitor(IEventSinkValTime listener, int intMaskEvent)
+				throws ConnectionException {
+			super(JcaServerChannel.this, intMaskEvent);
+			this.listener = listener;
+			this.maskEvent = intMaskEvent;
+		}
+		
+    	@Override
+		public void postEvent(int select, DBR event) {
+			if ((select & maskEvent) != 0)
+				listener.eventValue(getRawTimeRecord(), JcaServerChannel.this);
+		}
+	
+		@Override
+		public void canceled() {
+		}
+		
+		@Override
+		protected void begin() throws MonitorException {
+			pved.registerEventListener(this);
+		}
 
-    protected ServerMemoryProcessVariable getPV() {
-        return pv;
+		@Override
+		public void clear() {
+			pved.unregisterEventListener(this);			
+		}
     }
-
 }
