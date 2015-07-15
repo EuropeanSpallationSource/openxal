@@ -18,10 +18,7 @@ import xal.smf.Accelerator;
 import xal.tools.data.DataAdaptor;
 import xal.tools.messaging.MessageCenter;
 import xal.tools.xml.XmlDataAdaptor;
-//import edu.stanford.lcls.xal.model.RunModel;
-//import edu.stanford.lcls.xal.tools.ca.ConnectionManager;
 import edu.stanford.lcls.modelmanager.view.ModelPlotData;
-import edu.stanford.lcls.modelmanager.view.ModelStateView;
 import edu.stanford.lcls.xal.model.RunModel;
 import edu.stanford.lcls.xal.model.RunModelConfiguration;
 import edu.stanford.slac.Message.Message;
@@ -423,37 +420,25 @@ public class BrowserModel {
 			_selectedMachineModel = null;
 			_selectedMachineModelDetail = null;
 			_selectedMachineModelDevice = null;
-			EVENT_PROXY.modelStateChanged(this);
-			return;
 		} else if (_selectedMachineModel == null
 				&& selectedMachineModel != null) {
 			setSelectedModel(selectedMachineModel);
-			EVENT_PROXY.modelStateChanged(this);
-			return;
 		} else if (_selectedMachineModel != null
 				&& selectedMachineModel != null
 				&& !(_selectedMachineModel.getPropertyValue("ID")
 						.equals(selectedMachineModel.getPropertyValue("ID")))) {
 			setSelectedModel(selectedMachineModel);
-			EVENT_PROXY.modelStateChanged(this);
-			return;
 		} else if (!(_referenceMachineModel.getPropertyValue("ID")
 				.equals(referenceMachineModel.getPropertyValue("ID")))
 				&& _selectedMachineModel == null) {
 			setReferenceModel(referenceMachineModel);
-			EVENT_PROXY.modelStateChanged(this);
-			return;
 		} else if (!(_referenceMachineModel.getPropertyValue("ID")
 				.equals(referenceMachineModel.getPropertyValue("ID")))
 				&& _selectedMachineModel != null) {
 			setReferenceModel(referenceMachineModel);
 			setSelectedModel(_selectedMachineModel);
-			EVENT_PROXY.modelStateChanged(this);
-			return;
-		} else {
-			ModelStateView.getProgressBar().setString("Loading Success !");
-			ModelStateView.getProgressBar().setIndeterminate(false);
 		}
+		EVENT_PROXY.modelStateChanged(this);
 	}
 
 	public void setGoldModel(MachineModel goldMachineModel)
