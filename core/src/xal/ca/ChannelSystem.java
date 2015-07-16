@@ -26,14 +26,6 @@ abstract public class ChannelSystem {
 	 */
     abstract public void setDebugMode( final boolean debugFlag );
 
-
-	/** 
-	 * Create a new channel server 
-	 * @return new channel server
-	 * @throws java.lang.Exception as appropriate
-	 */
-	abstract public ChannelServer newChannelServer() throws Exception;
-	
 	
 	/** flush requests to the server */
 	abstract public void flushIO();

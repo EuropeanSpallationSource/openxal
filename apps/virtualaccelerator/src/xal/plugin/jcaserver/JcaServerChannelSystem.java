@@ -13,7 +13,6 @@ import gov.aps.jca.TimeoutException;
 
 import java.util.prefs.Preferences;
 
-import xal.ca.ChannelServer;
 import xal.ca.ChannelSystem;
 
 /**
@@ -138,11 +137,5 @@ class JcaServerChannelSystem extends ChannelSystem {
     @Override
     public void printInfo() {
         JCA_CONTEXT.printInfo();
-    }
-
-    @Override
-    public ChannelServer newChannelServer() throws Exception {
-        //Nothing to do here not used.
-        return null;
     }
 }
