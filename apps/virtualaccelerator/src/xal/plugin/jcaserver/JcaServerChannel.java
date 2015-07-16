@@ -7,8 +7,6 @@ import gov.aps.jca.dbr.Status;
 
 import java.math.BigDecimal;
 
-import com.cosylab.epics.caj.cas.ProcessVariableEventDispatcher;
-
 import xal.ca.Channel;
 import xal.ca.ChannelRecord;
 import xal.ca.ChannelStatusRecord;
@@ -26,6 +24,8 @@ import xal.ca.TimeAdaptor;
 import xal.ca.ValueAdaptor;
 import xal.tools.ArrayValue;
 
+import com.cosylab.epics.caj.cas.ProcessVariableEventDispatcher;
+
 /**
  * JcaServerChannel using rawProcessVariables instead of ChanneServerPVs. Used on local machine with server.
  * 
@@ -34,9 +34,7 @@ import xal.tools.ArrayValue;
  */
 
 public class JcaServerChannel extends Channel {
-
-
-    private ServerMemoryProcessVariable pv;
+	private ServerMemoryProcessVariable pv;
     private ProcessVariableEventDispatcher pved;;
 
     /** size for array PVs */
@@ -425,4 +423,36 @@ public class JcaServerChannel extends Channel {
 			pved.unregisterEventListener(this);			
 		}
     }
+    
+    public void setLowerAlarmLimit(Number lowerAlarmLimit) {
+		pv.setLowerAlarmLimit(lowerAlarmLimit);
+	}
+
+	public void setLowerCtrlLimit(Number lowerCtrlLimit) {
+		pv.setLowerCtrlLimit(lowerCtrlLimit);
+	}
+
+	public void setLowerDispLimit(Number lowerDispLimit) {
+		pv.setLowerDispLimit(lowerDispLimit);
+	}
+
+	public void setLowerWarningLimit(Number lowerWarningLimit) {
+		pv.setLowerWarningLimit(lowerWarningLimit);
+	}
+
+	public void setUpperAlarmLimit(Number upperAlarmLimit) {
+		pv.setUpperAlarmLimit(upperAlarmLimit);
+	}
+
+	public void setUpperCtrlLimit(Number upperCtrlLimit) {
+		pv.setUpperCtrlLimit(upperCtrlLimit);
+	}
+
+	public void setUpperDispLimit(Number upperDispLimit) {
+		pv.setUpperDispLimit(upperDispLimit);
+	}
+
+	public void setUpperWarningLimit(Number upperWarningLimit) {
+		pv.setUpperWarningLimit(upperWarningLimit);
+	}    
 }
