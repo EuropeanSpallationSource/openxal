@@ -57,7 +57,7 @@ public class ModelPlotView implements SwingConstants {
 	private static int plotSignMethod;
 	private static boolean plotNodeMethod;
 	private static int plotMethod;
-	private static boolean isGold;
+	private boolean isGold;
 	protected BrowserModel _model;
 	private MachineModel _referenceMachineModel;
 	private MachineModelDetail[] _referenceMachineModelDetail;
@@ -204,6 +204,8 @@ public class ModelPlotView implements SwingConstants {
 					setPlotPanelEnable(true);
 					_referenceMachineModel = model.getReferenceMachineModel();
 					_referenceMachineModelDetail = model.getReferenceMachineModelDetail();
+					isGold = _model.isGold();
+					
 					_selectedMachineModel = model.getSelectedMachineModel();
 					_selectedMachineModelDetail = model.getSelectedMachineModelDetail();
 					if (_selectedMachineModelDetail == null) _selectedMachineModel = null;
@@ -273,19 +275,48 @@ public class ModelPlotView implements SwingConstants {
 	}
 	
 	public void plotAction() {
-		isGold = _model.isGold();
 		Color refernecColor;
 		if (isGold)
 			refernecColor = Color.ORANGE;
 		else
 			refernecColor = Color.CYAN;
 		ModelPlotData.getRange();
-		if (_selectedMachineModel == null){
+		if (_selectedMachineModel != null && _referenceMachineModel != null){
+			if (plotMethod == 0){
+				zPlotPanel = ModelPlotData.plotOriginal(_referenceMachineModelDetail, 
+						_selectedMachineModelDetail, plotFunctionID1, plotFunctionID2, 
+						plotSignMethod, plotNodeMethod, modelPlotBox, isGold);
+				zPlotPanel.setTitle("Selected Model & Reference Model", Color.WHITE);
+			} else if (plotMethod == 1){
+				zPlotPanel = ModelPlotData.plotDifferent(_model
+						.getReferenceMachineModelDetail(), _model
+						.getSelectedMachineModelDetail(), plotFunctionID1,
+						plotFunctionID2, plotSignMethod, plotNodeMethod, modelPlotBox);
+				zPlotPanel.setTitle("Difference Between Selected & Reference Model", Color.WHITE);
+			}
+		} else if (_referenceMachineModel != null)	{
 			zPlotPanel = ModelPlotData.plotData(_referenceMachineModelDetail,
 					plotFunctionID1, plotFunctionID2, plotSignMethod, plotNodeMethod, modelPlotBox, isGold);
-			zPlotPanel.setTitle("Reference Machine Model", Color.WHITE);
-			zPlotPanel.getChart().addSubtitle(0,  new TextTitle("Reference Model ID: " +
-					_referenceMachineModel.getPropertyValue("ID").toString() + 
+			zPlotPanel.setTitle("Reference Machine Model", Color.WHITE);	
+		} else if (_selectedMachineModel != null){
+			zPlotPanel = ModelPlotData.plotData(_selectedMachineModelDetail,
+					plotFunctionID1, plotFunctionID2, plotSignMethod, plotNodeMethod, modelPlotBox, isGold);
+			zPlotPanel.setTitle("Selected Machine Model", Color.WHITE);			
+		}
+		
+		if (_selectedMachineModel != null)
+			zPlotPanel.getChart().addSubtitle(new TextTitle("Selected Model ID: "+
+					_selectedMachineModel.getPropertyValue("ID") +
+					"    Run Source: " +
+					_selectedMachineModel.getPropertyValue("RUN_SOURCE_CHK") +
+					"    Created Date: " +
+					_selectedMachineModel.getPropertyValue("DATE_CREATED"),
+					new Font("SansSerif", Font.PLAIN, 11), Color.GREEN,
+					Title.DEFAULT_POSITION, Title.DEFAULT_HORIZONTAL_ALIGNMENT,
+	                Title.DEFAULT_VERTICAL_ALIGNMENT, Title.DEFAULT_PADDING));
+		if (_referenceMachineModel != null)
+			zPlotPanel.getChart().addSubtitle(new TextTitle("Reference Model ID: " +
+					_referenceMachineModel.getPropertyValue("ID") + 
 					"    Run Source: " +
 					_referenceMachineModel.getPropertyValue("RUN_SOURCE_CHK") +
 					"    Created Date: " + 
@@ -293,51 +324,8 @@ public class ModelPlotView implements SwingConstants {
 					new Font("SansSerif", Font.PLAIN, 11), refernecColor,
 					Title.DEFAULT_POSITION, Title.DEFAULT_HORIZONTAL_ALIGNMENT,
 	                Title.DEFAULT_VERTICAL_ALIGNMENT, Title.DEFAULT_PADDING));
-//			.addSubtitle( new TextTitle("Reference Model ID: " +
-//					_referenceMachineModel.getPropertyValue("ID").toString() + 
-//					"    Run Source: " +
-//					_referenceMachineModel.getPropertyValue("RUN_SOURCE_CHK") +
-//					"    Created Date: " + 
-//					_referenceMachineModel.getPropertyValue("DATE_CREATED"),
-//					new Font("SansSerif", Font.PLAIN, 11), Color.WHITE,
-//					Title.DEFAULT_POSITION, Title.DEFAULT_HORIZONTAL_ALIGNMENT,
-//	                Title.DEFAULT_VERTICAL_ALIGNMENT, Title.DEFAULT_PADDING));
-			modelPlotView.setDividerLocation(modelPlotView.getDividerLocation());
-			return;
-		}
-		if (plotMethod == 0){
-			zPlotPanel = ModelPlotData.plotOriginal(_referenceMachineModelDetail, 
-					_selectedMachineModelDetail, plotFunctionID1, plotFunctionID2, 
-					plotSignMethod, plotNodeMethod, modelPlotBox, isGold);
-			zPlotPanel.setTitle("Selected Model & Reference Model", Color.WHITE);
-		} else if (plotMethod == 1){
-			zPlotPanel = ModelPlotData.plotDifferent(_model
-					.getReferenceMachineModelDetail(), _model
-					.getSelectedMachineModelDetail(), plotFunctionID1,
-					plotFunctionID2, plotSignMethod, plotNodeMethod, modelPlotBox);
-			zPlotPanel.setTitle("Difference Between Selected & Reference Model", Color.WHITE);
-		}
-		zPlotPanel.getChart().addSubtitle(0, new TextTitle("Selected Model ID: "+
-				_selectedMachineModel.getPropertyValue("ID") +
-				"    Run Source: " +
-				_selectedMachineModel.getPropertyValue("RUN_SOURCE_CHK") +
-				"    Created Date: " +
-				_selectedMachineModel.getPropertyValue("DATE_CREATED"),
-				new Font("SansSerif", Font.PLAIN, 11), Color.GREEN,
-				Title.DEFAULT_POSITION, Title.DEFAULT_HORIZONTAL_ALIGNMENT,
-                Title.DEFAULT_VERTICAL_ALIGNMENT, Title.DEFAULT_PADDING));		
-		zPlotPanel.getChart().addSubtitle(1, new TextTitle("Reference Model ID: " +
-				_referenceMachineModel.getPropertyValue("ID") + 
-				"    Run Source: " +
-				_referenceMachineModel.getPropertyValue("RUN_SOURCE_CHK") +
-				"    Created Date: " + 
-				_referenceMachineModel.getPropertyValue("DATE_CREATED"),
-				new Font("SansSerif", Font.PLAIN, 11), refernecColor,
-				Title.DEFAULT_POSITION, Title.DEFAULT_HORIZONTAL_ALIGNMENT,
-                Title.DEFAULT_VERTICAL_ALIGNMENT, Title.DEFAULT_PADDING));
 		// modelPlotView.repaint(); //Repaint doesn't work!!!
-		modelPlotView.setDividerLocation(modelPlotView
-				.getDividerLocation());
+		modelPlotView.setDividerLocation(modelPlotView.getDividerLocation());
 	}
 
 	public void setPlotPanelEnable(boolean enabled) {

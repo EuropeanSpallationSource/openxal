@@ -82,7 +82,6 @@ public class ToolBarView implements SwingConstants {
 	private ModelListView modelListView;
 	private Thread thread1;
 	private Thread thread2;
-	private int modelModesID;
 	
 	private PVLogSnapshotChooser plsc;
 	private JDialog pvLogSelector;
@@ -118,14 +117,18 @@ public class ToolBarView implements SwingConstants {
 		 */
 		
 		
-		// usually a beamline selector would be here, but we put in probe editor		
-		// TODO OPENXAL beamline selections
-		String[] beamlineSelections = {};
-		beamlineSelector = new JComboBox<String>(beamlineSelections);
+		// beamline selection
+		JPanel bs = new JPanel();
+		bs.setOpaque(false);
+		bs.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "Beamline:"));
+		bs.setLayout(new BoxLayout(bs, BoxLayout.LINE_AXIS));
+		
+		beamlineSelector = new JComboBox<String>(model.getRunModel().getBeamlines().toArray(new String[]{}));
 		beamlineSelector.setToolTipText("select a beamline");
 		beamlineSelector.setMaximumSize(new Dimension(180, 28));
 		beamlineSelector.setEnabled(false);
-		//toolBarView.add(beamlineSelector);
+		bs.add(beamlineSelector);
+		toolBarView.add(bs);
 		
 		
 		// initial parameters
@@ -157,7 +160,7 @@ public class ToolBarView implements SwingConstants {
 		matcherButton.addActionListener(new ActionListener() {			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Matcher matcher = new Matcher(model.getRunModel().getAccelerator(), model.getRunModel().getProbe());
+				Matcher matcher = new Matcher(model.getRunModel().getSequence(), model.getRunModel().getProbe());
 				MatcherDialog md = new MatcherDialog(parent, matcher, true);			
 			}
 		});
@@ -256,42 +259,36 @@ public class ToolBarView implements SwingConstants {
 			}
 		});
 		
-		/*
+		
 		beamlineSelector.addActionListener(new ActionListener() { 
 			public void actionPerformed(ActionEvent e) {
-				if(beamlineSelector.getSelectedIndex() == 0) {
-					modelModesID = 5;
+				/*if(beamlineSelector.getSelectedIndex() == 0) {
 					BPRPSelector.setEnabled(true);
 					for (int i=0; i< refPts.length; i++)
 						((ComboItem) refPts[i]).setEnabled(true);
-				}
+				}*/
+				setQueryViewEnable(false);
+				modelListView.setModelListViewEnable(false);
+				ModelStateView.getDataBaseState();
+				ModelStateView.getMachineModelState().setText(
+						"Trying to find models in the selected beam line...");
+				ModelStateView.getProgressBar().setString("Loading ...");
+				ModelStateView.getProgressBar().setIndeterminate(true);
+				Message.info("Trying to find models in the selected beam line...");
 				
-				thread1 = new Thread(new Runnable() {
-					public void run() {
-						setQueryViewEnable(false);
-						modelListView.setModelListViewEnable(false);
-						ModelStateView.getDataBaseState();
-						ModelStateView.getMachineModelState().setText(
-								"Trying to find models in the selected beam line...");
-						ModelStateView.getProgressBar().setString("Loading ...");
-						ModelStateView.getProgressBar().setIndeterminate(true);
-						Message.info("Trying to find models in the selected beam line...");
-					}
-				});
 				thread2 = new Thread(new Runnable() {
 					public void run() {
 						try {
-							model.setModelMode(modelModesID);
+							model.setModelMode((String)beamlineSelector.getSelectedItem());
 						} catch (SQLException exception) {
 							Message.error("SQLException: " + exception.getMessage());			
 							exception.printStackTrace();
 						}
 					}
 				});
-				thread1.start();
 				thread2.start();
 			}
-		});*/
+		});
 
 
 		//mp.addSeparator(new Dimension(5, 10));

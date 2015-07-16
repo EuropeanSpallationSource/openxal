@@ -305,7 +305,7 @@ public class ModelListView {
 		}
 	}
 
-	public void findMachineModelInRange(Date startDate, Date endDate, int modelModesID) {
+	public void findMachineModelInRange(Date startDate, Date endDate, String modelModesID) {
 		try {
 			model.fetchMachineModelInRange(startDate, endDate, modelModesID);
 		} catch (Exception exception) {

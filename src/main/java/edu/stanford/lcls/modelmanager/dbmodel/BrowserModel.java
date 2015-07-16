@@ -10,11 +10,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import javax.swing.ComboBoxModel;
 import javax.swing.JFrame;
 
 import xal.model.ModelException;
 import xal.sim.scenario.Scenario;
 import xal.smf.Accelerator;
+import xal.smf.AcceleratorSeq;
 import xal.tools.data.DataAdaptor;
 import xal.tools.messaging.MessageCenter;
 import xal.tools.xml.XmlDataAdaptor;
@@ -69,14 +71,7 @@ public class BrowserModel {
 	protected RunModel rm;
 	
 	private final String autoRunID = "RUN";
-	protected List<Integer> modelModes = new ArrayList<Integer>(Arrays
-			.asList(new Integer[] { 5, 53, 52, 51 }));
-	protected List<String> modelModesName = new ArrayList<String>(Arrays
-			.asList(new String[] { "CATHODE to Main Dump", "CATHODE to 52SL2",
-					"CATHODE to 135-Mev SPECT DUMP",
-					"CATHODE to GUN SPECT DUMP" }));
-	protected int modelMode = 5;
-	protected boolean isGold;
+	protected String modelMode;
 	protected Accelerator acc;
 	
 	protected boolean stateReady = false;
@@ -93,6 +88,7 @@ public class BrowserModel {
 	public BrowserModel(Accelerator acc) {
 		this.acc = acc;
 		rm = new RunModel(acc);
+		modelMode = rm.getBeamlines().get(0);
 		MESSAGE_CENTER = new MessageCenter("Browser Model");
 		EVENT_PROXY = MESSAGE_CENTER.registerSource(this,
 				BrowserModelListener.class);
@@ -235,19 +231,20 @@ public class BrowserModel {
 		return plotFunctionID2;
 	}
 
-	public int getModelMode() {
+	public String getModelMode() {
 		return modelMode;
 	}
 
 	/** beamline selection */
-	public void setModelMode(int _modelMode) throws SQLException {
+	public void setModelMode(String _modelMode) throws SQLException {
+		if (modelMode != _modelMode && runState.equals(RunState.FETCHED_DATA)) resetRunData();
 		modelMode = _modelMode;
-		filterMachineModelInMode(_allMachineModels, _goldMachineModels,
-				modelMode);
+		rm.setModelMode(modelMode);
+		filterMachineModelInMode(_allMachineModels, _goldMachineModels, modelMode);
 	}
 
 	public boolean isGold() {
-		return isGold;
+		return _referenceMachineModel != null ? _referenceMachineModel.getPropertyValue("GOLD").equals("PRESENT") : false;
 	}
 	
 	/**
@@ -255,7 +252,7 @@ public class BrowserModel {
 	 */
 
 	public void fetchMachineModelInRange(final java.util.Date startTime,
-			final java.util.Date endTime, final int modelMode)
+			final java.util.Date endTime, final String modelMode)
 			throws SQLException {
 		List<MachineModel> _machineModel_tmp1 = PERSISTENT_STORE
 				.fetchMachineModelsInRange(_connection, startTime, endTime);
@@ -295,11 +292,11 @@ public class BrowserModel {
 				goldMachineModels.add(allMachineModel.get(i));
 		}
 		boolean containDesignGold;
-		for (int i = 0; i < modelModes.size(); i++) {
+		for (String modelMode : rm.getBeamlines()) {
 			containDesignGold = false;
 			for (int j = 0; j < goldMachineModels.size(); j++) {
 				if (goldMachineModels.get(j).getPropertyValue("MODEL_MODES_ID")
-						.equals(String.valueOf(modelModes.get(i)))
+						.equals(String.valueOf(modelMode))
 						&& goldMachineModels.get(j).getPropertyValue(
 								"RUN_SOURCE_CHK").equals("DESIGN")) {
 					containDesignGold = true;
@@ -319,7 +316,7 @@ public class BrowserModel {
 									.getPropertyValue("MODEL_MODES_ID") != null
 							&& allMachineModel.get(j).getPropertyValue(
 									"MODEL_MODES_ID").equals(
-									String.valueOf(modelModes.get(i)))) {
+									String.valueOf(modelMode))) {
 						if (lastDesignMachineModel == null)
 							lastDesignMachineModel = allMachineModel.get(j);
 						else {
@@ -343,24 +340,17 @@ public class BrowserModel {
 		return goldMachineModels;
 	}
 
-	public MachineModel getGoldMachineModel(List<MachineModel> goldMachineModels,
-			int modelMode, String runSource) throws SQLException {
-		if (modelMode == 0)
-			modelMode = 5;
+	public MachineModel getGoldMachineModel(List<MachineModel> goldMachineModels, String modelMode, String runSource) throws SQLException {
 		MachineModel goldModel = null;
 		for (int i = 0; i < goldMachineModels.size(); i++) {
-			if (goldMachineModels.get(i).getPropertyValue("MODEL_MODES_ID").equals(
-					String.valueOf(modelMode))
-					&& goldMachineModels.get(i).getPropertyValue("RUN_SOURCE_CHK")
-							.equals(runSource))
+			if (goldMachineModels.get(i).getPropertyValue("MODEL_MODES_ID").equals(modelMode)
+					&& goldMachineModels.get(i).getPropertyValue("RUN_SOURCE_CHK").equals(runSource))
 				goldModel = goldMachineModels.get(i);
 		}
 		if (goldModel == null && runSource.equals("EXTANT")) {
 			for (int i = 0; i < goldMachineModels.size(); i++) {
-				if (goldMachineModels.get(i).getPropertyValue("MODEL_MODES_ID")
-						.equals(String.valueOf(modelMode))
-						&& goldMachineModels.get(i).getPropertyValue(
-								"RUN_SOURCE_CHK").equals("DESIGN"))
+				if (goldMachineModels.get(i).getPropertyValue("MODEL_MODES_ID").equals(modelMode)
+						&& goldMachineModels.get(i).getPropertyValue("RUN_SOURCE_CHK").equals("DESIGN"))
 					goldModel = goldMachineModels.get(i);
 			}
 		}
@@ -371,14 +361,14 @@ public class BrowserModel {
 	 * filter machine models
 	 */
 	public void filterMachineModelInMode(List<MachineModel> allMachineModels,
-			List<MachineModel> goldMachineModels, int modelMode)
+			List<MachineModel> goldMachineModels, String modelMode)
 			throws SQLException {
 		// add run if run is not null
 		if (_runMachineModel != null) {
 			allMachineModels.add(_runMachineModel);
 		}
 		List<MachineModel> fetchedMachineModels;
-		if (modelMode == 0) {
+		if (modelMode == null || RunModel.DEFAULT_BEAMLINE_TEXT.equals(modelMode)) {
 			fetchedMachineModels = allMachineModels;
 		} else {
 			fetchedMachineModels = new ArrayList<>();
@@ -386,23 +376,18 @@ public class BrowserModel {
 			for (int i = 0; i < allMachineModels.size(); i++) {
 				MachineModel machineModel = allMachineModels.get(i);
 				if (machineModel.getPropertyValue("MODEL_MODES_ID") != null) {
-					if ((Integer.valueOf((String)machineModel
-							.getPropertyValue("MODEL_MODES_ID"))).intValue() == modelMode) {
+					if (modelMode.equals((String)machineModel.getPropertyValue("MODEL_MODES_ID"))) {
 						fetchedMachineModels.add(machineModel);						
 					}
 				}
 			}
 		}
-		Collections.sort(fetchedMachineModels, new Sort(Sort.DOWM)); // TODO check if correct
+		Collections.sort(fetchedMachineModels, new Sort(Sort.DOWM));
 
 		_fetchedMachineModels = fetchedMachineModels;
-		_goldMachineModel = getGoldMachineModel(goldMachineModels, modelMode,
-				"DESIGN");
+		_goldMachineModel = getGoldMachineModel(goldMachineModels, rm.getModelMode(), "DESIGN");
 		setGoldModel(_goldMachineModel);
-		_referenceMachineModel = getGoldMachineModel(goldMachineModels,
-				modelMode, "EXTANT");
-		isGold = _referenceMachineModel.getPropertyValue("GOLD").equals(
-				"PRESENT");
+		_referenceMachineModel = getGoldMachineModel(goldMachineModels,	rm.getModelMode(), "EXTANT");
 		_selectedMachineModel = null;
 		_selectedMachineModelDetail = null;
 		_selectedMachineModelDevice = null;
@@ -414,27 +399,15 @@ public class BrowserModel {
 	}
 
 	public void setSelectedMachineModel(MachineModel referenceMachineModel, MachineModel selectedMachineModel) throws SQLException {
-		isGold = referenceMachineModel.getPropertyValue("GOLD").equals(
-				"PRESENT");
 		if (_selectedMachineModel != null && selectedMachineModel == null) {
 			_selectedMachineModel = null;
 			_selectedMachineModelDetail = null;
 			_selectedMachineModelDevice = null;
-		} else if (_selectedMachineModel == null
-				&& selectedMachineModel != null) {
+		} else if (_selectedMachineModel != selectedMachineModel) {
 			setSelectedModel(selectedMachineModel);
-		} else if (_selectedMachineModel != null
-				&& selectedMachineModel != null
-				&& !(_selectedMachineModel.getPropertyValue("ID")
-						.equals(selectedMachineModel.getPropertyValue("ID")))) {
-			setSelectedModel(selectedMachineModel);
-		} else if (!(_referenceMachineModel.getPropertyValue("ID")
-				.equals(referenceMachineModel.getPropertyValue("ID")))
-				&& _selectedMachineModel == null) {
+		} else if (_referenceMachineModel != referenceMachineModel && _selectedMachineModel == null) {
 			setReferenceModel(referenceMachineModel);
-		} else if (!(_referenceMachineModel.getPropertyValue("ID")
-				.equals(referenceMachineModel.getPropertyValue("ID")))
-				&& _selectedMachineModel != null) {
+		} else if (_referenceMachineModel != referenceMachineModel && _selectedMachineModel != null) {
 			setReferenceModel(referenceMachineModel);
 			setSelectedModel(_selectedMachineModel);
 		}
@@ -444,12 +417,14 @@ public class BrowserModel {
 	public void setGoldModel(MachineModel goldMachineModel)
 			throws SQLException {
 		_goldMachineModel = goldMachineModel;
-		_goldMachineModelDetail = PERSISTENT_STORE.fetchMachineModelDetails(acc, _connection,
-				Long.valueOf((String) _goldMachineModel.getPropertyValue("ID")));
+		if (goldMachineModel != null)
+			_goldMachineModelDetail = PERSISTENT_STORE.fetchMachineModelDetails(acc, _connection,
+					Long.valueOf((String) _goldMachineModel.getPropertyValue("ID")));
 	}
 
 	public void setReferenceModel(MachineModel referenceMachineModel) throws SQLException {
 		_referenceMachineModel = referenceMachineModel;
+		if (referenceMachineModel == null) return;
 		if (referenceMachineModel.getPropertyValue("ID").toString().equals(
 				autoRunID)) {
 			_referenceMachineModelDetail = _runMachineModelDetail;
@@ -519,17 +494,13 @@ public class BrowserModel {
 	}
 	
 	public void runModel(RunModelConfiguration config) throws SQLException, ModelException {
-		// beamline selection
-		rm.setModelMode(modelMode);
-
 		rm.run(config);
 		
 		Scenario scenario = rm.getScenario();
-		_runMachineModel = DataManager.getRunMachineModel(config.getRunModelMethod(),
-				modelMode); // add runMachineMode to _fetchedMachineModels
+		_runMachineModel = DataManager.getRunMachineModel(config.getRunModelMethod(), rm.getModelMode()); // add runMachineMode to _fetchedMachineModels
 		_runMachineModelDetail = DataManager.getRunMachineModeDetail(config.getRunModelMethod(), scenario);
 		_runMachineModelDevice = DataManager.getRunMachineModeDevice(scenario);
-		createRunModelComment(_runMachineModel, _runMachineModelDetail);
+		createRunModelComment(_runMachineModel, _runMachineModelDetail, rm.getModelMode());
 
 		addRunModelToFetchedModels(_runMachineModel);
 		setSelectedModel(_runMachineModel);
@@ -537,29 +508,18 @@ public class BrowserModel {
 		EVENT_PROXY.modelStateChanged(this);
 	}
 
-	public void createRunModelComment(MachineModel runMachineModel,
-			MachineModelDetail[] runMachineModelDetail) {
-		if (modelMode == 0) {
-			runMachineModel.setPropertyValue("COMMENTS", "Run "
-					+ runMachineModel.getPropertyValue("RUN_SOURCE_CHK")
-					+ " Model on "
-					+ modelModesName.get(modelModes.indexOf(5))
-					+ " beam line. And the Energy is "
-					+ runMachineModelDetail[runMachineModelDetail.length - 1]
-							.getPropertyValue("E") + " GeV.");
-		} else {
-			runMachineModel.setPropertyValue("COMMENTS", "Run "
-					+ runMachineModel.getPropertyValue("RUN_SOURCE_CHK")
-					+ " Model on "
-					+ modelModesName.get(modelModes.indexOf(modelMode))
-					+ " beam line. And the Energy is "
-					+ runMachineModelDetail[runMachineModelDetail.length - 1]
-							.getPropertyValue("E") + " GeV.");
-		}
+	public void createRunModelComment(MachineModel runMachineModel, MachineModelDetail[] runMachineModelDetail, String modelMode) {
+		runMachineModel.setPropertyValue("COMMENTS", "Run "
+				+ runMachineModel.getPropertyValue("RUN_SOURCE_CHK")
+				+ " Model on "
+				+ modelMode
+				+ " beam line. And the Energy is "
+				+ runMachineModelDetail[runMachineModelDetail.length - 1]
+						.getPropertyValue("E") + " GeV.");
 	}
 
 	public void addRunModelToFetchedModels(MachineModel runMachineModel) {
-		if (_fetchedMachineModels.get(0).getPropertyValue("ID").toString().equals(autoRunID))
+		if (_fetchedMachineModels.size() > 0 && _fetchedMachineModels.get(0).getPropertyValue("ID").toString().equals(autoRunID))
 			_fetchedMachineModels.set(0, runMachineModel);
 		else {
 			_fetchedMachineModels.add(runMachineModel);
@@ -609,9 +569,11 @@ public class BrowserModel {
 //				_runMachineModelDetail, _runMachineModelDevice);
 		String runID = DataManager.newUploadToDatabase(parent, this, _runMachineModel,
 				_runMachineModelDetail, _runMachineModelDevice);
-		// automatically update the table after a model is uploaded
-		removeRunModelFromFetchedModels(runID);
-		runState = RunState.NONE;
+		if (runID != null) {
+			// automatically update the table after a model is uploaded
+			removeRunModelFromFetchedModels(runID);
+			runState = RunState.NONE;
+		}
 		return runID;
 	}
 
@@ -665,8 +627,12 @@ public class BrowserModel {
 			_selectedMachineModelDevice = null;
 		}
 
-		if (_fetchedMachineModels.get(0).getPropertyValue("ID").toString().equals(autoRunID)) {			
+		if (_fetchedMachineModels.size() > 0 && _fetchedMachineModels.get(0).getPropertyValue("ID").toString().equals(autoRunID)) {			
 			_fetchedMachineModels.remove(0);
+		}
+		
+		if (_allMachineModels.size() > 0 && _allMachineModels.get(0).getPropertyValue("ID").toString().equals(autoRunID)) {			
+			_allMachineModels.remove(0);
 		}
 		
 		_runMachineModel = null;
@@ -676,4 +642,5 @@ public class BrowserModel {
 		runState = RunState.NONE;
 		EVENT_PROXY.modelStateChanged(this);
 	}
+
 }

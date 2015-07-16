@@ -20,7 +20,7 @@ public class MachineModelDetailTableModel extends AbstractTableModel implements
 	}
 
 	public void setMachineModelDetails(MachineModelDetail[] modelDetails) {
-		_modelDetails = modelDetails;
+		_modelDetails = modelDetails == null ? new MachineModelDetail[0] : modelDetails;
 		fireTableDataChanged();
 	}
 

@@ -1,5 +1,8 @@
 package edu.stanford.lcls.xal.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import xal.model.IAlgorithm;
 import xal.model.ModelException;
 import xal.model.probe.EnvelopeProbe;
@@ -8,30 +11,25 @@ import xal.sim.scenario.ProbeFactory;
 import xal.sim.scenario.Scenario;
 import xal.smf.Accelerator;
 import xal.smf.AcceleratorSeq;
-import xal.smf.data.XMLDataManager;
+import xal.smf.AcceleratorSeqCombo;
 
 public class RunModel {	
-	private AcceleratorSeq accelerator;
+	private Accelerator accelerator;
 	private Scenario scenario;
-	protected int modelMode = 5;
+	protected String modelMode;
 	private EnvelopeProbe probe;
+	private List<String> beamlines;
+	private String defaultBeamline;
 	
-	public RunModel(AcceleratorSeq acc) { 
-		try {
-			accelerator = acc;
+	public static final String DEFAULT_BEAMLINE_TEXT = "DEFAULT";
+
+	
+	public RunModel(Accelerator acc) { 
+		accelerator = acc;
 			
-			scenario = Scenario.newScenarioFor(accelerator);//, elementMapping);
-		
-			//IAlgorithm tracker = AlgorithmFactory.createEnvTrackerAdapt( accelerator );
-			IAlgorithm tracker = AlgorithmFactory.createEnvelopeTracker( accelerator );
-			
-			probe = ProbeFactory.getEnvelopeProbe( accelerator.getSequence("MEBT"), tracker );
-		} catch (ModelException | InstantiationException e) {
-			e.printStackTrace();
-		}	
+		initBeamlines();
+		resetProbe();				
 	}
-
-
 
 	public void run(RunModelConfiguration config) throws ModelException {
 		config.initialize(scenario);
@@ -41,8 +39,13 @@ public class RunModel {
 		scenario.run();
 	}
 
-	public AcceleratorSeq getAccelerator() {
-		return accelerator;
+	public AcceleratorSeq getSequence()
+	{
+		AcceleratorSeq seq = accelerator.getSequence(modelMode);
+		if (seq == null) {
+			seq = accelerator.getComboSequence(modelMode);
+		}
+		return seq;
 	}
 
 	public Scenario getScenario() {
@@ -54,20 +57,54 @@ public class RunModel {
 	}
 
 	/** beamline selection */
-	public void setModelMode(int _modelMode) {
-		modelMode = _modelMode;
+	public void setModelMode(String _modelMode) {
+		if (DEFAULT_BEAMLINE_TEXT.equals(_modelMode)) {
+			modelMode = defaultBeamline;
+		} else {
+			modelMode = _modelMode;
+		}
+		resetProbe();
+		try {
+			scenario = Scenario.newScenarioFor(getSequence()); //, elementMapping);
+		} catch (ModelException e) {
+			e.printStackTrace();
+		}
 	}
-
-
 
 	public void resetProbe() {
 		IAlgorithm tracker;
 		try {
 			tracker = AlgorithmFactory.createEnvelopeTracker( accelerator );
-			probe = ProbeFactory.getEnvelopeProbe( accelerator.getSequence("MEBT"), tracker );
+			AcceleratorSeq seq = getSequence();
+			probe = ProbeFactory.getEnvelopeProbe(seq, tracker);
+			if (seq instanceof AcceleratorSeqCombo)
+				seq = ((AcceleratorSeqCombo)seq).getConstituents().get(0);
+			probe.setPosition(accelerator.getPosition(seq));
 		} catch (InstantiationException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private void initBeamlines()
+	{
+		beamlines = new ArrayList<>();
+		beamlines.add(DEFAULT_BEAMLINE_TEXT);
+		for (AcceleratorSeq seq : accelerator.getComboSequences()) {
+			beamlines.add(seq.getId());
+		}
+		for (AcceleratorSeq seq : accelerator.getSequences()) {
+			beamlines.add(seq.getId());
+		}
+		defaultBeamline = beamlines.get(1);
+		setModelMode(defaultBeamline);
+	}
+	
+	public List<String> getBeamlines() {	
+		return beamlines;
+	}
+
+	public String getModelMode() {
+		return modelMode;
 	}
 	
 }

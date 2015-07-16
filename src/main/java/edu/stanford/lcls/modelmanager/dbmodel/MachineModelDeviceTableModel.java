@@ -21,7 +21,7 @@ public class MachineModelDeviceTableModel extends AbstractTableModel implements	
 	}
 
 	public void setMachineModelDevice(MachineModelDevice[] modelDevices) {
-		_modelDevices = modelDevices;
+		_modelDevices = modelDevices == null ? new MachineModelDevice[0] : modelDevices;
 		fireTableDataChanged();
 	}
 

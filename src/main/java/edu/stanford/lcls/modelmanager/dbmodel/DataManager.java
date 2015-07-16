@@ -23,11 +23,6 @@
  */
 package edu.stanford.lcls.modelmanager.dbmodel;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -49,15 +44,9 @@ import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.WindowConstants;
 import javax.swing.filechooser.FileFilter;
 
 import xal.ca.ConnectionException;
@@ -71,6 +60,7 @@ import xal.model.probe.traj.Trajectory;
 import xal.model.probe.traj.TransferMapState;
 import xal.sim.scenario.Scenario;
 import xal.sim.sync.SynchronizationException;
+import xal.smf.Accelerator;
 import xal.smf.AcceleratorNode;
 import xal.smf.AcceleratorSeq;
 import xal.smf.AcceleratorSeqCombo;
@@ -158,6 +148,8 @@ public class DataManager {
 				selectedMachineModelDetail[i].setPropertyValue("Bmag_Y", Bmag_Y.toString());
 			}
 		}else{*/
+			if (referenceMachineModelDetail == null) return selectedMachineModelDetail;
+			
 			Double alpha_X, alpha0_X, beta_X, beta0_X, gamma_X, gamma0_X,
 		       alpha_Y, alpha0_Y, beta_Y, beta0_Y, gamma_Y, gamma0_Y, Bmag_X, Bmag_Y;
 			for (int i = 0; i < selectedMachineModelDetail.length; i++) {
@@ -189,7 +181,7 @@ public class DataManager {
 		return selectedMachineModelDetail;
 	}
 	
-	public static MachineModel getRunMachineModel(int runModelMethod, int modelMode) {
+	public static MachineModel getRunMachineModel(int runModelMethod, String modelMode) {
 		MachineModel runMachineModel = new MachineModel();
 		runMachineModel.setPropertyValue("ID", autoRunID);
 		runMachineModel.setPropertyValue("RUN_ELEMENT_DATE", machineModelDateFormat.format(new java.util.Date()));
@@ -202,10 +194,7 @@ public class DataManager {
 		} else if(runModelMethod == 3){
 			runMachineModel.setPropertyValue("RUN_SOURCE_CHK", "MANUAL");
 		}
-		if(modelMode == 0)
-			runMachineModel.setPropertyValue("MODEL_MODES_ID", "5");
-		else
-			runMachineModel.setPropertyValue("MODEL_MODES_ID", Integer.valueOf(modelMode).toString());
+		runMachineModel.setPropertyValue("MODEL_MODES_ID", modelMode);
 		runMachineModel.setPropertyValue("COMMENTS", "");
 		runMachineModel.setPropertyValue("DATE_CREATED", machineModelDateFormat.format(new java.util.Date()));
 		runMachineModel.setPropertyValue("GOLD", "RUN");
@@ -220,6 +209,7 @@ public class DataManager {
 		ModelFormat df = new ModelFormat("%17.12g");
 		Trajectory trajectory = scenario.getTrajectory();
 		AcceleratorSeq seq = scenario.getSequence();
+		AcceleratorSeq acc = seq.getAccelerator();
 		OrTypeQualifier otq = new OrTypeQualifier();
 		otq.or("Bnch");
 		NotTypeQualifier ntq = new NotTypeQualifier(otq);
@@ -305,24 +295,24 @@ public class DataManager {
 					if (nodeId.contains("Q30615") || nodeId.contains("Q30715")) {
 						// TODO HARDCODED
 						machineModelDetail.setPropertyValue("INDEX_SLICE_CHK", "1");
-						s = useSDisplay ? node.getSDisplay() : seq.getPosition(node);
+						s = useSDisplay ? node.getSDisplay() : acc.getPosition(node);
 					} else if (node.isKindOf(RfGap.s_strType)) {
 						double gapLength = ((RfGap) node)
 								.getGapLength();
 						if (i == 0) {
 							machineModelDetail.setPropertyValue("INDEX_SLICE_CHK", "0");
-							s = (useSDisplay ? node.getParent().getSDisplay() : seq.getPosition(node.getParent())) 
+							s = (useSDisplay ? node.getParent().getSDisplay() : acc.getPosition(node.getParent())) 
 									+ node.getPosition() - gapLength / 2.;
 						} else {
 							machineModelDetail.setPropertyValue("INDEX_SLICE_CHK", "2");
-							s = (useSDisplay ? node.getParent().getSDisplay() : seq.getPosition(node.getParent())) 
+							s = (useSDisplay ? node.getParent().getSDisplay() : acc.getPosition(node.getParent())) 
 									+ node.getPosition() + gapLength / 2.;
 						}
 					} else {
 
 						if (elems.size() == 1) {
 							machineModelDetail.setPropertyValue("INDEX_SLICE_CHK", String.valueOf(devI));
-							s = useSDisplay ? node.getSDisplay() : seq.getPosition(node);
+							s = useSDisplay ? node.getSDisplay() : acc.getPosition(node);
 						} else {
 							machineModelDetail.setPropertyValue("INDEX_SLICE_CHK", String.valueOf(devI));
 							double sLength =0.;
@@ -336,7 +326,7 @@ public class DataManager {
 								halfLength = node.getLength() / 2.0;
 							}
 							
-							s = (useSDisplay ? node.getSDisplay() : seq.getPosition(node)) - halfLength + i
+							s = (useSDisplay ? node.getSDisplay() : acc.getPosition(node)) - halfLength + i
 									* sLength;
 						}
 
@@ -507,6 +497,7 @@ public class DataManager {
 		ModelFormat df = new ModelFormat("%17.12g");
 		List<MachineModelDevice> runMachineModelDevice = new ArrayList<MachineModelDevice>();
 		AcceleratorSeq seq = scenario.getSequence();
+		Accelerator acc = seq.getAccelerator();
 		List<AcceleratorNode> allNodes = seq.getAllNodes();
 		Iterator<AcceleratorNode> it = allNodes.iterator();
 		while (it.hasNext()) {
@@ -520,7 +511,7 @@ public class DataManager {
 					tmp1.setPropertyValue("DEVICE_PROPERTY", "B");
 					tmp1.setPropertyValue("DEVICE_VALUE", scenario.propertiesForNode(node)
 									.get(ElectromagnetPropertyAccessor.PROPERTY_FIELD).toString());
-					tmp1.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : seq.getPosition(node)));
+					tmp1.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node)));
 					runMachineModelDevice.add(tmp1);
 				} catch (SynchronizationException e) {
 					Message.error("Model Synchronization Exception: Cannot synchronize device data for model run.", true);
@@ -531,14 +522,14 @@ public class DataManager {
 					tmp2.setPropertyValue("ELEMENT_NAME", node.getId());
 					tmp2.setPropertyValue("DEVICE_PROPERTY", "BACT");
 					tmp2.setPropertyValue("DEVICE_VALUE", Double.toString(((Electromagnet) node).getDesignField()));
-					tmp2.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : seq.getPosition(node)));
+					tmp2.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node)));
 					runMachineModelDevice.add(tmp2);
 					
 					MachineModelDevice tmp3 = new MachineModelDevice();
 					tmp3.setPropertyValue("ELEMENT_NAME", node.getId());
 					tmp3.setPropertyValue("DEVICE_PROPERTY", "BDES");
 					tmp3.setPropertyValue("DEVICE_VALUE", Double.toString(((Electromagnet) node).getDesignField()));
-					tmp3.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : seq.getPosition(node)));
+					tmp3.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node)));
 					runMachineModelDevice.add(tmp3);
 				} else {
 					try {
@@ -546,14 +537,14 @@ public class DataManager {
 						tmp4.setPropertyValue("ELEMENT_NAME", node.getId());
 						tmp4.setPropertyValue("DEVICE_PROPERTY", "BACT");
 						tmp4.setPropertyValue("DEVICE_VALUE", Double.toString(((Electromagnet) node).getFieldReadback()));
-						tmp4.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : seq.getPosition(node)));
+						tmp4.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node)));
 						runMachineModelDevice.add(tmp4);
 						
 						MachineModelDevice tmp5 = new MachineModelDevice();
 						tmp5.setPropertyValue("ELEMENT_NAME", node.getId());
 						tmp5.setPropertyValue("DEVICE_PROPERTY", "BDES");
 						tmp5.setPropertyValue("DEVICE_VALUE", Double.toString(((Electromagnet) node).getFieldSetting()));
-						tmp5.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : seq.getPosition(node)));
+						tmp5.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node)));
 						runMachineModelDevice.add(tmp5);
 					} catch (ConnectionException e) {
 						Message.error("Connection Exception: Cannot connect to magnet PV for " + ((Electromagnet) node).getEId(), true);
@@ -572,7 +563,7 @@ public class DataManager {
 					tmp6.setPropertyValue("DEVICE_PROPERTY", "P");
 					tmp6.setPropertyValue("DEVICE_VALUE", scenario.propertiesForNode(node).get(
 							RfCavityPropertyAccessor.PROPERTY_PHASE).toString());
-					tmp6.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : seq.getPosition(node)));
+					tmp6.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node)));
 					runMachineModelDevice.add(tmp6);
 					
 					MachineModelDevice tmp7 = new MachineModelDevice();
@@ -580,7 +571,7 @@ public class DataManager {
 					tmp7.setPropertyValue("DEVICE_PROPERTY", "A");
 					tmp7.setPropertyValue("DEVICE_VALUE", scenario.propertiesForNode(node)
 							.get(RfCavityPropertyAccessor.PROPERTY_AMPLITUDE).toString());
-					tmp7.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : seq.getPosition(node)));
+					tmp7.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node)));
 					runMachineModelDevice.add(tmp7);
 				} catch (SynchronizationException e) {
 					Message.error("Model Synchronization Exception: Cannot synchronize device data for model run.", true);
@@ -591,14 +582,14 @@ public class DataManager {
 					tmp8.setPropertyValue("ELEMENT_NAME", node.getId());
 					tmp8.setPropertyValue("DEVICE_PROPERTY", "PDES");
 					tmp8.setPropertyValue("DEVICE_VALUE", Double.toString(((RfCavity) node).getDfltAvgCavPhase()));
-					tmp8.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : seq.getPosition(node)));
+					tmp8.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node)));
 					runMachineModelDevice.add(tmp8);
 					
 					MachineModelDevice tmp9 = new MachineModelDevice();
 					tmp9.setPropertyValue("ELEMENT_NAME", node.getId());
 					tmp9.setPropertyValue("DEVICE_PROPERTY", "ADES");
 					tmp9.setPropertyValue("DEVICE_VALUE", Double.toString(((RfCavity) node).getDfltCavAmp()));
-					tmp9.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : seq.getPosition(node)));
+					tmp9.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node)));
 					runMachineModelDevice.add(tmp9);
 				}
 				// We use "design" values for both cases for now because we
@@ -640,7 +631,7 @@ public class DataManager {
 				+"	VALUES(?,?,?) RETURNING \"ID\"");
 			stmt1.setString(1, (String)runMachineModel.getPropertyValue("RUN_SOURCE_CHK"));
 			stmt1.setString(2, (String)runMachineModel.getPropertyValue("COMMENTS"));
-			stmt1.setInt(3, Integer.parseInt((String)runMachineModel.getPropertyValue("MODEL_MODES_ID")));
+			stmt1.setString(3, (String)runMachineModel.getPropertyValue("MODEL_MODES_ID"));
 			
 			ResultSet rs1 = stmt1.executeQuery();
 			rs1.next();
