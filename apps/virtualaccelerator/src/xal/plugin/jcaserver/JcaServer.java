@@ -47,7 +47,7 @@ public class JcaServer{
      */
     public ServerMemoryProcessVariable registerRawPV(final String pv,  Object initialArray) {
         if (!initialArray.getClass().isArray()){
-            initialArray = new Object[]{initialArray};
+            throw new IllegalArgumentException("Expectred array of primitive type");           
         }
         
         final ServerMemoryProcessVariable serverMemoryProcessVariable = new ServerMemoryProcessVariable(pv, null, initialArray);

@@ -58,20 +58,20 @@ public class JcaServerChannel extends Channel {
 
         if (size == 1) {
             final String[] warningPVs = getWarningLimitPVs();
-            channelServer.registerRawPV(warningPVs[0], 0); // TODO is this really needed? 
-            channelServer.registerRawPV(warningPVs[1], 0);
+            channelServer.registerRawPV(warningPVs[0], new double[] {0.}); 
+            channelServer.registerRawPV(warningPVs[1], new double[] {0.});
 
             final String[] alarmPVs = getAlarmLimitPVs();
-            channelServer.registerRawPV(alarmPVs[0], 0);
-            channelServer.registerRawPV(alarmPVs[1], 0);
+            channelServer.registerRawPV(alarmPVs[0], new double[] {0.});
+            channelServer.registerRawPV(alarmPVs[1], new double[] {0.});
 
             final String[] operationLimitPVs = getOperationLimitPVs();
-            channelServer.registerRawPV(operationLimitPVs[0], pv.getLowerDispLimit().doubleValue());
-            channelServer.registerRawPV(operationLimitPVs[1], pv.getUpperDispLimit().doubleValue());
+            channelServer.registerRawPV(operationLimitPVs[0], new double[] {pv.getLowerDispLimit().doubleValue()}); //TODO this might change
+            channelServer.registerRawPV(operationLimitPVs[1], new double[] {pv.getUpperDispLimit().doubleValue()});
 
             final String[] driveLimitPVs = getDriveLimitPVs();
-            channelServer.registerRawPV(driveLimitPVs[0], pv.getLowerCtrlLimit().doubleValue());
-            channelServer.registerRawPV(driveLimitPVs[1], pv.getUpperCtrlLimit().doubleValue());
+            channelServer.registerRawPV(driveLimitPVs[0], new double[] {pv.getLowerCtrlLimit().doubleValue()});
+            channelServer.registerRawPV(driveLimitPVs[1], new double[] {pv.getUpperCtrlLimit().doubleValue()});           
         }
 
     }
