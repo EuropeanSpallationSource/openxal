@@ -16,8 +16,7 @@ import java.util.prefs.Preferences;
 import xal.ca.ChannelSystem;
 
 /**
- * JcaServerChannelSystem is initially the same as JcaSystem but returns ChannelServer instead of JcaChannelServer in
- * newChannelServer method and does not contain .
+ * JcaServerChannelSystem is the same as JcaSystem
  * 
  * @version 0.1 13 Jul 2015
  * @author Blaž Kranjc <blaz.kranjc@cosylab.com>

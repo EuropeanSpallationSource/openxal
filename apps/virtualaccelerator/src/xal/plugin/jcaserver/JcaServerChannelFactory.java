@@ -1,6 +1,10 @@
 package xal.plugin.jcaserver;
 
+import com.cosylab.epics.caj.cas.util.DefaultServerImpl;
+
 import gov.aps.jca.CAException;
+import gov.aps.jca.JCALibrary;
+import gov.aps.jca.cas.ServerContext;
 import xal.ca.ChannelFactory;
 import xal.ca.ChannelSystem;
 
@@ -15,15 +19,24 @@ public class JcaServerChannelFactory extends ChannelFactory {
     final private JcaServerChannelSystem JCA_SERVER_SYSTEM;
     
     /**
-     * Channel server for creating and holding PVs. Made static to all channels.
+     * Channel server for creating and holding PVs.
      */
-    static private JcaServer CHANNEL_SERVER;
+    private DefaultServerImpl CHANNEL_SERVER;
+    
+    /** CA Server context */
+    private ServerContext CONTEXT;
+
      
     /** Constructor */
     public JcaServerChannelFactory() {
         JCA_SERVER_SYSTEM = new JcaServerChannelSystem();
+        
         try {
-            CHANNEL_SERVER = new JcaServer();
+	        // Create server implementation
+	        CHANNEL_SERVER = new DefaultServerImpl();
+	
+	        // Create a context with default configuration values.
+	        CONTEXT = JCALibrary.getInstance().createServerContext(JCALibrary.CHANNEL_ACCESS_SERVER_JAVA, CHANNEL_SERVER);
         } catch (CAException e) {
             e.printStackTrace();
         }

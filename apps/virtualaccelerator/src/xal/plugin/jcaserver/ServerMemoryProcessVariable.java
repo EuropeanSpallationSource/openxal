@@ -23,6 +23,7 @@ import gov.aps.jca.dbr.DBR;
 import gov.aps.jca.dbr.DBRType;
 import gov.aps.jca.dbr.TimeStamp;
 
+import com.cosylab.epics.caj.cas.util.DefaultServerImpl;
 import com.cosylab.epics.caj.cas.util.MemoryProcessVariable;
 
 /**
@@ -54,7 +55,7 @@ public class ServerMemoryProcessVariable extends MemoryProcessVariable {
 	 * 
      * @see MemoryProcessVariable
      */
-    public ServerMemoryProcessVariable(String name, ProcessVariableEventCallback eventCallback, Object initialValue) {
+    public ServerMemoryProcessVariable(String name, ProcessVariableEventCallback eventCallback, Object initialValue, DefaultServerImpl channelServer) {
         super(name, eventCallback, getType(initialValue), initialValue);
         // We disable writing to all channels whose suffix is not in WRITEABLE_CHANNEL_NAME_SUFFIXES
         for (String suffix : WRITEABLE_CHANNEL_NAME_SUFFIXES) {
@@ -63,6 +64,7 @@ public class ServerMemoryProcessVariable extends MemoryProcessVariable {
                 break;
             }
         }
+        channelServer.registerProcessVaribale(this);
     }
 
     private static DBRType getType(Object initialValue) {
@@ -97,7 +99,7 @@ public class ServerMemoryProcessVariable extends MemoryProcessVariable {
     }
 
     /**
-     * Sets PV's value. Meant only for {@link JcaServerChannel} which runs locally.
+     * Sets PV's value. Meant only for {@link JcaServerChannel}.
      * 
      * @param value
      *            value to set.
@@ -129,7 +131,7 @@ public class ServerMemoryProcessVariable extends MemoryProcessVariable {
     }
 
     /**
-     * Returns PV's value. Meant only for {@link JcaServerChannel} which runs locally.
+     * Returns PV's value. Meant only for {@link JcaServerChannel}.
      * 
      * @return value
      */

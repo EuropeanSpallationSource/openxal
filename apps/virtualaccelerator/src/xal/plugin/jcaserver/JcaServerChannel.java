@@ -25,16 +25,17 @@ import xal.ca.ValueAdaptor;
 import xal.tools.ArrayValue;
 
 import com.cosylab.epics.caj.cas.ProcessVariableEventDispatcher;
+import com.cosylab.epics.caj.cas.util.DefaultServerImpl;
 
 /**
- * JcaServerChannel using rawProcessVariables instead of ChanneServerPVs. Used on local machine with server.
+ * JcaServerChannel imitiating client channel, so it is instatiate directly in SMF layer.
  * 
  * @version 0.1 13 Jul 2015
  * @author Blaž Kranjc <blaz.kranjc@cosylab.com>
  */
 
 public class JcaServerChannel extends Channel {
-	private ServerMemoryProcessVariable pv;
+	private ServerMemoryRecord pv;
     private ProcessVariableEventDispatcher pved;;
 
     /** size for array PVs */
@@ -42,36 +43,19 @@ public class JcaServerChannel extends Channel {
 
     private final int size;
 
-    JcaServerChannel(String signal, JcaServer channelServer) {
+    JcaServerChannel(String signal, DefaultServerImpl channelServer) {
         super(signal);
         m_strId = signal;
         size = signal.matches(".*(TBT|A)") ? DEFAULT_ARRAY_SIZE : 1;
-        pv = channelServer.registerRawPV(signal, new double[size]);
+       
+        pv = new ServerMemoryRecord(signal, null, new double[size], channelServer);
+       
         pv.setUnits("units");
         
         pved = new ProcessVariableEventDispatcher(pv);
         pv.setEventCallback(pved);
         
         connectionFlag = true;
-
-        if (size == 1) {
-            final String[] warningPVs = getWarningLimitPVs();
-            channelServer.registerRawPV(warningPVs[0], new double[] {0.}); 
-            channelServer.registerRawPV(warningPVs[1], new double[] {0.});
-
-            final String[] alarmPVs = getAlarmLimitPVs();
-            channelServer.registerRawPV(alarmPVs[0], new double[] {0.});
-            channelServer.registerRawPV(alarmPVs[1], new double[] {0.});
-
-            final String[] operationLimitPVs = getOperationLimitPVs();
-            channelServer.registerRawPV(operationLimitPVs[0], new double[] {pv.getLowerDispLimit().doubleValue()}); //TODO this might change
-            channelServer.registerRawPV(operationLimitPVs[1], new double[] {pv.getUpperDispLimit().doubleValue()});
-
-            final String[] driveLimitPVs = getDriveLimitPVs();
-            channelServer.registerRawPV(driveLimitPVs[0], new double[] {pv.getLowerCtrlLimit().doubleValue()});
-            channelServer.registerRawPV(driveLimitPVs[1], new double[] {pv.getUpperCtrlLimit().doubleValue()});           
-        }
-
     }
 
     @Override
