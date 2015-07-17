@@ -16,7 +16,7 @@ import xal.ca.ChannelSystem;
  */
 public class JcaServerChannelFactory extends ChannelFactory {
     /** JCA channel system */
-    final private JcaServerChannelSystem JCA_SERVER_SYSTEM;
+    private JcaServerChannelSystem JCA_SERVER_SYSTEM;
     
     /**
      * Channel server for creating and holding PVs.
@@ -29,14 +29,13 @@ public class JcaServerChannelFactory extends ChannelFactory {
      
     /** Constructor */
     public JcaServerChannelFactory() {
-        JCA_SERVER_SYSTEM = new JcaServerChannelSystem();
-        
         try {
 	        // Create server implementation
 	        CHANNEL_SERVER = new DefaultServerImpl();
 	
 	        // Create a context with default configuration values.
-	        CONTEXT = JCALibrary.getInstance().createServerContext(JCALibrary.CHANNEL_ACCESS_SERVER_JAVA, CHANNEL_SERVER);
+	        CONTEXT = JCALibrary.getInstance().createServerContext(JCALibrary.CHANNEL_ACCESS_SERVER_JAVA, CHANNEL_SERVER);	     
+	        JCA_SERVER_SYSTEM = new JcaServerChannelSystem(CONTEXT);
         } catch (CAException e) {
             e.printStackTrace();
         }
