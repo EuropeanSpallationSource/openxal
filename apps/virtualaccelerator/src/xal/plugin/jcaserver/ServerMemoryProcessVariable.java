@@ -34,36 +34,25 @@ import com.cosylab.epics.caj.cas.util.MemoryProcessVariable;
  * @author Blaž Kranjc <blaz.kranjc@cosylab.com>
  */
 public class ServerMemoryProcessVariable extends MemoryProcessVariable {
-
-    /**
-     * Array of suffixes, the channel can have to be writable.
-     */
-    private final String[] WRITEABLE_CHANNEL_NAME_SUFFIXES = { "FldSet", "Ctl" };
     /**
      * Indicates if {@link ServerMemoryProcessVariable} is writable or not. False by default.
      */
     private boolean writable = false;
-
+    
     /**
-     * Class constructor.
+     * Creates and registers a PV (possibly readonly) on the channel server.
      * 
-     * Changes writable to true if name ends with any of the suffixes in {@link #WRITEABLE_CHANNEL_NAME_SUFFIXES}.
      * 
      * @param name	name of the PV.
 	 * @param eventCallback	event callback, where to report value changes if <code>interest</code> is <code>true</code>.
 	 * @param initialValue	initial value, array is expected.
+	 * @param writable is this PV writable
 	 * 
      * @see MemoryProcessVariable
      */
-    public ServerMemoryProcessVariable(String name, ProcessVariableEventCallback eventCallback, Object initialValue, DefaultServerImpl channelServer) {
+    public ServerMemoryProcessVariable(String name, ProcessVariableEventCallback eventCallback, Object initialValue, DefaultServerImpl channelServer, boolean writable) {
         super(name, eventCallback, getType(initialValue), initialValue);
-        // We disable writing to all channels whose suffix is not in WRITEABLE_CHANNEL_NAME_SUFFIXES
-        for (String suffix : WRITEABLE_CHANNEL_NAME_SUFFIXES) {
-            if (name.endsWith(suffix)) {
-                writable = true;
-                break;
-            }
-        }
+        this.writable = writable;
         channelServer.registerProcessVaribale(this);
     }
 

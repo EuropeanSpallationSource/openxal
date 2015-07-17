@@ -43,12 +43,12 @@ public class JcaServerChannel extends Channel {
 
     private final int size;
 
-    JcaServerChannel(String signal, DefaultServerImpl channelServer) {
+    JcaServerChannel(String signal, DefaultServerImpl channelServer, boolean writable) {
         super(signal);
         m_strId = signal;
         size = signal.matches(".*(TBT|A)") ? DEFAULT_ARRAY_SIZE : 1;
        
-        pv = new ServerMemoryRecord(signal, null, new double[size], channelServer);
+        pv = new ServerMemoryRecord(signal, null, new double[size], channelServer, writable);
        
         pv.setUnits("units");
         
