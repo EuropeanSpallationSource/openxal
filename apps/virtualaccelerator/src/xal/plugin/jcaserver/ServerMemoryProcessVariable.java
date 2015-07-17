@@ -13,6 +13,8 @@
  */
 package xal.plugin.jcaserver;
 
+import org.mockito.internal.matchers.InstanceOf;
+
 import gov.aps.jca.CAException;
 import gov.aps.jca.CAStatus;
 import gov.aps.jca.CAStatusException;
@@ -21,6 +23,9 @@ import gov.aps.jca.cas.ProcessVariableWriteCallback;
 import gov.aps.jca.cas.ServerChannel;
 import gov.aps.jca.dbr.DBR;
 import gov.aps.jca.dbr.DBRType;
+import gov.aps.jca.dbr.STS;
+import gov.aps.jca.dbr.Severity;
+import gov.aps.jca.dbr.Status;
 import gov.aps.jca.dbr.TimeStamp;
 
 import com.cosylab.epics.caj.cas.util.DefaultServerImpl;
@@ -136,5 +141,15 @@ public class ServerMemoryProcessVariable extends MemoryProcessVariable {
     public TimeStamp getTimestamp()
     {
     	return timestamp;
+    }
+    
+    @Override
+    public void fillInDBR(DBR value) {
+    	super.fillInDBR(value);
+    	if (value instanceof STS) {
+    		STS val = (STS)value;
+    		val.setStatus(Status.NO_ALARM);
+    		val.setSeverity(Severity.NO_ALARM);
+    	}
     }
 }
