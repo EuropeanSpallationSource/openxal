@@ -568,7 +568,7 @@ public class ModelPlotData {
 			if (deviceType.equals("BPM")) {
 				devices[i] = new CartoonDevice(deviceName, Startz,
 						new BPMWidget());
-			} else if (deviceType.equals("LRG") | deviceType.equals("Bnch")) {
+			} else if (deviceType.equals("LRG") || deviceType.equals("Bnch") || deviceType.equals("RG")) {
 				devices[i] = new CartoonDevice(deviceName, Startz,
 						length, new CavityWidget());
 			} else if (deviceType.equals("YBEND") || deviceType.equals("XBEND")) {
@@ -604,10 +604,10 @@ public class ModelPlotData {
 			} else if (deviceType.equals("COLL")) {
 				devices[i] = new CartoonDevice(deviceName, Startz,
 						new YCollimatorWidget());
-			} else if (deviceType.equals("XCOR")) {
+			} else if (deviceType.equals("XCOR") || deviceType.equals("DCH")) {
 				devices[i] = new CartoonDevice(deviceName, Startz,
 						new XCorWidget());
-			} else if (deviceType.equals("YCOR")) {
+			} else if (deviceType.equals("YCOR") || deviceType.equals("DCV")) {
 				devices[i] = new CartoonDevice(deviceName, Startz,
 						new YCorWidget());
 			} else if (deviceType.equals("marker") | deviceType.equals("MARK")) {
