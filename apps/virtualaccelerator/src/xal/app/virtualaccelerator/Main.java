@@ -12,7 +12,6 @@ import java.awt.event.ActionEvent;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -32,10 +31,6 @@ import xal.extension.application.smf.AcceleratorApplication;
  * @author Blaž Kranjc <blaz.kranjc@cosylab.com>
  */
 public class Main extends ApplicationAdaptor {
-
-    private URL url;
-    /** Variable indicating whether or not application should default to new empty document. False by default. */
-    private static boolean openNewDocument = false;
     /**
      * Variable indicating wheather or not application should start virtual accelerator after loading is done.False by
      * default.
@@ -44,18 +39,8 @@ public class Main extends ApplicationAdaptor {
     
     //-------------Constructors-------------
     public Main() {
-        url = null;
     }
 
-    public Main(String str) {
-
-	    try{
-            url = new URL(str);
-	    }
-	    catch (MalformedURLException exception) {
-            System.err.println(exception);
-	    }
-    }
 
     /** The main method of the application. */
     static public void main(String[] args) {
@@ -81,31 +66,14 @@ public class Main extends ApplicationAdaptor {
     public static void setOptions(String[] args) {
 
         final java.util.ArrayList<String> docPaths = new java.util.ArrayList<String>();
-        Properties props = System.getProperties();
-        boolean chooseSequence = false;
         for (final String arg : args) {
             if (!arg.startsWith("-")) {
-                if(chooseSequence){
-                    props.setProperty("useSequence", arg);
-                }else{
-                    docPaths.add(arg);// We add any filepaths.    
-                }
+            	docPaths.add(arg);// We add any filepaths. 
             } else {
                 switch (arg) {
-                case "-d":
-                case "--default":
-                    openNewDocument = true;
-                    if (props.getProperty("useDefaultAccelerator") == null){
-                        props.setProperty("useDefaultAccelerator", "true");    
-                    }
-                    if (props.getProperty("useSequence") == null){
-                        props.setProperty("useSequence", "MEBT");// First sequence in default accelerator.
-                    }
+                case "-r":
+                case "--run":                
                     runOnFinishedLaunching = true;
-                    break;
-                case "-s":
-                case "--sequence":
-                    chooseSequence=true;
                     break;
                 case "-h":
                 case "--help":
@@ -135,11 +103,10 @@ public class Main extends ApplicationAdaptor {
         System.out.println("Usage:virtualaccelerator [options] [files]\r\n"
                          + "        Runs Virtual Accelerator.\r\n"
                          + "  options:\r\n"
-                         + "        -d,--default                    chooses default accelerator and sequence then runs it after loading is complete.\r\n"
-                         + "        -s,--sequence <sequenceName>    sets sequence to use.\r\n"
+                         + "        -r,--run                        run accelerator after loading.\r\n"
                          + "        -h,--help                       print this help.\r\n"
                          + "  files:\r\n"
-                         + "    path(s) to virtual accelerator[.ve] file we want to open.\r\n");
+                         + "    path(s) to virtual accelerator[.va] file we want to open.\r\n");
     }
 
 
@@ -199,14 +166,5 @@ public class Main extends ApplicationAdaptor {
     
     public boolean usesConsole() {
 		return true;
-    }
-    
-    public boolean showsWelcomeDialogAtLaunch() {
-        // We don't want dialog if we already know what document are we going to open/create.
-        if (openNewDocument) {
-            return false;
-        }
-        return super.showsWelcomeDialogAtLaunch();
-    }
-    
+    }    
 }
