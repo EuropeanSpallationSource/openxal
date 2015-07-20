@@ -364,12 +364,10 @@ public class BrowserModel {
 			List<MachineModel> goldMachineModels, String modelMode)
 			throws SQLException {
 		// add run if run is not null
-		if (_runMachineModel != null) {
-			allMachineModels.add(_runMachineModel);
-		}
+
 		List<MachineModel> fetchedMachineModels;
 		if (modelMode == null || RunModel.DEFAULT_BEAMLINE_TEXT.equals(modelMode)) {
-			fetchedMachineModels = allMachineModels;
+			fetchedMachineModels = new ArrayList<>(allMachineModels);
 		} else {
 			fetchedMachineModels = new ArrayList<>();
 			
@@ -497,12 +495,14 @@ public class BrowserModel {
 		rm.run(config);
 		
 		Scenario scenario = rm.getScenario();
-		_runMachineModel = DataManager.getRunMachineModel(config.getRunModelMethod(), rm.getModelMode()); // add runMachineMode to _fetchedMachineModels
-		_runMachineModelDetail = DataManager.getRunMachineModeDetail(config.getRunModelMethod(), scenario);
-		_runMachineModelDevice = DataManager.getRunMachineModeDevice(scenario);
+		MachineModel _runMachineModel = DataManager.getRunMachineModel(config.getRunModelMethod(), rm.getModelMode()); // add runMachineMode to _fetchedMachineModels
+		replaceRunModel(_runMachineModel, 
+				DataManager.getRunMachineModeDetail(config.getRunModelMethod(), scenario), 
+				DataManager.getRunMachineModeDevice(scenario));
+		
 		createRunModelComment(_runMachineModel, _runMachineModelDetail, rm.getModelMode());
 
-		addRunModelToFetchedModels(_runMachineModel);
+		
 		setSelectedModel(_runMachineModel);
 		runState = RunState.RUN;
 		EVENT_PROXY.modelStateChanged(this);
@@ -518,38 +518,29 @@ public class BrowserModel {
 						.getPropertyValue("E") + " GeV.");
 	}
 
-	public void addRunModelToFetchedModels(MachineModel runMachineModel) {
-		if (_fetchedMachineModels.size() > 0 && _fetchedMachineModels.get(0).getPropertyValue("ID").toString().equals(autoRunID))
-			_fetchedMachineModels.set(0, runMachineModel);
-		else {
-			_fetchedMachineModels.add(runMachineModel);
-		}
+	public void replaceRunModel(MachineModel runMachineModel, MachineModelDetail[] runMachineModelDetail, MachineModelDevice[] runMachineModelDevice) {
+		removeRunModel();
+		_allMachineModels.add(runMachineModel);
+		_fetchedMachineModels.add(runMachineModel);
+		
+		_runMachineModel = runMachineModel;
+		_runMachineModelDetail = runMachineModelDetail;
+		// switch fetch Machine model
+		_runMachineModelDevice = runMachineModelDevice;
+		
+		Collections.sort(_allMachineModels, new Sort(Sort.DOWM));
 		Collections.sort(_fetchedMachineModels, new Sort(Sort.DOWM));
 	}
 
-	public void removeRunModelFromFetchedModels(String uploadID) {
+	public void updateRunModelWithUploadID(String uploadID) {
 		//add upload machine model to all machine models.
 		_runMachineModel.setPropertyValue("ID", uploadID);
 		_runMachineModel.setPropertyValue("GOLD", "");
 		
-		_allMachineModels.add(_runMachineModel);
-		
-		//refresh model list
-		for (int i = 0; i < _fetchedMachineModels.size(); i++) {
-			if (_fetchedMachineModels.get(i).getPropertyValue("ID").toString().equals(
-					autoRunID)){
-				_fetchedMachineModels.get(i).setPropertyValue("ID", uploadID);
-				_fetchedMachineModels.get(i).setPropertyValue("GOLD", "");
-				break;
-			}
-		}
-		
-		//if select machine model is upload model, refresh the run id.
-		if (_selectedMachineModel != null && _selectedMachineModel
-				.getPropertyValue("ID").toString().equals(autoRunID)) {
-			_selectedMachineModel = _runMachineModel;
+		// refresh the run id
+		if (_selectedMachineModel == _runMachineModel || _referenceMachineModel == _runMachineModel) {
 			for (int i = 0; i < _selectedMachineModelDetail.length; i++) {
-				_selectedMachineModelDetail[i].setPropertyValue("RUNS_ID", uploadID);
+				_runMachineModelDetail[i].setPropertyValue("RUNS_ID", uploadID);
 			}
 		}
 		
@@ -559,19 +550,41 @@ public class BrowserModel {
 		
 		EVENT_PROXY.modelStateChanged(this);
 	}
+	
+	public void removeRunModel()
+	{
+		if (_runMachineModel == null) return;
+		
+		if (_selectedMachineModel == _runMachineModel) {
+			_selectedMachineModel = null;
+			_selectedMachineModelDetail = null;
+			_selectedMachineModelDevice = null;
+		}
+		
+		if (_referenceMachineModel == _runMachineModel) {
+			_referenceMachineModel = null;
+			_referenceMachineModelDetail = null;
+			_referenceMachineModelDevice = null;
+		}
+			
+		_fetchedMachineModels.remove(_runMachineModel);
+		_allMachineModels.remove(_runMachineModel);
+			
+		_runMachineModel = null;
+		_runMachineModelDetail = null;
+		_runMachineModelDevice = null;		
+	}
 
 	public void exportToXML(final JFrame parent) {
 		DataManager.exportToXML(parent, _runMachineModel, rm.getScenario());
 	}
 
 	public String uploadToDatabase(final JFrame parent) {
-//		return DataManager.uploadToDatabase(parent, this, _runMachineModel,
-//				_runMachineModelDetail, _runMachineModelDevice);
 		String runID = DataManager.newUploadToDatabase(parent, this, _runMachineModel,
 				_runMachineModelDetail, _runMachineModelDevice);
 		if (runID != null) {
 			// automatically update the table after a model is uploaded
-			removeRunModelFromFetchedModels(runID);
+			updateRunModelWithUploadID(runID);
 			runState = RunState.NONE;
 		}
 		return runID;
@@ -601,14 +614,9 @@ public class BrowserModel {
 		Scenario scenario = rm.getScenario();
 		config.initialize(scenario);
 		
-		_runMachineModel = DataManager.getRunMachineModel(config.getRunModelMethod(), modelMode); // add runMachineMode to _fetchedMachineModels
-		
-		_runMachineModelDetail = null;
-		// switch fetch Machine model
-		_runMachineModelDevice = DataManager.getRunMachineModeDevice(scenario);
+		MachineModel _runMachineModel = DataManager.getRunMachineModel(config.getRunModelMethod(), modelMode); // add runMachineMode to _fetchedMachineModels
 		_runMachineModel.setPropertyValue("COMMENTS", "Fetched machine parameters.");
-		_runMachineModel.setPropertyValue("RUN_SOURCE_CHK", "PRERUN");
-		addRunModelToFetchedModels(_runMachineModel);
+		replaceRunModel(_runMachineModel, null, DataManager.getRunMachineModeDevice(scenario));
 		setSelectedModel(_runMachineModel);
 		
 		runState = RunState.FETCHED_DATA;
@@ -621,23 +629,7 @@ public class BrowserModel {
 	}
 
 	public void resetRunData() {
-		if (_selectedMachineModel == _runMachineModel) {
-			_selectedMachineModel = null;
-			_selectedMachineModelDetail = null;
-			_selectedMachineModelDevice = null;
-		}
-
-		if (_fetchedMachineModels.size() > 0 && _fetchedMachineModels.get(0).getPropertyValue("ID").toString().equals(autoRunID)) {			
-			_fetchedMachineModels.remove(0);
-		}
-		
-		if (_allMachineModels.size() > 0 && _allMachineModels.get(0).getPropertyValue("ID").toString().equals(autoRunID)) {			
-			_allMachineModels.remove(0);
-		}
-		
-		_runMachineModel = null;
-		_runMachineModelDetail = null;
-		_runMachineModelDevice = null;		
+		removeRunModel();
 		
 		runState = RunState.NONE;
 		EVENT_PROXY.modelStateChanged(this);
