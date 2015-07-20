@@ -52,12 +52,9 @@ import javax.swing.filechooser.FileFilter;
 import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.model.IElement;
-import xal.model.ModelException;
 import xal.model.elem.Element;
 import xal.model.probe.traj.EnvelopeProbeState;
-import xal.model.probe.traj.ProbeState;
 import xal.model.probe.traj.Trajectory;
-import xal.model.probe.traj.TransferMapState;
 import xal.sim.scenario.Scenario;
 import xal.sim.sync.SynchronizationException;
 import xal.smf.Accelerator;
@@ -75,7 +72,6 @@ import xal.smf.impl.qualify.OrTypeQualifier;
 import xal.smf.proxy.ElectromagnetPropertyAccessor;
 import xal.smf.proxy.RfCavityPropertyAccessor;
 import xal.tools.apputils.files.RecentFileTracker;
-import xal.tools.beam.CovarianceMatrix;
 import xal.tools.beam.PhaseMatrix;
 import xal.tools.beam.PhaseVector;
 import xal.tools.beam.RelativisticParameterConverter;
@@ -94,8 +90,7 @@ public class DataManager {
 
 	public static String url = null; // Defaults to production
 
-	private final static String autoRunID = "RUN";
-	private static String comment = ""; // TODO this variable should not be global!
+	private final static String autoRunID = "RUN";	
 
 	private static boolean useSDisplay = false;
 	
@@ -207,9 +202,8 @@ public class DataManager {
 		DeviceType deviceType = new DeviceType(scenario.getSequence());
 		// DecimalFormat df = new DecimalFormat("##0.000000"); - see Mod 1-Mar-2011.
 		ModelFormat df = new ModelFormat("%17.12g");
-		Trajectory trajectory = scenario.getTrajectory();
+		Trajectory<EnvelopeProbeState> trajectory = scenario.getTrajectory();
 		AcceleratorSeq seq = scenario.getSequence();
-		AcceleratorSeq acc = seq.getAccelerator();
 		OrTypeQualifier otq = new OrTypeQualifier();
 		otq.or("Bnch");
 		NotTypeQualifier ntq = new NotTypeQualifier(otq);
@@ -233,10 +227,9 @@ public class DataManager {
 		// order the elements
 		HashMap<String, Integer> elemOrders = new HashMap<String, Integer>();
 		int ordinal = 0;
-		Iterator<?> elemIter = scenario.getProbe().getTrajectory().stateIterator();
+		Iterator<EnvelopeProbeState> elemIter = trajectory.stateIterator();
 		while (elemIter.hasNext()) {
-			elemOrders.put(((ProbeState) elemIter.next()).getElementId(),
-					new Integer(ordinal));
+			elemOrders.put(elemIter.next().getElementId(),	new Integer(ordinal));
 			ordinal++;
 		}
 		CalculationsOnBeams cob = new CalculationsOnBeams(trajectory);
@@ -263,223 +256,171 @@ public class DataManager {
 				node_length = node.getLength();
 			}
 			
-			int devI = 0;
-			
 			if (elems != null)
 			for (int i = 0; i < elems.size(); i++) {
-				if (!((Element) elems.get(i)).getId().endsWith("xx")
-						&& !((Element) elems.get(i)).getId().endsWith("yx")) {
-					// reset machineModelDetail
-					MachineModelDetail machineModelDetail = new MachineModelDetail();
-					for(int j=0; j<MachineModelDetail.getPropertySize(); j++)
-						machineModelDetail.setPropertyValue(j, null);
-					machineModelDetail.setPropertyValue("RUNS_ID", autoRunID);
-					
-					// trim off anything after ":"
-					// I forgot why we need this. --pc
-					String nodeId = node.getId();
-					/*if (node.getId().contains(":")) {
-						int k = node.getId().indexOf(":");
-						nodeId = node.getId().substring(0, k);
-					} else {
-						nodeId = node.getId();
-					}*/
-					machineModelDetail.setPropertyValue("ELEMENT_NAME", nodeId);
-					machineModelDetail.setPropertyValue("DEVICE_TYPE", deviceType
-							.getDeviceType(machineModelDetail.getPropertyValue("ELEMENT_NAME").toString()));
-					machineModelDetail.setPropertyValue("EPICS_NAME", deviceType
-							.getEPICSName(machineModelDetail.getPropertyValue("ELEMENT_NAME").toString()));
-					
-					double s = 0.;
-					// treat Q30615x and Q30715x differently
-					if (nodeId.contains("Q30615") || nodeId.contains("Q30715")) {
-						// TODO HARDCODED
-						machineModelDetail.setPropertyValue("INDEX_SLICE_CHK", "1");
-						s = useSDisplay ? node.getSDisplay() : acc.getPosition(node);
-					} else if (node.isKindOf(RfGap.s_strType)) {
-						double gapLength = ((RfGap) node)
-								.getGapLength();
-						if (i == 0) {
-							machineModelDetail.setPropertyValue("INDEX_SLICE_CHK", "0");
-							s = (useSDisplay ? node.getParent().getSDisplay() : acc.getPosition(node.getParent())) 
-									+ node.getPosition() - gapLength / 2.;
-						} else {
-							machineModelDetail.setPropertyValue("INDEX_SLICE_CHK", "2");
-							s = (useSDisplay ? node.getParent().getSDisplay() : acc.getPosition(node.getParent())) 
-									+ node.getPosition() + gapLength / 2.;
-						}
-					} else {
+				// reset machineModelDetail
+				MachineModelDetail machineModelDetail = new MachineModelDetail();
 
-						if (elems.size() == 1) {
-							machineModelDetail.setPropertyValue("INDEX_SLICE_CHK", String.valueOf(devI));
-							s = useSDisplay ? node.getSDisplay() : acc.getPosition(node);
-						} else {
-							machineModelDetail.setPropertyValue("INDEX_SLICE_CHK", String.valueOf(devI));
-							double sLength =0.;
-							double halfLength = 0.;
-							if (node instanceof Magnet) {
-								sLength= ((Magnet)node).getEffLength() / (elems.size()-1);
-								halfLength = ((Magnet)node).getEffLength() / 2.;
-							}
-							else {
-								sLength= node.getLength() / (elems.size() -1);
-								halfLength = node.getLength() / 2.0;
-							}
-							
-							s = (useSDisplay ? node.getSDisplay() : acc.getPosition(node)) - halfLength + i
-									* sLength;
-						}
-
-						devI++;
-					}
-					// get element
-					Element elem = (Element) elems.get(i);
-
-					// get element length
-					machineModelDetail.setPropertyValue("LEFF", df.format(node_length));
-					machineModelDetail.setPropertyValue("SLEFF", df.format(elem.getLength()));
-					
-					// get state for the element
-					try {
-						List<? extends ProbeState<?>> states = scenario
-								.trajectoryStatesForElement(elem.getId());
-						// We only output begin/middle/end for a thick device,
-						// therefore, no need to go through all the states but only the
-						// last state for that element.
-						if (states == null) continue;
-						
-						ProbeState state = states.get(states.size() - 1);
-
-						// z-pos offset correction
-						machineModelDetail.setPropertyValue("ZPOS", df.format(s));
-						machineModelDetail.setPropertyValue("SUML", df.format(state.getPosition()));
-						machineModelDetail.setPropertyValue("ORDINAL", elemOrders.get(state.getElementId()).toString());
-
-						if (state instanceof EnvelopeProbeState) {
-							Twiss[] twiss = ((EnvelopeProbeState) state)
-									.twissParameters();
-							R3 betatronPhase = cob.computeBetatronPhase((EnvelopeProbeState) state);
-									
-							machineModelDetail.setPropertyValue("BETA_X", df.format(twiss[0].getBeta()));
-							machineModelDetail.setPropertyValue("ALPHA_X", df.format(twiss[0].getAlpha()));
-							machineModelDetail.setPropertyValue("BETA_Y", df.format(twiss[1].getBeta()));
-							machineModelDetail.setPropertyValue("ALPHA_Y", df.format(twiss[1].getAlpha()));
-							
-							PhaseVector chromDispersion = cob.computeChromDispersion((EnvelopeProbeState)state);
-							machineModelDetail.setPropertyValue("ETA_X", df.format(chromDispersion.getx()));
-							machineModelDetail.setPropertyValue("ETA_Y", df.format(chromDispersion.gety()));
-							machineModelDetail.setPropertyValue("ETAP_X", df.format(chromDispersion.getxp()));
-							machineModelDetail.setPropertyValue("ETAP_Y", df.format(chromDispersion.getyp()));
-							
-							machineModelDetail.setPropertyValue("PSI_X", df.format(betatronPhase.getx()));
-							machineModelDetail.setPropertyValue("PSI_Y", df.format(betatronPhase.gety()));
-							machineModelDetail.setPropertyValue("E", df.format(getTotalEnergyFromKinetic(state.getSpeciesRestEnergy() / 1.e9,state.getKineticEnergy() / 1.e9)));
-							machineModelDetail.setPropertyValue("P", df.format(RelativisticParameterConverter.
-									computeMomentumFromEnergies(state.getKineticEnergy(), state.getSpeciesRestEnergy())/1e9));
-							machineModelDetail.setPropertyValue("Bmag_X", "1");
-							machineModelDetail.setPropertyValue("Bmag_Y", "1");
-							
-							PhaseMatrix rMat = ((EnvelopeProbeState) state)
-									.getResponseMatrix();
-							machineModelDetail.setPropertyValue("R11", df.format(rMat.getElem(0, 0)));
-							machineModelDetail.setPropertyValue("R12", df.format(rMat.getElem(0, 1)));
-							machineModelDetail.setPropertyValue("R13", df.format(rMat.getElem(0, 2)));
-							machineModelDetail.setPropertyValue("R14", df.format(rMat.getElem(0, 3)));
-							machineModelDetail.setPropertyValue("R15", df.format(rMat.getElem(0, 4)));
-							machineModelDetail.setPropertyValue("R16", df.format(rMat.getElem(0, 5)));
-							machineModelDetail.setPropertyValue("R21", df.format(rMat.getElem(1, 0)));
-							machineModelDetail.setPropertyValue("R22", df.format(rMat.getElem(1, 1)));
-							machineModelDetail.setPropertyValue("R23", df.format(rMat.getElem(1, 2)));
-							machineModelDetail.setPropertyValue("R24", df.format(rMat.getElem(1, 3)));
-							machineModelDetail.setPropertyValue("R25", df.format(rMat.getElem(1, 4)));
-							machineModelDetail.setPropertyValue("R26", df.format(rMat.getElem(1, 5)));
-							machineModelDetail.setPropertyValue("R31", df.format(rMat.getElem(2, 0)));
-							machineModelDetail.setPropertyValue("R32", df.format(rMat.getElem(2, 1)));
-							machineModelDetail.setPropertyValue("R33", df.format(rMat.getElem(2, 2)));
-							machineModelDetail.setPropertyValue("R34", df.format(rMat.getElem(2, 3)));
-							machineModelDetail.setPropertyValue("R35", df.format(rMat.getElem(2, 4)));
-							machineModelDetail.setPropertyValue("R36", df.format(rMat.getElem(2, 5)));
-							machineModelDetail.setPropertyValue("R41", df.format(rMat.getElem(3, 0)));
-							machineModelDetail.setPropertyValue("R42", df.format(rMat.getElem(3, 1)));
-							machineModelDetail.setPropertyValue("R43", df.format(rMat.getElem(3, 2)));
-							machineModelDetail.setPropertyValue("R44", df.format(rMat.getElem(3, 3)));
-							machineModelDetail.setPropertyValue("R45", df.format(rMat.getElem(3, 4)));
-							machineModelDetail.setPropertyValue("R46", df.format(rMat.getElem(3, 5)));
-							machineModelDetail.setPropertyValue("R51", df.format(rMat.getElem(4, 0)));
-							machineModelDetail.setPropertyValue("R52", df.format(rMat.getElem(4, 1)));
-							machineModelDetail.setPropertyValue("R53", df.format(rMat.getElem(4, 2)));
-							machineModelDetail.setPropertyValue("R54", df.format(rMat.getElem(4, 3)));
-							machineModelDetail.setPropertyValue("R55", df.format(rMat.getElem(4, 4)));
-							machineModelDetail.setPropertyValue("R56", df.format(rMat.getElem(4, 5)));
-							machineModelDetail.setPropertyValue("R61", df.format(rMat.getElem(5, 0)));
-							machineModelDetail.setPropertyValue("R62", df.format(rMat.getElem(5, 1)));
-							machineModelDetail.setPropertyValue("R63", df.format(rMat.getElem(5, 2)));
-							machineModelDetail.setPropertyValue("R64", df.format(rMat.getElem(5, 3)));
-							machineModelDetail.setPropertyValue("R65", df.format(rMat.getElem(5, 4)));
-							machineModelDetail.setPropertyValue("R66", df.format(rMat.getElem(5, 5)));
-						} else if (state instanceof TransferMapState) {
-							PhaseMatrix transferMatrix = ((TransferMapState) state).getPartialTransferMap().getFirstOrder();
-							CovarianceMatrix covMatrix = new CovarianceMatrix(transferMatrix);
-							
-							Twiss[] twiss = covMatrix.computeTwiss();							
-							PhaseVector betatronPhase = covMatrix.getMean();
-							
-							machineModelDetail.setPropertyValue("BETA_X", df.format(twiss[0].getBeta()));
-							machineModelDetail.setPropertyValue("ALPHA_X", df.format(twiss[0].getAlpha()));
-							machineModelDetail.setPropertyValue("BETA_Y", df.format(twiss[1].getBeta()));
-							machineModelDetail.setPropertyValue("ALPHA_Y", df.format(twiss[1].getAlpha()));
-							/* TODO OPENXAL
-							machineModelDetail.setPropertyValue("ETA_X", df.format(((TransferMapState) state).getChromDispersionX()));
-							machineModelDetail.setPropertyValue("ETA_Y", df.format(((TransferMapState) state).getChromDispersionY()));
-							machineModelDetail.setPropertyValue("ETAP_X", df.format(((TransferMapState) state).getChromDispersionSlopeX()));
-							machineModelDetail.setPropertyValue("ETAP_Y", df.format(((TransferMapState) state).getChromDispersionSlopeY()));
-							*/machineModelDetail.setPropertyValue("PSI_X", df.format(betatronPhase.getx()));
-							machineModelDetail.setPropertyValue("PSI_Y", df.format(betatronPhase.gety()));
-							machineModelDetail.setPropertyValue("EK", df.format(getTotalEnergyFromKinetic(state.getSpeciesRestEnergy() / 1.e9,state.getKineticEnergy() / 1.e9)));
-
-							machineModelDetail.setPropertyValue("R11", df.format(transferMatrix.getElem(0, 0)));
-							machineModelDetail.setPropertyValue("R12", df.format(transferMatrix.getElem(0, 1)));
-							machineModelDetail.setPropertyValue("R13", df.format(transferMatrix.getElem(0, 2)));
-							machineModelDetail.setPropertyValue("R14", df.format(transferMatrix.getElem(0, 3)));
-							machineModelDetail.setPropertyValue("R15", df.format(transferMatrix.getElem(0, 4)));
-							machineModelDetail.setPropertyValue("R16", df.format(transferMatrix.getElem(0, 5)));
-							machineModelDetail.setPropertyValue("R21", df.format(transferMatrix.getElem(1, 0)));
-							machineModelDetail.setPropertyValue("R22", df.format(transferMatrix.getElem(1, 1)));
-							machineModelDetail.setPropertyValue("R23", df.format(transferMatrix.getElem(1, 2)));
-							machineModelDetail.setPropertyValue("R24", df.format(transferMatrix.getElem(1, 3)));
-							machineModelDetail.setPropertyValue("R25", df.format(transferMatrix.getElem(1, 4)));
-							machineModelDetail.setPropertyValue("R26", df.format(transferMatrix.getElem(1, 5)));
-							machineModelDetail.setPropertyValue("R31", df.format(transferMatrix.getElem(2, 0)));
-							machineModelDetail.setPropertyValue("R32", df.format(transferMatrix.getElem(2, 1)));
-							machineModelDetail.setPropertyValue("R33", df.format(transferMatrix.getElem(2, 2)));
-							machineModelDetail.setPropertyValue("R34", df.format(transferMatrix.getElem(2, 3)));
-							machineModelDetail.setPropertyValue("R35", df.format(transferMatrix.getElem(2, 4)));
-							machineModelDetail.setPropertyValue("R36", df.format(transferMatrix.getElem(2, 5)));
-							machineModelDetail.setPropertyValue("R41", df.format(transferMatrix.getElem(3, 0)));
-							machineModelDetail.setPropertyValue("R42", df.format(transferMatrix.getElem(3, 1)));
-							machineModelDetail.setPropertyValue("R43", df.format(transferMatrix.getElem(3, 2)));
-							machineModelDetail.setPropertyValue("R44", df.format(transferMatrix.getElem(3, 3)));
-							machineModelDetail.setPropertyValue("R45", df.format(transferMatrix.getElem(3, 4)));
-							machineModelDetail.setPropertyValue("R46", df.format(transferMatrix.getElem(3, 5)));
-							machineModelDetail.setPropertyValue("R51", df.format(transferMatrix.getElem(4, 0)));
-							machineModelDetail.setPropertyValue("R52", df.format(transferMatrix.getElem(4, 1)));
-							machineModelDetail.setPropertyValue("R53", df.format(transferMatrix.getElem(4, 2)));
-							machineModelDetail.setPropertyValue("R54", df.format(transferMatrix.getElem(4, 3)));
-							machineModelDetail.setPropertyValue("R55", df.format(transferMatrix.getElem(4, 4)));
-							machineModelDetail.setPropertyValue("R56", df.format(transferMatrix.getElem(4, 5)));
-							machineModelDetail.setPropertyValue("R61", df.format(transferMatrix.getElem(5, 0)));
-							machineModelDetail.setPropertyValue("R62", df.format(transferMatrix.getElem(5, 1)));
-							machineModelDetail.setPropertyValue("R63", df.format(transferMatrix.getElem(5, 2)));
-							machineModelDetail.setPropertyValue("R64", df.format(transferMatrix.getElem(5, 3)));
-							machineModelDetail.setPropertyValue("R65", df.format(transferMatrix.getElem(5, 4)));
-							machineModelDetail.setPropertyValue("R66", df.format(transferMatrix.getElem(5, 5)));
-						}
-					} catch (ModelException e) {
-						e.printStackTrace();
-						Message.error("Model Exception: Cannot get model data possibly due to a failed model run.", true);
-					}
-					runMachineModelDetail.add(machineModelDetail);
+				machineModelDetail.setPropertyValue("RUNS_ID", autoRunID);
+				
+				String nodeId = node.getId();
+		
+				machineModelDetail.setPropertyValue("ELEMENT_NAME", nodeId);
+				machineModelDetail.setPropertyValue("DEVICE_TYPE", deviceType
+						.getDeviceType(machineModelDetail.getPropertyValue("ELEMENT_NAME").toString()));
+				machineModelDetail.setPropertyValue("EPICS_NAME", deviceType
+						.getEPICSName(machineModelDetail.getPropertyValue("ELEMENT_NAME").toString()));
+				
+				//double s = 0.;
+				// treat Q30615x and Q30715x differently
+				if (node.isKindOf(RfGap.s_strType)) {						
+					machineModelDetail.setPropertyValue("INDEX_SLICE_CHK", i == 0 ? "0" : "2");					
+				} else {
+					machineModelDetail.setPropertyValue("INDEX_SLICE_CHK", String.valueOf(i));												
 				}
+				// get element
+				Element elem = (Element) elems.get(i);
+
+				// get element length
+				machineModelDetail.setPropertyValue("LEFF", df.format(node_length));
+				machineModelDetail.setPropertyValue("SLEFF", df.format(elem.getLength()));
+				
+				// get state for the element
+			
+				EnvelopeProbeState state = trajectory.stateNearestPosition(elem.getPosition()+elem.getLength()/2.);
+						//.trajectoryStatesForElement(elem.getId());
+				// We only output begin/middle/end for a thick device,
+				// therefore, no need to go through all the states but only the
+				// last state for that element.
+				if (state == null) continue;
+										
+
+				// z-pos offset correction
+				machineModelDetail.setPropertyValue("ZPOS", df.format(elem.getPosition()+elem.getLength()/2.));
+				machineModelDetail.setPropertyValue("SUML", df.format(state.getPosition()));
+				machineModelDetail.setPropertyValue("ORDINAL", elemOrders.get(state.getElementId()).toString());
+
+				if (state instanceof EnvelopeProbeState) {
+					Twiss[] twiss = ((EnvelopeProbeState) state)
+							.twissParameters();
+					R3 betatronPhase = cob.computeBetatronPhase((EnvelopeProbeState) state);
+							
+					machineModelDetail.setPropertyValue("BETA_X", df.format(twiss[0].getBeta()));
+					machineModelDetail.setPropertyValue("ALPHA_X", df.format(twiss[0].getAlpha()));
+					machineModelDetail.setPropertyValue("BETA_Y", df.format(twiss[1].getBeta()));
+					machineModelDetail.setPropertyValue("ALPHA_Y", df.format(twiss[1].getAlpha()));
+					
+					PhaseVector chromDispersion = cob.computeChromDispersion((EnvelopeProbeState)state);
+					machineModelDetail.setPropertyValue("ETA_X", df.format(chromDispersion.getx()));
+					machineModelDetail.setPropertyValue("ETA_Y", df.format(chromDispersion.gety()));
+					machineModelDetail.setPropertyValue("ETAP_X", df.format(chromDispersion.getxp()));
+					machineModelDetail.setPropertyValue("ETAP_Y", df.format(chromDispersion.getyp()));
+					
+					machineModelDetail.setPropertyValue("PSI_X", df.format(betatronPhase.getx()));
+					machineModelDetail.setPropertyValue("PSI_Y", df.format(betatronPhase.gety()));
+					machineModelDetail.setPropertyValue("E", df.format(getTotalEnergyFromKinetic(state.getSpeciesRestEnergy() / 1.e9,state.getKineticEnergy() / 1.e9)));
+					machineModelDetail.setPropertyValue("P", df.format(RelativisticParameterConverter.
+							computeMomentumFromEnergies(state.getKineticEnergy(), state.getSpeciesRestEnergy())/1e9));
+					machineModelDetail.setPropertyValue("Bmag_X", "1");
+					machineModelDetail.setPropertyValue("Bmag_Y", "1");
+					
+					PhaseMatrix rMat = ((EnvelopeProbeState) state)
+							.getResponseMatrix();
+					machineModelDetail.setPropertyValue("R11", df.format(rMat.getElem(0, 0)));
+					machineModelDetail.setPropertyValue("R12", df.format(rMat.getElem(0, 1)));
+					machineModelDetail.setPropertyValue("R13", df.format(rMat.getElem(0, 2)));
+					machineModelDetail.setPropertyValue("R14", df.format(rMat.getElem(0, 3)));
+					machineModelDetail.setPropertyValue("R15", df.format(rMat.getElem(0, 4)));
+					machineModelDetail.setPropertyValue("R16", df.format(rMat.getElem(0, 5)));
+					machineModelDetail.setPropertyValue("R21", df.format(rMat.getElem(1, 0)));
+					machineModelDetail.setPropertyValue("R22", df.format(rMat.getElem(1, 1)));
+					machineModelDetail.setPropertyValue("R23", df.format(rMat.getElem(1, 2)));
+					machineModelDetail.setPropertyValue("R24", df.format(rMat.getElem(1, 3)));
+					machineModelDetail.setPropertyValue("R25", df.format(rMat.getElem(1, 4)));
+					machineModelDetail.setPropertyValue("R26", df.format(rMat.getElem(1, 5)));
+					machineModelDetail.setPropertyValue("R31", df.format(rMat.getElem(2, 0)));
+					machineModelDetail.setPropertyValue("R32", df.format(rMat.getElem(2, 1)));
+					machineModelDetail.setPropertyValue("R33", df.format(rMat.getElem(2, 2)));
+					machineModelDetail.setPropertyValue("R34", df.format(rMat.getElem(2, 3)));
+					machineModelDetail.setPropertyValue("R35", df.format(rMat.getElem(2, 4)));
+					machineModelDetail.setPropertyValue("R36", df.format(rMat.getElem(2, 5)));
+					machineModelDetail.setPropertyValue("R41", df.format(rMat.getElem(3, 0)));
+					machineModelDetail.setPropertyValue("R42", df.format(rMat.getElem(3, 1)));
+					machineModelDetail.setPropertyValue("R43", df.format(rMat.getElem(3, 2)));
+					machineModelDetail.setPropertyValue("R44", df.format(rMat.getElem(3, 3)));
+					machineModelDetail.setPropertyValue("R45", df.format(rMat.getElem(3, 4)));
+					machineModelDetail.setPropertyValue("R46", df.format(rMat.getElem(3, 5)));
+					machineModelDetail.setPropertyValue("R51", df.format(rMat.getElem(4, 0)));
+					machineModelDetail.setPropertyValue("R52", df.format(rMat.getElem(4, 1)));
+					machineModelDetail.setPropertyValue("R53", df.format(rMat.getElem(4, 2)));
+					machineModelDetail.setPropertyValue("R54", df.format(rMat.getElem(4, 3)));
+					machineModelDetail.setPropertyValue("R55", df.format(rMat.getElem(4, 4)));
+					machineModelDetail.setPropertyValue("R56", df.format(rMat.getElem(4, 5)));
+					machineModelDetail.setPropertyValue("R61", df.format(rMat.getElem(5, 0)));
+					machineModelDetail.setPropertyValue("R62", df.format(rMat.getElem(5, 1)));
+					machineModelDetail.setPropertyValue("R63", df.format(rMat.getElem(5, 2)));
+					machineModelDetail.setPropertyValue("R64", df.format(rMat.getElem(5, 3)));
+					machineModelDetail.setPropertyValue("R65", df.format(rMat.getElem(5, 4)));
+					machineModelDetail.setPropertyValue("R66", df.format(rMat.getElem(5, 5)));
+				} /*else if (state instanceof TransferMapState) {
+					PhaseMatrix transferMatrix = ((TransferMapState) state).getPartialTransferMap().getFirstOrder();
+					CovarianceMatrix covMatrix = new CovarianceMatrix(transferMatrix);
+					
+					Twiss[] twiss = covMatrix.computeTwiss();							
+					PhaseVector betatronPhase = covMatrix.getMean();
+					
+					machineModelDetail.setPropertyValue("BETA_X", df.format(twiss[0].getBeta()));
+					machineModelDetail.setPropertyValue("ALPHA_X", df.format(twiss[0].getAlpha()));
+					machineModelDetail.setPropertyValue("BETA_Y", df.format(twiss[1].getBeta()));
+					machineModelDetail.setPropertyValue("ALPHA_Y", df.format(twiss[1].getAlpha()));
+					/* TODO OPENXAL
+					machineModelDetail.setPropertyValue("ETA_X", df.format(((TransferMapState) state).getChromDispersionX()));
+					machineModelDetail.setPropertyValue("ETA_Y", df.format(((TransferMapState) state).getChromDispersionY()));
+					machineModelDetail.setPropertyValue("ETAP_X", df.format(((TransferMapState) state).getChromDispersionSlopeX()));
+					machineModelDetail.setPropertyValue("ETAP_Y", df.format(((TransferMapState) state).getChromDispersionSlopeY()));
+					machineModelDetail.setPropertyValue("PSI_X", df.format(betatronPhase.getx()));
+					machineModelDetail.setPropertyValue("PSI_Y", df.format(betatronPhase.gety()));
+					machineModelDetail.setPropertyValue("EK", df.format(getTotalEnergyFromKinetic(state.getSpeciesRestEnergy() / 1.e9,state.getKineticEnergy() / 1.e9)));
+
+					machineModelDetail.setPropertyValue("R11", df.format(transferMatrix.getElem(0, 0)));
+					machineModelDetail.setPropertyValue("R12", df.format(transferMatrix.getElem(0, 1)));
+					machineModelDetail.setPropertyValue("R13", df.format(transferMatrix.getElem(0, 2)));
+					machineModelDetail.setPropertyValue("R14", df.format(transferMatrix.getElem(0, 3)));
+					machineModelDetail.setPropertyValue("R15", df.format(transferMatrix.getElem(0, 4)));
+					machineModelDetail.setPropertyValue("R16", df.format(transferMatrix.getElem(0, 5)));
+					machineModelDetail.setPropertyValue("R21", df.format(transferMatrix.getElem(1, 0)));
+					machineModelDetail.setPropertyValue("R22", df.format(transferMatrix.getElem(1, 1)));
+					machineModelDetail.setPropertyValue("R23", df.format(transferMatrix.getElem(1, 2)));
+					machineModelDetail.setPropertyValue("R24", df.format(transferMatrix.getElem(1, 3)));
+					machineModelDetail.setPropertyValue("R25", df.format(transferMatrix.getElem(1, 4)));
+					machineModelDetail.setPropertyValue("R26", df.format(transferMatrix.getElem(1, 5)));
+					machineModelDetail.setPropertyValue("R31", df.format(transferMatrix.getElem(2, 0)));
+					machineModelDetail.setPropertyValue("R32", df.format(transferMatrix.getElem(2, 1)));
+					machineModelDetail.setPropertyValue("R33", df.format(transferMatrix.getElem(2, 2)));
+					machineModelDetail.setPropertyValue("R34", df.format(transferMatrix.getElem(2, 3)));
+					machineModelDetail.setPropertyValue("R35", df.format(transferMatrix.getElem(2, 4)));
+					machineModelDetail.setPropertyValue("R36", df.format(transferMatrix.getElem(2, 5)));
+					machineModelDetail.setPropertyValue("R41", df.format(transferMatrix.getElem(3, 0)));
+					machineModelDetail.setPropertyValue("R42", df.format(transferMatrix.getElem(3, 1)));
+					machineModelDetail.setPropertyValue("R43", df.format(transferMatrix.getElem(3, 2)));
+					machineModelDetail.setPropertyValue("R44", df.format(transferMatrix.getElem(3, 3)));
+					machineModelDetail.setPropertyValue("R45", df.format(transferMatrix.getElem(3, 4)));
+					machineModelDetail.setPropertyValue("R46", df.format(transferMatrix.getElem(3, 5)));
+					machineModelDetail.setPropertyValue("R51", df.format(transferMatrix.getElem(4, 0)));
+					machineModelDetail.setPropertyValue("R52", df.format(transferMatrix.getElem(4, 1)));
+					machineModelDetail.setPropertyValue("R53", df.format(transferMatrix.getElem(4, 2)));
+					machineModelDetail.setPropertyValue("R54", df.format(transferMatrix.getElem(4, 3)));
+					machineModelDetail.setPropertyValue("R55", df.format(transferMatrix.getElem(4, 4)));
+					machineModelDetail.setPropertyValue("R56", df.format(transferMatrix.getElem(4, 5)));
+					machineModelDetail.setPropertyValue("R61", df.format(transferMatrix.getElem(5, 0)));
+					machineModelDetail.setPropertyValue("R62", df.format(transferMatrix.getElem(5, 1)));
+					machineModelDetail.setPropertyValue("R63", df.format(transferMatrix.getElem(5, 2)));
+					machineModelDetail.setPropertyValue("R64", df.format(transferMatrix.getElem(5, 3)));
+					machineModelDetail.setPropertyValue("R65", df.format(transferMatrix.getElem(5, 4)));
+					machineModelDetail.setPropertyValue("R66", df.format(transferMatrix.getElem(5, 5)));
+				}	*/				
+				runMachineModelDetail.add(machineModelDetail);
+			
 			}
 		}
 		Collections.sort(runMachineModelDetail, new SortMachineModelDetail("ORDINAL", Sort.UP));
