@@ -30,15 +30,19 @@
 	</plugins>
   </build>
   <dependencies>
-    <dependency>
-      <groupId>org.xal</groupId>
-      <artifactId>openxal.extensions.zplot</artifactId>
-      <version>1.0.5-SNAPSHOT</version>
-    </dependency>
+	<dependency>
+		<groupId>org.xal</groupId>
+		<artifactId>openxal.extensions.zplot</artifactId>
+		<version>1.0.5-SNAPSHOT</version>
+	</dependency>
+	<dependency>
+		<groupId>se.lu.esss.ics.jels</groupId>
+		<artifactId>jels</artifactId>
+	</dependency>
 	<dependency>
 		<groupId>postgresql</groupId>
 		<artifactId>postgresql</artifactId>
 		<scope>runtime</scope>
-	</dependency>	
+	</dependency>
   </dependencies>
 </project>
