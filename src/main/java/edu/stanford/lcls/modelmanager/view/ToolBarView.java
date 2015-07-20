@@ -8,6 +8,8 @@ import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,7 +25,6 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JSeparator;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.ListCellRenderer;
@@ -39,9 +40,8 @@ import xal.model.ModelException;
 import xal.service.pvlogger.apputils.browser.PVLogSnapshotChooser;
 import edu.stanford.lcls.modelmanager.ModelManagerWindow;
 import edu.stanford.lcls.modelmanager.dbmodel.BrowserModel;
-import edu.stanford.lcls.modelmanager.dbmodel.BrowserModelListener;
-import edu.stanford.lcls.modelmanager.dbmodel.MachineModelDevice;
 import edu.stanford.lcls.modelmanager.dbmodel.BrowserModel.RunState;
+import edu.stanford.lcls.modelmanager.dbmodel.BrowserModelListener;
 import edu.stanford.lcls.xal.model.RunModelConfiguration;
 import edu.stanford.lcls.xal.model.RunModelConfigurationDesign;
 import edu.stanford.lcls.xal.model.RunModelConfigurationExtant;
@@ -95,7 +95,7 @@ public class ToolBarView implements SwingConstants {
 //		toolBarView = new JToolBar();
 		toolBarView = ((ModelManagerWindow)_parent).getToolBar();
 		
-		Dimension small = new Dimension(5,10);
+		Dimension small = new Dimension(5,5);
 		Dimension big = new Dimension(10,10);
 		
 		/*
@@ -118,8 +118,8 @@ public class ToolBarView implements SwingConstants {
 		
 		
 		// beamline selection
-		JPanel bs = new JPanel();
-		bs.setOpaque(false);
+		final JPanel bs = new JPanel();
+		bs.setOpaque(false);	
 		bs.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "Beamline:"));
 		bs.setLayout(new BoxLayout(bs, BoxLayout.LINE_AXIS));
 		
@@ -127,16 +127,15 @@ public class ToolBarView implements SwingConstants {
 		beamlineSelector.setToolTipText("select a beamline");
 		beamlineSelector.setMaximumSize(new Dimension(180, 28));
 		beamlineSelector.setEnabled(false);
+		beamlineSelector.setAlignmentX(0.f);
 		bs.add(beamlineSelector);
 		toolBarView.add(bs);
 		
-		
 		// initial parameters
-		JPanel ip = new JPanel();
+		final JPanel ip = new JPanel();
 		ip.setOpaque(false);
 		ip.setBorder(BorderFactory.createTitledBorder("Initial parameters"));
 		ip.setLayout(new BoxLayout(ip, BoxLayout.LINE_AXIS));
-		
 		
 		setInitTiwissButton = new JButton("Edit Init Twiss...");
 		setInitTiwissButton.addActionListener(new ActionListener() {			
@@ -190,7 +189,7 @@ public class ToolBarView implements SwingConstants {
 		
 		// machine parameters
 		
-		JPanel mp = new JPanel();
+		final JPanel mp = new JPanel();
 		mp.setOpaque(false);
 		mp.setBorder(BorderFactory.createTitledBorder("Machine parameters"));
 		mp.setLayout(new BoxLayout(mp, BoxLayout.LINE_AXIS));
@@ -201,8 +200,9 @@ public class ToolBarView implements SwingConstants {
 		String[] runModeSelections = { "Design", "Extant", "PVLogger", "Selected model" };
 		runModeSelector = new JComboBox<String>(runModeSelections);
 		runModeSelector.setToolTipText("select to run either DESIGN or EXTANT model");
-		runModeSelector.setMaximumSize(new Dimension(100, 28));
+		runModeSelector.setMaximumSize(new Dimension(100, 28));		
 		runModeSelector.setSelectedIndex(1);
+		runModeSelector.setAlignmentX(0.f);
 		
 		mp.add(runModeSelector);
 		mp.add(new JToolBar.Separator(big));
@@ -240,7 +240,23 @@ public class ToolBarView implements SwingConstants {
 				// " for Twiss.");
 				//Message.info("Use reference pt.: " + emitNode + " for Twiss back propagate.");
 				// do Twiss back propagate
-				
+		
+		toolBarView.addPropertyChangeListener( "orientation", new PropertyChangeListener() {			
+			@Override
+			public void propertyChange(PropertyChangeEvent e) {
+                int o = ((Integer)e.getNewValue()).intValue();
+
+                if (o == JToolBar.VERTICAL) {                
+                	bs.setLayout(new BoxLayout(bs, BoxLayout.PAGE_AXIS));
+                	ip.setLayout(new BoxLayout(ip, BoxLayout.PAGE_AXIS));                    
+                    mp.setLayout(new BoxLayout(mp, BoxLayout.PAGE_AXIS));                
+                } else {
+                	bs.setLayout(new BoxLayout(bs, BoxLayout.LINE_AXIS));
+                	ip.setLayout(new BoxLayout(ip, BoxLayout.LINE_AXIS));                    
+                    mp.setLayout(new BoxLayout(mp, BoxLayout.LINE_AXIS));                    
+                }
+            }
+        });
 		
 		runModeSelector.addActionListener(new ActionListener() { 
 			public void actionPerformed(ActionEvent e) {
@@ -333,17 +349,20 @@ public class ToolBarView implements SwingConstants {
 
 		runModelButton = new JButton("Run Model");
 		runModelButton.setToolTipText("run XAL online model");
+		runModelButton.setAlignmentY(0.3f);
 		toolBarView.add(runModelButton);
 		
 		toolBarView.addSeparator(small);
 		upload2DBButton = new JButton("Save");
 		upload2DBButton.setToolTipText("save the model data in memory to database");
 		upload2DBButton.setEnabled(false);
+		upload2DBButton.setAlignmentY(0.3f);
 		toolBarView.add(upload2DBButton);
 		
 		toolBarView.addSeparator(small);
 		makeGoldButton = new JButton("Make SEL Gold");
 		makeGoldButton.setToolTipText("tag the selected model (in SEL column from the table) as the GOLD one");
+		makeGoldButton.setAlignmentY(0.3f);
 		toolBarView.add(makeGoldButton);
 		makeGoldButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
@@ -568,6 +587,8 @@ public class ToolBarView implements SwingConstants {
 		toolBarView.remove(comp1);
 		toolBarView.remove(comp2);
 		
+		((JButton)comp1).setAlignmentY(0.3f);
+		((JButton)comp2).setAlignmentY(0.3f);
 		toolBarView.add(comp1);
 		toolBarView.addSeparator(small);
 		toolBarView.add(comp2);
