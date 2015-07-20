@@ -47,8 +47,8 @@ public class ModelManagerWindow extends XalWindow implements SwingConstants {
 	 */
 	protected ModelManagerFeature makeContent() {
 		Dimension screenSize = this.getToolkit().getScreenSize();
-		int frameWidth = screenSize.width - 100 < 1200 ? screenSize.width - 100
-				: 1200;
+		int frameWidth = screenSize.width - 100 < 1300 ? screenSize.width - 100
+				: 1300;
 		int frameHeight = screenSize.height - 100 < 1000 ? screenSize.height - 100
 				: 1000;
 		this.setSize(frameWidth, frameHeight);
