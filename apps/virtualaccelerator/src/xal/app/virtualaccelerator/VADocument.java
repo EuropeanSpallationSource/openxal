@@ -475,6 +475,19 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 				DataAdaptor daSeqComponents = daSeq.createChild( "seq" );
 				daSeqComponents.setValue( "name", sequenceName );
 			}
+            DataAdaptor daNoise = daLevel1.createChild("noiseLevels");
+            daNoise.setValue("quad", quadNoise);
+            daNoise.setValue("dipole", dipoleNoise);
+            daNoise.setValue("corrector", correctorNoise);
+            daNoise.setValue("bpm", bpmNoise);
+            daNoise.setValue("sol", solNoise);
+            
+            DataAdaptor daOffset = daLevel1.createChild("offsets");
+            daOffset.setValue("quad", quadOffset);
+            daOffset.setValue("dipole", dipoleOffset);
+            daOffset.setValue("corrector", correctorOffset);
+            daOffset.setValue("bpm", bpmOffset);
+            daOffset.setValue("sol", solOffset);      
 		}
         
 		daLevel1.setValue( "modelSyncPeriod", _modelSyncPeriod );
@@ -688,6 +701,16 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 		Action setNoiseAction = new AbstractAction() {
 			static final long serialVersionUID = 0;
 			public void actionPerformed(ActionEvent event) {
+				df1.setValue(quadNoise);
+				df2.setValue(dipoleNoise);
+				df3.setValue(correctorNoise);
+				df4.setValue(bpmNoise);
+				df5.setValue(solNoise);
+				df11.setValue(quadOffset);
+				df21.setValue(dipoleOffset);
+				df31.setValue(correctorOffset);
+				df41.setValue(bpmOffset);
+				df51.setValue(solOffset);				
 				setNoise.setVisible(true);
 			}
 		};
@@ -738,6 +761,24 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 			DataAdaptor da2a = da1.childAdaptor( "sequences" );
 			String seqName = da2a.stringValue( "name" );
             
+			DataAdaptor daNoise = da1.childAdaptor("noiseLevels");
+			if (daNoise != null) {
+				quadNoise = daNoise.doubleValue("quad");
+	            dipoleNoise = daNoise.doubleValue("dipole");
+	            correctorNoise = daNoise.doubleValue("corrector");
+	            bpmNoise = daNoise.doubleValue("bpm");
+	            solNoise = daNoise.doubleValue("sol");
+			}
+			
+            DataAdaptor daOffset = da1.childAdaptor("offsets");
+            if (daOffset != null) {
+	            quadOffset = daOffset.doubleValue("quad");
+	            dipoleOffset = daOffset.doubleValue("dipole");
+	            correctorOffset = daOffset.doubleValue("corrector");
+	            bpmOffset = daOffset.doubleValue("bpm");
+	            solOffset = daOffset.doubleValue("sol");
+            }
+			
 			temp = da2a.childAdaptors("seq");
             for ( final DataAdaptor da : temp ) {
 				seqs.add( getAccelerator().getSequence( da.stringValue("name") ) );
@@ -755,8 +796,8 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
             
 			if ( da1.hasAttribute( "modelSyncPeriod" ) ) {
 				_modelSyncPeriod = da1.longValue( "modelSyncPeriod" );
-			}
-		}
+			}			
+	}
         
 	}
     
@@ -1411,6 +1452,8 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 			correctorOffset = df31.getDoubleValue();
 			bpmOffset = df41.getDoubleValue();
 			solOffset = df51.getDoubleValue();
+			setHasChanges(true);
+			
 			/**add below*/
 			configureReadbacks();
 			setNoise.setVisible(false);
