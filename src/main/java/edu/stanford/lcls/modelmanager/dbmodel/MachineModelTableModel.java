@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
+import edu.stanford.lcls.modelmanager.dbmodel.BrowserModelListener.BrowserModelAction;
 import edu.stanford.lcls.modelmanager.view.ModelStateView;
 import edu.stanford.slac.Message.Message;
 
@@ -134,7 +135,7 @@ public class MachineModelTableModel extends AbstractTableModel implements
 	}
 	
 	@Override
-	public void modelStateChanged(BrowserModel model){
+	public void modelStateChanged(BrowserModel model, BrowserModelAction action){
 		if (model.getStateReady()) {
 			setMachineModels(model.getFetchedMachineModel());
 			this.referenceMachineModel = model.getReferenceMachineModel();

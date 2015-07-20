@@ -40,6 +40,7 @@ import edu.stanford.lcls.modelmanager.dbmodel.BrowserModel;
 import edu.stanford.lcls.modelmanager.dbmodel.BrowserModelListener;
 import edu.stanford.lcls.modelmanager.dbmodel.DataManager;
 import edu.stanford.lcls.modelmanager.dbmodel.MachineModelTableModel;
+import edu.stanford.lcls.modelmanager.dbmodel.BrowserModelListener.BrowserModelAction;
 import edu.stanford.slac.Message.Message;
 
 public class ModelListView {
@@ -233,7 +234,7 @@ public class ModelListView {
 
 		model.addBrowserModelListener(new BrowserModelListener() {		
 			@Override
-			public void modelStateChanged(BrowserModel model) {
+			public void modelStateChanged(BrowserModel model, BrowserModelAction action) {
 				if (!model.getStateReady()) return;
 				
 				if ( model.getReferenceMachineModel() != null)

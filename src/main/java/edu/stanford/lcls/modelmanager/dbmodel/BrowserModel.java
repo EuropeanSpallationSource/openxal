@@ -143,7 +143,7 @@ public class BrowserModel {
 				.childAdaptor("persistentStore");
 		PERSISTENT_STORE = new PersistentStore(persistentStoreAdaptor);
 		
-		EVENT_PROXY.modelStateChanged(this);
+		EVENT_PROXY.modelStateChanged(this, BrowserModelListener.BrowserModelAction.CONNECTED);
 		fetchAllMachineModel();
 	}	
 
@@ -393,7 +393,7 @@ public class BrowserModel {
 		ModelPlotData.clearRange();
 		
 		stateReady = true;
-		EVENT_PROXY.modelStateChanged(this);
+		EVENT_PROXY.modelStateChanged(this, BrowserModelListener.BrowserModelAction.FETCHED);
 	}
 
 	public void setSelectedMachineModel(MachineModel referenceMachineModel, MachineModel selectedMachineModel) throws SQLException {
@@ -409,7 +409,7 @@ public class BrowserModel {
 			setReferenceModel(referenceMachineModel);
 			setSelectedModel(_selectedMachineModel);
 		}
-		EVENT_PROXY.modelStateChanged(this);
+		EVENT_PROXY.modelStateChanged(this, BrowserModelListener.BrowserModelAction.MODEL_SELECTED);
 	}
 
 	public void setGoldModel(MachineModel goldMachineModel)
@@ -505,7 +505,7 @@ public class BrowserModel {
 		
 		setSelectedModel(_runMachineModel);
 		runState = RunState.RUN;
-		EVENT_PROXY.modelStateChanged(this);
+		EVENT_PROXY.modelStateChanged(this, BrowserModelListener.BrowserModelAction.MODEL_RUN);
 	}
 
 	public void createRunModelComment(MachineModel runMachineModel, MachineModelDetail[] runMachineModelDetail, String modelMode) {
@@ -548,7 +548,7 @@ public class BrowserModel {
 		_runMachineModelDetail = null;
 		_runMachineModelDevice = null;
 		
-		EVENT_PROXY.modelStateChanged(this);
+		EVENT_PROXY.modelStateChanged(this, BrowserModelListener.BrowserModelAction.MODEL_SAVED);
 	}
 	
 	public void removeRunModel()
@@ -620,7 +620,7 @@ public class BrowserModel {
 		setSelectedModel(_runMachineModel);
 		
 		runState = RunState.FETCHED_DATA;
-		EVENT_PROXY.modelStateChanged(this);
+		EVENT_PROXY.modelStateChanged(this, BrowserModelListener.BrowserModelAction.RUN_DATA_FETCHED);
 	}
 	
 	public RunState getRunState()
@@ -632,7 +632,7 @@ public class BrowserModel {
 		removeRunModel();
 		
 		runState = RunState.NONE;
-		EVENT_PROXY.modelStateChanged(this);
+		EVENT_PROXY.modelStateChanged(this, BrowserModelListener.BrowserModelAction.RUN_DATA_RESET);
 	}
 
 }

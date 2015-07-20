@@ -44,6 +44,7 @@ import edu.stanford.lcls.modelmanager.dbmodel.BrowserModelListener;
 import edu.stanford.lcls.modelmanager.dbmodel.MachineModel;
 import edu.stanford.lcls.modelmanager.dbmodel.MachineModelDetail;
 import edu.stanford.lcls.modelmanager.dbmodel.MachineModelDevice;
+import edu.stanford.lcls.modelmanager.dbmodel.BrowserModelListener.BrowserModelAction;
 import edu.stanford.slac.Message.Message;
 import edu.stanford.slac.util.zplot.ZPlotPanel;
 
@@ -199,7 +200,7 @@ public class ModelPlotView implements SwingConstants {
 
 		_model.addBrowserModelListener(new BrowserModelListener() {
 			@Override
-			public void modelStateChanged(BrowserModel model) {
+			public void modelStateChanged(BrowserModel model, BrowserModelAction action) {
 				if (model.getStateReady()) {
 					setPlotPanelEnable(true);
 					_referenceMachineModel = model.getReferenceMachineModel();

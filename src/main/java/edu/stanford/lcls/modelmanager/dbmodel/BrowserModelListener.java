@@ -12,5 +12,10 @@ public interface BrowserModelListener {
 	 * @param model
 	 *            The model whose state changed
 	 */
-	public void modelStateChanged(BrowserModel model);
+	public void modelStateChanged(BrowserModel model, BrowserModelAction action);
+	
+	public static enum BrowserModelAction {
+		CONNECTED, FETCHED, MODEL_SELECTED, MODEL_SAVED, MODEL_RUN, RUN_DATA_FETCHED, RUN_DATA_RESET
+		
+	}
 }

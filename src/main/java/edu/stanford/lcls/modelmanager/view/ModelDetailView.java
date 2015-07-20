@@ -10,6 +10,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.*;
 
 import edu.stanford.lcls.modelmanager.dbmodel.*;
+import edu.stanford.lcls.modelmanager.dbmodel.BrowserModelListener.BrowserModelAction;
 
 public class ModelDetailView implements SwingConstants {
 	private JSplitPane modelDetailView;
@@ -110,7 +111,7 @@ public class ModelDetailView implements SwingConstants {
 		
 		model.addBrowserModelListener(new BrowserModelListener() {
 			@Override
-			public void modelStateChanged(BrowserModel model) {					
+			public void modelStateChanged(BrowserModel model, BrowserModelAction action) {					
 				commentText.setEditable(false);
 				MachineModel selectedMachineModel = model.getSelectedMachineModel();
 				MachineModelDetail[] selectedMachineModelDetail = model.getSelectedMachineModelDetail();

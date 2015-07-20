@@ -13,6 +13,8 @@ import javax.swing.SwingConstants;
 
 import xal.smf.Accelerator;
 import edu.stanford.lcls.modelmanager.dbmodel.BrowserModel;
+import edu.stanford.lcls.modelmanager.dbmodel.BrowserModelListener;
+import edu.stanford.lcls.modelmanager.dbmodel.BrowserModelListener.BrowserModelAction;
 import edu.stanford.slac.Message.Message;
 
 public class ModelManagerFeature  implements SwingConstants {
@@ -45,7 +47,7 @@ public class ModelManagerFeature  implements SwingConstants {
 		modelPlotBox = (JSplitPane) new ModelPlotView(frame, model,
 				modelDetailView.getDataTable(), modelStateView).getInstance();
 
-		JTabbedPane mainDataPanel = new JTabbedPane();
+		final JTabbedPane mainDataPanel = new JTabbedPane();
 		mainDataPanel.addTab("Z Plot", modelPlotBox);
 		mainDataPanel.addTab("Model Details", modelDetailBox);
 		mainDataPanel.addTab("Machine Parameters", modelDeviceBox);
@@ -61,20 +63,32 @@ public class ModelManagerFeature  implements SwingConstants {
 		listView.setDividerLocation(30);
 		listView.setOneTouchExpandable(true);
 		
-		JSplitPane ContentView = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
+		JSplitPane contentView = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
 				 mainDataPanel, listView);
-		ContentView.setOneTouchExpandable(true);
+		contentView.setOneTouchExpandable(true);
 
 		Container mainView = new Container();
 		mainView.setLayout(new BorderLayout());
 		mainView.add(queryBox, BorderLayout.PAGE_START);
-		mainView.add(ContentView, BorderLayout.CENTER);
+		mainView.add(contentView, BorderLayout.CENTER);
 		stateBar.add(modelStateBox);
 		
 		frame.getContentPane().add(mainView);
 		frame.setVisible(true);
-		ContentView.setDividerLocation(0.7);
+		contentView.setDividerLocation(0.7);
 		modelPlotBox.setDividerLocation(modelPlotBox.getWidth() - 200);
+		
+		model.addBrowserModelListener(new BrowserModelListener() {
+			
+			@Override
+			public void modelStateChanged(BrowserModel model, BrowserModelAction action) {
+				if (action.equals(BrowserModelAction.RUN_DATA_FETCHED))
+					mainDataPanel.setSelectedComponent(modelDeviceBox);
+				else if (action.equals(BrowserModelAction.MODEL_RUN))
+					mainDataPanel.setSelectedComponent(modelPlotBox);
+				
+			}
+		});
 	}
 	
 /*	public static Message getMessageLogger(){

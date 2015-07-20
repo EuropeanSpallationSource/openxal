@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
+import edu.stanford.lcls.modelmanager.dbmodel.BrowserModelListener.BrowserModelAction;
+
 public class MachineModelDeviceTableModel extends AbstractTableModel implements	BrowserModelListener {
 
 	/**
@@ -82,7 +84,7 @@ public class MachineModelDeviceTableModel extends AbstractTableModel implements	
 	}
 
 	
-	public void modelStateChanged(BrowserModel model) {
+	public void modelStateChanged(BrowserModel model, BrowserModelAction action) {
 		editable = false;
 		if (model.getStateReady()) {
 			MachineModelDevice[] machineModelDevices = model.getSelectedMachineModelDevice();

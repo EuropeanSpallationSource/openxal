@@ -63,7 +63,7 @@ public class MachineModelDetailTableModel extends AbstractTableModel implements
 		return GUI_TABLE_COLUMN_NAME.get(columnIndex);
 	}
 
-	public void modelStateChanged(BrowserModel model) {
+	public void modelStateChanged(BrowserModel model, BrowserModelAction action) {
 		if (model.getStateReady()) {
 			MachineModelDetail[] machineModelDetails = model.getSelectedMachineModelDetail();
 			if (machineModelDetails == null) machineModelDetails = model.getReferenceMachineModelDetail();

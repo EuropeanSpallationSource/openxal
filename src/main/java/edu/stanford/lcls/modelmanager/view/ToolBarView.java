@@ -41,6 +41,7 @@ import xal.service.pvlogger.apputils.browser.PVLogSnapshotChooser;
 import edu.stanford.lcls.modelmanager.ModelManagerWindow;
 import edu.stanford.lcls.modelmanager.dbmodel.BrowserModel;
 import edu.stanford.lcls.modelmanager.dbmodel.BrowserModel.RunState;
+import edu.stanford.lcls.modelmanager.dbmodel.BrowserModelListener.BrowserModelAction;
 import edu.stanford.lcls.modelmanager.dbmodel.BrowserModelListener;
 import edu.stanford.lcls.xal.model.RunModelConfiguration;
 import edu.stanford.lcls.xal.model.RunModelConfigurationDesign;
@@ -576,7 +577,7 @@ public class ToolBarView implements SwingConstants {
 		
 		model.addBrowserModelListener(new BrowserModelListener() {
 			@Override
-			public void modelStateChanged(BrowserModel model) {
+			public void modelStateChanged(BrowserModel model, BrowserModelAction action) {
 				if (model.getStateReady()) setQueryViewEnable(true);		
 			}
 		});

@@ -18,6 +18,7 @@ import edu.stanford.lcls.modelmanager.dbmodel.BrowserModelListener;
 import edu.stanford.lcls.modelmanager.dbmodel.MachineModel;
 import edu.stanford.lcls.modelmanager.dbmodel.MachineModelDetail;
 import edu.stanford.lcls.modelmanager.dbmodel.MachineModelDevice;
+import edu.stanford.lcls.modelmanager.dbmodel.BrowserModelListener.BrowserModelAction;
 
 public class ModelStateView extends Thread implements SwingConstants {
 	protected BrowserModel _model;
@@ -66,8 +67,8 @@ public class ModelStateView extends Thread implements SwingConstants {
 		
 		_model.addBrowserModelListener(new BrowserModelListener() {
 			@Override
-			public void modelStateChanged(BrowserModel model) {
-				if (!model.getStateReady()) {
+			public void modelStateChanged(BrowserModel model, BrowserModelAction action) {				
+				if (action.equals(BrowserModelAction.CONNECTED)) {
 					int lastColonIndex = _model.getDataBaseURL().lastIndexOf(":");
 					dataBaseState.setText("User \"" + _model.getConnectUser()
 							+ "\" connected to \""
@@ -75,19 +76,17 @@ public class ModelStateView extends Thread implements SwingConstants {
 							+ "\" Database.");
 					machineModelState.setText("Retrieving machine models from database ...");
 					progressBar.setString("Loading ...");
-				} else {
-					if (model.getSelectedMachineModel() != null) {
-						
-						machineModelState.setText("You can now plot or export the running machine model data...");
-						progressBar.setIndeterminate(false);
-						progressBar.setString("Running Success !");
-					}
+				} else if (action.equals(BrowserModelAction.FETCHED)) {					
 					machineModelState.setText("Find " + _model.getFetchedMachineModel().size()
 							+ " machine models in the database!");
 					progressBar.setIndeterminate(false);
-					progressBar.setString("Loading successful!");					
-				}
-				
+					progressBar.setString("Loading successful!");
+				} else {
+					if (model.getSelectedMachineModel() != null) 	
+						machineModelState.setText("You can now plot or export the running machine model data...");
+					progressBar.setIndeterminate(false);
+					progressBar.setString("Running Success !");					
+				}				
 			}
 		});
 		modelStateView.repaint();
