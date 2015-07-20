@@ -193,53 +193,19 @@ public class ModelListView {
 		sorter.setTableModel(machineModelTableModel);
 		modelTable.setModel(sorter);
 
-		for (int columnIndex = 0; columnIndex < modelTable.getColumnCount(); columnIndex++) {
-			TableColumn tableColumn = modelTable.getColumnModel().getColumn(
-					columnIndex);
-			switch (columnIndex) {
-			case 0:
-				tableColumn.setMinWidth(30);
-				tableColumn.setMaxWidth(50);
-				tableColumn.setPreferredWidth(40);
-				break;
-			case 1:
-				tableColumn.setMinWidth(80);
-				tableColumn.setMaxWidth(180);
-				tableColumn.setPreferredWidth(100);
-				break;
-			case 2:
-				tableColumn.setMinWidth(50);
-				tableColumn.setMaxWidth(60);
-				tableColumn.setPreferredWidth(55);
-				break;
-			case 3:
-				tableColumn.setMinWidth(15);
-				tableColumn.setMaxWidth(30);
-				tableColumn.setPreferredWidth(20);
-				break;
-			case 4:
-				tableColumn.setMinWidth(50);
-				tableColumn.setMaxWidth(2000);
-				tableColumn.setPreferredWidth(80);
-				break;
-			case 5:
-				tableColumn.setMinWidth(50);
-				tableColumn.setMaxWidth(80);
-				tableColumn.setPreferredWidth(60);
-				break;
-			case 6:
-				tableColumn.setMinWidth(20);
-				tableColumn.setMaxWidth(40);
-				tableColumn.setPreferredWidth(30);
-				break;
-			case 7:
-				tableColumn.setMinWidth(20);
-				tableColumn.setMaxWidth(40);
-				tableColumn.setPreferredWidth(30);
-				break;
-			}
+		//"ID", "RUN_ELEMENT_DATE", "RUN_SOURCE_CHK", "MODEL_MODES_ID", "COMMENTS", "DATE_CREATED", "GOLD"});
+		int[] minWidth = new int[] {30,80, 50,50,50,  20,20,20};
+		int[] maxWidth = new int[] {50,180,60,60,2000,80,40,40};
+		int[] preWidth = new int[] {40,100,55,55,80,  60,30,30};
+		
+				 
+		for (int columnIndex = 0; columnIndex < minWidth.length; columnIndex++) {
+			TableColumn tableColumn = modelTable.getColumnModel().getColumn(columnIndex);
+			tableColumn.setMinWidth(minWidth[columnIndex]);
+			tableColumn.setMaxWidth(maxWidth[columnIndex]);
+			tableColumn.setPreferredWidth(preWidth[columnIndex]);
 		}
-
+		
 		modelTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		tableView.add(modelTable.getTableHeader());
 		tableView.add(new JScrollPane(modelTable));
