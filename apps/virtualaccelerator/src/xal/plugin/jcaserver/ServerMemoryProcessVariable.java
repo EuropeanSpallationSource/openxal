@@ -13,8 +13,6 @@
  */
 package xal.plugin.jcaserver;
 
-import org.mockito.internal.matchers.InstanceOf;
-
 import gov.aps.jca.CAException;
 import gov.aps.jca.CAStatus;
 import gov.aps.jca.CAStatusException;
