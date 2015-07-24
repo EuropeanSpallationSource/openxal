@@ -6,17 +6,14 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import javax.swing.ComboBoxModel;
 import javax.swing.JFrame;
 
 import xal.model.ModelException;
 import xal.sim.scenario.Scenario;
 import xal.smf.Accelerator;
-import xal.smf.AcceleratorSeq;
 import xal.tools.data.DataAdaptor;
 import xal.tools.messaging.MessageCenter;
 import xal.tools.xml.XmlDataAdaptor;
@@ -457,11 +454,17 @@ public class BrowserModel {
 				_selectedMachineModelDevice = PERSISTENT_STORE.fetchMachineModelDevices(_connection, 
 						Long.valueOf((String) selectedMachineModel.getPropertyValue("ID")));
 				// Correct some models' ZPOS
-				String startElementName = _selectedMachineModelDetail[0]
+				String startElementName = null;
+				Double startElementZPos = null;
+				try{//Fix for elements without details.
+				startElementName = _selectedMachineModelDetail[0]
 						.getPropertyValue("ELEMENT_NAME").toString();
-				Double startElementZPos = Double
+				startElementZPos = Double
 						.valueOf(_selectedMachineModelDetail[0]
 								.getPropertyValue("ZPOS").toString());
+			    }catch (ArrayIndexOutOfBoundsException e){
+                    Message.error("No details for model with ID " + selectedMachineModel.getPropertyValue("ID"));
+                }
 				for (int i = 0; i < _referenceMachineModelDetail.length; i++) {
 					if (_referenceMachineModelDetail[i].getPropertyValue(
 							"ELEMENT_NAME").toString().equals(startElementName)) {
