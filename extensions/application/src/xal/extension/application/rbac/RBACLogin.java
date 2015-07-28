@@ -69,7 +69,7 @@ public abstract class RBACLogin {
 	 * Instantiate a new RBACLogin by calling xal.extensions.application.rbac.RBACPlugin.getRBACLoginInstance()
 	 * @return a new RBACLogin
 	 */
-    static protected RBACLogin newRBACLogin() {
+    public static RBACLogin newRBACLogin() {
 		try {
 			// effectively returns ChannelFactoryPlugin.getChannelFactoryInstance()
 			final Class<?> pluginClass = Class.forName( "xal.extensions.application.rbac.RBACPlugin" );
