@@ -1,4 +1,4 @@
-package xal.extension.application.dummyrbac;
+package xal.plugins.dummyrbac;
 
 import java.util.HashMap;
 import java.util.Map;

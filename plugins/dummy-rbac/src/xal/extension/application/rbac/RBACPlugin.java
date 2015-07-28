@@ -1,6 +1,6 @@
 package xal.extension.application.rbac;
 
-import xal.extension.application.dummyrbac.DummyRbacLogin;
+import xal.plugins.dummyrbac.DummyRbacLogin;
 import xal.rbac.RBACLogin;
 
 
