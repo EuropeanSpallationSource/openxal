@@ -126,8 +126,7 @@ abstract public class Application {
 	 * @param urls An array of document URLs to open upon startup. 
 	 */
     protected Application( final AbstractApplicationAdaptor adaptor, final URL[] urls ) {
-        RBACService.initialize();
-        RBACService.authenticate();
+        RBACService.authenticate(); 
         if (!RBACService.authorize(adaptor.applicationName(), "Run")){
             System.out.println("Not authorized to start this application.");
             System.out.println("Exiting...");

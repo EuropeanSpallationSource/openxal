@@ -6,6 +6,8 @@ import xal.rbac.AccessDeniedException;
 import xal.rbac.ExclusiveAccess;
 import xal.rbac.RBACException;
 
+//TODO test
+//TODO check if we can use it in rbacService.
 
 /**
  * EssExclusiveAccess implements {@link se.esss.ics.rbac.access.ExclusiveAccess}.

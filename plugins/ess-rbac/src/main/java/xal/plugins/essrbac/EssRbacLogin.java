@@ -2,9 +2,9 @@ package xal.plugins.essrbac;
 
 import se.esss.ics.rbac.access.Credentials;
 import se.esss.ics.rbac.access.SecurityCallback;
+import se.esss.ics.rbac.access.SecurityCallbackAdapter;
 import se.esss.ics.rbac.access.SecurityFacade;
 import se.esss.ics.rbac.access.SecurityFacadeException;
-import se.esss.ics.rbac.access.Token;
 import xal.rbac.AccessDeniedException;
 import xal.rbac.RBACException;
 import xal.rbac.RBACLogin;
@@ -23,7 +23,7 @@ import xal.rbac.RBACSubject;
 public class EssRbacLogin extends RBACLogin {
 
     @Override
-    public String[] getRolesForUser(String username) throws RBACException {
+    public String[] getRolesForUser(String username) throws RBACException {//TODO test
         try {
             return SecurityFacade.getDefaultInstance().getRolesForUser(username);
         } catch (Exception e) {
@@ -46,8 +46,8 @@ public class EssRbacLogin extends RBACLogin {
     @Override
     public RBACSubject authenticate(final String username, final char[] password, final String preferredRole,
             final String ip) throws AccessDeniedException, RBACException {
-        Token token;
-        SecurityCallback callback = new EssRbacSecurityCallback(){
+        SecurityCallback callback = new SecurityCallbackAdapter() {
+            
             @Override
             public Credentials getCredentials() {
              return new Credentials(username, password, preferredRole, ip);
@@ -55,11 +55,11 @@ public class EssRbacLogin extends RBACLogin {
         };
         SecurityFacade.getDefaultInstance().setDefaultSecurityCallback(callback);
         try {
-            token = SecurityFacade.getDefaultInstance().authenticate();
+            SecurityFacade.getDefaultInstance().authenticate();
         } catch (SecurityFacadeException e) {
             throw new RBACException("Unable to authenticate");
         }
         
-        return new EssRbacSubject(token);
+        return new EssRbacSubject();
     }
 }

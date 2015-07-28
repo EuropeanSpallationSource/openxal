@@ -4,7 +4,6 @@ import java.util.Map;
 
 import se.esss.ics.rbac.access.SecurityFacade;
 import se.esss.ics.rbac.access.SecurityFacadeException;
-import se.esss.ics.rbac.access.Token;
 import xal.rbac.AccessDeniedException;
 import xal.rbac.AutoLogoutCallback;
 import xal.rbac.ExclusiveAccess;
@@ -14,18 +13,13 @@ import xal.rbac.RBACSubject;
 
 /**
  * Implementation of {@link RBACSubject}.
- * Basically just a wrapper for {@link SecurityFacade} for getting permissions, and log out.
+ * Basically just a wrapper to {@link SecurityFacade} for getting permissions, and log out.
  * 
- * @version 0.1 27 Jul 2015
+ * @version 0.2 28 Jul 2015
  * @author Blaž Kranjc <blaz.kranjc@cosylab.com>
  */
 public class EssRbacSubject implements RBACSubject {
-    private final Token token;
-
-    public EssRbacSubject(Token token) {
-        this.token = token;
-    }
-
+ 
     public void logout() throws RBACException {
         try {
             SecurityFacade.getDefaultInstance().logout();
@@ -39,7 +33,7 @@ public class EssRbacSubject implements RBACSubject {
         try {
             return SecurityFacade.getDefaultInstance().hasPermission(resource, permission);
         } catch (se.esss.ics.rbac.access.AccessDeniedException e) {
-            throw new AccessDeniedException("User not logged in.");
+            throw new AccessDeniedException("User logged out.");
         } catch (SecurityFacadeException e) {
             throw new RBACException("Error getting permission.");
         }
@@ -50,7 +44,7 @@ public class EssRbacSubject implements RBACSubject {
         try {
             return SecurityFacade.getDefaultInstance().hasPermissions(resource, permissions);
         } catch (se.esss.ics.rbac.access.AccessDeniedException e) {
-            throw new AccessDeniedException("User not logged in.");
+            throw new AccessDeniedException("User logged out.");
         } catch (SecurityFacadeException e) {
             throw new RBACException("Error getting permissions.");
         }
@@ -61,7 +55,7 @@ public class EssRbacSubject implements RBACSubject {
             try {
                     return new EssExclusiveAccess(SecurityFacade.getDefaultInstance().requestExclusiveAccess(resource, permission, durationInMinutes));
             } catch (se.esss.ics.rbac.access.AccessDeniedException e) {
-                throw new AccessDeniedException("User not logged in.");
+                throw new AccessDeniedException("User logged out.");
             } catch (IllegalArgumentException | SecurityFacadeException e) {
                 throw new RBACException("Error getting exclusive acceess.");
             }
@@ -73,11 +67,11 @@ public class EssRbacSubject implements RBACSubject {
     }
 
     public void updateLastAction() {
-        // TODO update
-    }
-    
-    public Token getToken() {
-        return token;
+        try {
+            SecurityFacade.getDefaultInstance().renewToken();
+        } catch (SecurityFacadeException e) {
+            e.printStackTrace();
+        }
     }
 
 }

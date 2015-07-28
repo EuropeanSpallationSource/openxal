@@ -26,7 +26,6 @@ import java.awt.Insets;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -52,7 +51,6 @@ public class AuthenticationPane extends JOptionPane {
 
         private JTextField tfUsername;
         private JPasswordField pfPassword;
-        private JComboBox<String> rolePickerCombo;
 
         LoginPanel() {
             createGUI();
