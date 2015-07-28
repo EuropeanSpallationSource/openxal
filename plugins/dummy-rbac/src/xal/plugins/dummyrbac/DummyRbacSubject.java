@@ -9,6 +9,12 @@ import xal.rbac.ExclusiveAccess;
 import xal.rbac.RBACException;
 import xal.rbac.RBACSubject;
 
+/**
+ * Dummy Rbac Subject implements {@link RBACSubject} returning true for all permissions.
+ * 
+ * @version 0.1 28 Jul 2015
+ * @author Blaž Kranjc <blaz.kranjc@cosylab.com>
+ */
 public class DummyRbacSubject implements RBACSubject {
 
     public DummyRbacSubject() {

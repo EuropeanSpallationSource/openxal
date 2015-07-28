@@ -5,6 +5,12 @@ import xal.rbac.RBACException;
 import xal.rbac.RBACLogin;
 import xal.rbac.RBACSubject;
 
+/**
+ * Dummy RBAC Login extends {@link RBACLogin} returning {@link DummyRbacSubject} immediately when authenticate is called.
+ * 
+ * @version 0.1 28 Jul 2015
+ * @author Blaž Kranjc <blaz.kranjc@cosylab.com>
+ */
 public class DummyRbacLogin extends RBACLogin{
     
     @Override
