@@ -18,7 +18,7 @@ public class RBACService {
     
     private static RBACLogin login = RBACLogin.newRBACLogin();
     private static RBACSubject subject;
-    
+    private static String resource;
     /**
      * Method for authenticating user.
      * 
@@ -28,6 +28,7 @@ public class RBACService {
      * @return true if authentication was successful and false if not or if user canceled. 
      */
     public static synchronized boolean authenticate(){
+        System.out.println("Testing authentication.");
         System.out.println("Starting authentication.");
         //Getting information from user.
         AuthenticationPane pane = new AuthenticationPane();
@@ -62,7 +63,7 @@ public class RBACService {
      * Takes subject received when authenticating and asks for permissions.
      * If user logged out in the mean time asks user to auhenticate again and retires.
      * </p>
-     * @param resource to authorizate for.
+     * @param resource to authorizate for if null uses same as previously.
      * @param permission to authorizate for.
      * @return true if permission is granted, false if user is not authenticated or authorization failed.
      */
@@ -70,6 +71,11 @@ public class RBACService {
         if(subject == null){
             System.err.println("Authenticate first.");
             return false;
+        }
+        if(resource == null){
+            resource = RBACService.resource;
+        }else{
+            RBACService.resource = resource;
         }
         System.out.println("Starting authorization.");
         //Setting name of the application

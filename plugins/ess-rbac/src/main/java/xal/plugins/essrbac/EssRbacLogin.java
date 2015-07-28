@@ -57,7 +57,7 @@ public class EssRbacLogin extends RBACLogin {
         try {
             SecurityFacade.getDefaultInstance().authenticate();
         } catch (SecurityFacadeException e) {
-            throw new RBACException("Unable to authenticate");
+            throw new AccessDeniedException("Unable to authenticate");
         }
         
         return new EssRbacSubject();

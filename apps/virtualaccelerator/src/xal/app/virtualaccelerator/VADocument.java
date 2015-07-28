@@ -49,6 +49,7 @@ import xal.ca.PutException;
 import xal.ca.PutListener;
 import xal.extension.application.Commander;
 import xal.extension.application.XalWindow;
+import xal.extension.application.rbacgui.RBACService;
 import xal.extension.application.smf.AcceleratorDocument;
 import xal.extension.bricks.WindowReference;
 import xal.extension.widgets.apputils.SimpleProbeEditor;
@@ -634,6 +635,10 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 					JOptionPane.showMessageDialog( getMainWindow(), "You need to select sequence(s) first.", "Warning!", JOptionPane.PLAIN_MESSAGE );
 				}
 				else {
+				    if(!RBACService.authorize(null, "Start")){//CHECK start VA authorization
+				        JOptionPane.showMessageDialog( getMainWindow(), "You are unauthorized for this action.", "Warning!", JOptionPane.PLAIN_MESSAGE );
+				        return;
+				    }
 					// use PV logger
 					if ( isFromPVLogger ) {
 						long pvLoggerId = plsc.getPVLogId();
