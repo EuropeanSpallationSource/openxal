@@ -128,7 +128,7 @@ abstract public class Application {
     protected Application( final AbstractApplicationAdaptor adaptor, final URL[] urls ) {
         RBACService.initialize();
         RBACService.authenticate();
-        if (!RBACService.authorize(adaptor.applicationName(), "RUN")){
+        if (!RBACService.authorize(adaptor.applicationName(), "Run")){
             System.out.println("Not authorized to start this application.");
             System.out.println("Exiting...");
             System.exit(0);
