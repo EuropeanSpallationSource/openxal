@@ -15,19 +15,19 @@ import java.util.Date;
 public abstract class ExclusiveAccess {
 	protected String resource;	
     protected String permission;
-    protected long expirationDate;
+    protected Date expirationDate;
     
     /**
      * Construct a new exclusive access.
      * 
      * @param resource the name of the resource that owns the permission
      * @param permission the name of the permission for which exclusive access was requested
-     * @param expirationDate the expiration date as UTC
+     * @param date the expiration date as UTC
      */
-    protected ExclusiveAccess(String resource, String permission, long expirationDate) {
+    protected ExclusiveAccess(String resource, String permission, Date date) {
         this.resource = resource;
         this.permission = permission;
-        this.expirationDate = expirationDate;
+        this.expirationDate = date;
     }
     
     /**
@@ -54,7 +54,7 @@ public abstract class ExclusiveAccess {
      * @return the exclusive access expiration date
      */
     public Date getExpirationDate() {
-        return new Date(expirationDate);
+        return expirationDate;
     }
     
     

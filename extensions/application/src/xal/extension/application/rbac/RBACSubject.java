@@ -31,8 +31,9 @@ public interface RBACSubject {
      * @return <code>true</code> if the user has the specified permission
      * 
      * @throws RBACException if there was an error
+     * @throws AccessDeniedException 
      */
-    boolean hasPermission(String resource, String permission) throws RBACException;
+    boolean hasPermission(String resource, String permission) throws RBACException, AccessDeniedException;
 
     /**
      * Checks if the logged in user is granted the permissions provided as parameters.
