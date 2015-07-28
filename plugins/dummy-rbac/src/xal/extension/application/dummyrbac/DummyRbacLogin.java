@@ -1,9 +1,9 @@
-package openxal.extension.application.dummyrbac;
+package xal.extension.application.dummyrbac;
 
-import xal.extension.application.rbac.AccessDeniedException;
-import xal.extension.application.rbac.RBACException;
-import xal.extension.application.rbac.RBACLogin;
-import xal.extension.application.rbac.RBACSubject;
+import xal.rbac.AccessDeniedException;
+import xal.rbac.RBACException;
+import xal.rbac.RBACLogin;
+import xal.rbac.RBACSubject;
 
 public class DummyRbacLogin extends RBACLogin{
     

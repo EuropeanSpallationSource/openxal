@@ -8,25 +8,43 @@ package xal.extension.application;
 
 import java.awt.Point;
 import java.awt.Window;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.filechooser.FileFilter;
-import java.awt.Toolkit;
-
-import java.util.*;
-import java.util.logging.*;
-import java.net.*;
-import java.io.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.channels.FileChannel;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Properties;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
-import xal.extension.application.platform.*;
-import xal.tools.StringJoiner;
-import xal.tools.apputils.files.*;
-import xal.tools.messaging.MessageCenter;
-import xal.extension.service.*;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+
+import xal.extension.application.platform.MacAdaptor;
+import xal.extension.application.rbacgui.RBACService;
+import xal.extension.service.ServiceDirectory;
 import xal.tools.URLReference;
 import xal.tools.apputils.ApplicationSupport;
+import xal.tools.apputils.files.DefaultFolderAccessory;
+import xal.tools.apputils.files.FileFilterFactory;
+import xal.tools.apputils.files.RecentFileTracker;
+import xal.tools.messaging.MessageCenter;
 
 
 /**
@@ -108,6 +126,14 @@ abstract public class Application {
 	 * @param urls An array of document URLs to open upon startup. 
 	 */
     protected Application( final AbstractApplicationAdaptor adaptor, final URL[] urls ) {
+        RBACService.initialize();
+        RBACService.authenticate();
+        if (!RBACService.authorize(adaptor.applicationName(), "RUN")){
+            System.out.println("Not authorized to start this application.");
+            System.out.println("Exiting...");
+            System.exit(0);
+        }
+        System.out.println("Authorization successful. Proceeding...");
         _nextDocumentOpenLocation = new Point( 0, 0 );
         
 		LAUNCH_TIME = new Date();

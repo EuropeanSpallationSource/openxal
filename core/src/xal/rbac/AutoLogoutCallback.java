@@ -1,4 +1,5 @@
-package xal.extension.application.rbac;
+package xal.rbac;
+
 
 /**
  * Provides callback for AutoLogout functionality

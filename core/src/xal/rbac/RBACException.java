@@ -1,4 +1,4 @@
-package xal.extension.application.rbac;
+package xal.rbac;
 
 /**
  * This exception is thrown if there is an error while using {@link RBACLogin} or {@link RBACSubject}.

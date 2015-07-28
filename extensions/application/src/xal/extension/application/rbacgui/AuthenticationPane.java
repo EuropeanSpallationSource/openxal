@@ -59,15 +59,7 @@ public class AuthenticationPane extends JOptionPane {
         }
 
         Credentials getCredentials() {
-            String role = null;
-            if (rolePickerCombo != null) {
-                role = (String) rolePickerCombo.getSelectedItem();
-                if (role != null && role.trim().isEmpty()) {
-                    role = null;
-                }
-            }
             return new Credentials(tfUsername.getText(), pfPassword.getPassword());
-
         }
 
         private void createGUI() {

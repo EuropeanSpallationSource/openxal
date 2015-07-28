@@ -1,6 +1,7 @@
-package xal.extension.application.rbac;
+package xal.rbac;
 
 import java.util.Map;
+
 
 
 /**

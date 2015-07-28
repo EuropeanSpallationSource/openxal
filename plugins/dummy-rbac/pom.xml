@@ -15,10 +15,5 @@
 		<sourceDirectory>src</sourceDirectory>
 	</build>
 	<dependencies>
-		<dependency>
-			<groupId>org.xal</groupId>
-			<artifactId>openxal.extensions.application</artifactId>
-			<version>1.0.5-SNAPSHOT</version>
-		</dependency>
 	</dependencies>
 </project>

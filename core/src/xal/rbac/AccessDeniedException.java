@@ -1,4 +1,4 @@
-package xal.extension.application.rbac;
+package xal.rbac;
 
 /**
  * 

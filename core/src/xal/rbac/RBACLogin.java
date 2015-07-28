@@ -1,7 +1,6 @@
-package xal.extension.application.rbac;
+package xal.rbac;
 
 import java.lang.reflect.Method;
-
 
 /**
  * <code>RBACLogin</code> is the entry point for authentication of user.
@@ -72,7 +71,7 @@ public abstract class RBACLogin {
     public static RBACLogin newRBACLogin() {
 		try {
 			// effectively returns ChannelFactoryPlugin.getChannelFactoryInstance()
-			final Class<?> pluginClass = Class.forName( "xal.extensions.application.rbac.RBACPlugin" );
+			final Class<?> pluginClass = Class.forName( "xal.extension.application.rbac.RBACPlugin" );
 			final Method creatorMethod = pluginClass.getMethod( "getRBACLoginInstance" );
 			return (RBACLogin)creatorMethod.invoke( null );
 		}
