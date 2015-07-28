@@ -1,4 +1,4 @@
-package xal.extension.application.essrbac;
+package xal.plugins.essrbac;
 
 import se.esss.ics.rbac.access.SecurityCallbackAdapter;
 import se.esss.ics.rbac.access.Token;

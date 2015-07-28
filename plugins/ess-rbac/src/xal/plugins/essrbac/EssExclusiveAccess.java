@@ -1,10 +1,10 @@
-package xal.extension.application.essrbac;
+package xal.plugins.essrbac;
 
 import se.esss.ics.rbac.access.SecurityFacade;
 import se.esss.ics.rbac.access.SecurityFacadeException;
-import xal.extension.application.rbac.AccessDeniedException;
-import xal.extension.application.rbac.ExclusiveAccess;
-import xal.extension.application.rbac.RBACException;
+import xal.rbac.AccessDeniedException;
+import xal.rbac.ExclusiveAccess;
+import xal.rbac.RBACException;
 
 
 /**

@@ -1,14 +1,14 @@
-package xal.extension.application.essrbac;
+package xal.plugins.essrbac;
 
 import se.esss.ics.rbac.access.Credentials;
 import se.esss.ics.rbac.access.SecurityCallback;
 import se.esss.ics.rbac.access.SecurityFacade;
 import se.esss.ics.rbac.access.SecurityFacadeException;
 import se.esss.ics.rbac.access.Token;
-import xal.extension.application.rbac.AccessDeniedException;
-import xal.extension.application.rbac.RBACException;
-import xal.extension.application.rbac.RBACLogin;
-import xal.extension.application.rbac.RBACSubject;
+import xal.rbac.AccessDeniedException;
+import xal.rbac.RBACException;
+import xal.rbac.RBACLogin;
+import xal.rbac.RBACSubject;
 
 
 

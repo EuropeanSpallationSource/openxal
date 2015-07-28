@@ -1,6 +1,6 @@
 package xal.extension.application.rbac;
 
-import xal.extension.application.essrbac.EssRbacLogin;
+import xal.plugins.essrbac.EssRbacLogin;
 
 /**
  * This is a plugin for rbac authentication and authorization. It provides a method for retrieving its RbacLogin, thus

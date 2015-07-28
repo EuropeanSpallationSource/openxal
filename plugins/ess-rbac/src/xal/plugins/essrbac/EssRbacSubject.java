@@ -1,15 +1,15 @@
-package xal.extension.application.essrbac;
+package xal.plugins.essrbac;
 
 import java.util.Map;
 
 import se.esss.ics.rbac.access.SecurityFacade;
 import se.esss.ics.rbac.access.SecurityFacadeException;
 import se.esss.ics.rbac.access.Token;
-import xal.extension.application.rbac.AccessDeniedException;
-import xal.extension.application.rbac.AutoLogoutCallback;
-import xal.extension.application.rbac.ExclusiveAccess;
-import xal.extension.application.rbac.RBACException;
-import xal.extension.application.rbac.RBACSubject;
+import xal.rbac.AccessDeniedException;
+import xal.rbac.AutoLogoutCallback;
+import xal.rbac.ExclusiveAccess;
+import xal.rbac.RBACException;
+import xal.rbac.RBACSubject;
 
 
 /**
