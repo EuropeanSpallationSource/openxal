@@ -37,7 +37,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 import xal.extension.application.platform.MacAdaptor;
-import xal.extension.application.rbacgui.AuthenticationPane;
+import xal.extension.application.rbac.AuthenticationPane;
 import xal.extension.service.ServiceDirectory;
 import xal.rbac.AccessDeniedException;
 import xal.rbac.RBACException;
@@ -145,7 +145,6 @@ abstract public class Application {
         
         // assign the global application instance before the setup since it is referenced there (among other places).
         Application._application = this;
-		
         if(!authenticateWithRBAC()){
             System.out.println("Exiting...");
             System.exit(0);
@@ -180,7 +179,6 @@ abstract public class Application {
             } catch (RBACException e) {
                 System.out.println("Error while trying to authorize.");
                 e.printStackTrace();
-                System.out.println(e.getCause());
                 System.out.println("Plese try logging in again.");
                 if(authenticateWithRBAC()){
                     return checkRbacPermissions(permission);
@@ -218,7 +216,7 @@ abstract public class Application {
                 System.out.println("User pressed cancel.");
                 return false;     
             }
-            rbacSubject = rbacLogin.authenticate(credentials.getUsername(),credentials.getPassword(),credentials.getPreferredRole(),credentials.getIP());//CHECK if this can be done better
+            rbacSubject = rbacLogin.authenticate(credentials.getUsername(),credentials.getPassword(),credentials.getPreferredRole(),credentials.getIP());
             System.out.println("Authentication successful.");
             return true;
         } catch (RuntimeException e) {
@@ -227,7 +225,8 @@ abstract public class Application {
             return true;
         } catch (AccessDeniedException e) {
             System.out.println("Couldn't authenticate.");
-            return false;
+            System.out.println("Plese try again..");
+            return authenticateWithRBAC();
         } catch (RBACException e) {
             System.out.println("Error while trying to authenticate.");
             e.printStackTrace();
