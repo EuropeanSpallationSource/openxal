@@ -15,7 +15,7 @@ import xal.rbac.RBACException;
  */
 public class EssExclusiveAccess extends ExclusiveAccess {
 
-    public EssExclusiveAccess(se.esss.ics.rbac.access.ExclusiveAccess exclusiveAccess) {
+    public EssExclusiveAccess(final se.esss.ics.rbac.access.ExclusiveAccess exclusiveAccess) {
         super(exclusiveAccess.getResource(), exclusiveAccess.getPermission(), exclusiveAccess.getExpirationDate());
     }
 

@@ -34,7 +34,7 @@ public class EssRbacSubject implements RBACSubject {
     }
 
     @Override
-    public boolean hasPermission(String resource, String permission) throws AccessDeniedException, RBACException {
+    public boolean hasPermission(final String resource,final String permission) throws AccessDeniedException, RBACException {
         try {
             return SecurityFacade.getDefaultInstance().hasPermission(resource, permission);
         } catch (se.esss.ics.rbac.access.AccessDeniedException e) {
@@ -47,7 +47,7 @@ public class EssRbacSubject implements RBACSubject {
     }
 
     @Override
-    public Map<String, Boolean> hasPermissions(String resource, String... permissions) throws AccessDeniedException,
+    public Map<String, Boolean> hasPermissions(final String resource,final String... permissions) throws AccessDeniedException,
             RBACException {
         try {
             return SecurityFacade.getDefaultInstance().hasPermissions(resource, permissions);
@@ -61,7 +61,7 @@ public class EssRbacSubject implements RBACSubject {
     }
 
     @Override
-    public ExclusiveAccess requestExclusiveAccess(String resource, String permission, int durationInMinutes)
+    public ExclusiveAccess requestExclusiveAccess(final String resource,final String permission,final int durationInMinutes)
             throws AccessDeniedException, RBACException {
             try {
                    return new EssExclusiveAccess(SecurityFacade.getDefaultInstance().requestExclusiveAccess(resource, permission, durationInMinutes));
@@ -75,7 +75,7 @@ public class EssRbacSubject implements RBACSubject {
     }
 
     @Override
-    public void setAutoLogoutTimeout(int timeoutInMinutes, AutoLogoutCallback callback) {
+    public void setAutoLogoutTimeout(final int timeoutInMinutes,final AutoLogoutCallback callback) {
         SecurityFacade.getDefaultInstance().setAutoLogoutTimeout(timeoutInMinutes);
     }
 

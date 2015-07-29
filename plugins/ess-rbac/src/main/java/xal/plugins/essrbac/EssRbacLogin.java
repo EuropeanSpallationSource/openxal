@@ -21,7 +21,7 @@ import xal.rbac.RBACSubject;
 public class EssRbacLogin extends RBACLogin {
 
     @Override
-    public String[] getRolesForUser(String username) throws RBACException {// TODO test
+    public String[] getRolesForUser(final String username) throws RBACException {// TODO test
         try {
             return SecurityFacade.getDefaultInstance().getRolesForUser(username);
         } catch (Exception e) {
@@ -55,7 +55,7 @@ public class EssRbacLogin extends RBACLogin {
 
             @Override
             // TODO test, then see autologout callback
-            public boolean autoLogoutConfirm(Token token, int timeoutInSeconds) {
+            public boolean autoLogoutConfirm(final Token token,final  int timeoutInSeconds) {
                 return true;
             }
         });

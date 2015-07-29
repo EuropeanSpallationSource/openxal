@@ -102,9 +102,9 @@ abstract public class Application {
     
 
     /* RBAC service */
-    private RBACLogin rbacLogin;
-    private RBACSubject rbacSubject;
-    private boolean useRBAC = true;
+    public RBACLogin rbacLogin;
+    public RBACSubject rbacSubject;
+    public boolean useRBAC = true;
 
 	
 	/** static initializer */
@@ -169,7 +169,7 @@ abstract public class Application {
      * 
      * @return true if authorization was successful, else false.
      */
-    public boolean checkRbacPermissions(String permission){
+    public boolean checkRbacPermissions(final String permission){
         //RBAC authorization
         if(useRBAC){
             try {
@@ -213,7 +213,7 @@ abstract public class Application {
         try {
             System.out.println("Starting authentication.");
             rbacLogin = RBACLogin.newRBACLogin();
-            se.esss.ics.rbac.access.Credentials credentials = AuthenticationPane.getCredentials();
+            final se.esss.ics.rbac.access.Credentials credentials = AuthenticationPane.getCredentials();
             if(credentials == null){
                 System.out.println("User pressed cancel.");
                 return false;     
