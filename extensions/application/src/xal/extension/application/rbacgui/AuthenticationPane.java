@@ -35,6 +35,8 @@ import javax.swing.JTextField;
 
 import se.esss.ics.rbac.access.Credentials;
 
+
+
 /**
  * 
  * <code>AuthenticationPane</code> is an option pane that shows the username and password field, where user can input
@@ -114,13 +116,15 @@ public class AuthenticationPane extends JOptionPane {
      * 
      * @return the credentials
      */
-    public Credentials getCredentials() {
-        Object o = getValue();
+    public static Credentials getCredentials() {
+        AuthenticationPane pane = new AuthenticationPane();
+        pane.createDialog((Component) null).setVisible(true);
+        Object o = pane.getValue();
         if (o == UNINITIALIZED_VALUE) {
             return null;
         }
         if (o instanceof Integer) {
-            return ((Integer) o).intValue() == JOptionPane.OK_OPTION ? ((LoginPanel) getMessage()).getCredentials()
+            return ((Integer) o).intValue() == JOptionPane.OK_OPTION ? ((LoginPanel) pane.getMessage()).getCredentials()
                     : null;
         }
         return null;

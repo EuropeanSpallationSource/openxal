@@ -37,8 +37,12 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 import xal.extension.application.platform.MacAdaptor;
-import xal.extension.application.rbacgui.RBACService;
+import xal.extension.application.rbacgui.AuthenticationPane;
 import xal.extension.service.ServiceDirectory;
+import xal.rbac.AccessDeniedException;
+import xal.rbac.RBACException;
+import xal.rbac.RBACLogin;
+import xal.rbac.RBACSubject;
 import xal.tools.URLReference;
 import xal.tools.apputils.ApplicationSupport;
 import xal.tools.apputils.files.DefaultFolderAccessory;
@@ -96,6 +100,12 @@ abstract public class Application {
     /** default folder */
     private File _defaultDocumentFolder;
     
+
+    /* RBAC service */
+    private RBACLogin rbacLogin;
+    private RBACSubject rbacSubject;
+    private boolean useRBAC = true;
+
 	
 	/** static initializer */
 	static {
@@ -126,13 +136,6 @@ abstract public class Application {
 	 * @param urls An array of document URLs to open upon startup. 
 	 */
     protected Application( final AbstractApplicationAdaptor adaptor, final URL[] urls ) {
-        RBACService.authenticate(); 
-        if (!RBACService.authorize(adaptor.applicationName(), "Run")){
-            System.out.println("Not authorized to start this application.");
-            System.out.println("Exiting...");
-            System.exit(0);
-        }
-        System.out.println("Authorization successful. Proceeding...");
         _nextDocumentOpenLocation = new Point( 0, 0 );
         
 		LAUNCH_TIME = new Date();
@@ -143,7 +146,93 @@ abstract public class Application {
         // assign the global application instance before the setup since it is referenced there (among other places).
         Application._application = this;
 		
+        if(!authenticateWithRBAC()){
+            System.out.println("Exiting...");
+            System.exit(0);
+        }
+        if(!checkRbacPermissions("Run")){
+            System.out.println("Not authorized to start this application.");
+            System.out.println("Exiting...");
+            System.exit(0);
+        }
         setup( urls );
+    }
+    
+    /**
+     * Authenticates and authorizes user. If successful returns true.
+     * 
+     * <p>
+     * If user logged out or not logged in asks user to login again.
+     * </p>
+     * 
+     * @param permission for which to authenticate.
+     * 
+     * @return true if authorization was successful, else false.
+     */
+    public boolean checkRbacPermissions(String permission){
+        //RBAC authorization
+        if(useRBAC){
+            try {
+                System.out.println("Starting authorization.");
+                if (!rbacSubject.hasPermission("Xal" + getAdaptor().applicationName().replace(" ", ""), permission)) {
+                    return false;
+                }
+            } catch (RBACException e) {
+                System.out.println("Error while trying to authorize.");
+                e.printStackTrace();
+                System.out.println(e.getCause());
+                System.out.println("Plese try logging in again.");
+                if(authenticateWithRBAC()){
+                    return checkRbacPermissions(permission);
+                }else{
+                    return false;
+                }
+            } catch (AccessDeniedException e) {
+                System.out.println("User loged out.");
+                System.out.println("Plese login again.");
+                if(authenticateWithRBAC()){
+                    return checkRbacPermissions(permission);
+                }else{
+                    return false;
+                }
+            }
+            System.out.println("Authorization successful. Proceeding...");
+        }
+        return true;
+    }
+    
+    /**
+     * Convention method for authenticating user.
+     * 
+     * <p>
+     * If RBACPlugin couldn't be loaded sets {@ #useRBACR} to false.
+     * @return true if authentication successful, false if not.
+     */
+    private boolean authenticateWithRBAC(){
+      //RBAC authentication
+        try {
+            System.out.println("Starting authentication.");
+            rbacLogin = RBACLogin.newRBACLogin();
+            se.esss.ics.rbac.access.Credentials credentials = AuthenticationPane.getCredentials();
+            if(credentials == null){
+                System.out.println("User pressed cancel.");
+                return false;     
+            }
+            rbacSubject = rbacLogin.authenticate(credentials.getUsername(),credentials.getPassword(),credentials.getPreferredRole(),credentials.getIP());//CHECK if this can be done better
+            System.out.println("Authentication successful.");
+            return true;
+        } catch (RuntimeException e) {
+              useRBAC = false;
+            System.out.println("RBAC plugin not found. Continuing without RBAC.");
+            return true;
+        } catch (AccessDeniedException e) {
+            System.out.println("Couldn't authenticate.");
+            return false;
+        } catch (RBACException e) {
+            System.out.println("Error while trying to authenticate.");
+            e.printStackTrace();
+            return false; 
+        }
     }
 	
 	
@@ -1343,6 +1432,7 @@ abstract public class Application {
             }
             
             newButton.addActionListener( new ActionListener() {
+                @Override
                 public void actionPerformed( final ActionEvent event ) {
                     setOpenMode( NEW_MODE );
                     DOCUMENT_CHOOSER.approveSelection();
@@ -1350,6 +1440,7 @@ abstract public class Application {
             });
             
             openButton.addActionListener( new ActionListener() {
+                @Override
                 public void actionPerformed( final ActionEvent event ) {
                     DOCUMENT_CHOOSER.setCurrentDirectory( documentFolder );
                     setOpenMode( DOCUMENT_MODE );
@@ -1357,6 +1448,7 @@ abstract public class Application {
             });
             
             templateButton.addActionListener( new ActionListener() {
+                @Override
                 public void actionPerformed( final ActionEvent event ) {
                     DOCUMENT_CHOOSER.setCurrentDirectory( templateFolder );
                     setOpenMode( TEMPLATE_MODE );
@@ -1364,6 +1456,7 @@ abstract public class Application {
             });
             
             recentButton.addActionListener( new ActionListener() {
+                @Override
                 public void actionPerformed( final ActionEvent event ) {
                     final URLReference selection = (URLReference)JOptionPane.showInputDialog( DOCUMENT_CHOOSER, "Open the selected document", "Recent Documents", JOptionPane.PLAIN_MESSAGE, null, recentURLReferences, null );
                     if ( selection != null ) {
@@ -1458,11 +1551,13 @@ abstract public class Application {
         
         
         /** Create the dialog */
+        @Override
         protected JDialog createDialog( final java.awt.Component parent ) throws java.awt.HeadlessException {
             final JDialog dialog = super.createDialog( parent );
             dialog.setLocation( INITIAL_LOCATION );
             
             dialog.addComponentListener( new java.awt.event.ComponentAdapter() {
+                @Override
                 public void componentMoved( final java.awt.event.ComponentEvent event ) {
                     setNextDocumentOpenLocation( dialog.getLocationOnScreen() );
                 }

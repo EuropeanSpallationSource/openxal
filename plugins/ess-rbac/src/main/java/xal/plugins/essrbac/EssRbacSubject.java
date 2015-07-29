@@ -19,53 +19,67 @@ import xal.rbac.RBACSubject;
  * @author Blaž Kranjc <blaz.kranjc@cosylab.com>
  */
 public class EssRbacSubject implements RBACSubject {
+    
+
  
+    @Override
     public void logout() throws RBACException {
         try {
             SecurityFacade.getDefaultInstance().logout();
         } catch (SecurityFacadeException e) {
+            e.printStackTrace();
             throw new RBACException("Error logging out");
         }
 
     }
 
+    @Override
     public boolean hasPermission(String resource, String permission) throws AccessDeniedException, RBACException {
         try {
             return SecurityFacade.getDefaultInstance().hasPermission(resource, permission);
         } catch (se.esss.ics.rbac.access.AccessDeniedException e) {
+            e.printStackTrace();
             throw new AccessDeniedException("User logged out.");
         } catch (SecurityFacadeException e) {
+            e.printStackTrace();
             throw new RBACException("Error getting permission.");
         }
     }
 
+    @Override
     public Map<String, Boolean> hasPermissions(String resource, String... permissions) throws AccessDeniedException,
             RBACException {
         try {
             return SecurityFacade.getDefaultInstance().hasPermissions(resource, permissions);
         } catch (se.esss.ics.rbac.access.AccessDeniedException e) {
+            e.printStackTrace();
             throw new AccessDeniedException("User logged out.");
         } catch (SecurityFacadeException e) {
+            e.printStackTrace();
             throw new RBACException("Error getting permissions.");
         }
     }
 
+    @Override
     public ExclusiveAccess requestExclusiveAccess(String resource, String permission, int durationInMinutes)
             throws AccessDeniedException, RBACException {
             try {
-                    return new EssExclusiveAccess(SecurityFacade.getDefaultInstance().requestExclusiveAccess(resource, permission, durationInMinutes));
-            } catch (se.esss.ics.rbac.access.AccessDeniedException e) {
+                   return new EssExclusiveAccess(SecurityFacade.getDefaultInstance().requestExclusiveAccess(resource, permission, durationInMinutes));
+            } catch (se.esss.ics.rbac.access.AccessDeniedException e) {//TODO check SecurityFacade.getDefaultInstance().requestExclusiveAccess throws. (Documentation might not be correct)
+                e.printStackTrace();
                 throw new AccessDeniedException("User logged out.");
             } catch (IllegalArgumentException | SecurityFacadeException e) {
+                e.printStackTrace();
                 throw new RBACException("Error getting exclusive acceess.");
             }
     }
 
+    @Override
     public void setAutoLogoutTimeout(int timeoutInMinutes, AutoLogoutCallback callback) {
         SecurityFacade.getDefaultInstance().setAutoLogoutTimeout(timeoutInMinutes);
-
     }
 
+    @Override
     public void updateLastAction() {
         try {
             SecurityFacade.getDefaultInstance().renewToken();
