@@ -371,7 +371,7 @@ public class BrowserModel {
 			for (int i = 0; i < allMachineModels.size(); i++) {
 				MachineModel machineModel = allMachineModels.get(i);
 				if (machineModel.getPropertyValue("MODEL_MODES_ID") != null) {
-					if (modelMode.equals((String)machineModel.getPropertyValue("MODEL_MODES_ID"))) {
+					if (modelMode.equals(machineModel.getPropertyValue("MODEL_MODES_ID"))) {
 						fetchedMachineModels.add(machineModel);						
 					}
 				}
@@ -456,13 +456,14 @@ public class BrowserModel {
 				// Correct some models' ZPOS
 				String startElementName = null;
 				Double startElementZPos = null;
-				try{//Fix for elements without details.
+				//Fix for elements without details.
+				if(_selectedMachineModelDetail.length > 0){
 				startElementName = _selectedMachineModelDetail[0]
 						.getPropertyValue("ELEMENT_NAME").toString();
 				startElementZPos = Double
 						.valueOf(_selectedMachineModelDetail[0]
 								.getPropertyValue("ZPOS").toString());
-			    }catch (ArrayIndexOutOfBoundsException e){
+			    }else{
                     Message.error("No details for model with ID " + selectedMachineModel.getPropertyValue("ID"));
                 }
 				for (int i = 0; i < _referenceMachineModelDetail.length; i++) {
