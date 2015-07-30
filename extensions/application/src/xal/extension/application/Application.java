@@ -103,9 +103,8 @@ abstract public class Application {
     
 
     /* RBAC service */
-    public RBACLogin rbacLogin;
-    public RBACSubject rbacSubject;
-    public boolean useRBAC = true;
+    private RBACLogin rbacLogin;
+    private RBACSubject rbacSubject;
 
 	
 	/** static initializer */
@@ -146,12 +145,17 @@ abstract public class Application {
         
         // assign the global application instance before the setup since it is referenced there (among other places).
         Application._application = this;
-        if(!authenticateWithRBAC()){
+        
+        try{
+        while(!authenticateWithRBAC()){
+            System.out.println("Plese try again...");
+            }
+        }catch(NullPointerException e){//If user pressed cancel null was returned.
             System.out.println("Exiting...");
             System.exit(0);
         }
 
-        if(!checkRbacPermissions("Run")){
+        if(!authorizeWithRBAC("Run")){
             System.out.println("Not authorized to start this application.");
             System.out.println("Exiting...");
             System.exit(0);
@@ -159,55 +163,15 @@ abstract public class Application {
         setup( urls );
     }
     
-    /**
-     * Authenticates and authorizes user. If successful returns true.
-     * 
-     * <p>
-     * If user logged out or not logged in asks user to login again.
-     * </p>
-     * 
-     * @param permission for which to authenticate.
-     * 
-     * @return true if authorization was successful, else false.
-     */
-    public boolean checkRbacPermissions(final String permission){
-        //RBAC authorization
-        if(useRBAC){
-            try {
-                System.out.println("Starting authorization.");
-                if (!rbacSubject.hasPermission("Xal" + getAdaptor().applicationName().replace(" ", ""), permission)) {
-                    return false;
-                }
-            } catch (RBACException e) {
-                System.out.println("Error while trying to authorize.");
-                System.out.println("Plese try logging in again.");
-                if(authenticateWithRBAC()){
-                    return checkRbacPermissions(permission);
-                }else{
-                    return false;
-                }
-            } catch (AccessDeniedException e) {
-                System.out.println("User loged out.");
-                System.out.println("Plese login again.");
-                if(authenticateWithRBAC()){
-                    return checkRbacPermissions(permission);
-                }else{
-                    return false;
-                }
-            }
-            System.out.println("Authorization successful. Proceeding...");
-        }
-        return true;
-    }
     
     /**
      * Convention method for authenticating user.
      * 
      * <p>
-     * If RBACPlugin couldn't be loaded sets {@ #useRBACR} to false.
+     * If RBACPlugin couldn't be loaded the application will not use RBAC !!!
      * @return true if authentication successful, false if not.
      */
-    private boolean authenticateWithRBAC(){
+    private Boolean authenticateWithRBAC(){
       //RBAC authentication
         try {
             System.out.println("Starting authentication.");
@@ -215,27 +179,64 @@ abstract public class Application {
             final se.esss.ics.rbac.access.Credentials credentials = AuthenticationPane.getCredentials();
             if(credentials == null){
                 System.out.println("User pressed cancel.");
-                return false;     
+                return null;
             }
             rbacSubject = rbacLogin.authenticate(credentials.getUsername(),credentials.getPassword(),credentials.getPreferredRole(),credentials.getIP());
             System.out.println("Authentication successful.");
             return true;
         } catch (RuntimeException e) {
-              useRBAC = false;
             System.out.println("RBAC plugin not found. Continuing without RBAC.");
             return true;
         } catch (AccessDeniedException e) {
             System.out.println("Couldn't authenticate.");
-            System.out.println("Plese try again..");
-            return authenticateWithRBAC();
+            return false;
         } catch (RBACException e) {
             System.out.println("Error while trying to authenticate.");
             return false; 
         }
     }
+    
+    /**
+     * Authenticates and authorizes user. If successful returns true.
+     * 
+     * <p>
+     * Asks for given permission on resource : "Xal" + application name without spaces.
+     * Eg. for Virtual Accelerator this is XalVirtualAccelerator.
+     * </p>
+     * 
+     * @param permission for which to authenticate.
+     * 
+     * @return true if authorization was successful, else false.
+     */
+    public boolean authorizeWithRBAC(final String permission){
+        //RBAC authorization
+        if(rbacSubject != null){
+            try {
+                System.out.println("Starting authorization.");
+                if (!rbacSubject.hasPermission("Xal" + getAdaptor().applicationName().replace(" ", ""), permission)) {
+                    return false;
+                }
+            } catch (RBACException e) {
+                System.out.println("Error while trying to authorize.");
+                return false;
+            } catch (AccessDeniedException e) {
+                System.out.println("User loged out.");
+                return false;
+            }
+            System.out.println("Authorization successful. Proceeding...");
+        }
+        return true;
+    }
 	
-	
-	/** Load the user's custom properties and set them as the defaults, but do not override existing properties. */
+	public RBACLogin getRbacLogin() {
+        return rbacLogin;
+    }
+
+    public RBACSubject getRbacSubject() {
+        return rbacSubject;
+    }
+
+    /** Load the user's custom properties and set them as the defaults, but do not override existing properties. */
 	static private void loadUserProperties() {
 		final Preferences prefs = xal.tools.apputils.Preferences.nodeForPackage( Application.class );
 		final String propertiesPath = prefs.get( "UserPropertiesFile", "" );

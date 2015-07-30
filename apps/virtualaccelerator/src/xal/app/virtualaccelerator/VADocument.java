@@ -641,7 +641,7 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 					JOptionPane.showMessageDialog( getMainWindow(), "Virtual Accelerator has already started.", "Warning!", JOptionPane.PLAIN_MESSAGE );
 					return;
 				}
-				if(!Application.getApp().checkRbacPermissions("Start")){
+				if(!Application.getApp().authorizeWithRBAC("Start")){
 				    JOptionPane.showMessageDialog( getMainWindow(), "You are unauthorized for this action.", "Warning!", JOptionPane.PLAIN_MESSAGE );
                     return;
 				}

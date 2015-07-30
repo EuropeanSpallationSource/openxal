@@ -12,18 +12,13 @@ import xal.rbac.RBACLogin;
  */
 public class RBACPlugin {
 
-    private static EssRbacLogin rbacLogin;
-
     /**
      * Gets us an instance of {@link EssRbacLogin}
      * 
      * @return instance of {@link EssRbacLogin}
      */
     public static RBACLogin getRBACLoginInstance() {
-        if (rbacLogin == null) {
-            rbacLogin = new EssRbacLogin();
-        }
-        return rbacLogin;
+        return new EssRbacLogin();
 
     }
 

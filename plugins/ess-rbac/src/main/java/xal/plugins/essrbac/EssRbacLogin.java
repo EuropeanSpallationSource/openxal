@@ -46,7 +46,7 @@ public class EssRbacLogin extends RBACLogin {
             final String ip) throws AccessDeniedException, RBACException {
 
         SecurityFacade.getDefaultInstance().setDefaultSecurityCallback(new SecurityCallbackAdapter() {
-
+            //We don't need anything else but getCredentials method.
             @Override
             public Credentials getCredentials() {
                 return new Credentials(username, password, preferredRole, ip);
@@ -54,7 +54,7 @@ public class EssRbacLogin extends RBACLogin {
         });
 
         try {
-            SecurityFacade.getDefaultInstance().authenticate();
+            return new EssRbacSubject(SecurityFacade.getDefaultInstance().authenticate());
 
         } catch (SecurityFacadeException e) {
             System.err.println(e.getMessage());
@@ -64,6 +64,5 @@ public class EssRbacLogin extends RBACLogin {
             System.err.println(e.getMessage());
             throw new RBACException("Error while trying to authenticate.");
         }
-        return new EssRbacSubject();
     }
 }
