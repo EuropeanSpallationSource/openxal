@@ -7,10 +7,8 @@
 		<version>1.0.5-SNAPSHOT</version>
 	</parent>
 	
-	<groupId>org.xal</groupId>
 	<artifactId>openxal.plugins.ess-rbac</artifactId>
-	<version>1.0.5-SNAPSHOT</version>
-
+	
 	<dependencies>
 		<dependency>
 			<groupId>se.esss.ics.rbac</groupId>

@@ -24,10 +24,10 @@ public class EssExclusiveAccess extends ExclusiveAccess {
         try {
             SecurityFacade.getDefaultInstance().releaseExclusiveAccess(getResource(), getPermission());
         } catch (se.esss.ics.rbac.access.AccessDeniedException e) {
-            e.printStackTrace();
+            System.err.println(e.getMessage());
             throw new AccessDeniedException("User not loged in.");
         } catch (SecurityFacadeException e) {
-            e.printStackTrace();
+            System.err.println(e.getMessage());
             throw new RBACException("Error releasing exclusive access");            
         }
     }

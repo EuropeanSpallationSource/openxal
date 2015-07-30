@@ -62,6 +62,7 @@ import xal.tools.messaging.MessageCenter;
  * common to all multi-document applications.
  *
  * @author  t6p
+ * @author Blaž Kranjc <blaz.kranjc@cosylab.com>
  */
 abstract public class Application {
 	// public static constants for confirmation dialogs
@@ -149,6 +150,7 @@ abstract public class Application {
             System.out.println("Exiting...");
             System.exit(0);
         }
+
         if(!checkRbacPermissions("Run")){
             System.out.println("Not authorized to start this application.");
             System.out.println("Exiting...");
@@ -178,7 +180,6 @@ abstract public class Application {
                 }
             } catch (RBACException e) {
                 System.out.println("Error while trying to authorize.");
-                e.printStackTrace();
                 System.out.println("Plese try logging in again.");
                 if(authenticateWithRBAC()){
                     return checkRbacPermissions(permission);
@@ -229,7 +230,6 @@ abstract public class Application {
             return authenticateWithRBAC();
         } catch (RBACException e) {
             System.out.println("Error while trying to authenticate.");
-            e.printStackTrace();
             return false; 
         }
     }

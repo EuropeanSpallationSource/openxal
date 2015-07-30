@@ -4,7 +4,6 @@ import se.esss.ics.rbac.access.Credentials;
 import se.esss.ics.rbac.access.SecurityCallbackAdapter;
 import se.esss.ics.rbac.access.SecurityFacade;
 import se.esss.ics.rbac.access.SecurityFacadeException;
-import se.esss.ics.rbac.access.Token;
 import xal.rbac.AccessDeniedException;
 import xal.rbac.RBACException;
 import xal.rbac.RBACLogin;
@@ -25,8 +24,8 @@ public class EssRbacLogin extends RBACLogin {
         try {
             return SecurityFacade.getDefaultInstance().getRolesForUser(username);
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new RBACException("Couldn't get roles for user: " + username + "\n\r\t" + e);
+            System.err.println(e.getMessage());
+            throw new RBACException("Couldn't get roles for user: " + username + "\n\r\t");
         }
     }
 
@@ -52,20 +51,18 @@ public class EssRbacLogin extends RBACLogin {
             public Credentials getCredentials() {
                 return new Credentials(username, password, preferredRole, ip);
             }
-
-            @Override
-            // TODO test, then see autologout callback
-            public boolean autoLogoutConfirm(final Token token,final  int timeoutInSeconds) {
-                return true;
-            }
         });
 
         try {
             SecurityFacade.getDefaultInstance().authenticate();
 
         } catch (SecurityFacadeException e) {
-            e.printStackTrace();
-            throw new AccessDeniedException("Unable to authenticate");
+            System.err.println(e.getMessage());
+            //e.printStackTrace();
+            throw new AccessDeniedException("Unable to authenticate.");
+        } catch (Exception e){
+            System.err.println(e.getMessage());
+            throw new RBACException("Error while trying to authenticate.");
         }
         return new EssRbacSubject();
     }

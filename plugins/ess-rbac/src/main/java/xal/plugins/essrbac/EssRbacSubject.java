@@ -68,7 +68,7 @@ public class EssRbacSubject implements RBACSubject {
             } catch (se.esss.ics.rbac.access.AccessDeniedException e) {//TODO check SecurityFacade.getDefaultInstance().requestExclusiveAccess throws. (Documentation might not be correct)
                 e.printStackTrace();
                 throw new AccessDeniedException("User logged out.");
-            } catch (IllegalArgumentException | SecurityFacadeException e) {
+            } catch (SecurityFacadeException e) {
                 e.printStackTrace();
                 throw new RBACException("Error getting exclusive acceess.");
             }
