@@ -32,7 +32,6 @@
 		<dependency>
 			<groupId>org.xal</groupId>
 			<artifactId>openxal.plugins.ess-rbac</artifactId>
-			<version>1.0.5-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 </project>
