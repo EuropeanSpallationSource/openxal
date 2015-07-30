@@ -22,6 +22,7 @@ public abstract class SingleElementTest extends TestCommon {
 		
 		// TW output
 		double[][] TWTransferMatrix, TWCorrelationMatrix;
+		double[] TWMean;
 		double TWGamma;
 		
 		// ELS output
@@ -45,7 +46,10 @@ public abstract class SingleElementTest extends TestCommon {
 		
 		checkTWTransferMatrix(data.TWTransferMatrix);
 			
-		checkTWResults( data.TWGamma, data.TWCorrelationMatrix);
+		if (data.TWMean == null)
+			checkTWResults( data.TWGamma, data.TWCorrelationMatrix);
+		else
+			checkTWResults( data.TWGamma, data.TWCorrelationMatrix, data.TWMean);
 	}
 	
 	@Parameters
