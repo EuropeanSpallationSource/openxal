@@ -20,6 +20,11 @@ public class TTFIntegrator extends UnivariateRealPolynomial {
 
 	private double frequency;
 	private boolean inverted;
+	//Caching -- not static as we do not want a polynomial with different coefficients to use it.
+	private double ezzSin;
+	private double ezzSinBeta = 0;
+	private double ezCos0;
+	private double cos0Beta = 0;
 
 	/**
 	 * Constructs new TTFIntegrator
@@ -112,6 +117,10 @@ public class TTFIntegrator extends UnivariateRealPolynomial {
 	 */
 	public double evaluateEzCos0(double beta)
 	{
+	    if(beta == cos0Beta){
+            return ezCos0;
+        }
+	    
 		double dz = getLength() / field.length;
 		double dphi = 2*Math.PI*frequency*dz / (beta * IElement.LightSpeed);
 		double DC = 0., DS = 0.;
@@ -121,7 +130,8 @@ public class TTFIntegrator extends UnivariateRealPolynomial {
 			DC += field[i]*Math.cos(i*dphi);
 			DS += field[i]*Math.sin(i*dphi);
 		}
-		return Math.sqrt(DC*DC+DS*DS)*dz/e0tl;
+		cos0Beta = beta;
+		return ezCos0 = Math.sqrt(DC*DC+DS*DS)*dz/e0tl;
 	}
 
 	/**
@@ -132,6 +142,10 @@ public class TTFIntegrator extends UnivariateRealPolynomial {
 	 */
 	public double evaluateEzzSin(double beta)
 	{
+	    
+	    if(beta == ezzSinBeta){
+            return ezzSin;
+        }
 		double dz = getLength() / field.length;
 		double DZS = 0., DZC = 0.;
 		double DC = 0., DS = 0.;
@@ -140,13 +154,16 @@ public class TTFIntegrator extends UnivariateRealPolynomial {
 		for (int i = 0; i < field.length; i++)
 		{
 			double phi = i*dphi;
-			DZS += field[i]*Math.sin(phi)*i;
-			DZC += field[i]*Math.cos(phi)*i;
-			DC += field[i]*Math.cos(phi);
-			DS += field[i]*Math.sin(phi);
+			double a = field[i]*Math.cos(phi);
+			double b = field[i]*Math.sin(phi);
+	        DC += a;
+	        DS += b;
+			DZS += b*i;
+			DZC += a*i;
 		}
 		double DZ = (DZS*DC-DZC*DS)*dz*dz/Math.sqrt(DC*DC+DS*DS);
-		return DZ/e0tl*2 * Math.PI * frequency / beta / beta / IElement.LightSpeed;
+        ezzSinBeta = beta;
+        return ezzSin = DZ/e0tl*2 * Math.PI * frequency / beta / beta / IElement.LightSpeed;
 	}
 
 
