@@ -264,7 +264,7 @@ public class QuadTest extends SingleElementTest {
 		tests.add(new Object[] {new SingleElementTestData() {{
 			probe = setupOpenXALProbe( 3e6, frequency, current); 
 			elementMapping = JElsElementMapping.getInstance();
-			sequence = quad(70., -16., 15., 0., 0., 0., 0., 0., 1., 0., 0.);
+			sequence = quad(70., -16., 15., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0.);
 			
 			// TW transfer matrix
 			TWTransferMatrix = new double[][]{ 
@@ -299,7 +299,7 @@ public class QuadTest extends SingleElementTest {
 		tests.add(new Object[] {new SingleElementTestData() {{
 			probe = setupOpenXALProbe( 3e6, frequency, current); 
 			elementMapping = JElsElementMapping.getInstance();
-			sequence = quad(70., -16., 15., 0., 0., 0., 0., 0., 0., 1., 0.);
+			sequence = quad(70., -16., 15., 0., 0., 0., 0., 0., 0., 1., 0., 0. ,0. ,0.);
 			
 			// TW transfer matrix
 			TWTransferMatrix = new double[][]{ 
@@ -323,16 +323,41 @@ public class QuadTest extends SingleElementTest {
 			TWMean = new double[] {
 					0,0, 0.15246, 4.2418, -0.000219041, 0 	
 			};
+		}}});		
+		
+		tests.add(new Object[] {new SingleElementTestData() {{
+			probe = setupOpenXALProbe( 3e6, frequency, current); 
+			elementMapping = JElsElementMapping.getInstance();
+			sequence = quad(70., -16., 15., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1.);
 			
-			/*
- 
-			 */
+			// TW transfer matrix
+			TWTransferMatrix = new double[][]{ 
+					{+1.160530e+00, +7.370702e-02, +5.463263e-03, +1.274563e-04, +0.000000e+00, +0.000000e+00}, 
+					{+4.705644e+00, +1.160530e+00, +1.561782e-01, +5.463263e-03, +0.000000e+00, +0.000000e+00}, 
+					{+5.463263e-03, +1.274563e-04, +8.476349e-01, +6.640728e-02, +0.000000e+00, +0.000000e+00}, 
+					{+1.561782e-01, +5.463263e-03, -4.239070e+00, +8.476349e-01, +0.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +1.000000e+00, +6.955452e-02}, 
+					{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +1.000000e+00}, 
+			};
+			
+			// TW correlation matrix
+			TWGamma = 1.003197291; 
+			TWCorrelationMatrix = new double[][] { 
+					{+1.001439e-12, +5.226533e-12, +9.686578e-15, +1.089479e-13, +0.000000e+00, +0.000000e+00}, 
+					{+5.226533e-12, +3.415808e-11, +1.741208e-13, +7.520650e-14, +0.000000e+00, +0.000000e+00}, 
+					{+9.686578e-15, +1.741208e-13, +8.735915e-13, -2.950460e-12, +0.000000e+00, +0.000000e+00}, 
+					{+1.089479e-13, +7.520650e-14, -2.950460e-12, +1.780010e-11, +0.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +3.361266e-12, +2.249328e-12}, 
+					{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +2.249328e-12, +5.280827e-12},
+			};
+			
+
 			// ELS results
 			elsPosition = 7.000000E-02;
 			elsSigma = new double[] {1.000780E-03, 9.345521E-04, 1.833376E-03};
 			elsBeta = new double[] {3.820541E-01, 3.342766E-01, 9.435362E-01};			
-		}}});		
-		
+		}}});
+
 		return tests;
 	}
 	
@@ -350,7 +375,7 @@ public class QuadTest extends SingleElementTest {
 	 */
 	public static AcceleratorSeq quad(double L, double G, double R, double Phi, double G3, double G4, double G5, double G6)
 	{
-		return quad(L,G,R,Phi,G3,G4,G5,G6,0,0,0);
+		return quad(L,G,R,Phi,G3,G4,G5,G6,0,0,0,0,0,0);
 	}
 	
 	/**
@@ -363,12 +388,15 @@ public class QuadTest extends SingleElementTest {
 	 * @param G4 octupole gradient (T/m^2)
 	 * @param G5 decapole gradient (T/m^2)
 	 * @param G6 dodecapole gradient (T/m^2)
-	 * @param dx
-	 * @param dy
-	 * @param dz
+	 * @param dx displacement in x
+	 * @param dy displacement in y
+	 * @param dz displacement in z
+	 * @param fx rotation in x
+	 * @param fy rotation in y
+	 * @param fz rotation in z
 	 * @return
 	 */
-	public static AcceleratorSeq quad(double L, double G, double R, double Phi, double G3, double G4, double G5, double G6, double dx, double dy, double dz)
+	public static AcceleratorSeq quad(double L, double G, double R, double Phi, double G3, double G4, double G5, double G6, double dx, double dy, double dz, double fx, double fy, double fz)
 	{
 		AcceleratorSeq sequence = new AcceleratorSeq("QuadTest");
 		Quadrupole quad = new Quadrupole("quad") { // there's no setter for type (you need to extend class)
@@ -385,6 +413,9 @@ public class QuadTest extends SingleElementTest {
 		quad.getAlign().setX(dx);
 		quad.getAlign().setY(dy);
 		quad.getAlign().setZ(dz);
+		quad.getAlign().setPitch(fx*1e-3/2.);
+		quad.getAlign().setYaw(fy*1e-3/2.);
+		quad.getAlign().setRoll(fz*Math.PI/180.);
 		sequence.addNode(quad);
 		sequence.setLength(L*1e-3);	
 		return sequence;
