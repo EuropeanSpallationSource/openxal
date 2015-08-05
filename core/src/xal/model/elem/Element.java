@@ -191,7 +191,7 @@ public abstract class Element implements IElement {
     	setId( strElemId != null ? strElemId : strSmfId);
     	setHardwareNodeId(strSmfId);
 		setPosition(latticeElement.getCenter());
-		dblLatPivotPos = latticeElement.getNode().getPosition();
+		setPivotPosition(latticeElement.getNode().getPosition());
 		
 		AlignmentBucket alignmentBucket = latticeElement.getNode().getAlign(); 
 		setAlignX(alignmentBucket.getX());
@@ -243,6 +243,16 @@ public abstract class Element implements IElement {
      */
     public void setPosition(double dblPos) {
         dblLatPos = dblPos;
+    }
+
+    /**
+     * Set the pivot position of the element with the containing
+     * lattice.
+     * 
+     * @param dblPivotPos    pivot position along the design trajectory (meters) 
+     */
+    public void setPivotPosition(double dblPivotPos) {
+        dblLatPivotPos = dblPivotPos;
     }
     
     
@@ -428,8 +438,8 @@ public abstract class Element implements IElement {
 	    		Ti = PhaseMatrix.identity();
 	    	}
 	    	if (len > 0.) {
-	    		T = thickPitchAndYaw(T, px, py, start - dblLatPivotPos);
-	    		Ti = thickPitchAndYaw(Ti, -px, -py, start - dblLatPivotPos + len);
+	    		T = thickPitchAndYaw(T, px, py, start - getPivotPosition());
+	    		Ti = thickPitchAndYaw(Ti, -px, -py, start - getPivotPosition() + len);
 	    	}
 	    	
 	    	T = thinPitchAndYaw(T, px, py);
@@ -686,6 +696,16 @@ public abstract class Element implements IElement {
         return dblLatPos;
     }
 
+    /**
+     * Return the pivot position of the element along the design trajectory.
+     * This is the pivot position with the containing lattice.
+     * 
+     * @return  pivot position of the element (meters)
+     */
+    public double getPivotPosition() {
+        return dblLatPivotPos;
+    }
+    
     /**
      * Return the list of nearest adjacent elements to this element.
      * THis is used primarily in permenant magnet quadrupole considerations.
