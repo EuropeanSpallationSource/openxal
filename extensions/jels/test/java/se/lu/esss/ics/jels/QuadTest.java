@@ -358,6 +358,37 @@ public class QuadTest extends SingleElementTest {
 			elsBeta = new double[] {3.820541E-01, 3.342766E-01, 9.435362E-01};			
 		}}});
 
+		
+		// basic test, E=3MeV, Q=-16, with x rotation		
+		tests.add(new Object[] {new SingleElementTestData() {{
+			probe = setupOpenXALProbe( 3e6, frequency, current); 
+			elementMapping = JElsElementMapping.getInstance();
+			sequence = quad(70., -16., 15., 0., 0., 0., 0., 0., 0., 0., 0., 1. ,0. ,0.);
+			
+			// TW transfer matrix
+			TWTransferMatrix = new double[][]{ 
+					{+1.160625e+00, +7.370925e-02, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00}, 
+					{+4.708370e+00, +1.160625e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, +8.475396e-01, +6.640505e-02, +0.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, -4.241796e+00, +8.475396e-01, +0.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +1.000000e+00, +6.955452e-02}, 
+					{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +1.000000e+00}, 		
+			};
+			
+			// TW correlation matrix
+			TWGamma = 1.003197291; 
+			TWCorrelationMatrix = new double[][] { 
+					{+1.001561e-12, +5.228219e-12, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00}, 
+					{+5.228219e-12, +3.415331e-11, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, +8.733876e-13, -2.953358e-12, +0.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, -2.953358e-12, +1.780296e-11, +0.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +3.361266e-12, +2.249328e-12}, 
+					{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +2.249328e-12, +5.280827e-12}};
+			TWMean = new double[] {
+					 0.0333817, 0.0727444, 0, 0, -9.3271e-06, 0							 
+			};
+		}}});		
+		
 		return tests;
 	}
 	
@@ -410,11 +441,11 @@ public class QuadTest extends SingleElementTest {
 		quad.getAper().setAperX(R*1e-3);
 		quad.getAper().setAperY(R*1e-3);
 		quad.getAper().setShape(ApertureBucket.iRectangle);
-		quad.getAlign().setX(dx);
-		quad.getAlign().setY(dy);
-		quad.getAlign().setZ(dz);
-		quad.getAlign().setPitch(fx*1e-3/2.);
-		quad.getAlign().setYaw(fy*1e-3/2.);
+		quad.getAlign().setX(dx*1e-3);
+		quad.getAlign().setY(dy*1e-3);
+		quad.getAlign().setZ(dz*1e-3);
+		quad.getAlign().setPitch(fx*Math.PI/180.);
+		quad.getAlign().setYaw(fy*Math.PI/180.);
 		quad.getAlign().setRoll(fz*Math.PI/180.);
 		sequence.addNode(quad);
 		sequence.setLength(L*1e-3);	
