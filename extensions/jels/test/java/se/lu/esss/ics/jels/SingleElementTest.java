@@ -58,9 +58,9 @@ public abstract class SingleElementTest extends TestCommon {
 	@Test
 	public void test() throws ModelException
 	{
-		run(data.sequence);
-		
 		System.out.printf("\nResults of %s:\n", data.toString());
+		
+		run(data.sequence);
 		
 		//printResults();
 		if (data.elsSigma != null)
