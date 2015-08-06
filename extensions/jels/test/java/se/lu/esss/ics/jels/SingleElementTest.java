@@ -2,11 +2,13 @@ package se.lu.esss.ics.jels;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Locale;
 
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
 import xal.model.ModelException;
+import xal.model.probe.EnvelopeProbe;
 import xal.model.probe.Probe;
 import xal.sim.scenario.ElementMapping;
 import xal.smf.AcceleratorSeq;
@@ -15,6 +17,8 @@ public abstract class SingleElementTest extends TestCommon {
 	protected SingleElementTestData data;
 	
 	public static class SingleElementTestData {
+		String description;
+		
 		// input
 		Probe probe;
 		ElementMapping elementMapping;
@@ -28,6 +32,16 @@ public abstract class SingleElementTest extends TestCommon {
 		// ELS output
 		double elsPosition;
 		double[] elsSigma, elsBeta;
+		
+		@Override
+		public String toString()
+		{
+			double I = ((EnvelopeProbe)probe).getBeamCurrent();
+			String params = I == 0. ? String.format(Locale.ROOT, "E=%.1E", probe.getKineticEnergy())
+					: String.format(Locale.ROOT, "E=%.1E, I=%.1E", probe.getKineticEnergy(), ((EnvelopeProbe)probe).getBeamCurrent());;
+			if (description != null) return description+ ", " + params;
+			return params;	
+		}
 	}
 	
 	public SingleElementTest(SingleElementTestData data) {
@@ -39,6 +53,8 @@ public abstract class SingleElementTest extends TestCommon {
 	public void test() throws ModelException
 	{
 		run(data.sequence);
+		
+		System.out.printf("\nResults of %s:\n", data.toString());
 		
 		//printResults();
 		if (data.elsSigma != null)
