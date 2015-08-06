@@ -6,6 +6,7 @@
  */
 package xal.model.probe.traj;
 
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -24,6 +25,7 @@ import xal.smf.Accelerator;
 import xal.smf.AcceleratorSeq;
 import xal.smf.data.XMLDataManager;
 import xal.test.ResourceManager;
+import xal.test.Tools;
 import xal.tools.beam.PhaseMatrix;
 
 /**
@@ -35,6 +37,22 @@ import xal.tools.beam.PhaseMatrix;
  */
 public class TestTransferMapTrajectory {
 
+    /*
+     * Global Constants
+     */
+    
+    /** Flag used for indicating whether to type out to stout or file */
+    private static final boolean        BOL_TYPE_STOUT = false;
+    
+
+    /*
+     * Global Attributes
+     */
+    
+    /** The results output file stream */
+    static private PrintStream        PSTR_OUTPUT;
+
+    
     private static Accelerator     ACCEL;
     
     private static Scenario         MODEL;
@@ -46,6 +64,11 @@ public class TestTransferMapTrajectory {
     
     @BeforeClass
     public static void SetupClass() throws ModelException {
+        
+        if (BOL_TYPE_STOUT) 
+            PSTR_OUTPUT = System.out;
+        else
+            PSTR_OUTPUT = Tools.createOutputStream(TestTrajectory.class);
         
         ACCEL  =  ResourceManager.getTestAccelerator(); 
 
@@ -88,14 +111,14 @@ public class TestTransferMapTrajectory {
     
     @Test
     public void printElementsInLattice() {
-        System.out.print("\n\nELEMENTS IN LATTICE\n");
+        PSTR_OUTPUT.print("\n\nELEMENTS IN LATTICE\n");
         int cnt = 0;
         Lattice latModel  = MODEL.getLattice();
         Iterator<?>  iter = latModel.globalIterator();
         while (iter.hasNext()) {
             Object obj = iter.next();
             IComponent elem = (IComponent)obj;
-            System.out.println(cnt + "   " + elem.getId() );
+            PSTR_OUTPUT.println(cnt + "   " + elem.getId() );
             cnt = cnt + 1;
         }
 
@@ -103,7 +126,7 @@ public class TestTransferMapTrajectory {
     
     @Test
     public void printElementsInTrajectory() {
-        System.out.print("\n\nSTATES BY ELEMENT IN TRAJECTORY\n");
+        PSTR_OUTPUT.print("\n\nSTATES BY ELEMENT IN TRAJECTORY\n");
         int cnt = 0;
         Iterator<TransferMapState>  iter = TRAJ.iterator();
         while (iter.hasNext()) {
@@ -113,7 +136,7 @@ public class TestTransferMapTrajectory {
             double  dblPos    = state.getPosition();
             double  dblKin    = state.getKineticEnergy();
                     
-            System.out.println(cnt + "   " + strElemId + "   " + dblPos + "   " + dblKin);
+            PSTR_OUTPUT.println(cnt + "   " + strElemId + "   " + dblPos + "   " + dblKin);
             cnt = cnt + 1;
         }
 
@@ -127,7 +150,7 @@ public class TestTransferMapTrajectory {
     public void testGetTransferMatrix() {
 //        CalculationsOnMachines  prcTran = new CalculationsOnMachines(TRAJ);
         
-        System.out.print("\n\nSTATE-BY-STATE TRANSFER MATRICES IN TRAJECTORY\n");
+        PSTR_OUTPUT.print("\n\nSTATE-BY-STATE TRANSFER MATRICES IN TRAJECTORY\n");
         int cnt    = 0;
         TransferMapState state1 = TRAJ.initialState();
         Iterator<TransferMapState> iter = TRAJ.iterator();
@@ -141,7 +164,7 @@ public class TestTransferMapTrajectory {
             PhaseMatrix matXfer2 = state2.getTransferMap().getFirstOrder();
             PhaseMatrix matXfer  = matXfer2.times( matXfer1.inverse() );
             
-            System.out.println(cnt + "     " + strId1 + " to " + strId2 + "     " + matXfer.toStringMatrix() );
+            PSTR_OUTPUT.println(cnt + "     " + strId1 + " to " + strId2 + "     " + matXfer.toStringMatrix() );
             
             cnt = cnt + 1;
             state1 = state2;
@@ -150,7 +173,7 @@ public class TestTransferMapTrajectory {
 
     @Test 
     public void testGetFullTrajectoryTransferMatrix() {
-        System.out.print("\n\nENTRANCE-TO-ELEMENT TRANSFER MATRICES IN TRAJECTORY\n");
+        PSTR_OUTPUT.print("\n\nENTRANCE-TO-ELEMENT TRANSFER MATRICES IN TRAJECTORY\n");
         int cnt    = 0;
         Iterator<TransferMapState> iter =  TRAJ.iterator();
         while ( iter.hasNext() ) {
@@ -159,7 +182,7 @@ public class TestTransferMapTrajectory {
 //            PhaseMatrix matXfer = TRAJ.getTransferMatrix(strId1, strId2);
             PhaseMatrix matXfer = state.getTransferMap().getFirstOrder();
             
-            System.out.println(cnt + "     " + strId1 + "     " + matXfer.toStringMatrix() );
+            PSTR_OUTPUT.println(cnt + "     " + strId1 + "     " + matXfer.toStringMatrix() );
             
             cnt = cnt + 1;
         }
@@ -171,7 +194,7 @@ public class TestTransferMapTrajectory {
 //     */
 //    @Test
 //    public void testGetTransferMatrixEntrToEntr() {
-//        System.out.print("\n\nENTR-TO-ENTR STATE-BY-STATE TRANSFER MATRICES IN TRAJECTORY\n");
+//        PSTR_OUTPUT.print("\n\nENTR-TO-ENTR STATE-BY-STATE TRANSFER MATRICES IN TRAJECTORY\n");
 //        int cnt    = 0;
 //        TransferMapState state1 = (TransferMapState) TRAJ.initialState();
 //        Iterator<TransferMapState> iter = (Iterator<TransferMapState>) TRAJ.stateIterator();
@@ -182,7 +205,7 @@ public class TestTransferMapTrajectory {
 //            PhaseMatrix matXfer = TRAJ.getTransferMatrixEntrToEntr(strId1, strId2);
 ////            PhaseMatrix matXfer = TRAJ.getTransferMatrix(state1, state2);
 //            
-//            System.out.println(cnt + "     " + strId1 + " to " + strId2 + "     " + matXfer.toStringMatrix() );
+//            PSTR_OUTPUT.println(cnt + "     " + strId1 + " to " + strId2 + "     " + matXfer.toStringMatrix() );
 //            
 //            cnt = cnt + 1;
 //            state1 = state2;

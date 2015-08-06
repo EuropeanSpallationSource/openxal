@@ -16,6 +16,7 @@ import xal.model.probe.Probe;
 
 
 
+
 /** SimpleProbeEditor */
 public class SimpleProbeEditor extends SimpleBeanEditor<Probe<?>> {
 	private static final long serialVersionUID = 1L;
