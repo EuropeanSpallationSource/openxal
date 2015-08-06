@@ -18,7 +18,7 @@ public class SteererTest extends TestCommon {
 		super(probe, elementMapping);
 	}
 
-	private static double errTolerance = 1e-6;
+	private static double errTolerance = 1e-4;
 	
 	@Test
 	public void doQuadTest() throws InstantiationException, ModelException {
@@ -72,7 +72,7 @@ public class SteererTest extends TestCommon {
 					{+0.000000e+00, +0.000000e+00, +2.809946e-14, +1.601717e-13, +0.000000e+00, +0.000000e+00}, 
 					{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +5.719022e-15, +5.106308e-14}, 
 					{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +5.106308e-14, +1.599526e-12}, 
-			}, new double[] {4.4423e-3,126.998e-3,2.21983e-3,63.3862e-3,0,0}, errTolerance);
+			}, new double[] {4.4423,126.998,2.21983,63.3862,0,0}, errTolerance);
 			 /*      dx  = 4.4423 mm
 					 dx' = 126.998 mrad
 					 dy  = 2.21983 mm
@@ -111,13 +111,13 @@ public class SteererTest extends TestCommon {
 		VDipoleCorr vcorr = new VDipoleCorr("VC");
 		vcorr.setPosition(L*1e-3*0.5);
 		vcorr.getMagBucket().setEffLength(L*1e-3);
-		vcorr.setDfltField(Bx);
+		vcorr.setDfltField(-Bx);
 		sequence.addNode(vcorr);
 		
 		HDipoleCorr hcorr = new HDipoleCorr("HC");
 		hcorr.setPosition(L*1e-3*0.5);
 		hcorr.getMagBucket().setEffLength(L*1e-3);
-		hcorr.setDfltField(-By);
+		hcorr.setDfltField(By);
 		sequence.addNode(hcorr);
 		
 		sequence.setLength(L*1e-3);	
