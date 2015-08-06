@@ -19,14 +19,15 @@ public class QuadTest extends SingleElementTest {
 		super(data);
 	}
 
-	@Parameters
+	@Parameters(name = "Quad {index}: {0}")
 	public static Collection<Object[]> tests() {
 		final double frequency = 4.025e8, current = 0;
 		
 		List<Object []> tests = new ArrayList<>();
 		
-		// basic test, E=3MeV, Q=-16		
+		// 0: basic test, E=3MeV, Q=-16		
 		tests.add(new Object[] {new SingleElementTestData() {{
+			description = "basic, Q=-16";
 			probe = setupOpenXALProbe( 3e6, frequency, current); 
 			elementMapping = JElsElementMapping.getInstance();
 			sequence = quad(70., -16., 15., 0., 0., 0., 0., 0.);
@@ -57,8 +58,9 @@ public class QuadTest extends SingleElementTest {
 			elsBeta = new double[] {3.820541E-01, 3.342766E-01, 9.435362E-01};			
 		}}});
 		
-		// high energy test, E=2.5GeV, Q=-16
+		// 1: high energy test, E=2.5GeV, Q=-16
 		tests.add(new Object[] {new SingleElementTestData() {{
+			description = "high E, Q=-16";
 			probe = setupOpenXALProbe( 2.5e9, frequency, current); 
 			elementMapping = JElsElementMapping.getInstance();
 			sequence = quad(70., -16., 15., 0., 0., 0., 0., 0.);
@@ -85,8 +87,9 @@ public class QuadTest extends SingleElementTest {
 			};
 		}}});	
 		
-		// basic test, E=3MeV, Q=16
+		// 2: basic test, E=3MeV, Q=16
 		tests.add(new Object[] {new SingleElementTestData() {{
+			description = "basic, Q=16";
 			probe = setupOpenXALProbe( 3e6, frequency, current);
 			elementMapping = JElsElementMapping.getInstance();
 			sequence = quad(70., 16., 15., 0., 0., 0., 0., 0.);
@@ -118,8 +121,9 @@ public class QuadTest extends SingleElementTest {
 			elsBeta = new double[] {2.138779E-01, 6.059861E-01, 9.435362E-01};
 		}}});
 			
-		// high energy test, E=2.5GeV, Q=16
+		// 3: high energy test, E=2.5GeV, Q=16
 		tests.add(new Object[] {new SingleElementTestData() {{
+				description = "high E, Q=16";
 				probe = setupOpenXALProbe( 2.5e9, frequency, current); 
 			    elementMapping = JElsElementMapping.getInstance();
 				sequence = quad(70., 16., 15., 0., 0., 0., 0., 0.);
@@ -145,8 +149,9 @@ public class QuadTest extends SingleElementTest {
 				};
 		}}});
 		
-		// bigger beta variation test, E=3MeV, Q=-16		
+		// 4: bigger beta variation test, E=3MeV, Q=-16		
 		tests.add(new Object[] {new SingleElementTestData() {{
+			description = "bigger twiss, Q=-16";
 			probe = setupOpenXALProbe( 3e6, frequency, current,
 					new double[][]{{-0.1763,0.3,0.2098},
 				  		{-0.3247,0.4,0.2091},
@@ -176,92 +181,98 @@ public class QuadTest extends SingleElementTest {
 			};		
 		}}});
 		
-		// basic test, E=3MeV, Q=-16		
-				tests.add(new Object[] {new SingleElementTestData() {{
-					probe = setupOpenXALProbe2( 3e6, frequency, 30.0e-3); 
-					elementMapping = JElsElementMapping.getInstance();
-					sequence = quad(70., -16., 15., 0., 0., 0., 0., 0.);
-					
-					// TW transfer matrix
-					TWTransferMatrix = new double[][]{ 
-							{+1.160625e+00, +7.370925e-02, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00}, 
-							{+4.708370e+00, +1.160625e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00}, 
-							{+0.000000e+00, +0.000000e+00, +8.475396e-01, +6.640505e-02, +0.000000e+00, +0.000000e+00}, 
-							{+0.000000e+00, +0.000000e+00, -4.241796e+00, +8.475396e-01, +0.000000e+00, +0.000000e+00}, 
-							{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +1.000000e+00, +6.955452e-02}, 
-							{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +1.000000e+00}, 		
-					};
-
-					
-					// TW correlation matrix
-					TWGamma = 1.003197291; 
-					TWCorrelationMatrix = new double[][] { 
-							{+1.038199e-06, +5.859669e-06, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00}, 
-							{+5.859669e-06, +3.969189e-05, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00}, 
-							{+0.000000e+00, +0.000000e+00, +9.061416e-07, -2.552999e-06, +0.000000e+00, +0.000000e+00}, 
-							{+0.000000e+00, +0.000000e+00, -2.552999e-06, +1.472658e-05, +0.000000e+00, +0.000000e+00}, 
-							{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +3.416879e-06, +3.069598e-06}, 
-							{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +3.069598e-06, +6.471760e-06}};
-				}}});
-
-				tests.add(new Object[] {new SingleElementTestData() {{
-					probe = setupOpenXALProbe2( 3e6, frequency, 30.0e-3); 
-					elementMapping = JElsElementMapping.getInstance();
-					sequence = quad(5000., -16., 15., 0., 0., 0., 0., 0.);
-					
-					// TW transfer matrix
-					TWTransferMatrix = new double[][]{ 
-							{+1.132742e+17, +1.417283e+16, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00}, 
-							{+9.053264e+17, +1.132742e+17, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00}, 
-							{+0.000000e+00, +0.000000e+00, -6.379448e-01, +9.635244e-02, +0.000000e+00, +0.000000e+00}, 
-							{+0.000000e+00, +0.000000e+00, -6.154763e+00, -6.379448e-01, +0.000000e+00, +0.000000e+00}, 
-							{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +1.000000e+00, +4.968180e+00}, 
-							{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +1.000000e+00}, 
-
-					};
-
-					// TW correlation matrix
-					TWGamma = 1.003197291; 
-					TWCorrelationMatrix = new double[][] { 
-							{+1.000000e+25, +6.819195e+27, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00}, 
-							{+6.819195e+27, +1.000000e+25, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00}, 
-							{+0.000000e+00, +0.000000e+00, +2.508888e-07, +2.454528e-06, +0.000000e+00, +0.000000e+00}, 
-							{+0.000000e+00, +0.000000e+00, +2.454528e-06, +5.122298e-05, +0.000000e+00, +0.000000e+00}, 
-							{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +3.359821e-04, +6.339603e-05}, 
-							{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +6.339603e-05, +1.199989e-05}, 
-					};
-				}}});
-
-				tests.add(new Object[] {new SingleElementTestData() {{
-					probe = setupOpenXALProbe2( 20e9, frequency, 30.0e-3); 
-					elementMapping = JElsElementMapping.getInstance();
-					sequence = quad(5000., -16., 15., 0., 0., 0., 0., 0.);
-					
-					// TW transfer matrix
-					TWTransferMatrix = new double[][]{ 
-							{+5.526161e+00, +1.134948e+01, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00}, 
-							{+2.602626e+00, +5.526161e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00}, 
-							{+0.000000e+00, +0.000000e+00, -7.335668e-01, +1.419210e+00, +0.000000e+00, +0.000000e+00}, 
-							{+0.000000e+00, +0.000000e+00, -3.254486e-01, -7.335668e-01, +0.000000e+00, +0.000000e+00}, 
-							{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +1.000000e+00, +1.004074e-02}, 
-							{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +1.000000e+00}, 
-					};
-
-					// TW correlation matrix
-					TWGamma = 22.315273669; 
-					TWCorrelationMatrix = new double[][] { 
-							{+5.815553e-06, +2.830545e-06, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00}, 
-							{+2.830545e-06, +1.377698e-06, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00}, 
-							{+0.000000e+00, +0.000000e+00, +5.492668e-08, -2.913093e-08, +0.000000e+00, +0.000000e+00}, 
-							{+0.000000e+00, +0.000000e+00, -2.913093e-08, +1.705164e-08, +0.000000e+00, +0.000000e+00}, 
-							{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +1.231478e-09, +1.139644e-07}, 
-							{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +1.139644e-07, +1.067940e-05},  
-					};
-				}}});
-
-				
-		// basic test, E=3MeV, Q=-16, with x misalignmnet		
+		// 5: space charge test, E=3MeV, Q=-16		
 		tests.add(new Object[] {new SingleElementTestData() {{
+			description = "space charge, Q=-16";
+			probe = setupOpenXALProbe2( 3e6, frequency, 30.0e-3); 
+			elementMapping = JElsElementMapping.getInstance();
+			sequence = quad(70., -16., 15., 0., 0., 0., 0., 0.);
+			
+			// TW transfer matrix
+			TWTransferMatrix = new double[][]{ 
+					{+1.160625e+00, +7.370925e-02, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00}, 
+					{+4.708370e+00, +1.160625e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, +8.475396e-01, +6.640505e-02, +0.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, -4.241796e+00, +8.475396e-01, +0.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +1.000000e+00, +6.955452e-02}, 
+					{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +1.000000e+00}, 		
+			};
+
+			
+			// TW correlation matrix
+			TWGamma = 1.003197291; 
+			TWCorrelationMatrix = new double[][] { 
+					{+1.038199e-06, +5.859669e-06, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00}, 
+					{+5.859669e-06, +3.969189e-05, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, +9.061416e-07, -2.552999e-06, +0.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, -2.552999e-06, +1.472658e-05, +0.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +3.416879e-06, +3.069598e-06}, 
+					{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +3.069598e-06, +6.471760e-06}};
+		}}});
+
+		// 6: space charge test, L=5m
+		tests.add(new Object[] {new SingleElementTestData() {{
+			description = "space charge, L=5m, Q=-16";
+			probe = setupOpenXALProbe2( 3e6, frequency, 30.0e-3); 
+			elementMapping = JElsElementMapping.getInstance();
+			sequence = quad(5000., -16., 15., 0., 0., 0., 0., 0.);
+			
+			// TW transfer matrix
+			TWTransferMatrix = new double[][]{ 
+					{+1.132742e+17, +1.417283e+16, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00}, 
+					{+9.053264e+17, +1.132742e+17, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, -6.379448e-01, +9.635244e-02, +0.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, -6.154763e+00, -6.379448e-01, +0.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +1.000000e+00, +4.968180e+00}, 
+					{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +1.000000e+00}, 
+
+			};
+
+			// TW correlation matrix
+			TWGamma = 1.003197291; 
+			TWCorrelationMatrix = new double[][] { 
+					{+1.000000e+25, +6.819195e+27, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00}, 
+					{+6.819195e+27, +1.000000e+25, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, +2.508888e-07, +2.454528e-06, +0.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, +2.454528e-06, +5.122298e-05, +0.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +3.359821e-04, +6.339603e-05}, 
+					{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +6.339603e-05, +1.199989e-05}, 
+			};
+		}}});
+
+		// 7: space charge test big E, L=5m
+		tests.add(new Object[] {new SingleElementTestData() {{
+			description = "space charge big E, L=5m, Q=-16";
+			probe = setupOpenXALProbe2( 20e9, frequency, 30.0e-3); 
+			elementMapping = JElsElementMapping.getInstance();
+			sequence = quad(5000., -16., 15., 0., 0., 0., 0., 0.);
+			
+			// TW transfer matrix
+			TWTransferMatrix = new double[][]{ 
+					{+5.526161e+00, +1.134948e+01, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00}, 
+					{+2.602626e+00, +5.526161e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, -7.335668e-01, +1.419210e+00, +0.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, -3.254486e-01, -7.335668e-01, +0.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +1.000000e+00, +1.004074e-02}, 
+					{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +1.000000e+00}, 
+			};
+
+			// TW correlation matrix
+			TWGamma = 22.315273669; 
+			TWCorrelationMatrix = new double[][] { 
+					{+5.815553e-06, +2.830545e-06, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00}, 
+					{+2.830545e-06, +1.377698e-06, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, +5.492668e-08, -2.913093e-08, +0.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, -2.913093e-08, +1.705164e-08, +0.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +1.231478e-09, +1.139644e-07}, 
+					{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +1.139644e-07, +1.067940e-05},  
+			};
+		}}});
+
+		
+		// 8: misalignment test dx, E=3MeV, Q=-16		
+		tests.add(new Object[] {new SingleElementTestData() {{
+			description = "mislignment dx";
 			probe = setupOpenXALProbe( 3e6, frequency, current); 
 			elementMapping = JElsElementMapping.getInstance();
 			sequence = quad(70., -16., 15., 0., 0., 0., 0., 0., 1., 0., 0., 0., 0., 0.);
@@ -295,8 +306,9 @@ public class QuadTest extends SingleElementTest {
 			elsBeta = new double[] {3.820541E-01, 3.342766E-01, 9.435362E-01};			
 		}}});
 		
-		// basic test, E=3MeV, Q=-16, with y misalignmnet		
+		// 9: misalignment test dy, E=3MeV, Q=-16		
 		tests.add(new Object[] {new SingleElementTestData() {{
+			description = "mislignment dy";
 			probe = setupOpenXALProbe( 3e6, frequency, current); 
 			elementMapping = JElsElementMapping.getInstance();
 			sequence = quad(70., -16., 15., 0., 0., 0., 0., 0., 0., 1., 0., 0. ,0. ,0.);
@@ -325,7 +337,9 @@ public class QuadTest extends SingleElementTest {
 			};
 		}}});		
 		
+		// 10: rotation test fz
 		tests.add(new Object[] {new SingleElementTestData() {{
+			description = "rotation fz";
 			probe = setupOpenXALProbe( 3e6, frequency, current); 
 			elementMapping = JElsElementMapping.getInstance();
 			sequence = quad(70., -16., 15., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1.);
@@ -349,18 +363,13 @@ public class QuadTest extends SingleElementTest {
 					{+1.089479e-13, +7.520650e-14, -2.950460e-12, +1.780010e-11, +0.000000e+00, +0.000000e+00}, 
 					{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +3.361266e-12, +2.249328e-12}, 
 					{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +2.249328e-12, +5.280827e-12},
-			};
-			
-
-			// ELS results
-			elsPosition = 7.000000E-02;
-			elsSigma = new double[] {1.000780E-03, 9.345521E-04, 1.833376E-03};
-			elsBeta = new double[] {3.820541E-01, 3.342766E-01, 9.435362E-01};			
+			};			
 		}}});
 
 		
-		// basic test, E=3MeV, Q=-16, with x rotation		
+		// 11: rotation test x, E=3MeV, Q=-16		
 		tests.add(new Object[] {new SingleElementTestData() {{
+			description = "rotation fx";
 			probe = setupOpenXALProbe( 3e6, frequency, current); 
 			elementMapping = JElsElementMapping.getInstance();
 			sequence = quad(70., -16., 15., 0., 0., 0., 0., 0., 0., 0., 0., 1. ,0. ,0.);
@@ -389,8 +398,9 @@ public class QuadTest extends SingleElementTest {
 			};
 		}}});		
 
-		// basic test, E=3MeV, Q=-16, with x rotation		
+		// 12: misalignment & rotation test, E=3MeV, Q=-16		
 		tests.add(new Object[] {new SingleElementTestData() {{
+			description = "misalignment & rotation";
 			probe = setupOpenXALProbe( 3e6, frequency, current); 
 			elementMapping = JElsElementMapping.getInstance();
 			sequence = quad(70., -16., 15., 0., 0., 0., 0., 0., 1., 2., 0., 3., 4., 5.);
