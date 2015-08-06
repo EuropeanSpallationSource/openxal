@@ -7,10 +7,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.junit.Assert;
 import org.junit.runners.Parameterized.Parameters;
 
 import se.lu.esss.ics.jels.model.alg.ElsTracker;
-import se.lu.esss.ics.jels.model.elem.els.ElsElementMapping;
 import se.lu.esss.ics.jels.model.elem.els.IdealRfGap;
 import se.lu.esss.ics.jels.model.elem.jels.JElsElementMapping;
 import se.lu.esss.ics.jels.model.probe.ElsProbe;
@@ -23,7 +23,6 @@ import xal.model.alg.Tracker;
 import xal.model.probe.EnvelopeProbe;
 import xal.model.probe.Probe;
 import xal.model.probe.traj.EnvelopeProbeState;
-import xal.model.probe.traj.ProbeState;
 import xal.model.probe.traj.Trajectory;
 import xal.model.xml.LatticeXmlWriter;
 import xal.sim.scenario.ElementMapping;
@@ -42,10 +41,11 @@ public abstract class TestCommon {
 	protected ElementMapping elementMapping;
 	protected Scenario scenario;
 	protected double initialEnergy;
+
+	
 	
 	public TestCommon(Probe probe, ElementMapping elementMapping)
-	{
-		System.out.printf("\nResults of %s:\n", elementMapping.getClass());
+	{		
 		probe.reset();
 		this.initialEnergy = probe.getKineticEnergy();
 		this.probe = probe;
@@ -277,7 +277,7 @@ public abstract class TestCommon {
 		System.out.printf("sigma: %E %E %E %E\n",probe.getPosition(), sigma[0], sigma[1], sigma[2]);		
 	}
 	
-	public void checkELSResults(double elsPosition, double[] elsSigma, double[] elsBeta)
+	public void checkELSResults(double elsPosition, double[] elsSigma, double[] elsBeta, double errTolearance)
 	{
 		Twiss[] t;
 		if (probe instanceof ElsProbe)
@@ -301,17 +301,25 @@ public abstract class TestCommon {
 		}		
 		
 		System.out.printf("ELS results diff: %E %E %E\n", Math.abs(elsPosition-probe.getPosition())/elsPosition, Math.sqrt(e/e0), Math.sqrt(b/b0));
+		Assert.assertTrue("ELS position", Math.abs(elsPosition-probe.getPosition())/elsPosition < errTolearance);
+		Assert.assertTrue("ELS envelope radius",  Math.sqrt(e/e0) < errTolearance);
+		Assert.assertTrue("ELS beta", Math.sqrt(b/b0) < errTolearance);
 	}
 	
-	public void checkTWTransferMatrix(double T[][]) throws ModelException
+	public void checkTWTransferMatrix(double T[][], double errTolerance) throws ModelException
 	{		
 		Trajectory<EnvelopeProbeState> trajectory = probe.getTrajectory();
 		
 		Iterator<EnvelopeProbeState> it = trajectory.stateIterator();
 		
 		Probe<EnvelopeProbeState> probe = this.probe.copy();
+				
 		PhaseMap pm = PhaseMap.identity();		
+		pm = new PhaseMap(trajectory.finalState().getResponseMatrixNoSpaceCharge());
 		
+		ROpenXal2TW(trajectory.initialState().getGamma(), trajectory.finalState().getGamma(), pm);					
+		
+		/*
 		EnvelopeProbeState initialState = null;
 		EnvelopeProbeState ps = null;
 		
@@ -321,8 +329,7 @@ public abstract class TestCommon {
 			//el.transferMap(probe, el.getLength()).getFirstOrder().print();
 			if (ps != null) {
 				probe.applyState(ps);
-				PhaseMap element_pm = new PhaseMap(psnext.getResponseMatrix().times(ps.getResponseMatrix().inverse())); 
-				
+				PhaseMap element_pm = new PhaseMap(psnext.getResponseMatrixNoSpaceCharge().times(ps.getResponseMatrixNoSpaceCharge().inverse())); 				
 				if (!(elementMapping instanceof ElsElementMapping))
 					ROpenXal2TW(ps.getGamma(), psnext.getGamma(), element_pm);					
 				
@@ -333,7 +340,7 @@ public abstract class TestCommon {
 			if (initialState == null) initialState = ps;
 		
 		}
-	
+	*/
 		// transform T
 	/*	if (!(elementMapping instanceof ElsElementMapping)) {
 			double gamma_start = initialState.getGamma();
@@ -357,6 +364,7 @@ public abstract class TestCommon {
 		double n = pm.getFirstOrder().minus(pm77).norm2()/pm77.norm2();
 		//pm.getFirstOrder().minus(new PhaseMatrix(new Matrix(T77))).print();
 		System.out.printf("TW transfer matrix diff: %E\n",n);
+		Assert.assertTrue("TW transfer matrix", n < errTolerance);
 	}
 	
 	
@@ -379,11 +387,11 @@ public abstract class TestCommon {
 		return (x-y)/y;
 	}
 	
-	protected void checkTWResults(double gammaTw, double[][] centCovTw66) {
-		checkTWResults(gammaTw, centCovTw66, new double[] {0.,0.,0.,0.,0.,0.});
+	protected void checkTWResults(double gammaTw, double[][] centCovTw66, double errTolerance) {
+		checkTWResults(gammaTw, centCovTw66, new double[] {0.,0.,0.,0.,0.,0.}, errTolerance);
 	}
 	
-	protected void checkTWResults(double gammaTw, double[][] centCovTw66, double[] meanTw6) {
+	protected void checkTWResults(double gammaTw, double[][] centCovTw66, double[] meanTw6, double errTolerance) {
 		/*double[] alpha = new double[3],beta=new double[3],emit=new double[3], det=new double[3], sigma=new double[3], gama=new double[3];
 			
 		for (int i=0; i<3; i++) 
@@ -410,7 +418,7 @@ public abstract class TestCommon {
 			System.out.printf("%c:%.0g %.0g %.0g ",'x'+i, tr(t[i].getAlpha(),alpha[i]), tr(t[i].getBeta(),beta[i]), tr(t[i].getEmittance(),emit[i]));	
 		}*/
 		System.out.printf("TW gamma diff: %.2g\n", tr(probe.getGamma(),gammaTw));
-		
+		Assert.assertTrue("TW gamma", tr(probe.getGamma(),gammaTw)<errTolerance);
 		
 		// transform cov
 		for (int i=0; i<6; i++) {
@@ -418,6 +426,7 @@ public abstract class TestCommon {
 			centCovTw66[i][5]/=gammaTw;
 			centCovTw66[4][i]*=gammaTw;				
 			centCovTw66[5][i]/=gammaTw;
+			meanTw6[i]*=1e-3;
 		}
 
 		double centCovTw77[][] = new double[7][7];	
@@ -448,6 +457,8 @@ public abstract class TestCommon {
 		//pm.getFirstOrder().minus(new PhaseMatrix(new Matrix(T77))).print();
 		System.out.printf("TW cov matrix diff: %E\n",n);
 		System.out.printf("TW mean diff: %E\n",n2);
+		Assert.assertTrue("TW cov matrix", n<errTolerance);
+		Assert.assertTrue("TW mean", n2<errTolerance);
 	}
 
 }

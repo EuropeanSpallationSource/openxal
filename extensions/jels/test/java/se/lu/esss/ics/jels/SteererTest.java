@@ -18,6 +18,8 @@ public class SteererTest extends TestCommon {
 		super(probe, elementMapping);
 	}
 
+	private static double errTolerance = 1e-6;
+	
 	@Test
 	public void doQuadTest() throws InstantiationException, ModelException {
 		probe.reset();
@@ -30,7 +32,7 @@ public class SteererTest extends TestCommon {
 		//printResults();
 		if (initialEnergy == 3e6) {
 			checkELSResults(7.000000E-02, new double[] {1.000780E-03, 9.345521E-04, 1.833376E-03},
-					new double[] {3.820541E-01, 3.342766E-01, 9.435362E-01});
+					new double[] {3.820541E-01, 3.342766E-01, 9.435362E-01}, errTolerance);
 			
 			checkTWTransferMatrix(new double[][]{
 					{+1.160625e+00, +7.370925e-02, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00}, 
@@ -39,7 +41,7 @@ public class SteererTest extends TestCommon {
 					{+0.000000e+00, +0.000000e+00, -4.241796e+00, +8.475396e-01, +0.000000e+00, +0.000000e+00}, 
 					{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +1.000000e+00, +6.955452e-02}, 
 					{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +1.000000e+00}, 		
-			});
+			}, errTolerance);
 			
 			checkTWResults(1.003197291, new double[][] {
 					{+1.001561e-12, +5.228219e-12, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00}, 
@@ -50,7 +52,7 @@ public class SteererTest extends TestCommon {
 					{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +2.249328e-12, +5.280827e-12} 
 			
 			
-			});
+			}, errTolerance);
 		}
 		if (initialEnergy == 2.5e9)
 		{
@@ -61,7 +63,7 @@ public class SteererTest extends TestCommon {
 					{+0.000000e+00, +0.000000e+00, -1.013880e-01, +9.964493e-01, +0.000000e+00, +0.000000e+00}, 
 					{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +1.000000e+00, +5.213029e-03}, 
 					{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +1.000000e+00}, 		
-			});
+			}, errTolerance);
 			
 			checkTWResults(3.664409209, new double[][] {
 					{+1.734644e-14, +2.979657e-14, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00}, 
@@ -70,7 +72,7 @@ public class SteererTest extends TestCommon {
 					{+0.000000e+00, +0.000000e+00, +2.809946e-14, +1.601717e-13, +0.000000e+00, +0.000000e+00}, 
 					{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +5.719022e-15, +5.106308e-14}, 
 					{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +5.106308e-14, +1.599526e-12}, 
-			}, new double[] {4.4423e-3,126.998e-3,2.21983e-3,63.3862e-3,0,0});
+			}, new double[] {4.4423e-3,126.998e-3,2.21983e-3,63.3862e-3,0,0}, errTolerance);
 			 /*      dx  = 4.4423 mm
 					 dx' = 126.998 mrad
 					 dy  = 2.21983 mm

@@ -33,6 +33,12 @@ public abstract class SingleElementTest extends TestCommon {
 		double elsPosition;
 		double[] elsSigma, elsBeta;
 		
+		double errTolerance = 1e-6;
+		double ELSerrTolerance = errTolerance;
+		double TMerrTolerance = errTolerance;
+		double CMerrTolerance = errTolerance;
+		
+		
 		@Override
 		public String toString()
 		{
@@ -58,14 +64,14 @@ public abstract class SingleElementTest extends TestCommon {
 		
 		//printResults();
 		if (data.elsSigma != null)
-			checkELSResults(data.elsPosition, data.elsSigma, data.elsBeta);
+			checkELSResults(data.elsPosition, data.elsSigma, data.elsBeta, data.ELSerrTolerance);
 		
-		checkTWTransferMatrix(data.TWTransferMatrix);
+		checkTWTransferMatrix(data.TWTransferMatrix, data.TMerrTolerance);
 			
 		if (data.TWMean == null)
-			checkTWResults( data.TWGamma, data.TWCorrelationMatrix);
+			checkTWResults( data.TWGamma, data.TWCorrelationMatrix, data.CMerrTolerance);
 		else
-			checkTWResults( data.TWGamma, data.TWCorrelationMatrix, data.TWMean);
+			checkTWResults( data.TWGamma, data.TWCorrelationMatrix, data.TWMean, data.CMerrTolerance);
 	}
 	
 	@Parameters
