@@ -301,7 +301,8 @@ public abstract class TestCommon {
 		}		
 		
 		System.out.printf("ELS results diff: %E %E %E\n", Math.abs(elsPosition-probe.getPosition())/elsPosition, Math.sqrt(e/e0), Math.sqrt(b/b0));
-		Assert.assertTrue("ELS position", Math.abs(elsPosition-probe.getPosition())/elsPosition < errTolearance);
+		Assert.assertTrue("ELS position", (elsPosition == 0. ? Math.abs(elsPosition-probe.getPosition()) : 
+			Math.abs(elsPosition-probe.getPosition())/elsPosition) < errTolearance);
 		Assert.assertTrue("ELS envelope radius",  Math.sqrt(e/e0) < errTolearance);
 		Assert.assertTrue("ELS beta", Math.sqrt(b/b0) < errTolearance);
 	}
