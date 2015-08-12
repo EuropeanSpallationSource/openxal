@@ -93,6 +93,8 @@ public class DataManager {
 	private final static String autoRunID = "RUN";	
 
 	private static boolean useSDisplay = false;
+
+    private static boolean showAdditionalParameters = false;
 	
 	public static Connection getConnection() throws SQLException
 	{
@@ -236,7 +238,7 @@ public class DataManager {
 		
 		// loop through all nodes
 		while (it.hasNext()) {
-			AcceleratorNode node = (AcceleratorNode) it.next();
+			AcceleratorNode node = it.next();
 			List<IElement> elems = scenario.elementsMappedTo(node);
 			
 			// Get effective length at node level (not the element itself).
@@ -301,16 +303,16 @@ public class DataManager {
 				machineModelDetail.setPropertyValue("ORDINAL", elemOrders.get(state.getElementId()).toString());
 
 				if (state instanceof EnvelopeProbeState) {
-					Twiss[] twiss = ((EnvelopeProbeState) state)
+					Twiss[] twiss = state
 							.twissParameters();
-					R3 betatronPhase = cob.computeBetatronPhase((EnvelopeProbeState) state);
+					R3 betatronPhase = cob.computeBetatronPhase(state);
 							
 					machineModelDetail.setPropertyValue("BETA_X", df.format(twiss[0].getBeta()));
 					machineModelDetail.setPropertyValue("ALPHA_X", df.format(twiss[0].getAlpha()));
 					machineModelDetail.setPropertyValue("BETA_Y", df.format(twiss[1].getBeta()));
 					machineModelDetail.setPropertyValue("ALPHA_Y", df.format(twiss[1].getAlpha()));
 					
-					PhaseVector chromDispersion = cob.computeChromDispersion((EnvelopeProbeState)state);
+					PhaseVector chromDispersion = cob.computeChromDispersion(state);
 					machineModelDetail.setPropertyValue("ETA_X", df.format(chromDispersion.getx()));
 					machineModelDetail.setPropertyValue("ETA_Y", df.format(chromDispersion.gety()));
 					machineModelDetail.setPropertyValue("ETAP_X", df.format(chromDispersion.getxp()));
@@ -324,7 +326,7 @@ public class DataManager {
 					machineModelDetail.setPropertyValue("Bmag_X", "1");
 					machineModelDetail.setPropertyValue("Bmag_Y", "1");
 					
-					PhaseMatrix rMat = ((EnvelopeProbeState) state)
+					PhaseMatrix rMat = state
 							.getResponseMatrix();
 					machineModelDetail.setPropertyValue("R11", df.format(rMat.getElem(0, 0)));
 					machineModelDetail.setPropertyValue("R12", df.format(rMat.getElem(0, 1)));
@@ -538,7 +540,58 @@ public class DataManager {
 				else {
 				}
 			}
-		}
+			//Misalignments and other parameters
+            if (showAdditionalParameters ) {
+                MachineModelDevice tmp10 = new MachineModelDevice();
+                tmp10.setPropertyValue("ELEMENT_NAME", node.getId());
+                tmp10.setPropertyValue("DEVICE_PROPERTY", "Aperture size");
+                tmp10.setPropertyValue("DEVICE_VALUE", Double.toString(node.getAper().getAperX()));
+                tmp10.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node)));
+                runMachineModelDevice.add(tmp10);
+
+                MachineModelDevice tmp11 = new MachineModelDevice();
+                tmp11.setPropertyValue("ELEMENT_NAME", node.getId());
+                tmp11.setPropertyValue("DEVICE_PROPERTY", "Misalignment x");
+                tmp11.setPropertyValue("DEVICE_VALUE", Double.toString(node.getAlign().getX()));
+                tmp11.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node)));
+                runMachineModelDevice.add(tmp11);
+
+                MachineModelDevice tmp12 = new MachineModelDevice();
+                tmp12.setPropertyValue("ELEMENT_NAME", node.getId());
+                tmp12.setPropertyValue("DEVICE_PROPERTY", "Misalignment y");
+                tmp12.setPropertyValue("DEVICE_VALUE", Double.toString(node.getAlign().getY()));
+                tmp12.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node)));
+                runMachineModelDevice.add(tmp12);
+
+                MachineModelDevice tmp13 = new MachineModelDevice();
+                tmp13.setPropertyValue("ELEMENT_NAME", node.getId());
+                tmp13.setPropertyValue("DEVICE_PROPERTY", "Misalignment z");
+                tmp13.setPropertyValue("DEVICE_VALUE", Double.toString(node.getAlign().getZ()));
+                tmp13.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node)));
+                runMachineModelDevice.add(tmp13);
+
+                MachineModelDevice tmp14 = new MachineModelDevice();
+                tmp14.setPropertyValue("ELEMENT_NAME", node.getId());
+                tmp14.setPropertyValue("DEVICE_PROPERTY", "Misalignment yaw");
+                tmp14.setPropertyValue("DEVICE_VALUE", Double.toString(node.getAlign().getYaw()));
+                tmp14.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node)));
+                runMachineModelDevice.add(tmp14);
+
+                MachineModelDevice tmp15 = new MachineModelDevice();
+                tmp15.setPropertyValue("ELEMENT_NAME", node.getId());
+                tmp15.setPropertyValue("DEVICE_PROPERTY", "Misalignment pitch");
+                tmp15.setPropertyValue("DEVICE_VALUE", Double.toString(node.getAlign().getPitch()));
+                tmp15.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node)));
+                runMachineModelDevice.add(tmp15);
+
+                MachineModelDevice tmp16 = new MachineModelDevice();
+                tmp16.setPropertyValue("ELEMENT_NAME", node.getId());
+                tmp16.setPropertyValue("DEVICE_PROPERTY", "Misalignment roll");
+                tmp16.setPropertyValue("DEVICE_VALUE", Double.toString(node.getAlign().getRoll()));
+                tmp16.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node)));
+                runMachineModelDevice.add(tmp16);
+            }
+        }
 		return runMachineModelDevice.toArray(new MachineModelDevice[runMachineModelDevice.size()]);
 	}
 	
@@ -733,14 +786,16 @@ public class DataManager {
 		String currentDirectory = _savedFileTracker.getRecentFolderPath();
 		JFileChooser fileChooser = new JFileChooser(currentDirectory);
 		fileChooser.setFileFilter(new FileFilter() {
-			public boolean accept(File f) {
+			@Override
+            public boolean accept(File f) {
 				if (f.getName().endsWith(".csv") || f.isDirectory()) {
 					return true;
 				}
 				return false;
 			}
 
-			public String getDescription() {
+			@Override
+            public String getDescription() {
 				return "CSV (*.csv)";
 			}
 		});
@@ -827,13 +882,15 @@ public class DataManager {
 		JFileChooser fileChooser = new JFileChooser(currentDirectory);
 		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		fileChooser.setFileFilter(new FileFilter() {
-			public boolean accept(File f) {
+			@Override
+            public boolean accept(File f) {
 				if (f.getName().endsWith(".xml") || f.isDirectory()) {
 					return true;
 					}
 				return false;
 				}
-			public String getDescription() {
+			@Override
+            public String getDescription() {
 				return "XML (*.xml)";
 				}
 			});
