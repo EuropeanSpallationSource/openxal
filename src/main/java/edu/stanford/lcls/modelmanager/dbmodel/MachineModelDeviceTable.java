@@ -7,9 +7,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JFrame;
-
-import edu.stanford.lcls.modelmanager.view.ModelManagerFeature;
 import edu.stanford.slac.Message.Message;
 
 public class MachineModelDeviceTable {
@@ -18,7 +15,7 @@ public class MachineModelDeviceTable {
 	protected final String TABLE_NAME;
 	protected final List<String> DB_TABLE_COLUMN_NAME;
 	static protected final String[] _TABLE_COLUMN_NAME = {"ELEMENT_NAME", "DEVICE_PROPERTY", "DEVICE_VALUE", "ZPOS"};
-	static final private int TABLE_SIZE = _TABLE_COLUMN_NAME.length; // 54
+	static final private int TABLE_SIZE = _TABLE_COLUMN_NAME.length; // 4
 
 	/** Constructor */
 	public MachineModelDeviceTable(final DBTableConfiguration configuration) {

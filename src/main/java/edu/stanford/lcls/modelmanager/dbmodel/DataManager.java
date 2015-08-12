@@ -93,8 +93,6 @@ public class DataManager {
 	private final static String autoRunID = "RUN";	
 
 	private static boolean useSDisplay = false;
-
-    private static boolean showAdditionalParameters = false;
 	
 	public static Connection getConnection() throws SQLException
 	{
@@ -527,70 +525,69 @@ public class DataManager {
 					tmp8.setPropertyValue("DEVICE_VALUE", Double.toString(((RfCavity) node).getDfltAvgCavPhase()));
 					tmp8.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node)));
 					runMachineModelDevice.add(tmp8);
-					
-					MachineModelDevice tmp9 = new MachineModelDevice();
-					tmp9.setPropertyValue("ELEMENT_NAME", node.getId());
-					tmp9.setPropertyValue("DEVICE_PROPERTY", "ADES");
-					tmp9.setPropertyValue("DEVICE_VALUE", Double.toString(((RfCavity) node).getDfltCavAmp()));
-					tmp9.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node)));
-					runMachineModelDevice.add(tmp9);
-				}
-				// We use "design" values for both cases for now because we
-				// don't have access to live readbacks.
-				else {
-				}
-			}
-			//Misalignments and other parameters
-            if (showAdditionalParameters ) {
-                MachineModelDevice tmp10 = new MachineModelDevice();
-                tmp10.setPropertyValue("ELEMENT_NAME", node.getId());
-                tmp10.setPropertyValue("DEVICE_PROPERTY", "Aperture size");
-                tmp10.setPropertyValue("DEVICE_VALUE", Double.toString(node.getAper().getAperX()));
-                tmp10.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node)));
-                runMachineModelDevice.add(tmp10);
 
-                MachineModelDevice tmp11 = new MachineModelDevice();
-                tmp11.setPropertyValue("ELEMENT_NAME", node.getId());
-                tmp11.setPropertyValue("DEVICE_PROPERTY", "Misalignment x");
-                tmp11.setPropertyValue("DEVICE_VALUE", Double.toString(node.getAlign().getX()));
-                tmp11.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node)));
-                runMachineModelDevice.add(tmp11);
-
-                MachineModelDevice tmp12 = new MachineModelDevice();
-                tmp12.setPropertyValue("ELEMENT_NAME", node.getId());
-                tmp12.setPropertyValue("DEVICE_PROPERTY", "Misalignment y");
-                tmp12.setPropertyValue("DEVICE_VALUE", Double.toString(node.getAlign().getY()));
-                tmp12.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node)));
-                runMachineModelDevice.add(tmp12);
-
-                MachineModelDevice tmp13 = new MachineModelDevice();
-                tmp13.setPropertyValue("ELEMENT_NAME", node.getId());
-                tmp13.setPropertyValue("DEVICE_PROPERTY", "Misalignment z");
-                tmp13.setPropertyValue("DEVICE_VALUE", Double.toString(node.getAlign().getZ()));
-                tmp13.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node)));
-                runMachineModelDevice.add(tmp13);
-
-                MachineModelDevice tmp14 = new MachineModelDevice();
-                tmp14.setPropertyValue("ELEMENT_NAME", node.getId());
-                tmp14.setPropertyValue("DEVICE_PROPERTY", "Misalignment yaw");
-                tmp14.setPropertyValue("DEVICE_VALUE", Double.toString(node.getAlign().getYaw()));
-                tmp14.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node)));
-                runMachineModelDevice.add(tmp14);
-
-                MachineModelDevice tmp15 = new MachineModelDevice();
-                tmp15.setPropertyValue("ELEMENT_NAME", node.getId());
-                tmp15.setPropertyValue("DEVICE_PROPERTY", "Misalignment pitch");
-                tmp15.setPropertyValue("DEVICE_VALUE", Double.toString(node.getAlign().getPitch()));
-                tmp15.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node)));
-                runMachineModelDevice.add(tmp15);
-
-                MachineModelDevice tmp16 = new MachineModelDevice();
-                tmp16.setPropertyValue("ELEMENT_NAME", node.getId());
-                tmp16.setPropertyValue("DEVICE_PROPERTY", "Misalignment roll");
-                tmp16.setPropertyValue("DEVICE_VALUE", Double.toString(node.getAlign().getRoll()));
-                tmp16.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node)));
-                runMachineModelDevice.add(tmp16);
+                    MachineModelDevice tmp9 = new MachineModelDevice();
+                    tmp9.setPropertyValue("ELEMENT_NAME", node.getId());
+                    tmp9.setPropertyValue("DEVICE_PROPERTY", "ADES");
+                    tmp9.setPropertyValue("DEVICE_VALUE", Double.toString(((RfCavity) node).getDfltCavAmp()));
+                    tmp9.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node)));
+                    runMachineModelDevice.add(tmp9);
+                }
+                // We use "design" values for both cases for now because we
+                // don't have access to live readbacks.
+                else {
+                }
             }
+            // Misalignments and other parameters
+            MachineModelDevice tmp10 = new MachineModelDevice();
+            tmp10.setPropertyValue("ELEMENT_NAME", node.getId());
+            tmp10.setPropertyValue("DEVICE_PROPERTY", "Aperture size");
+            tmp10.setPropertyValue("DEVICE_VALUE", Double.toString(node.getAper().getAperX()));
+            tmp10.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node)));
+            runMachineModelDevice.add(tmp10);
+
+            MachineModelDevice tmp11 = new MachineModelDevice();
+            tmp11.setPropertyValue("ELEMENT_NAME", node.getId());
+            tmp11.setPropertyValue("DEVICE_PROPERTY", "Misalignment x");
+            tmp11.setPropertyValue("DEVICE_VALUE", Double.toString(node.getAlign().getX()));
+            tmp11.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node)));
+            runMachineModelDevice.add(tmp11);
+
+            MachineModelDevice tmp12 = new MachineModelDevice();
+            tmp12.setPropertyValue("ELEMENT_NAME", node.getId());
+            tmp12.setPropertyValue("DEVICE_PROPERTY", "Misalignment y");
+            tmp12.setPropertyValue("DEVICE_VALUE", Double.toString(node.getAlign().getY()));
+            tmp12.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node)));
+            runMachineModelDevice.add(tmp12);
+
+            MachineModelDevice tmp13 = new MachineModelDevice();
+            tmp13.setPropertyValue("ELEMENT_NAME", node.getId());
+            tmp13.setPropertyValue("DEVICE_PROPERTY", "Misalignment z");
+            tmp13.setPropertyValue("DEVICE_VALUE", Double.toString(node.getAlign().getZ()));
+            tmp13.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node)));
+            runMachineModelDevice.add(tmp13);
+
+            MachineModelDevice tmp14 = new MachineModelDevice();
+            tmp14.setPropertyValue("ELEMENT_NAME", node.getId());
+            tmp14.setPropertyValue("DEVICE_PROPERTY", "Misalignment yaw");
+            tmp14.setPropertyValue("DEVICE_VALUE", Double.toString(node.getAlign().getYaw()));
+            tmp14.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node)));
+            runMachineModelDevice.add(tmp14);
+
+            MachineModelDevice tmp15 = new MachineModelDevice();
+            tmp15.setPropertyValue("ELEMENT_NAME", node.getId());
+            tmp15.setPropertyValue("DEVICE_PROPERTY", "Misalignment pitch");
+            tmp15.setPropertyValue("DEVICE_VALUE", Double.toString(node.getAlign().getPitch()));
+            tmp15.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node)));
+            runMachineModelDevice.add(tmp15);
+
+            MachineModelDevice tmp16 = new MachineModelDevice();
+            tmp16.setPropertyValue("ELEMENT_NAME", node.getId());
+            tmp16.setPropertyValue("DEVICE_PROPERTY", "Misalignment roll");
+            tmp16.setPropertyValue("DEVICE_VALUE", Double.toString(node.getAlign().getRoll()));
+            tmp16.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node)));
+            runMachineModelDevice.add(tmp16);
+
         }
 		return runMachineModelDevice.toArray(new MachineModelDevice[runMachineModelDevice.size()]);
 	}

@@ -4,8 +4,6 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
-import edu.stanford.lcls.modelmanager.dbmodel.BrowserModelListener.BrowserModelAction;
-
 public class MachineModelDeviceTableModel extends AbstractTableModel implements	BrowserModelListener {
 
 	/**
@@ -17,6 +15,7 @@ public class MachineModelDeviceTableModel extends AbstractTableModel implements	
 	private boolean editable = false;
 	
 	protected MachineModelDevice[] _modelDevices = new MachineModelDevice[0];
+	protected MachineModelDevice[] _shownModelDevices = new MachineModelDevice[0];//TODO
 
 	public MachineModelDeviceTableModel() {
 		GUI_TABLE_COLUMN_NAME = MachineModelDevice.getAllPropertyName();
@@ -27,15 +26,18 @@ public class MachineModelDeviceTableModel extends AbstractTableModel implements	
 		fireTableDataChanged();
 	}
 
-	public int getColumnCount() {
+	@Override
+    public int getColumnCount() {
 		return TABLE_SIZE;
 	}
 
-	public int getRowCount() {
+	@Override
+    public int getRowCount() {
 		return _modelDevices.length;
 	}
 
-	public Object getValueAt(int rowIndex, int columnIndex) {
+	@Override
+    public Object getValueAt(int rowIndex, int columnIndex) {
 		MachineModelDevice modelDevice = _modelDevices[rowIndex];
 		String type = MachineModelDevice.getPropertyType(columnIndex);
 		if (modelDevice.getPropertyValue(columnIndex) != null) {
@@ -45,7 +47,7 @@ public class MachineModelDeviceTableModel extends AbstractTableModel implements	
 			else if (type.equals("Double"))
 				return Double.valueOf((String)modelDevice.getPropertyValue(columnIndex));
 			else
-				return (String) modelDevice.getPropertyValue(columnIndex);
+				return modelDevice.getPropertyValue(columnIndex);
 		} else
 			return null;
 	}
@@ -79,12 +81,14 @@ public class MachineModelDeviceTableModel extends AbstractTableModel implements	
 			return String.class;
 	}
 
-	public String getColumnName(int columnIndex) {
+	@Override
+    public String getColumnName(int columnIndex) {
 		return GUI_TABLE_COLUMN_NAME.get(columnIndex);
 	}
 
 	
-	public void modelStateChanged(BrowserModel model, BrowserModelAction action) {
+	@Override
+    public void modelStateChanged(BrowserModel model, BrowserModelAction action) {
 		editable = false;
 		if (model.getStateReady()) {
 			MachineModelDevice[] machineModelDevices = model.getSelectedMachineModelDevice();
@@ -101,6 +105,26 @@ public class MachineModelDeviceTableModel extends AbstractTableModel implements	
 			setMachineModelDevice(new MachineModelDevice[0]);
 		}
 	}
+	
+	public void showAdditionalParameters(boolean show){
+	    if(show){
+	        //TODO show all
+	        System.out.println("Bljah");
+	    }else{
+	        //TODO dont show additional params
+	        System.out.println("Bljeh");
+	    }
+	    fireTableDataChanged();
+	}
+	
+	public void showFilteredData(String keyword){
+        //TODO Show only those that start with keyword
+	    System.out.println(keyword);
+        fireTableDataChanged();
+    }
+    
+
+	
 	
 	
 }
