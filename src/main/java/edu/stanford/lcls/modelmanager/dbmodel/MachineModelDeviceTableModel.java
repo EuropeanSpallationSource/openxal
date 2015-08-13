@@ -166,7 +166,6 @@ public class MachineModelDeviceTableModel extends AbstractTableModel implements	
      * @param keyword  with which we want to filter devices.
      */
     public void setFilter(String keyword){
-        keyword.toLowerCase();
-        filterKeyword = keyword;
+        filterKeyword = keyword.toLowerCase();
     }
 }
