@@ -543,12 +543,12 @@ public class DataManager {
             MachineModelDevice tmp13 = new MachineModelDevice(node.getId(),"MISZ",deviceValue,zpos);
             runMachineModelDevice.add(tmp13);
 
-            deviceValue = Double.toString(node.getAlign().getYaw());
-            zpos = df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node));//check if rotations are correctly named 
+            deviceValue = Double.toString(node.getAlign().getPitch());
+            zpos = df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node));
             MachineModelDevice tmp14 = new MachineModelDevice(node.getId(),"ROTX",deviceValue,zpos);
             runMachineModelDevice.add(tmp14);
 
-            deviceValue = Double.toString(node.getAlign().getPitch());
+            deviceValue = Double.toString(node.getAlign().getYaw());
             zpos = df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node));
             MachineModelDevice tmp15 = new MachineModelDevice(node.getId(),"ROTY",deviceValue,zpos);
             runMachineModelDevice.add(tmp15);

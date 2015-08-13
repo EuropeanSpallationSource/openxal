@@ -49,6 +49,7 @@ public class RunModel {
 	}
 
 	public Scenario getScenario() {
+	    System.out.println(scenario.getSequence().getNodeAt(0).getAlign().getX());//TEST
 		return scenario;
 	}
 

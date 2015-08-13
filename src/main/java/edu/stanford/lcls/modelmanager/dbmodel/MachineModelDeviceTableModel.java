@@ -63,7 +63,7 @@ public class MachineModelDeviceTableModel extends AbstractTableModel implements	
 		if (editable && columnIndex == 2) {
 			MachineModelDevice modelDevice = _shownModelDevices[rowIndex];
 			Object prop = modelDevice.getPropertyValue("DEVICE_PROPERTY");
-			return "B".equals(prop) || "P".equals(prop) || 	"A".equals(prop);
+			return "B".equals(prop) || "P".equals(prop) || 	"A".equals(prop) || additionalParameters.contains(prop);
 		}
 		return false;
 	}
