@@ -6,8 +6,6 @@ import java.awt.Container;
 import java.awt.GridLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -20,6 +18,8 @@ import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -43,19 +43,23 @@ public class ModelDeviceView  implements SwingConstants{
 	    Box deviceOptons = new Box(HORIZONTAL);
 	    deviceOptons.add(new JLabel("Filter: "));
 	    final JTextField deviceFilter = new JTextField();
-	    deviceFilter.addKeyListener(new KeyListener() {
+	    deviceFilter.getDocument().addDocumentListener(new DocumentListener() {
             
             @Override
-            public void keyTyped(KeyEvent e) {
-                JTextField textField = (JTextField) e.getSource();
-                String text = textField.getText() + e.getKeyChar();
-                machineModelDeviceTableModel.showFilteredData(text);
+            public void removeUpdate(DocumentEvent e) {callback();}
+            
+            @Override
+            public void insertUpdate(DocumentEvent e) {callback();}
+            
+            @Override
+            public void changedUpdate(DocumentEvent e) {callback();}
+            
+            private void callback(){
+                String text = deviceFilter.getText();
+                machineModelDeviceTableModel.setFilter(text);
+                machineModelDeviceTableModel.refresh();
             }
-            @Override
-            public void keyReleased(KeyEvent e) {}
-            @Override
-            public void keyPressed(KeyEvent e) {}
-	    });
+        });
 	    deviceFilter.setEditable(true);
 	    deviceOptons.add(deviceFilter);      
 	    final JCheckBox addidionalParametersCheckBox = new JCheckBox("Show additional parrameters",false); 
@@ -63,12 +67,8 @@ public class ModelDeviceView  implements SwingConstants{
 
             @Override
             public void itemStateChanged(ItemEvent e) {
-                final int change = e.getStateChange();
-                if (change == ItemEvent.SELECTED) {
-                   machineModelDeviceTableModel.showAdditionalParameters(true);
-                } else {
-                    machineModelDeviceTableModel.showAdditionalParameters(false);
-                }
+                machineModelDeviceTableModel.switchAdditionalParams();
+                machineModelDeviceTableModel.refresh();
             }
         });
         deviceOptons.add(addidionalParametersCheckBox);

@@ -1,5 +1,6 @@
 package edu.stanford.lcls.modelmanager.dbmodel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
@@ -13,9 +14,12 @@ public class MachineModelDeviceTableModel extends AbstractTableModel implements	
 	protected final List<String> GUI_TABLE_COLUMN_NAME;
 	static final protected int TABLE_SIZE = MachineModelDevice.getPropertySize();
 	private boolean editable = false;
+	private boolean showAdditionalParams = false;
+	private String filterKeyword;
 	
 	protected MachineModelDevice[] _modelDevices = new MachineModelDevice[0];
-	protected MachineModelDevice[] _shownModelDevices = new MachineModelDevice[0];//TODO
+	protected MachineModelDevice[] _shownModelDevices = new MachineModelDevice[0];
+    
 
 	public MachineModelDeviceTableModel() {
 		GUI_TABLE_COLUMN_NAME = MachineModelDevice.getAllPropertyName();
@@ -23,7 +27,7 @@ public class MachineModelDeviceTableModel extends AbstractTableModel implements	
 
 	public void setMachineModelDevice(MachineModelDevice[] modelDevices) {
 		_modelDevices = modelDevices == null ? new MachineModelDevice[0] : modelDevices;
-		fireTableDataChanged();
+		refresh();
 	}
 
 	@Override
@@ -33,12 +37,12 @@ public class MachineModelDeviceTableModel extends AbstractTableModel implements	
 
 	@Override
     public int getRowCount() {
-		return _modelDevices.length;
+		return _shownModelDevices.length;
 	}
 
 	@Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-		MachineModelDevice modelDevice = _modelDevices[rowIndex];
+		MachineModelDevice modelDevice = _shownModelDevices[rowIndex];
 		String type = MachineModelDevice.getPropertyType(columnIndex);
 		if (modelDevice.getPropertyValue(columnIndex) != null) {
 			if (type.equals("Long"))
@@ -56,7 +60,7 @@ public class MachineModelDeviceTableModel extends AbstractTableModel implements	
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
 		if (editable && columnIndex == 2) {
-			MachineModelDevice modelDevice = _modelDevices[rowIndex];
+			MachineModelDevice modelDevice = _shownModelDevices[rowIndex];
 			Object prop = modelDevice.getPropertyValue("DEVICE_PROPERTY");
 			return "B".equals(prop) || "P".equals(prop) || 	"A".equals(prop);
 		}
@@ -65,8 +69,9 @@ public class MachineModelDeviceTableModel extends AbstractTableModel implements	
 
 
 	@Override
+
 	public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-		MachineModelDevice modelDevice = _modelDevices[rowIndex];
+		MachineModelDevice modelDevice = _shownModelDevices[rowIndex];
 		modelDevice.setPropertyValue(columnIndex, aValue.toString());
 	}
 	
@@ -105,26 +110,63 @@ public class MachineModelDeviceTableModel extends AbstractTableModel implements	
 			setMachineModelDevice(new MachineModelDevice[0]);
 		}
 	}
-	
-	public void showAdditionalParameters(boolean show){
-	    if(show){
-	        //TODO show all
-	        System.out.println("Bljah");
-	    }else{
-	        //TODO dont show additional params
-	        System.out.println("Bljeh");
-	    }
-	    fireTableDataChanged();
-	}
-	
-	public void showFilteredData(String keyword){
-        //TODO Show only those that start with keyword
-	    System.out.println(keyword);
+    
+    /**
+     * Convenience method for refreshing devices view.
+     */
+    public void refresh() {
+        if (showAdditionalParams && (filterKeyword == null || filterKeyword.length() < 1)) {
+            _shownModelDevices = _modelDevices;
+        } else {
+            List<MachineModelDevice> shownDevices = new ArrayList<MachineModelDevice>();// TODO database doesen't have
+                                                                                        // additional parameters
+            for (MachineModelDevice device : _modelDevices) {
+                if (!showAdditionalParams) {
+                    switch ((String) device.getPropertyValue("DEVICE_PROPERTY")) {
+                    case "Aperture size":
+                    case "Misalignment x":
+                    case "Misalignment y":
+                    case "Misalignment z":
+                    case "Misalignment yaw":
+                    case "Misalignment pitch":
+                    case "Misalignment roll":
+                        break;
+                    default:
+                        if (filterKeyword == null
+                                || filterKeyword.length() < 1
+                                || device.getPropertyValue("ELEMENT_NAME").toString().toLowerCase()
+                                        .startsWith(filterKeyword)) {
+                            shownDevices.add(device);
+                        } else {
+                            if (filterKeyword == null
+                                    || filterKeyword.length() < 1
+                                    || device.getPropertyValue("ELEMENT_NAME").toString().toLowerCase()
+                                            .startsWith(filterKeyword)) {
+                                shownDevices.add(device);
+                            }
+                        }
+
+                    }
+                }
+            }
+            _shownModelDevices = shownDevices.toArray(new MachineModelDevice[shownDevices.size()]);
+        }
         fireTableDataChanged();
     }
-    
 
-	
-	
-	
+    /**
+     * Method for switching boolean for showing additional parameters.
+     */
+    public void switchAdditionalParams(){
+        showAdditionalParams = !showAdditionalParams;
+    }
+    
+    /**
+     * Method for receiving filter keyword.
+     * @param keyword  with which we want to filter devices.
+     */
+    public void setFilter(String keyword){
+        keyword.toLowerCase();
+        filterKeyword = keyword;
+    }
 }

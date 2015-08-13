@@ -31,7 +31,7 @@ public class BrowserModel {
 
 
 	final protected MessageCenter MESSAGE_CENTER;
-	private final BrowserModelListener EVENT_PROXY;
+	final protected BrowserModelListener EVENT_PROXY;
 	final static public SimpleDateFormat machineModelDateFormat = new SimpleDateFormat(
 			"yyyy-MM-dd HH:mm:ss");
 
@@ -638,9 +638,5 @@ public class BrowserModel {
 		runState = RunState.NONE;
 		EVENT_PROXY.modelStateChanged(this, BrowserModelListener.BrowserModelAction.RUN_DATA_RESET);
 	}
-
-    public BrowserModelListener getEVENT_PROXY() {
-        return EVENT_PROXY;
-    }
 
 }
