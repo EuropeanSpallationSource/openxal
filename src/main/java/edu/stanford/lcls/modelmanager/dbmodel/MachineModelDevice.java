@@ -35,6 +35,21 @@ public class MachineModelDevice {
 	public MachineModelDevice() {
 		this(Arrays.asList(new Object[PROPERTY_SIZE]));
 	}
+	
+	/**
+	 * Convenience constructor setting all parameters.
+	 * @param elementName String name of the element
+	 * @param deviceProperty String name of device property
+	 * @param deviceValue String of a double device value
+	 * @param zpos String of a double device position
+	 */
+	public MachineModelDevice(String elementName, String deviceProperty, String deviceValue, String zpos){//CHECK should this be  objects ?
+	    this();
+	    this.setPropertyValue("ELEMENT_NAME", elementName );
+	    this.setPropertyValue("DEVICE_PROPERTY", deviceProperty);
+	    this.setPropertyValue("DEVICE_VALUE", deviceValue);
+	    this.setPropertyValue("ZPOS", zpos);
+	}
 
 	//About propertyName
 	public static String getPropertyName(int index) {

@@ -441,51 +441,45 @@ public class DataManager {
 		Accelerator acc = seq.getAccelerator();
 		List<AcceleratorNode> allNodes = seq.getAllNodes();
 		Iterator<AcceleratorNode> it = allNodes.iterator();
+		//Local variables for better code readability
+		String deviceValue;
+		String zpos;
+		//Going through all accelerator nodes
 		while (it.hasNext()) {
 			AcceleratorNode node = it.next();
 			String runMode = scenario.getSynchronizationMode();
 			// for magnets
 			if (node instanceof Electromagnet) {
 				try {
-					MachineModelDevice tmp1 = new MachineModelDevice();
-					tmp1.setPropertyValue("ELEMENT_NAME", node.getId());
-					tmp1.setPropertyValue("DEVICE_PROPERTY", "B");
-					tmp1.setPropertyValue("DEVICE_VALUE", scenario.propertiesForNode(node)
-									.get(ElectromagnetPropertyAccessor.PROPERTY_FIELD).toString());
-					tmp1.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node)));
+				    deviceValue = scenario.propertiesForNode(node).get(ElectromagnetPropertyAccessor.PROPERTY_FIELD).toString();
+				    zpos = df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node));
+					MachineModelDevice tmp1 = new MachineModelDevice(node.getId(),"B",deviceValue,zpos);
 					runMachineModelDevice.add(tmp1);
 				} catch (SynchronizationException e) {
 					Message.error("Model Synchronization Exception: Cannot synchronize device data for model run.", true);
 					e.printStackTrace();
 				}
 				if (Scenario.SYNC_MODE_DESIGN.equals(runMode)) {
-					MachineModelDevice tmp2 = new MachineModelDevice();
-					tmp2.setPropertyValue("ELEMENT_NAME", node.getId());
-					tmp2.setPropertyValue("DEVICE_PROPERTY", "BACT");
-					tmp2.setPropertyValue("DEVICE_VALUE", Double.toString(((Electromagnet) node).getDesignField()));
-					tmp2.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node)));
+					
+				    deviceValue = Double.toString(((Electromagnet) node).getDesignField());
+                    zpos = df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node));
+					MachineModelDevice tmp2 = new MachineModelDevice(node.getId(),"BACT",deviceValue,zpos);
 					runMachineModelDevice.add(tmp2);
 					
-					MachineModelDevice tmp3 = new MachineModelDevice();
-					tmp3.setPropertyValue("ELEMENT_NAME", node.getId());
-					tmp3.setPropertyValue("DEVICE_PROPERTY", "BDES");
-					tmp3.setPropertyValue("DEVICE_VALUE", Double.toString(((Electromagnet) node).getDesignField()));
-					tmp3.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node)));
+					deviceValue = Double.toString(((Electromagnet) node).getDesignField());
+                    zpos = df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node));
+					MachineModelDevice tmp3 = new MachineModelDevice(node.getId(),"BDES",deviceValue,zpos);
 					runMachineModelDevice.add(tmp3);
 				} else {
 					try {
-						MachineModelDevice tmp4 = new MachineModelDevice();
-						tmp4.setPropertyValue("ELEMENT_NAME", node.getId());
-						tmp4.setPropertyValue("DEVICE_PROPERTY", "BACT");
-						tmp4.setPropertyValue("DEVICE_VALUE", Double.toString(((Electromagnet) node).getFieldReadback()));
-						tmp4.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node)));
+						deviceValue = Double.toString(((Electromagnet) node).getFieldReadback());
+	                    zpos = df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node));
+						MachineModelDevice tmp4 = new MachineModelDevice(node.getId(),"BACT",deviceValue,zpos);
 						runMachineModelDevice.add(tmp4);
 						
-						MachineModelDevice tmp5 = new MachineModelDevice();
-						tmp5.setPropertyValue("ELEMENT_NAME", node.getId());
-						tmp5.setPropertyValue("DEVICE_PROPERTY", "BDES");
-						tmp5.setPropertyValue("DEVICE_VALUE", Double.toString(((Electromagnet) node).getFieldSetting()));
-						tmp5.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node)));
+						deviceValue = Double.toString(((Electromagnet) node).getFieldSetting());
+	                    zpos = df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node)); 
+	                    MachineModelDevice tmp5 = new MachineModelDevice(node.getId(),"BDES",deviceValue,zpos);
 						runMachineModelDevice.add(tmp5);
 					} catch (ConnectionException e) {
 						Message.error("Connection Exception: Cannot connect to magnet PV for " + ((Electromagnet) node).getEId(), true);
@@ -499,38 +493,28 @@ public class DataManager {
 			// for RF cavities
 			else if (node instanceof RfCavity) {
 				try {
-					MachineModelDevice tmp6 = new MachineModelDevice();
-					tmp6.setPropertyValue("ELEMENT_NAME", node.getId());
-					tmp6.setPropertyValue("DEVICE_PROPERTY", "P");
-					tmp6.setPropertyValue("DEVICE_VALUE", scenario.propertiesForNode(node).get(
-							RfCavityPropertyAccessor.PROPERTY_PHASE).toString());
-					tmp6.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node)));
+					deviceValue = scenario.propertiesForNode(node).get(RfCavityPropertyAccessor.PROPERTY_PHASE).toString();
+                    zpos = df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node)); 
+					MachineModelDevice tmp6 = new MachineModelDevice(node.getId(),"P",deviceValue,zpos);
 					runMachineModelDevice.add(tmp6);
 					
-					MachineModelDevice tmp7 = new MachineModelDevice();
-					tmp7.setPropertyValue("ELEMENT_NAME", node.getId());
-					tmp7.setPropertyValue("DEVICE_PROPERTY", "A");
-					tmp7.setPropertyValue("DEVICE_VALUE", scenario.propertiesForNode(node)
-							.get(RfCavityPropertyAccessor.PROPERTY_AMPLITUDE).toString());
-					tmp7.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node)));
+					deviceValue = scenario.propertiesForNode(node).get(RfCavityPropertyAccessor.PROPERTY_AMPLITUDE).toString();
+                    zpos = df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node)); 
+					MachineModelDevice tmp7 = new MachineModelDevice(node.getId(),"A",deviceValue,zpos);
 					runMachineModelDevice.add(tmp7);
 				} catch (SynchronizationException e) {
 					Message.error("Model Synchronization Exception: Cannot synchronize device data for model run.", true);
 					e.printStackTrace();
 				}
 				if (Scenario.SYNC_MODE_DESIGN.equals("DESIGN")) {
-					MachineModelDevice tmp8 = new MachineModelDevice();
-					tmp8.setPropertyValue("ELEMENT_NAME", node.getId());
-					tmp8.setPropertyValue("DEVICE_PROPERTY", "PDES");
-					tmp8.setPropertyValue("DEVICE_VALUE", Double.toString(((RfCavity) node).getDfltAvgCavPhase()));
-					tmp8.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node)));
+					deviceValue = Double.toString(((RfCavity) node).getDfltAvgCavPhase());
+                    zpos = df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node));
+					MachineModelDevice tmp8 = new MachineModelDevice(node.getId(),"PDES",deviceValue,zpos);
 					runMachineModelDevice.add(tmp8);
 
-                    MachineModelDevice tmp9 = new MachineModelDevice();
-                    tmp9.setPropertyValue("ELEMENT_NAME", node.getId());
-                    tmp9.setPropertyValue("DEVICE_PROPERTY", "ADES");
-                    tmp9.setPropertyValue("DEVICE_VALUE", Double.toString(((RfCavity) node).getDfltCavAmp()));
-                    tmp9.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node)));
+                    deviceValue = Double.toString(((RfCavity) node).getDfltCavAmp());
+                    zpos = df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node)); 
+                    MachineModelDevice tmp9 = new MachineModelDevice(node.getId(),"ADES",deviceValue,zpos);
                     runMachineModelDevice.add(tmp9);
                 }
                 // We use "design" values for both cases for now because we
@@ -539,53 +523,39 @@ public class DataManager {
                 }
             }
             // Misalignments and other parameters
-            MachineModelDevice tmp10 = new MachineModelDevice();
-            tmp10.setPropertyValue("ELEMENT_NAME", node.getId());
-            tmp10.setPropertyValue("DEVICE_PROPERTY", "Aperture size");
-            tmp10.setPropertyValue("DEVICE_VALUE", Double.toString(node.getAper().getAperX()));
-            tmp10.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node)));
+            deviceValue = Double.toString(node.getAper().getAperX());
+            zpos = df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node)); 
+            MachineModelDevice tmp10 = new MachineModelDevice(node.getId(),"APRX",deviceValue,zpos);
             runMachineModelDevice.add(tmp10);
 
-            MachineModelDevice tmp11 = new MachineModelDevice();
-            tmp11.setPropertyValue("ELEMENT_NAME", node.getId());
-            tmp11.setPropertyValue("DEVICE_PROPERTY", "Misalignment x");
-            tmp11.setPropertyValue("DEVICE_VALUE", Double.toString(node.getAlign().getX()));
-            tmp11.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node)));
+            deviceValue = Double.toString(node.getAlign().getX());
+            zpos = df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node)); 
+            MachineModelDevice tmp11 = new MachineModelDevice(node.getId(),"MISX",deviceValue,zpos);
             runMachineModelDevice.add(tmp11);
 
-            MachineModelDevice tmp12 = new MachineModelDevice();
-            tmp12.setPropertyValue("ELEMENT_NAME", node.getId());
-            tmp12.setPropertyValue("DEVICE_PROPERTY", "Misalignment y");
-            tmp12.setPropertyValue("DEVICE_VALUE", Double.toString(node.getAlign().getY()));
-            tmp12.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node)));
+            deviceValue = Double.toString(node.getAlign().getY());
+            zpos = df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node)); 
+            MachineModelDevice tmp12 = new MachineModelDevice(node.getId(),"MISY",deviceValue,zpos);
             runMachineModelDevice.add(tmp12);
 
-            MachineModelDevice tmp13 = new MachineModelDevice();
-            tmp13.setPropertyValue("ELEMENT_NAME", node.getId());
-            tmp13.setPropertyValue("DEVICE_PROPERTY", "Misalignment z");
-            tmp13.setPropertyValue("DEVICE_VALUE", Double.toString(node.getAlign().getZ()));
-            tmp13.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node)));
+            deviceValue = Double.toString(node.getAlign().getZ());
+            zpos = df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node));
+            MachineModelDevice tmp13 = new MachineModelDevice(node.getId(),"MISZ",deviceValue,zpos);
             runMachineModelDevice.add(tmp13);
 
-            MachineModelDevice tmp14 = new MachineModelDevice();
-            tmp14.setPropertyValue("ELEMENT_NAME", node.getId());
-            tmp14.setPropertyValue("DEVICE_PROPERTY", "Misalignment yaw");
-            tmp14.setPropertyValue("DEVICE_VALUE", Double.toString(node.getAlign().getYaw()));
-            tmp14.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node)));
+            deviceValue = Double.toString(node.getAlign().getYaw());
+            zpos = df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node));//check if rotations are correctly named 
+            MachineModelDevice tmp14 = new MachineModelDevice(node.getId(),"ROTX",deviceValue,zpos);
             runMachineModelDevice.add(tmp14);
 
-            MachineModelDevice tmp15 = new MachineModelDevice();
-            tmp15.setPropertyValue("ELEMENT_NAME", node.getId());
-            tmp15.setPropertyValue("DEVICE_PROPERTY", "Misalignment pitch");
-            tmp15.setPropertyValue("DEVICE_VALUE", Double.toString(node.getAlign().getPitch()));
-            tmp15.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node)));
+            deviceValue = Double.toString(node.getAlign().getPitch());
+            zpos = df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node));
+            MachineModelDevice tmp15 = new MachineModelDevice(node.getId(),"ROTY",deviceValue,zpos);
             runMachineModelDevice.add(tmp15);
 
-            MachineModelDevice tmp16 = new MachineModelDevice();
-            tmp16.setPropertyValue("ELEMENT_NAME", node.getId());
-            tmp16.setPropertyValue("DEVICE_PROPERTY", "Misalignment roll");
-            tmp16.setPropertyValue("DEVICE_VALUE", Double.toString(node.getAlign().getRoll()));
-            tmp16.setPropertyValue("ZPOS", df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node)));
+            deviceValue = Double.toString(node.getAlign().getRoll());
+            zpos = df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node));
+            MachineModelDevice tmp16 = new MachineModelDevice(node.getId(),"ROTZ",deviceValue,zpos);
             runMachineModelDevice.add(tmp16);
 
         }

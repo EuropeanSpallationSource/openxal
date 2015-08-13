@@ -1,6 +1,7 @@
 package edu.stanford.lcls.modelmanager.dbmodel;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
@@ -16,7 +17,7 @@ public class MachineModelDeviceTableModel extends AbstractTableModel implements	
 	private boolean editable = false;
 	private boolean showAdditionalParams = false;
 	private String filterKeyword;
-	
+	private final List<String> additionalParameters = Arrays.asList("APRX","MISX","MISY","MISZ","ROTX","ROTY","ROTZ");
 	protected MachineModelDevice[] _modelDevices = new MachineModelDevice[0];
 	protected MachineModelDevice[] _shownModelDevices = new MachineModelDevice[0];
     
@@ -118,36 +119,20 @@ public class MachineModelDeviceTableModel extends AbstractTableModel implements	
         if (showAdditionalParams && (filterKeyword == null || filterKeyword.length() < 1)) {
             _shownModelDevices = _modelDevices;
         } else {
-            List<MachineModelDevice> shownDevices = new ArrayList<MachineModelDevice>();// TODO database doesen't have
-                                                                                        // additional parameters
+            List<MachineModelDevice> shownDevices = new ArrayList<MachineModelDevice>();
             for (MachineModelDevice device : _modelDevices) {
                 if (!showAdditionalParams) {
-                    switch ((String) device.getPropertyValue("DEVICE_PROPERTY")) {
-                    case "Aperture size":
-                    case "Misalignment x":
-                    case "Misalignment y":
-                    case "Misalignment z":
-                    case "Misalignment yaw":
-                    case "Misalignment pitch":
-                    case "Misalignment roll":
-                        break;
-                    default:
-                        if (filterKeyword == null
-                                || filterKeyword.length() < 1
-                                || device.getPropertyValue("ELEMENT_NAME").toString().toLowerCase()
-                                        .startsWith(filterKeyword)) {
-                            shownDevices.add(device);
-                        } else {
-                            if (filterKeyword == null
-                                    || filterKeyword.length() < 1
-                                    || device.getPropertyValue("ELEMENT_NAME").toString().toLowerCase()
-                                            .startsWith(filterKeyword)) {
-                                shownDevices.add(device);
-                            }
-                        }
-
+                    if (additionalParameters.contains(device.getPropertyValue("DEVICE_PROPERTY"))) {//if parameter is one of the additional we do not add it
+                        continue;
                     }
                 }
+                if (filterKeyword != null && filterKeyword.length() > 0) {
+                    if (!device.getPropertyValue("ELEMENT_NAME").toString().toLowerCase().startsWith(filterKeyword)) {
+                        continue
+                        ;
+                    }
+                }
+                shownDevices.add(device);
             }
             _shownModelDevices = shownDevices.toArray(new MachineModelDevice[shownDevices.size()]);
         }
