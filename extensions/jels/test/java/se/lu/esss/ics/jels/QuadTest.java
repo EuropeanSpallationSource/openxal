@@ -433,6 +433,7 @@ public class QuadTest extends SingleElementTest {
 			TWMean = new double[] {
 				-0.0917743, -5.97537, 0.169973, 7.85048, -0.000587091, 0 
 			};
+			CMerrTolerance = 1e-4;
 		}}});		
 		
 		return tests;

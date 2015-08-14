@@ -70,9 +70,7 @@ public abstract class Element implements IElement {
     //position in s (m)
     /** This is the center position of the element with the lattice - CKA */
     private double      dblLatPos;
-
-    private double      dblLatPivotPos;
-
+    
     
     //sako closeElements (for fringe field calculations)
     /** 
@@ -190,8 +188,7 @@ public abstract class Element implements IElement {
         
     	setId( strElemId != null ? strElemId : strSmfId);
     	setHardwareNodeId(strSmfId);
-		setPosition(latticeElement.getCenter());
-		setPivotPosition(latticeElement.getNode().getPosition());
+		setPosition(latticeElement.getCenter());	
 		
 		AlignmentBucket alignmentBucket = latticeElement.getNode().getAlign(); 
 		setAlignX(alignmentBucket.getX());
@@ -243,18 +240,7 @@ public abstract class Element implements IElement {
      */
     public void setPosition(double dblPos) {
         dblLatPos = dblPos;
-    }
-
-    /**
-     * Set the pivot position of the element with the containing
-     * lattice.
-     * 
-     * @param dblPivotPos    pivot position along the design trajectory (meters) 
-     */
-    public void setPivotPosition(double dblPivotPos) {
-        dblLatPivotPos = dblPivotPos;
-    }
-    
+    }    
     
     /**
      * Set the alignment parameters all at once.
@@ -348,7 +334,6 @@ public abstract class Element implements IElement {
      */
     
     
-    
     /**
      * <h2>Add Displacement Error to Transfer Matrix</h2>
      * <p>
@@ -406,69 +391,6 @@ public abstract class Element implements IElement {
         return matPhi;
 	}
      
-    /**
-	 * <h2>Add Rotation Error to Transfer Matrix</h2>
-	 * <p>
-	 * Method to add the effects of a spatial rotation to the
-	 * beamline element represented by the given 
-	 * transfer matrix.  The returned matrix is the
-	 * original transfer matrix conjugated by the rotation
-	 * matrix.
-	 * 
-	 * @param   matPhi      transfer matrix <b>&Phi;</b> to be processed
-	 * 
-	 * @return  transfer matrix <b>&Phi;</b> after applying rotations
-	 * 
-	 * @author  Ivo List
-	 */
-	protected PhaseMatrix applyRotationError(PhaseMatrix matPhi, double start, double len) {
-		double px = getPhiX();
-	    double py = getPhiY();
-	    double pz = getPhiZ();
-	    PhaseMatrix T = null, Ti = null;
-	    	    
-	    if (px != 0. || py != 0.) {
-	    	T = PhaseMatrix.identity();
-	    	Ti = PhaseMatrix.identity();
-	    	
-	    	if (len > 0.) {
-	    		T = thickPitchAndYaw(T, px, py, start - getPivotPosition());
-	    		Ti = thickPitchAndYaw(Ti, -px, -py, start - getPivotPosition() + len);
-	    	}
-	    	
-	    	T = thinPitchAndYaw(T, px, py);
-	    	Ti = thinPitchAndYaw(Ti, -px, -py);
-	    }
-	    
-	    if (pz != 0.) {
-	    	if (T == null || Ti == null) {
-	    		T = PhaseMatrix.identity();
-		    	Ti = PhaseMatrix.identity();	
-	    	}
-	    	PhaseMatrix R = PhaseMatrix.rotationProduct(R3x3.newRotationZ(-pz));
-	    	T = R.times(T);
-	    	Ti  = Ti.times(R.transpose());	    	
-	    }
-	    
-	    if (T != null) matPhi = Ti.times(matPhi).times(T);
-	    return matPhi;
-	}
-
-	// Pitch and yaw of thick elements
-	protected PhaseMatrix thickPitchAndYaw(PhaseMatrix T, double px, double py, double dist) {	 	
-    	T.setElem(IND.X,IND.HOM, -px * dist);	    	
-    	T.setElem(IND.Y,IND.HOM, -py * dist);
-    	return T;
-	}
-
-	// Shift in momentum space for pitch and yaw
-	protected PhaseMatrix thinPitchAndYaw(PhaseMatrix T, double px, double py) {
-    	T.setElem(IND.Xp,IND.HOM, -px);	    	
-    	T.setElem(IND.Yp,IND.HOM, -py);	    	
-    	
-	    return T;
-	}
-    
     /**
      * <p>This method is intended to return the location of the probe within
      * the current element.  Actually, we compute and return the distance of 
@@ -701,16 +623,6 @@ public abstract class Element implements IElement {
     }
 
     /**
-     * Return the pivot position of the element along the design trajectory.
-     * This is the pivot position with the containing lattice.
-     * 
-     * @return  pivot position of the element (meters)
-     */
-    public double getPivotPosition() {
-        return dblLatPivotPos;
-    }
-    
-    /**
      * Return the list of nearest adjacent elements to this element.
      * THis is used primarily in permenant magnet quadrupole considerations.
      * 
@@ -799,6 +711,5 @@ public abstract class Element implements IElement {
         os.println("  element type       : " + this.getType() );
         os.println("  element UID        : " + this.getUID() );
         os.println("  element length     : " + this.getLength() );
-    };
-
-};
+    }
+}
