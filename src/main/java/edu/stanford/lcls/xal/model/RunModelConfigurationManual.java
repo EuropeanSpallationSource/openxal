@@ -31,12 +31,16 @@ public class RunModelConfigurationManual extends RunModelConfiguration {
 		    final AcceleratorNode node = scenario.getSequence().getNodeWithId(nodeId);
 			final Object prop = dev.getPropertyValue("DEVICE_PROPERTY");
 			final double val = Double.parseDouble((String)dev.getPropertyValue("DEVICE_VALUE"));
+			
 			if ("B".equals(prop)) {			
 				scenario.setModelInput(node, ElectromagnetPropertyAccessor.PROPERTY_FIELD, val);
+				
 			} else if ("P".equals(prop)) {				
 				scenario.setModelInput(node, RfCavityPropertyAccessor.PROPERTY_PHASE, val);
+				
 			} else if ("A".equals(prop)) {				
 				scenario.setModelInput(node, RfCavityPropertyAccessor.PROPERTY_AMPLITUDE, val);
+				
 			} else if(MachineModelDeviceTableModel.additionalParameters.contains(prop)){
                 switch(MachineModelDeviceTableModel.additionalParameters.indexOf(prop)){
                 case 0:
