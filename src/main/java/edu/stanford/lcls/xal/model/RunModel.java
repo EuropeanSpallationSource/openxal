@@ -32,6 +32,11 @@ public class RunModel {
 	}
 
 	public void run(RunModelConfiguration config) throws ModelException {
+	    try {
+            scenario = Scenario.newScenarioFor(getSequence()); //, elementMapping);
+        } catch (ModelException e) {
+            e.printStackTrace();
+        }
 		config.initialize(scenario);
 		
 		scenario.setProbe(probe.copy());

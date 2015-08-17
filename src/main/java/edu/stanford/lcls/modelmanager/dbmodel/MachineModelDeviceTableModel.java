@@ -17,7 +17,7 @@ public class MachineModelDeviceTableModel extends AbstractTableModel implements	
 	private boolean editable = false;
 	private boolean showAdditionalParams = false;
 	private String filterKeyword;
-	private final List<String> additionalParameters = Arrays.asList("APRX","MISX","MISY","MISZ","ROTX","ROTY","ROTZ");
+	public final static List<String> additionalParameters = Arrays.asList("APRX","MISX","MISY","MISZ","ROTX","ROTY","ROTZ");
 	protected MachineModelDevice[] _modelDevices = new MachineModelDevice[0];
 	protected MachineModelDevice[] _shownModelDevices = new MachineModelDevice[0];
     
