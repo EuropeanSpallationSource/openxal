@@ -557,6 +557,11 @@ public class DataManager {
             zpos = df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node));
             MachineModelDevice tmp16 = new MachineModelDevice(node.getId(),"ROTZ",deviceValue,zpos);
             runMachineModelDevice.add(tmp16);
+            
+            deviceValue = String.valueOf(node.getStatus());
+            zpos = df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node));
+            MachineModelDevice tmp17 = new MachineModelDevice(node.getId(),"ENBL",deviceValue,zpos);
+            runMachineModelDevice.add(tmp17);         
 
         }
 		return runMachineModelDevice.toArray(new MachineModelDevice[runMachineModelDevice.size()]);
@@ -632,7 +637,7 @@ public class DataManager {
 				stmt3.setString(3, (String)runMachineModelDevice[i].getPropertyValue("ELEMENT_NAME"));
 				stmt3.setNull(4, Types.INTEGER);			
 				stmt3.setString(5, (String)runMachineModelDevice[i].getPropertyValue("DEVICE_PROPERTY"));
-				stmt3.setDouble(6, Double.parseDouble((String)runMachineModelDevice[i].getPropertyValue("DEVICE_VALUE")));
+				stmt3.setString(6, ((String)runMachineModelDevice[i].getPropertyValue("DEVICE_VALUE")));//TODO check this and change apropirately
 				stmt3.setDouble(7, Double.parseDouble((String)runMachineModelDevice[i].getPropertyValue("ZPOS")));			
 				stmt3.addBatch();
 			}

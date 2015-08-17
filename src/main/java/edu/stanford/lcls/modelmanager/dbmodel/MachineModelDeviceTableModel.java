@@ -17,7 +17,7 @@ public class MachineModelDeviceTableModel extends AbstractTableModel implements	
 	private boolean editable = false;
 	private boolean showAdditionalParams = false;
 	private String filterKeyword;
-	public final static List<String> additionalParameters = Arrays.asList("APRX","MISX","MISY","MISZ","ROTX","ROTY","ROTZ");
+	public final static List<String> additionalParameters = Arrays.asList("APRX","MISX","MISY","MISZ","ROTX","ROTY","ROTZ","ENBL");
 	protected MachineModelDevice[] _modelDevices = new MachineModelDevice[0];
 	protected MachineModelDevice[] _shownModelDevices = new MachineModelDevice[0];
     
@@ -42,15 +42,17 @@ public class MachineModelDeviceTableModel extends AbstractTableModel implements	
 	}
 
 	@Override
-    public Object getValueAt(int rowIndex, int columnIndex) {
+    public Object getValueAt(int rowIndex, int columnIndex) {//TODO check and set apropirately
 		MachineModelDevice modelDevice = _shownModelDevices[rowIndex];
-		String type = MachineModelDevice.getPropertyType(columnIndex);
+		String type = modelDevice.getPropertyClass(columnIndex);
 		if (modelDevice.getPropertyValue(columnIndex) != null) {
 			if (type.equals("Long"))
 				return Long.valueOf((String) modelDevice
 						.getPropertyValue(columnIndex));
 			else if (type.equals("Double"))
 				return Double.valueOf((String)modelDevice.getPropertyValue(columnIndex));
+			else if(type.equals("Boolean"))
+			    return Boolean.valueOf((String)modelDevice.getPropertyValue(columnIndex));
 			else
 				return modelDevice.getPropertyValue(columnIndex);
 		} else
@@ -77,12 +79,12 @@ public class MachineModelDeviceTableModel extends AbstractTableModel implements	
 	}
 	
 	@Override
-	public Class<?> getColumnClass(int columnIndex) {
+	public Class<?> getColumnClass(int columnIndex) {//TODO check and set apropirately
 		String type = MachineModelDevice.getPropertyType(columnIndex);
 		if (type.equals("Long")) 
 			return Long.class;
-		else if (type.equals("Double"))
-			return Double.class; 
+		else if (type.equals("Object"))
+			return Object.class; 
 		else 
 			return String.class;
 	}

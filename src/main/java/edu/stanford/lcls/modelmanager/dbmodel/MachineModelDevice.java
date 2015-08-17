@@ -16,7 +16,7 @@ public class MachineModelDevice {
 	static {
 		PROPERTY_NAME = Arrays.asList(new String[] {
 				"ELEMENT_NAME", "DEVICE_PROPERTY", "DEVICE_VALUE", "ZPOS" });
-		propertyType = Arrays.asList(new String[] { "String", "String", "Double", "Double" });
+		propertyType = Arrays.asList(new String[] { "String", "String", "Object", "Double" });//TODO check and set apropirately
 		PROPERTY_SIZE = PROPERTY_NAME.size();
 	}
 	
@@ -43,7 +43,7 @@ public class MachineModelDevice {
 	 * @param deviceValue String of a double device value
 	 * @param zpos String of a double device position
 	 */
-	public MachineModelDevice(String elementName, String deviceProperty, String deviceValue, String zpos){//CHECK should this be  objects ?
+	public MachineModelDevice(String elementName, String deviceProperty, String deviceValue, String zpos){
 	    this();
 	    this.setPropertyValue("ELEMENT_NAME", elementName );
 	    this.setPropertyValue("DEVICE_PROPERTY", deviceProperty);
@@ -63,6 +63,14 @@ public class MachineModelDevice {
 	//About propertyType
 	public static String getPropertyType(int index) {
 		return propertyType.get(index);
+	}
+	
+	public String getPropertyClass(int index){//TODO check and set apropirately
+        if("ENBL".equals(getPropertyValue(1)) && index == 2){
+            return "Boolean";
+        }
+	    return getPropertyType(index);
+	    
 	}
 
 	public static String getPropertyType(String propertyName) {
