@@ -79,11 +79,11 @@ public class MachineModelDeviceTableModel extends AbstractTableModel implements	
 	}
 	
 	@Override
-	public Class<?> getColumnClass(int columnIndex) {//TODO check and set apropirately
+	public Class<?> getColumnClass(int columnIndex) {
 		String type = MachineModelDevice.getPropertyType(columnIndex);
 		if (type.equals("Long")) 
 			return Long.class;
-		else if (type.equals("Object"))
+		else if (type.equals("Double"))//TODO check and set apropirately
 			return Object.class; 
 		else 
 			return String.class;

@@ -71,6 +71,8 @@
 			<column attribute="ELEMENT_NAME" column="ELEMENT_NAME"/>
 			<column attribute="DEVICE_PROPERTY" column="DEVICE_PROPERTY"/>
 			<column attribute="DEVICE_VALUE" column="DEVICE_VALUE"/>
+			<column attribute="INITIAL_VALUE" column="INITIAL_VALUE"/>
+			<column attribute="UNITS" column="UNITS"/>
 			<column attribute="ZPOS" column="ZPOS"/>
 		</dbtable>
 	</persistentStore>

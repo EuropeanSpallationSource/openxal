@@ -14,8 +14,8 @@ public class MachineModelDeviceTable {
 	protected final String SCHEMA_NAME;
 	protected final String TABLE_NAME;
 	protected final List<String> DB_TABLE_COLUMN_NAME;
-	static protected final String[] _TABLE_COLUMN_NAME = {"ELEMENT_NAME", "DEVICE_PROPERTY", "DEVICE_VALUE", "ZPOS"};
-	static final private int TABLE_SIZE = _TABLE_COLUMN_NAME.length; // 4
+	static protected final String[] _TABLE_COLUMN_NAME = {"ELEMENT_NAME", "DEVICE_PROPERTY", "DEVICE_VALUE","INITIAL_VALUE", "UNITS", "ZPOS" };
+	static final private int TABLE_SIZE = _TABLE_COLUMN_NAME.length; // 6
 
 	/** Constructor */
 	public MachineModelDeviceTable(final DBTableConfiguration configuration) {
@@ -44,7 +44,7 @@ public class MachineModelDeviceTable {
 					"E.\"INDEX_SLICE_CHK\" = 0 AND " +
 					"D.\"LCLS_ELEMENTS_ELEMENT_ID\" = E.\"LCLS_ELEMENTS_ELEMENT_ID\" " + // TODO OPENXAL Oracle's outer joins (+) " +
 					"ORDER BY E.\"ORDINAL\", D.\"DEVICE_PROPERTY\"");*/
-			final PreparedStatement queryStatement = connection.prepareStatement("SELECT D.\"ELEMENT_NAME\", D.\"DEVICE_PROPERTY\", D.\"DEVICE_VALUE\", D.\"ZPOS\" " +
+			final PreparedStatement queryStatement = connection.prepareStatement("SELECT D.\"ELEMENT_NAME\", D.\"DEVICE_PROPERTY\", D.\"DEVICE_VALUE\", D.\"INITIAL_VALUE\",D.\"UNITS\", D.\"ZPOS\" " +
 					"FROM \"MACHINE_MODEL\".\"MODEL_DEVICES\" D " +
 					"WHERE D.\"RUNS_ID\" = ? ");
 			queryStatement.setLong(1, id);
