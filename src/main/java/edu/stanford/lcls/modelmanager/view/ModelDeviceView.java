@@ -23,8 +23,6 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableCellRenderer;
 
 import edu.stanford.lcls.modelmanager.dbmodel.BrowserModel;
 import edu.stanford.lcls.modelmanager.dbmodel.MachineModelDeviceTableModel;
@@ -64,7 +62,7 @@ public class ModelDeviceView  implements SwingConstants{
         });
 	    deviceFilter.setEditable(true);
 	    deviceOptons.add(deviceFilter);      
-	    final JCheckBox addidionalParametersCheckBox = new JCheckBox("Show additional parrameters",false); 
+	    final JCheckBox addidionalParametersCheckBox = new JCheckBox("Show additional parameters",false); 
         addidionalParametersCheckBox.addItemListener(new ItemListener() {
 
             @Override
@@ -78,24 +76,24 @@ public class ModelDeviceView  implements SwingConstants{
 		
 		Box tableBox = new Box(BoxLayout.Y_AXIS);
 		_model.addBrowserModelListener(machineModelDeviceTableModel);
-		deviceTable = new JTable(machineModelDeviceTableModel){//Setting cell renderer and editor for some cells manually.
-		    @Override
-            public TableCellRenderer getCellRenderer(int row, int column) {
-		        if(column == 2){
-		            Class cellClass = getModel().getValueAt(row, column).getClass();
-		            return getDefaultRenderer(cellClass);
-		        }
-		        return super.getCellRenderer(row, column);
-            }
-            @Override
-            public TableCellEditor getCellEditor(int row, int column) {
-                if(column == 2){
-                    Class cellClass = getModel().getValueAt(row, column).getClass();
-                    return getDefaultEditor(cellClass);
-                }
-                return super.getCellEditor(row, column);
-            }
-		};
+		deviceTable = new JTable(machineModelDeviceTableModel);//Setting cell renderer and editor for some cells manually.
+//		    @Override
+//            public TableCellRenderer getCellRenderer(int row, int column) {
+//		        if(column == 2){
+//		            Class cellClass = getModel().getValueAt(row, column).getClass();
+//		            return getDefaultRenderer(cellClass);
+//		        }
+//		        return super.getCellRenderer(row, column);
+//            }
+//            @Override
+//            public TableCellEditor getCellEditor(int row, int column) {
+//                if(column == 2){
+//                    Class cellClass = getModel().getValueAt(row, column).getClass();
+//                    return getDefaultEditor(cellClass);
+//                }
+//                return super.getCellEditor(row, column);
+//            }
+//		};
 		//Sort by Table Head
 		TableSorter sorter = new TableSorter();
         sorter.setTableHeader(deviceTable.getTableHeader());

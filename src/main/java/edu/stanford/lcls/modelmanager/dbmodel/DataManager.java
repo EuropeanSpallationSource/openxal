@@ -548,7 +548,7 @@ public class DataManager {
             
             deviceValue = String.valueOf(node.getStatus());
             zpos = df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node));
-            MachineModelDevice tmp17 = new MachineModelDevice(node.getId(),"ENBL",deviceValue,deviceValue,"/",zpos);//TODO set units and initial value
+            MachineModelDevice tmp17 = new MachineModelDevice(node.getId(),"ENBL",deviceValue,deviceValue,"",zpos);//TODO set units and initial value
             runMachineModelDevice.add(tmp17);         
 
         }
