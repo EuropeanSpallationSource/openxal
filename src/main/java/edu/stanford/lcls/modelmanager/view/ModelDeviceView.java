@@ -99,6 +99,17 @@ public class ModelDeviceView  implements SwingConstants{
                 }
                 return super.getCellEditor(row, column);
             }
+            
+            @Override
+            public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {//Coloring manually changed parameters to blue for better overview. 
+                Component comp = super.prepareRenderer(renderer, row, column);
+                comp.setForeground(Color.BLACK);
+                if(column == 2 && !(getValueAt(row, 2).equals(getValueAt(row, 3)))){//if device value is different than initial value
+                    comp.setForeground(Color.BLUE);
+                }
+                return comp;
+            }
+            
         };
 		//Sort by Table Head
 		TableSorter sorter = new TableSorter();
