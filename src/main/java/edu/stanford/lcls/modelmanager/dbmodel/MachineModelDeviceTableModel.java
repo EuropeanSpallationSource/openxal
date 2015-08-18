@@ -88,8 +88,8 @@ public class MachineModelDeviceTableModel extends AbstractTableModel implements	
 		String type = MachineModelDevice.getPropertyType(columnIndex);
 		if (type.equals("Long")) 
 			return Long.class;
-		else if (type.equals("Double"))//TODO check and set apropirately
-			return Object.class; 
+		else if (type.equals("Double"))
+			return Double.class; 
 		else 
 			return String.class;
 	}
