@@ -16,8 +16,8 @@ public class MachineModelDevice {
 	static {
 		PROPERTY_NAME = Arrays.asList(new String[] {
 				"ELEMENT_NAME", "DEVICE_PROPERTY", "DEVICE_VALUE","INITIAL_VALUE", "UNITS", "ZPOS" });
-		propertyType = Arrays.asList(new String[] { "String", "String", "Double","Double","String", "Double" });//TODO check and set apropirately
-		PROPERTY_SIZE = PROPERTY_NAME.size();
+		propertyType = Arrays.asList(new String[] { "String", "String", "Double","Double","String", "Double" });
+		PROPERTY_SIZE = PROPERTY_NAME.size();//6
 	}
 	
 	/**
@@ -67,10 +67,7 @@ public class MachineModelDevice {
 		return propertyType.get(index);
 	}
 	
-	public String getPropertyClass(int index){//TODO check and set apropirately
-        if("ENBL".equals(getPropertyValue(1)) && (index == 2 || index ==3) ){
-            return "Boolean";
-        }
+	public String getPropertyClass(int index){
 	    return getPropertyType(index);
 	    
 	}

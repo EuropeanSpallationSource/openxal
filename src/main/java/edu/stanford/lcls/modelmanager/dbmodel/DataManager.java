@@ -546,7 +546,7 @@ public class DataManager {
             MachineModelDevice tmp16 = new MachineModelDevice(node.getId(),"ROTZ",deviceValue,deviceValue,"Rad",zpos);//TODO set units and initial value
             runMachineModelDevice.add(tmp16);
             
-            deviceValue = String.valueOf(node.getStatus());
+            deviceValue = String.valueOf(node.getStatus() ? 1:0);
             zpos = df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node));
             MachineModelDevice tmp17 = new MachineModelDevice(node.getId(),"ENBL",deviceValue,deviceValue,"",zpos);//TODO set units and initial value
             runMachineModelDevice.add(tmp17);         
@@ -607,8 +607,8 @@ public class DataManager {
 				elementTypeID.add(rs.getInt(3));
 			}*/
 
-			PreparedStatement stmt3 = writeConnection.prepareStatement("INSERT INTO \"MACHINE_MODEL\".\"MODEL_DEVICES\" (\"RUNS_ID\", \"LCLS_ELEMENTS_ELEMENT_ID\", \"ELEMENT_NAME\", \"DEVICE_TYPES_ID\", \"DEVICE_PROPERTY\", \"DEVICE_VALUE\", \"ZPOS\") "+
-			  "VALUES (?,?,?,?,?,?,?)");
+			PreparedStatement stmt3 = writeConnection.prepareStatement("INSERT INTO \"MACHINE_MODEL\".\"MODEL_DEVICES\" (\"RUNS_ID\", \"LCLS_ELEMENTS_ELEMENT_ID\", \"ELEMENT_NAME\", \"DEVICE_TYPES_ID\", \"DEVICE_PROPERTY\", \"DEVICE_VALUE\", \"INITIAL_VALUE\", \"UNITS\", \"ZPOS\") "+
+			  "VALUES (?,?,?,?,?,?,?,?,?)");
 			stmt3.setInt(1, runID);
 			
 			int deviceIndex = 0;
@@ -625,8 +625,10 @@ public class DataManager {
 				stmt3.setString(3, (String)runMachineModelDevice[i].getPropertyValue("ELEMENT_NAME"));
 				stmt3.setNull(4, Types.INTEGER);			
 				stmt3.setString(5, (String)runMachineModelDevice[i].getPropertyValue("DEVICE_PROPERTY"));
-				stmt3.setString(6, ((String)runMachineModelDevice[i].getPropertyValue("DEVICE_VALUE")));//TODO check this and change apropirately
-				stmt3.setDouble(7, Double.parseDouble((String)runMachineModelDevice[i].getPropertyValue("ZPOS")));			
+				stmt3.setDouble(6, Double.parseDouble((String) runMachineModelDevice[i].getPropertyValue("DEVICE_VALUE")));
+				stmt3.setDouble(7, Double.parseDouble((String) runMachineModelDevice[i].getPropertyValue("INITIAL_VALUE")));
+				stmt3.setString(8, ((String)runMachineModelDevice[i].getPropertyValue("UNITS")));
+				stmt3.setDouble(9, Double.parseDouble((String)runMachineModelDevice[i].getPropertyValue("ZPOS")));			
 				stmt3.addBatch();
 			}
 			stmt3.executeBatch();

@@ -30,43 +30,42 @@ public class RunModelConfigurationManual extends RunModelConfiguration {
 		    final String nodeId = (String)dev.getPropertyValue("ELEMENT_NAME"); 
 		    final AcceleratorNode node = scenario.getSequence().getNodeWithId(nodeId);
 			final Object prop = dev.getPropertyValue("DEVICE_PROPERTY");
-			final String val = (String) dev.getPropertyValue("DEVICE_VALUE");
+			final double val = Double.parseDouble((String) dev.getPropertyValue("DEVICE_VALUE"));
 			
 			if ("B".equals(prop)) {			
-				scenario.setModelInput(node, ElectromagnetPropertyAccessor.PROPERTY_FIELD, Double.parseDouble(val));
+				scenario.setModelInput(node, ElectromagnetPropertyAccessor.PROPERTY_FIELD, val);
 				
 			} else if ("P".equals(prop)) {				
-				scenario.setModelInput(node, RfCavityPropertyAccessor.PROPERTY_PHASE, Double.parseDouble(val));
+				scenario.setModelInput(node, RfCavityPropertyAccessor.PROPERTY_PHASE, val);
 				
 			} else if ("A".equals(prop)) {				
-				scenario.setModelInput(node, RfCavityPropertyAccessor.PROPERTY_AMPLITUDE, Double.parseDouble(val));
+				scenario.setModelInput(node, RfCavityPropertyAccessor.PROPERTY_AMPLITUDE, val);
 				
 			} else if(MachineModelDeviceTableModel.additionalParameters.contains(prop)){
                 switch(MachineModelDeviceTableModel.additionalParameters.indexOf(prop)){//CHECK maybe do this nicer ?
                 case 0:
-                    node.getAper().setAperX(Double.parseDouble(val));
+                    node.getAper().setAperX(val);
                     break;
                 case 1:
-                    node.getAlign().setX(Double.parseDouble(val));
+                    node.getAlign().setX(val);
                     break;
                 case 2:
-                    node.getAlign().setY(Double.parseDouble(val));
+                    node.getAlign().setY(val);
                     break;
                 case 3:
-                    node.getAlign().setZ(Double.parseDouble(val));
+                    node.getAlign().setZ(val);
                     break;
                 case 4:
-                    node.getAlign().setPitch(Double.parseDouble(val));
+                    node.getAlign().setPitch(val);
                     break;
                 case 5:
-                    node.getAlign().setYaw(Double.parseDouble(val));
+                    node.getAlign().setYaw(val);
                     break;
-
                 case 6:
-                    node.getAlign().setRoll(Double.parseDouble(val));
+                    node.getAlign().setRoll(val);
                     break;
                 case 7:
-                    node.setStatus(Boolean.valueOf(val));
+                    node.setStatus((val == 1));
                     break;
                 }
 			}

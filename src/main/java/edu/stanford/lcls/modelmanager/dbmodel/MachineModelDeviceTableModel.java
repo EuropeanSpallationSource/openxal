@@ -42,17 +42,18 @@ public class MachineModelDeviceTableModel extends AbstractTableModel implements	
 	}
 
 	@Override
-    public Object getValueAt(int rowIndex, int columnIndex) {//TODO check and set apropirately
+    public Object getValueAt(int rowIndex, int columnIndex) {
 		MachineModelDevice modelDevice = _shownModelDevices[rowIndex];
-		String type = modelDevice.getPropertyClass(columnIndex);
+		String type = MachineModelDevice.getPropertyType(columnIndex);
 		if (modelDevice.getPropertyValue(columnIndex) != null) {
 			if (type.equals("Long"))
 				return Long.valueOf((String) modelDevice
 						.getPropertyValue(columnIndex));
 			else if (type.equals("Double"))
-				return Double.valueOf((String)modelDevice.getPropertyValue(columnIndex));
-			else if(type.equals("Boolean"))
-			    return Boolean.valueOf((String)modelDevice.getPropertyValue(columnIndex));
+			    if("ENBL".equals((modelDevice.getPropertyValue(1))) && (columnIndex == 2 || columnIndex == 3 ))
+			        return (Double.valueOf((String)modelDevice.getPropertyValue(columnIndex)) == 1);//Boolean
+			    else
+			        return Double.valueOf((String)modelDevice.getPropertyValue(columnIndex));
 			else
 				return modelDevice.getPropertyValue(columnIndex);
 		} else
@@ -75,7 +76,11 @@ public class MachineModelDeviceTableModel extends AbstractTableModel implements	
 
 	public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
 		MachineModelDevice modelDevice = _shownModelDevices[rowIndex];
-		modelDevice.setPropertyValue(columnIndex, aValue.toString());
+		if("ENBL".equals((modelDevice.getPropertyValue(1)))  &&  columnIndex == 2){
+		    modelDevice.setPropertyValue(columnIndex, String.valueOf(((boolean) aValue) ? 1:0));
+		}else{
+            modelDevice.setPropertyValue(columnIndex, aValue.toString());
+		}
 	}
 	
 	@Override
