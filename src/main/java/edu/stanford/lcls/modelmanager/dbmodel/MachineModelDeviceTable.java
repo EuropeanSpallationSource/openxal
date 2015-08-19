@@ -9,6 +9,15 @@ import java.util.List;
 
 import edu.stanford.slac.Message.Message;
 
+
+
+/**
+ * 
+ * Machine model device table.
+ * 
+ * 
+ * @author unknown
+ */
 public class MachineModelDeviceTable {
 
 	protected final String SCHEMA_NAME;

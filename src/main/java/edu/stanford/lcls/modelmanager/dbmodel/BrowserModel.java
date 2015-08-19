@@ -25,7 +25,7 @@ import edu.stanford.slac.Message.Message;
 /**
  * BrowserModel is the main document model.
  * 
- * @author 
+ * @author unknown
  */
 public class BrowserModel {
 

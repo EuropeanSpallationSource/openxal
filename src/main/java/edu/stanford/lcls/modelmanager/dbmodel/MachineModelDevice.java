@@ -4,6 +4,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * 
+ * Machine model device storing parameters for device.
+ * 
+ * @version 1.0 18 Avg 2015
+ * 
+ * @author unknown
+ * @author Blaž Kranjc <blaz.kranjc@cosylab.com>
+ */
 public class MachineModelDevice {
 	static final private List<String> PROPERTY_NAME;
 	static final private int PROPERTY_SIZE;
@@ -23,7 +32,6 @@ public class MachineModelDevice {
 	/**
 	 * Primary constructor
 	 */	
-	
 	public MachineModelDevice(ArrayList<Object> propertyValue) {
 		this.propertyValue = propertyValue;
 	}
@@ -53,7 +61,6 @@ public class MachineModelDevice {
 	    this.setPropertyValue("ZPOS", zpos);
 	}
 
-	//About propertyName
 	public static String getPropertyName(int index) {
 		return PROPERTY_NAME.get(index);
 	}
@@ -62,14 +69,8 @@ public class MachineModelDevice {
 		return PROPERTY_NAME;
 	}
 
-	//About propertyType
 	public static String getPropertyType(int index) {
 		return propertyType.get(index);
-	}
-	
-	public String getPropertyClass(int index){
-	    return getPropertyType(index);
-	    
 	}
 
 	public static String getPropertyType(String propertyName) {
@@ -85,7 +86,6 @@ public class MachineModelDevice {
 				propertyType);
 	}
 
-	//About PropertyValue
 	public Object getPropertyValue(int index) {
 		return propertyValue.get(index);
 	}

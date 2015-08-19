@@ -8,9 +8,23 @@ import xal.smf.proxy.RfCavityPropertyAccessor;
 import edu.stanford.lcls.modelmanager.dbmodel.MachineModelDevice;
 import edu.stanford.lcls.modelmanager.dbmodel.MachineModelDeviceTableModel;
 
+
+/**
+ * 
+ * Run configuration for manual edited parameters. 
+ * 
+ * @version 1.0 18 Avg 2015
+ * 
+ * @author unknown
+ * @author Blaž Kranjc <blaz.kranjc@cosylab.com>
+ */
 public class RunModelConfigurationManual extends RunModelConfiguration {
 	private MachineModelDevice[] machineDevice;
 	
+	/**
+	 * Class constructor.
+	 * @param machineDevice array of MachineModelDevices to set for running simulation.
+	 */
 	public RunModelConfigurationManual(MachineModelDevice[] machineDevice)
 	{
 		this.machineDevice = machineDevice;
@@ -26,12 +40,14 @@ public class RunModelConfigurationManual extends RunModelConfiguration {
 		scenario.setSynchronizationMode(Scenario.SYNC_MODE_DESIGN);
 		
 		//scenario.setModelInput( magnet, ElectromagnetPropertyAccessor.PROPERTY_FIELD, field );
+		//setting all parameters
 		for (MachineModelDevice dev : machineDevice) {
+		    //getting parameter info
 		    final String nodeId = (String)dev.getPropertyValue("ELEMENT_NAME"); 
 		    final AcceleratorNode node = scenario.getSequence().getNodeWithId(nodeId);
 			final Object prop = dev.getPropertyValue("DEVICE_PROPERTY");
 			final double val = Double.parseDouble((String) dev.getPropertyValue("DEVICE_VALUE"));
-			
+			//checking for parameter type
 			if ("B".equals(prop)) {			
 				scenario.setModelInput(node, ElectromagnetPropertyAccessor.PROPERTY_FIELD, val);
 				
@@ -41,8 +57,8 @@ public class RunModelConfigurationManual extends RunModelConfiguration {
 			} else if ("A".equals(prop)) {				
 				scenario.setModelInput(node, RfCavityPropertyAccessor.PROPERTY_AMPLITUDE, val);
 				
-			} else if(MachineModelDeviceTableModel.additionalParameters.contains(prop)){
-                switch(MachineModelDeviceTableModel.additionalParameters.indexOf(prop)){//CHECK maybe do this nicer ?
+			} else if(MachineModelDeviceTableModel.additionalParameters.contains(prop)){//Checking if prop is one of the additional parameters.
+                switch(MachineModelDeviceTableModel.additionalParameters.indexOf(prop)){
                 case 0:
                     node.getAper().setAperX(val);
                     break;

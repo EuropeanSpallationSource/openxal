@@ -29,20 +29,34 @@ import javax.swing.table.TableCellRenderer;
 import edu.stanford.lcls.modelmanager.dbmodel.BrowserModel;
 import edu.stanford.lcls.modelmanager.dbmodel.MachineModelDeviceTableModel;
 
+
+/**
+ * 
+ * ModelDeviceView for showing list of all device parameters.
+ * 
+ * @version 1.0 18 Avg 2015
+ * 
+ * @author unknown
+ * @author Blaž Kranjc <blaz.kranjc@cosylab.com>
+ */
 public class ModelDeviceView  implements SwingConstants{
 	
 	private JSplitPane modelDeviceView;
 	protected BrowserModel _model;
 	private JTable deviceTable;
 
-
+/**
+ * Constructor. Creates view and configures table.
+ * @param model
+ */
 	public ModelDeviceView(BrowserModel model) {
 		_model = model;
         final MachineModelDeviceTableModel machineModelDeviceTableModel = new MachineModelDeviceTableModel();
-
-	    JPanel modelDevice= new JPanel(new GridLayout(1, 1));
+        /*Filtering toolbar*/
+	    final JPanel modelDevice= new JPanel(new GridLayout(1, 1));
 	    modelDevice.setBorder(BorderFactory.createEmptyBorder(3,4,2,4));
-	    Box deviceOptons = new Box(HORIZONTAL);
+	    final Box deviceOptons = new Box(HORIZONTAL);
+	    /*Filter*/
 	    deviceOptons.add(new JLabel("Filter: "));
 	    final JTextField deviceFilter = new JTextField();
 	    deviceFilter.getDocument().addDocumentListener(new DocumentListener() {
@@ -63,7 +77,8 @@ public class ModelDeviceView  implements SwingConstants{
             }
         });
 	    deviceFilter.setEditable(true);
-	    deviceOptons.add(deviceFilter);      
+	    deviceOptons.add(deviceFilter);
+	    /*Checkbox for toggling additional parameters*/
 	    final JCheckBox addidionalParametersCheckBox = new JCheckBox("Show additional parameters",false); 
         addidionalParametersCheckBox.addItemListener(new ItemListener() {
 
@@ -74,14 +89,15 @@ public class ModelDeviceView  implements SwingConstants{
             }
         });
         deviceOptons.add(addidionalParametersCheckBox);
-        modelDevice.add(deviceOptons);	    
-		
+        modelDevice.add(deviceOptons);
+        
+		/*Parameters list*/
 		Box tableBox = new Box(BoxLayout.Y_AXIS);
 		_model.addBrowserModelListener(machineModelDeviceTableModel);
-        deviceTable = new JTable(machineModelDeviceTableModel) {// Setting cell renderer and editor for some cells
-                                                                // manually.
+		/*Configuring parameters table look*/
+        deviceTable = new JTable(machineModelDeviceTableModel) {
             @Override
-            public TableCellRenderer getCellRenderer(int row, int column) {
+            public TableCellRenderer getCellRenderer(int row, int column) {//Manually setting renderer for enable parameter.
                 if (column == 2 || column == 3) {
                     if ("ENBL".equals(getModel().getValueAt(row, 1))) {
                         return getDefaultRenderer(Boolean.class);
@@ -91,7 +107,7 @@ public class ModelDeviceView  implements SwingConstants{
             }
 
             @Override
-            public TableCellEditor getCellEditor(int row, int column) {
+            public TableCellEditor getCellEditor(int row, int column) {//Manually setting editor for enable parameter.
                 if (column == 2 || column == 3) {
                     if ("ENBL".equals(getModel().getValueAt(row, 1))) {
                         return getDefaultEditor(Boolean.class);
@@ -139,7 +155,7 @@ public class ModelDeviceView  implements SwingConstants{
 															hasFocus, row,
 															column);
 											if (row == deviceTable.getSelectedRow())
-												cell.setBackground(cell.getBackground());
+												cell.setBackground(cell.getBackground());//CHECK: not sure if this acctually does anything.
 											else
 												cell.setBackground(Color.WHITE);
 											return cell;

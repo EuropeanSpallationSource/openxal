@@ -6,11 +6,18 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
+
+/**
+ * 
+ * Machine model device table model for configuring table..
+ * 
+ * @version 1.0 18 Avg 2015
+ * 
+ * @author unknown
+ * @author Blaž Kranjc <blaz.kranjc@cosylab.com>
+ */
 public class MachineModelDeviceTableModel extends AbstractTableModel implements	BrowserModelListener {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	protected final List<String> GUI_TABLE_COLUMN_NAME;
 	static final protected int TABLE_SIZE = MachineModelDevice.getPropertySize();
@@ -73,7 +80,6 @@ public class MachineModelDeviceTableModel extends AbstractTableModel implements	
 
 
 	@Override
-
 	public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
 		MachineModelDevice modelDevice = _shownModelDevices[rowIndex];
 		if("ENBL".equals((modelDevice.getPropertyValue(1)))  &&  columnIndex == 2){

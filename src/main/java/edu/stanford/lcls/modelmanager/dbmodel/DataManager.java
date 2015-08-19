@@ -79,7 +79,15 @@ import xal.tools.beam.Twiss;
 import xal.tools.beam.calc.CalculationsOnBeams;
 import xal.tools.math.r3.R3;
 import edu.stanford.slac.Message.Message;
-
+/**
+ * 
+ * DataManager for showing loading different parameters, details and other data according to model configuration.
+ * 
+ * @version 1.0 18 Avg 2015
+ * 
+ * @author unknown
+ * @author Blaž Kranjc <blaz.kranjc@cosylab.com>
+ */
 public class DataManager {
 	final static public SimpleDateFormat machineModelDateFormat = new SimpleDateFormat(
 	"yyyy-MM-dd HH:mm:ss");
@@ -94,6 +102,11 @@ public class DataManager {
 
 	private static boolean useSDisplay = false;
 	
+	/**
+	 * Get connection to the database. 
+	 * @return connection to database if succeeded.
+	 * @throws SQLException if connection couldn't be established.
+	 */
 	public static Connection getConnection() throws SQLException
 	{
 		Connection connection = null;
@@ -175,7 +188,12 @@ public class DataManager {
 			}
 		return selectedMachineModelDetail;
 	}
-	
+	/**
+	 * Gives the Machine model to run with set model mode and some properties.
+	 * @param runModelMethod mode on which to set model.
+	 * @param modelMode beamline.
+	 * @return configured machine model.
+	 */
 	public static MachineModel getRunMachineModel(int runModelMethod, String modelMode) {
 		MachineModel runMachineModel = new MachineModel();
 		runMachineModel.setPropertyValue("ID", autoRunID);
@@ -196,7 +214,12 @@ public class DataManager {
 		return runMachineModel;
 	}
 	
-	
+	/**
+	 * Gives the Machine model details obtained according to runModelMethod.
+	 * @param runModelMethod method for which to obtain details.
+	 * @param scenario from which to obtain details.
+	 * @return MachineModelDetails with set properties. 
+	 */
 	public static MachineModelDetail[] getRunMachineModeDetail(int runModelMethod, Scenario scenario ) {
 		List<MachineModelDetail> runMachineModelDetail = new ArrayList<MachineModelDetail>();
 		DeviceType deviceType = new DeviceType(scenario.getSequence());
@@ -433,6 +456,11 @@ public class DataManager {
 		return Et;
 	}
 	
+	/**
+	 * Gives MachineModelDevice obtained from scenario.
+	 * @param scenario from which to obtain devices.
+	 * @return MachineModelDevices with set properties.
+	 */
 	public static MachineModelDevice[] getRunMachineModeDevice(Scenario scenario) {
 		//DecimalFormat df = new DecimalFormat("##0.000000");
 		ModelFormat df = new ModelFormat("%17.12g");
@@ -441,10 +469,10 @@ public class DataManager {
 		Accelerator acc = seq.getAccelerator();
 		List<AcceleratorNode> allNodes = seq.getAllNodes();
 		Iterator<AcceleratorNode> it = allNodes.iterator();
-		//Local variables for better code readability
-		String deviceValue;
-		String zpos;
 		//Going through all accelerator nodes
+		//Variables for better code readability
+        String deviceValue;
+        String zpos;
 		while (it.hasNext()) {
 			AcceleratorNode node = it.next();
 			String runMode = scenario.getSynchronizationMode();
@@ -555,6 +583,15 @@ public class DataManager {
 		return runMachineModelDevice.toArray(new MachineModelDevice[runMachineModelDevice.size()]);
 	}
 	
+	/**
+	 * Saves model to database.
+	 * @param parent parent window
+	 * @param model browser model
+	 * @param runMachineModel model to save
+	 * @param runMachineModelDetail model detail to save
+	 * @param runMachineModelDevice model device to save
+	 * @return runID if successfull else null.
+	 */
 	public static String newUploadToDatabase(final JFrame parent,
 			BrowserModel model,
 			MachineModel runMachineModel,
@@ -742,6 +779,11 @@ public class DataManager {
 		}*/
 	}		
 	
+	/**
+	 * Export model detail to csv.
+	 * @param parent parent window
+	 * @param selectedMachineModelDetail machine model detail to export.
+	 */
 	public static void exportDetailData(JFrame parent, MachineModelDetail[] selectedMachineModelDetail) {
 		RecentFileTracker _savedFileTracker = new RecentFileTracker(1, parent.getClass(),
 				"recent_saved_file");
@@ -795,6 +837,12 @@ public class DataManager {
 		}
 	}
 	
+	/**
+	 * Tag selected model as gold
+	 * @param comment to add to tag
+	 * @param selectedMachineModel model to tag as gold
+	 * @throws SQLException if tagging couldn't be sent to database.
+	 */
 	public static void makeGold(String comment, MachineModel selectedMachineModel) throws SQLException {
 		// TODO also update other DB instances, if necessary
 		
@@ -835,7 +883,12 @@ public class DataManager {
 			writeConnection.close();					
 		}
 	}
-	
+	/**
+	 * Export machine model to xml.
+	 * @param parent parent window
+	 * @param runMachineModel machine model to export
+	 * @param scenario
+	 */
 	public static void exportToXML(JFrame parent, MachineModel runMachineModel,
 			Scenario scenario) {
 		RecentFileTracker _savedFileTracker = new RecentFileTracker(1, parent

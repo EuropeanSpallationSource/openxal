@@ -13,6 +13,15 @@ import xal.smf.Accelerator;
 import xal.smf.AcceleratorSeq;
 import xal.smf.AcceleratorSeqCombo;
 
+/**
+ * 
+ * Run model for running simulations.
+ * 
+ * @version 1.0 18 Avg 2015
+ * 
+ * @author unknown
+ * @author Blaž Kranjc <blaz.kranjc@cosylab.com>
+ */
 public class RunModel {	
 	private Accelerator accelerator;
 	private Scenario scenario;
@@ -23,7 +32,10 @@ public class RunModel {
 	
 	public static final String DEFAULT_BEAMLINE_TEXT = "DEFAULT";
 
-	
+	/**
+	 * Constructor
+	 * @param acc on which the simulation is to be run.
+	 */
 	public RunModel(Accelerator acc) { 
 		accelerator = acc;
 			
@@ -31,9 +43,14 @@ public class RunModel {
 		resetProbe();				
 	}
 
+	/**
+	 * Runs the scenario simulation.
+	 * @param config configuration to set up all parameters.
+	 * @throws ModelException
+	 */
 	public void run(RunModelConfiguration config) throws ModelException {
 	    try {
-            scenario = Scenario.newScenarioFor(getSequence()); //, elementMapping);
+            scenario = Scenario.newScenarioFor(getSequence()); 
         } catch (ModelException e) {
             e.printStackTrace();
         }
@@ -45,6 +62,10 @@ public class RunModel {
 		scenario.run();
 	}
 
+	/**
+	 * Get used sequence.
+	 * @return AcceleratorSequence used by run model.
+	 */
 	public AcceleratorSeq getSequence()
 	{
 		AcceleratorSeq seq = accelerator.getSequence(modelMode);
@@ -54,15 +75,25 @@ public class RunModel {
 		return seq;
 	}
 
+	/**
+	 * Get used scenario.
+	 * @return scenario used by run model.
+	 */
 	public Scenario getScenario() {
 		return scenario;
 	}
-
+	/**
+     * Get used probe.
+     * @return probe used by run model.
+     */
 	public EnvelopeProbe getProbe() {
 		return probe;
 	}
 
-	/** beamline selection */
+	/** 
+	 * Beamline selection 
+	 * @param _modelMode mode of obtaining parameters.
+	 */
 	public void setModelMode(String _modelMode) {
 		if (DEFAULT_BEAMLINE_TEXT.equals(_modelMode)) {
 			modelMode = defaultBeamline;
@@ -76,7 +107,7 @@ public class RunModel {
 			e.printStackTrace();
 		}
 	}
-
+	/**Resets probe and sets it position */
 	public void resetProbe() {
 		IAlgorithm tracker;
 		try {
@@ -90,7 +121,7 @@ public class RunModel {
 			e.printStackTrace();
 		}
 	}
-	
+	/**Initializes beamlines and sets model mode.*/
 	private void initBeamlines()
 	{
 		beamlines = new ArrayList<>();
