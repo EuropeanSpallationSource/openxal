@@ -529,11 +529,11 @@ public class DataManager {
 			else if (node instanceof RfCavity) {
 				try {
 					deviceValue = scenario.propertiesForNode(node).get(RfCavityPropertyAccessor.PROPERTY_PHASE).toString();
-					MachineModelDevice tmp6 = new MachineModelDevice(node.getId(),"P",deviceValue,deviceValue,"Rad",zpos);//TODO set units and initial value
+					MachineModelDevice tmp6 = new MachineModelDevice(node.getId(),"P",deviceValue,deviceValue,"Rad",zpos);//TODO set  initial value
 					runMachineModelDevice.add(tmp6);
 					
 					deviceValue = scenario.propertiesForNode(node).get(RfCavityPropertyAccessor.PROPERTY_AMPLITUDE).toString();
-					MachineModelDevice tmp7 = new MachineModelDevice(node.getId(),"A",deviceValue,deviceValue,"kV/m",zpos);//TODO set units and initial value
+					MachineModelDevice tmp7 = new MachineModelDevice(node.getId(),"A",deviceValue,deviceValue,"kV/m",zpos);//TODO set  initial value
 					runMachineModelDevice.add(tmp7);
 				} catch (SynchronizationException e) {
 					Message.error("Model Synchronization Exception: Cannot synchronize device data for model run.", true);
@@ -541,11 +541,11 @@ public class DataManager {
 				}
 				if (Scenario.SYNC_MODE_DESIGN.equals("DESIGN")) {
 					deviceValue = Double.toString(((RfCavity) node).getDfltAvgCavPhase());
-					MachineModelDevice tmp8 = new MachineModelDevice(node.getId(),"PDES",deviceValue,deviceValue,"Rad",zpos);//TODO set units and initial value
+					MachineModelDevice tmp8 = new MachineModelDevice(node.getId(),"PDES",deviceValue,deviceValue,"Rad",zpos);//TODO set  initial value
 					runMachineModelDevice.add(tmp8);
 
                     deviceValue = Double.toString(((RfCavity) node).getDfltCavAmp());
-                    MachineModelDevice tmp9 = new MachineModelDevice(node.getId(),"ADES",deviceValue,deviceValue,"kV/m",zpos);//TODO set units and initial value
+                    MachineModelDevice tmp9 = new MachineModelDevice(node.getId(),"ADES",deviceValue,deviceValue,"kV/m",zpos);//TODO set  initial value
                     runMachineModelDevice.add(tmp9);
                 }
                 // We use "design" values for both cases for now because we
@@ -554,7 +554,7 @@ public class DataManager {
             }
             // Misalignments and other parameters
             deviceValue = Double.toString(node.getAper().getAperX()); 
-            MachineModelDevice tmp10 = new MachineModelDevice(node.getId(),"APRX",deviceValue,deviceValue,"mm",zpos);//TODO set units and  initial value
+            MachineModelDevice tmp10 = new MachineModelDevice(node.getId(),"APRX",deviceValue,deviceValue,"mm",zpos);//TODO set   initial value
             runMachineModelDevice.add(tmp10);
 
             deviceValue = Double.toString(node.getAlign().getX()); 
@@ -607,12 +607,17 @@ public class DataManager {
 			MachineModel runMachineModel,
 			final MachineModelDetail[] runMachineModelDetail,
 			final MachineModelDevice[] runMachineModelDevice) {
-		
+	    try {
+	        
+	        if(runMachineModelDetail == null){
+	            throw new Exception("Model not run before trying to save. Please run model first.");
+	        }
+	    
 		Integer runID = null;
 				
 		Connection writeConnection;
 		
-		try {
+		
 //			writeConnection = dialog.showConnectionDialog(DatabaseAdaptor.getInstance());
 			writeConnection = DataManager.getConnection();
 			
@@ -773,7 +778,7 @@ public class DataManager {
 			return null;
 		} catch (Exception exception) {
 			JOptionPane.showMessageDialog(parent, exception.getMessage(),
-					"SQL Error!  Query failed on" + url, JOptionPane.ERROR_MESSAGE);
+					"SQL Error!  Query failed on " + url, JOptionPane.ERROR_MESSAGE);
 			Logger.getLogger("global").log(Level.SEVERE,
 					"Database SQL error.", exception);
 			Message.error("SQLException: Query failed on " + url, true);
