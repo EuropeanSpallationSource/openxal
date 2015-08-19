@@ -67,6 +67,7 @@ import xal.smf.impl.Magnet;
 import xal.smf.impl.RfCavity;
 import xal.smf.impl.RfGap;
 import xal.smf.impl.VDipoleCorr;
+import xal.smf.impl.qualify.MagnetType;
 import xal.smf.impl.qualify.NotTypeQualifier;
 import xal.smf.impl.qualify.OrTypeQualifier;
 import xal.smf.proxy.ElectromagnetPropertyAccessor;
@@ -479,9 +480,19 @@ public class DataManager {
 			zpos = df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node));
 			// for magnets
 			if (node instanceof Electromagnet) {
+			    String units = "T";
+			    if(MagnetType.QUAD.equals(node.getType())){
+			        units = units + "/m"; 
+			    }
+			    else if(MagnetType.SEXT.equals(node.getType())){
+                    units = units + "/m^2"; 
+                }
+			    else if(MagnetType.OCT.equals(node.getType())){
+                    units = units + "/m^3"; 
+                }//CHECK solenoid too ?
 				try {
 				    deviceValue = scenario.propertiesForNode(node).get(ElectromagnetPropertyAccessor.PROPERTY_FIELD).toString();
-					MachineModelDevice tmp1 = new MachineModelDevice(node.getId(),"B",deviceValue,deviceValue,"T",zpos);//TODO set units and initial value
+					MachineModelDevice tmp1 = new MachineModelDevice(node.getId(),"B",deviceValue,deviceValue,units,zpos);//TODO set  initial value
 					runMachineModelDevice.add(tmp1);
 				} catch (SynchronizationException e) {
 					Message.error("Model Synchronization Exception: Cannot synchronize device data for model run.", true);
@@ -490,20 +501,20 @@ public class DataManager {
 				if (Scenario.SYNC_MODE_DESIGN.equals(runMode)) {
 					
 				    deviceValue = Double.toString(((Electromagnet) node).getDesignField());
-					MachineModelDevice tmp2 = new MachineModelDevice(node.getId(),"BACT",deviceValue,deviceValue,"T",zpos);//TODO set units and initial value
+					MachineModelDevice tmp2 = new MachineModelDevice(node.getId(),"BACT",deviceValue,deviceValue,units,zpos);//TODO set  initial value
 					runMachineModelDevice.add(tmp2);
 					
 					deviceValue = Double.toString(((Electromagnet) node).getDesignField());
-					MachineModelDevice tmp3 = new MachineModelDevice(node.getId(),"BDES",deviceValue,deviceValue,"T",zpos);//TODO set units and initial value
+					MachineModelDevice tmp3 = new MachineModelDevice(node.getId(),"BDES",deviceValue,deviceValue,units,zpos);//TODO set  initial value
 					runMachineModelDevice.add(tmp3);
 				} else {
 					try {
 						deviceValue = Double.toString(((Electromagnet) node).getFieldReadback());
-						MachineModelDevice tmp4 = new MachineModelDevice(node.getId(),"BACT",deviceValue,deviceValue,"T",zpos);//TODO set units and initial value
+						MachineModelDevice tmp4 = new MachineModelDevice(node.getId(),"BACT",deviceValue,deviceValue,units,zpos);//TODO set  initial value
 						runMachineModelDevice.add(tmp4);
 						
 						deviceValue = Double.toString(((Electromagnet) node).getFieldSetting()); 
-	                    MachineModelDevice tmp5 = new MachineModelDevice(node.getId(),"BDES",deviceValue,deviceValue,"T",zpos);//TODO set units and initial value
+	                    MachineModelDevice tmp5 = new MachineModelDevice(node.getId(),"BDES",deviceValue,deviceValue,units,zpos);//TODO set  initial value
 						runMachineModelDevice.add(tmp5);
 					} catch (ConnectionException e) {
 						Message.error("Connection Exception: Cannot connect to magnet PV for " + ((Electromagnet) node).getEId(), true);
@@ -522,7 +533,7 @@ public class DataManager {
 					runMachineModelDevice.add(tmp6);
 					
 					deviceValue = scenario.propertiesForNode(node).get(RfCavityPropertyAccessor.PROPERTY_AMPLITUDE).toString();
-					MachineModelDevice tmp7 = new MachineModelDevice(node.getId(),"A",deviceValue,deviceValue,"MV/m",zpos);//TODO set units and initial value
+					MachineModelDevice tmp7 = new MachineModelDevice(node.getId(),"A",deviceValue,deviceValue,"kV/m",zpos);//TODO set units and initial value
 					runMachineModelDevice.add(tmp7);
 				} catch (SynchronizationException e) {
 					Message.error("Model Synchronization Exception: Cannot synchronize device data for model run.", true);
@@ -534,13 +545,12 @@ public class DataManager {
 					runMachineModelDevice.add(tmp8);
 
                     deviceValue = Double.toString(((RfCavity) node).getDfltCavAmp());
-                    MachineModelDevice tmp9 = new MachineModelDevice(node.getId(),"ADES",deviceValue,deviceValue,"MV/m",zpos);//TODO set units and initial value
+                    MachineModelDevice tmp9 = new MachineModelDevice(node.getId(),"ADES",deviceValue,deviceValue,"kV/m",zpos);//TODO set units and initial value
                     runMachineModelDevice.add(tmp9);
                 }
                 // We use "design" values for both cases for now because we
                 // don't have access to live readbacks.
-                else {
-                }
+                else {}
             }
             // Misalignments and other parameters
             deviceValue = Double.toString(node.getAper().getAperX()); 
