@@ -544,39 +544,39 @@ public class DataManager {
             }
             // Misalignments and other parameters
             deviceValue = Double.toString(node.getAper().getAperX()); 
-            MachineModelDevice tmp10 = new MachineModelDevice(node.getId(),"APRX",deviceValue,deviceValue,"m",zpos);//TODO set units and initial value
+            MachineModelDevice tmp10 = new MachineModelDevice(node.getId(),"APRX",deviceValue,deviceValue,"mm",zpos);//TODO set units and  initial value
             runMachineModelDevice.add(tmp10);
 
             deviceValue = Double.toString(node.getAlign().getX()); 
-            MachineModelDevice tmp11 = new MachineModelDevice(node.getId(),"MISX",deviceValue,deviceValue,"m",zpos);//TODO set units and initial value
+            MachineModelDevice tmp11 = new MachineModelDevice(node.getId(),"MISX",deviceValue,deviceValue,"mm",zpos);//TODO   initial value
             runMachineModelDevice.add(tmp11);
 
             deviceValue = Double.toString(node.getAlign().getY()); 
-            MachineModelDevice tmp12 = new MachineModelDevice(node.getId(),"MISY",deviceValue,deviceValue,"m",zpos);//TODO set units and initial value
+            MachineModelDevice tmp12 = new MachineModelDevice(node.getId(),"MISY",deviceValue,deviceValue,"mm",zpos);//TODO   initial value
             runMachineModelDevice.add(tmp12);
 
             deviceValue = Double.toString(node.getAlign().getZ());
-            MachineModelDevice tmp13 = new MachineModelDevice(node.getId(),"MISZ",deviceValue,deviceValue,"m",zpos);//TODO set units and initial value
+            MachineModelDevice tmp13 = new MachineModelDevice(node.getId(),"MISZ",deviceValue,deviceValue,"mm",zpos);//TODO   initial value
             runMachineModelDevice.add(tmp13);
 
             deviceValue = Double.toString(node.getAlign().getPitch());
             zpos = df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node));
-            MachineModelDevice tmp14 = new MachineModelDevice(node.getId(),"ROTX",deviceValue,deviceValue,"Rad",zpos);//TODO set units and initial value
+            MachineModelDevice tmp14 = new MachineModelDevice(node.getId(),"ROTX",deviceValue,deviceValue,"mRad",zpos);//TODO   initial value
             runMachineModelDevice.add(tmp14);
 
             deviceValue = Double.toString(node.getAlign().getYaw());
             zpos = df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node));
-            MachineModelDevice tmp15 = new MachineModelDevice(node.getId(),"ROTY",deviceValue,deviceValue,"Rad",zpos);//TODO set units and initial value
+            MachineModelDevice tmp15 = new MachineModelDevice(node.getId(),"ROTY",deviceValue,deviceValue,"mRad",zpos);//TODO   initial value
             runMachineModelDevice.add(tmp15);
 
             deviceValue = Double.toString(node.getAlign().getRoll());
             zpos = df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node));
-            MachineModelDevice tmp16 = new MachineModelDevice(node.getId(),"ROTZ",deviceValue,deviceValue,"Rad",zpos);//TODO set units and initial value
+            MachineModelDevice tmp16 = new MachineModelDevice(node.getId(),"ROTZ",deviceValue,deviceValue,"mRad",zpos);//TODO   initial value
             runMachineModelDevice.add(tmp16);
             
             deviceValue = String.valueOf(node.getStatus() ? 1:0);
             zpos = df.format(useSDisplay ? node.getSDisplay() : acc.getPosition(node));
-            MachineModelDevice tmp17 = new MachineModelDevice(node.getId(),"ENBL",deviceValue,deviceValue,"",zpos);//TODO set units and initial value
+            MachineModelDevice tmp17 = new MachineModelDevice(node.getId(),"ENBL",deviceValue,deviceValue,"",zpos);//TODO   initial value
             runMachineModelDevice.add(tmp17);         
 
         }
