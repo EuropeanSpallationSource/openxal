@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="machine_model" id="Project_5ee0cef" html="y" template="Default" database="PostgreSQL" >
+	<schema name="MACHINE_MODEL" catalogname="machine_model" schemaname="MACHINE_MODEL" >
+		<table name="DEVICE_TYPES" >
+			<comment><![CDATA[DEVICE_TYPES
+Keeps track of the device type.
+E.g. Monitor (aka BPM), QUAD, XCOR etc.
+In particualar DEFAULT_SLICING_POS_CHK is
+the number of "slices" at which optics
+are recorded for each device type. 
+For a QUAD there are 3(beginning, middle and end).
+For others only 1.]]></comment>
+			<column name="ID" type="serial" length="10" decimal="0" jt="4" mandatory="y" />
+			<column name="DEVICE_TYPE" type="varchar" length="4" decimal="0" jt="12" mandatory="y" />
+			<column name="UPDATED_BY" type="varchar" length="30" decimal="0" jt="12" >
+				<defo>&quot;current_user&quot;()</defo>
+			</column>
+			<column name="CREATED_BY" type="varchar" length="30" decimal="0" jt="12" mandatory="y" />
+			<column name="DATE_CREATED" type="timestamp" length="29" decimal="6" jt="93" mandatory="y" />
+			<column name="DATE_UPDATED" type="timestamp" length="29" decimal="6" jt="93" >
+				<defo>now()</defo>
+			</column>
+			<column name="DEFAULT_SLICING_POS_CHK" type="integer" length="10" decimal="0" jt="4" />
+			<index name="DEVICE_TYPES_pkey" unique="PRIMARY_KEY" >
+				<column name="ID" />
+			</index>
+			<index name="DEVICE_TYPES_DEVICE_TYPE_key" unique="UNIQUE" >
+				<column name="DEVICE_TYPE" />
+			</index>
+			<constraint name="ckc_default_slicing_p_device_t" >
+				<string>(&quot;DEFAULT_SLICING_POS_CHK&quot; IS NULL) OR (&quot;DEFAULT_SLICING_POS_CHK&quot; = ANY (ARRAY[0, 1, 2]))</string>
+			</constraint>
+		</table>
+		<table name="ELEMENT_MODELS" >
+			<comment><![CDATA[ELEMENT_MODELS
+The Twiss parameters and R-matrices for each device element, for each run. 
+Ie, the number of rows is roughly number of elements in each model (huge table).
+Most devices are equivalent to one elment, but there are exceptions which corespond to more.
+For example quads correspond to 3, being the twiss and R-matrices at the begnning, middle and end of the quadrupole.]]></comment>
+			<column name="ID" type="serial" length="10" decimal="0" jt="4" mandatory="y" />
+			<column name="RUNS_ID" type="integer" length="10" decimal="0" jt="4" />
+			<column name="LCLS_ELEMENTS_ELEMENT_ID" type="integer" length="10" decimal="0" jt="4" />
+			<column name="CREATED_BY" type="varchar" length="30" decimal="0" jt="12" mandatory="y" >
+				<defo>&quot;current_user&quot;()</defo>
+			</column>
+			<column name="DATE_CREATED" type="timestamp" length="29" decimal="6" jt="93" >
+				<defo>now()</defo>
+			</column>
+			<column name="ELEMENT_NAME" type="varchar" length="60" decimal="0" jt="12" />
+			<column name="INDEX_SLICE_CHK" type="integer" length="10" decimal="0" jt="4" />
+			<column name="ZPOS" type="numeric" decimal="0" jt="2" />
+			<column name="EK" type="numeric" decimal="0" jt="2" />
+			<column name="ALPHA_X" type="numeric" decimal="0" jt="2" />
+			<column name="ALPHA_Y" type="numeric" decimal="0" jt="2" />
+			<column name="BETA_X" type="numeric" decimal="0" jt="2" />
+			<column name="BETA_Y" type="numeric" decimal="0" jt="2" />
+			<column name="PSI_X" type="numeric" decimal="0" jt="2" />
+			<column name="PSI_Y" type="numeric" decimal="0" jt="2" />
+			<column name="ETA_X" type="numeric" decimal="0" jt="2" />
+			<column name="ETA_Y" type="numeric" decimal="0" jt="2" />
+			<column name="ETAP_X" type="numeric" decimal="0" jt="2" />
+			<column name="ETAP_Y" type="numeric" decimal="0" jt="2" />
+			<column name="R11" type="numeric" decimal="0" jt="2" />
+			<column name="R12" type="numeric" decimal="0" jt="2" />
+			<column name="R13" type="numeric" decimal="0" jt="2" />
+			<column name="R14" type="numeric" decimal="0" jt="2" />
+			<column name="R15" type="numeric" decimal="0" jt="2" />
+			<column name="R16" type="numeric" decimal="0" jt="2" />
+			<column name="R21" type="numeric" decimal="0" jt="2" />
+			<column name="R22" type="numeric" decimal="0" jt="2" />
+			<column name="R23" type="numeric" decimal="0" jt="2" />
+			<column name="R24" type="numeric" decimal="0" jt="2" />
+			<column name="R25" type="numeric" decimal="0" jt="2" />
+			<column name="R26" type="numeric" decimal="0" jt="2" />
+			<column name="R31" type="numeric" decimal="0" jt="2" />
+			<column name="R32" type="numeric" decimal="0" jt="2" />
+			<column name="R33" type="numeric" decimal="0" jt="2" />
+			<column name="R34" type="numeric" decimal="0" jt="2" />
+			<column name="R35" type="numeric" decimal="0" jt="2" />
+			<column name="R36" type="numeric" decimal="0" jt="2" />
+			<column name="R41" type="numeric" decimal="0" jt="2" />
+			<column name="R42" type="numeric" decimal="0" jt="2" />
+			<column name="R43" type="numeric" decimal="0" jt="2" />
+			<column name="R44" type="numeric" decimal="0" jt="2" />
+			<column name="R45" type="numeric" decimal="0" jt="2" />
+			<column name="R46" type="numeric" decimal="0" jt="2" />
+			<column name="R51" type="numeric" decimal="0" jt="2" />
+			<column name="R52" type="numeric" decimal="0" jt="2" />
+			<column name="R53" type="numeric" decimal="0" jt="2" />
+			<column name="R54" type="numeric" decimal="0" jt="2" />
+			<column name="R55" type="numeric" decimal="0" jt="2" />
+			<column name="R56" type="numeric" decimal="0" jt="2" />
+			<column name="R61" type="numeric" decimal="0" jt="2" />
+			<column name="R62" type="numeric" decimal="0" jt="2" />
+			<column name="R63" type="numeric" decimal="0" jt="2" />
+			<column name="R64" type="numeric" decimal="0" jt="2" />
+			<column name="R65" type="numeric" decimal="0" jt="2" />
+			<column name="R66" type="numeric" decimal="0" jt="2" />
+			<column name="LEFF" type="numeric" decimal="0" jt="2" />
+			<column name="SLEFF" type="numeric" decimal="0" jt="2" />
+			<column name="ORDINAL" type="numeric" decimal="0" jt="2" />
+			<column name="SUML" type="numeric" decimal="0" jt="2" />
+			<index name="ELEMENT_MODELS_pkey" unique="PRIMARY_KEY" >
+				<column name="ID" />
+			</index>
+			<fk name="ELEMENT_MODELS_RUNS_ID_fkey" to_schema="MACHINE_MODEL" to_table="RUNS" delete_action="cascade" >
+				<fk_column name="RUNS_ID" pk="ID" />
+			</fk>
+		</table>
+		<table name="GOLD" >
+			<comment><![CDATA[MODEL_GOLD
+Which model runs have been designated
+by operations to be good ones, both presently
+and in the past.]]></comment>
+			<column name="ID" type="serial" length="10" decimal="0" jt="4" mandatory="y" />
+			<column name="RUNS_ID" type="integer" length="10" decimal="0" jt="4" />
+			<column name="COMMENTS" type="varchar" length="200" decimal="0" jt="12" />
+			<column name="CREATED_BY" type="varchar" length="30" decimal="0" jt="12" mandatory="y" >
+				<defo>&quot;current_user&quot;()</defo>
+			</column>
+			<column name="DATE_CREATED" type="timestamp" length="29" decimal="6" jt="93" mandatory="y" >
+				<defo>now()</defo>
+			</column>
+			<index name="GOLD_pkey" unique="PRIMARY_KEY" >
+				<column name="ID" />
+			</index>
+			<fk name="GOLD_RUNS_ID_fkey" to_schema="MACHINE_MODEL" to_table="RUNS" delete_action="cascade" >
+				<fk_column name="RUNS_ID" pk="ID" />
+			</fk>
+		</table>
+		<table name="MODEL_DEVICES" >
+			<comment><![CDATA[MODEL_DEVICES
+Stores machine device parameters.
+ The number of rows is roughly the number of devices multiplied by constant (element parameters).
+ It basically tells us what were the values on devices in a model when simulation was run.
+At SLAC this table makes a link between a device name and the model runs that
+have optics (Twiss and R-matrices) for that device, via a FK to device ids
+in the infrastructure DB. But for ESS that FK has been removed for now.
+In future you will need some mechanism like that
+so one can query for optics based on a PV name which is in turn based on
+the device name. This table, with an appropriate column added to identify
+a device, will form the translation from device name
+to runs containing elements correspondinf to that device.]]></comment>
+			<column name="ID" type="serial" length="10" decimal="0" jt="4" mandatory="y" />
+			<column name="RUNS_ID" type="integer" length="10" decimal="0" jt="4" />
+			<column name="LCLS_ELEMENTS_ELEMENT_ID" type="integer" length="10" decimal="0" jt="4" />
+			<column name="DEVICE_TYPES_ID" type="integer" length="10" decimal="0" jt="4" />
+			<column name="CREATED_BY" type="varchar" length="30" decimal="0" jt="12" mandatory="y" >
+				<defo>&quot;current_user&quot;()</defo>
+			</column>
+			<column name="DATE_CREATED" type="timestamp" length="29" decimal="6" jt="93" mandatory="y" >
+				<defo>now()</defo>
+			</column>
+			<column name="DEVICE_PROPERTY" type="varchar" length="30" decimal="0" jt="12" />
+			<column name="ELEMENT_NAME" type="varchar" length="60" decimal="0" jt="12" />
+			<column name="DEVICE_VALUE" type="float8" length="17" decimal="17" jt="6" />
+			<column name="ZPOS" type="numeric" decimal="0" jt="2" />
+			<column name="INITIAL_VALUE" type="float8" length="17" decimal="17" jt="6" />
+			<column name="UNITS" type="varchar" length="10" decimal="0" jt="12" />
+			<index name="MODEL_DEVICES_pkey" unique="PRIMARY_KEY" >
+				<column name="ID" />
+			</index>
+			<constraint name="ckc_model_devices_dev_prop" >
+				<string>(&quot;DEVICE_PROPERTY&quot; IS NULL) OR ((&quot;DEVICE_PROPERTY&quot;)::text = ANY ((ARRAY[&#039;B&#039;::character varying, &#039;BACT&#039;::character varying, &#039;BDES&#039;::character varying, &#039;A&#039;::character varying, &#039;P&#039;::character varying, &#039;ADES&#039;::character varying, &#039;PDES&#039;::character varying, &#039;APRX&#039;::character varying, &#039;MISX&#039;::character varying, &#039;MISY&#039;::character varying, &#039;MISZ&#039;::character varying, &#039;ROTX&#039;::character varying, &#039;ROTY&#039;::character varying, &#039;ROTZ&#039;::character varying, &#039;ENBL&#039;::character varying])::text[]))</string>
+			</constraint>
+			<fk name="MODEL_DEVICES_RUNS_ID_fkey" to_schema="MACHINE_MODEL" to_table="RUNS" delete_action="cascade" >
+				<fk_column name="RUNS_ID" pk="ID" />
+			</fk>
+		</table>
+		<table name="RUNS" >
+			<comment><![CDATA[MODEL_RUNS
+Keeps track of each tracking "run" done by XAL GUI.
+Each row in the GUI's runs table corresponds to one row of this table.]]></comment>
+			<column name="ID" type="serial" length="10" decimal="0" jt="4" mandatory="y" />
+			<column name="CREATED_BY" type="varchar" length="30" decimal="0" jt="12" mandatory="y" >
+				<defo>&quot;current_user&quot;()</defo>
+			</column>
+			<column name="DATE_CREATED" type="timestamp" length="29" decimal="6" jt="93" mandatory="y" >
+				<defo>now()</defo>
+			</column>
+			<column name="RUN_SOURCE_CHK" type="varchar" length="60" decimal="0" jt="12" />
+			<column name="RUN_ELEMENT_DATE" type="timestamp" length="29" decimal="6" jt="93" >
+				<defo>now()</defo>
+			</column>
+			<column name="RUN_DEVICE_DATE" type="timestamp" length="29" decimal="6" jt="93" >
+				<defo>now()</defo>
+			</column>
+			<column name="COMMENTS" type="varchar" length="200" decimal="0" jt="12" />
+			<column name="MODEL_MODES_ID" type="varchar" length="60" decimal="0" jt="12" />
+			<index name="RUNS_pkey" unique="PRIMARY_KEY" >
+				<column name="ID" />
+			</index>
+			<constraint name="ckc_run_source_chk_runs" >
+				<string>(&quot;RUN_SOURCE_CHK&quot; IS NULL) OR ((&quot;RUN_SOURCE_CHK&quot;)::text = ANY ((ARRAY[&#039;DESIGN&#039;::character varying, &#039;EXTANT&#039;::character varying, &#039;PVLOGGER&#039;::character varying, &#039;MANUAL&#039;::character varying])::text[]))</string>
+			</constraint>
+		</table>
+		<view name="V_GOLD_REPORT" >
+			<comment><![CDATA[GOLD_REPORT
+displays all GOLD models, the last DESIGN and EXTAND marked with 'PRESENT']]></comment>
+			<view_script><![CDATA[( SELECT g."ID",
+    g."RUNS_ID" AS "RUN_ID",
+    'PRESENT'::text AS "GOLD_STATUS_NO_CSS",
+    g."COMMENTS",
+    g."CREATED_BY",
+    g."DATE_CREATED",
+    r."RUN_SOURCE_CHK"
+   FROM "MACHINE_MODEL"."GOLD" g,
+    "MACHINE_MODEL"."RUNS" r
+  WHERE ((g."RUNS_ID" = r."ID") AND ((r."RUN_SOURCE_CHK")::text = 'DESIGN'::text))
+  ORDER BY g."DATE_CREATED" DESC
+ LIMIT 1)
+UNION
+( SELECT g."ID",
+    g."RUNS_ID" AS "RUN_ID",
+    'PRESENT'::text AS "GOLD_STATUS_NO_CSS",
+    g."COMMENTS",
+    g."CREATED_BY",
+    g."DATE_CREATED",
+    r."RUN_SOURCE_CHK"
+   FROM "MACHINE_MODEL"."GOLD" g,
+    "MACHINE_MODEL"."RUNS" r
+  WHERE ((g."RUNS_ID" = r."ID") AND ((r."RUN_SOURCE_CHK")::text = 'EXTANT'::text))
+  ORDER BY g."DATE_CREATED" DESC
+ LIMIT 1)
+UNION
+( SELECT g."ID",
+    g."RUNS_ID" AS "RUN_ID",
+    'PREVIOUS'::text AS "GOLD_STATUS_NO_CSS",
+    g."COMMENTS",
+    g."CREATED_BY",
+    g."DATE_CREATED",
+    r."RUN_SOURCE_CHK"
+   FROM "MACHINE_MODEL"."GOLD" g,
+    "MACHINE_MODEL"."RUNS" r
+  WHERE (g."RUNS_ID" = r."ID")
+  ORDER BY g."DATE_CREATED" DESC);]]></view_script>
+			<column name="COMMENTS" type="varchar" />
+			<column name="CREATED_BY" type="varchar" />
+			<column name="DATE_CREATED" type="timestamp" />
+			<column name="GOLD_STATUS_NO_CSS" type="text" />
+			<column name="ID" type="integer" />
+			<column name="RUN_ID" type="integer" />
+			<column name="RUN_SOURCE_CHK" type="varchar" />
+		</view>
+		<sequence name="DEVICE_TYPES_ID_seq" start="1" />
+		<sequence name="ELEMENT_MODELS_ID_seq" start="1" />
+		<sequence name="GOLD_ID_seq" start="1" />
+		<sequence name="MODEL_DEVICES_ID_seq" start="1" />
+		<sequence name="RUNS_ID_seq" start="1" />
+		<function name="GOLD_THIS_MODEL" id="Function_3a728eae" isSystem="false" />
+	</schema>
+	<connector name="machine_model" database="PostgreSQL" driver_class="org.postgresql.Driver" driver_jar="postgresql-9.2-1003.jdbc3.jar" host="localhost" port="5432" instance="machine_model" user="machinemodel" passwd="cGh5c2ljc2wxbmFjc3R1ZmY=" schema_mapping="" />
+	<layout id="Layout_1805b6d1" name="MACHINE_MODEL" joined_routing="y" show_column_type="y" show_schema_name="y" show_relation_columns="y" >
+		<entity schema="MACHINE_MODEL" name="ELEMENT_MODELS" color="bfd4f5" x="705" y="210" >
+			<callout x="255" y="45" pointer="SE" />
+		</entity>
+		<entity schema="MACHINE_MODEL" name="V_GOLD_REPORT" color="bfd4f5" x="480" y="990" >
+			<callout x="480" y="1155" pointer="NV" />
+		</entity>
+		<entity schema="MACHINE_MODEL" name="RUNS" color="bfd4f5" x="450" y="735" >
+			<callout x="225" y="915" pointer="NE" />
+		</entity>
+		<entity schema="MACHINE_MODEL" name="GOLD" color="bfd4f5" x="465" y="600" >
+			<callout x="180" y="675" pointer="Round" />
+		</entity>
+		<entity schema="MACHINE_MODEL" name="DEVICE_TYPES" color="bfd4f5" x="150" y="375" >
+			<callout x="90" y="540" pointer="NE" />
+		</entity>
+		<entity schema="MACHINE_MODEL" name="MODEL_DEVICES" color="bfd4f5" x="420" y="360" >
+			<callout x="45" y="150" pointer="SE" />
+		</entity>
+	</layout>
+</project>

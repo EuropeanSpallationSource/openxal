@@ -1,0 +1,1372 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.1 plus MathML 2.0 plus SVG 1.1//EN' 'http://www.w3.org/2002/04/xhtml-math-svg/xhtml-math-svg.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml' >
+<head>
+<title>MACHINE&#95;MODEL</title>
+<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/>
+<meta http-equiv='X-UA-Compatible' content='IE=edge'/>
+<style type='text/css'>
+body {
+    font-family: 'trebuchet MS', 'Lucida sans', Dialog;
+    font-size: 12px;
+    color: #444;
+}
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+.bordered {
+    border: solid #ccc 1px;
+    -moz-border-radius: 6px;
+    -webkit-border-radius: 6px;
+    border-radius: 6px;
+    -webkit-box-shadow: 0 1px 1px #ccc;
+    -moz-box-shadow: 0 1px 1px #ccc;
+    box-shadow: 0 1px 1px #ccc;
+}
+
+.bordered tr:hover {
+    background: #fbf8e9;
+    -o-transition: all 0.1s ease-in-out;
+    -webkit-transition: all 0.1s ease-in-out;
+    -moz-transition: all 0.1s ease-in-out;
+    -ms-transition: all 0.1s ease-in-out;
+    transition: all 0.1s ease-in-out;
+}
+
+.bordered td, .bordered th {
+    border-left: 1px solid #ccc;
+    border-top: 1px solid #ccc;
+    padding: 4px;
+    text-align: left;
+}
+
+.bordered th {
+    background-color: #d7d7ea;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#f4f4fb), to(#d7d7ea));
+    background-image: -webkit-linear-gradient(top, #f4f4fb, #d7d7ea);
+    background-image:    -moz-linear-gradient(top, #f4f4fb, #d7d7ea);
+    background-image:     -ms-linear-gradient(top, #f4f4fb, #d7d7ea);
+    background-image:      -o-linear-gradient(top, #f4f4fb, #d7d7ea);
+    background-image:         linear-gradient(top, #f4f4fb, #d7d7ea);
+    -webkit-box-shadow: 0 1px 0 rgba(255,255,255,.8) inset;
+    -moz-box-shadow:0 1px 0 rgba(255,255,255,.8) inset;
+    box-shadow: 0 1px 0 rgba(255,255,255,.8) inset;
+    border-top: none;
+    text-shadow: 0 1px 0 rgba(255,255,255,.5);
+}
+
+.bordered td:first-child, .bordered th:first-child {
+    border-left: none;
+}
+
+.bordered th:first-child {
+    -moz-border-radius: 6px 0 0 0;
+    -webkit-border-radius: 6px 0 0 0;
+    border-radius: 6px 0 0 0;
+}
+
+.bordered th:last-child {
+    -moz-border-radius: 0 6px 0 0;
+    -webkit-border-radius: 0 6px 0 0;
+    border-radius: 0 6px 0 0;
+}
+
+.bordered th:only-child{
+    -moz-border-radius: 6px 6px 0 0;
+    -webkit-border-radius: 6px 6px 0 0;
+    border-radius: 6px 6px 0 0;
+}
+
+.bordered tr:last-child td:first-child {
+    -moz-border-radius: 0 0 0 6px;
+    -webkit-border-radius: 0 0 0 6px;
+    border-radius: 0 0 0 6px;
+}
+
+.bordered tr:last-child td:last-child {
+    -moz-border-radius: 0 0 6px 0;
+    -webkit-border-radius: 0 0 6px 0;
+    border-radius: 0 0 6px 0;
+}
+
+</style>
+</head>
+
+<body>
+<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'   width='990' height='1341' viewbox='0 0 990 1341' >
+  <script type='text/ecmascript'>
+  <![CDATA[
+  function hghl(el) { for ( var i in el ){ document.getElementById(el[i]).setAttribute('class','highlight');  }  }
+  function uhghl(el) { for ( var i in el ){ document.getElementById(el[i]).setAttribute('class','scene'); }  } 
+  ]]>
+  </script> 
+
+<style type='text/css'>
+  text                { fill:#000000; font-family: Ubuntu, 'Trebuchet MS', Dialog; font-size:12px; }
+  text:hover          { fill:#a00000; font-size:13px; }
+  text.highlight      { fill:#a00000; font-size:13px; }
+  text.colType        { fill:#b3b3b3; }
+  path                { stroke:#54402e; stroke-width:1.25; fill:none; }
+  path.scene          { stroke-width:10; opacity:0;}
+  path.highlight      { stroke-width:7; stroke:#e5d78a; opacity:0.6;}
+  rect.table          { fill:#ffffff; stroke:#101010; stroke-width:0.44; filter:url(#shadow); }
+  line.delim          { stroke:#222; stroke-width:0.3; }
+  rect.callout        { fill:url(#calloutGradient); stroke:#bebdbd; stroke-width:0.5; filter: url(#shadow);}
+  rect.grp            { stroke:#b1b1b1; stroke-width:1.7; }
+</style>
+<defs>
+  <pattern patternUnits='userSpaceOnUse' id='layoutBgA' width='10' height='20' x='0' y='0' viewBox='0 0 5 10'>  
+     <line x1='-2' y1='1' x2='7' y2='10' stroke='#f3f3f3' stroke-width='.5'/>  
+     <line x1='-2' y1='6' x2='7' y2='15' stroke='#f3f3f3' stroke-width='.5'/>  
+     <line x1='-2' y1='-4' x2='7' y2='5' stroke='#f3f3f3' stroke-width='.5'/>  
+  </pattern>  
+  <radialGradient id='layoutBgB' gradientUnits='userSpaceOnUse' cx='50%' cy='50%' r='75%' fx='46%' fy='22%'>
+     <stop offset='0%' stop-opacity='.2' stop-color='#f0f0f0' />  
+     <stop offset='100%' stop-color='#e7e7e7' />  
+  </radialGradient>
+  <linearGradient id='tableHeaderGradient0' x1='0%' y1='0%' x2='0%' y2='90%' >
+          <stop offset='-50%' stop-color='#bfd4f5'/> 
+          <stop offset='20%' stop-color='#fafafa'/> 
+          <stop offset='100%' stop-color='#bfd4f5'/> 
+   </linearGradient>
+  <linearGradient id='groupUnderTitleLine' x1='0%' y1='0%' x2='100%' y2='0%' >
+          <stop offset='0%' stop-color='#999999' stop-opacity='0.7'/> 
+          <stop offset='100%' stop-color='#999999' stop-opacity='0' /> 
+   </linearGradient>
+  <radialGradient id='calloutGradient' cx='25%' cy='20%' r='80%' fx='10%' fy='10%'>
+	   <stop offset='0%' stop-color='#ffffff' />
+    <stop offset='100%' stop-color='#f8f6d1' />
+  </radialGradient>
+  <filter id='shadow' width='120%' height='120%'> 
+      <feOffset result='offOut' in='SourceGraphic' dx='2' dy='2' /> 
+      <feColorMatrix result='matrixOut' in='offOut' type='matrix' 
+      values='0.1 0 0 0 0 0 0.1 0 0 0 0 0 0.1 0 0 0 0 0 0.5 0' /> 
+      <feGaussianBlur result='blurOut' in='matrixOut' stdDeviation='3' /> 
+      <feBlend in='SourceGraphic' in2='blurOut' mode='normal' /> 
+    </filter> 
+  <filter id='fkShadow' height='130%'> 
+    <feGaussianBlur in='SourceAlpha' stdDeviation='1.5'/> <!-- stdDeviation is how much to blur -->
+    <feOffset dx='1.2' dy='1.2' result='offsetblur'/> <!-- how much to offset -->
+    <feMerge>
+    <feMergeNode/> <!-- this contains the offset blurred image -->
+    <feMergeNode in='SourceGraphic'/> <!-- this contains the element that the filter is applied to -->
+    </feMerge>
+  </filter>
+  <radialGradient id='legendGradient' fx='5%' fy='5%' r='75%' spreadMethod='pad'>
+          <stop offset='0%' stop-color='#eaf6ee' stop-opacity='1'/> 
+          <stop offset='100%' stop-color='#cce3ca' stop-opacity='1' /> 
+   </radialGradient>
+  <symbol id='calloutArrowDown' overflow='visible' >
+      <path d='M 0,0 L 7,11 L 15,0 z' style='fill:#f8f6d1;stroke:none; filter: url(#shadow);' />
+      <path d='M 0,0 L 7,11 L 15,0' style='stroke:#bebdbd; stroke-width:0.5;' />
+  </symbol>
+  <symbol id='calloutArrowUp' overflow='visible' >
+      <path d='M 0,15 L 7,3 L 15,15 z' style='fill:#ffffff; stroke:none; filter: url(#shadow);' />
+      <path d='M 0,15 L 7,3 L 15,15' style='stroke:#bebdbd; stroke-width:0.5;' />
+  </symbol>
+  <symbol id='pk' overflow='visible' >
+    <g transform='scale(0.99)'>
+     <path style='fill:#fbea8e;stroke:#472106;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;'
+        d='M 9.3678877,3.5695485 C 9.1030218,3.2729386 9.0796382,2.7628519 9.3396185,2.4517097 9.5449651,2.1956495 9.9040386,2.0980533 10.199638,2.2169415 10.533525,2.3415459 10.775153,2.706942 10.750675,3.0842709 10.737029,3.3980003 10.541153,3.699122 10.258248,3.8066067 9.966649,3.9250429 9.6169668,3.8418805 9.4008073,3.6062324 9.3894892,3.5943518 9.3785264,3.582104 9.3678886,3.5695487 z M 11.226617,6.9916004 C 11.888137,6.3548946 12.293488,5.4172188 12.311087,4.442353 12.378144,2.7379364 11.248678,1.0541269 9.7322318,0.44767357 8.3887112,-0.1280313 6.7865012,0.26822889 5.8918395,1.4007929 5.080823,2.3839145 4.9336815,3.8452096 5.3635544,5.101615 L 4.3670905,5.315913 C 4.0664984,5.3682645 4.0967703,5.6316724 4.2574957,5.8208829 L 4.9124,6.5655244 4.1543436,7.2512357 3.2136002,7.2163506 3.1674775,8.5586827 2.0406832,8.5086512 1.5965306,8.9299953 1.5471661,10.179833 0.75616674,10.195223 0.2112857,10.758575 0.15354288,11.735988 0.07199052,12.765553 c 0.36440953,0.238225 0.79006967,0.195492 1.44938278,-0.02675 L 6.3033562,8.1282037 6.8217102,8.6765688 C 6.9985465,8.8799427 7.3003699,8.7497574 7.358381,8.5016252 L 7.4938877,7.5084164 c 0.8537488,0.3985387 1.8303125,0.4711541 2.6851793,0.1427713 0.393927,-0.1407258 0.746858,-0.3701772 1.04755,-0.6595873 z'/>
+     <path d='M 6.8014948,6.3102123 0.15369063,13.024481 0.21560535,12.141962 6.0062342,6.2683782 z'
+        style='fill:#ffe5a5;fill-opacity:1;stroke:#854e31;stroke-width:0.06912433;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:3.00300009'/>
+    </g>
+  </symbol>
+  <symbol id='unq' overflow='visible' >
+    <g transform='scale(0.99)'>
+      <rect style='fill:#e07554;stroke:#7e4d31;stroke-width:0.71934468;stroke-linecap:round;stroke-linejoin:round;'
+         width='2.29' height='8.43' x='7.48' y='-0.76' ry='1.14' transform='matrix(0.701,0.713,-0.727,0.685,0,0)' />
+      <path style='fill:white;stroke:#858585;stroke-width:1.2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;'
+         d='m 26.04,8.64 a 4.13,4.13 0 1 1 -8.26,0 4.13,4.13 0 1 1 8.26,0 z'
+         transform='matrix(1.025,0,0,0.987,-14.690,-3.862)' />
+      <text x='5.5' y='7.7' style='font-size:8px;fill:#8a8a8a;'>1</text>
+    </g>
+  </symbol>
+  <symbol id='idx' overflow='visible' >
+    <g transform='scale(0.99)'>
+      <rect style='fill:#e07554;stroke:#7e4d31;stroke-width:0.71934468;stroke-linecap:round;stroke-linejoin:round;'
+         width='2.29' height='8.43' x='7.48' y='-0.76' ry='1.14' transform='matrix(0.701,0.713,-0.727,0.685,0,0)' />
+      <path style='fill:white;stroke:#858585;stroke-width:1.2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;'
+         d='m 26.04,8.64 a 4.13,4.13 0 1 1 -8.26,0 4.13,4.13 0 1 1 8.26,0 z'
+         transform='matrix(1.025,0,0,0.987,-14.690,-3.862)' />
+    </g>
+  </symbol>
+  <symbol id='fk' overflow='visible' >
+    <g transform='scale(0.87)'>
+      <path style='fill:#b7d0f6;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;'
+      d='M 12.48,0.33 7.07,0.89 9.067,2.974 0.329,11.731 1.073,12.597 9.811,3.841 11.77,5.78 z' />
+    </g>
+  </symbol>
+  <symbol id='ref' overflow='visible' >
+    <g transform='scale(0.87)'>
+      <path style='fill:#f3e1b7;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;'
+          d='M 0.10,12.70 5.31,12.15 3.40,10.06 11.82,1.32 11.11,0.45 2.68,9.19 0.80,7.24 z'/>
+    </g>
+  </symbol>
+  <symbol id='flag' overflow='visible' >
+    <g transform='scale(0.92)'>
+      <path style='fill:#b7d0f6;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;'
+          d='M 0.12,12.67 0.16,7.22 C 2.59,7.22 4.13,8.78 9.22,4.22 5.68,4.98 2.53,4.50 0.09,1.80 z'/>
+    </g>
+  </symbol>
+  <symbol id='nn' overflow='visible' >
+  <path style='stroke:#9b3e50;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;'
+          d='M 0,0 3,3 M 0,3 3,0 z'/>
+  </symbol>
+  <marker id='arrow01' viewBox='0 0 15.00 7.50' refX='7.50' refY='3.75' markerUnits='strokeWidth' markerWidth='15.00' markerHeight='7.50' orient='auto'>
+    <path d='M 0.00,3.75 L 15.00,3.75 z' />
+  </marker>
+  <marker id='arrow1' viewBox='0 0 15.00 7.50' refX='7.50' refY='3.75' markerUnits='strokeWidth' markerWidth='15.00' markerHeight='7.50' orient='auto'>
+    <path d='M 0.00,3.75 L 15.00,3.75 z' />
+  </marker>
+  <marker id='foot01' viewBox='0 0 15.00 7.50' refX='7.50' refY='3.75' markerUnits='strokeWidth' markerWidth='15.00' markerHeight='7.50' orient='auto'>
+    <path d='M 1.50,3.75 L 3.00,3.75 L 4.50,3.75 L 6.00,3.75 z' />
+  </marker>
+  <marker id='foot0p' viewBox='0 0 15.00 7.50' refX='7.50' refY='3.75' markerUnits='strokeWidth' markerWidth='15.00' markerHeight='7.50' orient='auto'>
+    <path d='M 1.50,3.75 L 3.00,3.75 L 4.50,3.75 L 6.00,3.75 z' />
+    <path d='M 0.00,0.00 L 7.50,3.75 L 0.00,7.50' />
+  </marker>
+  <marker id='foot1' viewBox='0 0 15.00 7.50' refX='7.50' refY='3.75' markerUnits='strokeWidth' markerWidth='15.00' markerHeight='7.50' orient='auto'>
+    <path d='M 0.00,3.75 L 15.00,3.75 z' />
+  </marker>
+  <marker id='foot1p' viewBox='0 0 15.00 7.50' refX='7.50' refY='3.75' markerUnits='strokeWidth' markerWidth='15.00' markerHeight='7.50' orient='auto'>
+    <path d='M 0.00,3.75 L 15.00,3.75 z' />
+    <path d='M 0.00,0.00 L 7.50,3.75 L 0.00,7.50' />
+  </marker>
+  <linearGradient id='tbg_bfd4f5' x1='0%' y1='0%' x2='0%' y2='100%' >
+     <stop offset='0%' stop-color='#ffffff' /> 
+     <stop offset='100%' stop-color='#bfd4f5' /> 
+  </linearGradient>
+</defs>
+
+<!-- ============= Desktop ============= -->
+<rect x='1' y='1' width='988' height='1339' rx='7' ry='7' style='fill:url(#layoutBgA); stroke:#333333; stroke-width:0.5;' />
+<rect x='1' y='1' width='988' height='1339' rx='7' ry='7' style='fill:url(#layoutBgB)'/>
+
+<!-- ============= Legend ============= -->
+<g transform='translate(10,10)'>
+  <rect x='10' y='10' width='260' height='64' rx='6' ry='6' style='fill:url(#legendGradient);filter:url(#shadow);'/> 
+  <text x='20' y='30'><tspan>Project</tspan> machine_model by <a xlink:href='http://www.dbschema.com' text-decoration='underline'>DbSchema</a></text> 
+  <text x='20' y='44'><tspan>Layout</tspan> MACHINE_MODEL</text> 
+  <text x='20' y='58' style='fill:#777'><tspan>Column comments as mouse-over tooltips.</tspan></text> 
+</g>
+
+<g transform='translate(0,110)'>
+<!-- ============= Fk 'ELEMENT_MODELS_ELEMENT_MODELS_RUNS_ID_fkey' ============= -->
+<path id='ELEMENT_MODELS_ELEMENT_MODELS_RUNS_ID_fkey'  onmouseover="hghl(['ELEMENT_MODELS_ELEMENT_MODELS_RUNS_ID_fkey','MACHINE_MODEL.ELEMENT_MODELS.RUNS_ID','MACHINE_MODEL.RUNS.ID'])" onmouseout="uhghl(['ELEMENT_MODELS_ELEMENT_MODELS_RUNS_ID_fkey','MACHINE_MODEL.ELEMENT_MODELS.RUNS_ID','MACHINE_MODEL.RUNS.ID'])" transform='translate(7,0)' class='scene' d='M 690 255 L 682,255 Q 675,255 675,262 L 675,757 Q 675,765 667,765 L 660,765' >
+	<title>Fk ELEMENT_MODELS_RUNS_ID_fkey
+ELEMENT_MODELS ref RUNS ( RUNS_ID -&gt; ID )</title>
+</path>
+<path class='defo' transform='translate(7,0)' marker-start='url(#foot0p)' marker-end='url(#arrow1)'  style='stroke-dasharray:4,2;'  d='M 690 255 L 682,255 Q 675,255 675,262 L 675,757 Q 675,765 667,765 L 660,765' ></path>
+<text x='644' y='250' transform='rotate(0 644,250)' title='Fk ELEMENT_MODELS_RUNS_ID_fkey
+ELEMENT_MODELS ref RUNS ( RUNS_ID -&gt; ID )' style='fill:#cfc391;'>RUNS_ID</text>
+<!-- ============= Fk 'GOLD_GOLD_RUNS_ID_fkey' ============= -->
+<path id='GOLD_GOLD_RUNS_ID_fkey'  onmouseover="hghl(['GOLD_GOLD_RUNS_ID_fkey','MACHINE_MODEL.GOLD.RUNS_ID','MACHINE_MODEL.RUNS.ID'])" onmouseout="uhghl(['GOLD_GOLD_RUNS_ID_fkey','MACHINE_MODEL.GOLD.RUNS_ID','MACHINE_MODEL.RUNS.ID'])" transform='translate(7,0)' class='scene' d='M 645 645 L 667,645 Q 675,645 675,652 L 675,660' >
+	<title>Fk GOLD_RUNS_ID_fkey
+GOLD ref RUNS ( RUNS_ID -&gt; ID )</title>
+</path>
+<path class='defo' transform='translate(7,0)' marker-start='url(#foot0p)'   style='stroke-dasharray:4,2;'  d='M 645 645 L 667,645 Q 675,645 675,652 L 675,660' ></path>
+<text x='652' y='640' transform='rotate(0 652,640)' title='Fk GOLD_RUNS_ID_fkey
+GOLD ref RUNS ( RUNS_ID -&gt; ID )' style='fill:#cfc391;'>RUNS_ID</text>
+<!-- ============= Fk 'MODEL_DEVICES_MODEL_DEVICES_RUNS_ID_fkey' ============= -->
+<path id='MODEL_DEVICES_MODEL_DEVICES_RUNS_ID_fkey'  onmouseover="hghl(['MODEL_DEVICES_MODEL_DEVICES_RUNS_ID_fkey','MACHINE_MODEL.MODEL_DEVICES.RUNS_ID','MACHINE_MODEL.RUNS.ID'])" onmouseout="uhghl(['MODEL_DEVICES_MODEL_DEVICES_RUNS_ID_fkey','MACHINE_MODEL.MODEL_DEVICES.RUNS_ID','MACHINE_MODEL.RUNS.ID'])" transform='translate(7,0)' class='scene' d='M 660 405 L 667,405 Q 675,405 675,412 L 675,420' >
+	<title>Fk MODEL_DEVICES_RUNS_ID_fkey
+MODEL_DEVICES ref RUNS ( RUNS_ID -&gt; ID )</title>
+</path>
+<path class='defo' transform='translate(7,0)' marker-start='url(#foot0p)'   style='stroke-dasharray:4,2;'  d='M 660 405 L 667,405 Q 675,405 675,412 L 675,420' ></path>
+<text x='667' y='400' transform='rotate(0 667,400)' title='Fk MODEL_DEVICES_RUNS_ID_fkey
+MODEL_DEVICES ref RUNS ( RUNS_ID -&gt; ID )' style='fill:#cfc391;'>RUNS_ID</text>
+<!-- ============= Table 'ELEMENT_MODELS' ============= -->
+<rect class='table' x='705' y='203' width='240' height='930' rx='7' ry='7' style='fill:url(#tbg_bfd4f5);'/>
+<line class='delim' x1='705.500000' y1='229.500000' x2='944.500000' y2='229.500000'/>
+<line class='delim' x1='720.500000' y1='229.500000' x2='720.500000' y2='1132.500000'/>
+<line class='delim' x1='933.500000' y1='229.500000' x2='933.500000' y2='1132.500000'/>
+<line style='stroke:#c4c4c4;stroke-width:1;' x1='705.50' y1='229.50' x2='944.50' y2='229.50'/>
+<a xlink:href='#ELEMENT_MODELS'><text x='720' y='221'>MACHINE_MODEL.ELEMENT_MODELS</text><title>Table MACHINE_MODEL.ELEMENT_MODELS
+ELEMENT_MODELS
+The Twiss parameters and R-matrices for each device element, for each run. 
+Ie, the number of rows is roughly number of elements in each model (huge table).
+Most devices are equivalent to one elment, but there are exceptions which corespond to more.
+For example quads correspond to 3, being the twiss and R-matrices at the begnning, middle and end of the quadrupole.</title></a>
+  <use id='nn' x='707' y='237' xlink:href='#nn'/><a xlink:href='#ELEMENT_MODELS.ID'><use id='pk' x='707' y='236' xlink:href='#pk'/><title>Pk ELEMENT_MODELS_pkey ( ID ) </title></a>
+<a xlink:href='#ELEMENT_MODELS.ID'><text id='MACHINE_MODEL.ELEMENT_MODELS.ID' x='723' y='247'>ID</text><text x='930' y='247' text-anchor='end' class='colType'>serial</text><title>ID
+* serial</title></a>
+  <a xlink:href='#ELEMENT_MODELS.RUNS_ID'><text id='MACHINE_MODEL.ELEMENT_MODELS.RUNS_ID' x='723' y='262' onmouseover="hghl(['ELEMENT_MODELS_ELEMENT_MODELS_RUNS_ID_fkey'])" onmouseout="uhghl(['ELEMENT_MODELS_ELEMENT_MODELS_RUNS_ID_fkey'])">RUNS_ID</text><text x='930' y='262' text-anchor='end' class='colType'>integer</text><title>RUNS_ID
+integer</title></a>
+<a xlink:href='#ELEMENT_MODELS.RUNS_ID'><use id='fk' x='933' y='251' xlink:href='#fk'/><title>References RUNS ( RUNS_ID -&gt; ID ) </title></a>
+  <a xlink:href='#ELEMENT_MODELS.LCLS_ELEMENTS_ELEMENT_ID'><text id='MACHINE_MODEL.ELEMENT_MODELS.LCLS_ELEMENTS_ELEMENT_ID' x='723' y='277'>LCLS_ELEMENTS_ELEMENT_ID</text><text x='930' y='277' text-anchor='end' class='colType'>integer</text><title>LCLS_ELEMENTS_ELEMENT_ID
+integer</title></a>
+  <use id='nn' x='707' y='282' xlink:href='#nn'/><a xlink:href='#ELEMENT_MODELS.CREATED_BY'><text id='MACHINE_MODEL.ELEMENT_MODELS.CREATED_BY' x='723' y='292'>CREATED_BY</text><text x='930' y='292' text-anchor='end' class='colType'>varchar(30)</text><title>CREATED_BY
+* varchar(30) default "current_user"()</title></a>
+  <a xlink:href='#ELEMENT_MODELS.DATE_CREATED'><text id='MACHINE_MODEL.ELEMENT_MODELS.DATE_CREATED' x='723' y='307'>DATE_CREATED</text><text x='930' y='307' text-anchor='end' class='colType'>timestamp</text><title>DATE_CREATED
+timestamp default now()</title></a>
+  <a xlink:href='#ELEMENT_MODELS.ELEMENT_NAME'><text id='MACHINE_MODEL.ELEMENT_MODELS.ELEMENT_NAME' x='723' y='322'>ELEMENT_NAME</text><text x='930' y='322' text-anchor='end' class='colType'>varchar(60)</text><title>ELEMENT_NAME
+varchar(60)</title></a>
+  <a xlink:href='#ELEMENT_MODELS.INDEX_SLICE_CHK'><text id='MACHINE_MODEL.ELEMENT_MODELS.INDEX_SLICE_CHK' x='723' y='337'>INDEX_SLICE_CHK</text><text x='930' y='337' text-anchor='end' class='colType'>integer</text><title>INDEX_SLICE_CHK
+integer</title></a>
+  <a xlink:href='#ELEMENT_MODELS.ZPOS'><text id='MACHINE_MODEL.ELEMENT_MODELS.ZPOS' x='723' y='352'>ZPOS</text><text x='930' y='352' text-anchor='end' class='colType'>numeric(-9999999,0)</text><title>ZPOS
+numeric(-9999999,0)</title></a>
+  <a xlink:href='#ELEMENT_MODELS.EK'><text id='MACHINE_MODEL.ELEMENT_MODELS.EK' x='723' y='367'>EK</text><text x='930' y='367' text-anchor='end' class='colType'>numeric(-9999999,0)</text><title>EK
+numeric(-9999999,0)</title></a>
+  <a xlink:href='#ELEMENT_MODELS.ALPHA_X'><text id='MACHINE_MODEL.ELEMENT_MODELS.ALPHA_X' x='723' y='382'>ALPHA_X</text><text x='930' y='382' text-anchor='end' class='colType'>numeric(-9999999,0)</text><title>ALPHA_X
+numeric(-9999999,0)</title></a>
+  <a xlink:href='#ELEMENT_MODELS.ALPHA_Y'><text id='MACHINE_MODEL.ELEMENT_MODELS.ALPHA_Y' x='723' y='397'>ALPHA_Y</text><text x='930' y='397' text-anchor='end' class='colType'>numeric(-9999999,0)</text><title>ALPHA_Y
+numeric(-9999999,0)</title></a>
+  <a xlink:href='#ELEMENT_MODELS.BETA_X'><text id='MACHINE_MODEL.ELEMENT_MODELS.BETA_X' x='723' y='412'>BETA_X</text><text x='930' y='412' text-anchor='end' class='colType'>numeric(-9999999,0)</text><title>BETA_X
+numeric(-9999999,0)</title></a>
+  <a xlink:href='#ELEMENT_MODELS.BETA_Y'><text id='MACHINE_MODEL.ELEMENT_MODELS.BETA_Y' x='723' y='427'>BETA_Y</text><text x='930' y='427' text-anchor='end' class='colType'>numeric(-9999999,0)</text><title>BETA_Y
+numeric(-9999999,0)</title></a>
+  <a xlink:href='#ELEMENT_MODELS.PSI_X'><text id='MACHINE_MODEL.ELEMENT_MODELS.PSI_X' x='723' y='442'>PSI_X</text><text x='930' y='442' text-anchor='end' class='colType'>numeric(-9999999,0)</text><title>PSI_X
+numeric(-9999999,0)</title></a>
+  <a xlink:href='#ELEMENT_MODELS.PSI_Y'><text id='MACHINE_MODEL.ELEMENT_MODELS.PSI_Y' x='723' y='457'>PSI_Y</text><text x='930' y='457' text-anchor='end' class='colType'>numeric(-9999999,0)</text><title>PSI_Y
+numeric(-9999999,0)</title></a>
+  <a xlink:href='#ELEMENT_MODELS.ETA_X'><text id='MACHINE_MODEL.ELEMENT_MODELS.ETA_X' x='723' y='472'>ETA_X</text><text x='930' y='472' text-anchor='end' class='colType'>numeric(-9999999,0)</text><title>ETA_X
+numeric(-9999999,0)</title></a>
+  <a xlink:href='#ELEMENT_MODELS.ETA_Y'><text id='MACHINE_MODEL.ELEMENT_MODELS.ETA_Y' x='723' y='487'>ETA_Y</text><text x='930' y='487' text-anchor='end' class='colType'>numeric(-9999999,0)</text><title>ETA_Y
+numeric(-9999999,0)</title></a>
+  <a xlink:href='#ELEMENT_MODELS.ETAP_X'><text id='MACHINE_MODEL.ELEMENT_MODELS.ETAP_X' x='723' y='502'>ETAP_X</text><text x='930' y='502' text-anchor='end' class='colType'>numeric(-9999999,0)</text><title>ETAP_X
+numeric(-9999999,0)</title></a>
+  <a xlink:href='#ELEMENT_MODELS.ETAP_Y'><text id='MACHINE_MODEL.ELEMENT_MODELS.ETAP_Y' x='723' y='517'>ETAP_Y</text><text x='930' y='517' text-anchor='end' class='colType'>numeric(-9999999,0)</text><title>ETAP_Y
+numeric(-9999999,0)</title></a>
+  <a xlink:href='#ELEMENT_MODELS.R11'><text id='MACHINE_MODEL.ELEMENT_MODELS.R11' x='723' y='532'>R11</text><text x='930' y='532' text-anchor='end' class='colType'>numeric(-9999999,0)</text><title>R11
+numeric(-9999999,0)</title></a>
+  <a xlink:href='#ELEMENT_MODELS.R12'><text id='MACHINE_MODEL.ELEMENT_MODELS.R12' x='723' y='547'>R12</text><text x='930' y='547' text-anchor='end' class='colType'>numeric(-9999999,0)</text><title>R12
+numeric(-9999999,0)</title></a>
+  <a xlink:href='#ELEMENT_MODELS.R13'><text id='MACHINE_MODEL.ELEMENT_MODELS.R13' x='723' y='562'>R13</text><text x='930' y='562' text-anchor='end' class='colType'>numeric(-9999999,0)</text><title>R13
+numeric(-9999999,0)</title></a>
+  <a xlink:href='#ELEMENT_MODELS.R14'><text id='MACHINE_MODEL.ELEMENT_MODELS.R14' x='723' y='577'>R14</text><text x='930' y='577' text-anchor='end' class='colType'>numeric(-9999999,0)</text><title>R14
+numeric(-9999999,0)</title></a>
+  <a xlink:href='#ELEMENT_MODELS.R15'><text id='MACHINE_MODEL.ELEMENT_MODELS.R15' x='723' y='592'>R15</text><text x='930' y='592' text-anchor='end' class='colType'>numeric(-9999999,0)</text><title>R15
+numeric(-9999999,0)</title></a>
+  <a xlink:href='#ELEMENT_MODELS.R16'><text id='MACHINE_MODEL.ELEMENT_MODELS.R16' x='723' y='607'>R16</text><text x='930' y='607' text-anchor='end' class='colType'>numeric(-9999999,0)</text><title>R16
+numeric(-9999999,0)</title></a>
+  <a xlink:href='#ELEMENT_MODELS.R21'><text id='MACHINE_MODEL.ELEMENT_MODELS.R21' x='723' y='622'>R21</text><text x='930' y='622' text-anchor='end' class='colType'>numeric(-9999999,0)</text><title>R21
+numeric(-9999999,0)</title></a>
+  <a xlink:href='#ELEMENT_MODELS.R22'><text id='MACHINE_MODEL.ELEMENT_MODELS.R22' x='723' y='637'>R22</text><text x='930' y='637' text-anchor='end' class='colType'>numeric(-9999999,0)</text><title>R22
+numeric(-9999999,0)</title></a>
+  <a xlink:href='#ELEMENT_MODELS.R23'><text id='MACHINE_MODEL.ELEMENT_MODELS.R23' x='723' y='652'>R23</text><text x='930' y='652' text-anchor='end' class='colType'>numeric(-9999999,0)</text><title>R23
+numeric(-9999999,0)</title></a>
+  <a xlink:href='#ELEMENT_MODELS.R24'><text id='MACHINE_MODEL.ELEMENT_MODELS.R24' x='723' y='667'>R24</text><text x='930' y='667' text-anchor='end' class='colType'>numeric(-9999999,0)</text><title>R24
+numeric(-9999999,0)</title></a>
+  <a xlink:href='#ELEMENT_MODELS.R25'><text id='MACHINE_MODEL.ELEMENT_MODELS.R25' x='723' y='682'>R25</text><text x='930' y='682' text-anchor='end' class='colType'>numeric(-9999999,0)</text><title>R25
+numeric(-9999999,0)</title></a>
+  <a xlink:href='#ELEMENT_MODELS.R26'><text id='MACHINE_MODEL.ELEMENT_MODELS.R26' x='723' y='697'>R26</text><text x='930' y='697' text-anchor='end' class='colType'>numeric(-9999999,0)</text><title>R26
+numeric(-9999999,0)</title></a>
+  <a xlink:href='#ELEMENT_MODELS.R31'><text id='MACHINE_MODEL.ELEMENT_MODELS.R31' x='723' y='712'>R31</text><text x='930' y='712' text-anchor='end' class='colType'>numeric(-9999999,0)</text><title>R31
+numeric(-9999999,0)</title></a>
+  <a xlink:href='#ELEMENT_MODELS.R32'><text id='MACHINE_MODEL.ELEMENT_MODELS.R32' x='723' y='727'>R32</text><text x='930' y='727' text-anchor='end' class='colType'>numeric(-9999999,0)</text><title>R32
+numeric(-9999999,0)</title></a>
+  <a xlink:href='#ELEMENT_MODELS.R33'><text id='MACHINE_MODEL.ELEMENT_MODELS.R33' x='723' y='742'>R33</text><text x='930' y='742' text-anchor='end' class='colType'>numeric(-9999999,0)</text><title>R33
+numeric(-9999999,0)</title></a>
+  <a xlink:href='#ELEMENT_MODELS.R34'><text id='MACHINE_MODEL.ELEMENT_MODELS.R34' x='723' y='757'>R34</text><text x='930' y='757' text-anchor='end' class='colType'>numeric(-9999999,0)</text><title>R34
+numeric(-9999999,0)</title></a>
+  <a xlink:href='#ELEMENT_MODELS.R35'><text id='MACHINE_MODEL.ELEMENT_MODELS.R35' x='723' y='772'>R35</text><text x='930' y='772' text-anchor='end' class='colType'>numeric(-9999999,0)</text><title>R35
+numeric(-9999999,0)</title></a>
+  <a xlink:href='#ELEMENT_MODELS.R36'><text id='MACHINE_MODEL.ELEMENT_MODELS.R36' x='723' y='787'>R36</text><text x='930' y='787' text-anchor='end' class='colType'>numeric(-9999999,0)</text><title>R36
+numeric(-9999999,0)</title></a>
+  <a xlink:href='#ELEMENT_MODELS.R41'><text id='MACHINE_MODEL.ELEMENT_MODELS.R41' x='723' y='802'>R41</text><text x='930' y='802' text-anchor='end' class='colType'>numeric(-9999999,0)</text><title>R41
+numeric(-9999999,0)</title></a>
+  <a xlink:href='#ELEMENT_MODELS.R42'><text id='MACHINE_MODEL.ELEMENT_MODELS.R42' x='723' y='817'>R42</text><text x='930' y='817' text-anchor='end' class='colType'>numeric(-9999999,0)</text><title>R42
+numeric(-9999999,0)</title></a>
+  <a xlink:href='#ELEMENT_MODELS.R43'><text id='MACHINE_MODEL.ELEMENT_MODELS.R43' x='723' y='832'>R43</text><text x='930' y='832' text-anchor='end' class='colType'>numeric(-9999999,0)</text><title>R43
+numeric(-9999999,0)</title></a>
+  <a xlink:href='#ELEMENT_MODELS.R44'><text id='MACHINE_MODEL.ELEMENT_MODELS.R44' x='723' y='847'>R44</text><text x='930' y='847' text-anchor='end' class='colType'>numeric(-9999999,0)</text><title>R44
+numeric(-9999999,0)</title></a>
+  <a xlink:href='#ELEMENT_MODELS.R45'><text id='MACHINE_MODEL.ELEMENT_MODELS.R45' x='723' y='862'>R45</text><text x='930' y='862' text-anchor='end' class='colType'>numeric(-9999999,0)</text><title>R45
+numeric(-9999999,0)</title></a>
+  <a xlink:href='#ELEMENT_MODELS.R46'><text id='MACHINE_MODEL.ELEMENT_MODELS.R46' x='723' y='877'>R46</text><text x='930' y='877' text-anchor='end' class='colType'>numeric(-9999999,0)</text><title>R46
+numeric(-9999999,0)</title></a>
+  <a xlink:href='#ELEMENT_MODELS.R51'><text id='MACHINE_MODEL.ELEMENT_MODELS.R51' x='723' y='892'>R51</text><text x='930' y='892' text-anchor='end' class='colType'>numeric(-9999999,0)</text><title>R51
+numeric(-9999999,0)</title></a>
+  <a xlink:href='#ELEMENT_MODELS.R52'><text id='MACHINE_MODEL.ELEMENT_MODELS.R52' x='723' y='907'>R52</text><text x='930' y='907' text-anchor='end' class='colType'>numeric(-9999999,0)</text><title>R52
+numeric(-9999999,0)</title></a>
+  <a xlink:href='#ELEMENT_MODELS.R53'><text id='MACHINE_MODEL.ELEMENT_MODELS.R53' x='723' y='922'>R53</text><text x='930' y='922' text-anchor='end' class='colType'>numeric(-9999999,0)</text><title>R53
+numeric(-9999999,0)</title></a>
+  <a xlink:href='#ELEMENT_MODELS.R54'><text id='MACHINE_MODEL.ELEMENT_MODELS.R54' x='723' y='937'>R54</text><text x='930' y='937' text-anchor='end' class='colType'>numeric(-9999999,0)</text><title>R54
+numeric(-9999999,0)</title></a>
+  <a xlink:href='#ELEMENT_MODELS.R55'><text id='MACHINE_MODEL.ELEMENT_MODELS.R55' x='723' y='952'>R55</text><text x='930' y='952' text-anchor='end' class='colType'>numeric(-9999999,0)</text><title>R55
+numeric(-9999999,0)</title></a>
+  <a xlink:href='#ELEMENT_MODELS.R56'><text id='MACHINE_MODEL.ELEMENT_MODELS.R56' x='723' y='967'>R56</text><text x='930' y='967' text-anchor='end' class='colType'>numeric(-9999999,0)</text><title>R56
+numeric(-9999999,0)</title></a>
+  <a xlink:href='#ELEMENT_MODELS.R61'><text id='MACHINE_MODEL.ELEMENT_MODELS.R61' x='723' y='982'>R61</text><text x='930' y='982' text-anchor='end' class='colType'>numeric(-9999999,0)</text><title>R61
+numeric(-9999999,0)</title></a>
+  <a xlink:href='#ELEMENT_MODELS.R62'><text id='MACHINE_MODEL.ELEMENT_MODELS.R62' x='723' y='997'>R62</text><text x='930' y='997' text-anchor='end' class='colType'>numeric(-9999999,0)</text><title>R62
+numeric(-9999999,0)</title></a>
+  <a xlink:href='#ELEMENT_MODELS.R63'><text id='MACHINE_MODEL.ELEMENT_MODELS.R63' x='723' y='1012'>R63</text><text x='930' y='1012' text-anchor='end' class='colType'>numeric(-9999999,0)</text><title>R63
+numeric(-9999999,0)</title></a>
+  <a xlink:href='#ELEMENT_MODELS.R64'><text id='MACHINE_MODEL.ELEMENT_MODELS.R64' x='723' y='1027'>R64</text><text x='930' y='1027' text-anchor='end' class='colType'>numeric(-9999999,0)</text><title>R64
+numeric(-9999999,0)</title></a>
+  <a xlink:href='#ELEMENT_MODELS.R65'><text id='MACHINE_MODEL.ELEMENT_MODELS.R65' x='723' y='1042'>R65</text><text x='930' y='1042' text-anchor='end' class='colType'>numeric(-9999999,0)</text><title>R65
+numeric(-9999999,0)</title></a>
+  <a xlink:href='#ELEMENT_MODELS.R66'><text id='MACHINE_MODEL.ELEMENT_MODELS.R66' x='723' y='1057'>R66</text><text x='930' y='1057' text-anchor='end' class='colType'>numeric(-9999999,0)</text><title>R66
+numeric(-9999999,0)</title></a>
+  <a xlink:href='#ELEMENT_MODELS.LEFF'><text id='MACHINE_MODEL.ELEMENT_MODELS.LEFF' x='723' y='1072'>LEFF</text><text x='930' y='1072' text-anchor='end' class='colType'>numeric(-9999999,0)</text><title>LEFF
+numeric(-9999999,0)</title></a>
+  <a xlink:href='#ELEMENT_MODELS.SLEFF'><text id='MACHINE_MODEL.ELEMENT_MODELS.SLEFF' x='723' y='1087'>SLEFF</text><text x='930' y='1087' text-anchor='end' class='colType'>numeric(-9999999,0)</text><title>SLEFF
+numeric(-9999999,0)</title></a>
+  <a xlink:href='#ELEMENT_MODELS.ORDINAL'><text id='MACHINE_MODEL.ELEMENT_MODELS.ORDINAL' x='723' y='1102'>ORDINAL</text><text x='930' y='1102' text-anchor='end' class='colType'>numeric(-9999999,0)</text><title>ORDINAL
+numeric(-9999999,0)</title></a>
+  <a xlink:href='#ELEMENT_MODELS.SUML'><text id='MACHINE_MODEL.ELEMENT_MODELS.SUML' x='723' y='1117'>SUML</text><text x='930' y='1117' text-anchor='end' class='colType'>numeric(-9999999,0)</text><title>SUML
+numeric(-9999999,0)</title></a>
+
+<!-- ============= Table 'V_GOLD_REPORT' ============= -->
+<rect class='table' x='480' y='983' width='210' height='150' rx='7' ry='7' style='fill:url(#tbg_bfd4f5);'/>
+<line class='delim' x1='480.500000' y1='1009.500000' x2='689.500000' y2='1009.500000'/>
+<line class='delim' x1='495.500000' y1='1009.500000' x2='495.500000' y2='1132.500000'/>
+<line class='delim' x1='678.500000' y1='1009.500000' x2='678.500000' y2='1132.500000'/>
+<line style='stroke:#c4c4c4;stroke-width:1;' x1='480.50' y1='1009.50' x2='689.50' y2='1009.50'/>
+<a xlink:href='#V_GOLD_REPORT'><text x='485' y='1001'>MACHINE_MODEL.V_GOLD_REPORT</text><title>View MACHINE_MODEL.V_GOLD_REPORT
+GOLD_REPORT
+displays all GOLD models, the last DESIGN and EXTAND marked with 'PRESENT'</title></a>
+  <a xlink:href='#V_GOLD_REPORT.COMMENTS'><text id='MACHINE_MODEL.V_GOLD_REPORT.COMMENTS' x='498' y='1027'>COMMENTS</text><text x='675' y='1027' text-anchor='end' class='colType'>varchar(200)</text><title>COMMENTS
+varchar(200)</title></a>
+  <a xlink:href='#V_GOLD_REPORT.CREATED_BY'><text id='MACHINE_MODEL.V_GOLD_REPORT.CREATED_BY' x='498' y='1042'>CREATED_BY</text><text x='675' y='1042' text-anchor='end' class='colType'>varchar(30)</text><title>CREATED_BY
+varchar(30)</title></a>
+  <a xlink:href='#V_GOLD_REPORT.DATE_CREATED'><text id='MACHINE_MODEL.V_GOLD_REPORT.DATE_CREATED' x='498' y='1057'>DATE_CREATED</text><text x='675' y='1057' text-anchor='end' class='colType'>timestamp</text><title>DATE_CREATED
+timestamp</title></a>
+  <a xlink:href='#V_GOLD_REPORT.GOLD_STATUS_NO_CSS'><text id='MACHINE_MODEL.V_GOLD_REPORT.GOLD_STATUS_NO_CSS' x='498' y='1072'>GOLD_STATUS_NO_CSS</text><text x='675' y='1072' text-anchor='end' class='colType'>text</text><title>GOLD_STATUS_NO_CSS
+text</title></a>
+  <a xlink:href='#V_GOLD_REPORT.ID'><text id='MACHINE_MODEL.V_GOLD_REPORT.ID' x='498' y='1087'>ID</text><text x='675' y='1087' text-anchor='end' class='colType'>integer</text><title>ID
+integer</title></a>
+  <a xlink:href='#V_GOLD_REPORT.RUN_ID'><text id='MACHINE_MODEL.V_GOLD_REPORT.RUN_ID' x='498' y='1102'>RUN_ID</text><text x='675' y='1102' text-anchor='end' class='colType'>integer</text><title>RUN_ID
+integer</title></a>
+  <a xlink:href='#V_GOLD_REPORT.RUN_SOURCE_CHK'><text id='MACHINE_MODEL.V_GOLD_REPORT.RUN_SOURCE_CHK' x='498' y='1117'>RUN_SOURCE_CHK</text><text x='675' y='1117' text-anchor='end' class='colType'>varchar(60)</text><title>RUN_SOURCE_CHK
+varchar(60)</title></a>
+
+<!-- ============= Table 'RUNS' ============= -->
+<rect class='table' x='450' y='728' width='210' height='165' rx='7' ry='7' style='fill:url(#tbg_bfd4f5);'/>
+<line class='delim' x1='450.500000' y1='754.500000' x2='659.500000' y2='754.500000'/>
+<line class='delim' x1='465.500000' y1='754.500000' x2='465.500000' y2='892.500000'/>
+<line class='delim' x1='648.500000' y1='754.500000' x2='648.500000' y2='892.500000'/>
+<line style='stroke:#c4c4c4;stroke-width:1;' x1='450.50' y1='754.50' x2='659.50' y2='754.50'/>
+<a xlink:href='#RUNS'><text x='487' y='746'>MACHINE_MODEL.RUNS</text><title>Table MACHINE_MODEL.RUNS
+MODEL_RUNS
+Keeps track of each tracking "run" done by XAL GUI.
+Each row in the GUI's runs table corresponds to one row of this table.</title></a>
+  <use id='nn' x='452' y='762' xlink:href='#nn'/><a xlink:href='#RUNS.ID'><use id='pk' x='452' y='761' xlink:href='#pk'/><title>Pk RUNS_pkey ( ID ) </title></a>
+<a xlink:href='#RUNS.ID'><text id='MACHINE_MODEL.RUNS.ID' x='468' y='772' onmouseover="hghl(['ELEMENT_MODELS_ELEMENT_MODELS_RUNS_ID_fkey','GOLD_GOLD_RUNS_ID_fkey','MODEL_DEVICES_MODEL_DEVICES_RUNS_ID_fkey'])" onmouseout="uhghl(['ELEMENT_MODELS_ELEMENT_MODELS_RUNS_ID_fkey','GOLD_GOLD_RUNS_ID_fkey','MODEL_DEVICES_MODEL_DEVICES_RUNS_ID_fkey'])">ID</text><text x='645' y='772' text-anchor='end' class='colType'>serial</text><title>ID
+* serial</title></a>
+<a xlink:href='#RUNS.ID'><use id='ref' x='648' y='761' xlink:href='#ref'/><title>Referred by ELEMENT_MODELS ( RUNS_ID -&gt; ID ) 
+Referred by GOLD ( RUNS_ID -&gt; ID ) 
+Referred by MODEL_DEVICES ( RUNS_ID -&gt; ID ) </title></a>
+  <use id='nn' x='452' y='777' xlink:href='#nn'/><a xlink:href='#RUNS.CREATED_BY'><text id='MACHINE_MODEL.RUNS.CREATED_BY' x='468' y='787'>CREATED_BY</text><text x='645' y='787' text-anchor='end' class='colType'>varchar(30)</text><title>CREATED_BY
+* varchar(30) default "current_user"()</title></a>
+  <use id='nn' x='452' y='792' xlink:href='#nn'/><a xlink:href='#RUNS.DATE_CREATED'><text id='MACHINE_MODEL.RUNS.DATE_CREATED' x='468' y='802'>DATE_CREATED</text><text x='645' y='802' text-anchor='end' class='colType'>timestamp</text><title>DATE_CREATED
+* timestamp default now()</title></a>
+  <a xlink:href='#RUNS.RUN_SOURCE_CHK'><text id='MACHINE_MODEL.RUNS.RUN_SOURCE_CHK' x='468' y='817'>RUN_SOURCE_CHK</text><text x='645' y='817' text-anchor='end' class='colType'>varchar(60)</text><title>RUN_SOURCE_CHK
+varchar(60)</title></a>
+  <a xlink:href='#RUNS.RUN_ELEMENT_DATE'><text id='MACHINE_MODEL.RUNS.RUN_ELEMENT_DATE' x='468' y='832'>RUN_ELEMENT_DATE</text><text x='645' y='832' text-anchor='end' class='colType'>timestamp</text><title>RUN_ELEMENT_DATE
+timestamp default now()</title></a>
+  <a xlink:href='#RUNS.RUN_DEVICE_DATE'><text id='MACHINE_MODEL.RUNS.RUN_DEVICE_DATE' x='468' y='847'>RUN_DEVICE_DATE</text><text x='645' y='847' text-anchor='end' class='colType'>timestamp</text><title>RUN_DEVICE_DATE
+timestamp default now()</title></a>
+  <a xlink:href='#RUNS.COMMENTS'><text id='MACHINE_MODEL.RUNS.COMMENTS' x='468' y='862'>COMMENTS</text><text x='645' y='862' text-anchor='end' class='colType'>varchar(200)</text><title>COMMENTS
+varchar(200)</title></a>
+  <a xlink:href='#RUNS.MODEL_MODES_ID'><text id='MACHINE_MODEL.RUNS.MODEL_MODES_ID' x='468' y='877'>MODEL_MODES_ID</text><text x='645' y='877' text-anchor='end' class='colType'>varchar(60)</text><title>MODEL_MODES_ID
+varchar(60)</title></a>
+
+<!-- ============= Table 'GOLD' ============= -->
+<rect class='table' x='465' y='593' width='180' height='120' rx='7' ry='7' style='fill:url(#tbg_bfd4f5);'/>
+<line class='delim' x1='465.500000' y1='619.500000' x2='644.500000' y2='619.500000'/>
+<line class='delim' x1='480.500000' y1='619.500000' x2='480.500000' y2='712.500000'/>
+<line class='delim' x1='633.500000' y1='619.500000' x2='633.500000' y2='712.500000'/>
+<line style='stroke:#c4c4c4;stroke-width:1;' x1='465.50' y1='619.50' x2='644.50' y2='619.50'/>
+<a xlink:href='#GOLD'><text x='486' y='611'>MACHINE_MODEL.GOLD</text><title>Table MACHINE_MODEL.GOLD
+MODEL_GOLD
+Which model runs have been designated
+by operations to be good ones, both presently
+and in the past.</title></a>
+  <use id='nn' x='467' y='627' xlink:href='#nn'/><a xlink:href='#GOLD.ID'><use id='pk' x='467' y='626' xlink:href='#pk'/><title>Pk GOLD_pkey ( ID ) </title></a>
+<a xlink:href='#GOLD.ID'><text id='MACHINE_MODEL.GOLD.ID' x='483' y='637'>ID</text><text x='630' y='637' text-anchor='end' class='colType'>serial</text><title>ID
+* serial</title></a>
+  <a xlink:href='#GOLD.RUNS_ID'><text id='MACHINE_MODEL.GOLD.RUNS_ID' x='483' y='652' onmouseover="hghl(['GOLD_GOLD_RUNS_ID_fkey'])" onmouseout="uhghl(['GOLD_GOLD_RUNS_ID_fkey'])">RUNS_ID</text><text x='630' y='652' text-anchor='end' class='colType'>integer</text><title>RUNS_ID
+integer</title></a>
+<a xlink:href='#GOLD.RUNS_ID'><use id='fk' x='633' y='641' xlink:href='#fk'/><title>References RUNS ( RUNS_ID -&gt; ID ) </title></a>
+  <a xlink:href='#GOLD.COMMENTS'><text id='MACHINE_MODEL.GOLD.COMMENTS' x='483' y='667'>COMMENTS</text><text x='630' y='667' text-anchor='end' class='colType'>varchar(200)</text><title>COMMENTS
+varchar(200)</title></a>
+  <use id='nn' x='467' y='672' xlink:href='#nn'/><a xlink:href='#GOLD.CREATED_BY'><text id='MACHINE_MODEL.GOLD.CREATED_BY' x='483' y='682'>CREATED_BY</text><text x='630' y='682' text-anchor='end' class='colType'>varchar(30)</text><title>CREATED_BY
+* varchar(30) default "current_user"()</title></a>
+  <use id='nn' x='467' y='687' xlink:href='#nn'/><a xlink:href='#GOLD.DATE_CREATED'><text id='MACHINE_MODEL.GOLD.DATE_CREATED' x='483' y='697'>DATE_CREATED</text><text x='630' y='697' text-anchor='end' class='colType'>timestamp</text><title>DATE_CREATED
+* timestamp default now()</title></a>
+
+<!-- ============= Table 'DEVICE_TYPES' ============= -->
+<rect class='table' x='150' y='368' width='240' height='150' rx='7' ry='7' style='fill:url(#tbg_bfd4f5);'/>
+<line class='delim' x1='150.500000' y1='394.500000' x2='389.500000' y2='394.500000'/>
+<line class='delim' x1='165.500000' y1='394.500000' x2='165.500000' y2='517.500000'/>
+<line class='delim' x1='378.500000' y1='394.500000' x2='378.500000' y2='517.500000'/>
+<line style='stroke:#c4c4c4;stroke-width:1;' x1='150.50' y1='394.50' x2='389.50' y2='394.50'/>
+<a xlink:href='#DEVICE_TYPES'><text x='176' y='386'>MACHINE_MODEL.DEVICE_TYPES</text><title>Table MACHINE_MODEL.DEVICE_TYPES
+DEVICE_TYPES
+Keeps track of the device type.
+E.g. Monitor (aka BPM), QUAD, XCOR etc.
+In particualar DEFAULT_SLICING_POS_CHK is
+the number of "slices" at which optics
+are recorded for each device type. 
+For a QUAD there are 3(beginning, middle and end).
+For others only 1.</title></a>
+  <use id='nn' x='152' y='402' xlink:href='#nn'/><a xlink:href='#DEVICE_TYPES.ID'><use id='pk' x='152' y='401' xlink:href='#pk'/><title>Pk DEVICE_TYPES_pkey ( ID ) </title></a>
+<a xlink:href='#DEVICE_TYPES.ID'><text id='MACHINE_MODEL.DEVICE_TYPES.ID' x='168' y='412'>ID</text><text x='375' y='412' text-anchor='end' class='colType'>serial</text><title>ID
+* serial</title></a>
+  <use id='nn' x='152' y='417' xlink:href='#nn'/><a xlink:href='#DEVICE_TYPES.DEVICE_TYPE'><use id='unq' x='152' y='416' xlink:href='#unq'/><title>Unq DEVICE_TYPES_DEVICE_TYPE_key ( DEVICE_TYPE ) </title></a>
+<a xlink:href='#DEVICE_TYPES.DEVICE_TYPE'><text id='MACHINE_MODEL.DEVICE_TYPES.DEVICE_TYPE' x='168' y='427'>DEVICE_TYPE</text><text x='375' y='427' text-anchor='end' class='colType'>varchar(4)</text><title>DEVICE_TYPE
+* varchar(4)</title></a>
+  <a xlink:href='#DEVICE_TYPES.UPDATED_BY'><text id='MACHINE_MODEL.DEVICE_TYPES.UPDATED_BY' x='168' y='442'>UPDATED_BY</text><text x='375' y='442' text-anchor='end' class='colType'>varchar(30)</text><title>UPDATED_BY
+varchar(30) default "current_user"()</title></a>
+  <use id='nn' x='152' y='447' xlink:href='#nn'/><a xlink:href='#DEVICE_TYPES.CREATED_BY'><text id='MACHINE_MODEL.DEVICE_TYPES.CREATED_BY' x='168' y='457'>CREATED_BY</text><text x='375' y='457' text-anchor='end' class='colType'>varchar(30)</text><title>CREATED_BY
+* varchar(30)</title></a>
+  <use id='nn' x='152' y='462' xlink:href='#nn'/><a xlink:href='#DEVICE_TYPES.DATE_CREATED'><text id='MACHINE_MODEL.DEVICE_TYPES.DATE_CREATED' x='168' y='472'>DATE_CREATED</text><text x='375' y='472' text-anchor='end' class='colType'>timestamp</text><title>DATE_CREATED
+* timestamp</title></a>
+  <a xlink:href='#DEVICE_TYPES.DATE_UPDATED'><text id='MACHINE_MODEL.DEVICE_TYPES.DATE_UPDATED' x='168' y='487'>DATE_UPDATED</text><text x='375' y='487' text-anchor='end' class='colType'>timestamp</text><title>DATE_UPDATED
+timestamp default now()</title></a>
+  <a xlink:href='#DEVICE_TYPES.DEFAULT_SLICING_POS_CHK'><text id='MACHINE_MODEL.DEVICE_TYPES.DEFAULT_SLICING_POS_CHK' x='168' y='502'>DEFAULT_SLICING_POS_CHK</text><text x='375' y='502' text-anchor='end' class='colType'>integer</text><title>DEFAULT_SLICING_POS_CHK
+integer</title></a>
+
+<!-- ============= Table 'MODEL_DEVICES' ============= -->
+<rect class='table' x='420' y='353' width='240' height='225' rx='7' ry='7' style='fill:url(#tbg_bfd4f5);'/>
+<line class='delim' x1='420.500000' y1='379.500000' x2='659.500000' y2='379.500000'/>
+<line class='delim' x1='435.500000' y1='379.500000' x2='435.500000' y2='577.500000'/>
+<line class='delim' x1='648.500000' y1='379.500000' x2='648.500000' y2='577.500000'/>
+<line style='stroke:#c4c4c4;stroke-width:1;' x1='420.50' y1='379.50' x2='659.50' y2='379.50'/>
+<a xlink:href='#MODEL_DEVICES'><text x='441' y='371'>MACHINE_MODEL.MODEL_DEVICES</text><title>Table MACHINE_MODEL.MODEL_DEVICES
+MODEL_DEVICES
+Stores machine device parameters.
+ The number of rows is roughly the number of devices multiplied by constant (element parameters).
+ It basically tells us what were the values on devices in a model when simulation was run.
+At SLAC this table makes a link between a device name and the model runs that
+have optics (Twiss and R-matrices) for that device, via a FK to device ids
+in the infrastructure DB. But for ESS that FK has been removed for now.
+In future you will need some mechanism like that
+so one can query for optics based on a PV name which is in turn based on
+the device name. This table, with an appropriate column added to identify
+a device, will form the translation from device name
+to runs containing elements correspondinf to that device.</title></a>
+  <use id='nn' x='422' y='387' xlink:href='#nn'/><a xlink:href='#MODEL_DEVICES.ID'><use id='pk' x='422' y='386' xlink:href='#pk'/><title>Pk MODEL_DEVICES_pkey ( ID ) </title></a>
+<a xlink:href='#MODEL_DEVICES.ID'><text id='MACHINE_MODEL.MODEL_DEVICES.ID' x='438' y='397'>ID</text><text x='645' y='397' text-anchor='end' class='colType'>serial</text><title>ID
+* serial</title></a>
+  <a xlink:href='#MODEL_DEVICES.RUNS_ID'><text id='MACHINE_MODEL.MODEL_DEVICES.RUNS_ID' x='438' y='412' onmouseover="hghl(['MODEL_DEVICES_MODEL_DEVICES_RUNS_ID_fkey'])" onmouseout="uhghl(['MODEL_DEVICES_MODEL_DEVICES_RUNS_ID_fkey'])">RUNS_ID</text><text x='645' y='412' text-anchor='end' class='colType'>integer</text><title>RUNS_ID
+integer</title></a>
+<a xlink:href='#MODEL_DEVICES.RUNS_ID'><use id='fk' x='648' y='401' xlink:href='#fk'/><title>References RUNS ( RUNS_ID -&gt; ID ) </title></a>
+  <a xlink:href='#MODEL_DEVICES.LCLS_ELEMENTS_ELEMENT_ID'><text id='MACHINE_MODEL.MODEL_DEVICES.LCLS_ELEMENTS_ELEMENT_ID' x='438' y='427'>LCLS_ELEMENTS_ELEMENT_ID</text><text x='645' y='427' text-anchor='end' class='colType'>integer</text><title>LCLS_ELEMENTS_ELEMENT_ID
+integer</title></a>
+  <a xlink:href='#MODEL_DEVICES.DEVICE_TYPES_ID'><text id='MACHINE_MODEL.MODEL_DEVICES.DEVICE_TYPES_ID' x='438' y='442'>DEVICE_TYPES_ID</text><text x='645' y='442' text-anchor='end' class='colType'>integer</text><title>DEVICE_TYPES_ID
+integer</title></a>
+  <use id='nn' x='422' y='447' xlink:href='#nn'/><a xlink:href='#MODEL_DEVICES.CREATED_BY'><text id='MACHINE_MODEL.MODEL_DEVICES.CREATED_BY' x='438' y='457'>CREATED_BY</text><text x='645' y='457' text-anchor='end' class='colType'>varchar(30)</text><title>CREATED_BY
+* varchar(30) default "current_user"()</title></a>
+  <use id='nn' x='422' y='462' xlink:href='#nn'/><a xlink:href='#MODEL_DEVICES.DATE_CREATED'><text id='MACHINE_MODEL.MODEL_DEVICES.DATE_CREATED' x='438' y='472'>DATE_CREATED</text><text x='645' y='472' text-anchor='end' class='colType'>timestamp</text><title>DATE_CREATED
+* timestamp default now()</title></a>
+  <a xlink:href='#MODEL_DEVICES.DEVICE_PROPERTY'><text id='MACHINE_MODEL.MODEL_DEVICES.DEVICE_PROPERTY' x='438' y='487'>DEVICE_PROPERTY</text><text x='645' y='487' text-anchor='end' class='colType'>varchar(30)</text><title>DEVICE_PROPERTY
+varchar(30)</title></a>
+  <a xlink:href='#MODEL_DEVICES.ELEMENT_NAME'><text id='MACHINE_MODEL.MODEL_DEVICES.ELEMENT_NAME' x='438' y='502'>ELEMENT_NAME</text><text x='645' y='502' text-anchor='end' class='colType'>varchar(60)</text><title>ELEMENT_NAME
+varchar(60)</title></a>
+  <a xlink:href='#MODEL_DEVICES.DEVICE_VALUE'><text id='MACHINE_MODEL.MODEL_DEVICES.DEVICE_VALUE' x='438' y='517'>DEVICE_VALUE</text><text x='645' y='517' text-anchor='end' class='colType'>float8</text><title>DEVICE_VALUE
+float8</title></a>
+  <a xlink:href='#MODEL_DEVICES.ZPOS'><text id='MACHINE_MODEL.MODEL_DEVICES.ZPOS' x='438' y='532'>ZPOS</text><text x='645' y='532' text-anchor='end' class='colType'>numeric(-9999999,0)</text><title>ZPOS
+numeric(-9999999,0)</title></a>
+  <a xlink:href='#MODEL_DEVICES.INITIAL_VALUE'><text id='MACHINE_MODEL.MODEL_DEVICES.INITIAL_VALUE' x='438' y='547'>INITIAL_VALUE</text><text x='645' y='547' text-anchor='end' class='colType'>float8</text><title>INITIAL_VALUE
+float8</title></a>
+  <a xlink:href='#MODEL_DEVICES.UNITS'><text id='MACHINE_MODEL.MODEL_DEVICES.UNITS' x='438' y='562'>UNITS</text><text x='645' y='562' text-anchor='end' class='colType'>varchar(10)</text><title>UNITS
+varchar(10)</title></a>
+
+<!-- ============= Callout ============= -->
+<rect class='callout' x='255' y='30' width='705' height='92' rx='15' ry='15'  />
+<text x='277' y='30'>
+    <tspan x='258' dx='7' dy='18'>ELEMENT&#95;MODELS</tspan>
+    <tspan x='258' dx='7' dy='18'>The Twiss parameters and R&#45;matrices for each device element&#44; for each run&#46; </tspan>
+    <tspan x='258' dx='7' dy='18'>Ie&#44; the number of rows is roughly number of elements in each model &#40;huge table&#41;&#46;</tspan>
+    <tspan x='258' dx='7' dy='18'>Most devices are equivalent to one elment&#44; but there are exceptions which corespond to more&#46;</tspan>
+    <tspan x='258' dx='7' dy='18'>For example quads correspond to 3&#44; being the twiss and R&#45;matrices at the begnning&#44; middle and end of the quadrupole&#46;</tspan>
+</text>
+<use x='915' y='122' xlink:href='#calloutArrowDown'/>
+
+<!-- ============= Callout ============= -->
+<rect class='callout' x='480' y='1140' width='480' height='46' rx='15' ry='15'  />
+<text x='502' y='1140'>
+    <tspan x='483' dx='7' dy='18'>GOLD&#95;REPORT</tspan>
+    <tspan x='483' dx='7' dy='18'>displays all GOLD models&#44; the last DESIGN and EXTAND marked with &#39;PRESENT&#39;</tspan>
+</text>
+<use x='495' y='1125' xlink:href='#calloutArrowUp'/>
+
+<!-- ============= Callout ============= -->
+<rect class='callout' x='45' y='135' width='600' height='200' rx='15' ry='15'  />
+<text x='67' y='135'>
+    <tspan x='48' dx='7' dy='18'>MODEL&#95;DEVICES</tspan>
+    <tspan x='48' dx='7' dy='18'>Stores machine device parameters&#46;</tspan>
+    <tspan x='48' dx='7' dy='18'> The number of rows is roughly the number of devices multiplied by constant &#40;element parameters&#41;&#46;</tspan>
+    <tspan x='48' dx='7' dy='18'> It basically tells us what were the values on devices in a model when simulation was run&#46;</tspan>
+    <tspan x='48' dx='7' dy='18'>At SLAC this table makes a link between a device name and the model runs that</tspan>
+    <tspan x='48' dx='7' dy='18'>have optics &#40;Twiss and R&#45;matrices&#41; for that device&#44; via a FK to device ids</tspan>
+    <tspan x='48' dx='7' dy='18'>in the infrastructure DB&#46; But for ESS that FK has been removed for now&#46;</tspan>
+    <tspan x='48' dx='7' dy='18'>In future you will need some mechanism like that</tspan>
+    <tspan x='48' dx='7' dy='18'>so one can query for optics based on a PV name which is in turn based on</tspan>
+    <tspan x='48' dx='7' dy='18'>the device name&#46; This table&#44; with an appropriate column added to identify</tspan>
+    <tspan x='48' dx='7' dy='18'>a device&#44; will form the translation from device name</tspan>
+    <tspan x='48' dx='7' dy='18'>to runs containing elements correspondinf to that device&#46;</tspan>
+</text>
+<use x='600' y='335' xlink:href='#calloutArrowDown'/>
+
+<!-- ============= Callout ============= -->
+<rect class='callout' x='225' y='900' width='420' height='62' rx='15' ry='15'  />
+<text x='247' y='900'>
+    <tspan x='228' dx='7' dy='18'>MODEL&#95;RUNS</tspan>
+    <tspan x='228' dx='7' dy='18'>Keeps track of each tracking &quot;run&quot; done by XAL GUI&#46;</tspan>
+    <tspan x='228' dx='7' dy='18'>Each row in the GUI&#39;s runs table corresponds to one row of this table&#46;</tspan>
+</text>
+<use x='600' y='885' xlink:href='#calloutArrowUp'/>
+
+<!-- ============= Callout ============= -->
+<rect class='callout' x='180' y='660' width='285' height='77' rx='15' ry='15'  />
+<text x='202' y='660'>
+    <tspan x='183' dx='7' dy='18'>MODEL&#95;GOLD</tspan>
+    <tspan x='183' dx='7' dy='18'>Which model runs have been designated</tspan>
+    <tspan x='183' dx='7' dy='18'>by operations to be good ones&#44; both presently</tspan>
+    <tspan x='183' dx='7' dy='18'>and in the past&#46;</tspan>
+</text>
+<!-- ============= Callout ============= -->
+<rect class='callout' x='90' y='525' width='315' height='139' rx='15' ry='15'  />
+<text x='112' y='525'>
+    <tspan x='93' dx='7' dy='18'>DEVICE&#95;TYPES</tspan>
+    <tspan x='93' dx='7' dy='18'>Keeps track of the device type&#46;</tspan>
+    <tspan x='93' dx='7' dy='18'>E&#46;g&#46; Monitor &#40;aka BPM&#41;&#44; QUAD&#44; XCOR etc&#46;</tspan>
+    <tspan x='93' dx='7' dy='18'>In particualar DEFAULT&#95;SLICING&#95;POS&#95;CHK is</tspan>
+    <tspan x='93' dx='7' dy='18'>the number of &quot;slices&quot; at which optics</tspan>
+    <tspan x='93' dx='7' dy='18'>are recorded for each device type&#46; </tspan>
+    <tspan x='93' dx='7' dy='18'>For a QUAD there are 3&#40;beginning&#44; middle and end&#41;&#46;</tspan>
+    <tspan x='93' dx='7' dy='18'>For others only 1&#46;</tspan>
+</text>
+<use x='360' y='510' xlink:href='#calloutArrowUp'/>
+
+</g></svg>
+
+<br/><br/>
+<table class='bordered'>
+<thead>
+<tr><th colspan='4'><a name='ELEMENT_MODELS'>Table ELEMENT_MODELS</a></th></tr>
+<tr><td colspan='3'>ELEMENT&#95;MODELS
+The Twiss parameters and R&#45;matrices for each device element&#44; for each run&#46; 
+Ie&#44; the number of rows is roughly number of elements in each model &#40;huge table&#41;&#46;
+Most devices are equivalent to one elment&#44; but there are exceptions which corespond to more&#46;
+For example quads correspond to 3&#44; being the twiss and R&#45;matrices at the begnning&#44; middle and end of the quadrupole&#46; </td></tr>
+</thead>
+<tbody>
+	<tr>
+		<td>*</td>
+		<td><a name='ELEMENT_MODELS.ID'>ID</a></td>
+		<td> serial   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.RUNS_ID'>RUNS&#95;ID</a></td>
+		<td> integer   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.LCLS_ELEMENTS_ELEMENT_ID'>LCLS&#95;ELEMENTS&#95;ELEMENT&#95;ID</a></td>
+		<td> integer   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>*</td>
+		<td><a name='ELEMENT_MODELS.CREATED_BY'>CREATED&#95;BY</a></td>
+		<td> varchar&#40; 30 &#41;   DEFO "current_user"() </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.DATE_CREATED'>DATE&#95;CREATED</a></td>
+		<td> timestamp   DEFO now() </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.ELEMENT_NAME'>ELEMENT&#95;NAME</a></td>
+		<td> varchar&#40; 60 &#41;   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.INDEX_SLICE_CHK'>INDEX&#95;SLICE&#95;CHK</a></td>
+		<td> integer   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.ZPOS'>ZPOS</a></td>
+		<td> numeric   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.EK'>EK</a></td>
+		<td> numeric   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.ALPHA_X'>ALPHA&#95;X</a></td>
+		<td> numeric   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.ALPHA_Y'>ALPHA&#95;Y</a></td>
+		<td> numeric   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.BETA_X'>BETA&#95;X</a></td>
+		<td> numeric   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.BETA_Y'>BETA&#95;Y</a></td>
+		<td> numeric   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.PSI_X'>PSI&#95;X</a></td>
+		<td> numeric   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.PSI_Y'>PSI&#95;Y</a></td>
+		<td> numeric   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.ETA_X'>ETA&#95;X</a></td>
+		<td> numeric   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.ETA_Y'>ETA&#95;Y</a></td>
+		<td> numeric   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.ETAP_X'>ETAP&#95;X</a></td>
+		<td> numeric   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.ETAP_Y'>ETAP&#95;Y</a></td>
+		<td> numeric   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.R11'>R11</a></td>
+		<td> numeric   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.R12'>R12</a></td>
+		<td> numeric   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.R13'>R13</a></td>
+		<td> numeric   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.R14'>R14</a></td>
+		<td> numeric   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.R15'>R15</a></td>
+		<td> numeric   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.R16'>R16</a></td>
+		<td> numeric   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.R21'>R21</a></td>
+		<td> numeric   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.R22'>R22</a></td>
+		<td> numeric   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.R23'>R23</a></td>
+		<td> numeric   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.R24'>R24</a></td>
+		<td> numeric   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.R25'>R25</a></td>
+		<td> numeric   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.R26'>R26</a></td>
+		<td> numeric   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.R31'>R31</a></td>
+		<td> numeric   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.R32'>R32</a></td>
+		<td> numeric   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.R33'>R33</a></td>
+		<td> numeric   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.R34'>R34</a></td>
+		<td> numeric   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.R35'>R35</a></td>
+		<td> numeric   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.R36'>R36</a></td>
+		<td> numeric   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.R41'>R41</a></td>
+		<td> numeric   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.R42'>R42</a></td>
+		<td> numeric   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.R43'>R43</a></td>
+		<td> numeric   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.R44'>R44</a></td>
+		<td> numeric   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.R45'>R45</a></td>
+		<td> numeric   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.R46'>R46</a></td>
+		<td> numeric   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.R51'>R51</a></td>
+		<td> numeric   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.R52'>R52</a></td>
+		<td> numeric   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.R53'>R53</a></td>
+		<td> numeric   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.R54'>R54</a></td>
+		<td> numeric   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.R55'>R55</a></td>
+		<td> numeric   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.R56'>R56</a></td>
+		<td> numeric   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.R61'>R61</a></td>
+		<td> numeric   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.R62'>R62</a></td>
+		<td> numeric   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.R63'>R63</a></td>
+		<td> numeric   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.R64'>R64</a></td>
+		<td> numeric   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.R65'>R65</a></td>
+		<td> numeric   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.R66'>R66</a></td>
+		<td> numeric   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.LEFF'>LEFF</a></td>
+		<td> numeric   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.SLEFF'>SLEFF</a></td>
+		<td> numeric   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.ORDINAL'>ORDINAL</a></td>
+		<td> numeric   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='ELEMENT_MODELS.SUML'>SUML</a></td>
+		<td> numeric   </td>
+		<td>  </td>
+	</tr>
+<tr><th colspan='4'><b>Indexes</b></th></tr>
+	<tr>		<td>Pk</td><td>ELEMENT&#95;MODELS&#95;pkey</td>
+		<td> ON ID</td>
+		<td>  </td>
+	</tr>
+<tr><th colspan='4'><b>Foreign Keys</b></th></tr>
+	<tr>
+		<td>&nbsp;</td><td>ELEMENT_MODELS_RUNS_ID_fkey</td>
+		<td > ( RUNS&#95;ID ) ref <a href='#RUNS'>RUNS</a> (ID) </td>
+		<td>  </td>
+	</tr>
+</tbody>
+</table>
+
+<br/><br/>
+<table class='bordered'>
+<thead>
+<tr><th colspan='4'><a name='RUNS'>Table RUNS</a></th></tr>
+<tr><td colspan='3'>MODEL&#95;RUNS
+Keeps track of each tracking &quot;run&quot; done by XAL GUI&#46;
+Each row in the GUI&#39;s runs table corresponds to one row of this table&#46; </td></tr>
+</thead>
+<tbody>
+	<tr>
+		<td>*</td>
+		<td><a name='RUNS.ID'>ID</a></td>
+		<td> serial   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>*</td>
+		<td><a name='RUNS.CREATED_BY'>CREATED&#95;BY</a></td>
+		<td> varchar&#40; 30 &#41;   DEFO "current_user"() </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>*</td>
+		<td><a name='RUNS.DATE_CREATED'>DATE&#95;CREATED</a></td>
+		<td> timestamp   DEFO now() </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='RUNS.RUN_SOURCE_CHK'>RUN&#95;SOURCE&#95;CHK</a></td>
+		<td> varchar&#40; 60 &#41;   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='RUNS.RUN_ELEMENT_DATE'>RUN&#95;ELEMENT&#95;DATE</a></td>
+		<td> timestamp   DEFO now() </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='RUNS.RUN_DEVICE_DATE'>RUN&#95;DEVICE&#95;DATE</a></td>
+		<td> timestamp   DEFO now() </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='RUNS.COMMENTS'>COMMENTS</a></td>
+		<td> varchar&#40; 200 &#41;   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='RUNS.MODEL_MODES_ID'>MODEL&#95;MODES&#95;ID</a></td>
+		<td> varchar&#40; 60 &#41;   </td>
+		<td>  </td>
+	</tr>
+<tr><th colspan='4'><b>Indexes</b></th></tr>
+	<tr>		<td>Pk</td><td>RUNS&#95;pkey</td>
+		<td> ON ID</td>
+		<td>  </td>
+	</tr>
+<tr><th colspan='4'><b>Constraints</b></th></tr>
+	<tr>
+		<td>&nbsp;</td><td> ckc_run_source_chk_runs </td><td> &#40;&quot;RUN&#95;SOURCE&#95;CHK&quot; IS NULL&#41; OR &#40;&#40;&quot;RUN&#95;SOURCE&#95;CHK&quot;&#41;&#58;&#58;text &#61; ANY &#40;&#40;ARRAY&#91;&#39;DESIGN&#39;&#58;&#58;character varying&#44; &#39;EXTANT&#39;&#58;&#58;character varying&#44; &#39;PVLOGGER&#39;&#58;&#58;character varying&#44; &#39;MANUAL&#39;&#58;&#58;character varying&#93;&#41;&#58;&#58;text&#91;&#93;&#41;&#41; </td><td> </td>
+	</tr>
+</tbody>
+</table>
+
+<br/><br/>
+<table class='bordered'>
+<thead>
+<tr><th colspan='4'><a name='GOLD'>Table GOLD</a></th></tr>
+<tr><td colspan='3'>MODEL&#95;GOLD
+Which model runs have been designated
+by operations to be good ones&#44; both presently
+and in the past&#46; </td></tr>
+</thead>
+<tbody>
+	<tr>
+		<td>*</td>
+		<td><a name='GOLD.ID'>ID</a></td>
+		<td> serial   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='GOLD.RUNS_ID'>RUNS&#95;ID</a></td>
+		<td> integer   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='GOLD.COMMENTS'>COMMENTS</a></td>
+		<td> varchar&#40; 200 &#41;   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>*</td>
+		<td><a name='GOLD.CREATED_BY'>CREATED&#95;BY</a></td>
+		<td> varchar&#40; 30 &#41;   DEFO "current_user"() </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>*</td>
+		<td><a name='GOLD.DATE_CREATED'>DATE&#95;CREATED</a></td>
+		<td> timestamp   DEFO now() </td>
+		<td>  </td>
+	</tr>
+<tr><th colspan='4'><b>Indexes</b></th></tr>
+	<tr>		<td>Pk</td><td>GOLD&#95;pkey</td>
+		<td> ON ID</td>
+		<td>  </td>
+	</tr>
+<tr><th colspan='4'><b>Foreign Keys</b></th></tr>
+	<tr>
+		<td>&nbsp;</td><td>GOLD_RUNS_ID_fkey</td>
+		<td > ( RUNS&#95;ID ) ref <a href='#RUNS'>RUNS</a> (ID) </td>
+		<td>  </td>
+	</tr>
+</tbody>
+</table>
+
+<br/><br/>
+<table class='bordered'>
+<thead>
+<tr><th colspan='4'><a name='DEVICE_TYPES'>Table DEVICE_TYPES</a></th></tr>
+<tr><td colspan='3'>DEVICE&#95;TYPES
+Keeps track of the device type&#46;
+E&#46;g&#46; Monitor &#40;aka BPM&#41;&#44; QUAD&#44; XCOR etc&#46;
+In particualar DEFAULT&#95;SLICING&#95;POS&#95;CHK is
+the number of &quot;slices&quot; at which optics
+are recorded for each device type&#46; 
+For a QUAD there are 3&#40;beginning&#44; middle and end&#41;&#46;
+For others only 1&#46; </td></tr>
+</thead>
+<tbody>
+	<tr>
+		<td>*</td>
+		<td><a name='DEVICE_TYPES.ID'>ID</a></td>
+		<td> serial   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>*</td>
+		<td><a name='DEVICE_TYPES.DEVICE_TYPE'>DEVICE&#95;TYPE</a></td>
+		<td> varchar&#40; 4 &#41;   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='DEVICE_TYPES.UPDATED_BY'>UPDATED&#95;BY</a></td>
+		<td> varchar&#40; 30 &#41;   DEFO "current_user"() </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>*</td>
+		<td><a name='DEVICE_TYPES.CREATED_BY'>CREATED&#95;BY</a></td>
+		<td> varchar&#40; 30 &#41;   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>*</td>
+		<td><a name='DEVICE_TYPES.DATE_CREATED'>DATE&#95;CREATED</a></td>
+		<td> timestamp   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='DEVICE_TYPES.DATE_UPDATED'>DATE&#95;UPDATED</a></td>
+		<td> timestamp   DEFO now() </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='DEVICE_TYPES.DEFAULT_SLICING_POS_CHK'>DEFAULT&#95;SLICING&#95;POS&#95;CHK</a></td>
+		<td> integer   </td>
+		<td>  </td>
+	</tr>
+<tr><th colspan='4'><b>Indexes</b></th></tr>
+	<tr>		<td>Pk</td><td>DEVICE&#95;TYPES&#95;pkey</td>
+		<td> ON ID</td>
+		<td>  </td>
+	</tr>
+	<tr>		<td>U</td><td>DEVICE&#95;TYPES&#95;DEVICE&#95;TYPE&#95;key</td>
+		<td> ON DEVICE&#95;TYPE</td>
+		<td>  </td>
+	</tr>
+<tr><th colspan='4'><b>Constraints</b></th></tr>
+	<tr>
+		<td>&nbsp;</td><td> ckc_default_slicing_p_device_t </td><td> &#40;&quot;DEFAULT&#95;SLICING&#95;POS&#95;CHK&quot; IS NULL&#41; OR &#40;&quot;DEFAULT&#95;SLICING&#95;POS&#95;CHK&quot; &#61; ANY &#40;ARRAY&#91;0&#44; 1&#44; 2&#93;&#41;&#41; </td><td> </td>
+	</tr>
+</tbody>
+</table>
+
+<br/><br/>
+<table class='bordered'>
+<thead>
+<tr><th colspan='4'><a name='MODEL_DEVICES'>Table MODEL_DEVICES</a></th></tr>
+<tr><td colspan='3'>MODEL&#95;DEVICES
+Stores machine device parameters&#46;
+ The number of rows is roughly the number of devices multiplied by constant &#40;element parameters&#41;&#46;
+ It basically tells us what were the values on devices in a model when simulation was run&#46;
+At SLAC this table makes a link between a device name and the model runs that
+have optics &#40;Twiss and R&#45;matrices&#41; for that device&#44; via a FK to device ids
+in the infrastructure DB&#46; But for ESS that FK has been removed for now&#46;
+In future you will need some mechanism like that
+so one can query for optics based on a PV name which is in turn based on
+the device name&#46; This table&#44; with an appropriate column added to identify
+a device&#44; will form the translation from device name
+to runs containing elements correspondinf to that device&#46; </td></tr>
+</thead>
+<tbody>
+	<tr>
+		<td>*</td>
+		<td><a name='MODEL_DEVICES.ID'>ID</a></td>
+		<td> serial   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='MODEL_DEVICES.RUNS_ID'>RUNS&#95;ID</a></td>
+		<td> integer   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='MODEL_DEVICES.LCLS_ELEMENTS_ELEMENT_ID'>LCLS&#95;ELEMENTS&#95;ELEMENT&#95;ID</a></td>
+		<td> integer   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='MODEL_DEVICES.DEVICE_TYPES_ID'>DEVICE&#95;TYPES&#95;ID</a></td>
+		<td> integer   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>*</td>
+		<td><a name='MODEL_DEVICES.CREATED_BY'>CREATED&#95;BY</a></td>
+		<td> varchar&#40; 30 &#41;   DEFO "current_user"() </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>*</td>
+		<td><a name='MODEL_DEVICES.DATE_CREATED'>DATE&#95;CREATED</a></td>
+		<td> timestamp   DEFO now() </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='MODEL_DEVICES.DEVICE_PROPERTY'>DEVICE&#95;PROPERTY</a></td>
+		<td> varchar&#40; 30 &#41;   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='MODEL_DEVICES.ELEMENT_NAME'>ELEMENT&#95;NAME</a></td>
+		<td> varchar&#40; 60 &#41;   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='MODEL_DEVICES.DEVICE_VALUE'>DEVICE&#95;VALUE</a></td>
+		<td> float8   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='MODEL_DEVICES.ZPOS'>ZPOS</a></td>
+		<td> numeric   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='MODEL_DEVICES.INITIAL_VALUE'>INITIAL&#95;VALUE</a></td>
+		<td> float8   </td>
+		<td>  </td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><a name='MODEL_DEVICES.UNITS'>UNITS</a></td>
+		<td> varchar&#40; 10 &#41;   </td>
+		<td>  </td>
+	</tr>
+<tr><th colspan='4'><b>Indexes</b></th></tr>
+	<tr>		<td>Pk</td><td>MODEL&#95;DEVICES&#95;pkey</td>
+		<td> ON ID</td>
+		<td>  </td>
+	</tr>
+<tr><th colspan='4'><b>Foreign Keys</b></th></tr>
+	<tr>
+		<td>&nbsp;</td><td>MODEL_DEVICES_RUNS_ID_fkey</td>
+		<td > ( RUNS&#95;ID ) ref <a href='#RUNS'>RUNS</a> (ID) </td>
+		<td>  </td>
+	</tr>
+<tr><th colspan='4'><b>Constraints</b></th></tr>
+	<tr>
+		<td>&nbsp;</td><td> ckc_model_devices_dev_prop </td><td> &#40;&quot;DEVICE&#95;PROPERTY&quot; IS NULL&#41; OR &#40;&#40;&quot;DEVICE&#95;PROPERTY&quot;&#41;&#58;&#58;text &#61; ANY &#40;&#40;ARRAY&#91;&#39;B&#39;&#58;&#58;character varying&#44; &#39;BACT&#39;&#58;&#58;character varying&#44; &#39;BDES&#39;&#58;&#58;character varying&#44; &#39;A&#39;&#58;&#58;character varying&#44; &#39;P&#39;&#58;&#58;character varying&#44; &#39;ADES&#39;&#58;&#58;character varying&#44; &#39;PDES&#39;&#58;&#58;character varying&#44; &#39;APRX&#39;&#58;&#58;character varying&#44; &#39;MISX&#39;&#58;&#58;character varying&#44; &#39;MISY&#39;&#58;&#58;character varying&#44; &#39;MISZ&#39;&#58;&#58;character varying&#44; &#39;ROTX&#39;&#58;&#58;character varying&#44; &#39;ROTY&#39;&#58;&#58;character varying&#44; &#39;ROTZ&#39;&#58;&#58;character varying&#44; &#39;ENBL&#39;&#58;&#58;character varying&#93;&#41;&#58;&#58;text&#91;&#93;&#41;&#41; </td><td> </td>
+	</tr>
+</tbody>
+</table>
+
+<br/><br/>
+<table class='bordered'>
+<thead>
+	<tr>
+		<th><a name='V_GOLD_REPORT'>View V_GOLD_REPORT</a></th>
+	<tr>		<td colspan='3'>GOLD&#95;REPORT
+displays all GOLD models&#44; the last DESIGN and EXTAND marked with &#39;PRESENT&#39; </td>
+	</tr></thead>
+<tbody>
+	<tr><td>&#40; SELECT g&#46;&quot;ID&quot;&#44;
+    g&#46;&quot;RUNS&#95;ID&quot; AS &quot;RUN&#95;ID&quot;&#44;
+    &#39;PRESENT&#39;&#58;&#58;text AS &quot;GOLD&#95;STATUS&#95;NO&#95;CSS&quot;&#44;
+    g&#46;&quot;COMMENTS&quot;&#44;
+    g&#46;&quot;CREATED&#95;BY&quot;&#44;
+    g&#46;&quot;DATE&#95;CREATED&quot;&#44;
+    r&#46;&quot;RUN&#95;SOURCE&#95;CHK&quot;
+   FROM &quot;MACHINE&#95;MODEL&quot;&#46;&quot;GOLD&quot; g&#44;
+    &quot;MACHINE&#95;MODEL&quot;&#46;&quot;RUNS&quot; r
+  WHERE &#40;&#40;g&#46;&quot;RUNS&#95;ID&quot; &#61; r&#46;&quot;ID&quot;&#41; AND &#40;&#40;r&#46;&quot;RUN&#95;SOURCE&#95;CHK&quot;&#41;&#58;&#58;text &#61; &#39;DESIGN&#39;&#58;&#58;text&#41;&#41;
+  ORDER BY g&#46;&quot;DATE&#95;CREATED&quot; DESC
+ LIMIT 1&#41;
+UNION
+&#40; SELECT g&#46;&quot;ID&quot;&#44;
+    g&#46;&quot;RUNS&#95;ID&quot; AS &quot;RUN&#95;ID&quot;&#44;
+    &#39;PRESENT&#39;&#58;&#58;text AS &quot;GOLD&#95;STATUS&#95;NO&#95;CSS&quot;&#44;
+    g&#46;&quot;COMMENTS&quot;&#44;
+    g&#46;&quot;CREATED&#95;BY&quot;&#44;
+    g&#46;&quot;DATE&#95;CREATED&quot;&#44;
+    r&#46;&quot;RUN&#95;SOURCE&#95;CHK&quot;
+   FROM &quot;MACHINE&#95;MODEL&quot;&#46;&quot;GOLD&quot; g&#44;
+    &quot;MACHINE&#95;MODEL&quot;&#46;&quot;RUNS&quot; r
+  WHERE &#40;&#40;g&#46;&quot;RUNS&#95;ID&quot; &#61; r&#46;&quot;ID&quot;&#41; AND &#40;&#40;r&#46;&quot;RUN&#95;SOURCE&#95;CHK&quot;&#41;&#58;&#58;text &#61; &#39;EXTANT&#39;&#58;&#58;text&#41;&#41;
+  ORDER BY g&#46;&quot;DATE&#95;CREATED&quot; DESC
+ LIMIT 1&#41;
+UNION
+&#40; SELECT g&#46;&quot;ID&quot;&#44;
+    g&#46;&quot;RUNS&#95;ID&quot; AS &quot;RUN&#95;ID&quot;&#44;
+    &#39;PREVIOUS&#39;&#58;&#58;text AS &quot;GOLD&#95;STATUS&#95;NO&#95;CSS&quot;&#44;
+    g&#46;&quot;COMMENTS&quot;&#44;
+    g&#46;&quot;CREATED&#95;BY&quot;&#44;
+    g&#46;&quot;DATE&#95;CREATED&quot;&#44;
+    r&#46;&quot;RUN&#95;SOURCE&#95;CHK&quot;
+   FROM &quot;MACHINE&#95;MODEL&quot;&#46;&quot;GOLD&quot; g&#44;
+    &quot;MACHINE&#95;MODEL&quot;&#46;&quot;RUNS&quot; r
+  WHERE &#40;g&#46;&quot;RUNS&#95;ID&quot; &#61; r&#46;&quot;ID&quot;&#41;
+  ORDER BY g&#46;&quot;DATE&#95;CREATED&quot; DESC&#41;&#59;</td></tr>
+</tbody>
+</table>
+</body></html>
