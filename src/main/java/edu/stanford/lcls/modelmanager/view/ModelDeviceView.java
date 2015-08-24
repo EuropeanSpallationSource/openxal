@@ -155,7 +155,7 @@ public class ModelDeviceView  implements SwingConstants{
 															hasFocus, row,
 															column);
 											if (row == deviceTable.getSelectedRow())
-												cell.setBackground(cell.getBackground());//CHECK: not sure if this acctually does anything.
+											    cell.setBackground(cell.getBackground());//CHECK: not sure if this actually does anything.
 											else
 												cell.setBackground(Color.WHITE);
 											return cell;
@@ -183,15 +183,3 @@ public class ModelDeviceView  implements SwingConstants{
 	}
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
