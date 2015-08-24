@@ -138,7 +138,7 @@ public class ModelDeviceView  implements SwingConstants{
         			@Override
                     public void valueChanged(ListSelectionEvent event) {
 						if ((!event.getValueIsAdjusting())
-								& deviceTable.getSelectedRow() > -1) {
+								&& deviceTable.getSelectedRow() > -1) {
 							deviceTable.setDefaultRenderer(Object.class,
 									new DefaultTableCellRenderer() {
 										private static final long serialVersionUID = 1L;
