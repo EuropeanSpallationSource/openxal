@@ -2,26 +2,80 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>org.xal</groupId>
-    <artifactId>openxal.apps</artifactId>
-    <version>1.0.5-SNAPSHOT</version>   
-  </parent>
-		
+	<parent>
+		<groupId>org.xal</groupId>
+		<artifactId>openxal.apps</artifactId>
+		<version>1.0.5-SNAPSHOT</version>
+	</parent>
+
 	<artifactId>openxal.apps.meme</artifactId>
-	
-	
+
+
 	<packaging>pom</packaging>
-	
-	<dependencyManagement>
-		<dependencies>
-			
-		</dependencies>
-	</dependencyManagement>
+
+
 
 	<modules>
 		<module>services</module>
-		<module>support</module>				
-	</modules>	
+		<module>support</module>
+	</modules>
+
+	<repositories>
+		<repository>
+			<id>epics</id>
+			<name>EPICS Repository</name>
+			<url>http://epics.sourceforge.net/maven2/</url>
+		</repository>
+	</repositories>
+
+
+
+
+	<dependencies>
+		<dependency>
+			<groupId>epics</groupId>
+			<artifactId>pvData</artifactId>
+			<version>2.1-SNAPSHOT</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>epics</groupId>
+			<artifactId>pvAccess</artifactId>
+			<version>2.1-SNAPSHOT</version>
+			<exclusions>  <!--We exclude following dependencies because pvAccess is looking in the 
+					wrong place. Instead we add jca and caj as meme dependencies -->
+				<exclusion>
+					<groupId>epics</groupId>
+					<artifactId>caj</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>epics</groupId>
+					<artifactId>jca</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>org.epics</groupId>
+			<artifactId>jca</artifactId>
+			<version>2.3.6</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.epics</groupId>
+			<artifactId>caj</artifactId>
+			<version>1.1.10</version>
+		</dependency>
+
+	</dependencies>
+
+
+
+
+
 </project>
 
+
+
+      

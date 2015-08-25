@@ -17,11 +17,6 @@
 		<sourceDirectory>src</sourceDirectory>
 	</build>
 
-	<dependencyManagement>
-		<dependencies>
-
-		</dependencies>
-	</dependencyManagement>
 
 </project>
 
