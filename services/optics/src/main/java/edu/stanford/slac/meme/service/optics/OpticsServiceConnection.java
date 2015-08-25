@@ -12,27 +12,16 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 // Oracle's native interface that supports passwordless authentication
 // import oracle.jdbc.pool.OracleDataSource;
-
 // EPICS
 import org.epics.pvdata.factory.FieldFactory;
 import org.epics.pvdata.factory.PVDataFactory;
-import org.epics.pvdata.pv.Field;
 import org.epics.pvdata.pv.FieldCreate;
-import org.epics.pvdata.pv.PVByteArray;
 import org.epics.pvdata.pv.PVDataCreate;
-import org.epics.pvdata.pv.PVDoubleArray;
-import org.epics.pvdata.pv.PVField;
-import org.epics.pvdata.pv.PVLongArray;
-import org.epics.pvdata.pv.PVStringArray;
-import org.epics.pvdata.pv.PVStructure;
-import org.epics.pvdata.pv.ScalarArray;
-import org.epics.pvdata.pv.ScalarType;
 
 import edu.stanford.slac.meme.support.err.UnableToGetDataException;
 

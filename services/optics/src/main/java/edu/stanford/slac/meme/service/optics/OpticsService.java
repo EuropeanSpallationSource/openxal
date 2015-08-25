@@ -9,50 +9,43 @@
 
 package edu.stanford.slac.meme.service.optics;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.epics.pvaccess.util.logging.ConsoleLogHandler;
 import java.util.regex.Pattern;
-import java.util.Map;
-import java.util.HashMap;
-import java.lang.Integer;
-import Jama.Matrix;
 
+// Error handling, MEME exceptions, utilities for MEME design principles.
+import org.epics.pvaccess.PVAException;
+import org.epics.pvaccess.server.rpc.RPCRequestException;
 // Import pvaccess Remote Procedure Call interface
 import org.epics.pvaccess.server.rpc.RPCServer;
 import org.epics.pvaccess.server.rpc.RPCService;
-
 // pvData Data Interface
 import org.epics.pvdata.factory.FieldFactory;
-import org.epics.pvdata.pv.Field;
-import org.epics.pvdata.pv.FieldCreate;
-import org.epics.pvdata.pv.ScalarType;
-import org.epics.pvdata.pv.Structure;
-
 // pvData Introspection interface
 import org.epics.pvdata.factory.PVDataFactory;
+import org.epics.pvdata.pv.Field;
+import org.epics.pvdata.pv.FieldCreate;
 import org.epics.pvdata.pv.PVDoubleArray;
 import org.epics.pvdata.pv.PVIntArray;
-import org.epics.pvdata.pv.PVStructure;
-import org.epics.pvdata.pv.PVStringArray;
 import org.epics.pvdata.pv.PVString;
-
+import org.epics.pvdata.pv.PVStructure;
+import org.epics.pvdata.pv.ScalarType;
 // Asynchronous status messaging system
 // import org.epics.pvdata.pv.Status;
 // import org.epics.pvdata.pv.StatusCreate;
 import org.epics.pvdata.pv.Status.StatusType;
 // import org.epics.pvdata.factory.StatusFactory;
+import org.epics.pvdata.pv.Structure;
 
-// Error handling, MEME exceptions, utilities for MEME design principles.
-import org.epics.pvaccess.PVAException;
-import org.epics.pvaccess.server.rpc.RPCRequestException;
-
+import Jama.Matrix;
 import edu.stanford.slac.meme.support.err.Message;
 import edu.stanford.slac.meme.support.err.UnableToGetDataException;
-import edu.stanford.slac.meme.support.sys.Mode;               // Dev or prod
 // import edu.stanford.slac.meme.support.err.MEMERequestException;
 import edu.stanford.slac.meme.support.sys.DataMode;     // fake or real data
 import edu.stanford.slac.meme.support.sys.MemeNormativeTypes; // NTMATRIX_ID
+import edu.stanford.slac.meme.support.sys.Mode;               // Dev or prod
 
 
 
@@ -90,9 +83,7 @@ public class OpticsService
 			.getFieldCreate();
 	// private static final PVDataCreate pvDataCreate = PVDataFactory
 	//		.getPVDataCreate();
-
-	// Default console logging level.
-	private static final Level LOG_LEVEL_DEFAULT = Level.INFO;
+	
 	// private static OpticsMessage Msg;
 
 	// vate static final int MODE_PARAM=0;      // Index of MODE in Params.
@@ -201,7 +192,8 @@ public class OpticsService
 		 * an NTURI that encodes the name of a relational database
 		 * query, as understood by this service.
 		 */
-		public PVStructure request(PVStructure pvUri)
+		@Override
+        public PVStructure request(PVStructure pvUri)
 				throws RPCRequestException
 		{
 

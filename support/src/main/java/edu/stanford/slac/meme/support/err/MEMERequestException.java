@@ -14,6 +14,9 @@ import org.epics.pvdata.pv.Status;
  * @version 23/Oct/2013, original version
  */
 public class MEMERequestException extends RPCRequestException {
+
+    private static final long serialVersionUID = 9061106108856848342L;
+
     public MEMERequestException(String message) {
         super(Status.StatusType.ERROR, message);
     }

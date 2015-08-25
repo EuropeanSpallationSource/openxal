@@ -18,6 +18,7 @@ import org.epics.pvdata.pv.Status;
  */
 public class UnableToGetDataException extends RPCRequestException {
 
+    private static final long serialVersionUID = 2175761868356771465L;
     private static final String _Msg = "Unable to get data";
     private static final String _msgWithKind = "Unable to get %s data";
 

@@ -1,9 +1,7 @@
 //-*-jde-*-
 package edu.stanford.slac.meme.service.optics;
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.epics.pvaccess.util.logging.ConsoleLogHandler;
  
 /**
  * Entity defines how to get the "device name" part and "property" part

@@ -21,7 +21,6 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -256,8 +255,6 @@ public class RdbServiceConnection {
         if (logger.isLoggable(Level.FINER))
             logger.entering(this.getClass().getName(), "getData");
         logger.finer("SQL query to be executed: " + query);
-
-        ArrayList<Field> myArr = new ArrayList<Field>();
         ResultSet rs = null;
         PVStructure pvTop = null;
 

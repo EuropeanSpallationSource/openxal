@@ -9,7 +9,6 @@ package edu.stanford.slac.meme.service.rdb;
 
 import java.io.File;
 import java.util.Hashtable;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -21,10 +20,6 @@ import org.epics.pvaccess.PVAException;
 import org.epics.pvaccess.server.rpc.RPCRequestException;
 import org.epics.pvaccess.server.rpc.RPCServer;
 import org.epics.pvaccess.server.rpc.RPCService;
-import org.epics.pvdata.factory.FieldFactory;
-import org.epics.pvdata.factory.PVDataFactory;
-import org.epics.pvdata.pv.FieldCreate;
-import org.epics.pvdata.pv.PVDataCreate;
 import org.epics.pvdata.pv.PVString;
 import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.Status.StatusType;
@@ -78,14 +73,6 @@ public class RdbService {
     // The advertised name of the service - that is, the EPICS V4 PV name of
     // this RPC service.
     private static final String RDB_SERVICE_CHANNEL_NAME = "rdb";
-
-    // Factories for creating the data and introspection interfaces of data
-    // exchanged by RdbService.
-    private static final FieldCreate fieldCreate = FieldFactory.getFieldCreate();
-    private static final PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
-
-    // Default console logging level.
-    private static final Level LOG_LEVEL_DEFAULT = Level.INFO;
 
     // Error Messages
     private static final String NOTEXPECTEDNTID = "Expected %s id member value but found id value %s";
