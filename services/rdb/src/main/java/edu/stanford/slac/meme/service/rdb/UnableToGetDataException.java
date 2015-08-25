@@ -1,23 +1,17 @@
 package edu.stanford.slac.meme.service.rdb;
 
 @SuppressWarnings("serial")
-public class UnableToGetDataException extends Exception 
-{
-	public
-    UnableToGetDataException()
-    {
+public class UnableToGetDataException extends Exception {
+    public UnableToGetDataException() {
         super();
     }
 
-	public UnableToGetDataException(String _message) {
-		super(_message);
-	}
-	
-	public UnableToGetDataException(String _message, Throwable _cause) {
-		super(_message, _cause);
-	}
-	
+    public UnableToGetDataException(String _message) {
+        super(_message);
+    }
+
+    public UnableToGetDataException(String _message, Throwable _cause) {
+        super(_message, _cause);
+    }
+
 }
-
-
-
