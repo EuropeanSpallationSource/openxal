@@ -166,6 +166,9 @@ to runs containing elements correspondinf to that device.]]></comment>
 			<fk name="MODEL_DEVICES_RUNS_ID_fkey" to_schema="MACHINE_MODEL" to_table="RUNS" delete_action="cascade" >
 				<fk_column name="RUNS_ID" pk="ID" />
 			</fk>
+			<fk name="MODEL_DEVICES_DEVICE_TYPES_ID_fkey" to_schema="MACHINE_MODEL" to_table="DEVICE_TYPES" delete_action="cascade" >
+				<fk_column name="DEVICE_TYPES_ID" pk="ID" />
+			</fk>
 		</table>
 		<table name="RUNS" >
 			<comment><![CDATA[MODEL_RUNS
@@ -250,24 +253,24 @@ UNION
 		<function name="GOLD_THIS_MODEL" id="Function_3a728eae" isSystem="false" />
 	</schema>
 	<connector name="machine_model" database="PostgreSQL" driver_class="org.postgresql.Driver" driver_jar="postgresql-9.2-1003.jdbc3.jar" host="localhost" port="5432" instance="machine_model" user="machinemodel" passwd="cGh5c2ljc2wxbmFjc3R1ZmY=" schema_mapping="" />
-	<layout id="Layout_1805b6d1" name="MACHINE_MODEL" joined_routing="y" show_column_type="y" show_schema_name="y" show_relation_columns="y" >
-		<entity schema="MACHINE_MODEL" name="ELEMENT_MODELS" color="bfd4f5" x="705" y="210" >
-			<callout x="255" y="45" pointer="SE" />
+	<layout id="Layout_1805b6d1" name="MACHINE_MODEL" joined_routing="y" show_column_type="y" show_relation_columns="y" >
+		<entity schema="MACHINE_MODEL" name="ELEMENT_MODELS" color="bfd4f5" x="1100" y="240" >
+			<callout x="860" y="100" pointer="Round" />
 		</entity>
-		<entity schema="MACHINE_MODEL" name="V_GOLD_REPORT" color="bfd4f5" x="480" y="990" >
-			<callout x="480" y="1155" pointer="NV" />
+		<entity schema="MACHINE_MODEL" name="MODEL_DEVICES" color="bfd4f5" x="640" y="360" >
+			<callout x="100" y="60" pointer="SE" />
 		</entity>
-		<entity schema="MACHINE_MODEL" name="RUNS" color="bfd4f5" x="450" y="735" >
-			<callout x="225" y="915" pointer="NE" />
+		<entity schema="MACHINE_MODEL" name="V_GOLD_REPORT" color="bfd4f5" x="780" y="1300" >
+			<callout x="920" y="1540" pointer="NV" />
 		</entity>
-		<entity schema="MACHINE_MODEL" name="GOLD" color="bfd4f5" x="465" y="600" >
-			<callout x="180" y="675" pointer="Round" />
+		<entity schema="MACHINE_MODEL" name="RUNS" color="bfd4f5" x="700" y="920" >
+			<callout x="460" y="1180" pointer="NE" />
 		</entity>
-		<entity schema="MACHINE_MODEL" name="DEVICE_TYPES" color="bfd4f5" x="150" y="375" >
-			<callout x="90" y="540" pointer="NE" />
+		<entity schema="MACHINE_MODEL" name="GOLD" color="bfd4f5" x="680" y="700" >
+			<callout x="320" y="800" pointer="Round" />
 		</entity>
-		<entity schema="MACHINE_MODEL" name="MODEL_DEVICES" color="bfd4f5" x="420" y="360" >
-			<callout x="45" y="150" pointer="SE" />
+		<entity schema="MACHINE_MODEL" name="DEVICE_TYPES" color="bfd4f5" x="220" y="380" >
+			<callout x="60" y="600" pointer="NE" />
 		</entity>
 	</layout>
 </project>
