@@ -12,12 +12,6 @@
 
 	<packaging>pom</packaging>
 
-	<dependencyManagement>
-		<dependencies>
-
-		</dependencies>
-	</dependencyManagement>
-
 	<modules>
 		<module>optics</module>
 		<module>rdb</module>

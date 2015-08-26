@@ -6,19 +6,24 @@
 	<parent>
 		<groupId>org.xal</groupId>
 		<artifactId>openxal.apps.meme.services</artifactId>
-
 		<version>1.0.5-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>openxal.apps.meme.services.testservice</artifactId>
 
-	<packaging>pom</packaging>
+	<packaging>jar</packaging>
 
-	<dependencyManagement>
-		<dependencies>
+	<build>
+		<sourceDirectory>src/main/java</sourceDirectory>
+	</build>
 
-		</dependencies>
-	</dependencyManagement>
+	<dependencies>
+		<dependency>
+			<groupId>org.xal</groupId>
+			<artifactId>openxal.apps.meme.support</artifactId>
+			<version>1.0.5-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
 
 </project>
 

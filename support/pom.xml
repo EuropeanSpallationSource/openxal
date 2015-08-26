@@ -10,11 +10,10 @@
 
 	<artifactId>openxal.apps.meme.support</artifactId>
 
-	<packaging>pom</packaging>
-
+	<packaging>jar</packaging>
 
 	<build>
-		<sourceDirectory>src</sourceDirectory>
+		<sourceDirectory>src/main/java</sourceDirectory>
 	</build>
 
 

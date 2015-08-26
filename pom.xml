@@ -28,9 +28,6 @@
 		</repository>
 	</repositories>
 
-
-
-
 	<dependencies>
 		<dependency>
 			<groupId>epics</groupId>

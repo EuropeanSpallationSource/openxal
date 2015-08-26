@@ -10,17 +10,22 @@
 
 	<artifactId>openxal.apps.meme.services.rdb</artifactId>
 
-	<packaging>pom</packaging>
 
-
+	<packaging>jar</packaging>
+	
 	<build>
-		<sourceDirectory>src</sourceDirectory>
+		<sourceDirectory>src/main/java</sourceDirectory>
 	</build>
 
-	<dependencyManagement>
-		<dependencies>
-		</dependencies>
-	</dependencyManagement>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.xal</groupId>
+			<artifactId>openxal.apps.meme.support</artifactId>
+			<version>1.0.5-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
+
 
 </project>
 
