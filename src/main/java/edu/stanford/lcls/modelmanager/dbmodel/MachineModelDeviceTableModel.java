@@ -114,6 +114,7 @@ public class MachineModelDeviceTableModel extends AbstractTableModel implements	
 			if (machineModelDevices != null) {
 				if (model.getSelectedMachineModel() == model.getRunMachineModel() && model.getRunState().equals(BrowserModel.RunState.FETCHED_DATA)) {
 					editable = true;
+					
 				}
 			} else {
 				machineModelDevices = model.getReferenceMachineModelDevice();
@@ -166,4 +167,7 @@ public class MachineModelDeviceTableModel extends AbstractTableModel implements	
     public void setFilter(String keyword){
         filterKeyword = keyword.toLowerCase();
     }
+    public boolean isEditable() {
+		return editable;
+	}
 }
