@@ -10,6 +10,7 @@
 
 package edu.stanford.lcls.modelmanager;
 
+import edu.stanford.lcls.modelmanager.dbmodel.BrowserModel;
 import edu.stanford.lcls.modelmanager.dbmodel.DataManager;
 import edu.stanford.lcls.modelmanager.view.ModelManagerFeature;
 import edu.stanford.slac.Message.Message;
@@ -35,24 +36,24 @@ import javax.swing.Action;
 public class ModelManagerDocument extends AcceleratorDocument {
 	
 	private Action helpAction; 
+	private BrowserModel model = null;
 	
 //	HelpWindow hw = new HelpWindow();
 	
 	/** Create a new empty document */
-    public ModelManagerDocument() {
-        this(null);
-    }
+	public ModelManagerDocument() {
+		this(null);
+	}
     
     
     /** 
      * Create a new document loaded from the URL file 
      * @param url The URL of the file to load into the new document.
      */
-    public ModelManagerDocument(java.net.URL url) {
-        setSource(url);
-    }
-    
-    
+	public ModelManagerDocument(java.net.URL url) {
+		setSource(url);
+	}
+
     /**
      * Make a main window by instantiating the my custom window.
      */
@@ -175,11 +176,15 @@ public class ModelManagerDocument extends AcceleratorDocument {
         
     }
     
-    public void acceleratorChanged() {
-		if (accelerator != null) {
 
+	public void acceleratorChanged() {
+		if (accelerator != null) {
 			setHasChanges(true);
-		}
+			// If model already exists update it!
+			if (model != null) {
+				model.setAccelerator(accelerator);
+			}
+		} 
 	}
 
 	public void selectedSequenceChanged() {
@@ -204,6 +209,13 @@ public class ModelManagerDocument extends AcceleratorDocument {
 	public void willClose() {
 		//TODO clear all DB connections
 		ModelManagerFeature.getBrowserModel().closeDBConnection();
+	}
+
+	public BrowserModel getModel() {
+		if (model == null) {
+			model = new BrowserModel(accelerator);
+		}
+		return model;
 	}
 }
 

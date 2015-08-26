@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -38,6 +39,7 @@ import se.lu.esss.ics.jels.matcher.MatcherDialog;
 import xal.extension.widgets.apputils.SimpleProbeEditor;
 import xal.model.ModelException;
 import xal.service.pvlogger.apputils.browser.PVLogSnapshotChooser;
+import edu.stanford.lcls.modelmanager.ModelManagerDocument;
 import edu.stanford.lcls.modelmanager.ModelManagerWindow;
 import edu.stanford.lcls.modelmanager.dbmodel.BrowserModel;
 import edu.stanford.lcls.modelmanager.dbmodel.BrowserModel.RunState;
@@ -59,7 +61,9 @@ import edu.stanford.slac.Message.Message;
 public class ToolBarView implements SwingConstants {
 	private JToolBar toolBarView;
 	private JFrame parent;
+	private ModelManagerDocument document;
 	private BrowserModel model;
+	private JButton loadAccelerator;
 	private JComboBox<String> beamlineSelector;
 	
 	/*private JComboBox<ComboItem> BPRPSelector; //Back Propagte Reference points
@@ -89,9 +93,10 @@ public class ToolBarView implements SwingConstants {
 
 //	private int bprpMethod;
 
-	public ToolBarView(JFrame _parent, BrowserModel _model, final ModelListView _modelListView) {
+	public ToolBarView(JFrame _parent, ModelManagerDocument _document, final ModelListView _modelListView) {
 		parent = _parent;
-		model = _model;
+		document = _document;
+		model = _document.getModel();
 		modelListView = _modelListView;
 //		toolBarView = new JToolBar();
 		toolBarView = ((ModelManagerWindow)_parent).getToolBar();
@@ -117,6 +122,27 @@ public class ToolBarView implements SwingConstants {
 			Fetch
 		 */
 		
+		
+		// Accelerator loader
+		loadAccelerator = new JButton("Load");
+                loadAccelerator.setToolTipText("Load Accelerator.");
+                loadAccelerator.setAlignmentY(0.3f);
+                loadAccelerator.setEnabled(true);
+                loadAccelerator.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+		                //AcceleratorActionFactory.loadAcceleratorAction( document ).actionPerformed( null );
+                                AcceleratorSelector selector = new AcceleratorSelector(parent);
+                                selector.setLocationRelativeTo(null);
+                                selector.setVisible(true);
+
+				if (selector.getSelectedAccelerator() != null) {
+                                    document.setAccelerator(selector.getSelectedAccelerator(), selector.getAcceleratorPath());
+                                }
+                        }
+                });
+                toolBarView.add(loadAccelerator);
+                toolBarView.addSeparator(small);
 		
 		// beamline selection
 		final JPanel bs = new JPanel();
@@ -579,6 +605,10 @@ public class ToolBarView implements SwingConstants {
 			@Override
 			public void modelStateChanged(BrowserModel model, BrowserModelAction action) {
 				if (model.getStateReady()) setQueryViewEnable(true);		
+				if (action.equals(BrowserModelAction.ACC_LOAD)) {
+					beamlineSelector.setModel(new DefaultComboBoxModel(
+						model.getRunModel().getBeamlines().toArray(new String[]{})));
+				}
 			}
 		});
 		

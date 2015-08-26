@@ -87,7 +87,7 @@ import edu.stanford.slac.Message.Message;
  * @version 1.0 18 Avg 2015
  * 
  * @author unknown
- * @author Blaž Kranjc <blaz.kranjc@cosylab.com>
+ * @author Blaž Kranjc 
  */
 public class DataManager {
 	final static public SimpleDateFormat machineModelDateFormat = new SimpleDateFormat(

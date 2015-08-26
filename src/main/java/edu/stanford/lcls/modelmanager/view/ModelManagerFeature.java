@@ -12,6 +12,7 @@ import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
 
 import xal.smf.Accelerator;
+import edu.stanford.lcls.modelmanager.ModelManagerDocument;
 import edu.stanford.lcls.modelmanager.dbmodel.BrowserModel;
 import edu.stanford.lcls.modelmanager.dbmodel.BrowserModelListener;
 import edu.stanford.lcls.modelmanager.dbmodel.BrowserModelListener.BrowserModelAction;
@@ -19,6 +20,7 @@ import edu.stanford.slac.Message.Message;
 
 public class ModelManagerFeature  implements SwingConstants {
 	private JFrame frame;
+	private ModelManagerDocument document;
 	protected static BrowserModel model;
 	private Container queryBox;
 	private Container modelStateBox;
@@ -30,14 +32,15 @@ public class ModelManagerFeature  implements SwingConstants {
 	private ModelListView modelListView;
 //	private static Message logger = Message.getInstance();
 
-	public ModelManagerFeature(JFrame _frame, JPanel stateBar, Accelerator acc) {
+	public ModelManagerFeature(JFrame _frame, JPanel stateBar, ModelManagerDocument _document) {
 		frame =_frame;
-		model = new BrowserModel(acc);
+		document = _document;
+		model = document.getModel();
 		ModelStateView modelStateView = new ModelStateView(frame, model);
 		modelStateBox = ModelStateView.getInstance();
 		modelStateView.start();
 		modelListView = new ModelListView(frame, model);
-		toolBarView = new ToolBarView(frame, model, modelListView);
+		toolBarView = new ToolBarView(frame, document, modelListView);
 		queryBox = toolBarView.getInstance();
 		modelListBox = modelListView.getInstance();
 		ModelDetailView modelDetailView = new ModelDetailView(frame, model);

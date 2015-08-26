@@ -20,7 +20,7 @@ import xal.smf.AcceleratorSeqCombo;
  * @version 1.0 18 Avg 2015
  * 
  * @author unknown
- * @author Blaž Kranjc <blaz.kranjc@cosylab.com>
+ * @author Blaž Kranjc 
  */
 public class RunModel {	
 	private Accelerator accelerator;

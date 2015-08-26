@@ -357,6 +357,19 @@ public class BrowserModel {
 		return goldModel;
 	}
 
+	public void setAccelerator(Accelerator accelerator) {
+		acc = accelerator;
+		rm = new RunModel(acc);
+		modelMode = rm.getBeamlines().get(0);
+		EVENT_PROXY.modelStateChanged(this, BrowserModelListener.BrowserModelAction.ACC_LOAD);
+		try {
+			setModelMode(modelMode);
+		} catch (SQLException e) {
+			Message.error("SQL connection error!");
+		}
+	}
+
+
 	/**
 	 * filter machine models
 	 */
@@ -470,6 +483,7 @@ public class BrowserModel {
 										.getPropertyValue("ZPOS").toString());
 						if (!startElementRealZPos.equals(startElementZPos)) {
 							Double offSet = startElementRealZPos
+
 									- startElementZPos;
 							for (int j = 0; j < _selectedMachineModelDetail.length; j++) {
 								Double newElementZPos = Double

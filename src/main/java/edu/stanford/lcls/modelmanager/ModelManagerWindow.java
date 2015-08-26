@@ -54,7 +54,7 @@ public class ModelManagerWindow extends XalWindow implements SwingConstants {
 		this.setSize(frameWidth, frameHeight);
 		this.setLocation((screenSize.width - frameWidth) / 2,
 				(screenSize.height - frameHeight) / 2);
-		return new ModelManagerFeature(this, this.getStateBar(), ((AcceleratorDocument)document).getAccelerator());
+		return new ModelManagerFeature(this, this.getStateBar(), (ModelManagerDocument)document);
 	}
 
 	public void makeFrame() {

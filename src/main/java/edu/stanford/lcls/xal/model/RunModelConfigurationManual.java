@@ -15,7 +15,7 @@ import edu.stanford.lcls.modelmanager.dbmodel.MachineModelDevice;
  * @version 1.0 18 Avg 2015
  * 
  * @author unknown
- * @author Blaž Kranjc <blaz.kranjc@cosylab.com>
+ * @author Blaž Kranjc 
  */
 public class RunModelConfigurationManual extends RunModelConfiguration {
 	private MachineModelDevice[] machineDevice;

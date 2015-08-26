@@ -11,7 +11,7 @@ import java.util.List;
  * @version 1.0 18 Avg 2015
  * 
  * @author unknown
- * @author Blaž Kranjc <blaz.kranjc@cosylab.com>
+ * @author Blaž Kranjc 
  */
 public class MachineModelDevice {
 	static final private List<String> PROPERTY_NAME;

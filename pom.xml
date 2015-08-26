@@ -38,6 +38,12 @@
 	<dependency>
 		<groupId>se.lu.esss.ics.jels</groupId>
 		<artifactId>jels</artifactId>
+		<version>1.0.5-SNAPSHOT</version>
+	</dependency>
+	<dependency>
+		<groupId>se.lu.esss.ics.linaclego</groupId>
+		<artifactId>openxal.extensions.linaclego</artifactId>
+		<version>1.0.5-SNAPSHOT</version>
 	</dependency>
 	<dependency>
 		<groupId>postgresql</groupId>
