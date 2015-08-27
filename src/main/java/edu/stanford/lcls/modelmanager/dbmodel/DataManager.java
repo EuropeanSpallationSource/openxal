@@ -660,8 +660,8 @@ public class DataManager {
 				elementTypeID.add(rs.getInt(3));
 			}*/
 
-			PreparedStatement stmt3 = writeConnection.prepareStatement("INSERT INTO \"MACHINE_MODEL\".\"MODEL_DEVICES\" (\"RUNS_ID\", \"LCLS_ELEMENTS_ELEMENT_ID\", \"ELEMENT_NAME\", \"DEVICE_TYPES_ID\", \"DEVICE_PROPERTY\", \"DEVICE_VALUE\", \"INITIAL_VALUE\", \"UNITS\", \"ZPOS\") "+
-			  "VALUES (?,?,?,?,?,?,?,?,?)");
+			PreparedStatement stmt3 = writeConnection.prepareStatement("INSERT INTO \"MACHINE_MODEL\".\"MODEL_DEVICES\" (\"RUNS_ID\", \"LCLS_ELEMENTS_ELEMENT_ID\", \"ELEMENT_NAME\", \"DEVICE_TYPES_ID\", \"DEVICE_PROPERTY\", \"DEVICE_VALUE\", \"UNITS\", \"ZPOS\") "+
+			  "VALUES (?,?,?,?,?,?,?,?)");
 			stmt3.setInt(1, runID);
 			
 			int deviceIndex = 0;
@@ -679,9 +679,8 @@ public class DataManager {
 				stmt3.setNull(4, Types.INTEGER);			
 				stmt3.setString(5, (String)runMachineModelDevice[i].getPropertyValue("DEVICE_PROPERTY"));
 				stmt3.setDouble(6, Double.parseDouble((String) runMachineModelDevice[i].getPropertyValue("DEVICE_VALUE")));
-				stmt3.setDouble(7, Double.parseDouble((String) runMachineModelDevice[i].getPropertyValue("INITIAL_VALUE")));
-				stmt3.setString(8, ((String)runMachineModelDevice[i].getPropertyValue("UNITS")));
-				stmt3.setDouble(9, Double.parseDouble((String)runMachineModelDevice[i].getPropertyValue("ZPOS")));			
+				stmt3.setString(7, ((String)runMachineModelDevice[i].getPropertyValue("UNITS")));
+				stmt3.setDouble(8, Double.parseDouble((String)runMachineModelDevice[i].getPropertyValue("ZPOS")));			
 				stmt3.addBatch();
 			}
 			stmt3.executeBatch();

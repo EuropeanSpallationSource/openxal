@@ -6,14 +6,17 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import javax.swing.ComboBoxModel;
 import javax.swing.JFrame;
 
 import xal.model.ModelException;
 import xal.sim.scenario.Scenario;
 import xal.smf.Accelerator;
+import xal.smf.AcceleratorSeq;
 import xal.tools.data.DataAdaptor;
 import xal.tools.messaging.MessageCenter;
 import xal.tools.xml.XmlDataAdaptor;
@@ -25,7 +28,7 @@ import edu.stanford.slac.Message.Message;
 /**
  * BrowserModel is the main document model.
  * 
- * @author unknown
+ * @author 
  */
 public class BrowserModel {
 
@@ -371,7 +374,7 @@ public class BrowserModel {
 			for (int i = 0; i < allMachineModels.size(); i++) {
 				MachineModel machineModel = allMachineModels.get(i);
 				if (machineModel.getPropertyValue("MODEL_MODES_ID") != null) {
-					if (modelMode.equals(machineModel.getPropertyValue("MODEL_MODES_ID"))) {
+					if (modelMode.equals((String)machineModel.getPropertyValue("MODEL_MODES_ID"))) {
 						fetchedMachineModels.add(machineModel);						
 					}
 				}
@@ -454,18 +457,11 @@ public class BrowserModel {
 				_selectedMachineModelDevice = PERSISTENT_STORE.fetchMachineModelDevices(_connection, 
 						Long.valueOf((String) selectedMachineModel.getPropertyValue("ID")));
 				// Correct some models' ZPOS
-				String startElementName = null;
-				Double startElementZPos = null;
-				//Fix for elements without details.
-				if(_selectedMachineModelDetail.length > 0){
-				startElementName = _selectedMachineModelDetail[0]
+				String startElementName = _selectedMachineModelDetail[0]
 						.getPropertyValue("ELEMENT_NAME").toString();
-				startElementZPos = Double
+				Double startElementZPos = Double
 						.valueOf(_selectedMachineModelDetail[0]
 								.getPropertyValue("ZPOS").toString());
-			    }else{
-                    Message.error("No details for model with ID " + selectedMachineModel.getPropertyValue("ID"));
-                }
 				for (int i = 0; i < _referenceMachineModelDetail.length; i++) {
 					if (_referenceMachineModelDetail[i].getPropertyValue(
 							"ELEMENT_NAME").toString().equals(startElementName)) {

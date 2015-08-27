@@ -53,7 +53,7 @@ public class MachineModelDeviceTable {
 					"E.\"INDEX_SLICE_CHK\" = 0 AND " +
 					"D.\"LCLS_ELEMENTS_ELEMENT_ID\" = E.\"LCLS_ELEMENTS_ELEMENT_ID\" " + // TODO OPENXAL Oracle's outer joins (+) " +
 					"ORDER BY E.\"ORDINAL\", D.\"DEVICE_PROPERTY\"");*/
-			final PreparedStatement queryStatement = connection.prepareStatement("SELECT D.\"ELEMENT_NAME\", D.\"DEVICE_PROPERTY\", D.\"DEVICE_VALUE\", D.\"INITIAL_VALUE\",D.\"UNITS\", D.\"ZPOS\" " +
+			final PreparedStatement queryStatement = connection.prepareStatement("SELECT D.\"ELEMENT_NAME\", D.\"DEVICE_PROPERTY\", D.\"DEVICE_VALUE\", D.\"UNITS\", D.\"ZPOS\" " +
 					"FROM \"MACHINE_MODEL\".\"MODEL_DEVICES\" D " +
 					"WHERE D.\"RUNS_ID\" = ? ");
 			queryStatement.setLong(1, id);
@@ -63,7 +63,7 @@ public class MachineModelDeviceTable {
 				machineModelDevice = new MachineModelDevice();
 				// add TableColume
 				for (int i = 0; i < TABLE_SIZE; i++) {
-					machineModelDevice.setPropertyValue(i, modelResult
+					machineModelDevice.setPropertyValue(DB_TABLE_COLUMN_NAME.get(i), modelResult
 							.getString(DB_TABLE_COLUMN_NAME.get(i)));
 				}
 
