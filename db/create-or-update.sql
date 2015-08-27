@@ -3,29 +3,24 @@
 -- Keeps track of each tracking "run" done by XAL GUI.
 -- Each row in the GUI's runs table corresponds to one row of this table.
 
-CREATE TABLE IF NOT EXISTS "MACHINE_MODEL"."RUNS"
+CREATE TABLE  "MACHINE_MODEL"."RUNS"
 	  (
 	    "ID"                   SERIAL ,
-	--    "HARDWARE_SETTINGS_ID" INTEGER , -- no written by anything. Original design over-engineering.
-	--    "XML_DOCS_ID"          INTEGER , -- Original design over-engineering.
 	    "CREATED_BY"           VARCHAR (30) NOT NULL DEFAULT CURRENT_USER ,
 	    "DATE_CREATED"         TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	--    "UPDATED_BY"           VARCHAR (30) , -- Original design flaw.
-	--    "DATE_UPDATED"         TIMESTAMP , -- Original design flaw.
 	    "RUN_SOURCE_CHK"       VARCHAR (60) ,
-	--    "RUN_ELEMENT_FILENAME" VARCHAR (60) , --- Never updated, original design over-engineering.
 	    "RUN_ELEMENT_DATE"     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-	--    "RUN_DEVICE_FILENAME"  VARCHAR (60) , -- - Never updated, original design over-engineering.
 	    "RUN_DEVICE_DATE"      TIMESTAMP DEFAULT CURRENT_TIMESTAMP ,
 	    "COMMENTS"             VARCHAR (200) ,
-	    "MODEL_MODES_ID"       INTEGER,
-	    PRIMARY KEY ( "ID" )
+	    "MODEL_MODES_ID"       VARCHAR (60),
+	    PRIMARY KEY ( "ID" ),
+	    CONSTRAINT ckc_run_source_chk_runs CHECK  ( "RUN_SOURCE_CHK" IS NULL OR ( "RUN_SOURCE_CHK" IN ('DESIGN','EXTANT','PVLOGGER','MANUAL') ))
 	  );
 
 -- Keeps track of the kind of device we're talking about; E.g. MONItor (aka BPM), QUAD, XCOR etc.
 -- In particualar DEFAULT_SLICING_POS_CHK is the number of "slices" at which optics are recorded for each device type.
 -- For a QUAD there are 3 - beginning, middle and end. For all others only 1.
-CREATE TABLE IF NOT EXISTS "MACHINE_MODEL"."DEVICE_TYPES"
+CREATE TABLE  "MACHINE_MODEL"."DEVICE_TYPES"
   (
     "ID"                      SERIAL,
     "DEVICE_TYPE"             VARCHAR (4) NOT NULL UNIQUE,
@@ -34,22 +29,20 @@ CREATE TABLE IF NOT EXISTS "MACHINE_MODEL"."DEVICE_TYPES"
     "UPDATED_BY"              VARCHAR (30) DEFAULT CURRENT_USER,
     "DATE_UPDATED"            TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     "DEFAULT_SLICING_POS_CHK" INTEGER,
-    PRIMARY KEY ( "ID" )
+    PRIMARY KEY ( "ID" ),
+    CONSTRAINT CKC_DEFAULT_SLICING_P_DEVICE_T CHECK ( "DEFAULT_SLICING_POS_CHK" IS NULL OR ( "DEFAULT_SLICING_POS_CHK" IN (0,1,2) ))
   );
 
 -- The Twiss parameters and R-matrices for each device element, for each run. 
 -- Ie, the number of rows = roughly number of runs x number of elements in each model (so a big table).
 -- Most devices are equiv to one elment, some devices, such correspond to >1.
 -- For example quads correspond to 3, being the twiss and R-matrices at the beginning, middle and end of the quadrupole.
- CREATE TABLE IF NOT EXISTS "MACHINE_MODEL"."ELEMENT_MODELS"
+ CREATE TABLE  "MACHINE_MODEL"."ELEMENT_MODELS"
   (
     "ID"                       SERIAL,
     "RUNS_ID"                  INTEGER REFERENCES "MACHINE_MODEL"."RUNS" ( "ID" ) ON DELETE CASCADE,
-    "LCLS_ELEMENTS_ELEMENT_ID" INTEGER , -- until ESS infrastructure db is created and want link to device specs.
     "CREATED_BY"               VARCHAR (30) NOT NULL DEFAULT CURRENT_USER,
     "DATE_CREATED"             TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
---    "UPDATED_BY"               VARCHAR (30) , --  not used. Original design flaw
---    "DATE_UPDATED"             TIMESTAMP , --  not used. Original design flaw
     "ELEMENT_NAME"             VARCHAR (60) ,
     "INDEX_SLICE_CHK"          INTEGER ,
     "ZPOS"                     NUMERIC ,
@@ -109,15 +102,13 @@ CREATE TABLE IF NOT EXISTS "MACHINE_MODEL"."DEVICE_TYPES"
 
 
 -- Which model runs have been designated by operations to be good ones, both presently and in the past.
-  CREATE TABLE IF NOT EXISTS "MACHINE_MODEL"."GOLD"
+  CREATE TABLE  "MACHINE_MODEL"."GOLD"
   (
     "ID"           SERIAL ,
     "RUNS_ID"      INTEGER REFERENCES "MACHINE_MODEL"."RUNS" ( "ID" ) ON DELETE CASCADE,
     "COMMENTS"     VARCHAR (200) ,
     "CREATED_BY"   VARCHAR (30) NOT NULL DEFAULT CURRENT_USER ,
     "DATE_CREATED" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
---    "UPDATED_BY"   VARCHAR (30) , -- not used. Original design flaw. There is no rowwise modification of this table.
---    "DATE_UPDATED" TIMESTAMP, -- not used. Original design flaw. There is no rowwise modification of this table.
     PRIMARY KEY ( "ID" )
   );
 
@@ -156,7 +147,7 @@ ORDER BY
 -- in the infrastructure DB. But for ESS that FK has been removed for now. In future you will need some mechanism like that
 -- so one can query for optics based on a PV name which is in turn based on the device name. This table, with an appropriate column added to identify
 -- a device, will form the translation from device name to runs containing elements corresponding to that device.
-CREATE TABLE IF NOT EXISTS "MACHINE_MODEL"."MODEL_DEVICES"
+CREATE TABLE "MACHINE_MODEL"."MODEL_DEVICES"
   (
     "ID"                       SERIAL ,
     "RUNS_ID"                  INTEGER REFERENCES "MACHINE_MODEL"."RUNS" ( "ID" ) ON DELETE CASCADE,
@@ -164,11 +155,13 @@ CREATE TABLE IF NOT EXISTS "MACHINE_MODEL"."MODEL_DEVICES"
     "DEVICE_TYPES_ID"          INTEGER REFERENCES "MACHINE_MODEL"."DEVICE_TYPES" ( "ID" ) ON DELETE CASCADE,
     "CREATED_BY"               VARCHAR (30) NOT NULL DEFAULT CURRENT_USER ,
     "DATE_CREATED"             TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
---    "UPDATED_BY"               VARCHAR (30) , -- not used. Original design flaw. There is no rowwise modification of this table.
---    "DATE_UPDATED"             TIMESTAMP , -- not used. Original design flaw. There is no rowwise modification of this table.
     "DEVICE_PROPERTY"          VARCHAR (30) ,
     "DEVICE_VALUE"             DOUBLE PRECISION,
-    PRIMARY KEY ( "ID" )
+    "ELEMENT_NAME" 	       VARCHAR(60),
+    "ZPOS" 		       NUMERIC,
+    "UNITS"		       VARCHAR(10),
+    PRIMARY KEY ( "ID" ),
+    CONSTRAINT CKC_MODEL_DEVICES_DEV_PROP CHECK ( "DEVICE_PROPERTY" IS NULL OR ( "DEVICE_PROPERTY" IN ('B','BACT','BDES','A','P','ADES','PDES','APRX','MISX','MISY','MISZ','ROTX','ROTY','ROTZ','ENBL') ))
   );
 
 
@@ -180,71 +173,10 @@ END
 $BODY$
 LANGUAGE plpgsql;
 
-
---ALTERING TABLES
-
-DO $$ 
-    BEGIN
-        BEGIN
-            ALTER TABLE "MACHINE_MODEL"."MODEL_DEVICES" ADD COLUMN "ELEMENT_NAME" VARCHAR(60);
-        EXCEPTION
-            WHEN duplicate_column THEN RAISE NOTICE 'column "ELEMENT_NAME" already exists in "MACHINE_MODEL"."MODEL_DEVICES", skipping.';
-        END;
-        BEGIN
-	   ALTER TABLE "MACHINE_MODEL"."MODEL_DEVICES" ADD COLUMN "ZPOS" NUMERIC;
-        EXCEPTION
-            WHEN duplicate_column THEN RAISE NOTICE 'column "ZPOS" already exists in "MACHINE_MODEL"."MODEL_DEVICES", skipping.';
-        END;
-        
-        BEGIN
-	   ALTER TABLE "MACHINE_MODEL"."MODEL_DEVICES" ADD COLUMN "INITIAL_VALUE" DOUBLE PRECISION;
-        EXCEPTION
-            WHEN duplicate_column THEN RAISE NOTICE 'column "INITIAL_VALUE" already exists in "MACHINE_MODEL"."MODEL_DEVICES", skipping.';
-        END;
-        
-        BEGIN
-	   ALTER TABLE "MACHINE_MODEL"."MODEL_DEVICES" ADD COLUMN "UNITS" VARCHAR(10);
-        EXCEPTION
-            WHEN duplicate_column THEN RAISE NOTICE 'column "UNITS" already exists in "MACHINE_MODEL"."MODEL_DEVICES", skipping.';
-        END;
-    END;
-$$;
-
-DO $$ 
-    BEGIN
---_DROPING CONSTRAINTS
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE CONSTRAINT_NAME= 'ckc_model_devices_dev_prop') 
-THEN
-    ALTER TABLE "MACHINE_MODEL"."MODEL_DEVICES" DROP CONSTRAINT "ckc_model_devices_dev_prop";
-END IF;
-
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE CONSTRAINT_NAME= 'ckc_run_source_chk_runs') 
-THEN
-    ALTER TABLE "MACHINE_MODEL"."RUNS" DROP CONSTRAINT "ckc_run_source_chk_runs";
-END IF;
-
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE CONSTRAINT_NAME= 'model_devices_device_types_id_fkey') 
-THEN
-    ALTER TABLE "MACHINE_MODEL"."MODEL_DEVICES" DROP CONSTRAINT "model_devices_device_types_id_fkey";
-END IF;
-
-
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE CONSTRAINT_NAME= 'ckc_default_slicing_p_device_t') 
-THEN
-    ALTER TABLE "MACHINE_MODEL"."DEVICE_TYPES" DROP CONSTRAINT "ckc_default_slicing_p_device_t";
-END IF;
-
-END;
-$$ LANGUAGE plpgsql;
-
---ADDING CONSTRAINTS
-ALTER TABLE "MACHINE_MODEL"."MODEL_DEVICES" ADD CONSTRAINT CKC_MODEL_DEVICES_DEV_PROP CHECK ( "DEVICE_PROPERTY" IS NULL OR ( "DEVICE_PROPERTY" IN ('B','BACT','BDES','A','P','ADES','PDES','APRX','MISX','MISY','MISZ','ROTX','ROTY','ROTZ','ENBL') )) ;
-ALTER TABLE "MACHINE_MODEL"."RUNS" ADD CONSTRAINT ckc_run_source_chk_runs CHECK  ( "RUN_SOURCE_CHK" IS NULL OR ( "RUN_SOURCE_CHK" IN ('DESIGN','EXTANT','PVLOGGER','MANUAL') ));
-ALTER TABLE "MACHINE_MODEL"."DEVICE_TYPES" ADD CONSTRAINT CKC_DEFAULT_SLICING_P_DEVICE_T CHECK ( "DEFAULT_SLICING_POS_CHK" IS NULL OR ( "DEFAULT_SLICING_POS_CHK" IN (0,1,2) )) ;
---MISC ALTERING
-ALTER TABLE "MACHINE_MODEL"."RUNS" ALTER COLUMN "MODEL_MODES_ID" TYPE  VARCHAR (60);
 UPDATE "MACHINE_MODEL"."RUNS" SET "MODEL_MODES_ID"='from-mebt';
 
-
+--POPULATING
+﻿INSERT INTO "MACHINE_MODEL"."RUNS" ("RUN_SOURCE_CHK", "MODEL_MODES_ID") VALUES ('EXTANT', 5);
+INSERT INTO "MACHINE_MODEL"."RUNS" ("RUN_SOURCE_CHK", "MODEL_MODES_ID") VALUES ('DESIGN', 5);
 
 

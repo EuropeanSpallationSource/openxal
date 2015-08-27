@@ -48,58 +48,58 @@ For example quads correspond to 3, being the twiss and R-matrices at the begnnin
 			</column>
 			<column name="ELEMENT_NAME" type="varchar" length="60" decimal="0" jt="12" />
 			<column name="INDEX_SLICE_CHK" type="integer" length="10" decimal="0" jt="4" />
-			<column name="ZPOS" type="numeric" decimal="0" jt="0" />
-			<column name="EK" type="numeric" decimal="0" jt="0" />
-			<column name="ALPHA_X" type="numeric" decimal="0" jt="0" />
-			<column name="ALPHA_Y" type="numeric" decimal="0" jt="0" />
-			<column name="BETA_X" type="numeric" decimal="0" jt="0" />
-			<column name="BETA_Y" type="numeric" decimal="0" jt="0" />
-			<column name="PSI_X" type="numeric" decimal="0" jt="0" />
-			<column name="PSI_Y" type="numeric" decimal="0" jt="0" />
-			<column name="ETA_X" type="numeric" decimal="0" jt="0" />
-			<column name="ETA_Y" type="numeric" decimal="0" jt="0" />
-			<column name="ETAP_X" type="numeric" decimal="0" jt="0" />
-			<column name="ETAP_Y" type="numeric" decimal="0" jt="0" />
-			<column name="R11" type="numeric" decimal="0" jt="0" />
-			<column name="R12" type="numeric" decimal="0" jt="0" />
-			<column name="R13" type="numeric" decimal="0" jt="0" />
-			<column name="R14" type="numeric" decimal="0" jt="0" />
-			<column name="R15" type="numeric" decimal="0" jt="0" />
-			<column name="R16" type="numeric" decimal="0" jt="0" />
-			<column name="R21" type="numeric" decimal="0" jt="0" />
-			<column name="R22" type="numeric" decimal="0" jt="0" />
-			<column name="R23" type="numeric" decimal="0" jt="0" />
-			<column name="R24" type="numeric" decimal="0" jt="0" />
-			<column name="R25" type="numeric" decimal="0" jt="0" />
-			<column name="R26" type="numeric" decimal="0" jt="0" />
-			<column name="R31" type="numeric" decimal="0" jt="0" />
-			<column name="R32" type="numeric" decimal="0" jt="0" />
-			<column name="R33" type="numeric" decimal="0" jt="0" />
-			<column name="R34" type="numeric" decimal="0" jt="0" />
-			<column name="R35" type="numeric" decimal="0" jt="0" />
-			<column name="R36" type="numeric" decimal="0" jt="0" />
-			<column name="R41" type="numeric" decimal="0" jt="0" />
-			<column name="R42" type="numeric" decimal="0" jt="0" />
-			<column name="R43" type="numeric" decimal="0" jt="0" />
-			<column name="R44" type="numeric" decimal="0" jt="0" />
-			<column name="R45" type="numeric" decimal="0" jt="0" />
-			<column name="R46" type="numeric" decimal="0" jt="0" />
-			<column name="R51" type="numeric" decimal="0" jt="0" />
-			<column name="R52" type="numeric" decimal="0" jt="0" />
-			<column name="R53" type="numeric" decimal="0" jt="0" />
-			<column name="R54" type="numeric" decimal="0" jt="0" />
-			<column name="R55" type="numeric" decimal="0" jt="0" />
-			<column name="R56" type="numeric" decimal="0" jt="0" />
-			<column name="R61" type="numeric" decimal="0" jt="0" />
-			<column name="R62" type="numeric" decimal="0" jt="0" />
-			<column name="R63" type="numeric" decimal="0" jt="0" />
-			<column name="R64" type="numeric" decimal="0" jt="0" />
-			<column name="R65" type="numeric" decimal="0" jt="0" />
-			<column name="R66" type="numeric" decimal="0" jt="0" />
-			<column name="LEFF" type="numeric" decimal="0" jt="0" />
-			<column name="SLEFF" type="numeric" decimal="0" jt="0" />
-			<column name="ORDINAL" type="numeric" decimal="0" jt="0" />
-			<column name="SUML" type="numeric" decimal="0" jt="0" />
+			<column name="ZPOS" type="numeric" decimal="0" jt="2" />
+			<column name="EK" type="numeric" decimal="0" jt="2" />
+			<column name="ALPHA_X" type="numeric" decimal="0" jt="2" />
+			<column name="ALPHA_Y" type="numeric" decimal="0" jt="2" />
+			<column name="BETA_X" type="numeric" decimal="0" jt="2" />
+			<column name="BETA_Y" type="numeric" decimal="0" jt="2" />
+			<column name="PSI_X" type="numeric" decimal="0" jt="2" />
+			<column name="PSI_Y" type="numeric" decimal="0" jt="2" />
+			<column name="ETA_X" type="numeric" decimal="0" jt="2" />
+			<column name="ETA_Y" type="numeric" decimal="0" jt="2" />
+			<column name="ETAP_X" type="numeric" decimal="0" jt="2" />
+			<column name="ETAP_Y" type="numeric" decimal="0" jt="2" />
+			<column name="R11" type="numeric" decimal="0" jt="2" />
+			<column name="R12" type="numeric" decimal="0" jt="2" />
+			<column name="R13" type="numeric" decimal="0" jt="2" />
+			<column name="R14" type="numeric" decimal="0" jt="2" />
+			<column name="R15" type="numeric" decimal="0" jt="2" />
+			<column name="R16" type="numeric" decimal="0" jt="2" />
+			<column name="R21" type="numeric" decimal="0" jt="2" />
+			<column name="R22" type="numeric" decimal="0" jt="2" />
+			<column name="R23" type="numeric" decimal="0" jt="2" />
+			<column name="R24" type="numeric" decimal="0" jt="2" />
+			<column name="R25" type="numeric" decimal="0" jt="2" />
+			<column name="R26" type="numeric" decimal="0" jt="2" />
+			<column name="R31" type="numeric" decimal="0" jt="2" />
+			<column name="R32" type="numeric" decimal="0" jt="2" />
+			<column name="R33" type="numeric" decimal="0" jt="2" />
+			<column name="R34" type="numeric" decimal="0" jt="2" />
+			<column name="R35" type="numeric" decimal="0" jt="2" />
+			<column name="R36" type="numeric" decimal="0" jt="2" />
+			<column name="R41" type="numeric" decimal="0" jt="2" />
+			<column name="R42" type="numeric" decimal="0" jt="2" />
+			<column name="R43" type="numeric" decimal="0" jt="2" />
+			<column name="R44" type="numeric" decimal="0" jt="2" />
+			<column name="R45" type="numeric" decimal="0" jt="2" />
+			<column name="R46" type="numeric" decimal="0" jt="2" />
+			<column name="R51" type="numeric" decimal="0" jt="2" />
+			<column name="R52" type="numeric" decimal="0" jt="2" />
+			<column name="R53" type="numeric" decimal="0" jt="2" />
+			<column name="R54" type="numeric" decimal="0" jt="2" />
+			<column name="R55" type="numeric" decimal="0" jt="2" />
+			<column name="R56" type="numeric" decimal="0" jt="2" />
+			<column name="R61" type="numeric" decimal="0" jt="2" />
+			<column name="R62" type="numeric" decimal="0" jt="2" />
+			<column name="R63" type="numeric" decimal="0" jt="2" />
+			<column name="R64" type="numeric" decimal="0" jt="2" />
+			<column name="R65" type="numeric" decimal="0" jt="2" />
+			<column name="R66" type="numeric" decimal="0" jt="2" />
+			<column name="LEFF" type="numeric" decimal="0" jt="2" />
+			<column name="SLEFF" type="numeric" decimal="0" jt="2" />
+			<column name="ORDINAL" type="numeric" decimal="0" jt="2" />
+			<column name="SUML" type="numeric" decimal="0" jt="2" />
 			<index name="ELEMENT_MODELS_pkey" unique="PRIMARY_KEY" >
 				<column name="ID" />
 			</index>
@@ -154,7 +154,8 @@ to runs containing elements correspondinf to that device.]]></comment>
 			<column name="DEVICE_PROPERTY" type="varchar" length="30" decimal="0" jt="12" />
 			<column name="ELEMENT_NAME" type="varchar" length="60" decimal="0" jt="12" />
 			<column name="DEVICE_VALUE" type="float8" length="17" decimal="17" jt="6" />
-			<column name="ZPOS" type="numeric" decimal="0" jt="0" />
+			<column name="ZPOS" type="numeric" decimal="0" jt="2" />
+			<column name="INITIAL_VALUE" type="float8" length="17" decimal="17" jt="6" />
 			<column name="UNITS" type="varchar" length="10" decimal="0" jt="12" />
 			<index name="MODEL_DEVICES_pkey" unique="PRIMARY_KEY" >
 				<column name="ID" />
@@ -252,24 +253,24 @@ UNION
 		<function name="GOLD_THIS_MODEL" id="Function_3a728eae" isSystem="false" />
 	</schema>
 	<connector name="machine_model" database="PostgreSQL" driver_class="org.postgresql.Driver" driver_jar="postgresql-9.2-1003.jdbc3.jar" host="localhost" port="5432" instance="machine_model" user="machinemodel" passwd="cGh5c2ljc2wxbmFjc3R1ZmY=" schema_mapping="" />
-	<layout id="Layout_1805b6d1" name="Physical schema" joined_routing="y" show_column_type="y" show_relation_columns="y" >
-		<entity schema="MACHINE_MODEL" name="ELEMENT_MODELS" color="bfd4f5" x="1120" y="460" >
-			<callout x="1120" y="320" pointer="SV" />
+	<layout id="Layout_1805b6d1" name="MACHINE_MODEL" joined_routing="y" show_column_type="y" show_relation_columns="y" >
+		<entity schema="MACHINE_MODEL" name="ELEMENT_MODELS" color="bfd4f5" x="1100" y="240" >
+			<callout x="860" y="100" pointer="Round" />
 		</entity>
-		<entity schema="MACHINE_MODEL" name="RUNS" color="bfd4f5" x="720" y="140" >
-			<callout x="520" y="60" pointer="SE" />
+		<entity schema="MACHINE_MODEL" name="MODEL_DEVICES" color="bfd4f5" x="640" y="360" >
+			<callout x="100" y="60" pointer="SE" />
 		</entity>
-		<entity schema="MACHINE_MODEL" name="MODEL_DEVICES" color="bfd4f5" x="680" y="520" >
-			<callout x="300" y="840" pointer="NE" />
+		<entity schema="MACHINE_MODEL" name="V_GOLD_REPORT" color="bfd4f5" x="780" y="1300" >
+			<callout x="920" y="1540" pointer="NV" />
 		</entity>
-		<entity schema="MACHINE_MODEL" name="DEVICE_TYPES" color="bfd4f5" x="320" y="400" >
-			<callout x="140" y="640" pointer="NE" />
+		<entity schema="MACHINE_MODEL" name="RUNS" color="bfd4f5" x="700" y="920" >
+			<callout x="460" y="1180" pointer="NE" />
 		</entity>
-		<entity schema="MACHINE_MODEL" name="GOLD" color="bfd4f5" x="820" y="1140" >
-			<callout x="700" y="1320" pointer="NE" />
+		<entity schema="MACHINE_MODEL" name="GOLD" color="bfd4f5" x="680" y="700" >
+			<callout x="320" y="800" pointer="Round" />
 		</entity>
-		<entity schema="MACHINE_MODEL" name="V_GOLD_REPORT" color="bfd4f5" x="380" y="1140" >
-			<callout x="60" y="1380" pointer="NE" />
+		<entity schema="MACHINE_MODEL" name="DEVICE_TYPES" color="bfd4f5" x="220" y="380" >
+			<callout x="60" y="600" pointer="NE" />
 		</entity>
 	</layout>
 </project>
