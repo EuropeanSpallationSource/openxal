@@ -41,6 +41,7 @@ CREATE TABLE  "MACHINE_MODEL"."DEVICE_TYPES"
   (
     "ID"                       SERIAL,
     "RUNS_ID"                  INTEGER REFERENCES "MACHINE_MODEL"."RUNS" ( "ID" ) ON DELETE CASCADE,
+    "LCLS_ELEMENTS_ELEMENT_ID" INTEGER , -- until ESS infrastructure db is created and want link to device specs.
     "CREATED_BY"               VARCHAR (30) NOT NULL DEFAULT CURRENT_USER,
     "DATE_CREATED"             TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     "ELEMENT_NAME"             VARCHAR (60) ,

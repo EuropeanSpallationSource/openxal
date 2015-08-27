@@ -63,8 +63,13 @@ public class MachineModelDeviceTable {
 				machineModelDevice = new MachineModelDevice();
 				// add TableColume
 				for (int i = 0; i < TABLE_SIZE; i++) {
-					machineModelDevice.setPropertyValue(DB_TABLE_COLUMN_NAME.get(i), modelResult
-							.getString(DB_TABLE_COLUMN_NAME.get(i)));
+					if (i == 3) {
+						machineModelDevice.setPropertyValue(DB_TABLE_COLUMN_NAME.get(i),
+								modelResult.getString(DB_TABLE_COLUMN_NAME.get(i - 1)));
+					} else {
+						machineModelDevice.setPropertyValue(DB_TABLE_COLUMN_NAME.get(i),
+								modelResult.getString(DB_TABLE_COLUMN_NAME.get(i)));
+					}
 				}
 
 				modelDevices.add(machineModelDevice);
