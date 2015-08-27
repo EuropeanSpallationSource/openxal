@@ -90,15 +90,14 @@ public class TestServerClient {
 
         ClientFactory.start();
         RPCClientImpl client = new RPCClientImpl(CHANNEL_NAME);
-
         PVStructure pvRequest = PVDataFactory.getPVDataCreate().createPVStructure(uriStructure);
         pvRequest.getStringField("scheme").put("pva");
         PVStructure pvQuery = pvRequest.getStructureField("query");
         if (args[0] != null)
             pvQuery.getStringField("entity").put(args[0]);
-        if (args[1] != null)
+        if (args.length >1 && args[1] != null)
             pvQuery.getStringField("starttime").put(args[1]);
-        if (args[2] != null)
+        if (args.length >2 && args[2] != null)
             pvQuery.getStringField("endtime").put(args[2]);
 
         // Execute the service request for data subject to the arguments

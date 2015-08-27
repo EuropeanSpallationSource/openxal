@@ -265,8 +265,7 @@ public class RdbClient {
         // will be used to print the system as a familiar looking table, unless the style arg says
         // print it as rows, in which case you'll get a list of row data. Column style
         // is better for >1 value per name. Row style is good for 1 value per name.
-        //
-        if (args[_STYLE_ARGN] != null) {
+        if (args.length >_STYLE_ARGN + 1 && args[_STYLE_ARGN] != null) {
             if (_STYLE_ROW.equals(args[_STYLE_ARGN]))
                 _style = NamedValuesFormatter.STYLE_ROWS;
             else if (_STYLE_COL.equals(args[_STYLE_ARGN]))
@@ -276,7 +275,7 @@ public class RdbClient {
                         + _STYLE_COL);
         }
 
-        if (args[_STYLE_ARGN] != null && args[_LABELS_ARGN] != null) {
+        if (args.length >_LABELS_ARGN + 1 && args.length >_STYLE_ARGN + 1 && args[_STYLE_ARGN] != null && args[_LABELS_ARGN] != null) { 
             if (_LABELS_WANTED.equals(args[_LABELS_ARGN]))
                 _labels_wanted = true;
             else if (_LABELS_NOTWANTED.equals(args[_LABELS_ARGN]))
