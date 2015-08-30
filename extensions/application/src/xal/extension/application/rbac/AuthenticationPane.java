@@ -33,7 +33,8 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
-import se.esss.ics.rbac.access.Credentials;
+import xal.rbac.Credentials;
+
 
 
 

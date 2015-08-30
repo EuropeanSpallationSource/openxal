@@ -40,6 +40,7 @@ import xal.extension.application.platform.MacAdaptor;
 import xal.extension.application.rbac.AuthenticationPane;
 import xal.extension.service.ServiceDirectory;
 import xal.rbac.AccessDeniedException;
+import xal.rbac.Credentials;
 import xal.rbac.RBACException;
 import xal.rbac.RBACLogin;
 import xal.rbac.RBACSubject;
@@ -176,7 +177,7 @@ abstract public class Application {
         try {
             System.out.println("Starting authentication.");
             rbacLogin = RBACLogin.newRBACLogin();
-            final se.esss.ics.rbac.access.Credentials credentials = AuthenticationPane.getCredentials();
+            final Credentials credentials = AuthenticationPane.getCredentials();
             if(credentials == null){
                 System.out.println("User pressed cancel.");
                 return null;
