@@ -40,7 +40,6 @@ import org.epics.pvdata.pv.Status.StatusType;
 import org.epics.pvdata.pv.Structure;
 
 import Jama.Matrix;
-import edu.stanford.slac.meme.support.err.Message;
 import edu.stanford.slac.meme.support.err.UnableToGetDataException;
 // import edu.stanford.slac.meme.support.err.MEMERequestException;
 import edu.stanford.slac.meme.support.sys.DataMode; // fake or real data
@@ -67,6 +66,9 @@ import edu.stanford.slac.meme.support.sys.Mode; // Dev or prod
 public class OpticsService {
     // Acquire the logging interface
     private static final Logger logger = Logger.getLogger(OpticsService.class.getPackage().getName());
+    
+    private static final String MISSINGREQUIREDARGRVAL = "Missing required argument %s rvalue";
+    public static final String MISSINGREQUIREDARGLVAL = "Missing required argument %s";
 
     // Get this MEME server's config - its name and which MEME network
     // it will join. The name is the PV name for pvAccess responses
@@ -188,10 +190,10 @@ public class OpticsService {
 
                 PVString pvQueryName = pvQuery.getStringField("q");
                 if (pvQueryName == null)
-                    throw new RPCRequestException(StatusType.ERROR, String.format(Message.MISSINGREQUIREDARGLVAL, "q"));
+                    throw new RPCRequestException(StatusType.ERROR, String.format(MISSINGREQUIREDARGLVAL, "q"));
                 String pvname = pvQueryName.get();
                 if (pvname == null)
-                    throw new RPCRequestException(StatusType.ERROR, String.format(Message.MISSINGREQUIREDARGRVAL, "q"));
+                    throw new RPCRequestException(StatusType.ERROR, String.format(MISSINGREQUIREDARGRVAL, "q"));
                 logger.fine("pvname = " + pvname);
 
                 // Extract the parameters of the query from

@@ -54,11 +54,10 @@ public class TestServerClient {
     private static final String NTURI_ID = NTNAMESPACE + "/" + "NTURI:1.0";
 
     // Error exit codes
-    @SuppressWarnings("unused")
-    private static final int NOTNORMATIVETYPE = 1;
+    private static final int NOARGS = 1;
     private static final int NOTNTTABLETYPE = 2;
     private static final int NODATARETURNED = 3;
-    private static final int NOARGS = 4;
+
 
     private final static double TIMEOUT_SEC = 5.0;
 
@@ -89,10 +88,10 @@ public class TestServerClient {
         }
 
         ClientFactory.start();
-        RPCClientImpl client = new RPCClientImpl(CHANNEL_NAME);
-        PVStructure pvRequest = PVDataFactory.getPVDataCreate().createPVStructure(uriStructure);
+        final RPCClientImpl client = new RPCClientImpl(CHANNEL_NAME);
+        final PVStructure pvRequest = PVDataFactory.getPVDataCreate().createPVStructure(uriStructure);
         pvRequest.getStringField("scheme").put("pva");
-        PVStructure pvQuery = pvRequest.getStructureField("query");
+        final PVStructure pvQuery = pvRequest.getStructureField("query");
         if (args[0] != null)
             pvQuery.getStringField("entity").put(args[0]);
         if (args.length >1 && args[1] != null)
@@ -112,7 +111,7 @@ public class TestServerClient {
             if (pvResult != null) {
                 // Check the result PVStructure is of the type we
                 // expect. It should be an NTTABLE.
-                String type = pvResult.getStructure().getID();
+            	final String type = pvResult.getStructure().getID();
                 if (!type.equals(NTTABLE_ID)) {
                     logger.log(Level.SEVERE, "Unable to get data: unexpected data " + "structure returned from "
                             + CHANNEL_NAME + "; expected returned data id member value" + NTTABLE_ID
@@ -120,12 +119,12 @@ public class TestServerClient {
                     System.exit(NOTNTTABLETYPE);
                 }
 
-                PVStringArray pvColumnTitles = (PVStringArray) pvResult.getScalarArrayField("labels",
+                final PVStringArray pvColumnTitles = (PVStringArray) pvResult.getScalarArrayField("labels",
                         ScalarType.pvString);
-                PVStructure pvTableData = pvResult.getStructureField("value");
-                int Ncolumns = pvTableData.getNumberFields();
+                final PVStructure pvTableData = pvResult.getStructureField("value");
+                final int Ncolumns = pvTableData.getNumberFields();
 
-                PVField[] pvColumns = pvTableData.getPVFields();
+                final PVField[] pvColumns = pvTableData.getPVFields();
                 if (Ncolumns <= 0 || pvColumns.length <= 0) {
                     logger.log(Level.SEVERE, "No data fields returned from " + CHANNEL_NAME + ".");
                     System.exit(NODATARETURNED);
@@ -135,37 +134,43 @@ public class TestServerClient {
                 // PVstructure, make a NamedValues system from its
                 // data.
                 //
-                StringArrayData data = new StringArrayData();
+                final StringArrayData data = new StringArrayData();
                 int labelOffset = 0;
-                NamedValues namedValues = new NamedValues();
+                final NamedValues namedValues = new NamedValues();
                 for (PVField pvColumnIterator : pvColumns) {
                     // Get the column name.
                     pvColumnTitles.get(labelOffset, 1, data);
-                    String fieldName = data.data[labelOffset++];
+                    final String fieldName = data.data[labelOffset++];
 
                     if (pvColumnIterator.getField().getType() == Type.scalarArray) {
-                        ScalarArray scalarArray = (ScalarArray) pvColumnIterator.getField();
+                    	final ScalarArray scalarArray = (ScalarArray) pvColumnIterator.getField();
                         // Double array
-                        if (scalarArray.getElementType() == ScalarType.pvDouble) {
-                            PVDoubleArray pvDoubleArray = (PVDoubleArray) pvColumnIterator;
+                    	switch(scalarArray.getElementType()){
+                    	case pvDouble:
+                            final PVDoubleArray pvDoubleArray = (PVDoubleArray) pvColumnIterator;
                             namedValues.add(fieldName, GetHelper.getDoubleVector(pvDoubleArray));
-                        } else if (scalarArray.getElementType() == ScalarType.pvLong) {
-                            PVLongArray pvLongArray = (PVLongArray) pvColumnIterator;
+                            break;
+                    	case pvLong:
+                            final PVLongArray pvLongArray = (PVLongArray) pvColumnIterator;
                             namedValues.add(fieldName, GetHelper.getLongVector(pvLongArray));
-                        } else if (scalarArray.getElementType() == ScalarType.pvByte) {
-                            PVByteArray pvByteArray = (PVByteArray) pvColumnIterator;
+                            break;
+                    	case pvByte :
+                            final PVByteArray pvByteArray = (PVByteArray) pvColumnIterator;
                             namedValues.add(fieldName, GetHelper.getByteVector(pvByteArray));
-                        } else if (scalarArray.getElementType() == ScalarType.pvString) {
-                            PVStringArray pvStringArray = (PVStringArray) pvColumnIterator;
+                            break;
+                    	case pvString :
+                            final PVStringArray pvStringArray = (PVStringArray) pvColumnIterator;
                             namedValues.add(fieldName, GetHelper.getStringVector(pvStringArray));
-                        } else {
+                            break;
+                    	default:
                             // Array types other than those
                             // above are not understood by
                             // this client.
                             //
                             logger.log(Level.SEVERE, "Unexpected array type returned from " + CHANNEL_NAME
                                     + "; only pvData scalarArray types pvDouble, pvLong, pvByte or pvString expected");
-                        }
+                            break;
+                    	} 
                     } else {
                         logger.log(Level.SEVERE, "Unexpected non-array field returned from " + CHANNEL_NAME
                                 + ".\n Field named \'" + fieldName + "\' is not of scalarArray type, "
@@ -180,7 +185,7 @@ public class TestServerClient {
                 // from the server. Then ask the formatter to print
                 // it to System.out.
                 //
-                NamedValuesFormatter formatter = NamedValuesFormatter.create(NamedValuesFormatter.STYLE_COLUMNS);
+                final NamedValuesFormatter formatter = NamedValuesFormatter.create(NamedValuesFormatter.STYLE_COLUMNS);
                 formatter.setWhetherDisplayLabels(true);
                 formatter.assignNamedValues(namedValues);
                 formatter.display(System.out);

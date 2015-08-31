@@ -1,9 +1,8 @@
 //-*-jde-*-
 package edu.stanford.slac.meme.service.optics;
 
-import edu.stanford.slac.meme.support.err.Message;
 
-public class OpticsMessage extends Message {
+public class OpticsMessage {
     // Message Strings
 
     protected static final String SET_NOT_SUPPORTED = "Set operation is not supported in  Model server";
