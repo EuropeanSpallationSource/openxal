@@ -17,19 +17,19 @@ public class MEMERequestException extends RPCRequestException {
 
     private static final long serialVersionUID = 9061106108856848342L;
 
-    public MEMERequestException(String message) {
+    public MEMERequestException(final String message) {
         super(Status.StatusType.ERROR, message);
     }
 
-    public MEMERequestException(Status status, String message) {
+    public MEMERequestException(final Status status, final String message) {
         super(status.getType(), message);
     }
 
-    public MEMERequestException(String message, Throwable cause) {
+    public MEMERequestException(final String message,final  Throwable cause) {
         super(Status.StatusType.ERROR, message + "; " + cause.getMessage(), cause);
     }
 
-    public MEMERequestException(Status status, Throwable cause) {
+    public MEMERequestException(final Status status, final Throwable cause) {
         super(status.getType(), status.getMessage() + "; " + cause.getMessage(), cause);
     }
 }

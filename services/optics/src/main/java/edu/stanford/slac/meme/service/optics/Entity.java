@@ -14,19 +14,17 @@ class Entity {
     private static final Logger logger = Logger.getLogger(Entity.class.getName());
 
     private static final int SEPARATOR = ':'; // SLAC specific
-    private static final String BADSYNTAXMSG = "Entity \"%s\" has unrecognized syntax and so could not be "
-            + "split into an instance identifier and a property identifier. " + "Check fields and separators.";
     private static final String UNEXPECTEDSEP = "PV name %s contains unexpected separator %c, "
             + "expected only instance or device name in this context ";
     private String m_instance = null;
     private String m_attribute = null;
 
-    Entity(String pvname) {
+    Entity(final String pvname) {
         logger.fine("Entity constructor received pvame:\"" + pvname + "\"");
         parse(pvname);
     }
 
-    Entity(String pvname, Boolean instanceOnly) {
+    Entity(final String pvname, final Boolean instanceOnly) {
         logger.fine("Entity instanceOnly constructor received pvame:\"" + pvname + "\"");
         if (instanceOnly == true) {
             if (pvname.indexOf(SEPARATOR) >= 0) {
@@ -46,10 +44,10 @@ class Entity {
      * attribute of the corrector - its desired B-field energization. Of course the real world interpretation of these
      * name parts is not something that can be enforced.
      */
-    private void parse(String pvname) {
+    private void parse(final String pvname) {
         // Look for last index of ":". If does not occur
         // then the attribute part has not been given.
-        int separatorcharindex = pvname.lastIndexOf(SEPARATOR);
+    	final int separatorcharindex = pvname.lastIndexOf(SEPARATOR);
         if (separatorcharindex == 0) {
             m_instance = pvname.toUpperCase();
             m_attribute = null;

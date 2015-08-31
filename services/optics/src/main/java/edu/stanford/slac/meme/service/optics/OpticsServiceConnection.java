@@ -37,30 +37,16 @@ public class OpticsServiceConnection {
 
     // TODO: Externalize and protect access username/passwords and strings
 
-    private static OpticsMessage Msg;
-
     // Oracle JDBC connection URI and ID stuff.
     //
     private static volatile Connection m_Conn = null; // JDBC connection for queries
     private static final String CONNECTION_URI_DEFAULT = "jdbc:oracle:thin:@youopticss.host.name:1521:YOURDBNAME";
-    private static final String CONNECTION_USERID_DEFAULT = "eida";
-    private static final String CONNECTION_PWD_DEFAULT = "nicetry";
     private static final String NORESULTSETMETADATA = "No ResultSet metadata available, so can not continue to get data";
+    private static final String UNABLETOPROCESSSQL = "Unable to execute SQL query successfully";
+    private static final String NOMATCH = "No matching model data for query ";
+    private static final String WHEN_EXECUTINGSQL = "when executing SQL query \'%s\'. Retrying with new Connection";
     private static final int MAX_RETRIES = 2; // Try a SQL query at most 2 times
-                                              // before reinit and requery.
-
-    // Index of the column of eida.eida_names that contains the query string.
-    private static final int QRYCOLUMNNUM = 1;
-
-    private static final FieldCreate fieldCreate = FieldFactory.getFieldCreate();
-    private static final PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
-
-    private static final String INVALIDOPTICSQUERYNAME = "Invalid syntax of OPTICS query name, at least one period expected";
-    private static final String UNABLETOTRANSFORM = "Failed to process the SQL query which gets "
-            + "the SQL query matching the given name";
-    private static final String TOOMANYROWMATCHES = "DATABASE DATA ERROR EDETCTED: More than row matches query name.";
-    private static final String ZEROROWMATCHES = "No query name found in database matching given name.";
-
+    // before reinit and requery.
     /**
      * Initialize for an acquisition.
      * 
@@ -74,7 +60,7 @@ public class OpticsServiceConnection {
     /**
      * Init loads JDBC and initializes connection to the db, Oracle in this case.
      */
-    private void init(String service_name) {
+    private void init(final String service_name) {
         // Load JDBC.
         try {
             logger.info("Initializing " + service_name);
@@ -104,9 +90,9 @@ public class OpticsServiceConnection {
         try {
             // Retrieve db connection configuration from properties, or use
             // defaults if none given.
-            String url = System.getProperty("CONNECTION_URI_PROPERTY", CONNECTION_URI_DEFAULT);
-            String user = System.getProperty("CONNECTION_USERID_PROPERTY");
-            String pwd = System.getProperty("CONNECTION_PWD");
+        	final String url = System.getProperty("CONNECTION_URI_PROPERTY", CONNECTION_URI_DEFAULT);
+        	final String user = System.getProperty("CONNECTION_USERID_PROPERTY");
+        	final String pwd = System.getProperty("CONNECTION_PWD");
 
             // Make connection to Database.
             logger.info("Initializing database connection: " + url + " username:" + user);
@@ -149,14 +135,14 @@ public class OpticsServiceConnection {
      * @return The ResultSet given by stmt.executeQuery(sqlString)
      * @version 1.0 19-Jun-2005, Greg White
      */
-    protected double[] executeQuery(String sqlString, Integer position) throws UnableToGetDataException {
+    protected double[] executeQuery(final String sqlString, final Integer position) throws UnableToGetDataException {
 
-        Statement stmt = null; // Db SQL query object.
-        ResultSet rs = null; // ResultSet receiving SQL results.
-        int nRetries = 0; // Tracks retries of failing queries.
-        boolean bRetry = false; // Whether to retry db query.
-        double[] modelData = null; // Optics data from database as array.
-        String message = null; // Diagnostic messages;
+    	Statement stmt = null; // Db SQL query object.
+    	ResultSet rs = null; // ResultSet receiving SQL results.
+    	int nRetries = 0; // Tracks retries of failing queries.
+    	boolean bRetry = false; // Whether to retry db query.
+    	double[] modelData = null; // Optics data from database as array.
+    	String message = null; // Diagnostic messages;
 
         logger.fine("sqlString: " + sqlString);
         logger.fine("Position: " + position.toString());
@@ -182,7 +168,7 @@ public class OpticsServiceConnection {
                     // fix this by getting a new
                     // connection and set logic so we'll go
                     // through the do loop again.
-                    message = String.format(OpticsMessage.WHEN_EXECUTINGSQL, sqlString);
+                    message = String.format(WHEN_EXECUTINGSQL, sqlString);
                     if (nRetries < MAX_RETRIES) {
                         logger.warning(ex.getMessage() + ":" + message);
                         getConnection();
@@ -198,19 +184,19 @@ public class OpticsServiceConnection {
             } while (bRetry);
 
             if (rs == null || nRetries >= MAX_RETRIES)
-                throw new UnableToGetDataException(OpticsMessage.UNABLETOPROCESSSQL);
+                throw new UnableToGetDataException(UNABLETOPROCESSSQL);
 
             // Extract the data from the (single column) ResulSet.
             ResultSetMetaData rsmd = rs.getMetaData();
             if (rsmd == null)
-                throw new UnableToGetDataException(OpticsMessage.NORESULTSETMETADATA);
+                throw new UnableToGetDataException(NORESULTSETMETADATA);
 
             // Get number of rows in ResultSet. Check if got too few
             // (<1)
             rs.last();
-            int rowsM = rs.getRow();
+            final int rowsM = rs.getRow();
             if (rowsM < 1)
-                throw new UnableToGetDataException(OpticsMessage.NOMATCH + sqlString);
+                throw new UnableToGetDataException(NOMATCH + sqlString);
 
             // Decide the rowset we're going to return. Normally
             // (for all 0-length devices, and devices in more than 1
@@ -250,11 +236,8 @@ public class OpticsServiceConnection {
             // Actually advance to the mth rowset (often just the
             // 1st).
             rs.beforeFirst();
-            for (int mi = 0; mi < m; mi++) {
-                boolean isok = rs.next();
-            }
             // Get number of columns in ResultSet
-            int columnsN = rsmd.getColumnCount();
+            final int columnsN = rsmd.getColumnCount();
             modelData = new double[columnsN];
             logger.fine("Num Columns:" + columnsN);
 
@@ -266,7 +249,7 @@ public class OpticsServiceConnection {
                 logger.fine("Data " + (colj - 1) + " = " + modelData[colj - 1]);
             }
         } catch (Exception ex) {
-            throw new UnableToGetDataException(OpticsMessage.UNABLETOPROCESSSQL, ex);
+            throw new UnableToGetDataException(UNABLETOPROCESSSQL, ex);
         } finally {
             try {
                 if (rs != null)

@@ -21,6 +21,7 @@ import org.epics.pvaccess.server.rpc.RPCRequestException;
 // Import pvaccess Remote Procedure Call interface
 import org.epics.pvaccess.server.rpc.RPCServer;
 import org.epics.pvaccess.server.rpc.RPCService;
+import org.epics.pvaccess.util.logging.ConsoleLogHandler;
 // pvData Data Interface
 import org.epics.pvdata.factory.FieldFactory;
 // pvData Introspection interface
@@ -68,8 +69,13 @@ public class OpticsService {
     private static final Logger logger = Logger.getLogger(OpticsService.class.getPackage().getName());
     
     private static final String MISSINGREQUIREDARGRVAL = "Missing required argument %s rvalue";
-    public static final String MISSINGREQUIREDARGLVAL = "Missing required argument %s";
-
+    private static final String MISSINGREQUIREDARGLVAL = "Missing required argument %s";
+    private static final String INVALIDATTRIBUTE = "Entity with unrecognized attribute part received";
+    private static final String TYPE_PARAM_VAL_ILLEGAL = "Specified TYPE param must be valued COMPUTED, DATABASE, EXTANT (all meaning EXTANT) or DESIGN";
+    private static final String POS_PARAM_VAL_ILLEGAL = "Specified position (POS or POSB) param must be valued BEG, BEGINNING (same as BEG), MIDDLE (same as MID), or END";
+    private static final String INCONSISTENT_PSI = "Inconsistent phase advances in each plane detected for A and B";
+    private static final String ILLEGALRUN_PARAM = "The RUNID param, if supplied, must be a positive integer, or 'NULL' for latest run";
+    private static final String WARNING_BOTHTYPEANDRUNID = "WARNING: Mutually exclusive params supplied: RunID and TYPE. Only RunID will be used, given TYPE ignored.";
     // Get this MEME server's config - its name and which MEME network
     // it will join. The name is the PV name for pvAccess responses
     public static Integer meme_mode = null, data_mode = null;
@@ -132,9 +138,9 @@ public class OpticsService {
     // Fake Twiss and response matrix (6x6) data set, returned for
     // param fakedata being non-null. Based on QM14, QUAD:LI21:315 of
     // model run 45845.
-    private static double[] fakeTwissData = { 0.22, 20.8572411437, 29.3321341325, 12.5804392017, 0.0436279229998,
+    private final static double[] fakeTwissData = { 0.22, 20.8572411437, 29.3321341325, 12.5804392017, 0.0436279229998,
             -0.0193296502818, 15.1387492999, 31.0719654674, -31.6073259725, 0.0, 0.0, 2059.071169, 0.108, 0.054, 526 };
-    private static double[] fakeRmatData = { 2.09624160473, 0.804154556226, 0.0, 0.0, -1.06385858999, -0.0112465957359,
+    private final static double[] fakeRmatData = { 2.09624160473, 0.804154556226, 0.0, 0.0, -1.06385858999, -0.0112465957359,
             -0.966309173538, -0.357701041448, 0.0, 0.0, 0.474782969028, 0.00498288131746, 0.0, 0.0, -0.303419179617,
             1.28893518781, 0.0, 0.0, 0.0, 0.0, -0.314544894536, 1.24631295859, 0.0, 0.0, -0.00130328580005,
             2.17740006796E-4, 0.0, 0.0, 0.14234033399, 0.00291949986906, -0.0295967119844, -0.0246787398374, 0.0, 0.0,
@@ -164,7 +170,7 @@ public class OpticsService {
          * database query, as understood by this service.
          */
         @Override
-        public PVStructure request(PVStructure pvUri) throws RPCRequestException {
+        public PVStructure request(final PVStructure pvUri) throws RPCRequestException {
 
             RPCRequestException iss = null; // Return status
             double[] twiss = null; // Raw twiss param values
@@ -185,13 +191,13 @@ public class OpticsService {
                 // is wanted. <devicename>/twiss or
                 // <devicename>/R
                 //
-                PVStructure pvQuery = pvUri.getStructureField("query");
+            	final PVStructure pvQuery = pvUri.getStructureField("query");
                 logger.fine("pvQuery received= " + pvQuery);
 
-                PVString pvQueryName = pvQuery.getStringField("q");
+                final PVString pvQueryName = pvQuery.getStringField("q");
                 if (pvQueryName == null)
                     throw new RPCRequestException(StatusType.ERROR, String.format(MISSINGREQUIREDARGLVAL, "q"));
-                String pvname = pvQueryName.get();
+                final String pvname = pvQueryName.get();
                 if (pvname == null)
                     throw new RPCRequestException(StatusType.ERROR, String.format(MISSINGREQUIREDARGRVAL, "q"));
                 logger.fine("pvname = " + pvname);
@@ -202,8 +208,8 @@ public class OpticsService {
                 // is wanted for the given device (named in
                 // the q subfield).
                 //
-                String[] params = parseArgs(pvQuery);
-                Entity entity = new Entity(pvname);
+                final String[] params = parseArgs(pvQuery);
+                final Entity entity = new Entity(pvname);
 
                 // If twiss params were requested, get
                 // those, otherwise if R matrix was
@@ -247,8 +253,8 @@ public class OpticsService {
                     // according to introspection
                     // interface of rmat defined above.
                     result = PVDataFactory.getPVDataCreate().createPVStructure(rmatStructure);
-                    PVDoubleArray rmatpv = (PVDoubleArray) result.getScalarArrayField("value", ScalarType.pvDouble);
-                    PVIntArray dimpv = (PVIntArray) result.getScalarArrayField("dim", ScalarType.pvInt);
+                    final PVDoubleArray rmatpv = (PVDoubleArray) result.getScalarArrayField("value", ScalarType.pvDouble);
+                    final PVIntArray dimpv = (PVIntArray) result.getScalarArrayField("dim", ScalarType.pvInt);
 
                     if (params[B_PARAM].equals("NULL")) {
                         rmat = get_rmatA(entity, params);
@@ -270,7 +276,7 @@ public class OpticsService {
                     }
                 } else {
                     // query attribute not recognized
-                    throw new IllegalArgumentException(OpticsMessage.INVALIDATTRIBUTE + " : " + entity.attribute());
+                    throw new IllegalArgumentException(INVALIDATTRIBUTE + " : " + entity.attribute());
                 }
 
                 logger.fine("Successfully retrieved model data interface of PVStruture");
@@ -303,10 +309,10 @@ public class OpticsService {
          * @throws IllegalArgumentException
          *             if any parameter name or value is found to be invalid.
          */
-        private String[] parseArgs(PVStructure pvQuery) throws IllegalArgumentException {
+        private String[] parseArgs(final PVStructure pvQuery) throws IllegalArgumentException {
             // Parameters for query, initialized to defaults.
-            String[] paramNames = { "b", "type", "pos", "posb", "run", "fakedata" };
-            String[] paramValues = { "NULL", "EXTANT", "END", "BEG", "GOLD", "NULL" };
+        	final String[] paramNames = { "b", "type", "pos", "posb", "run", "fakedata" };
+        	final String[] paramValues = { "NULL", "EXTANT", "END", "BEG", "GOLD", "NULL" };
 
             // TODO: Add a check that an unreognized parameter (-a) is given.
 
@@ -315,7 +321,7 @@ public class OpticsService {
              */
             for (int i = 0; i < paramNames.length; i++) {
                 if (pvQuery.getSubField(paramNames[i]) != null) {
-                    PVString pvParam = pvQuery.getStringField(paramNames[i]);
+                	final PVString pvParam = pvQuery.getStringField(paramNames[i]);
                     if (pvParam != null)
                         paramValues[i] = pvParam.get().trim().toUpperCase();
                 }
@@ -329,7 +335,7 @@ public class OpticsService {
                     && pvQuery.getSubField(paramNames[RUN_PARAM]) != null
                     && Pattern.matches("^(0+)?[1-9][0-9]+$", paramValues[RUN_PARAM])) {
                 paramValues[TYPE_PARAM] = "NULL";
-                logger.warning(OpticsMessage.WARNING_BOTHTYPEANDRUNID);
+                logger.warning(WARNING_BOTHTYPEANDRUNID);
             }
 
             // Check that the type parameter, if specified, is valid. If
@@ -340,7 +346,7 @@ public class OpticsService {
             else if (Pattern.matches("^(DES.*)$", paramValues[TYPE_PARAM]))
                 paramValues[TYPE_PARAM] = "DESIGN";
             else {
-                throw new IllegalArgumentException(OpticsMessage.TYPE_PARAM_VAL_ILLEGAL);
+                throw new IllegalArgumentException(TYPE_PARAM_VAL_ILLEGAL);
             }
 
             // Check that the POS position parameter is valid.
@@ -351,7 +357,7 @@ public class OpticsService {
             else if (Pattern.matches("^(E|e).*$", paramValues[POS_PARAM]))
                 paramValues[POS_PARAM] = "END";
             else {
-                throw new IllegalArgumentException(OpticsMessage.POS_PARAM_VAL_ILLEGAL);
+                throw new IllegalArgumentException(POS_PARAM_VAL_ILLEGAL);
             }
 
             // Check that the POSB position parameter is valid.
@@ -362,7 +368,7 @@ public class OpticsService {
             else if (Pattern.matches("^(E|e).*$", paramValues[POSB_PARAM]))
                 paramValues[POSB_PARAM] = "END";
             else {
-                throw new IllegalArgumentException(OpticsMessage.POS_PARAM_VAL_ILLEGAL);
+                throw new IllegalArgumentException(POS_PARAM_VAL_ILLEGAL);
             }
 
             // Check that the RUNID position parameter is valid. It must be
@@ -385,7 +391,7 @@ public class OpticsService {
                 // if ( ! Pattern.matches("^(0+)?[1-9][0-9]+$",
                 // paramValues[RUN_PARAM]) )
                 catch (Exception n) {
-                    IllegalArgumentException ex = new IllegalArgumentException(OpticsMessage.ILLEGALRUN_PARAM);
+                    IllegalArgumentException ex = new IllegalArgumentException(ILLEGALRUN_PARAM);
                     throw ex;
                 }
             }
@@ -406,14 +412,14 @@ public class OpticsService {
          *
          * This method is algrithmically identical to get_rmatA, but is kept separate for the sake of explicit coding.
          */
-        private double[] get_twissA(Entity a, String[] params) throws UnableToGetDataException {
+        private double[] get_twissA(final Entity a, final String[] params) throws UnableToGetDataException {
 
             double[] modeldata = null; // The twiss params of device a.
             Integer runID; // The largest (latest) run ID of a
             // model containing the device A.
 
             // Extract the individual parameters, as passed and defaulted.
-            String typeParam = params[TYPE_PARAM], posParam = params[POS_PARAM], runIdParam = params[RUN_PARAM], fakeDataParam = params[FAKEDATA_PARAM];
+            final String typeParam = params[TYPE_PARAM], posParam = params[POS_PARAM], runIdParam = params[RUN_PARAM], fakeDataParam = params[FAKEDATA_PARAM];
 
             // Intercept fakedata request here, and return the static
             // fakedata.
@@ -458,14 +464,14 @@ public class OpticsService {
          *
          * This method is algrithmically identical to get_twissA, but is kept separate for the sake of explicit coding.
          */
-        private double[] get_rmatA(Entity a, String[] params) throws UnableToGetDataException {
+        private double[] get_rmatA(final Entity a, final String[] params) throws UnableToGetDataException {
             // 6x6 Rmat of A column order (1st 6 are 1st column)
             double[] modeldata = null;
             // The largest (latest) run ID of a model containing the device A.
             Integer runID;
 
             // Extract the individual parameters, as passed and defaulted.
-            String typeParam = params[TYPE_PARAM], posParam = params[POS_PARAM], runIdParam = params[RUN_PARAM], fakeDataParam = params[FAKEDATA_PARAM];
+            final String typeParam = params[TYPE_PARAM], posParam = params[POS_PARAM], runIdParam = params[RUN_PARAM], fakeDataParam = params[FAKEDATA_PARAM];
 
             // Intercept fakedata request here, and return the static
             // fakedata.
@@ -498,7 +504,7 @@ public class OpticsService {
         }
 
         // get_twiss ESS
-        private double[] get_twiss(Entity q, String posParam, Integer runId) throws UnableToGetDataException {
+        private double[] get_twiss(final Entity q, final String posParam, final Integer runId) throws UnableToGetDataException {
 
             // SQL query for Twiss. Note %d and %s for run id and element name.
             final String GETTWISS = "select e.\"EK\", "
@@ -510,7 +516,7 @@ public class OpticsService {
                     + "ORDER BY e.\"INDEX_SLICE_CHK\"";
 
             // Substitute in the RunID and instance name given (eg QP1)
-            String sql = String.format(GETTWISS, runId, q.instance());
+            final String sql = String.format(GETTWISS, runId, q.instance());
             DBG("sql for twiss", sql);
 
             // Execute the SQL query and return resulting array of twiss values.
@@ -518,7 +524,7 @@ public class OpticsService {
         }
 
         // get_rmat ESS
-        private double[] get_rmat(Entity q, String posParam, Integer runId) throws UnableToGetDataException {
+        private double[] get_rmat(final Entity q, final String posParam, final Integer runId) throws UnableToGetDataException {
 
             // SQL query for R-matrices. Note %d and %s for run id and element name.
             final String GETRMAT_SQL = "select " + "e.\"R11\",e.\"R12\",e.\"R13\",e.\"R14\",e.\"R15\",e.\"R16\", "
@@ -532,7 +538,7 @@ public class OpticsService {
                     + "ORDER BY e.\"INDEX_SLICE_CHK\"";
 
             // Substitute in the RunID and instance name given (eg QP1)
-            String sql = String.format(GETRMAT_SQL, runId, q.instance());
+            final String sql = String.format(GETRMAT_SQL, runId, q.instance());
             DBG("sql for Rmat", sql);
 
             // Excecute SQL and return array of 6x6=36 doubles
@@ -543,7 +549,7 @@ public class OpticsService {
          * Computes the transfer matrix from a device A to device B, given the additional constraints specified in the
          * given parmameters.
          */
-        private double[] get_rmat_AtoB(Entity q, String[] params) throws UnableToGetDataException {
+        private double[] get_rmat_AtoB(final Entity q, final String[] params) throws UnableToGetDataException {
 
             // 6x6 Rmats of A and B in column order (1st 6 are 1st column)
             double[] rmatA = null; // The 6x6 of device A
@@ -552,11 +558,11 @@ public class OpticsService {
             double[] rmatD = null; // The 6x6 of the downstream device
 
             // Extract the individual parameters, as passed and defaulted.
-            String typeParam = params[TYPE_PARAM], BParam = params[B_PARAM], posParam = params[POS_PARAM], posBParam = params[POSB_PARAM], runIdParam = params[RUN_PARAM];
+            final String typeParam = params[TYPE_PARAM], BParam = params[B_PARAM], posParam = params[POS_PARAM], posBParam = params[POSB_PARAM], runIdParam = params[RUN_PARAM];
 
             // Extract the names of the devices A and B
-            Entity a = q; // Device A, as given in query
-            Entity b = new Entity(BParam, true);
+            final Entity a = q; // Device A, as given in query
+            final Entity b = new Entity(BParam, true);
             // Device B (as in B=<device> param
             Entity u = null; // The upstream device
             Entity d = null; // The downstream device.
@@ -657,13 +663,13 @@ public class OpticsService {
             }
 
             // Now we have the Rmat of A and of B, compute the transfer matrix.
-            Matrix A = new Matrix(rmatA, 6).transpose();
+            final Matrix A = new Matrix(rmatA, 6).transpose();
             if (logger.isLoggable(Level.FINE))
                 printMatrix("rmatA", A);
-            Matrix B = new Matrix(rmatB, 6).transpose();
+            final Matrix B = new Matrix(rmatB, 6).transpose();
             if (logger.isLoggable(Level.FINE))
                 printMatrix("rmatB", B);
-            Matrix RmatAB = B.times(A.inverse());
+            final  Matrix RmatAB = B.times(A.inverse());
             if (logger.isLoggable(Level.FINE))
                 printMatrix("RmatAB", RmatAB);
 
@@ -695,10 +701,7 @@ public class OpticsService {
          * @return An int giving the highest valued Run ID which matched the input arguments, or 0 if no model matching
          *         the input arguments was found.
          */
-        private int get_runID(String instance, String type,
-        // String pos,
-        // String mode,
-                String run) {
+        private int get_runID(final String instance, final String type, final String run) {
             // The basic query strings for the 2 cases of whether simply the
             // latest run id is wanted of extant or design, or specfically the
             // golden model. Note the %s for the EXTANT or DESIGN to be substituted.
@@ -757,21 +760,21 @@ public class OpticsService {
          * @throws UnableToGetDataException
          *             if inconsistent phase advances across X and Y.
          */
-        private boolean isDownstream(Entity a, Entity b, String[] params) throws UnableToGetDataException {
+        private boolean isDownstream(final Entity a, final Entity b, final String[] params) throws UnableToGetDataException {
 
             // Ensure that POS param used for B, is that whch was passed in
             // POSB. Especially important when a and b are in fact the same
             // device!
-            double[] A_twiss = get_twissA(a, params);
-            String[] paramsB = params;
-            paramsB[POS_PARAM] = params[POSB_PARAM];
-            double[] B_twiss = get_twissA(b, paramsB);
+        	final double[] A_twiss = get_twissA(a, params);
+        	final String[] paramsB = params;
+        	paramsB[POS_PARAM] = params[POSB_PARAM];
+        	final double[] B_twiss = get_twissA(b, paramsB);
 
             // Check that A's X and Y phases advances are > or < B in both
             // planes consistently.
             if (A_twiss[PSIX] > B_twiss[PSIX] && A_twiss[PSIY] < B_twiss[PSIY] || A_twiss[PSIX] < B_twiss[PSIX]
                     && A_twiss[PSIY] > B_twiss[PSIY])
-                throw new UnableToGetDataException(OpticsMessage.INCONSISTENT_PSI);
+                throw new UnableToGetDataException(INCONSISTENT_PSI);
 
             // If consistent, any one of these will do to establish
             // downstreamness.
@@ -782,30 +785,28 @@ public class OpticsService {
          * Static method for issuing messages if static "debug" flag is on. This method should be inlined by the
          * compiler.
          */
-        private static final void DBG(String context, Object Msg) {
+        private static final void DBG(final String context,final  Object Msg) {
             if (logger.isLoggable(Level.FINE))
                 logger.fine(context + " : " + Msg.toString());
         }
 
         // TODO: redirect stdout to log.
-        private static void printMatrix(String label, Matrix M) {
+        private static void printMatrix(final String label, final Matrix M) {
             System.out.println(label);
             M.print(8, 4);
         }
 
     }
 
-    public static void main(String[] args) throws PVAException {
+    public static void main(final String[] args) throws PVAException {
 
         // Optics service's connecton to its backend database.
         OpticsServiceConnection opticsConnection = null;
 
         // Get service name from property if given.
-        String server_name = System.getProperty("SERVER_NAME", "meme_optics");
+        final String server_name = System.getProperty("SERVER_NAME", "meme_optics");
 
-        // Initialize logging - now done through properties file.
-        // ConsoleLogHandler.defaultConsoleLogging( LOG_LEVEL_DEFAULT );
-        // ConsoleLogHandler.defaultConsoleLogging( Level.FINE) ;
+        ConsoleLogHandler.defaultConsoleLogging(Level.INFO);
         logger.info("SERVICES OF SERVER \"" + server_name + "\" is/are initializing...");
 
         // Get MEME runtime config for this execution of this service.

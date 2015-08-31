@@ -9,6 +9,7 @@ package edu.stanford.slac.meme.service.rdb;
 
 import java.io.File;
 import java.util.Hashtable;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -20,6 +21,7 @@ import org.epics.pvaccess.PVAException;
 import org.epics.pvaccess.server.rpc.RPCRequestException;
 import org.epics.pvaccess.server.rpc.RPCServer;
 import org.epics.pvaccess.server.rpc.RPCService;
+import org.epics.pvaccess.util.logging.ConsoleLogHandler;
 import org.epics.pvdata.pv.PVString;
 import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.Status.StatusType;
@@ -97,7 +99,7 @@ public class RdbService {
         private final RdbServiceConnection connection;
         private final Hashtable<String, String> queries_ht;
 
-        RdbServiceImpl(RdbServiceConnection connection, Hashtable<String, String> queries_ht) {
+        RdbServiceImpl(final RdbServiceConnection connection, final Hashtable<String, String> queries_ht) {
             this.connection = connection;
             this.queries_ht = queries_ht;
         }
@@ -107,10 +109,10 @@ public class RdbService {
          * database query, as understood by this service.
          */
         @Override
-        public PVStructure request(PVStructure pvUri) throws RPCRequestException {
-            String msg = null; // Server messages logged and returned.
+        public PVStructure request(final PVStructure pvUri) throws RPCRequestException {
+        	String msg = null; // Server messages logged and returned.
 
-            String type = pvUri.getStructure().getID();
+        	final String type = pvUri.getStructure().getID();
             if (!type.equals(MemeNormativeTypes.NTURI_ID)) {
                 msg = "Unable to get data. Bad argument to server: "
                         + String.format(NOTEXPECTEDNTID, MemeNormativeTypes.NTURI_ID, type);
@@ -121,10 +123,10 @@ public class RdbService {
             // Retrieve the pattern argument, assuming pvUri is
             // is a PVStructure conforming to NTURI.
             //
-            PVString pvRbbQueryName = pvUri.getStructureField("query").getStringField("q");
+            final PVString pvRbbQueryName = pvUri.getStructureField("query").getStringField("q");
             if (pvRbbQueryName == null)
                 throw new RPCRequestException(StatusType.ERROR, String.format(MISSINGREQUIREDARGLVAL, "q"));
-            String rdbqueryname = pvRbbQueryName.get();
+            final String rdbqueryname = pvRbbQueryName.get();
             if (rdbqueryname == null || rdbqueryname.length() == 0)
                 throw new RPCRequestException(StatusType.ERROR, String.format(MISSINGREQUIREDARGRVAL, "q"));
 
@@ -134,7 +136,7 @@ public class RdbService {
             PVStructure pvTop = null;
             try {
                 // Look up sql query for queryname given.
-                String sqlquery = queries_ht.get(rdbqueryname);
+            	final String sqlquery = queries_ht.get(rdbqueryname);
 
                 // Execute sql query and serialize to pvTop PVStructure
                 pvTop = connection.getData(sqlquery);
@@ -162,42 +164,42 @@ public class RdbService {
      * if (subList != null && subList.getLength() > 0) { return subList.item(0).getNodeValue(); } } return null; }
      */
 
-    public static void main(String[] args) throws PVAException {
+    public static void main(final String[] args) throws PVAException {
         // Get service name from property if given.
-        String server_name = System.getProperty("SERVER_NAME", SERVER_NAME_DEFAULT);
-        String rpcchannelsxml_fn = System.getProperty("RPCQUERIES_FILENAME", RPCQUERIES_FILENAME_DEFAULT);
-
+    	final String server_name = System.getProperty("SERVER_NAME", SERVER_NAME_DEFAULT);
+    	final String rpcchannelsxml_fn = System.getProperty("RPCQUERIES_FILENAME", RPCQUERIES_FILENAME_DEFAULT);
+    	ConsoleLogHandler.defaultConsoleLogging(Level.INFO);
         // Initialize console logging.
         logger.info("SERVICES OF \"" + server_name + "\" is/are initializing...");
 
         try {
             // Initialize database connection.
-            RdbServiceConnection rdbConnection = new RdbServiceConnection(RDB_SERVICE_CHANNEL_NAME);
+        	final RdbServiceConnection rdbConnection = new RdbServiceConnection(RDB_SERVICE_CHANNEL_NAME);
 
             // Instantiate ChannelRPC service instances of this pvAccess server.
-            RPCServer server = new RPCServer();
+        	final RPCServer server = new RPCServer();
             logger.info("SERVICES OF \"" + server_name + "\" is/are initializing...");
 
             // Make hashtable of sql queries keyed by query name.
-            Hashtable<String, String> rpcqueries_ht = new Hashtable<String, String>();
+            final Hashtable<String, String> rpcqueries_ht = new Hashtable<String, String>();
 
             // XML open file best practice. XML file of sql queries fetched by this service.
-            File fXmlFile = new File(rpcchannelsxml_fn);
-            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            Document doc = dBuilder.parse(fXmlFile);
+            final File fXmlFile = new File(rpcchannelsxml_fn);
+            final DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            final DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            final Document doc = dBuilder.parse(fXmlFile);
             doc.getDocumentElement().normalize();
 
             // Read through xml file, and build the hashtable of queries
-            NodeList nList = doc.getElementsByTagName("query");
+            final NodeList nList = doc.getElementsByTagName("query");
             for (int temp = 0; temp < nList.getLength(); temp++) {
-                Node nNode = nList.item(temp);
+            	final Node nNode = nList.item(temp);
                 logger.info("Adding Channel metadata :" + nNode.getNodeName());
                 if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-                    Element element = (Element) nNode;
-                    String queryName = element.getElementsByTagName("name").item(0).getTextContent();
+                	final Element element = (Element) nNode;
+                	final String queryName = element.getElementsByTagName("name").item(0).getTextContent();
 
-                    String sqlStatement = // getString("sqlStatement", element);
+                	final String sqlStatement = //getString("sqlStatement", element);
                     element.getElementsByTagName("sqlStatement").item(0).getTextContent().trim();
                     logger.info(queryName + " : " + sqlStatement);
                     rpcqueries_ht.put(queryName, sqlStatement);

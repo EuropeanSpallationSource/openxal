@@ -60,11 +60,10 @@ public class RdbClient {
     // private static String NTTABLE_TYPE_NAME = NTNAMESPACE + ":" + "NTTable";
 
     // Error exit codes
-    @SuppressWarnings("unused")
-    private static final int NOTNORMATIVETYPE = 1;
+    private static final int NOARGS = 1;
     private static final int NOTNTTABLETYPE = 2;
     private static final int NODATARETURNED = 3;
-    private static final int NOARGS = 4;
+    
 
     private static final int _STYLE_ARGN = 1; // The index of the row/col arg if given.
     private static final String _STYLE_ROW = "row"; // Arg _STYLE_ARGN must be this for row printout.
@@ -96,7 +95,7 @@ public class RdbClient {
      *            SELECT statement, in a lookup table mapping keys to SELECT statements maintained by the server. Eg
      *            "swissFEL:allQuads".
      */
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         // Initialize Console logging, and set it to log only messages at WARNING or above.
         // To turn on debugging messages, set this to INFO.
         ConsoleLogHandler.defaultConsoleLogging(Level.WARNING);
@@ -105,6 +104,7 @@ public class RdbClient {
         // like "swissfel:allmagnetnames"
         if (args.length <= 0) {
             logger.log(Level.SEVERE, "No name of a db query was given; exiting.");
+            System.err.println("Usage: java RdbClient query column label");//TODO more detailed help
             System.exit(NOARGS);
         }
         parseArguments(args);
@@ -115,7 +115,7 @@ public class RdbClient {
         // example of an asynchronous client.
         //
         ClientFactory.start();
-        RPCClientImpl client = new RPCClientImpl(CHANNEL_NAME);
+        final RPCClientImpl client = new RPCClientImpl(CHANNEL_NAME);
 
         // Retrieve introspection interface of the service's input argument structure,
         // i.e. the API for setting the arguments of the service. It is a PVStructure
@@ -123,9 +123,9 @@ public class RdbClient {
         // query part of the uri, and set it's value to the first argument to this executable, ie
         // the name of the rdb query the rdbService should run against it's SQL database.
         //
-        PVStructure pvRequest = PVDataFactory.getPVDataCreate().createPVStructure(uriStructure);
+        final PVStructure pvRequest = PVDataFactory.getPVDataCreate().createPVStructure(uriStructure);
         pvRequest.getStringField("scheme").put("pva");
-        PVStructure pvQuery = pvRequest.getStructureField("query");
+        final PVStructure pvQuery = pvRequest.getStructureField("query");
         pvQuery.getStringField("q").put(args[0]);
 
         logger.log(Level.INFO, "Following client connect the arguments to service will be = " + pvRequest.toString());
@@ -140,7 +140,7 @@ public class RdbClient {
             // Verify result validity, unpack and display it.
             if (pvResult != null) {
                 // Check the result PVStructure is of the type we expect. It should be an NTTABLE.
-                String type = pvResult.getStructure().getID();
+            	final String type = pvResult.getStructure().getID();
                 if (!type.equals(MemeNormativeTypes.NTTABLE_ID)) {
                     logger.log(Level.SEVERE, "Unable to get data: unexpected data structure returned from "
                             + CHANNEL_NAME + "; \nexpected returned data id member value "
@@ -159,12 +159,12 @@ public class RdbClient {
                  * determine which.
                  */
 
-                PVStringArray pvColumnTitles = (PVStringArray) pvResult.getScalarArrayField("labels",
+                final PVStringArray pvColumnTitles = (PVStringArray) pvResult.getScalarArrayField("labels",
                         ScalarType.pvString);
-                PVStructure pvTableData = pvResult.getStructureField("value");
-                int Ncolumns = pvTableData.getNumberFields();
+                final PVStructure pvTableData = pvResult.getStructureField("value");
+                final int Ncolumns = pvTableData.getNumberFields();
 
-                PVField[] pvColumns = pvTableData.getPVFields();
+                final PVField[] pvColumns = pvTableData.getPVFields();
                 if (Ncolumns <= 0 || pvColumns.length <= 0) {
                     logger.log(Level.SEVERE, "No data fields returned from " + CHANNEL_NAME + ".");
                     System.exit(NODATARETURNED);
@@ -177,9 +177,9 @@ public class RdbClient {
                 // provisions of NamedValues to print that data in a familiar looking table
                 // format.
                 //
-                StringArrayData data = new StringArrayData();
+                final StringArrayData data = new StringArrayData();
                 int labelOffset = 0;
-                NamedValues namedValues = new NamedValues();
+                final NamedValues namedValues = new NamedValues();
                 for (PVField pvColumnIterator : pvColumns) {
                     // Get the column name. This will be the
                     // column name from the ResultSet of the SQL SELECT query.
@@ -188,24 +188,29 @@ public class RdbClient {
                     // field names of the value structure are, in the case of rdbService
                     // exactly the same values as the labels field.
                     pvColumnTitles.get(labelOffset, 1, data);
-                    String fieldName = data.data[labelOffset++];
+                    final String fieldName = data.data[labelOffset++];
                     /* pvColumnIterator.getFieldName(); - could have been used instead */
 
                     if (pvColumnIterator.getField().getType() == Type.scalarArray) {
                         ScalarArray scalarArray = (ScalarArray) pvColumnIterator.getField();
-                        if (scalarArray.getElementType() == ScalarType.pvDouble) {
-                            PVDoubleArray pvDoubleArray = (PVDoubleArray) pvColumnIterator;
+                        switch(scalarArray.getElementType()){
+                    	case pvDouble:
+                            final PVDoubleArray pvDoubleArray = (PVDoubleArray) pvColumnIterator;
                             namedValues.add(fieldName, GetHelper.getDoubleVector(pvDoubleArray));
-                        } else if (scalarArray.getElementType() == ScalarType.pvLong) {
-                            PVLongArray pvLongArray = (PVLongArray) pvColumnIterator;
+                            break;
+                    	case pvLong:
+                            final PVLongArray pvLongArray = (PVLongArray) pvColumnIterator;
                             namedValues.add(fieldName, GetHelper.getLongVector(pvLongArray));
-                        } else if (scalarArray.getElementType() == ScalarType.pvByte) {
-                            PVByteArray pvByteArray = (PVByteArray) pvColumnIterator;
+                            break;
+                    	case pvByte :
+                            final PVByteArray pvByteArray = (PVByteArray) pvColumnIterator;
                             namedValues.add(fieldName, GetHelper.getByteVector(pvByteArray));
-                        } else if (scalarArray.getElementType() == ScalarType.pvString) {
-                            PVStringArray pvStringArray = (PVStringArray) pvColumnIterator;
+                            break;
+                    	case pvString :
+                            final PVStringArray pvStringArray = (PVStringArray) pvColumnIterator;
                             namedValues.add(fieldName, GetHelper.getStringVector(pvStringArray));
-                        } else {
+                            break;
+                    	default: 
                             // To reset wrap C-u 100 C-x f then M-q.
                             // Array types other than those above are not understood by this
                             // client. Note that conformance to NTTable does NOT REQUIRE
@@ -260,7 +265,7 @@ public class RdbClient {
      * @param args
      *            - the command line arguments
      */
-    private static void parseArguments(String[] args) {
+    private static void parseArguments(final String[] args) {
         // Create a formatter for the namedValues system constructed above. This
         // will be used to print the system as a familiar looking table, unless the style arg says
         // print it as rows, in which case you'll get a list of row data. Column style

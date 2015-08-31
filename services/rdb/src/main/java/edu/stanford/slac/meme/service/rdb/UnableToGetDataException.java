@@ -1,8 +1,10 @@
 package edu.stanford.slac.meme.service.rdb;
 
-@SuppressWarnings("serial")
 public class UnableToGetDataException extends Exception {
-    public UnableToGetDataException() {
+	
+	private static final long serialVersionUID = -6542023913705709994L;
+
+	public UnableToGetDataException() {
         super();
     }
 

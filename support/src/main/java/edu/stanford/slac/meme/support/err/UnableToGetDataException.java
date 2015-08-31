@@ -20,7 +20,6 @@ public class UnableToGetDataException extends RPCRequestException {
 
     private static final long serialVersionUID = 2175761868356771465L;
     private static final String _Msg = "Unable to get data";
-    private static final String _msgWithKind = "Unable to get %s data";
 
     public UnableToGetDataException() {
         super(Status.StatusType.ERROR, _Msg);
@@ -29,21 +28,21 @@ public class UnableToGetDataException extends RPCRequestException {
     /**
      * Suitable for MEME internally generated error.
      */
-    public UnableToGetDataException(String message) {
+    public UnableToGetDataException(final String message) {
         super(Status.StatusType.ERROR, message);
     }
 
     /**
      * Suitable for MEME internally generated error.
      */
-    public UnableToGetDataException(Status status, String message) {
+    public UnableToGetDataException(final Status status, final String message) {
         super(status.getType(), message);
     }
 
     /**
      * Suitable for request method
      */
-    public UnableToGetDataException(Throwable cause) {
+    public UnableToGetDataException(final Throwable cause) {
         super(Status.StatusType.ERROR, _Msg + "; "
                 + (cause.getMessage() != null ? cause.getMessage() : cause.getClass().getName()), cause);
     }
@@ -51,7 +50,7 @@ public class UnableToGetDataException extends RPCRequestException {
     /**
      * Suitable for request method
      */
-    public UnableToGetDataException(Status status, Throwable cause) {
+    public UnableToGetDataException(final Status status, final Throwable cause) {
         super(status.getType(), _Msg + status.getMessage() + "; "
                 + (cause.getMessage() != null ? cause.getMessage() : cause.getClass().getName()), cause);
     }
@@ -59,7 +58,7 @@ public class UnableToGetDataException extends RPCRequestException {
     /**
      * Suitable for request method
      */
-    public UnableToGetDataException(String message, Throwable cause) {
+    public UnableToGetDataException(final String message,final  Throwable cause) {
         super(Status.StatusType.ERROR, message + "; "
                 + (cause.getMessage() != null ? cause.getMessage() : cause.getClass().getName()), cause);
     }
@@ -67,7 +66,7 @@ public class UnableToGetDataException extends RPCRequestException {
     /**
      * Suitable for request method
      */
-    public UnableToGetDataException(Status status, String message, Throwable cause) {
+    public UnableToGetDataException(final Status status, final String message, final Throwable cause) {
         super(status.getType(), message + " - " + status.getMessage() + "; "
                 + (cause.getMessage() != null ? cause.getMessage() : cause.getClass().getName()), cause);
     }

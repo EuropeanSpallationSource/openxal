@@ -11,6 +11,7 @@ import org.epics.pvaccess.PVAException;
 import org.epics.pvaccess.server.rpc.RPCRequestException;
 import org.epics.pvaccess.server.rpc.RPCServer;
 import org.epics.pvaccess.server.rpc.RPCService;
+import org.epics.pvaccess.util.logging.ConsoleLogHandler;
 // Import pvData Data Interface things we need
 import org.epics.pvdata.factory.FieldFactory;
 // Import pvData Introspection interface we need for test archive service
@@ -66,7 +67,7 @@ import edu.stanford.slac.meme.support.sys.MemeNormativeTypes;
 public class TestServer {
 
 	// Connect to logger.
-	private static final Logger logger = Logger.getLogger(TestServer.class.getPackage().getName());
+	private static final Logger logger = Logger.getLogger(TestServer.class.getName());
 
 	// The example is of an Archive Service; make some fake archive data for
 	// just one PV.
@@ -132,8 +133,7 @@ public class TestServer {
 		final String server_name = System.getProperty("SERVER_NAME", "memetestserver");
 
 		// Initialize console logging.
-		// ConsoleLogHandler.defaultConsoleLogging( LOG_LEVEL_DEFAULT );
-		// ConsoleLogHandler.defaultConsoleLogging( Level.FINE) ;
+		ConsoleLogHandler.defaultConsoleLogging(Level.INFO);
 		logger.info("SERVICES OF \"" + server_name + "\" is/are initializing...");
 
 		// Initialize test archive service
@@ -157,7 +157,7 @@ public class TestServer {
 
 	static class TwissServiceImpl implements RPCService {
 		@Override
-		public PVStructure request(PVStructure pvUri) throws RPCRequestException {
+		public PVStructure request(final PVStructure pvUri) throws RPCRequestException {
 			RPCRequestException iss = null;
 			// The device name for which we have been asked to get the Twiss
 			// params
@@ -224,7 +224,7 @@ public class TestServer {
 		private Date calEndtime; // The input enddate param as a Date
 
 		@Override
-		public PVStructure request(PVStructure uri) throws RPCRequestException {
+		public PVStructure request(final PVStructure uri) throws RPCRequestException {
 			RPCRequestException iss = null;
 
 			// Create the return data instance of a resultStructure, using the
@@ -308,7 +308,7 @@ public class TestServer {
 			return result;
 		}
 
-		private String getQueryArg(PVStructure pvUriQuery, String argname) throws RPCRequestException {
+		private String getQueryArg(final PVStructure pvUriQuery, String argname) throws RPCRequestException {
 			RPCRequestException iss = null;
 			logger.setLevel(Level.FINER);
 			String argValue = null;

@@ -35,8 +35,7 @@ import org.epics.pvdata.util.pvDataHelper.GetHelper;
  *
  * Usage:
  *
- * java TestServerClient quad45:bdes/history java TestServerClient quad45:bdes/history 2011-09-16T02.12.00 java
- * TestServerClient quad45:bdes/history 2011-09-16T02.12.00 2011-09-16T10.01.03
+ * java TestServerClient quad45:bdes/history 2011-09-16T02.12.00 2011-09-16T10.01.03
  * 
  * @author Greg White (greg@slac.stanford.edu) 22-Sep-2011
  * @version Greg White (greg@slac.stanford.edu) 15-Jan-2013 Updated for conformance to NTTable.
@@ -77,13 +76,15 @@ public class TestServerClient {
      *            SELECT statement, in a lookup table mapping keys to SELECT statements maintained by the server. Eg
      *            "swissFEL:allQuads".
      */
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         // Initialize Console logging.
         // To turn on debugging messages, set this to INFO.
         ConsoleLogHandler.defaultConsoleLogging(Level.WARNING);
 
-        if (args.length <= 0) {
-            logger.log(Level.SEVERE, "No name of a PV was given; exiting.");
+        if (args.length <= 2) {
+            logger.log(Level.SEVERE, "Not enough arguments given. Exiting...");
+            System.err.println("Usage: java TestServerClient querry startTime endTime\n"
+        			+ "e.g. java TestServerClient quad45:bdes/history 2011-09-16T02.12.00 2011-09-16T10.01.03");
             System.exit(NOARGS);
         }
 
@@ -94,9 +95,9 @@ public class TestServerClient {
         final PVStructure pvQuery = pvRequest.getStructureField("query");
         if (args[0] != null)
             pvQuery.getStringField("entity").put(args[0]);
-        if (args.length >1 && args[1] != null)
+        if (args[1] != null)
             pvQuery.getStringField("starttime").put(args[1]);
-        if (args.length >2 && args[2] != null)
+        if (args[2] != null)
             pvQuery.getStringField("endtime").put(args[2]);
 
         // Execute the service request for data subject to the arguments
