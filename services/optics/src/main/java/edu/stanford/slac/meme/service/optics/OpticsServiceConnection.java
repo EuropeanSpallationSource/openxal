@@ -24,6 +24,7 @@ import org.epics.pvdata.pv.FieldCreate;
 import org.epics.pvdata.pv.PVDataCreate;
 
 import edu.stanford.slac.meme.support.err.UnableToGetDataException;
+import edu.stanford.slac.meme.support.sys.MemeConstants;
 
 /**
  * opticsServicConnection defines how the Optics service accesses a relational database, such as ORACLE, from which it
@@ -40,11 +41,7 @@ public class OpticsServiceConnection {
     // Oracle JDBC connection URI and ID stuff.
     //
     private static volatile Connection m_Conn = null; // JDBC connection for queries
-    private static final String CONNECTION_URI_DEFAULT = "jdbc:oracle:thin:@youopticss.host.name:1521:YOURDBNAME";
-    private static final String NORESULTSETMETADATA = "No ResultSet metadata available, so can not continue to get data";
-    private static final String UNABLETOPROCESSSQL = "Unable to execute SQL query successfully";
-    private static final String NOMATCH = "No matching model data for query ";
-    private static final String WHEN_EXECUTINGSQL = "when executing SQL query \'%s\'. Retrying with new Connection";
+
     private static final int MAX_RETRIES = 2; // Try a SQL query at most 2 times
     // before reinit and requery.
     /**
@@ -90,7 +87,7 @@ public class OpticsServiceConnection {
         try {
             // Retrieve db connection configuration from properties, or use
             // defaults if none given.
-        	final String url = System.getProperty("CONNECTION_URI_PROPERTY", CONNECTION_URI_DEFAULT);
+        	final String url = System.getProperty("CONNECTION_URI_PROPERTY", MemeConstants.CONNECTION_URI_DEFAULT);
         	final String user = System.getProperty("CONNECTION_USERID_PROPERTY");
         	final String pwd = System.getProperty("CONNECTION_PWD");
 
@@ -168,7 +165,7 @@ public class OpticsServiceConnection {
                     // fix this by getting a new
                     // connection and set logic so we'll go
                     // through the do loop again.
-                    message = String.format(WHEN_EXECUTINGSQL, sqlString);
+                    message = String.format(MemeConstants.WHEN_EXECUTINGSQL, sqlString);
                     if (nRetries < MAX_RETRIES) {
                         logger.warning(ex.getMessage() + ":" + message);
                         getConnection();
@@ -184,19 +181,19 @@ public class OpticsServiceConnection {
             } while (bRetry);
 
             if (rs == null || nRetries >= MAX_RETRIES)
-                throw new UnableToGetDataException(UNABLETOPROCESSSQL);
+                throw new UnableToGetDataException(MemeConstants.UNABLETOPROCESSSQL);
 
             // Extract the data from the (single column) ResulSet.
             ResultSetMetaData rsmd = rs.getMetaData();
             if (rsmd == null)
-                throw new UnableToGetDataException(NORESULTSETMETADATA);
+                throw new UnableToGetDataException(MemeConstants.NORESULTSETMETADATA);
 
             // Get number of rows in ResultSet. Check if got too few
             // (<1)
             rs.last();
             final int rowsM = rs.getRow();
             if (rowsM < 1)
-                throw new UnableToGetDataException(NOMATCH + sqlString);
+                throw new UnableToGetDataException(MemeConstants.NOMATCH + sqlString);
 
             // Decide the rowset we're going to return. Normally
             // (for all 0-length devices, and devices in more than 1
@@ -249,7 +246,7 @@ public class OpticsServiceConnection {
                 logger.fine("Data " + (colj - 1) + " = " + modelData[colj - 1]);
             }
         } catch (Exception ex) {
-            throw new UnableToGetDataException(UNABLETOPROCESSSQL, ex);
+            throw new UnableToGetDataException(MemeConstants.UNABLETOPROCESSSQL, ex);
         } finally {
             try {
                 if (rs != null)

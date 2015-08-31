@@ -44,6 +44,7 @@ import Jama.Matrix;
 import edu.stanford.slac.meme.support.err.UnableToGetDataException;
 // import edu.stanford.slac.meme.support.err.MEMERequestException;
 import edu.stanford.slac.meme.support.sys.DataMode; // fake or real data
+import edu.stanford.slac.meme.support.sys.MemeConstants;
 import edu.stanford.slac.meme.support.sys.MemeNormativeTypes; // NTMATRIX_ID
 import edu.stanford.slac.meme.support.sys.Mode; // Dev or prod
 
@@ -68,14 +69,7 @@ public class OpticsService {
     // Acquire the logging interface
     private static final Logger logger = Logger.getLogger(OpticsService.class.getPackage().getName());
     
-    private static final String MISSINGREQUIREDARGRVAL = "Missing required argument %s rvalue";
-    private static final String MISSINGREQUIREDARGLVAL = "Missing required argument %s";
-    private static final String INVALIDATTRIBUTE = "Entity with unrecognized attribute part received";
-    private static final String TYPE_PARAM_VAL_ILLEGAL = "Specified TYPE param must be valued COMPUTED, DATABASE, EXTANT (all meaning EXTANT) or DESIGN";
-    private static final String POS_PARAM_VAL_ILLEGAL = "Specified position (POS or POSB) param must be valued BEG, BEGINNING (same as BEG), MIDDLE (same as MID), or END";
-    private static final String INCONSISTENT_PSI = "Inconsistent phase advances in each plane detected for A and B";
-    private static final String ILLEGALRUN_PARAM = "The RUNID param, if supplied, must be a positive integer, or 'NULL' for latest run";
-    private static final String WARNING_BOTHTYPEANDRUNID = "WARNING: Mutually exclusive params supplied: RunID and TYPE. Only RunID will be used, given TYPE ignored.";
+  
     // Get this MEME server's config - its name and which MEME network
     // it will join. The name is the PV name for pvAccess responses
     public static Integer meme_mode = null, data_mode = null;
@@ -196,10 +190,10 @@ public class OpticsService {
 
                 final PVString pvQueryName = pvQuery.getStringField("q");
                 if (pvQueryName == null)
-                    throw new RPCRequestException(StatusType.ERROR, String.format(MISSINGREQUIREDARGLVAL, "q"));
+                    throw new RPCRequestException(StatusType.ERROR, String.format(MemeConstants.MISSINGREQUIREDARGLVAL, "q"));
                 final String pvname = pvQueryName.get();
                 if (pvname == null)
-                    throw new RPCRequestException(StatusType.ERROR, String.format(MISSINGREQUIREDARGRVAL, "q"));
+                    throw new RPCRequestException(StatusType.ERROR, String.format(MemeConstants.MISSINGREQUIREDARGRVAL, "q"));
                 logger.fine("pvname = " + pvname);
 
                 // Extract the parameters of the query from
@@ -276,7 +270,7 @@ public class OpticsService {
                     }
                 } else {
                     // query attribute not recognized
-                    throw new IllegalArgumentException(INVALIDATTRIBUTE + " : " + entity.attribute());
+                    throw new IllegalArgumentException(MemeConstants.INVALIDATTRIBUTE + " : " + entity.attribute());
                 }
 
                 logger.fine("Successfully retrieved model data interface of PVStruture");
@@ -335,7 +329,7 @@ public class OpticsService {
                     && pvQuery.getSubField(paramNames[RUN_PARAM]) != null
                     && Pattern.matches("^(0+)?[1-9][0-9]+$", paramValues[RUN_PARAM])) {
                 paramValues[TYPE_PARAM] = "NULL";
-                logger.warning(WARNING_BOTHTYPEANDRUNID);
+                logger.warning(MemeConstants.WARNING_BOTHTYPEANDRUNID);
             }
 
             // Check that the type parameter, if specified, is valid. If
@@ -346,7 +340,7 @@ public class OpticsService {
             else if (Pattern.matches("^(DES.*)$", paramValues[TYPE_PARAM]))
                 paramValues[TYPE_PARAM] = "DESIGN";
             else {
-                throw new IllegalArgumentException(TYPE_PARAM_VAL_ILLEGAL);
+                throw new IllegalArgumentException(MemeConstants.TYPE_PARAM_VAL_ILLEGAL);
             }
 
             // Check that the POS position parameter is valid.
@@ -357,7 +351,7 @@ public class OpticsService {
             else if (Pattern.matches("^(E|e).*$", paramValues[POS_PARAM]))
                 paramValues[POS_PARAM] = "END";
             else {
-                throw new IllegalArgumentException(POS_PARAM_VAL_ILLEGAL);
+                throw new IllegalArgumentException(MemeConstants.POS_PARAM_VAL_ILLEGAL);
             }
 
             // Check that the POSB position parameter is valid.
@@ -368,7 +362,7 @@ public class OpticsService {
             else if (Pattern.matches("^(E|e).*$", paramValues[POSB_PARAM]))
                 paramValues[POSB_PARAM] = "END";
             else {
-                throw new IllegalArgumentException(POS_PARAM_VAL_ILLEGAL);
+                throw new IllegalArgumentException(MemeConstants.POS_PARAM_VAL_ILLEGAL);
             }
 
             // Check that the RUNID position parameter is valid. It must be
@@ -391,7 +385,7 @@ public class OpticsService {
                 // if ( ! Pattern.matches("^(0+)?[1-9][0-9]+$",
                 // paramValues[RUN_PARAM]) )
                 catch (Exception n) {
-                    IllegalArgumentException ex = new IllegalArgumentException(ILLEGALRUN_PARAM);
+                    IllegalArgumentException ex = new IllegalArgumentException(MemeConstants.ILLEGALRUN_PARAM);
                     throw ex;
                 }
             }
@@ -774,7 +768,7 @@ public class OpticsService {
             // planes consistently.
             if (A_twiss[PSIX] > B_twiss[PSIX] && A_twiss[PSIY] < B_twiss[PSIY] || A_twiss[PSIX] < B_twiss[PSIX]
                     && A_twiss[PSIY] > B_twiss[PSIY])
-                throw new UnableToGetDataException(INCONSISTENT_PSI);
+                throw new UnableToGetDataException(MemeConstants.INCONSISTENT_PSI);
 
             // If consistent, any one of these will do to establish
             // downstreamness.

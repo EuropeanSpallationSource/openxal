@@ -3,6 +3,8 @@ package edu.stanford.slac.meme.service.optics;
 
 import java.util.logging.Logger;
 
+import edu.stanford.slac.meme.support.sys.MemeConstants;
+
 /**
  * Entity defines how to get the "device name" part and "property" part from an MEME EPICS V4 PV.
  * 
@@ -12,10 +14,6 @@ import java.util.logging.Logger;
 class Entity {
     // Acquire the logging interface
     private static final Logger logger = Logger.getLogger(Entity.class.getName());
-
-    private static final int SEPARATOR = ':'; // SLAC specific
-    private static final String UNEXPECTEDSEP = "PV name %s contains unexpected separator %c, "
-            + "expected only instance or device name in this context ";
     private String m_instance = null;
     private String m_attribute = null;
 
@@ -27,8 +25,8 @@ class Entity {
     Entity(final String pvname, final Boolean instanceOnly) {
         logger.fine("Entity instanceOnly constructor received pvame:\"" + pvname + "\"");
         if (instanceOnly == true) {
-            if (pvname.indexOf(SEPARATOR) >= 0) {
-                throw new IllegalArgumentException(String.format(UNEXPECTEDSEP, pvname, SEPARATOR));
+            if (pvname.indexOf(MemeConstants.SEPARATOR) >= 0) {
+                throw new IllegalArgumentException(String.format(MemeConstants.UNEXPECTEDSEP, pvname, MemeConstants.SEPARATOR));
             } else {
                 m_instance = pvname;
                 m_instance.toUpperCase();
@@ -47,7 +45,7 @@ class Entity {
     private void parse(final String pvname) {
         // Look for last index of ":". If does not occur
         // then the attribute part has not been given.
-    	final int separatorcharindex = pvname.lastIndexOf(SEPARATOR);
+    	final int separatorcharindex = pvname.lastIndexOf(MemeConstants.SEPARATOR);
         if (separatorcharindex == 0) {
             m_instance = pvname.toUpperCase();
             m_attribute = null;

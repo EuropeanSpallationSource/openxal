@@ -34,6 +34,7 @@ import org.epics.pvdata.util.namedValues.NamedValues;
 import org.epics.pvdata.util.namedValues.NamedValuesFormatter;
 import org.epics.pvdata.util.pvDataHelper.GetHelper;
 
+import edu.stanford.slac.meme.support.sys.MemeConstants;
 /* MEME */
 import edu.stanford.slac.meme.support.sys.MemeNormativeTypes;
 
@@ -58,21 +59,6 @@ public class RdbClient {
     // definition of the NTTable Normative Type. See EPICS V4 Normative Types for definition.
     // private static String NTNAMESPACE="uri:ev4:nt/2012/pwd";
     // private static String NTTABLE_TYPE_NAME = NTNAMESPACE + ":" + "NTTable";
-
-    // Error exit codes
-    private static final int NOARGS = 1;
-    private static final int NOTNTTABLETYPE = 2;
-    private static final int NODATARETURNED = 3;
-    
-
-    private static final int _STYLE_ARGN = 1; // The index of the row/col arg if given.
-    private static final String _STYLE_ROW = "row"; // Arg _STYLE_ARGN must be this for row printout.
-    private static final String _STYLE_COL = "col"; // Arg _STYLE_ARGN, if given, = this for column printout.
-    private static final int _LABELS_ARGN = 2; // The index of the labels wanted arg.
-                                               // If given STYLE must be given also.
-    private static final String _LABELS_WANTED = "labels"; // Arg _LABELS_ARGN must be this for headings.
-    private static final String _LABELS_NOTWANTED = "nolabels"; // Arg _LABELS_ARGN, if given,
-                                                                // must be this to suppress headings.
 
     private static int _style = NamedValuesFormatter.STYLE_COLUMNS;
     private static boolean _labels_wanted = true;
@@ -105,7 +91,7 @@ public class RdbClient {
         if (args.length <= 0) {
             logger.log(Level.SEVERE, "No name of a db query was given; exiting.");
             System.err.println("Usage: java RdbClient query column label");//TODO more detailed help
-            System.exit(NOARGS);
+            System.exit(MemeConstants.NOARGS);
         }
         parseArguments(args);
 
@@ -145,7 +131,7 @@ public class RdbClient {
                     logger.log(Level.SEVERE, "Unable to get data: unexpected data structure returned from "
                             + CHANNEL_NAME + "; \nexpected returned data id member value "
                             + MemeNormativeTypes.NTTABLE_ID + " but found type = " + type);
-                    System.exit(NOTNTTABLETYPE);
+                    System.exit(MemeConstants.NOTNTTABLETYPE);
                 }
 
                 /*
@@ -167,7 +153,7 @@ public class RdbClient {
                 final PVField[] pvColumns = pvTableData.getPVFields();
                 if (Ncolumns <= 0 || pvColumns.length <= 0) {
                     logger.log(Level.SEVERE, "No data fields returned from " + CHANNEL_NAME + ".");
-                    System.exit(NODATARETURNED);
+                    System.exit(MemeConstants.NODATARETURNED);
                 }
 
                 // To print the contents of the NTTable conforming PVstructure, make a
@@ -266,29 +252,26 @@ public class RdbClient {
      *            - the command line arguments
      */
     private static void parseArguments(final String[] args) {
-        // Create a formatter for the namedValues system constructed above. This
-        // will be used to print the system as a familiar looking table, unless the style arg says
-        // print it as rows, in which case you'll get a list of row data. Column style
-        // is better for >1 value per name. Row style is good for 1 value per name.
-        if (args.length >_STYLE_ARGN + 1 && args[_STYLE_ARGN] != null) {
-            if (_STYLE_ROW.equals(args[_STYLE_ARGN]))
+    	//How the result will be printed (column or row)
+        if (args.length > 2 && args[1] != null) {
+            if ("row".equals(args[1]))
                 _style = NamedValuesFormatter.STYLE_ROWS;
-            else if (_STYLE_COL.equals(args[_STYLE_ARGN]))
+            else if ("col".equals(args[1]))
                 _style = NamedValuesFormatter.STYLE_COLUMNS;
             else
-                System.err.println("Unexpected value of style argument; it must be given as " + _STYLE_ROW + " or "
-                        + _STYLE_COL);
+                System.err.println("Unexpected value of style argument; it must be given as " + "row" + " or "
+                        + "col");
         }
-
-        if (args.length >_LABELS_ARGN + 1 && args.length >_STYLE_ARGN + 1 && args[_STYLE_ARGN] != null && args[_LABELS_ARGN] != null) { 
-            if (_LABELS_WANTED.equals(args[_LABELS_ARGN]))
+        //Show result with labels or not
+        if (args.length > 3 && args[2] != null) { 
+            if ("labels".equals(args[2]))
                 _labels_wanted = true;
-            else if (_LABELS_NOTWANTED.equals(args[_LABELS_ARGN]))
+            else if ("nolabels".equals(args[2]))
                 _labels_wanted = false;
             else
-                System.err.println("Unexpected value of labels argument; it must be given as " + _LABELS_WANTED
-                        + " or " + _LABELS_NOTWANTED);
+                System.err.println("Unexpected value of labels argument; it must be given as " + "labels"
+                        + " or " + "nolabels");
         }
     }
 
-} // end class RdbClient
+}

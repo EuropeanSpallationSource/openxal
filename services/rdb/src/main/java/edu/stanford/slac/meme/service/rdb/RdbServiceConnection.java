@@ -40,6 +40,7 @@ import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.ScalarType;
 import org.epics.pvdata.pv.Structure;
 
+import edu.stanford.slac.meme.support.sys.MemeConstants;
 // Versions of EPICS Std types used.
 import edu.stanford.slac.meme.support.sys.MemeNormativeTypes;
 
@@ -61,28 +62,13 @@ public class RdbServiceConnection {
 	private static final String CONNECTION_URI_DEFAULT = "jdbc:oracle:thin:@yourdbs.host.name:1521:YOURDBNAME";
 	private static final int MAX_RETRIES = 2; // Try a SQL query at most 2 times
 												// before reinit and requery.
-
-	// The basic SQL query that looks up sql expression matching given name
-	private static final String SQLSELECT = "SELECT TRANSFORM FROM AIDA_NAMES WHERE UPPER(INSTANCE) = '%s' "
-			+ "AND UPPER(ATTRIBUTE) = '%s'";
-
 	/*
 	 * Index of the column of eida.eida_names that contains the query string.
 	 */
 	private static final int QRYCOLUMNNUM = 1;
-
+	
 	private static final FieldCreate fieldCreate = FieldFactory.getFieldCreate();
 	private static final PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
-
-	/*
-	 * Error messages
-	 */
-	private static final String NORESULTSETMETADATA = "No ResultSet metadata available, so can not continue to get data";
-	private static final String INVALIDRDBQUERYNAME = "Invalid syntax of RDB query name (%s), at least one colon expected";
-	private static final String UNABLETOTRANSFORM = "Failed to find a SQL query name matching the given name";
-	private static final String TOOMANYROWMATCHES = "DATABASE DATA ERROR EDETCTED: More than row matches query name.";
-	private static final String ZEROROWMATCHES = "No query name found in database matching given name.";
-	private static final String RETRYMSG = "Failed to execute SQL query, retrying with new java.sql.Connection.";
 
 	/*
 	 * Query Translation Patterns
@@ -202,17 +188,17 @@ public class RdbServiceConnection {
 		String sqlQuery = null;
 		final int firstSlash = queryName.lastIndexOf(':');
 		if (firstSlash == -1)
-			throw new UnableToGetDataException(String.format(INVALIDRDBQUERYNAME, queryName));
+			throw new UnableToGetDataException(String.format(MemeConstants.INVALIDRDBQUERYNAME, queryName));
 		final String entity = queryName.substring(0, firstSlash);
 		final String attribute = queryName.substring(firstSlash + 1);
-		final String queryQuery = String.format(SQLSELECT, entity.toUpperCase(), attribute.toUpperCase());
+		final String queryQuery = String.format(MemeConstants.SQLSELECT, entity.toUpperCase(), attribute.toUpperCase());
 
 		ResultSet sqlqueryResultSet = null;
 		try {
 			sqlqueryResultSet = executeQuery(queryQuery);
 			final ResultSetMetaData rsmd = sqlqueryResultSet.getMetaData();
 			if (rsmd == null)
-				throw new UnableToGetDataException(NORESULTSETMETADATA);
+				throw new UnableToGetDataException(MemeConstants.NORESULTSETMETADATA);
 
 			// Make assumption that only 1 row is returned, so we
 			// don't waste time error checking for a very rare
@@ -222,12 +208,12 @@ public class RdbServiceConnection {
 			final int rowsM = sqlqueryResultSet.getRow();
 			logger.finer("Num sql queries matching name returned : " + rowsM);
 			if (rowsM > 1) {
-				logger.severe(TOOMANYROWMATCHES + " Aborting." + " Lookup query used: " + queryQuery);
-				throw new UnableToGetDataException(TOOMANYROWMATCHES);
+				logger.severe(MemeConstants.TOOMANYROWMATCHES + " Aborting." + " Lookup query used: " + queryQuery);
+				throw new UnableToGetDataException(MemeConstants.TOOMANYROWMATCHES);
 			}
 			if (rowsM < 1) {
-				logger.info(ZEROROWMATCHES + " Lookup query used: " + queryQuery);
-				throw new UnableToGetDataException(ZEROROWMATCHES);
+				logger.info(MemeConstants.ZEROROWMATCHES + " Lookup query used: " + queryQuery);
+				throw new UnableToGetDataException(MemeConstants.ZEROROWMATCHES);
 			}
 			sqlqueryResultSet.beforeFirst();
 			sqlqueryResultSet.next();
@@ -246,7 +232,7 @@ public class RdbServiceConnection {
 			return sqlQuery;
 
 		} catch (Throwable e) {
-			throw new UnableToGetDataException(UNABLETOTRANSFORM + ": " + queryName);
+			throw new UnableToGetDataException(MemeConstants.UNABLETOTRANSFORM + ": " + queryName);
 		} finally {
 			// Free JDBC resources.
 			//
@@ -275,7 +261,7 @@ public class RdbServiceConnection {
 			rs = executeQuery(query);
 			final ResultSetMetaData rsmd = rs.getMetaData();
 			if (rsmd == null)
-				throw new UnableToGetDataException(NORESULTSETMETADATA);
+				throw new UnableToGetDataException(MemeConstants.NORESULTSETMETADATA);
 
 			// Get number of rows in ResultSet
 			rs.last();
@@ -508,7 +494,7 @@ public class RdbServiceConnection {
 				// connection and set logic so we'll
 				// go through the do loop again.
 				if (nRetries < MAX_RETRIES) {
-					logger.log(Level.WARNING, RETRYMSG, ex);
+					logger.log(Level.WARNING, MemeConstants.RETRYMSG, ex);
 					getConnection();
 					bRetry = true;
 					nRetries++;

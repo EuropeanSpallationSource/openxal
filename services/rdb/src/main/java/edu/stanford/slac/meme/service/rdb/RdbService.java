@@ -30,6 +30,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import edu.stanford.slac.meme.support.sys.MemeConstants;
 // MEME
 import edu.stanford.slac.meme.support.sys.MemeNormativeTypes;
 // Hashtable
@@ -76,14 +77,7 @@ public class RdbService {
     // this RPC service.
     private static final String RDB_SERVICE_CHANNEL_NAME = "rdb";
 
-    // Error Messages
-    private static final String NOTEXPECTEDNTID = "Expected %s id member value but found id value %s";
-    private static final String MISSINGREQUIREDARGLVAL = "Missing required argument %s";
-    private static final String MISSINGREQUIREDARGRVAL = "Missing required argument %s rvalue";
-    private static final String NORETURNEDDATA = "Failed to get data from the database. Check service name and arguments";
-    private static final String SERVERINIT_SUCCESSFUL = "SERVICE %s initializaton successful.";
-    private static final String SERVERINIT_FAILED = "SERVICE %s initializaton FAILED.";
-
+    
     /**
      * The implementation class of the namesService RPCService, which gets the names of EPICS PVs matching a given
      * pattern provided by the user.
@@ -115,7 +109,7 @@ public class RdbService {
         	final String type = pvUri.getStructure().getID();
             if (!type.equals(MemeNormativeTypes.NTURI_ID)) {
                 msg = "Unable to get data. Bad argument to server: "
-                        + String.format(NOTEXPECTEDNTID, MemeNormativeTypes.NTURI_ID, type);
+                        + String.format(MemeConstants.NOTEXPECTEDNTID, MemeNormativeTypes.NTURI_ID, type);
                 logger.info(msg);
                 throw new RPCRequestException(StatusType.ERROR, msg);
             }
@@ -125,10 +119,10 @@ public class RdbService {
             //
             final PVString pvRbbQueryName = pvUri.getStructureField("query").getStringField("q");
             if (pvRbbQueryName == null)
-                throw new RPCRequestException(StatusType.ERROR, String.format(MISSINGREQUIREDARGLVAL, "q"));
+                throw new RPCRequestException(StatusType.ERROR, String.format(MemeConstants.MISSINGREQUIREDARGLVAL, "q"));
             final String rdbqueryname = pvRbbQueryName.get();
             if (rdbqueryname == null || rdbqueryname.length() == 0)
-                throw new RPCRequestException(StatusType.ERROR, String.format(MISSINGREQUIREDARGRVAL, "q"));
+                throw new RPCRequestException(StatusType.ERROR, String.format(MemeConstants.MISSINGREQUIREDARGRVAL, "q"));
 
             // Look up the SQL query keyed by the rdbqueryname, and then
             // get the data in Oracle for that SQL query.
@@ -146,7 +140,7 @@ public class RdbService {
                 return pvTop;
 
             } catch (UnableToGetDataException ex) {
-                msg = NORETURNEDDATA + ": " + ex.getMessage();
+                msg = MemeConstants.NORETURNEDDATA + ": " + ex.getMessage();
                 logger.info(String.format("Server request returns: [%s] \'%s\'", StatusType.ERROR, msg));
                 throw new RPCRequestException(StatusType.ERROR, msg);
             }
@@ -211,14 +205,14 @@ public class RdbService {
             server.registerService("rdb", new RdbServiceImpl(rdbConnection, rpcqueries_ht));
 
             server.printInfo();
-            logger.info(String.format(SERVERINIT_SUCCESSFUL, server_name));
+            logger.info(String.format(MemeConstants.SERVERINIT_SUCCESSFUL, server_name));
 
             // Start the service.
             server.run(0);
 
         } catch (Exception e) {
             logger.severe(e.toString());
-            logger.severe(String.format(SERVERINIT_FAILED, server_name));
+            logger.severe(String.format(MemeConstants.SERVERINIT_FAILED, server_name));
 
         }
 

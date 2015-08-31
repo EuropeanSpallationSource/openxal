@@ -30,6 +30,10 @@ import org.epics.pvdata.util.namedValues.NamedValues;
 import org.epics.pvdata.util.namedValues.NamedValuesFormatter;
 import org.epics.pvdata.util.pvDataHelper.GetHelper;
 
+import JSci.maths.symbolic.Constant;
+import edu.stanford.slac.meme.support.sys.MemeConstants;
+import edu.stanford.slac.meme.support.sys.MemeNormativeTypes;
+
 /**
  * TestServerClient is a simple client of the MEME testService.
  *
@@ -46,26 +50,16 @@ public class TestServerClient {
     private static final Logger logger = Logger.getLogger(TestServerClient.class.getName());
     private static final String CHANNEL_NAME = "archiveservice"; // Name of service to contact within the test server.
 
-    // The testServiceClient expects to get returned in a PVStructure which conforms to the
-    // definition of the NTTable Normative Type. See EPICS V4 Normative Types for definition.
-    private static final String NTNAMESPACE = "epics:nt";
-    private static final String NTTABLE_ID = NTNAMESPACE + "/" + "NTTable:1.0";
-    private static final String NTURI_ID = NTNAMESPACE + "/" + "NTURI:1.0";
-
-    // Error exit codes
-    private static final int NOARGS = 1;
-    private static final int NOTNTTABLETYPE = 2;
-    private static final int NODATARETURNED = 3;
-
-
     private final static double TIMEOUT_SEC = 5.0;
+    private final static String USAGE = "Usage: java TestServerClient querry startTime endTime\n"
+			+ "e.g. java TestServerClient quad45:bdes/history 2011-09-16T02.12.00 2011-09-16T10.01.03";
 
     private final static FieldCreate fieldCreate = FieldFactory.getFieldCreate();
     private final static Structure queryStructure = fieldCreate.createStructure(new String[] { "entity", "starttime",
             "endtime" },
             new Field[] { fieldCreate.createScalar(ScalarType.pvString), fieldCreate.createScalar(ScalarType.pvString),
                     fieldCreate.createScalar(ScalarType.pvString) });
-    private final static Structure uriStructure = fieldCreate.createStructure(NTURI_ID, new String[] { "scheme",
+    private final static Structure uriStructure = fieldCreate.createStructure(MemeNormativeTypes.NTURI_ID, new String[] { "scheme",
             "query" }, new Field[] { fieldCreate.createScalar(ScalarType.pvString), queryStructure });
 
     /**
@@ -82,10 +76,9 @@ public class TestServerClient {
         ConsoleLogHandler.defaultConsoleLogging(Level.WARNING);
 
         if (args.length <= 2) {
-            logger.log(Level.SEVERE, "Not enough arguments given. Exiting...");
-            System.err.println("Usage: java TestServerClient querry startTime endTime\n"
-        			+ "e.g. java TestServerClient quad45:bdes/history 2011-09-16T02.12.00 2011-09-16T10.01.03");
-            System.exit(NOARGS);
+            logger.log(Level.SEVERE, MemeConstants.NOT_ENOUGH_ARUMENTS);
+            System.err.println(USAGE);
+            System.exit(MemeConstants.NOARGS);
         }
 
         ClientFactory.start();
@@ -113,11 +106,11 @@ public class TestServerClient {
                 // Check the result PVStructure is of the type we
                 // expect. It should be an NTTABLE.
             	final String type = pvResult.getStructure().getID();
-                if (!type.equals(NTTABLE_ID)) {
+                if (!type.equals(MemeNormativeTypes.NTTABLE_ID)) {
                     logger.log(Level.SEVERE, "Unable to get data: unexpected data " + "structure returned from "
-                            + CHANNEL_NAME + "; expected returned data id member value" + NTTABLE_ID
+                            + CHANNEL_NAME + "; expected returned data id member value" + MemeNormativeTypes.NTTABLE_ID
                             + " but found type = " + type);
-                    System.exit(NOTNTTABLETYPE);
+                    System.exit(MemeConstants.NOTNTTABLETYPE);
                 }
 
                 final PVStringArray pvColumnTitles = (PVStringArray) pvResult.getScalarArrayField("labels",
@@ -128,7 +121,7 @@ public class TestServerClient {
                 final PVField[] pvColumns = pvTableData.getPVFields();
                 if (Ncolumns <= 0 || pvColumns.length <= 0) {
                     logger.log(Level.SEVERE, "No data fields returned from " + CHANNEL_NAME + ".");
-                    System.exit(NODATARETURNED);
+                    System.exit(MemeConstants.NODATARETURNED);
                 }
 
                 // To print the contents of the NTTable conforming
