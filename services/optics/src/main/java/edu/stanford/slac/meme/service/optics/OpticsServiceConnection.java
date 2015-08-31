@@ -5,7 +5,6 @@
 
 package edu.stanford.slac.meme.service.optics;
 
-// Java DataBase Connection (JDBC) and other standard java
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -14,251 +13,250 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-// Oracle's native interface that supports passwordless authentication
-// import oracle.jdbc.pool.OracleDataSource;
-// EPICS
-import org.epics.pvdata.factory.FieldFactory;
-import org.epics.pvdata.factory.PVDataFactory;
-import org.epics.pvdata.pv.FieldCreate;
-import org.epics.pvdata.pv.PVDataCreate;
-
 import edu.stanford.slac.meme.support.err.UnableToGetDataException;
 import edu.stanford.slac.meme.support.sys.MemeConstants;
 
 /**
- * opticsServicConnection defines how the Optics service accesses a relational database, such as ORACLE, from which it
- * gets model data.
+ * opticsServicConnection defines how the Optics service accesses a relational
+ * database, such as ORACLE, from which it gets model data.
  *
  * @author Greg White, 3-Sep-2014
  * @version Greg White, 10-Apr-2015: Converted to Postgres from Oracle
+ * @author Blaž Kranjc 30-Aug-2015 code cleanup
  */
 public class OpticsServiceConnection {
-    private static final Logger logger = Logger.getLogger(OpticsServiceConnection.class.getName());
+	private static final Logger logger = Logger.getLogger(OpticsServiceConnection.class.getName());
 
-    // TODO: Externalize and protect access username/passwords and strings
+	// TODO: Externalize and protect access username/passwords and strings
 
-    // Oracle JDBC connection URI and ID stuff.
-    //
-    private static volatile Connection m_Conn = null; // JDBC connection for queries
+	// Postgres JDBC connection URI and ID stuff.
+	private static volatile Connection m_Conn = null; // JDBC connection for
+														// queries
 
-    private static final int MAX_RETRIES = 2; // Try a SQL query at most 2 times
-    // before reinit and requery.
-    /**
-     * Initialize for an acquisition.
-     * 
-     * Note: we use a pattern where the initialization is done on server startup, and the important part (getConnection)
-     * can be redone at any time if the connection to the backend optics goes bad.
-     */
-    OpticsServiceConnection(String service_name) {
-        init(service_name);
-    }
+	private static final int MAX_RETRIES = 2; // Try a SQL query at most 2 times
 
-    /**
-     * Init loads JDBC and initializes connection to the db, Oracle in this case.
-     */
-    private void init(final String service_name) {
-        // Load JDBC.
-        try {
-            logger.info("Initializing " + service_name);
+	/**
+	 * Initialize for an acquisition.
+	 * 
+	 * Note: we use a pattern where the initialization is done on server
+	 * startup, and the important part (getConnection) can be redone at any time
+	 * if the connection to the backend optics goes bad.
+	 */
+	OpticsServiceConnection(String service_name) {
+		init(service_name);
+	}
 
-            // Establish connection to the db instance defined in private members.
-            getConnection();
+	/**
+	 * Init loads JDBC and initializes connection to the db, Oracle in this
+	 * case.
+	 */
+	private void init(final String service_name) {
+		// Load JDBC.
+		try {
+			logger.info("Initializing " + service_name);
 
-        } catch (Throwable ex) {
-            RuntimeException runtimeException = new RuntimeException("Failed to initialize service: " + service_name,
-                    ex);
-            logger.severe(runtimeException.getMessage());
-            throw runtimeException;
-        }
-    }
+			// Establish connection to the db instance defined in private
+			// members.
+			getConnection();
 
-    /**
-     * Initializes a database connection to the Oracle Database.
-     * 
-     * If the connection is non-null, then the old connection is first closed. This part is include so that this routine
-     * can be used to renew a stale connection.
-     */
-    private synchronized void getConnection() {
-        // If we already have a connection dispose of it.
-        closeConnection();
+		} catch (Throwable ex) {
+			RuntimeException runtimeException = new RuntimeException("Failed to initialize service: " + service_name,
+					ex);
+			logger.severe(runtimeException.getMessage());
+			throw runtimeException;
+		}
+	}
 
-        // Having dealt with a possible stale connection, get a new one.
-        try {
-            // Retrieve db connection configuration from properties, or use
-            // defaults if none given.
-        	final String url = System.getProperty("CONNECTION_URI_PROPERTY", MemeConstants.CONNECTION_URI_DEFAULT);
-        	final String user = System.getProperty("CONNECTION_USERID_PROPERTY");
-        	final String pwd = System.getProperty("CONNECTION_PWD");
+	/**
+	 * Initializes a database connection to the Oracle Database.
+	 * 
+	 * If the connection is non-null, then the old connection is first closed.
+	 * This part is include so that this routine can be used to renew a stale
+	 * connection.
+	 */
+	private synchronized void getConnection() {
+		// If we already have a connection dispose of it.
+		closeConnection();
 
-            // Make connection to Database.
-            logger.info("Initializing database connection: " + url + " username:" + user);
-            m_Conn = DriverManager.getConnection(url, user, pwd);
-        } catch (Throwable ex) {
-            logger.log(Level.SEVERE, "Failed to initialize connection to database.", ex);
-        }
-        if (m_Conn != null)
-            logger.info("Database connection completed successfully.");
-    }
+		// Having dealt with a possible stale connection, get a new one.
+		try {
+			// Retrieve db connection configuration from properties, or use
+			// defaults if none given.
+			final String url = System.getProperty("CONNECTION_URI_PROPERTY", MemeConstants.CONNECTION_URI_DEFAULT);
+			final String user = System.getProperty("CONNECTION_USERID_PROPERTY");
+			final String pwd = System.getProperty("CONNECTION_PWD");
 
-    /**
-     * Disposes of existing Db connection.
-     */
-    private synchronized void closeConnection() {
-        // If we have a connection, dispose of it.
-        try {
-            if (m_Conn != null) {
-                if (!m_Conn.isClosed()) {
-                    logger.config("Closing connection to database...");
-                    m_Conn.close();
-                    m_Conn = null;
-                }
-            }
-        } catch (Throwable ex) {
-            logger.log(Level.SEVERE, "Failed to close connection to database.", ex);
-        }
-    }
+			// Make connection to Database.
+			logger.info("Initializing database connection: " + url + " username:" + user);
+			m_Conn = DriverManager.getConnection(url, user, pwd);
+		} catch (Throwable ex) {
+			logger.log(Level.SEVERE, "Failed to initialize connection to database.", ex);
+		}
+		if (m_Conn != null)
+			logger.info("Database connection completed successfully.");
+	}
 
-    /**
-     * Queries the MEME Name Server database with the query in sqlString. This is a wrapper to give appropriate error
-     * handling and retry logic.
-     * 
-     * @param sqlString
-     *            The SQL query, in "ascii" (actually UTF-16 or whatever java String is).
-     * @param position
-     *            The position within a device composed of more than 1 modelled element, for which the model data is
-     *            required; regognized values are 1 (for beginning), 2 (for middle), or 3 (for END). A mapping is made
-     *            in this method from these 3 values, to any number of elements, 1, 2, 3 or more.
-     * @return The ResultSet given by stmt.executeQuery(sqlString)
-     * @version 1.0 19-Jun-2005, Greg White
-     */
-    protected double[] executeQuery(final String sqlString, final Integer position) throws UnableToGetDataException {
+	/**
+	 * Disposes of existing Db connection.
+	 */
+	private synchronized void closeConnection() {
+		// If we have a connection, dispose of it.
+		try {
+			if (m_Conn != null) {
+				if (!m_Conn.isClosed()) {
+					logger.config("Closing connection to database...");
+					m_Conn.close();
+					m_Conn = null;
+				}
+			}
+		} catch (Throwable ex) {
+			logger.log(Level.SEVERE, "Failed to close connection to database.", ex);
+		}
+	}
 
-    	Statement stmt = null; // Db SQL query object.
-    	ResultSet rs = null; // ResultSet receiving SQL results.
-    	int nRetries = 0; // Tracks retries of failing queries.
-    	boolean bRetry = false; // Whether to retry db query.
-    	double[] modelData = null; // Optics data from database as array.
-    	String message = null; // Diagnostic messages;
+	/**
+	 * Queries the MEME Name Server database with the query in sqlString. This
+	 * is a wrapper to give appropriate error handling and retry logic.
+	 * 
+	 * @param sqlString
+	 *            The SQL query, in "ascii" (actually UTF-16 or whatever java
+	 *            String is).
+	 * @param position
+	 *            The position within a device composed of more than 1 modelled
+	 *            element, for which the model data is required; regognized
+	 *            values are 1 (for beginning), 2 (for middle), or 3 (for END).
+	 *            A mapping is made in this method from these 3 values, to any
+	 *            number of elements, 1, 2, 3 or more.
+	 * @return The ResultSet given by stmt.executeQuery(sqlString)
+	 * @version 1.0 19-Jun-2005, Greg White
+	 */
+	protected double[] executeQuery(final String sqlString, final Integer position) throws UnableToGetDataException {
 
-        logger.fine("sqlString: " + sqlString);
-        logger.fine("Position: " + position.toString());
+		Statement stmt = null; // Db SQL query object.
+		ResultSet rs = null; // ResultSet receiving SQL results.
+		int nRetries = 0; // Tracks retries of failing queries.
+		boolean bRetry = false; // Whether to retry db query.
+		double[] modelData = null; // Optics data from database as array.
+		String message = null; // Diagnostic messages;
 
-        try {
-            // Create a jdbc Statement and execute the given
-            // query. If the query fails to execute for whatever
-            // reason, try to get a new connection and loop -
-            // re-creating the statement and re-executing the
-            // query. Try up to 3 times.
-            do {
-                try {
-                    // Create a statement with "Scrollable"
-                    // ResultSet, as necessary for
-                    // processing each column as a unit in
-                    // the get method.
-                    stmt = m_Conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-                    rs = stmt.executeQuery(sqlString);
-                    bRetry = false;
-                } catch (Exception ex) {
-                    // We encountered an error in the
-                    // execution of the sql query, so try to
-                    // fix this by getting a new
-                    // connection and set logic so we'll go
-                    // through the do loop again.
-                    message = String.format(MemeConstants.WHEN_EXECUTINGSQL, sqlString);
-                    if (nRetries < MAX_RETRIES) {
-                        logger.warning(ex.getMessage() + ":" + message);
-                        getConnection();
-                        bRetry = true;
-                        nRetries++;
-                    } else {
-                        bRetry = false;
-                        if (ex.getClass().getName() == "java.sql.SQLException")
-                            message.concat(": " + ((SQLException) ex).getSQLState());
-                        logger.severe(ex.getMessage() + " " + message);
-                    }
-                }
-            } while (bRetry);
+		logger.fine("sqlString: " + sqlString);
+		logger.fine("Position: " + position.toString());
 
-            if (rs == null || nRetries >= MAX_RETRIES)
-                throw new UnableToGetDataException(MemeConstants.UNABLETOPROCESSSQL);
+		try {
+			// Create a jdbc Statement and execute the given
+			// query. If the query fails to execute for whatever
+			// reason, try to get a new connection and loop -
+			// re-creating the statement and re-executing the
+			// query. Try up to 3 times.
+			do {
+				try {
+					// Create a statement with "Scrollable"
+					// ResultSet, as necessary for
+					// processing each column as a unit in
+					// the get method.
+					stmt = m_Conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+					rs = stmt.executeQuery(sqlString);
+					bRetry = false;
+				} catch (Exception ex) {
+					// We encountered an error in the
+					// execution of the sql query, so try to
+					// fix this by getting a new
+					// connection and set logic so we'll go
+					// through the do loop again.
+					message = String.format(MemeConstants.WHEN_EXECUTINGSQL, sqlString);
+					if (nRetries < MAX_RETRIES) {
+						logger.warning(ex.getMessage() + ":" + message);
+						getConnection();
+						bRetry = true;
+						nRetries++;
+					} else {
+						bRetry = false;
+						if (ex.getClass().getName() == "java.sql.SQLException")
+							message.concat(": " + ((SQLException) ex).getSQLState());
+						logger.severe(ex.getMessage() + " " + message);
+					}
+				}
+			} while (bRetry);
 
-            // Extract the data from the (single column) ResulSet.
-            ResultSetMetaData rsmd = rs.getMetaData();
-            if (rsmd == null)
-                throw new UnableToGetDataException(MemeConstants.NORESULTSETMETADATA);
+			if (rs == null || nRetries >= MAX_RETRIES)
+				throw new UnableToGetDataException(MemeConstants.UNABLETOPROCESSSQL);
 
-            // Get number of rows in ResultSet. Check if got too few
-            // (<1)
-            rs.last();
-            final int rowsM = rs.getRow();
-            if (rowsM < 1)
-                throw new UnableToGetDataException(MemeConstants.NOMATCH + sqlString);
+			// Extract the data from the (single column) ResulSet.
+			ResultSetMetaData rsmd = rs.getMetaData();
+			if (rsmd == null)
+				throw new UnableToGetDataException(MemeConstants.NORESULTSETMETADATA);
 
-            // Decide the rowset we're going to return. Normally
-            // (for all 0-length devices, and devices in more than 1
-            // element whose multi-elementness is handled by the SQL
-            // procedure (eg QUADs) only 1 rowset will have been
-            // retuned. However, some devices correspond to >1
-            // element and the SQL query has returned >1 row. This
-            // is normal for KLYS, ACCL etc, corresponding to eg
-            // elements K21_1D1, K21_1D2, K21_1D3, K21_1D4. For
-            // those, decide by checking the pos argument. The pos
-            // default is 3 (for END). For sliced waveguides (whether
-            // with 1 or more structures), both the begin and end of
-            // each "slice" is returned by the SQL. So we simply
-            // choose the middle one.
-            //
-            Integer m = rowsM; // Default is to take the last returned
-            // rowset.
-            if (m > 1) {
-                // If we got >1 row there was >1 modelled element
-                // corresponding to the device.
-                switch (position) {
-                case 1: // BEG, return the 1st rowset.
-                    m = 1;
-                    break;
-                case 2: // MID, return middle rowset.
-                    m = (int) Math.ceil(rowsM / 2.0);
-                    break;
-                case 3: // END, return the last rowset.
-                    m = rowsM;
-                    break;
-                default:
-                    m = rowsM; // shouldn't ever happen
-                }
-            }
-            logger.fine("Advance to ResultSet # " + m.toString());
+			// Get number of rows in ResultSet. Check if got too few
+			// (<1)
+			rs.last();
+			final int rowsM = rs.getRow();
+			if (rowsM < 1)
+				throw new UnableToGetDataException(MemeConstants.NOMATCH + sqlString);
 
-            // Actually advance to the mth rowset (often just the
-            // 1st).
-            rs.beforeFirst();
-            // Get number of columns in ResultSet
-            final int columnsN = rsmd.getColumnCount();
-            modelData = new double[columnsN];
-            logger.fine("Num Columns:" + columnsN);
+			// Decide the rowset we're going to return. Normally
+			// (for all 0-length devices, and devices in more than 1
+			// element whose multi-elementness is handled by the SQL
+			// procedure (eg QUADs) only 1 rowset will have been
+			// retuned. However, some devices correspond to >1
+			// element and the SQL query has returned >1 row. This
+			// is normal for KLYS, ACCL etc, corresponding to eg
+			// elements K21_1D1, K21_1D2, K21_1D3, K21_1D4. For
+			// those, decide by checking the pos argument. The pos
+			// default is 3 (for END). For sliced waveguides (whether
+			// with 1 or more structures), both the begin and end of
+			// each "slice" is returned by the SQL. So we simply
+			// choose the middle one.
+			//
+			Integer m = rowsM; // Default is to take the last returned
+			// rowset.
+			if (m > 1) {
+				// If we got >1 row there was >1 modelled element
+				// corresponding to the device.
+				switch (position) {
+				case 1: // BEG, return the 1st rowset.
+					m = 1;
+					break;
+				case 2: // MID, return middle rowset.
+					m = (int) Math.ceil(rowsM / 2.0);
+					break;
+				case 3: // END, return the last rowset.
+					m = rowsM;
+					break;
+				default:
+					m = rowsM; // shouldn't ever happen
+				}
+			}
+			logger.fine("Advance to ResultSet # " + m.toString());
 
-            // For each column, extract all the rows of the column
-            // from the ResultSet and add the whole column to what
-            // we return.
-            for (int colj = 1; colj <= columnsN; colj++) {
-                modelData[colj - 1] = rs.getDouble(colj);
-                logger.fine("Data " + (colj - 1) + " = " + modelData[colj - 1]);
-            }
-        } catch (Exception ex) {
-            throw new UnableToGetDataException(MemeConstants.UNABLETOPROCESSSQL, ex);
-        } finally {
-            try {
-                if (rs != null)
-                    rs.close();
-                if (stmt != null)
-                    stmt.close();
-            } catch (Exception ex) {
-                logger.warning(ex.getMessage() + " when freeing JDBC resources");
-            }
-        }
+			// Actually advance to the mth rowset (often just the
+			// 1st).
+			rs.beforeFirst();
+			// Get number of columns in ResultSet
+			final int columnsN = rsmd.getColumnCount();
+			modelData = new double[columnsN];
+			logger.fine("Num Columns:" + columnsN);
 
-        return modelData;
-    }
+			// For each column, extract all the rows of the column
+			// from the ResultSet and add the whole column to what
+			// we return.
+			for (int colj = 1; colj <= columnsN; colj++) {
+				modelData[colj - 1] = rs.getDouble(colj);
+				logger.fine("Data " + (colj - 1) + " = " + modelData[colj - 1]);
+			}
+		} catch (Exception ex) {
+			throw new UnableToGetDataException(MemeConstants.UNABLETOPROCESSSQL, ex);
+		} finally {
+			try {
+				if (rs != null)
+					rs.close();
+				if (stmt != null)
+					stmt.close();
+			} catch (Exception ex) {
+				logger.warning(ex.getMessage() + " when freeing JDBC resources");
+			}
+		}
+
+		return modelData;
+	}
 
 }

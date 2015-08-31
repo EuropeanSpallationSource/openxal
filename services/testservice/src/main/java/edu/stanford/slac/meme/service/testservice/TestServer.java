@@ -3,18 +3,14 @@ package edu.stanford.slac.meme.service.testservice;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.logging.Level; // Logging
-import java.util.logging.Logger; // Logging
-
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.epics.pvaccess.PVAException;
-// Import pvaccess Remote Procedure Call interface
 import org.epics.pvaccess.server.rpc.RPCRequestException;
 import org.epics.pvaccess.server.rpc.RPCServer;
 import org.epics.pvaccess.server.rpc.RPCService;
 import org.epics.pvaccess.util.logging.ConsoleLogHandler;
-// Import pvData Data Interface things we need
 import org.epics.pvdata.factory.FieldFactory;
-// Import pvData Introspection interface we need for test archive service
 import org.epics.pvdata.factory.PVDataFactory;
 import org.epics.pvdata.pv.Field;
 import org.epics.pvdata.pv.FieldCreate;
@@ -25,11 +21,10 @@ import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.ScalarType;
 import org.epics.pvdata.pv.Status.StatusType;
 import org.epics.pvdata.pv.Structure;
-
-// MEME exceptions, utilities for MEME design principles.
 import edu.stanford.slac.meme.support.err.MEMERequestException;
 import edu.stanford.slac.meme.support.err.UnableToGetDataException;
-import edu.stanford.slac.meme.support.sys.MemeNormativeTypes;
+import edu.stanford.slac.meme.support.sys.MemeConstants;
+
 // Also need Introspection interface for PVDouble for test twiss data
 // Get the asynchronous status messaging system things we need
 
@@ -62,6 +57,7 @@ import edu.stanford.slac.meme.support.sys.MemeNormativeTypes;
  * server which also calls itself "testserver" on the network.
  *
  * @author Greg White SLAC, 10-Oct-2013
+ * @author Blaž Kranjc, 31-Aug-2015
  *
  */
 public class TestServer {
@@ -80,19 +76,19 @@ public class TestServer {
 		initFakeArchiveData();
 	}
 
+	private static final String DEFAULT_SERVER_NAME = "memetestserver";
+
 	// Create the introspection interface of the returned data, which is a PV
 	// data Structure of grammar "NTTable". The NTTable has prescribed field
 	// names ("labels" and "value"). The value field must be a structure of
 	// scalar arrays (declared above so we can use it here). The type of these
 	// arrays is not prescribed, though they must be same length.
-	//
-	// private final static String NTTABLE_ID="epics:nt/NTTable:1.0";
 
 	private final static FieldCreate fieldCreate = FieldFactory.getFieldCreate();
 	private final static Structure valueStructure = fieldCreate.createStructure(new String[] { "times", "readings" },
 			new Field[] { fieldCreate.createScalarArray(ScalarType.pvString),
 					fieldCreate.createScalarArray(ScalarType.pvDouble) });
-	private final static Structure resultStructure = fieldCreate.createStructure(MemeNormativeTypes.NTTABLE_ID,
+	private final static Structure resultStructure = fieldCreate.createStructure(MemeConstants.NTTABLE_ID,
 			new String[] { "labels", "value" },
 			new Field[] { fieldCreate.createScalarArray(ScalarType.pvString), valueStructure });
 
@@ -100,7 +96,7 @@ public class TestServer {
 	// present this is a PVStructure without a Normative Type. It's a
 	// system of named field values. Maybe EV4 WG will in future define
 	// this as a Normative type called say NTTuple, or "NTStaticNamedValue".
-	//
+
 	// TODO: How should units be integrated?
 	private final static Structure twissStructure = fieldCreate
 			.createStructure(
@@ -130,7 +126,7 @@ public class TestServer {
 
 	public static void main(String[] args) throws PVAException {
 		// Get service name from property if given.
-		final String server_name = System.getProperty("SERVER_NAME", "memetestserver");
+		final String server_name = System.getProperty("SERVER_NAME", DEFAULT_SERVER_NAME);
 
 		// Initialize console logging.
 		ConsoleLogHandler.defaultConsoleLogging(Level.INFO);
@@ -159,9 +155,9 @@ public class TestServer {
 		@Override
 		public PVStructure request(final PVStructure pvUri) throws RPCRequestException {
 			RPCRequestException iss = null;
-			// The device name for which we have been asked to get the Twiss
-			// params
-			String elementname = null;
+
+			String elementname = null;// Device name which we are gettingTwiss
+										// params for
 
 			final PVStructure twissParams = PVDataFactory.getPVDataCreate().createPVStructure(twissStructure);
 
@@ -170,10 +166,6 @@ public class TestServer {
 				elementname = pvUri.getStringField("path").get();
 				if (elementname.compareToIgnoreCase("qm14:twiss") == 0) {
 
-					// "energy"
-					// "psix","alphax", "betax","etax","etaxp",
-					// "psiy","alphay", "betay","etay","etayp",
-					// "z","leff","sleff","ordinality"
 					twissParams.getDoubleField("energy").put(fakeTwissData[0]);
 					twissParams.getDoubleField("psix").put(fakeTwissData[1]);
 					twissParams.getDoubleField("alphax").put(fakeTwissData[2]);
@@ -227,33 +219,40 @@ public class TestServer {
 		public PVStructure request(final PVStructure uri) throws RPCRequestException {
 			RPCRequestException iss = null;
 
-			// Create the return data instance of a resultStructure, using the
-			// pvData Data interface methods, and the data interface to
-			// this instance.
+			// Create the return data instance
 			final PVStructure result = PVDataFactory.getPVDataCreate().createPVStructure(resultStructure);
 
 			try {
 				final PVStructure pvUriQuery = uri.getStructureField("query");
 
-				// Strings that will hold the values of the arguments sent
-				// from the client.
-				//
-				final String pvname = getQueryArg(pvUriQuery, "entity");// PV name of wanted historical values
-				final String starttime = getQueryArg(pvUriQuery, "starttime");// Request from this date/time
-				final String endtime = getQueryArg(pvUriQuery, "endtime");// .. up to this date/time
+				// Strings thet will be holding values sent from the client.
+				final String pvname = getQueryArg(pvUriQuery, "entity");// PV
+																		// name
+																		// of
+																		// wanted
+																		// historical
+																		// values
+				final String starttime = getQueryArg(pvUriQuery, "starttime");// Request
+																				// from
+																				// this
+																				// date/time
+				final String endtime = getQueryArg(pvUriQuery, "endtime");// ..
+																			// up
+																			// to
+																			// this
+																			// date/time
 
-				// Process the arguments to get them in a form for
-				// this service. E.g., get string arguments of
+				// Process the arguments E.g., get string arguments of
 				// date/time, into Calendar form.
-				//
 				dateFormater.setLenient(true);
 				calStarttime = dateFormater.parse(starttime);
 				calEndtime = dateFormater.parse(endtime);
 
-				// Retieve the data interface of the NTTable
+				// Retrieve the data interface of the NTTable
 				// PVStructure that will be returned to the user. We
 				// will populate it through this data interface.
-				final PVStringArray labelsArray = (PVStringArray) result.getScalarArrayField("labels", ScalarType.pvString);
+				final PVStringArray labelsArray = (PVStringArray) result.getScalarArrayField("labels",
+						ScalarType.pvString);
 				// Now the value structure
 				final PVStructure archiveDataTbl = result.getStructureField("value");
 				final PVStringArray datetimesArray = (PVStringArray) archiveDataTbl.getScalarArrayField("times",
@@ -317,12 +316,11 @@ public class TestServer {
 			if (pvQueryArg == null) {
 				// throw but don't log - per MEME logging rules.
 				final String msg = "Missing required argument '%s'";
-				iss = new RPCRequestException(StatusType.ERROR,
-						String.format(msg, argname));
+				iss = new RPCRequestException(StatusType.ERROR, String.format(msg, argname));
 				throw iss;
 			} else {
 				argValue = pvQueryArg.get();
-				if (argValue.length() == 0){
+				if (argValue.length() == 0) {
 					final String msg = "Missing required value for argument '%s'";
 					throw new MEMERequestException(String.format(msg, argname));
 				}

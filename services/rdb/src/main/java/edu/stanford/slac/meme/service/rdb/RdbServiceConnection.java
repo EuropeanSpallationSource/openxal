@@ -14,7 +14,6 @@
  */
 package edu.stanford.slac.meme.service.rdb;
 
-// JDBC
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -24,8 +23,6 @@ import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
-
-// EPICS V4
 import org.epics.pvdata.factory.FieldFactory;
 import org.epics.pvdata.factory.PVDataFactory;
 import org.epics.pvdata.pv.Field;
@@ -39,34 +36,25 @@ import org.epics.pvdata.pv.PVStringArray;
 import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.ScalarType;
 import org.epics.pvdata.pv.Structure;
-
 import edu.stanford.slac.meme.support.sys.MemeConstants;
-// Versions of EPICS Std types used.
-import edu.stanford.slac.meme.support.sys.MemeNormativeTypes;
-
-// Other java utils
 
 /**
  * RdbServiceConnection implements JDBC connection logic.
  *
  * @author Greg White, 2-Sep-2014
+ * @author Blaž Kranjc 30-Aug-2015
  */
 public class RdbServiceConnection {
 	private static final Logger logger = Logger.getLogger(RdbServiceConnection.class.getName());
 
-	/*
-	 * Oracle JDBC connection URI and ID stuff.
-	 */
-	private static volatile Connection m_Conn = null; // JDBC connection for
-														// queries
+	// Oracle JDBC connection URI and ID stuff.
+	private static volatile Connection m_Conn = null;
 	private static final String CONNECTION_URI_DEFAULT = "jdbc:oracle:thin:@yourdbs.host.name:1521:YOURDBNAME";
-	private static final int MAX_RETRIES = 2; // Try a SQL query at most 2 times
-												// before reinit and requery.
-	/*
-	 * Index of the column of eida.eida_names that contains the query string.
-	 */
+	private static final int MAX_RETRIES = 2;
+
+	// Index of the column of eida.eida_names that contains the query string.
 	private static final int QRYCOLUMNNUM = 1;
-	
+
 	private static final FieldCreate fieldCreate = FieldFactory.getFieldCreate();
 	private static final PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
 
@@ -81,7 +69,7 @@ public class RdbServiceConnection {
 	 */
 	private static final Pattern entityPattern = Pattern.compile("(\\&instance)",
 			Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);;
-	/* Pattern for recognizing "&attribute" in a query translation. */
+	/** Pattern for recognizing "&attribute" in a query translation. */
 	private static final Pattern attributePattern = Pattern.compile("(\\&attribute)",
 			Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 
@@ -101,7 +89,6 @@ public class RdbServiceConnection {
 	 * case.
 	 */
 	private void init(final String service_name) {
-		// Load JDBC.
 		try {
 			logger.info("Initializing " + service_name);
 
@@ -130,7 +117,6 @@ public class RdbServiceConnection {
 
 		// Having dealt with a possible stale connection, get a new one.
 		try {
-			//
 			final String url = System.getProperty("CONNECTION_URI_PROPERTY", CONNECTION_URI_DEFAULT);
 			final String user = System.getProperty("CONNECTION_USERID_PROPERTY");
 			final String pwd = System.getProperty("CONNECTION_PWD");
@@ -203,7 +189,6 @@ public class RdbServiceConnection {
 			// Make assumption that only 1 row is returned, so we
 			// don't waste time error checking for a very rare
 			// occurrence.
-			//
 			sqlqueryResultSet.last();
 			final int rowsM = sqlqueryResultSet.getRow();
 			logger.finer("Num sql queries matching name returned : " + rowsM);
@@ -223,7 +208,6 @@ public class RdbServiceConnection {
 			// If so, look for '&' markers saying replace these
 			// with values from the entity, attribute (or even other args,
 			// though that's TODO).
-			//
 			if (sqlqueryResultSet.getString(QRYCOLUMNNUM).charAt(0) == '/')
 				sqlQuery = substitute(sqlqueryResultSet.getString(QRYCOLUMNNUM).substring(1), entity, attribute);
 			else
@@ -235,7 +219,6 @@ public class RdbServiceConnection {
 			throw new UnableToGetDataException(MemeConstants.UNABLETOTRANSFORM + ": " + queryName);
 		} finally {
 			// Free JDBC resources.
-			//
 			try {
 				if (sqlqueryResultSet != null) {
 					sqlqueryResultSet.close();
@@ -257,7 +240,6 @@ public class RdbServiceConnection {
 			// Replace values of any passed arguments for matched arg names
 			// in the query
 			// String query = substituteArgs( args, query );
-
 			rs = executeQuery(query);
 			final ResultSetMetaData rsmd = rs.getMetaData();
 			if (rsmd == null)
@@ -317,13 +299,11 @@ public class RdbServiceConnection {
 
 			} // For each column
 
-			//
 			// Construct the Data interface and populate it.
-			//
 			final String[] topNames = new String[] { "labels", "value" };
 			final Field[] topFields = new Field[] { fieldCreate.createScalarArray(ScalarType.pvString),
 					fieldCreate.createStructure(columnNames, fields) };
-			final Structure top = fieldCreate.createStructure(MemeNormativeTypes.NTTABLE_ID, topNames, topFields);
+			final Structure top = fieldCreate.createStructure(MemeConstants.NTTABLE_ID, topNames, topFields);
 			pvTop = pvDataCreate.createPVStructure(top);
 			final PVStructure pvValue = pvTop.getStructureField("value");
 			final PVStringArray labelsArray = (PVStringArray) pvTop.getScalarArrayField("labels", ScalarType.pvString);
@@ -337,7 +317,6 @@ public class RdbServiceConnection {
 			// ResultSet and add the whole column to what we return. So we're
 			// transposing the ResultSet where the slow moving index is row,
 			// to a PVStructure.
-			//
 			final PVField[] pvFields = pvValue.getPVFields();
 			for (int colj = 1; colj <= columnsN; colj++) {
 				rs.beforeFirst(); // Reset cursor to first row.
@@ -443,7 +422,6 @@ public class RdbServiceConnection {
 			throw new UnableToGetDataException("Failed to process SQL query: " + query, e);
 		} finally {
 			// Free JDBC resources.
-			//
 			try {
 				if (rs != null) {
 					// Close and free resources of ResultSet.
@@ -537,7 +515,11 @@ public class RdbServiceConnection {
 	 */
 	private String substitute(final String original, final String entity, final String attribute) {
 		final String afterinstsub = entityPattern.matcher(original).replaceAll(entity);
-		final String finalString = attributePattern.matcher(afterinstsub).replaceAll(attribute); // The String after all replacements
+		final String finalString = attributePattern.matcher(afterinstsub).replaceAll(attribute); // The
+																									// String
+																									// after
+																									// all
+																									// replacements
 
 		/*
 		 * You could now, if you wanted, parse final string for regexps matching
