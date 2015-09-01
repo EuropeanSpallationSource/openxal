@@ -2,9 +2,12 @@ package edu.stanford.lcls.modelmanager.util;
 
 import java.io.File;
 import java.lang.UnsupportedOperationException;
+import java.util.ArrayList;
 
 import xal.smf.Accelerator;
 import xal.smf.data.XMLDataManager;
+import xal.tools.data.DataTable;
+import xal.tools.xml.XmlTableIO;
 
 import se.lu.esss.linaclego.LinacLego;
 
@@ -15,15 +18,15 @@ import se.lu.esss.linaclego.LinacLego;
 public enum AcceleratorLoader {
 	OPEN_XAL("xal") {
 		@Override
-		public Accelerator getAccelerator(String url) {
+		public Accelerator loadAccelerator(String url) {
 		    return XMLDataManager.acceleratorWithUrlSpec(new File(url).toURI().toString());
 		}
 	},
 	LINAC_LEGO("xml") {
 		@Override
-		public Accelerator getAccelerator(String url) {
+		public Accelerator loadAccelerator(String url) {
 			// Test if url contains interface otherwise presume
-			// it is a file.
+			// it is a local file.
 			if (!url.matches("^(https?|ftp|file)://.*$")) {
 				url = "file://" + url;
 			}
@@ -38,7 +41,16 @@ public enum AcceleratorLoader {
 		this.suffix = suffix;
 	}
 	
-	public abstract Accelerator getAccelerator(String url);
+	protected abstract Accelerator loadAccelerator(String url);
+
+	public Accelerator getAccelerator(String url) {
+	    Accelerator acc = loadAccelerator(url);
+	    if (acc.editContext().getTable("Algorithm") == null) {
+		File params = new File(getClass().getClassLoader().getResource("edu/stanford/lcls/modelmanager/util/model.params").getFile());
+                XmlTableIO.readTableGroupFromFile(acc.editContext(), "params", params);
+            }
+	    return acc;
+	}
 
 	public static AcceleratorLoader findAcceleratorBySuffix(String suffix) throws UnsupportedOperationException {
 		for (AcceleratorLoader t : values()) {
@@ -58,5 +70,6 @@ public enum AcceleratorLoader {
 		}
 		return suffixes;
 	}
+
 }
 
