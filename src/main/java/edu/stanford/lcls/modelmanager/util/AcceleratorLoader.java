@@ -1,13 +1,12 @@
 package edu.stanford.lcls.modelmanager.util;
 
 import java.io.File;
-import java.lang.UnsupportedOperationException;
-import java.util.ArrayList;
 
+import eu.ess.lt.tracewin.TraceWin;
+import se.lu.esss.linaclego.LinacLego;
 import xal.smf.Accelerator;
 import xal.smf.data.XMLDataManager;
 
-import se.lu.esss.linaclego.LinacLego;
 
 /* Loader of Accelerator from file for different Accelerator types.
  *
@@ -32,6 +31,12 @@ public enum AcceleratorLoader {
 			}
 			return LinacLego.loadAcceleator(url);
 		}
+	},//TODO put TraceWin in openxal.extensions
+	TRACE_WIN("dat"){
+		@Override
+		public Accelerator loadAccelerator(String url) {
+			return TraceWin.loadAcceleator(url);
+			}
 	};
 	
 	private String suffix;
