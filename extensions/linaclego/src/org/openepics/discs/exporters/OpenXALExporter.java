@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -25,6 +26,7 @@ import se.lu.esss.linaclego.Cell;
 import se.lu.esss.linaclego.FieldProfile;
 import se.lu.esss.linaclego.Linac;
 import se.lu.esss.linaclego.LinacLego;
+import se.lu.esss.linaclego.LinacParameterImporter;
 import se.lu.esss.linaclego.Section;
 import se.lu.esss.linaclego.Slot;
 import se.lu.esss.linaclego.elements.BeamlineElement;
@@ -56,6 +58,8 @@ import xal.smf.impl.RfCavity;
 import xal.smf.impl.VDipoleCorr;
 import xal.smf.impl.qualify.MagnetType;
 import xal.tools.data.DataAdaptor;
+import xal.tools.data.DataTable;
+import xal.tools.data.EditContext;
 import xal.tools.xml.XmlDataAdaptor;
 import xal.tools.xml.XmlWriter;
 
@@ -96,13 +100,17 @@ public class OpenXALExporter implements BLEVisitor {
 				// write out power supplies
 				DataAdaptor powerSuppliesAdaptor = adaptor.createChild("powersupplies");				 
 				for ( MagnetPowerSupply mps : exporter.accelerator.getMagnetMainSupplies()) {
-					mps.write( powerSuppliesAdaptor.createChild("ps"));				 
-				}				 
+					mps.write( powerSuppliesAdaptor.createChild("ps"));
+				}			 
 			 }
 		};
 		linac.accept(exporter);
 		exporter.accelerator.setLength(exporter.acceleratorPosition + exporter.sectionPosition);
 		
+		LinacParameterImporter importer = new LinacParameterImporter(linac);
+		final List<DataTable> tables = importer.getTables();
+		EditContext accContext = exporter.accelerator.editContext();
+		accContext.addTablesToGroup(tables, "params");
 
 		return  exporter;
 	}
