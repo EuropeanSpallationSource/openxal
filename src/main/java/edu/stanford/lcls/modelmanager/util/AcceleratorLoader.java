@@ -6,8 +6,6 @@ import java.util.ArrayList;
 
 import xal.smf.Accelerator;
 import xal.smf.data.XMLDataManager;
-import xal.tools.data.DataTable;
-import xal.tools.xml.XmlTableIO;
 
 import se.lu.esss.linaclego.LinacLego;
 
@@ -16,12 +14,14 @@ import se.lu.esss.linaclego.LinacLego;
  * @author Blaz Kranjc
  */
 public enum AcceleratorLoader {
+	/* Loader for  OpenXal accelerator files*/
 	OPEN_XAL("xal") {
 		@Override
 		public Accelerator loadAccelerator(String url) {
 		    return XMLDataManager.acceleratorWithUrlSpec(new File(url).toURI().toString());
 		}
 	},
+	/* Loader for  LinacLego accelerator files*/
 	LINAC_LEGO("xml") {
 		@Override
 		public Accelerator loadAccelerator(String url) {
@@ -44,11 +44,9 @@ public enum AcceleratorLoader {
 	protected abstract Accelerator loadAccelerator(String url);
 
 	public Accelerator getAccelerator(String url) {
-	    Accelerator acc = loadAccelerator(url);
-	    if (acc.editContext().getTable("Algorithm") == null) {
-		File params = new File(getClass().getClassLoader().getResource("edu/stanford/lcls/modelmanager/util/model.params").getFile());
-                XmlTableIO.readTableGroupFromFile(acc.editContext(), "params", params);
-            }
+            Accelerator acc = loadAccelerator(url);
+            DefaultTableLoader tableLoader = new DefaultTableLoader();
+            tableLoader.loadDefaultTables(acc.editContext());
 	    return acc;
 	}
 
