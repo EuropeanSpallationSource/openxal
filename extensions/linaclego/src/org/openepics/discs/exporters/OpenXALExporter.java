@@ -107,8 +107,7 @@ public class OpenXALExporter implements BLEVisitor {
 		linac.accept(exporter);
 		exporter.accelerator.setLength(exporter.acceleratorPosition + exporter.sectionPosition);
 		
-		LinacParameterImporter importer = new LinacParameterImporter(linac);
-		final List<DataTable> tables = importer.getTables();
+		final List<DataTable> tables = LinacParameterImporter.getTables(linac);
 		EditContext accContext = exporter.accelerator.editContext();
 		accContext.addTablesToGroup(tables, "params");
 

@@ -14,20 +14,10 @@ import xal.tools.data.DataTable;
  * @version 0.1 3 Sep 2015
  * @author Blaz Kranjc
  */
-public class LinacParameterImporter {
+public final class LinacParameterImporter {
 
-	private final Linac linac;
-	private final Parameters params; 
-
-	/**
-	 * Class constructor.
-	 *
-	 * @param linac Linac object from which parameters are read.
-	 */
-	public LinacParameterImporter(final Linac linac) {
-		this.linac = linac;
-		this.params = linac.getLinacData();
-	}
+	static private Linac linac;
+	static private Parameters params; 
 
 	/**
 	 * Generates the openxal "beam" table from linacLego parameters.
@@ -35,7 +25,7 @@ public class LinacParameterImporter {
 	 *
 	 * @return generated table
 	 */
-	private DataTable generateBeamTable() {
+	static private DataTable generateBeamTable() {
 		ArrayList<DataAttribute> attributes = new ArrayList<DataAttribute>();
 		attributes.add(new DataAttribute("name", String.class, true));
 		attributes.add(new DataAttribute("current", Double.class, false));
@@ -58,7 +48,7 @@ public class LinacParameterImporter {
 	 *
 	 * @return generated table
 	 */
-	private DataTable generateTwissTable() {
+	static private DataTable generateTwissTable() {
 		ArrayList<DataAttribute> attributes = new ArrayList<DataAttribute>();
 		attributes.add(new DataAttribute("name", String.class, true));
 		attributes.add(new DataAttribute("coordinate", String.class, true));
@@ -101,7 +91,7 @@ public class LinacParameterImporter {
 	 *
 	 * @return generated table
 	 */
-	private DataTable generateLocationTable() {
+	static private DataTable generateLocationTable() {
 		ArrayList<DataAttribute> attributes = new ArrayList<DataAttribute>();
 		attributes.add(new DataAttribute("name", String.class, true));
 		attributes.add(new DataAttribute("species", String.class, false));
@@ -139,7 +129,9 @@ public class LinacParameterImporter {
 	 *
 	 * @return collection of generated table
 	 */
-	public ArrayList<DataTable> getTables() {
+	static public ArrayList<DataTable> getTables(Linac linacObj) {
+		linac = linacObj;
+		params = linac.getLinacData();
 		ArrayList<DataTable> tables = new ArrayList<DataTable>();
 		tables.add(generateBeamTable());
 		tables.add(generateTwissTable());
