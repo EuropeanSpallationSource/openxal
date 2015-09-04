@@ -65,7 +65,7 @@ public class RfCavity extends AcceleratorSeq {
      * attribute and any reliance on it seems dangerously redundant.
      * </p>
      */
-    protected List<RfGap> _gaps;  // rf gaps within this multi-gap device
+    protected List<RfGap> _gaps = new ArrayList<RfGap>();  // rf gaps within this multi-gap device
 	
 	
 	// static initializer
@@ -97,17 +97,35 @@ public class RfCavity extends AcceleratorSeq {
     
     /** Override to provide type signature */
     public String getType()         { return s_strType; };
-    
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean addNode( final AcceleratorNode newNode ) {
+        boolean parentResult = super.addNode(newNode);
+        updateGaps();
+        return parentResult;
+    }
+
+
+    /**
+     * Update the enclosed rf gaps.
+     */    
+    private void updateGaps() {
+        final List<AcceleratorNode> nodes = getNodesOfType( RfGap.s_strType, true );
+        _gaps = new ArrayList<RfGap>( nodes.size() );
+        for ( final AcceleratorNode node : nodes ) {
+            _gaps.add( (RfGap)node );
+        }
+        processGaps();
+    }
 
     /** Collect all of the enclosed rf gaps for convenience */
     public void update( final DataAdaptor adaptor ) {
         super.update( adaptor );
-        final List<AcceleratorNode> nodes = getNodesOfType( RfGap.s_strType, true );
-        _gaps = new ArrayList<RfGap>( nodes.size() );
-		for ( final AcceleratorNode node : nodes ) {
-			_gaps.add( (RfGap)node );
-		}
-		processGaps();
+        updateGaps();
     }
     
 	
