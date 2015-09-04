@@ -1,6 +1,7 @@
 package edu.stanford.lcls.modelmanager.util;
 
 import java.io.File;
+import java.io.IOException;
 
 import eu.ess.lt.tracewin.TraceWin;
 import se.lu.esss.linaclego.LinacLego;
@@ -37,8 +38,13 @@ public enum AcceleratorLoader {
 	TRACE_WIN("dat"){
 		@Override
 		public Accelerator loadAccelerator(String url) {
-			return TraceWin.loadAcceleator(url);
+			try {
+				return TraceWin.loadAcceleator(url);
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
+			return null;
+		}
 	};
 	
 	private String suffix;
