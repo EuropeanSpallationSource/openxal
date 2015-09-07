@@ -1103,7 +1103,7 @@ public class BeamEllipsoid {
 // * 
 // * @return          matRot3xmatRot3 matrix in six-space
 // * 
-// * @see gov.sns.tools.beam.PhaseMatrix#rotationProduct(R3x3)
+// * @see xal.tools.beam.PhaseMatrix#rotationProduct(R3x3)
 // */
 //private PhaseMatrix computeRotation(R3x3 matRot3)    {
 //    return PhaseMatrix.rotationProduct(matRot3);

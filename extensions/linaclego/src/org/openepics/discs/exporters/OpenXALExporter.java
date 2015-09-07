@@ -59,8 +59,7 @@ import xal.tools.data.DataAdaptor;
 import xal.tools.xml.XmlDataAdaptor;
 import xal.tools.xml.XmlWriter;
 
-public class OpenXALExporter implements BLEVisitor {
-	private Map<String, MagnetMainSupply> magnetPowerSupplies;
+public class OpenXALExporter implements BLEVisitor {	
 	private double acceleratorPosition;
 	private double sectionPosition;
 	public static final double beta_gamma_Er_by_e0_c = -9.302773635653585;
@@ -91,15 +90,12 @@ public class OpenXALExporter implements BLEVisitor {
 		
 		exporter.linac = linac;
 		
-		exporter.accelerator = new Accelerator("ESS") {
-			{
-				exporter.magnetPowerSupplies = magnetMainSupplies; 
-			}
+		exporter.accelerator = new Accelerator("ESS") {			
 			public void write(DataAdaptor adaptor) {
 				super.write(adaptor);
 				// write out power supplies
 				DataAdaptor powerSuppliesAdaptor = adaptor.createChild("powersupplies");				 
-				for ( MagnetPowerSupply mps : exporter.magnetPowerSupplies.values()) {
+				for ( MagnetPowerSupply mps : exporter.accelerator.getMagnetMainSupplies()) {
 					mps.write( powerSuppliesAdaptor.createChild("ps"));				 
 				}				 
 			 }
@@ -212,76 +208,51 @@ public class OpenXALExporter implements BLEVisitor {
 		}	
 	}
 	
-	private static class MutableChannelSuite extends ChannelSuite
+	private void addRFCavityChannels(String ampChannel, String phaseChannel, ChannelSuite channelSuite)
 	{
-		public MutableChannelSuite() {
-			super();
-		}
-	
-		protected void addChannel(String handle, String signal, boolean settable)
-		{
-			SIGNAL_SUITE.addChannel(handle, signal, null, settable);
-		}
+    	channelSuite.putChannel(RfCavity.CAV_AMP_SET_HANDLE, ampChannel+"Ctl", true);
+    	channelSuite.putChannel(RfCavity.CAV_PHASE_SET_HANDLE, phaseChannel+"Ctl", true);
+    	channelSuite.putChannel(RfCavity.CAV_AMP_AVG_HANDLE, ampChannel, false);
+    	channelSuite.putChannel(RfCavity.CAV_PHASE_AVG_HANDLE, phaseChannel, false);
 	}
 	
-	private static class RFCavityChannelSuite extends MutableChannelSuite 
-	{	
-		public RFCavityChannelSuite(String ampChannel, String phaseChannel)
-		{
-	    	addChannel(RfCavity.CAV_AMP_SET_HANDLE, ampChannel+"Ctl", true);
-	    	addChannel(RfCavity.CAV_PHASE_SET_HANDLE, phaseChannel+"Ctl", true);
-	    	addChannel(RfCavity.CAV_AMP_AVG_HANDLE, ampChannel, false);
-	    	addChannel(RfCavity.CAV_PHASE_AVG_HANDLE, phaseChannel, false);
-		}
+	private void addBPMChannels(String name, ChannelSuite channelSuite)
+	{
+		name = name.replace('_', ':');
+		channelSuite.putChannel(BPM.X_AVG_HANDLE, name+":XAvg", false);
+    	channelSuite.putChannel(BPM.Y_AVG_HANDLE, name+":YAvg", false);
+    	channelSuite.putChannel(BPM.X_TBT_HANDLE, name+":XTBT", false);
+    	channelSuite.putChannel(BPM.Y_TBT_HANDLE, name+":YTBT", false);
+    	channelSuite.putChannel(BPM.PHASE_AVG_HANDLE, name+":PhsAvg", false);
+    	channelSuite.putChannel(BPM.AMP_AVG_HANDLE, name+":AmpAvg", false);
+    	channelSuite.putChannel(BPM.AMP_TBT_HANDLE, name+":AmpTBT", false);
+    	channelSuite.putChannel(BPM.PHASE_TBT_HANDLE, name+":PhsTBT", false);
 	}
 	
-	private static class BPMChannelSuite extends MutableChannelSuite 
+	private void addElectromagnetChannels(String currentSignal, ChannelSuite channelSuite)
 	{
-		public BPMChannelSuite(String name)
-		{
-			name = name.replace('_', ':');
-			addChannel(BPM.X_AVG_HANDLE, name+":XAvg", false);
-	    	addChannel(BPM.Y_AVG_HANDLE, name+":YAvg", false);
-	    	addChannel(BPM.X_TBT_HANDLE, name+":XTBT", false);
-	    	addChannel(BPM.Y_TBT_HANDLE, name+":YTBT", false);
-	    	addChannel(BPM.PHASE_AVG_HANDLE, name+":PhsAvg", false);
-	    	addChannel(BPM.AMP_AVG_HANDLE, name+":AmpAvg", false);
-	    	addChannel(BPM.AMP_TBT_HANDLE, name+":AmpTBT", false);
-	    	addChannel(BPM.PHASE_TBT_HANDLE, name+":PhsTBT", false);
+		String fieldSignal = currentSignal.replace("CURR", "FLD");
+		channelSuite.putChannel(Electromagnet.FIELD_RB_HANDLE, fieldSignal, false);
+	}	
+	
+	private static class MagnetSupply extends MagnetMainSupply {
+		public MagnetSupply(Accelerator acc, String name, String currentSignal) {
+			super(acc);
+			strId = name + "-PS";			
+			addChannels(currentSignal);
+			acc.putMagnetMainSupply(this);
 		}
-	}
-	
-	private static class ElectromagnetChannelSuite extends MutableChannelSuite 
-	{
-		public ElectromagnetChannelSuite(String currentSignal)
-		{
-			String fieldSignal = currentSignal.replace("CURR", "FLD");
-			addChannel(Electromagnet.FIELD_RB_HANDLE, fieldSignal, false);
-		}
-	}
-	
-	
-	private static class MagnetChannelSuite extends MutableChannelSuite 
-	{
-		public MagnetChannelSuite(String currentSignal)
+		
+		private void addChannels(String currentSignal)
 		{
 			String fieldSignal = currentSignal.replace("CURR", "FLD");
 			String cycleSignal = currentSignal.replace("CURR", "CYC");
-			addChannel(MagnetPowerSupply.CURRENT_RB_HANDLE, currentSignal, false);
-	    	addChannel(MagnetPowerSupply.CURRENT_SET_HANDLE, currentSignal+"Set", true);
-	    	addChannel(MagnetMainSupply.FIELD_RB_HANDLE, fieldSignal, false);
-	    	addChannel(MagnetMainSupply.FIELD_SET_HANDLE, fieldSignal+"Set", true);
-	    	addChannel(MagnetPowerSupply.CYCLE_STATE_HANDLE, cycleSignal, false);
-	    	addChannel(MagnetMainSupply.CYCLE_ENABLE_HANDLE, cycleSignal+"Set", true);
-		}
-	}
-	
-	
-	private static class MagnetSupply extends MagnetMainSupply {
-		public MagnetSupply(String name, String currentSignal) {
-			super(null);
-			strId = name + "-PS";			
-			channelSuite = new MagnetChannelSuite(currentSignal);
+			channelSuite.putChannel(MagnetPowerSupply.CURRENT_RB_HANDLE, currentSignal, false);
+	    	channelSuite.putChannel(MagnetPowerSupply.CURRENT_SET_HANDLE, currentSignal+"Set", true);
+	    	channelSuite.putChannel(MagnetMainSupply.FIELD_RB_HANDLE, fieldSignal, false);
+	    	channelSuite.putChannel(MagnetMainSupply.FIELD_SET_HANDLE, fieldSignal+"Set", true);
+	    	channelSuite.putChannel(MagnetPowerSupply.CYCLE_STATE_HANDLE, cycleSignal, false);
+	    	channelSuite.putChannel(MagnetMainSupply.CYCLE_ENABLE_HANDLE, cycleSignal+"Set", true);
 		}
 	}
 	
@@ -303,12 +274,11 @@ public class OpenXALExporter implements BLEVisitor {
 		double L = iquad.getLength()*1e-3;		
 		double G = iquad.getFieldGradient();
 		
-		final MagnetSupply ps = new MagnetSupply(iquad.getEssId(), iquad.getDevName());
-		magnetPowerSupplies.put(ps.getId(), ps);
+		final MagnetSupply ps = new MagnetSupply(accelerator, iquad.getEssId(), iquad.getDevName());				
 		xal.smf.impl.Quadrupole quad = new xal.smf.impl.Quadrupole(iquad.getEssId()) { // there's no setter for type (you need to extend class)
 			{
-				_type="Q"; 
-				channelSuite = new ElectromagnetChannelSuite(iquad.getDevName());
+				_type="Q";
+				addElectromagnetChannels(iquad.getDevName(), channelSuite);
 				mainSupplyId = ps.getId();
 			}
 		};
@@ -347,12 +317,9 @@ public class OpenXALExporter implements BLEVisitor {
 		gap.getRfGap().setAmpFactor(1.0);
 		/*gap.getRfGap().setGapOffset(dblVal)*/	
 		
-		ESSRfCavity cavity = new ESSRfCavity(rfGap.getEssId())
-		{
-			{
-				channelSuite = new RFCavityChannelSuite(rfGap.getVoltageDevName(), rfGap.getRFPhaseDevName());//, rfGap.getVoltageDevName(), rfGap.getRFPhaseDevName());
-			}
-		};
+		ESSRfCavity cavity = new ESSRfCavity(rfGap.getEssId());
+		addRFCavityChannels(rfGap.getVoltageDevName(), rfGap.getRFPhaseDevName(), cavity.channelSuite());//, rfGap.getVoltageDevName(), rfGap.getRFPhaseDevName());
+		
 		cavity.addNode(gap);
 		cavity.getRfField().setPhase(Phis);		
 		cavity.getRfField().setAmplitude(E0TL * 1e-6 / length);
@@ -407,13 +374,12 @@ public class OpenXALExporter implements BLEVisitor {
 	    double B0 = k/rho*Math.signum(alpha_deg);
 	    //double B0 = b*gamma*Er/(e*c*rho)*Math.signum(alpha);
 		
-	    final MagnetSupply ps = new MagnetSupply(ibend.getEssId(), ibend.getDevName());
-		magnetPowerSupplies.put(ps.getId(), ps);
+	    final MagnetSupply ps = new MagnetSupply(accelerator, ibend.getEssId(), ibend.getDevName());		
 	    se.lu.esss.ics.jels.smf.impl.ESSBend bend = new se.lu.esss.ics.jels.smf.impl.ESSBend(ibend.getEssId(), 
 				 MagnetType.VERTICAL)
 	    {
 	    	{				
-				channelSuite = new ElectromagnetChannelSuite(ibend.getDevName());
+				addElectromagnetChannels(ibend.getDevName(), channelSuite);
 				mainSupplyId = ps.getId();
 			}
 	    };
@@ -444,12 +410,11 @@ public class OpenXALExporter implements BLEVisitor {
 		
 		final String essId = thinSteering.getEssId();
 		
-		final MagnetSupply vcps = new MagnetSupply(essId+"-VC", thinSteering.getYKickDevName());
-		magnetPowerSupplies.put(vcps.getId(), vcps);
+		final MagnetSupply vcps = new MagnetSupply(accelerator, essId+"-VC", thinSteering.getYKickDevName());		
 
 		VDipoleCorr vcorr = new VDipoleCorr(essId+"-VC") {
 			{
-				channelSuite = new ElectromagnetChannelSuite(thinSteering.getYKickDevName());
+				addElectromagnetChannels(thinSteering.getYKickDevName(), channelSuite);
 				mainSupplyId = vcps.getId();
 			}
 		};
@@ -459,12 +424,11 @@ public class OpenXALExporter implements BLEVisitor {
 		updateApertureBucket(thinSteering, vcorr.getAper());
 		add(vcorr);
 		
-		final MagnetSupply hcps = new MagnetSupply(essId+"-HC", thinSteering.getXKickDevName());
-		magnetPowerSupplies.put(hcps.getId(), hcps);
+		final MagnetSupply hcps = new MagnetSupply(accelerator, essId+"-HC", thinSteering.getXKickDevName());		
 		
 		HDipoleCorr hcorr = new HDipoleCorr(essId+"-HC") {
 			{
-				channelSuite = new ElectromagnetChannelSuite(thinSteering.getXKickDevName());
+				addElectromagnetChannels(thinSteering.getXKickDevName(), channelSuite);
 				mainSupplyId = hcps.getId();
 			}
 		};
@@ -505,11 +469,8 @@ public class OpenXALExporter implements BLEVisitor {
 		int m = ncells.getMode();
 		
 		ESSRfCavity cavity = new ESSRfCavity(ncells.getEssId())
-		{
-			{
-				channelSuite = new RFCavityChannelSuite(ncells.getEssId());
-			}
-		};
+		addRFCavityChannels(ncells.getEssId(), cavity.channelSuite());
+			
 		cavity.getRfField().setPhase(Phis);
 		cavity.getRfField().setAmplitude(E0T * 1e-6);
 		cavity.getRfField().setFrequency(frequency * 1e-6);	
@@ -632,12 +593,8 @@ public class OpenXALExporter implements BLEVisitor {
 		/*gap.getRfGap().setGapOffset(dblVal)*/	
 		gap.setPosition(length/2.);
 		
-		ESSRfCavity cavity = new ESSRfCavity(dtlRfGap.getEssId())
-		{
-			{
-				channelSuite = new RFCavityChannelSuite(dtlRfGap.getVoltageDevName(), dtlRfGap.getRFPhaseDevName());
-			}
-		};
+		ESSRfCavity cavity = new ESSRfCavity(dtlRfGap.getEssId());
+		addRFCavityChannels(dtlRfGap.getVoltageDevName(), dtlRfGap.getRFPhaseDevName(), cavity.channelSuite());
 		cavity.addNode(gap);
 		cavity.getRfField().setPhase(Phis);		
 		cavity.getRfField().setAmplitude(E0TL * 1e-6 / length);
@@ -670,12 +627,11 @@ public class OpenXALExporter implements BLEVisitor {
 		
 		final String essId = dtlDriftTube.getEssId();
 		
-		final MagnetSupply ps = new MagnetSupply(essId, dtlDriftTube.getDevName());
-		magnetPowerSupplies.put(ps.getId(), ps);
+		final MagnetSupply ps = new MagnetSupply(accelerator, essId, dtlDriftTube.getDevName());		
 		xal.smf.impl.Quadrupole quad = new xal.smf.impl.Quadrupole(essId + ":Q") { // there's no setter for type (you need to extend class)
 			{
 				_type="Q"; 
-				channelSuite = new ElectromagnetChannelSuite(dtlDriftTube.getDevName());
+				addElectromagnetChannels(dtlDriftTube.getDevName(), channelSuite);
 				mainSupplyId = ps.getId();
 			}
 		};
@@ -720,12 +676,11 @@ public class OpenXALExporter implements BLEVisitor {
 		
 		// setup		
 		// QUAD1,2
-		final MagnetSupply ps1 = new MagnetSupply(essId+"A", dtlCell.getQ1DevName());
-		magnetPowerSupplies.put(ps1.getId(), ps1);
+		final MagnetSupply ps1 = new MagnetSupply(accelerator, essId+"A", dtlCell.getQ1DevName());		
 		
 		xal.smf.impl.Quadrupole quad1 = new xal.smf.impl.Quadrupole(essId+":Q1") { // there's no setter for type (you need to extend class)
 			{_type="Q";
-			channelSuite = new ElectromagnetChannelSuite(dtlCell.getQ1DevName());
+			addElectromagnetChannels(dtlCell.getQ1DevName(), channelSuite);
 			mainSupplyId = ps1.getId();
 			}
 		};
@@ -735,12 +690,11 @@ public class OpenXALExporter implements BLEVisitor {
 		quad1.setDfltField(B1);
 		quad1.getMagBucket().setPolarity(1);
 		
-		final MagnetSupply ps2 = new MagnetSupply(essId+"A", dtlCell.getQ2DevName());
-		magnetPowerSupplies.put(ps2.getId(), ps2);
+		final MagnetSupply ps2 = new MagnetSupply(accelerator, essId+"A", dtlCell.getQ2DevName());		
 		
 		xal.smf.impl.Quadrupole quad2 = new xal.smf.impl.Quadrupole(essId+":Q2") { // there's no setter for type (you need to extend class)
 			{_type="Q"; 
-			channelSuite = new ElectromagnetChannelSuite(dtlCell.getQ2DevName());	
+			addElectromagnetChannels(dtlCell.getQ2DevName(), channelSuite);	
 			mainSupplyId = ps2.getId();
 			}
 		};
@@ -764,12 +718,8 @@ public class OpenXALExporter implements BLEVisitor {
 		gap.getRfGap().setTTF(1.0);		
 		/*gap.getRfGap().setGapOffset(dblVal)*/		
 		
-		ESSRfCavity dtlTank = new ESSRfCavity(essId)
-		{
-			{
-				channelSuite = new RFCavityChannelSuite(dtlCell.getVoltageDevName(), dtlCell.getRFPhaseDevName());
-			}
-		};; // this could also be rfcavity, makes no difference
+		ESSRfCavity dtlTank = new ESSRfCavity(essId); // this could also be rfcavity, makes no difference
+		addRFCavityChannels(dtlCell.getVoltageDevName(), dtlCell.getRFPhaseDevName(), dtlTank.channelSuite());
 		dtlTank.addNode(quad1);
 		dtlTank.addNode(gap);
 		dtlTank.addNode(quad2);
@@ -827,11 +777,8 @@ public class OpenXALExporter implements BLEVisitor {
 	@Override
 	public void visit(final LegoMonitor legoMonitor) {
 		if ("bpm".equals(legoMonitor.getType().toLowerCase()) || "bpm".equals(legoMonitor.getModel().toLowerCase())) {
-			xal.smf.impl.BPM bpm = new BPM(legoMonitor.getEssId()) {
-				{
-					channelSuite = new BPMChannelSuite(legoMonitor.getEssId());
-				}
-			};
+			xal.smf.impl.BPM bpm = new BPM(legoMonitor.getEssId());
+			addBPMChannels(legoMonitor.getEssId(), bpm.channelSuite());				
 			bpm.getBPMBucket().setFrequency(linac.getBeamFrequency() * section.getRFHarmonic());
 			bpm.getBPMBucket().setLength(1.0);
 			bpm.getBPMBucket().setOrientation(1);
@@ -843,11 +790,8 @@ public class OpenXALExporter implements BLEVisitor {
 	@Override
 	public void visit(final Monitor monitor) {
 		if ("bpm".equals(monitor.getMonitorType().toLowerCase())) {
-			xal.smf.impl.BPM bpm = new BPM(monitor.getEssId()) {
-				{
-					channelSuite = new BPMChannelSuite(monitor.getEssId());
-				}
-			};
+			xal.smf.impl.BPM bpm = new BPM(monitor.getEssId());
+			addBPMChannels(monitor.getEssId(), bpm.channelSuite());				
 			bpm.getBPMBucket().setFrequency(monitor.getFrequency());
 			bpm.getBPMBucket().setLength(monitor.getLength());
 			bpm.getBPMBucket().setOrientation(1);

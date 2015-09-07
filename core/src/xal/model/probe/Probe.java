@@ -35,8 +35,8 @@ import java.util.Date;
  *  and implementation of a probe "state".  Thus, it is up to base classes to provide
  *  and implement the particular aspect of a beam the probe represents.
  *  </p>
- *
  *  
+ *
  * @author  Christopher K. Allen
  */
 public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive {
@@ -91,13 +91,13 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
     
     /** Time stamp associated with probe */
     private Date    m_dateStamp = new Date();
-        
+
 	/** Species name */
 	private String m_speciesName = "";
 
     /** toggle trajHist tracking for a probe */
     private boolean         bolTrack = true;
-        
+    
     /** initial state of probe, set when initialize is called */
     private S               stateInit;
     
@@ -186,12 +186,12 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
             System.err.println("Unable to intialize from " + probeInit.toString());
             e.printStackTrace();
             return null;
-		
+            
         } catch (NoSuchMethodException e) {
             System.err.println("Unable to intialize from " + probeInit.toString());
             e.printStackTrace();
             return null;
-		
+
         } catch (SecurityException e) {
             System.err.println("Unable to intialize from " + probeInit.toString());
             e.printStackTrace();
@@ -207,12 +207,12 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
             e.printStackTrace();
             return null;
             
-    }
-	
+        }
+		
 //		pNew.initializeFrom( probeInit );
     }
 	
-    
+	
     
     /*
      *  Abstract Methods
@@ -296,7 +296,7 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
      */
     public void applyState(S state) {
     	this.stateCurrent = state.copy();
-
+    	
 //        setSpeciesRestEnergy(state.getSpeciesRestEnergy());
 //        setSpeciesCharge(state.getSpeciesCharge());
 //
@@ -440,15 +440,15 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
      */
     public void setTimestamp(Date dateStamp)    { m_dateStamp = dateStamp; };
 
-    
-    /** 
+	
+	/**
 	 * Set the species name
 	 * @param name the species name
-     */
+	 */
 	public void setSpeciesName(String name) {m_speciesName = name; }
-    
-    
-    /** 
+
+
+    /**
      *  Set the algorithm defining the probes dynamics through elements
      *
      *  @param  ifcAlg   object exposing the IAlgorithm interface
@@ -496,7 +496,7 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
 	@NoEdit	// editors should not access this property
     public Trajectory<S> getTrajectory() {
         return trajHist; 
-        }
+    }
     
     /** 
      * Returns the momentum
@@ -507,19 +507,19 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
         return this.stateCurrent.getMomentum();
     }
     
-      
+    
     /*
      *  IProbe Interface
      */
-    
-    /** 
+
+	/**
 	 * returns the species name
 	 * @return species name
 	 */
 	public String getSpeciesName() { return m_speciesName; }
 
     /**
-     *  Returns the charge of probe's particle species 
+     *  Returns the charge of probe's particle species
      *  
      *  @return     particle species charge (<b>Coulombs</b>)
      */
@@ -635,7 +635,7 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
     	this.stateCurrent.setElementId(id);
     }
     
-    /** 
+    /**
      * Sets the identifier of the hardware modeled by the
      * current element.
      * 
@@ -673,7 +673,7 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
     public void setTime(double dblTime) {
         this.stateCurrent.setTime(dblTime);
     }
-    
+
     /**
      *  Set the current kinetic energy of the probe.
      *
@@ -682,10 +682,10 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
      *  @see    #getKineticEnergy
      */
     @Override
-    public void setKineticEnergy(double W)    { 
+    public void setKineticEnergy(double W)    {
     	this.stateCurrent.setKineticEnergy(W);  	
     };
-
+    
     /** 
      *  Set the charge of the particle species in the beam 
      *  
@@ -695,7 +695,7 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
     public void setSpeciesCharge(double q) { 
         this.stateCurrent.setSpeciesCharge(q);
     }
-
+    
     /** 
      *  Set the rest energy of a single particle in the beam 
      *
@@ -760,9 +760,9 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
     @Override
     public void initialize() {
     	this.stateInit = this.cloneCurrentProbeState();
-    
+    	
         this.trajHist = this.createTrajectory();
-//        this.getAlgorithm().initialize(); // CKA - I think these should be uncommented
+//        this.getAlgorithm().initialize();  // CKA - I think these should be uncommented
     }
 
     /**
@@ -770,22 +770,22 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
      */
     @Override
     public void update() throws ModelException  {
-    	
+        
         if (!bolTrack) return;
         
         this.getTrajectory().update(this);
     };
-	
-	/**
-	 * Subclasses should override this method to perform any required post processing upon completion 
-	 * of algorithm processing.  This method implementation does nothing.
+    
+    /**
+     * Subclasses should override this method to perform any required post processing upon completion 
+     * of algorithm processing.  This method implementation does nothing.
      * 
      * @deprecated     I don't think this gets used.
-	 */
+     */
     @Deprecated
     @Override
-	public void performPostProcessing() {
-	}
+    public void performPostProcessing() {
+    }
 
     /**
      *  Return the algorithm defining the probes dynamics.
@@ -800,11 +800,11 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
      * 
      * @see xal.tools.data.IArchive
      */
-	@NoEdit	// hide this property so it doesn't appear in editors
+    @NoEdit // hide this property so it doesn't appear in editors
     @Override
     public IArchive getArchive()        { return this; };
 
-    
+
     
     
     
@@ -909,7 +909,7 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
         this.applyState(state);
     };
     
-    
+  
 //
 //  CKA - we do not know if the Probe base class has Twiss parameters!
 //
@@ -994,9 +994,9 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
         
         // Copy all the Probe base attributes by copying the current ProbeState        
         this.stateCurrent = probe.stateCurrent.copy();
-
+             
         this.bolTrack = probe.bolTrack;
-
+        
         // Copy the algorithm object if we have one
         this.algTracker = null;
         final IAlgorithm algorithm = probe.getAlgorithm();

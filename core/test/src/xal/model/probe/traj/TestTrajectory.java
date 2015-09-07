@@ -32,7 +32,7 @@ import xal.smf.Accelerator;
 import xal.smf.AcceleratorSeq;
 import xal.smf.data.XMLDataManager;
 import xal.test.ResourceManager;
-import xal.test.Tools;
+import xal.test.ResourceTools;
 import xal.tools.beam.PhaseVector;
 
 /**
@@ -116,10 +116,11 @@ public class TestTrajectory {
         if (BOL_TYPE_STOUT) 
             PSTR_OUTPUT = System.out;
         else
-            PSTR_OUTPUT = Tools.createOutputStream(TestTrajectory.class);
+            PSTR_OUTPUT = ResourceTools.createOutputStream(TestTrajectory.class);
         
         try {
-            ACCEL_TEST =  ResourceManager.getTestAccelerator();;
+//            ACCEL_TEST = XMLDataManager.loadDefaultAccelerator();
+            ACCEL_TEST = ResourceManager.getTestAccelerator();
             SEQ_TEST   = ACCEL_TEST.getSequence(STR_ACCL_SEQ_ID);
             MODEL_TEST = Scenario.newScenarioFor(SEQ_TEST);
             

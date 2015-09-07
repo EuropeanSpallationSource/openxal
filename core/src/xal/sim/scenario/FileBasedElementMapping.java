@@ -90,7 +90,7 @@ public class FileBasedElementMapping extends ElementMapping {
 		
 	}
 
-
+	
 	@SuppressWarnings( "unchecked" )
 	private void setDefault(String stringValue) throws ClassNotFoundException {
 		defaultElement = (Class<? extends IComponent>) Class.forName(stringValue);		

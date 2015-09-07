@@ -772,7 +772,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      *  
      * @throws ModelException   could not compute the transfer map for given element 
      * 
-     * @see gov.sns.tools.beam.em.BeamEllipsoid
+     * @see xal.tools.beam.em.BeamEllipsoid
      */
     protected PhaseMatrix compScheffMatrix(double dblLen, EnvelopeProbe probe, IElement elem)
             throws ModelException {
@@ -1258,7 +1258,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * @since  Feb 17, 2009
      * 
      * @see #effPhaseSpread(EnvelopeProbe, IdealRfGap)
-     * @see gov.sns.xal.model.elem.IdealRfGap
+     * @see xal.model.elem.IdealRfGap
      */
     protected double compTransFourierTransform(double dphi)   
         throws ModelException
@@ -1435,7 +1435,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * @see #effPhaseSpread(EnvelopeProbe, IdealRfGap)
      * @see #compTransFourierTransform(double)
      * @see #compEmitGrowthFunction(PhasePlane, double, double)
-     * @see gov.sns.xal.model.elem.IdealRfGap
+     * @see xal.model.elem.IdealRfGap
      */
     protected double compLongFourierTransform(double dphi) 
         throws ModelException
@@ -1556,7 +1556,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * @see #momentSine(double)
      * @see #compTransFourierTransform(double)
      * @see #effPhaseSpread(EnvelopeProbe, IdealRfGap)
-     * @see gov.sns.xal.model.elem.IdealRfGap
+     * @see xal.model.elem.IdealRfGap
      */
     protected double fourierTransTrace3d(double dphi)   {
             
@@ -1632,7 +1632,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * 
      * @see #effPhaseSpread(EnvelopeProbe, IdealRfGap)
      * @see #compTransFourierTransform(double)
-     * @see gov.sns.xal.model.elem.IdealRfGap
+     * @see xal.model.elem.IdealRfGap
      */
     protected double fourierLongTrace3d(double dphi) {
     
@@ -1690,7 +1690,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * 
      * @see #effPhaseSpread(EnvelopeProbe, IdealRfGap)
      * @see #compTransFourierTransform(double)
-     * @see gov.sns.xal.model.elem.IdealRfGap
+     * @see xal.model.elem.IdealRfGap
      */
     protected double fourierLong3dUniform(double dphi) {
     
@@ -1757,7 +1757,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * 
      * @see #compTransFourierTransform(double)
      * @see #effPhaseSpread(EnvelopeProbe, IdealRfGap)
-     * @see gov.sns.xal.model.elem.IdealRfGap
+     * @see xal.model.elem.IdealRfGap
      */
     protected double fourierTrans3dUniform(double dphi)   {
         
@@ -1792,7 +1792,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * <br>
      * <br>
      * &nbsp; <i>F<sub>t</sub></i>(&Delta;<i>&phi;</i>) = 
-     * <i>e</i><sup>-&Delta;<i>&phi;</i><sup>2</sup>/10</sup>
+     * <i>e</i><sup>-&Delta;<i>&phi;</i>&circ;2/10</sup>
      * <br>
      * <br> 
      * There is no need for a small argument expansion since the
@@ -1814,7 +1814,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * 
      * @see #compTransFourierTransform(double)
      * @see #effPhaseSpread(EnvelopeProbe, IdealRfGap)
-     * @see gov.sns.xal.model.elem.IdealRfGap
+     * @see xal.model.elem.IdealRfGap
      */
     protected double fourierTrans3dGaussian(double dphi)   {
             
@@ -1838,7 +1838,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * <br>
      * &nbsp; <i>F<sub>z</sub></i>(&Delta;<i>&phi;</i>) = 
      *   (1 - &Delta;<i>&phi;</i><sup>2</sup>/5)
-     *   <i>e</i><sup>-&Delta;<i>&phi;</i><sup>2</sup>/10</sup>
+     *   <i>e</i><sup>-&Delta;<i>&phi;</i>&circ;2/10</sup>
      * <br>
      * <br> 
      * There is no need for a small argument expansion since the
@@ -1858,7 +1858,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * 
      * @see #effPhaseSpread(EnvelopeProbe, IdealRfGap)
      * @see #compTransFourierTransform(double)
-     * @see gov.sns.xal.model.elem.IdealRfGap
+     * @see xal.model.elem.IdealRfGap
      */
     protected double fourierLong3dGaussian(double dphi) {
     
@@ -1922,7 +1922,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * 
      * @see #compTransFourierTransform(double)
      * @see #effPhaseSpread(EnvelopeProbe, IdealRfGap)
-     * @see gov.sns.xal.model.elem.IdealRfGap
+     * @see xal.model.elem.IdealRfGap
      */
     protected double fourierTrans1dUniform(double dphi)   {
         
@@ -1989,7 +1989,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * 
      * @see #compTransFourierTransform(double)
      * @see #effPhaseSpread(EnvelopeProbe, IdealRfGap)
-     * @see gov.sns.xal.model.elem.IdealRfGap
+     * @see xal.model.elem.IdealRfGap
      */
     protected double fourierLong1dUniform(double dphi)   {
         
@@ -2025,7 +2025,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * <br>
      * <br>
      * &nbsp; <i>F<sub>t</sub></i>(&Delta;<i>&phi;</i>) = 
-     * <i>e</i><sup>-&Delta;<i>&phi;</i><sup>2</sup>/8</sup>
+     * <i>e</i><sup>-&Delta;<i>&phi;</i>&circ;2/8</sup>
      * <br>
      * <br> 
      * There is no need for a small argument expansion since the
@@ -2047,7 +2047,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * 
      * @see #compTransFourierTransform(double)
      * @see #effPhaseSpread(EnvelopeProbe, IdealRfGap)
-     * @see gov.sns.xal.model.elem.IdealRfGap
+     * @see xal.model.elem.IdealRfGap
      */
     protected double fourierTrans1dGaussian(double dphi)   {
             
@@ -2071,7 +2071,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * <br>
      * &nbsp; <i>F<sub>z</sub></i>(&Delta;<i>&phi;</i>) = 
      *   (1 - &Delta;<i>&phi;</i><sup>2</sup>/4)
-     *   <i>e</i><sup>-&Delta;<i>&phi;</i><sup>2</sup>/8</sup>
+     *   <i>e</i><sup>-&Delta;<i>&phi;</i>&circ;2/8</sup>
      * <br>
      * <br> 
      * There is no need for a small argument expansion since the
@@ -2091,7 +2091,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * 
      * @see #effPhaseSpread(EnvelopeProbe, IdealRfGap)
      * @see #compTransFourierTransform(double)
-     * @see gov.sns.xal.model.elem.IdealRfGap
+     * @see xal.model.elem.IdealRfGap
      */
     protected double fourierLong1dGaussian(double dphi) {
         
@@ -2167,7 +2167,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * &middot; Note that the RMS phase spread can also be represented as
      * <br>
      * <br>
-     * &nbsp;   <i>d&phi;</i> = &lt;[<i>&phi;(<i>s</i>) - &phi;<sub>s</sub></i>]<sup>2</sup>&gt;<sup>1/2</sup>
+     * &nbsp;   <i>d&phi;</i> = &lt;[<i>&phi;(s) - &phi;<sub>s</sub></i>]<sup>2</sup>&gt;<sup>1/2</sup>
      * <br>
      * <br>
      * where <i>&phi;<sub>s</sub></i> is the synchronous particle phase.
@@ -2567,7 +2567,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
 //     * 
 //     * @return  transverse emittance growth factor 
 //     * 
-//     * @see gov.sns.xal.model.elem.IdealRfGap
+//     * @see xal.model.elem.IdealRfGap
 //     * 
 //     * @deprecated  The functionality of this method has been replaced by
 //     *              {@link #compEmitGrowthFunction(PhasePlane, double, double)}
@@ -2635,7 +2635,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
 //         * 
 //         * @return  longitudinal growth factor
 //         * 
-//         * @see gov.sns.xal.model.elem.IdealRfGap
+//         * @see xal.model.elem.IdealRfGap
 //         * 
 //         * @deprecated  The functionality of this method has been replaced by
 //         *              {@link #compEmitGrowthFunction(PhasePlane, double, double)}
@@ -2715,7 +2715,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
 //     * 
 //     * @author Christopher K. Allen
 //     * 
-//     * @see gov.sns.xal.model.elem.IdealRfGap
+//     * @see xal.model.elem.IdealRfGap
 //     * @see EnvelopeTrackerBase#compTransFourierTransform(double)
 //     * 
 //     * @deprecated  This method is replaced by the method 
@@ -2787,7 +2787,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
 //     * @author Christopher K. Allen
 //     * 
 //     * @see Appendix F of the Trace3D manual.
-//     * @see gov.sns.xal.model.elem.IdealRfGap
+//     * @see xal.model.elem.IdealRfGap
 //     * 
 //     * @deprecated  This method will no longer be necessary once 
 //     *              {@link #compTransFourierTransform(double)}
@@ -2801,3 +2801,4 @@ public abstract class EnvelopeTrackerBase extends Tracker {
 //    }
 
 }
+
