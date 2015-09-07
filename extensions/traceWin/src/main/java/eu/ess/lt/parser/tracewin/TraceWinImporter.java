@@ -141,6 +141,10 @@ public class TraceWinImporter implements Importer, TraceWinTags {
 			String name = null;
 			originalLine = reader.readLine().trim();
 			fileLineNumber++;
+			if (originalLine.length() == 0) {
+				//Line is empty continue.
+				continue;
+			}
 
 			originalLine = replace(originalLine);
 			line = originalLine.toUpperCase();
