@@ -8,6 +8,7 @@ package xal.tools.text;
 
 import java.io.IOException;
 import java.text.*;
+import java.util.Locale;
 
 
 /**
@@ -21,10 +22,10 @@ public class ScientificNumberFormat extends NumberFormat {
 	private static final long serialVersionUID = 1L;
 
 	/** internal simple format without exponent for numbers where:  1 <= abs(number) < 10  */
-	private final DecimalFormat SIMPLE_FORMAT = new DecimalFormat("0.0000");
+	private final DecimalFormat SIMPLE_FORMAT = new DecimalFormat("0.0000", new DecimalFormatSymbols(Locale.ROOT));
 
 	/** internal simple format with exponent for numbers where:  abs(number) < 1 or abs(number) >= 10  */
-	private final DecimalFormat EXPONENTIAL_FORMAT = new DecimalFormat("0.0000E0");
+	private final DecimalFormat EXPONENTIAL_FORMAT = new DecimalFormat("0.0000E0", new DecimalFormatSymbols(Locale.ROOT));
 
 	/** total number of significant digits to display (includes digits left and right of decimal) */
 	private int _significantDigits;
