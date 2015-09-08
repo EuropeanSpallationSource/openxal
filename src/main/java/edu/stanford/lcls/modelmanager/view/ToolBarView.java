@@ -34,16 +34,10 @@ import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
-import se.lu.esss.ics.jels.matcher.Matcher;
-import se.lu.esss.ics.jels.matcher.MatcherDialog;
-import xal.extension.widgets.apputils.SimpleProbeEditor;
-import xal.model.ModelException;
-import xal.service.pvlogger.apputils.browser.PVLogSnapshotChooser;
 import edu.stanford.lcls.modelmanager.ModelManagerDocument;
 import edu.stanford.lcls.modelmanager.ModelManagerWindow;
 import edu.stanford.lcls.modelmanager.dbmodel.BrowserModel;
 import edu.stanford.lcls.modelmanager.dbmodel.BrowserModel.RunState;
-import edu.stanford.lcls.modelmanager.dbmodel.BrowserModelListener.BrowserModelAction;
 import edu.stanford.lcls.modelmanager.dbmodel.BrowserModelListener;
 import edu.stanford.lcls.xal.model.RunModelConfiguration;
 import edu.stanford.lcls.xal.model.RunModelConfigurationDesign;
@@ -51,6 +45,11 @@ import edu.stanford.lcls.xal.model.RunModelConfigurationExtant;
 import edu.stanford.lcls.xal.model.RunModelConfigurationManual;
 import edu.stanford.lcls.xal.model.RunModelConfigurationPVLogger;
 import edu.stanford.slac.Message.Message;
+import se.lu.esss.ics.jels.matcher.Matcher;
+import se.lu.esss.ics.jels.matcher.MatcherDialog;
+import xal.extension.widgets.apputils.SimpleProbeEditor;
+import xal.model.ModelException;
+import xal.service.pvlogger.apputils.browser.PVLogSnapshotChooser;
 
 /**
  * QueryView is the view for querying the database for the machine models.
@@ -286,6 +285,7 @@ public class ToolBarView implements SwingConstants {
         });
 		
 		runModeSelector.addActionListener(new ActionListener() { 
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				int runModelMethod = runModeSelector.getSelectedIndex();
 				//BPRPSelector.setEnabled(runModelMethod == 1);
@@ -304,6 +304,7 @@ public class ToolBarView implements SwingConstants {
 		
 		
 		beamlineSelector.addActionListener(new ActionListener() { 
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				/*if(beamlineSelector.getSelectedIndex() == 0) {
 					BPRPSelector.setEnabled(true);
@@ -320,6 +321,7 @@ public class ToolBarView implements SwingConstants {
 				Message.info("Trying to find models in the selected beam line...");
 				
 				thread2 = new Thread(new Runnable() {
+					@Override
 					public void run() {
 						try {
 							model.setModelMode((String)beamlineSelector.getSelectedItem());
@@ -356,6 +358,11 @@ public class ToolBarView implements SwingConstants {
 					}
 					model.fetchRunData(getRunModelConfiguration());		
 				} catch (ModelException | SQLException e1) {
+					if (runModeSelector.getSelectedIndex() == 1) {
+						String message = "Couldn't connect to get extant values.";
+						JOptionPane.showMessageDialog(parent, message,
+								"Run Model Error! See the xterm window for more details", JOptionPane.ERROR_MESSAGE);
+					}
 					e1.printStackTrace();
 				}
 			}
@@ -392,8 +399,10 @@ public class ToolBarView implements SwingConstants {
 		makeGoldButton.setAlignmentY(0.3f);
 		toolBarView.add(makeGoldButton);
 		makeGoldButton.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent event) {
 				thread1 = new Thread(new Runnable() {
+					@Override
 					public void run() {
 						setQueryViewEnable(false);
 						ModelStateView.getMachineModelState().setText(
@@ -404,6 +413,7 @@ public class ToolBarView implements SwingConstants {
 						}
 					});
 				thread2 = new Thread(new Runnable() {
+					@Override
 					public void run() {
 						try {
 							if (model.getSelectedMachineModel() == null)
@@ -479,6 +489,7 @@ public class ToolBarView implements SwingConstants {
 
 		
 		runModelButton.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent event) {
 				if (runModeSelector.getSelectedIndex() == 3 && model.getSelectedMachineModelDevice() == null) {
 					JOptionPane.showMessageDialog(parent, "You need to select a model.", "Run model Error", JOptionPane.ERROR_MESSAGE);
@@ -486,6 +497,7 @@ public class ToolBarView implements SwingConstants {
 				}
 				
 				thread1 = new Thread(new Runnable() {
+					@Override
 					public void run() {
 						setQueryViewEnable(false);
 						ModelStateView.getMachineModelState().setText(
@@ -496,11 +508,10 @@ public class ToolBarView implements SwingConstants {
 						}
 					});
 				thread2 = new Thread(new Runnable() {
+					@Override
 					public void run() {
+						RunModelConfiguration config = null;
 						try {
-							// model.setModelRef(refID);
-													
-							RunModelConfiguration config;
 							// if prefetched data
 							if (model.getRunState().equals(BrowserModel.RunState.FETCHED_DATA)) {
 								config = new RunModelConfigurationManual(model.getRunMachineModelDevice());
@@ -521,6 +532,9 @@ public class ToolBarView implements SwingConstants {
                             if(exception.getCause() != null) { 
                                 message = message + " -- " + exception.getCause().getMessage();
                             }
+                            if(config instanceof RunModelConfigurationExtant) { 
+                                message = "Couldn't connect to get extant values.";
+                            }
 							JOptionPane.showMessageDialog(parent, message,
 									"Run Model Error! See the xterm window for more details", JOptionPane.ERROR_MESSAGE);
 							ModelStateView.getMachineModelState().setText(
@@ -539,8 +553,10 @@ public class ToolBarView implements SwingConstants {
 		});
 
 		export2MADButton.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent event) {
 				thread1 = new Thread(new Runnable() {
+					@Override
 					public void run() {
 						runModelButton.setEnabled(false);
 						ModelStateView.getMachineModelState().setText(
@@ -551,6 +567,7 @@ public class ToolBarView implements SwingConstants {
 					}
 				});
 				thread2 = new Thread(new Runnable() {
+					@Override
 					public void run() {
 						model.exportToXML(parent);
 						ModelStateView.getMachineModelState().setText(
@@ -567,8 +584,10 @@ public class ToolBarView implements SwingConstants {
 		});
 
 		upload2DBButton.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent event) {
 				thread2 = new Thread(new Runnable() {
+					@Override
 					public void run() {
 						System.out.println("Save start!");
 						upload2DBButton.setEnabled(false);
@@ -678,6 +697,7 @@ public class ToolBarView implements SwingConstants {
 		buttonPane.add(commitComment);
 		goldComment.getContentPane().add(buttonPane, BorderLayout.SOUTH);
 		commitComment.addActionListener(new ActionListener(){
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				goldComment.dispose();
 			}
@@ -703,6 +723,7 @@ public class ToolBarView implements SwingConstants {
 		buttonPane.add(fetchButton);
 		fetchMachineConfig.getContentPane().add(buttonPane, BorderLayout.SOUTH);
 		fetchButton.addActionListener(new ActionListener(){
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				fetchMachineConfig.dispose();
 			}
@@ -739,6 +760,7 @@ public class ToolBarView implements SwingConstants {
 			setBorder(new EmptyBorder(1, 1, 1, 1));
 		}
 
+		@Override
 		public Component getListCellRendererComponent( JList<? extends ComboItem> list, 
 				ComboItem value, int index, boolean isSelected, boolean cellHasFocus) {
 			if (isSelected) {
@@ -768,6 +790,7 @@ public class ToolBarView implements SwingConstants {
 			currentItem = combo.getSelectedItem();
 		}
 
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			Object tempItem = combo.getSelectedItem();
 			if (! ((CanEnable)tempItem).isEnabled()) {
@@ -791,14 +814,17 @@ public class ToolBarView implements SwingConstants {
 			this(obj, true);
 		}
 
+		@Override
 		public boolean isEnabled() {
 			return isEnable;
 		}
 
+		@Override
 		public void setEnabled(boolean isEnable) {
 			this.isEnable = isEnable;
 		}
 
+		@Override
 		public String toString() {
 			return obj.toString();
 		}
