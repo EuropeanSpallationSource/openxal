@@ -112,7 +112,6 @@ public class OpenXalExporter implements Exporter {
 		}
 
 		acc.setLength(seq.getLength());
-
 		return acc;
 	}
 

@@ -164,8 +164,6 @@ public class TraceWinImporter implements Importer, TraceWinTags {
 				line = line.substring(idx + 1).trim();
 				name = originalLine.substring(0, idx);
 			}
-			;
-
 			values = split(originalLine.substring(idx + 1, originalLine.length() - trailinglen).trim());
 
 			if (name == null) {
@@ -469,12 +467,10 @@ public class TraceWinImporter implements Importer, TraceWinTags {
 
 		String line = originalLine.toUpperCase().trim();
 
-		if (line.startsWith(COMMENT_MARKER)) {
-			// truncate the comments;
-			while (line.startsWith(COMMENT_MARKER)) {
-				line = line.substring(1).trim();
-			}
+		while (line.startsWith(COMMENT_MARKER)) {
+			line = line.substring(1).trim();
 		}
+
 		if (line.startsWith(M_SLOT) || line.startsWith(M_BEAMLINE) || line.startsWith(M_MARKER)
 				|| line.startsWith(M_BEGINBEAMLINE)) {
 			String[] values = split(originalLine);
