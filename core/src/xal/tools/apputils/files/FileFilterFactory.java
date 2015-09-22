@@ -27,19 +27,19 @@ public class FileFilterFactory {
 	
     /** Creates a new instance of FileFilterFactory */
     protected FileFilterFactory() {}
-    
-    
+
     /**
      * Applies the file filters to the file chooser and returns this file chooser.
 	 * Existing file filters are removed from the file chooser and then new file filters
-	 * are added to the file chooser consistent with the specified file types.
+	 * are added to the file chooser consistent with the specified file types and descriptions.
 	 * @param fileChooser the file chooser to which to add the file filters
      * @param fileTypes An array of file types to accept
+     * @param fileDescriptions An arraz of corresponding file type descriptions
      * @return The file chooser that accepts the specified file types (same file chooser as the argument)
      */
-    static public JFileChooser applyFileFilters( final JFileChooser fileChooser, final String[] fileTypes ) {
+    static public JFileChooser applyFileFilters( final JFileChooser fileChooser, final String[] fileTypes, final String[] fileDescriptions ) {
         for ( int index = 0 ; index < fileTypes.length ; index++ ) {
-            FileFilter filter = getFileFilter(fileTypes[index]);
+            FileFilter filter = getFileFilter(fileTypes[index], fileDescriptions[index]);
             fileChooser.addChoosableFileFilter(filter);
         }
 
@@ -50,15 +50,29 @@ public class FileFilterFactory {
         return fileChooser;
     }
     
+    /**
+     * Applies the file filters to the file chooser and returns this file chooser.
+	 * Existing file filters are removed from the file chooser and then new file filters
+	 * are added to the file chooser consistent with the specified file types.
+	 * @param fileChooser the file chooser to which to add the file filters
+     * @param fileTypes An array of file types to accept
+     * @return The file chooser that accepts the specified file types (same file chooser as the argument)
+     */
+    static public JFileChooser applyFileFilters( final JFileChooser fileChooser, final String[] fileTypes ) {
+    	applyFileFilters(fileChooser, fileTypes, new String[fileTypes.length]);
+        return fileChooser;
+    }
+    
     
     /**
      * Create a file filter that accepts files of the specified type.  This is 
      * a supporting method for creating file choosers.  A type is identified
      * by its filename suffix.
      * @param fileType File type to accept
+     * @param description the description of this file type
      * @return The file filter that accepts the specified file type
      */
-    static public FileFilter getFileFilter( final String fileType ) {
+    static public FileFilter getFileFilter( final String fileType, final String description ) {
         return new FileFilter() {
 			final String suffix = "." + fileType.toLowerCase();
 			
@@ -75,7 +89,10 @@ public class FileFilterFactory {
              * @return File filter description.
              */
             public String getDescription() {
-                return fileType;
+            	if (description != null)
+            		return description + " (*." + fileType + ")";
+            	else 
+            		return fileType;
             }
         };
     }
