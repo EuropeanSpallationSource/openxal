@@ -30,7 +30,7 @@ public enum AcceleratorLoader {
 			// Test if url contains interface otherwise presume
 			// it is a local file.
 			if (!url.matches("^(https?|ftp|file)://.*$")) {
-				url = "file://" + url;
+				url = new File(url).toURI().toString();
 			}
 			return LinacLego.loadAcceleator(url);
 		}
