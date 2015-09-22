@@ -17,14 +17,14 @@ import xal.smf.data.XMLDataManager;
  */
 public enum AcceleratorLoader {
 	// Loader for  OpenXal accelerator files. 
-	OPEN_XAL("xal") {
+	OPEN_XAL("xal", "OpenXAL files") {
 		@Override
 		public Accelerator loadAccelerator(String url) {
 		    return XMLDataManager.acceleratorWithUrlSpec(new File(url).toURI().toString());
 		}
 	},
 	// Loader for  LinacLego accelerator files.
-	LINAC_LEGO("xml") {
+	LINAC_LEGO("xml", "LinacLego files") {
 		@Override
 		public Accelerator loadAccelerator(String url) {
 			// Test if url contains interface otherwise presume
@@ -35,7 +35,7 @@ public enum AcceleratorLoader {
 			return LinacLego.loadAcceleator(url);
 		}
 	},//TODO put TraceWin in openxal.extensions
-	TRACE_WIN("dat"){
+	TRACE_WIN("dat", "TraceWin files"){
 		@Override
 		public Accelerator loadAccelerator(String url) {
 			try {
@@ -47,7 +47,7 @@ public enum AcceleratorLoader {
 		}
 	};
 	
-	private String suffix;
+	private String suffix, description;
 	private static final int size = AcceleratorLoader.values().length;
 
 	/**
@@ -55,8 +55,9 @@ public enum AcceleratorLoader {
 	 * 
 	 * @param suffix Suffix of file to load.
 	 */
-	private AcceleratorLoader(String suffix) {
+	private AcceleratorLoader(String suffix, String description) {
 		this.suffix = suffix;
+		this.description = description;
 	}
 
 	/**
@@ -112,5 +113,20 @@ public enum AcceleratorLoader {
 		return suffixes;
 	}
 
+	/**
+     * Provides all suffixes for which loaders are implemented.
+     * 
+     * @return Array of supported suffixes.
+     */
+	public static String [] getSupportedTypesDescriptions() {
+		String[] descs = new String[size];
+		int i = 0;
+		for (AcceleratorLoader loader : values()) {
+			descs[i] = loader.description;
+			i++;
+		}
+		return descs;
+}
+	
 }
 

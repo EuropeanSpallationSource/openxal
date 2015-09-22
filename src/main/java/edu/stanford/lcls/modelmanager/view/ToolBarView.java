@@ -123,7 +123,7 @@ public class ToolBarView implements SwingConstants {
 		
 		
 		// Accelerator loader
-		loadAccelerator = new JButton("Load");
+		loadAccelerator = new JButton("Load...");
                 loadAccelerator.setToolTipText("Load Accelerator.");
                 loadAccelerator.setAlignmentY(0.3f);
                 loadAccelerator.setEnabled(true);
