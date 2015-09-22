@@ -63,7 +63,7 @@ public class OpenXalExporter implements Exporter {
 													// comands
 	private OnLeafComparator leafComparator = new OnLeafComparator();
 
-	private List<MagnetPowerSupply> magnetPowerSupplies;
+	private Accelerator acc;
 	private Corrector lastCorrector;
 
 	// variables to help exporting lattice points
@@ -83,20 +83,19 @@ public class OpenXalExporter implements Exporter {
 			}
 		}
 		Collections.sort(latticeCommands, leafComparator);
-
-		magnetPowerSupplies = new ArrayList<MagnetPowerSupply>();
-		AcceleratorSeq seq = export(parentSystem, systems, 0., leafComparator);
-		Accelerator acc = new Accelerator("ESS") {
+		
+		acc = new Accelerator("ESS") {
 			@Override
 			public void write(DataAdaptor adaptor) {
 				super.write(adaptor);
 				// write out power supplies
 				DataAdaptor powerSuppliesAdaptor = adaptor.createChild("powersupplies");
-				for (MagnetPowerSupply mps : magnetPowerSupplies) {
+				for (MagnetPowerSupply mps : getMagnetMainSupplies()) {
 					mps.write(powerSuppliesAdaptor.createChild("ps"));
 				}
 			}
 		};
+		AcceleratorSeq seq = export(parentSystem, systems, 0., leafComparator);		
 		AcceleratorSeq previousSeq = null;
 		for (AcceleratorSeq s : new ArrayList<AcceleratorSeq>(seq.getSequences())) {
 			acc.addNode(s);
@@ -295,147 +294,67 @@ public class OpenXalExporter implements Exporter {
 		return marker;
 	}
 
-	private static class BPMChannelSuite extends ChannelSuite {
-		private String name;
-
-		public BPMChannelSuite(String name) {
-			this.name = name.replace('_', ':');
-		}
-
-		/**
-		 * Write data to the data adaptor for storage.
-		 * 
-		 * @param adaptor
-		 *            The adaptor to which the receiver's data is written
-		 */
-		@Override
-		public void write(final DataAdaptor adaptor) {
-			writeChannel(adaptor, BPM.X_AVG_HANDLE, name + ":XAvg");
-			writeChannel(adaptor, BPM.Y_AVG_HANDLE, name + ":YAvg");
-			writeChannel(adaptor, BPM.X_TBT_HANDLE, name + ":XTBT");
-			writeChannel(adaptor, BPM.Y_TBT_HANDLE, name + ":YTBT");
-			writeChannel(adaptor, BPM.PHASE_AVG_HANDLE, name + ":PhsAvg");
-			writeChannel(adaptor, BPM.AMP_AVG_HANDLE, name + ":AmpAvg");
-			writeChannel(adaptor, BPM.AMP_TBT_HANDLE, name + ":AmpTBT");
-			writeChannel(adaptor, BPM.PHASE_TBT_HANDLE, name + ":PhsTBT");
-		}
-
-		public void writeChannel(final DataAdaptor adaptor, String handle, String signal) {
-
-			final DataAdaptor channelAdaptor = adaptor.createChild("channel");
-			channelAdaptor.setValue("handle", handle);
-			channelAdaptor.setValue("signal", signal);
-			channelAdaptor.setValue("settable", false);
-		}
+	private void addBPMChannels(String name, ChannelSuite channelSuite)
+	{
+		name = name.replace('_', ':');
+		channelSuite.putChannel(BPM.X_AVG_HANDLE, name+":XAvg", false);
+    	channelSuite.putChannel(BPM.Y_AVG_HANDLE, name+":YAvg", false);
+    	channelSuite.putChannel(BPM.X_TBT_HANDLE, name+":XTBT", false);
+    	channelSuite.putChannel(BPM.Y_TBT_HANDLE, name+":YTBT", false);
+    	channelSuite.putChannel(BPM.PHASE_AVG_HANDLE, name+":PhsAvg", false);
+    	channelSuite.putChannel(BPM.AMP_AVG_HANDLE, name+":AmpAvg", false);
+    	channelSuite.putChannel(BPM.AMP_TBT_HANDLE, name+":AmpTBT", false);
+    	channelSuite.putChannel(BPM.PHASE_TBT_HANDLE, name+":PhsTBT", false);
 	}
 
 	private AcceleratorNode exportBPM(final Subsystem element, double currentPosition) {
-		xal.smf.impl.BPM bpm = new BPM(element.getName()) {
-			{
-				channelSuite = new BPMChannelSuite(element.getName());
-			}
-		};
+		xal.smf.impl.BPM bpm = new BPM(element.getName());
+		addBPMChannels(element.getName(), bpm.channelSuite());
 		bpm.getBPMBucket().setFrequency(getFrequency(element));
 		bpm.getBPMBucket().setLength(1.0);
 		bpm.getBPMBucket().setOrientation(1);
 		bpm.setPosition(currentPosition);
 		return bpm;
 	}
+	
+	private void addElectromagnetChannels(String name, ChannelSuite channelSuite)
+	{		
+		addElectromagnetChannels(name,  "B", channelSuite);
+	}	
 
-	private static class ElectromagnetChannelSuite extends ChannelSuite {
-		private String name, signal = "B";
-
-		public ElectromagnetChannelSuite(String name) {
-			this.name = name.replace('_', ':');
-		}
-
-		public ElectromagnetChannelSuite(String name, String signal) {
-			this.name = name.replace('_', ':');
-			this.signal = signal;
-		}
-
-		/**
-		 * Write data to the data adaptor for storage.
-		 * 
-		 * @param adaptor
-		 *            The adaptor to which the receiver's data is written
-		 */
-		@Override
-		public void write(final DataAdaptor adaptor) {
-			final DataAdaptor channelAdaptor = adaptor.createChild("channel");
-
-			channelAdaptor.setValue("handle", Electromagnet.FIELD_RB_HANDLE);
-			channelAdaptor.setValue("signal", name + ":" + signal);
-			channelAdaptor.setValue("settable", false);
-		}
+	private void addElectromagnetChannels(String name, String signal, ChannelSuite channelSuite)
+	{		
+		channelSuite.putChannel(Electromagnet.FIELD_RB_HANDLE, name.replace('_', ':')+":"+signal, false);
+	}	
+	
+	private void addRFCavityChannels(String name, ChannelSuite channelSuite)
+	{
+		addRFCavityChannels(name+":Amp", name+":Phs", channelSuite);
 	}
-
-	private static class RFCavityChannelSuite extends ChannelSuite {
-		private String name;
-
-		public RFCavityChannelSuite(String name) {
-			this.name = name.replace('_', ':');
-		}
-
-		/**
-		 * Write data to the data adaptor for storage.
-		 * 
-		 * @param adaptor
-		 *            The adaptor to which the receiver's data is written
-		 */
-		@Override
-		public void write(final DataAdaptor adaptor) {
-			writeChannel(adaptor, RfCavity.CAV_AMP_SET_HANDLE, name + ":AmpCtl", true);
-			writeChannel(adaptor, RfCavity.CAV_PHASE_SET_HANDLE, name + ":PhsCtl", true);
-			writeChannel(adaptor, RfCavity.CAV_AMP_AVG_HANDLE, name + ":AmpAvg", false);
-			writeChannel(adaptor, RfCavity.CAV_PHASE_AVG_HANDLE, name + ":PhsAvg", false);
-		}
-
-		public void writeChannel(final DataAdaptor adaptor, String handle, String signal, boolean settable) {
-
-			final DataAdaptor channelAdaptor = adaptor.createChild("channel");
-			channelAdaptor.setValue("handle", handle);
-			channelAdaptor.setValue("signal", signal);
-			channelAdaptor.setValue("settable", settable);
-		}
-	}
-
-	private static class MagnetChannelSuite extends ChannelSuite {
-		private String name;
-
-		public MagnetChannelSuite(String name) {
-			this.name = name.replace('_', ':');
-		}
-
-		/**
-		 * Write data to the data adaptor for storage.
-		 * 
-		 * @param adaptor
-		 *            The adaptor to which the receiver's data is written
-		 */
-		@Override
-		public void write(final DataAdaptor adaptor) {
-			writeChannel(adaptor, MagnetPowerSupply.CURRENT_RB_HANDLE, name + ":CurRB", false);
-			writeChannel(adaptor, MagnetPowerSupply.CURRENT_SET_HANDLE, name + ":CurSet", true);
-			writeChannel(adaptor, MagnetMainSupply.FIELD_RB_HANDLE, name + ":FldRB", false);
-			writeChannel(adaptor, MagnetMainSupply.FIELD_SET_HANDLE, name + ":FldSet", true);
-			writeChannel(adaptor, MagnetPowerSupply.CYCLE_STATE_HANDLE, name + ":CycSt", false);
-			writeChannel(adaptor, MagnetMainSupply.CYCLE_ENABLE_HANDLE, name + ":CycEn", true);
-		}
-
-		public void writeChannel(final DataAdaptor adaptor, String handle, String signal, boolean settable) {
-
-			final DataAdaptor channelAdaptor = adaptor.createChild("channel");
-			channelAdaptor.setValue("handle", handle);
-			channelAdaptor.setValue("signal", signal);
-		}
+	
+	private void addRFCavityChannels(String ampChannel, String phaseChannel, ChannelSuite channelSuite)
+	{
+    	channelSuite.putChannel(RfCavity.CAV_AMP_SET_HANDLE, ampChannel+"Ctl", true);
+    	channelSuite.putChannel(RfCavity.CAV_PHASE_SET_HANDLE, phaseChannel+"Ctl", true);
+    	channelSuite.putChannel(RfCavity.CAV_AMP_AVG_HANDLE, ampChannel, false);
+    	channelSuite.putChannel(RfCavity.CAV_PHASE_AVG_HANDLE, phaseChannel, false);
 	}
 
 	private static class MagnetSupply extends MagnetMainSupply {
-		public MagnetSupply(String name) {
-			super(null);
-			strId = name + "-PS";
-			channelSuite = new MagnetChannelSuite(name);
+		public MagnetSupply(Accelerator acc, String name) {
+			super(acc);
+			strId = name + "-PS";			
+			addChannels(name);
+			acc.putMagnetMainSupply(this);
+		}
+
+		private void addChannels(String name) {
+			channelSuite.putChannel(MagnetPowerSupply.CURRENT_RB_HANDLE, name + ":CurRB", false);
+			channelSuite.putChannel(MagnetPowerSupply.CURRENT_SET_HANDLE, name + ":CurSet", true);
+			channelSuite.putChannel(MagnetMainSupply.FIELD_RB_HANDLE, name + ":FldRB", false);
+			channelSuite.putChannel(MagnetMainSupply.FIELD_SET_HANDLE, name + ":FldSet", true);
+			channelSuite.putChannel(MagnetPowerSupply.CYCLE_STATE_HANDLE, name + ":CycSt", false);
+			channelSuite.putChannel(MagnetMainSupply.CYCLE_ENABLE_HANDLE, name + ":CycEn", true);			
 		}
 	}
 
@@ -443,8 +362,7 @@ public class OpenXalExporter implements Exporter {
 		double L = element.getLength();
 		double G = element.getQuadrupoleGradient();
 
-		final MagnetSupply ps = new MagnetSupply(element.getName());
-		magnetPowerSupplies.add(ps);
+		final MagnetSupply ps = new MagnetSupply(acc, element.getName());		
 		xal.smf.impl.Quadrupole quad = new xal.smf.impl.Quadrupole(element.getName()) { // there's
 																						// no
 																						// setter
@@ -457,7 +375,7 @@ public class OpenXalExporter implements Exporter {
 																						// class)
 			{
 				_type = "Q";
-				channelSuite = new ElectromagnetChannelSuite(element.getName());
+				addElectromagnetChannels(element.getName(), channelSuite);				
 				mainSupplyId = ps.getId();
 			}
 		};
@@ -484,12 +402,11 @@ public class OpenXalExporter implements Exporter {
 
 	private AcceleratorNode exportCorrector(final Corrector element, AcceleratorSeq seq, double currentPosition,
 			double L) {
-		final MagnetSupply vcps = new MagnetSupply(element.getName() + "-VC");
-		magnetPowerSupplies.add(vcps);
+		final MagnetSupply vcps = new MagnetSupply(acc, element.getName() + "-VC");		
 
 		VDipoleCorr vcorr = new VDipoleCorr(element.getName() + "-VC") {
-			{
-				channelSuite = new ElectromagnetChannelSuite(element.getName() + "-VC");
+			{				
+				addElectromagnetChannels(element.getName() + "-VC", channelSuite);
 				mainSupplyId = vcps.getId();
 			}
 		};
@@ -499,12 +416,11 @@ public class OpenXalExporter implements Exporter {
 		updateApertureBucket(element, vcorr.getAper());
 		seq.addNode(vcorr);
 
-		final MagnetSupply hcps = new MagnetSupply(element.getName() + "-HC");
-		magnetPowerSupplies.add(hcps);
+		final MagnetSupply hcps = new MagnetSupply(acc, element.getName() + "-HC");
 
 		HDipoleCorr hcorr = new HDipoleCorr(element.getName() + "-HC") {
-			{
-				channelSuite = new ElectromagnetChannelSuite(element.getName() + "-HC");
+			{				
+				addElectromagnetChannels(element.getName() + "-HC", channelSuite);
 				mainSupplyId = hcps.getId();
 			}
 		};
@@ -537,12 +453,11 @@ public class OpenXalExporter implements Exporter {
 		double k = beta_gamma_Er_by_e0_c;
 		double B0 = k / rho * Math.signum(alpha_deg);
 
-		final MagnetSupply ps = new MagnetSupply(element.getName());
-		magnetPowerSupplies.add(ps);
+		final MagnetSupply ps = new MagnetSupply(acc, element.getName());		
 		se.lu.esss.ics.jels.smf.impl.ESSBend bend = new se.lu.esss.ics.jels.smf.impl.ESSBend(element.getName(),
 				Orientation.HORIZONTAL.equals(element.getOrientation()) ? MagnetType.HORIZONTAL : MagnetType.VERTICAL) {
 			{
-				channelSuite = new ElectromagnetChannelSuite(element.getName());
+				addElectromagnetChannels(element.getName(), channelSuite);				
 				mainSupplyId = ps.getId();
 			}
 		};
@@ -590,11 +505,8 @@ public class OpenXalExporter implements Exporter {
 		gap.getRfGap().setLength(length);
 		gap.getRfGap().setAmpFactor(1.0);
 
-		ESSRfCavity cavity = new ESSRfCavity(element.getName()) {
-			{
-				channelSuite = new RFCavityChannelSuite(element.getName());
-			}
-		};
+		ESSRfCavity cavity = new ESSRfCavity(element.getName());
+		addRFCavityChannels(element.getName(), cavity.channelSuite());
 		cavity.addNode(gap);
 		cavity.getRfField().setPhase(Phis);
 		cavity.getRfField().setAmplitude(E0TL * 1e-6 / length);
@@ -647,11 +559,8 @@ public class OpenXalExporter implements Exporter {
 		int n = element.getCellNumber();
 		int m = element.getMode();
 
-		ESSRfCavity cavity = new ESSRfCavity(element.getName()) {
-			{
-				channelSuite = new RFCavityChannelSuite(element.getName());
-			}
-		};
+		ESSRfCavity cavity = new ESSRfCavity(element.getName());
+		addRFCavityChannels(element.getName(), cavity.channelSuite());
 		cavity.getRfField().setPhase(Phis);
 		cavity.getRfField().setAmplitude(E0T * 1e-6);
 		cavity.getRfField().setFrequency(frequency * 1e-6);
@@ -766,8 +675,7 @@ public class OpenXalExporter implements Exporter {
 
 		// setup
 		// QUAD1,2
-		final MagnetSupply ps1 = new MagnetSupply(element.getName() + "A");
-		magnetPowerSupplies.add(ps1);
+		final MagnetSupply ps1 = new MagnetSupply(acc, element.getName() + "A");
 
 		xal.smf.impl.Quadrupole quad1 = new xal.smf.impl.Quadrupole(element.getName() + ":Q1") { // there's
 																									// no
@@ -781,7 +689,8 @@ public class OpenXalExporter implements Exporter {
 																									// class)
 			{
 				_type = "Q";
-				channelSuite = new ElectromagnetChannelSuite(element.getName(), "B1");
+				addElectromagnetChannels(element.getName(), "B1", channelSuite);
+				
 				mainSupplyId = ps1.getId();
 			}
 		};
@@ -791,8 +700,7 @@ public class OpenXalExporter implements Exporter {
 		quad1.setDfltField(B1);
 		quad1.getMagBucket().setPolarity(1);
 
-		final MagnetSupply ps2 = new MagnetSupply(element.getName() + "B");
-		magnetPowerSupplies.add(ps2);
+		final MagnetSupply ps2 = new MagnetSupply(acc, element.getName() + "B");		
 
 		xal.smf.impl.Quadrupole quad2 = new xal.smf.impl.Quadrupole(element.getName() + ":Q2") { // there's
 																									// no
@@ -806,7 +714,7 @@ public class OpenXalExporter implements Exporter {
 																									// class)
 			{
 				_type = "Q";
-				channelSuite = new ElectromagnetChannelSuite(element.getName(), "B2");
+				addElectromagnetChannels(element.getName(), "B2", channelSuite);				
 				mainSupplyId = ps2.getId();
 			}
 		};
@@ -830,12 +738,8 @@ public class OpenXalExporter implements Exporter {
 		gap.getRfGap().setAmpFactor(1.0);
 		gap.getRfGap().setTTF(1.0);
 
-		ESSRfCavity dtlTank = new ESSRfCavity(element.getName()) {
-			{
-				channelSuite = new RFCavityChannelSuite(element.getName());
-			}
-		};
-		;
+		ESSRfCavity dtlTank = new ESSRfCavity(element.getName());
+		addRFCavityChannels(element.getName(), dtlTank.channelSuite());
 		dtlTank.addNode(quad1);
 		dtlTank.addNode(gap);
 		dtlTank.addNode(quad2);
