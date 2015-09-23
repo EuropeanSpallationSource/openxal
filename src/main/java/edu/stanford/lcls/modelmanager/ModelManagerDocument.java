@@ -178,13 +178,14 @@ public class ModelManagerDocument extends AcceleratorDocument {
     
 
 	public void acceleratorChanged() {
-		if (accelerator != null) {
-			setHasChanges(true);
+		if (accelerator != null) {			
 			// If model already exists update it!
 			if (model != null) {
 				model.setAccelerator(accelerator);
 			}
-		} 
+		}
+		generateDocumentTitle();
+		setHasChanges(false);
 	}
 
 	public void selectedSequenceChanged() {
@@ -216,6 +217,13 @@ public class ModelManagerDocument extends AcceleratorDocument {
 			model = new BrowserModel(accelerator);
 		}
 		return model;
+	}
+
+
+	@Override
+	public void generateDocumentTitle() {		
+		final String filePath = getAcceleratorFilePath();		
+		setTitle( filePath );
 	}
 }
 

@@ -47,6 +47,7 @@ public class AcceleratorSelector extends JDialog {
 		container = new JPanel();
 		
 		input = new JTextField(30);
+		input.setText(XMLDataManager.defaultPath());
 		container.add(input);
 
 		browseButton = new JButton("Browse...");
