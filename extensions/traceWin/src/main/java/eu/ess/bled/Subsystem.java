@@ -1,6 +1,5 @@
 package eu.ess.bled;
 
-import eu.ess.bled.equipment.ComponentInstance;
 import gov.aps.jca.cas.ProcessVariable;
 
 /**
@@ -90,7 +89,6 @@ public class Subsystem implements BLEDEntity {
 	private Boolean active = true;
 	private String instanceName;
 	private Boolean virtual = false;
-	private ComponentInstance component;
 
 	public Integer getId() {
 		return id;
@@ -163,14 +161,6 @@ public class Subsystem implements BLEDEntity {
 
 	public void setVirtual(Boolean virtual) {
 		this.virtual = virtual;
-	}
-
-	public ComponentInstance getComponent() {
-		return component;
-	}
-
-	public void setComponent(ComponentInstance component) {
-		this.component = component;
 	}
 
 	protected StringBuilder getValuesAsString() {
