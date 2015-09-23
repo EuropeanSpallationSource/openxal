@@ -344,7 +344,7 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
 	 * Add a combo sequence to this accelerator
 	 * @param comboSequence The combo sequence to add
 	 */
-    protected void addComboSequence( final AcceleratorSeqCombo comboSequence ) {
+    public void addComboSequence( final AcceleratorSeqCombo comboSequence ) {
 		_comboSequences.put( comboSequence.getId(), comboSequence );
 	}
 	
