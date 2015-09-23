@@ -2,7 +2,6 @@ package eu.ess.lt.parser.tracewin;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -38,7 +37,6 @@ import eu.ess.bled.devices.lattice.Solenoid;
 import eu.ess.bled.devices.lattice.SpaceChargeCompensation;
 import eu.ess.bled.devices.lattice.ThinLens;
 import eu.ess.lt.parser.ComponentFactory;
-import eu.ess.lt.parser.Importer;
 import eu.ess.lt.parser.ValidationResult;
 
 /**
@@ -48,7 +46,7 @@ import eu.ess.lt.parser.ValidationResult;
  * @version 0.1 4 Sep 2015
  * @author Blaz Kranjc
  */
-public class TraceWinImporter implements Importer, TraceWinTags {
+public class TraceWinImporter implements TraceWinTags {
 
 	/** Speed of light */
 	public static final double C = 299792468;
@@ -98,18 +96,15 @@ public class TraceWinImporter implements Importer, TraceWinTags {
 
 		bledComponentFactory = new ComponentFactory();
 	}
-
-	@Override
-	public Collection<Subsystem> importFromTraceWin(String fileName, PrintWriter responseWriter)
+	
+	public Collection<Subsystem> importFromTraceWin(BufferedReader tracewinInput, PrintWriter responseWriter)
 			throws FileNotFoundException, IOException {
 		// Initializing
 		initClassVariables();
-		this.responseWriter = responseWriter;
-		BufferedReader br = new BufferedReader(new FileReader(fileName));
+		this.responseWriter = responseWriter;		
 
 		// Parsing
-		parseFromBufferedReader(br);
-		br.close();
+		parseFromBufferedReader(tracewinInput);		
 
 		// Putting it all together
 		buildHierarchy();

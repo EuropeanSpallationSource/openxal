@@ -20,7 +20,6 @@ import eu.ess.bled.devices.lattice.Marker;
 import eu.ess.bled.devices.lattice.NCell;
 import eu.ess.bled.devices.lattice.Quadrupole;
 import eu.ess.bled.devices.lattice.RFCavity;
-import eu.ess.lt.parser.Exporter;
 import se.lu.esss.ics.jels.smf.impl.ESSFieldMap;
 import se.lu.esss.ics.jels.smf.impl.ESSRfCavity;
 import se.lu.esss.ics.jels.smf.impl.ESSRfGap;
@@ -50,7 +49,7 @@ import xal.tools.data.DataAdaptor;
  * @author Ivo List <ivo.list@cosylab.com>
  * @author Blaz Kranjc
  */
-public class OpenXalExporter implements Exporter {
+public class OpenXalExporter {
 	// Those are the constants used during export and depend on the initial beam
 	// parameters.
 	public static final double InitialFrequency = 352.21 * 1e6;
@@ -71,8 +70,7 @@ public class OpenXalExporter implements Exporter {
 
 	/**
 	 * Main exporting entry point
-	 */
-	@Override
+	 */	
 	public Accelerator exportToOpenxal(Subsystem parentSystem, Collection<Subsystem> systems) {
 
 		// Getting lattice commands

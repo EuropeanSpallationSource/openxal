@@ -1,11 +1,15 @@
 package eu.ess.lt.tracewin;
 
+import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.net.URI;
 import java.util.Collection;
 
 import org.w3c.dom.Document;
@@ -46,7 +50,7 @@ public class TraceWin {
 	 * @throws IOException
 	 *             if there was a problem reading from file
 	 */
-	public static Accelerator loadAcceleator(String sourceFileName) throws IOException {
+	public static Accelerator loadAcceleator(URI sourceFileName) throws IOException {
 		return loadAcceleator(sourceFileName, JElsElementMapping.getInstance());
 	}
 
@@ -62,11 +66,13 @@ public class TraceWin {
 	 * @throws IOException
 	 *             if there was a problem reading from file
 	 */
-	public static Accelerator loadAcceleator(String fileName, ElementMapping modelMapping) throws IOException {
+	public static Accelerator loadAcceleator(URI fileName, ElementMapping modelMapping) throws IOException {
 		Accelerator acc = null;
 		// Importing from TraceWin formated file
 		eu.ess.lt.parser.tracewin.TraceWinImporter importer = new TraceWinImporter();
-		Collection<Subsystem> system = importer.importFromTraceWin(fileName, new PrintWriter(System.err));
+		BufferedReader br = new BufferedReader(new InputStreamReader(fileName.toURL().openStream()));
+		Collection<Subsystem> system = importer.importFromTraceWin(br, new PrintWriter(System.err));
+		br.close();
 
 		// Exporting to openxal format
 		OpenXalExporter exporter = new OpenXalExporter();
@@ -108,7 +114,7 @@ public class TraceWin {
 		System.out.println("Started parsing.");
 		Accelerator acc = null;
 		try {
-			acc = loadAcceleator(input);
+			acc = loadAcceleator(new File(input).toURI());
 		} catch (IOException e1) {
 			System.err.println("Error while trying to read file.");
 			System.exit(1);
