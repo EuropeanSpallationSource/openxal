@@ -62,7 +62,7 @@ public class ToolBarView implements SwingConstants {
 	private JFrame parent;
 	private ModelManagerDocument document;
 	private BrowserModel model;
-	private JButton loadAccelerator;
+	private JButton loadAcceleratorButton;
 	private JComboBox<String> beamlineSelector;
 	
 	/*private JComboBox<ComboItem> BPRPSelector; //Back Propagte Reference points
@@ -123,25 +123,26 @@ public class ToolBarView implements SwingConstants {
 		
 		
 		// Accelerator loader
-		loadAccelerator = new JButton("Load...");
-                loadAccelerator.setToolTipText("Load Accelerator.");
-                loadAccelerator.setAlignmentY(0.3f);
-                loadAccelerator.setEnabled(true);
-                loadAccelerator.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-		                //AcceleratorActionFactory.loadAcceleratorAction( document ).actionPerformed( null );
-                                AcceleratorSelector selector = new AcceleratorSelector(parent);
-                                selector.setLocationRelativeTo(null);
-                                selector.setVisible(true);
+		loadAcceleratorButton = new JButton("Load...");
+		loadAcceleratorButton.setToolTipText("Load Accelerator.");
+		loadAcceleratorButton.setAlignmentY(0.3f);
+		loadAcceleratorButton.setEnabled(false);
+		loadAcceleratorButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// AcceleratorActionFactory.loadAcceleratorAction( document
+				// ).actionPerformed( null );
+				AcceleratorSelector selector = new AcceleratorSelector(parent);
+				selector.setLocationRelativeTo(null);
+				selector.setVisible(true);
 
 				if (selector.getSelectedAccelerator() != null) {
-                                    document.setAccelerator(selector.getSelectedAccelerator(), selector.getAcceleratorPath());
-                                }
-                        }
-                });
-                toolBarView.add(loadAccelerator);
-                toolBarView.addSeparator(small);
+					document.setAccelerator(selector.getSelectedAccelerator(), selector.getAcceleratorPath());
+				}
+			}
+		});
+		toolBarView.add(loadAcceleratorButton);
+		toolBarView.addSeparator(small);
 		
 		// beamline selection
 		final JPanel bs = new JPanel();
@@ -656,6 +657,9 @@ public class ToolBarView implements SwingConstants {
 			BPRPModeSelector.setEnabled(false);
 			BPRPSelector.setEnabled(false);			
 		}*/
+		
+		loadAcceleratorButton.setEnabled(enabled);
+		
 		beamlineSelector.setEnabled(enabled);
 		
 		setInitTiwissButton.setEnabled(enabled);
