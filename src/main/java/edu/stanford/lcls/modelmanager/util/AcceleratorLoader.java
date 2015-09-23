@@ -1,7 +1,8 @@
 package edu.stanford.lcls.modelmanager.util;
 
-import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import eu.ess.lt.tracewin.TraceWin;
 import se.lu.esss.linaclego.LinacLego;
@@ -19,27 +20,22 @@ public enum AcceleratorLoader {
 	// Loader for  OpenXal accelerator files. 
 	OPEN_XAL("xal", "OpenXAL files") {
 		@Override
-		public Accelerator loadAccelerator(String url) {
-		    return XMLDataManager.acceleratorWithUrlSpec(new File(url).toURI().toString());
+		public Accelerator loadAccelerator(URI uri) {
+		    return XMLDataManager.acceleratorWithUrlSpec(uri.toString());
 		}
 	},
 	// Loader for  LinacLego accelerator files.
 	LINAC_LEGO("xml", "LinacLego files") {
 		@Override
-		public Accelerator loadAccelerator(String url) {
-			// Test if url contains interface otherwise presume
-			// it is a local file.
-			if (!url.matches("^(https?|ftp|file)://.*$")) {
-				url = new File(url).toURI().toString();
-			}
-			return LinacLego.loadAcceleator(url);
+		public Accelerator loadAccelerator(URI uri) {			
+			return LinacLego.loadAcceleator(uri.toString());
 		}
 	},//TODO put TraceWin in openxal.extensions
 	TRACE_WIN("dat", "TraceWin files"){
 		@Override
-		public Accelerator loadAccelerator(String url) {
+		public Accelerator loadAccelerator(URI uri) {
 			try {
-				return TraceWin.loadAcceleator(url);
+				return TraceWin.loadAcceleator(uri);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -67,7 +63,7 @@ public enum AcceleratorLoader {
 	 * @param url Url of accelerator file.
 	 * @return Loaded Accelerator object.
 	 */
-	protected abstract Accelerator loadAccelerator(String url);
+	protected abstract Accelerator loadAccelerator(URI uri);
 
 	/**
          * Accelerator serving method. Loads the accelerator from file
@@ -75,11 +71,12 @@ public enum AcceleratorLoader {
 	 * 
 	 * @param url Url of accelerator file.
 	 * @return Loaded Accelerator object.
+	 * @throws URISyntaxException 
 	 */
-	public Accelerator getAccelerator(String url) {
-            Accelerator acc = loadAccelerator(url);
-            DefaultTableLoader tableLoader = new DefaultTableLoader();
-            tableLoader.loadDefaultTables(acc.editContext());
+	public Accelerator getAccelerator(URI url) {
+        Accelerator acc = loadAccelerator(url);
+        DefaultTableLoader tableLoader = new DefaultTableLoader();
+        tableLoader.loadDefaultTables(acc.editContext());
 	    return acc;
 	}
 

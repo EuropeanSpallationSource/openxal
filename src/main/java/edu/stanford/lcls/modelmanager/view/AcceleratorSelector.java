@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -23,6 +25,7 @@ import xal.tools.apputils.files.FileFilterFactory;
  * 
  * @author Blaz Kranjc
  */
+@SuppressWarnings("serial")
 public class AcceleratorSelector extends JDialog {
 	private JFrame parent;
 	private JPanel container;
@@ -32,7 +35,7 @@ public class AcceleratorSelector extends JDialog {
 	private JButton cancelButton;
 	private JTextField input;
 	private Accelerator acc = null;
-	private String path;
+	private URI path;
 	private JFileChooser fileChooser;
 	
 	public AcceleratorSelector(JFrame _parent) {
@@ -47,7 +50,7 @@ public class AcceleratorSelector extends JDialog {
 		container = new JPanel();
 		
 		input = new JTextField(30);
-		input.setText(XMLDataManager.defaultPath());
+		input.setText(new File(XMLDataManager.defaultPath()).toURI().toString());
 		container.add(input);
 
 		browseButton = new JButton("Browse...");
@@ -62,8 +65,7 @@ public class AcceleratorSelector extends JDialog {
 						break;
 					case JFileChooser.APPROVE_OPTION:
 						final File fileSelection = chooser.getSelectedFile();
-						final String filePath = fileSelection.getAbsolutePath();
-						input.setText(filePath);
+						input.setText(fileSelection.toURI().toString());
 						break;
 					case JFileChooser.ERROR_OPTION:
 						break;
@@ -79,10 +81,11 @@ public class AcceleratorSelector extends JDialog {
 		acceptButton = new JButton("Accept");
 		acceptButton.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent evt) {
-				path = input.getText();
-				final String suffix = path.substring(path.lastIndexOf(".") + 1);
+			public void actionPerformed(ActionEvent evt) {				
 				try {
+					path = new URI(input.getText());
+					final String suffix = path.getPath().substring(path.getPath().lastIndexOf(".") + 1);
+					
 					AcceleratorLoader loader = AcceleratorLoader.findAcceleratorBySuffix(suffix);
 					acc = loader.getAccelerator(path);
 					if (acc != null) {
@@ -94,6 +97,8 @@ public class AcceleratorSelector extends JDialog {
 					}
 				} catch (UnsupportedOperationException e) {
 					JOptionPane.showMessageDialog(null, e.getMessage(), "Load error", JOptionPane.ERROR_MESSAGE);
+				} catch (URISyntaxException e) {
+					JOptionPane.showMessageDialog(null, e.getMessage(), "URL error", JOptionPane.ERROR_MESSAGE);					
 				}
 			}
 		});
@@ -117,7 +122,7 @@ public class AcceleratorSelector extends JDialog {
 	}
 
 	public String getAcceleratorPath() {
-		return path;
+		return path.toString();
 	}
 	
 	private JFileChooser getJFileChooser()

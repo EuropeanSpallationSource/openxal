@@ -11,7 +11,6 @@
 package edu.stanford.lcls.modelmanager;
 
 import edu.stanford.lcls.modelmanager.dbmodel.BrowserModel;
-import edu.stanford.lcls.modelmanager.dbmodel.DataManager;
 import edu.stanford.lcls.modelmanager.view.ModelManagerFeature;
 import edu.stanford.slac.Message.Message;
 import xal.extension.application.Commander;
