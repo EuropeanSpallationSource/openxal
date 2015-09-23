@@ -3,10 +3,13 @@ package edu.stanford.lcls.modelmanager.util;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 
 import eu.ess.lt.tracewin.TraceWin;
 import se.lu.esss.linaclego.LinacLego;
 import xal.smf.Accelerator;
+import xal.smf.AcceleratorSeq;
+import xal.smf.AcceleratorSeqCombo;
 import xal.smf.data.XMLDataManager;
 
 
@@ -22,20 +25,25 @@ public enum AcceleratorLoader {
 		@Override
 		public Accelerator loadAccelerator(URI uri) {
 		    return XMLDataManager.acceleratorWithUrlSpec(uri.toString());
+
 		}
 	},
 	// Loader for  LinacLego accelerator files.
 	LINAC_LEGO("xml", "LinacLego files") {
 		@Override
 		public Accelerator loadAccelerator(URI uri) {			
-			return LinacLego.loadAcceleator(uri.toString());
+			Accelerator accelerator = LinacLego.loadAcceleator(uri.toString());
+			addDefaultComboSeq(accelerator);
+			return accelerator;
 		}
 	},//TODO put TraceWin in openxal.extensions
 	TRACE_WIN("dat", "TraceWin files"){
 		@Override
 		public Accelerator loadAccelerator(URI uri) {
 			try {
-				return TraceWin.loadAcceleator(uri);
+				Accelerator accelerator = TraceWin.loadAcceleator(uri);
+				addDefaultComboSeq(accelerator);
+				return accelerator;
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -123,7 +131,18 @@ public enum AcceleratorLoader {
 			i++;
 		}
 		return descs;
-}
+	}
+	
+	protected void addDefaultComboSeq(Accelerator acc)
+	{		
+		List<AcceleratorSeq> seqs = acc.getSequences();
+		String name;
+		if (seqs.size() >= 2) 
+			name = seqs.get(0).getId() + "-" + seqs.get(seqs.size()-1).getId();
+		else 
+			name = "ALL";		
+		acc.addComboSequence(new AcceleratorSeqCombo(name, seqs));
+	}
 	
 }
 
