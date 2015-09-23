@@ -1,25 +1,22 @@
 package edu.stanford.lcls.modelmanager.view;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.lang.UnsupportedOperationException;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import xal.smf.Accelerator;
-import xal.tools.apputils.files.FileFilterFactory;
-
-import edu.stanford.lcls.modelmanager.ModelManagerDocument;
 import edu.stanford.lcls.modelmanager.util.AcceleratorLoader;
+import xal.smf.Accelerator;
+import xal.smf.data.XMLDataManager;
+import xal.tools.apputils.files.FileFilterFactory;
 
 /**
  * View for selection of accelerator file or URL.
@@ -36,7 +33,8 @@ public class AcceleratorSelector extends JDialog {
 	private JTextField input;
 	private Accelerator acc = null;
 	private String path;
-
+	private JFileChooser fileChooser;
+	
 	public AcceleratorSelector(JFrame _parent) {
 		super(_parent);
 		parent = _parent;
@@ -55,10 +53,7 @@ public class AcceleratorSelector extends JDialog {
 		browseButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent evt) {
-				JFileChooser chooser = new JFileChooser();
-				chooser.setMultiSelectionEnabled(false);
-				FileFilterFactory.applyFileFilters(chooser, AcceleratorLoader.getSupportedTypes(),
-						AcceleratorLoader.getSupportedTypesDescriptions());
+				JFileChooser chooser = getJFileChooser(); 
 				int status = chooser.showOpenDialog(parent);
 				try {
 					switch (status) {
@@ -123,4 +118,16 @@ public class AcceleratorSelector extends JDialog {
 	public String getAcceleratorPath() {
 		return path;
 	}
+	
+	private JFileChooser getJFileChooser()
+	{
+		if (fileChooser == null) {
+			fileChooser = new JFileChooser(XMLDataManager.defaultPath());
+			fileChooser.setMultiSelectionEnabled(false);
+			FileFilterFactory.applyFileFilters(fileChooser, AcceleratorLoader.getSupportedTypes(),
+					AcceleratorLoader.getSupportedTypesDescriptions());
+		}
+		return fileChooser;
+	}
+	
 }

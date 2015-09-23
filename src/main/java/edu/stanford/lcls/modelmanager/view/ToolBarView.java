@@ -62,7 +62,10 @@ public class ToolBarView implements SwingConstants {
 	private JFrame parent;
 	private ModelManagerDocument document;
 	private BrowserModel model;
+	
 	private JButton loadAcceleratorButton;
+	private AcceleratorSelector acceleratorSelector;
+	
 	private JComboBox<String> beamlineSelector;
 	
 	/*private JComboBox<ComboItem> BPRPSelector; //Back Propagte Reference points
@@ -123,6 +126,7 @@ public class ToolBarView implements SwingConstants {
 		
 		
 		// Accelerator loader
+		acceleratorSelector = new AcceleratorSelector(parent);
 		loadAcceleratorButton = new JButton("Load...");
 		loadAcceleratorButton.setToolTipText("Load Accelerator.");
 		loadAcceleratorButton.setAlignmentY(0.3f);
@@ -132,12 +136,12 @@ public class ToolBarView implements SwingConstants {
 			public void actionPerformed(ActionEvent e) {
 				// AcceleratorActionFactory.loadAcceleratorAction( document
 				// ).actionPerformed( null );
-				AcceleratorSelector selector = new AcceleratorSelector(parent);
-				selector.setLocationRelativeTo(null);
-				selector.setVisible(true);
+				
+				acceleratorSelector.setLocationRelativeTo(null);
+				acceleratorSelector.setVisible(true);
 
-				if (selector.getSelectedAccelerator() != null) {
-					document.setAccelerator(selector.getSelectedAccelerator(), selector.getAcceleratorPath());
+				if (acceleratorSelector.getSelectedAccelerator() != null) {
+					document.setAccelerator(acceleratorSelector.getSelectedAccelerator(), acceleratorSelector.getAcceleratorPath());
 				}
 			}
 		});
