@@ -19,7 +19,7 @@ import xal.extension.solver.Solver;
 import xal.extension.solver.Stopper;
 import xal.extension.solver.Trial;
 import xal.extension.solver.Variable;
-import xal.extension.solver.market.AlgorithmStrategy;
+import xal.extension.solver.algorithm.SearchAlgorithm;
 import xal.extension.widgets.olmplot.EnvelopeCurve;
 import xal.extension.widgets.olmplot.PLANE;
 import xal.extension.widgets.plot.BasicGraphData;
@@ -251,7 +251,7 @@ public class Matcher implements Runnable, Stopper {
 			int i = 0;
 			
 			@Override
-			public void trialVetoed(AlgorithmSchedule algorithmSchedule, Trial trial) {
+			public void trialVetoed(AlgorithmSchedule algorithmSchedule, Trial trial) {				
 			}
 			
 			@Override
@@ -261,15 +261,16 @@ public class Matcher implements Runnable, Stopper {
 				progress = solver.getScoreBoard().getElapsedTime() / (timeLimit*60); 
 
 			}
-			
+
 			@Override
-			public void strategyWillExecute(AlgorithmSchedule schedule,
-					AlgorithmStrategy strategy, ScoreBoard scoreBoard) {
+			public void algorithmRunWillExecute(AlgorithmSchedule schedule, SearchAlgorithm algorithm,
+					ScoreBoard scoreBoard) {				
 			}
-			
+
+
 			@Override
-			public void strategyExecuted(AlgorithmSchedule schedule,
-					AlgorithmStrategy strategy, ScoreBoard scoreBoard) {
+			public void algorithmRunExecuted(AlgorithmSchedule schedule, SearchAlgorithm algorithm,
+					ScoreBoard scoreBoard) {			
 			}
 		});
 		
