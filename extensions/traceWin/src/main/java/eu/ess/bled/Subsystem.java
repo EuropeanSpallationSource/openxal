@@ -1,7 +1,5 @@
 package eu.ess.bled;
 
-import gov.aps.jca.cas.ProcessVariable;
-
 /**
  * <p>
  * <code>Subsystem</code> is the base element for all elements in the control
