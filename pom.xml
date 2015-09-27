@@ -16,7 +16,9 @@
 
 
 	<modules>
-		<module>services</module>
+		<module>optics</module>
+		<module>rdb</module>
+		<module>testservice</module>
 	</modules>
 
 	<repositories>
@@ -66,12 +68,4 @@
 
 	</dependencies>
 
-
-
-
-
 </project>
-
-
-
-      
