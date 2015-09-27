@@ -46,6 +46,11 @@
 		<version>1.0.5-SNAPSHOT</version>
 	</dependency>
 	<dependency>
+		<groupId>org.xal</groupId>
+		<artifactId>openxal.extensions.tracewin</artifactId>
+		<version>1.0.5-SNAPSHOT</version>
+	</dependency>
+	<dependency>
 		<groupId>postgresql</groupId>
 		<artifactId>postgresql</artifactId>
 		<scope>runtime</scope>
