@@ -5,12 +5,12 @@
   <parent>
 	<groupId>org.xal</groupId>
 	<artifactId>openxal.extensions</artifactId>
-    <version>1.0.5-SNAPSHOT</version>
+    <version>1.0.5</version>
   </parent>
 	
   <groupId>org.xal</groupId>
   <artifactId>openxal.extensions.zplot</artifactId>
-  <version>1.0.5-SNAPSHOT</version>
+  <version>1.0.5</version>
   <packaging>jar</packaging>
 
   <name>zplot</name>
