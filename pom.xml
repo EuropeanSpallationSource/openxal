@@ -17,7 +17,6 @@
 
 	<modules>
 		<module>services</module>
-		<module>support</module>
 	</modules>
 
 	<repositories>
