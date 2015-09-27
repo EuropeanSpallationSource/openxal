@@ -4,11 +4,11 @@
   <parent>
 	<groupId>org.xal</groupId>
 	<artifactId>openxal.apps</artifactId>
-	<version>1.0.5</version>	
+	<version>1.0.6-SNAPSHOT</version>	
   </parent>
 	
   <artifactId>openxal.apps.modelmanager</artifactId> 
-  <version>1.0.5</version>
+  <version>1.0.6-SNAPSHOT</version>
   
   <build>
 	<plugins>
@@ -33,22 +33,22 @@
 	<dependency>
 		<groupId>org.xal</groupId>
 		<artifactId>openxal.extensions.zplot</artifactId>
-		<version>1.0.5</version>
+		<version>1.0.6-SNAPSHOT</version>
 	</dependency>
 	<dependency>
 		<groupId>se.lu.esss.ics.jels</groupId>
 		<artifactId>jels</artifactId>
-		<version>1.0.5</version>
+		<version>1.0.6-SNAPSHOT</version>
 	</dependency>
 	<dependency>
 		<groupId>se.lu.esss.ics.linaclego</groupId>
 		<artifactId>openxal.extensions.linaclego</artifactId>
-		<version>1.0.5</version>
+		<version>1.0.6-SNAPSHOT</version>
 	</dependency>
 	<dependency>
 		<groupId>org.xal</groupId>
 		<artifactId>openxal.extensions.tracewin</artifactId>
-		<version>1.0.5</version>
+		<version>1.0.6-SNAPSHOT</version>
 	</dependency>
 	<dependency>
 		<groupId>postgresql</groupId>
