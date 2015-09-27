@@ -4,11 +4,11 @@
 
 	<parent>
 		<groupId>org.xal</groupId>
-		<artifactId>openxal.apps.meme.services</artifactId>
-		<version>1.0.5-SNAPSHOT</version>
+		<artifactId>openxal.apps.meme</artifactId>
+		<version>1.0.5</version>
 	</parent>
 
-	<artifactId>openxal.apps.meme.services.optics</artifactId>
+	<artifactId>openxal.apps.meme.optics</artifactId>
 
 	<packaging>jar</packaging>
 
@@ -32,15 +32,6 @@
 			</plugin>
 		</plugins>
 	</build>
-
-	<dependencies>
-		<dependency>
-			<groupId>org.xal</groupId>
-			<artifactId>openxal.apps.meme.support</artifactId>
-			<version>1.0.5-SNAPSHOT</version>
-		</dependency>
-	</dependencies>
-
-
+	
 </project>
 
