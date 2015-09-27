@@ -27,6 +27,7 @@
 		<module>widgets</module>
 		<module>jels</module>
 		<module>linaclego</module>
+		<module>traceWin</module>
 		<module>../services/pvlogger/extension</module>			
 		<module>../services/worker/extension</module>					
 	</modules>
