@@ -88,7 +88,10 @@ public class Subsystem implements BLEDEntity {
 	private String instanceName;
 	private Boolean virtual = false;
 
+	private static int nextid = 0;
+	
 	public Integer getId() {
+		if (id == null) id = nextid++;
 		return id;
 	}
 

@@ -97,20 +97,22 @@ public class TraceWinImporter implements TraceWinTags {
 		bledComponentFactory = new ComponentFactory();
 	}
 	
-	public Collection<Subsystem> importFromTraceWin(BufferedReader tracewinInput, PrintWriter responseWriter)
+	public List<Subsystem> importFromTraceWin(BufferedReader tracewinInput, PrintWriter responseWriter)
 			throws FileNotFoundException, IOException {
 		// Initializing
 		initClassVariables();
 		this.responseWriter = responseWriter;		
 
 		// Parsing
-                Subsystem parentSubsystem = new Subsystem();
+   		Subsystem parentSubsystem = new Subsystem();
+   		parentSubsystem.setName("Accelerator");
 		parseFromBufferedReader(parentSubsystem, tracewinInput);		
 
 		// Putting it all together
 		buildHierarchy();
 
-		Collection<Subsystem> allSubsystems = new ArrayList<Subsystem>();
+		List<Subsystem> allSubsystems = new ArrayList<Subsystem>();
+		allSubsystems.add(parentSubsystem);
 		allSubsystems.addAll(Arrays.asList(section.getBeamlines()));
 		allSubsystems.addAll(Arrays.asList(section.getSlots()));
 		allSubsystems.addAll(Arrays.asList(section.getComponents()));

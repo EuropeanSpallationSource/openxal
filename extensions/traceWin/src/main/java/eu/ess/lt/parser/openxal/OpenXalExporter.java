@@ -71,7 +71,7 @@ public class OpenXalExporter {
 	/**
 	 * Main exporting entry point
 	 */	
-	public Accelerator exportToOpenxal(Subsystem parentSystem, Collection<Subsystem> systems) {
+	public Accelerator exportToOpenxal(Subsystem parentSystem, List<Subsystem> systems) {		
 		leafComparator.init(systems);
 		
 		// Getting lattice commands

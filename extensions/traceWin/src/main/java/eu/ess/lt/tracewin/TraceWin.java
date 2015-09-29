@@ -11,6 +11,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.util.Collection;
+import java.util.List;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -71,12 +72,12 @@ public class TraceWin {
 		// Importing from TraceWin formated file
 		eu.ess.lt.parser.tracewin.TraceWinImporter importer = new TraceWinImporter();
 		BufferedReader br = new BufferedReader(new InputStreamReader(fileName.toURL().openStream()));
-		Collection<Subsystem> system = importer.importFromTraceWin(br, new PrintWriter(System.err));
+		List<Subsystem> systems = importer.importFromTraceWin(br, new PrintWriter(System.err));
 		br.close();
 
 		// Exporting to openxal format
 		OpenXalExporter exporter = new OpenXalExporter();
-		acc = exporter.exportToOpenxal(null, system);
+		acc = exporter.exportToOpenxal(systems.get(0), systems);
 
 		// Setting element mapping
 		acc.setElementMapping(modelMapping);
