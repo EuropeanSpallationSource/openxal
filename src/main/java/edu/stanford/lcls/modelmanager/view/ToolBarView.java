@@ -10,6 +10,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -34,6 +36,10 @@ import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
+import org.openepics.discs.exporters.OpenXALExporter;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 import edu.stanford.lcls.modelmanager.ModelManagerDocument;
 import edu.stanford.lcls.modelmanager.ModelManagerWindow;
 import edu.stanford.lcls.modelmanager.dbmodel.BrowserModel;
@@ -50,6 +56,8 @@ import se.lu.esss.ics.jels.matcher.MatcherDialog;
 import xal.extension.widgets.apputils.SimpleProbeEditor;
 import xal.model.ModelException;
 import xal.service.pvlogger.apputils.browser.PVLogSnapshotChooser;
+import xal.tools.xml.XmlDataAdaptor;
+import xal.tools.xml.XmlWriter;
 
 /**
  * QueryView is the view for querying the database for the machine models.
@@ -146,8 +154,44 @@ public class ToolBarView implements SwingConstants {
 			}
 		});
 		toolBarView.add(loadAcceleratorButton);
-		toolBarView.addSeparator(small);
 		
+		
+/*		JButton saveButton = new JButton("Save...");		
+		saveButton.setAlignmentY(0.3f);		
+		saveButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				String fileName = "C:\\data\\ESS\\lattices\\export\\test.xdxf";
+
+				XmlDataAdaptor da = XmlDataAdaptor.newEmptyDocumentAdaptor();
+
+				Document document = da.document();
+				document.setDocumentURI(new File(fileName).toURI().toString());
+			
+				da.writeNode(ToolBarView.this.document.getAccelerator());
+				OpenXALExporter.cleanup(document);
+			
+				Element root = document.getDocumentElement();
+				
+				root.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
+				root.setAttributeNS("http://www.w3.org/2001/XMLSchema-instance", 
+							    "xsi:noNamespaceSchemaLocation", "http://sourceforge.net/p/xaldev/openxal/ci/master/tree/core/resources/xal/schemas/xdxf.xsd?format=raw");
+
+				System.out.printf("Writing output to: %s\n", fileName);
+				try {
+					XmlWriter.writeToFile(document, new File(fileName));
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+			}
+		});
+		toolBarView.add(saveButton);
+	*/	
+		toolBarView.addSeparator(small);
+	
 		// beamline selection
 		final JPanel bs = new JPanel();
 		bs.setOpaque(false);	
@@ -676,7 +720,7 @@ public class ToolBarView implements SwingConstants {
 		resetMachineParametersButton.setEnabled(enabled && model.getRunState().equals(RunState.FETCHED_DATA));
 		
 		runModelButton.setEnabled(enabled);
-		upload2DBButton.setEnabled(enabled && model.getRunMachineModel()!=null);
+		upload2DBButton.setEnabled(enabled && model.getRunMachineModel()!=null && !model.getRunState().equals(RunState.FETCHED_DATA));
 		makeGoldButton.setEnabled(enabled && model.getSelectedMachineModel() != null);
 		//export2MADButton.setEnabled(enabled && !model.isRunMachineModelNull());
 //		helpButton.setEnabled(enabled);
