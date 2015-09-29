@@ -529,7 +529,7 @@ public class DataManager {
 			else if (node instanceof RfCavity) {
 				try {
 					deviceValue = scenario.propertiesForNode(node).get(RfCavityPropertyAccessor.PROPERTY_PHASE).toString();
-					MachineModelDevice tmp6 = new MachineModelDevice(node.getId(),"P",deviceValue,deviceValue,"Rad",zpos);//CHECK initial value
+					MachineModelDevice tmp6 = new MachineModelDevice(node.getId(),"P",deviceValue,deviceValue,"deg",zpos);//CHECK initial value
 					runMachineModelDevice.add(tmp6);
 					
 					deviceValue = scenario.propertiesForNode(node).get(RfCavityPropertyAccessor.PROPERTY_AMPLITUDE).toString();
@@ -541,7 +541,7 @@ public class DataManager {
 				}
 				if (Scenario.SYNC_MODE_DESIGN.equals("DESIGN")) {
 					deviceValue = Double.toString(((RfCavity) node).getDfltAvgCavPhase());
-					MachineModelDevice tmp8 = new MachineModelDevice(node.getId(),"PDES",deviceValue,deviceValue,"Rad",zpos);//CHECK initial value
+					MachineModelDevice tmp8 = new MachineModelDevice(node.getId(),"PDES",deviceValue,deviceValue,"deg",zpos);//CHECK initial value
 					runMachineModelDevice.add(tmp8);
 
                     deviceValue = Double.toString(((RfCavity) node).getDfltCavAmp());
