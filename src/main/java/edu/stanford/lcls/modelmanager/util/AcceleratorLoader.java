@@ -33,7 +33,7 @@ public enum AcceleratorLoader {
 		@Override
 		public Accelerator loadAccelerator(URI uri) {			
 			Accelerator accelerator = LinacLego.loadAcceleator(uri.toString());
-			addDefaultComboSeq(accelerator);
+			if (accelerator != null) addDefaultComboSeq(accelerator);
 			return accelerator;
 		}
 	},//TODO put TraceWin in openxal.extensions
@@ -42,7 +42,7 @@ public enum AcceleratorLoader {
 		public Accelerator loadAccelerator(URI uri) {
 			try {
 				Accelerator accelerator = TraceWin.loadAcceleator(uri);
-				addDefaultComboSeq(accelerator);
+				if (accelerator != null) addDefaultComboSeq(accelerator);
 				return accelerator;
 			} catch (IOException e) {
 				e.printStackTrace();
