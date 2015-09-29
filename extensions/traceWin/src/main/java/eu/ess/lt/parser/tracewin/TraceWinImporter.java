@@ -104,7 +104,8 @@ public class TraceWinImporter implements TraceWinTags {
 		this.responseWriter = responseWriter;		
 
 		// Parsing
-		parseFromBufferedReader(tracewinInput);		
+                Subsystem parentSubsystem = new Subsystem();
+		parseFromBufferedReader(parentSubsystem, tracewinInput);		
 
 		// Putting it all together
 		buildHierarchy();
@@ -125,7 +126,7 @@ public class TraceWinImporter implements TraceWinTags {
 	 * @throws IOException
 	 *             if there is a problem reading form the stream.
 	 */
-	private void parseFromBufferedReader(BufferedReader reader) throws IOException {
+	private void parseFromBufferedReader(Subsystem parentSubsystem, BufferedReader reader) throws IOException {
 		String line = null;
 		String originalLine = null;
 		int idx, trailinglen;
@@ -179,7 +180,7 @@ public class TraceWinImporter implements TraceWinTags {
 					else
 						writeFeedback("Lattice end detected before lattice start!");
 				}
-				readLatticeCommand(reader, originalLine, section, name);
+				readLatticeCommand(reader, originalLine, section, name, parentSubsystem);
 				if (currentBeamline != null) {
 					currentBeamline.setDescription(currentBeamline.getDescription() + " " + name);
 				}
@@ -236,7 +237,7 @@ public class TraceWinImporter implements TraceWinTags {
 					}
 				}
 			} else if (isESSMetaTag(originalLine)) {
-				readESSMetaTag(originalLine, section);
+				readESSMetaTag(originalLine, section, parentSubsystem);
 				// } else if (isLatticeBoundaryCommand(originalLine)) {
 				// readLatticeBoundary(originalLine);
 			} else if (!originalLine.startsWith(COMMENT_MARKER)) {
@@ -457,13 +458,16 @@ public class TraceWinImporter implements TraceWinTags {
 	 *            {@link Subsystem} parent of the element.
 	 * @return <code>true</code> if the line is processed successfully.
 	 */
-	private boolean readESSMetaTag(String originalLine, Section section) {
+	private boolean readESSMetaTag(String originalLine, Section section, Subsystem parentSubsystem) {
 		LOG.finest("Importing ESS meta tag from line: " + originalLine);
 
 		String line = originalLine.toUpperCase().trim();
 
 		while (line.startsWith(COMMENT_MARKER)) {
-			line = line.substring(1).trim();
+			// truncate the comments;
+			while (line.startsWith(COMMENT_MARKER)) {
+				line = line.substring(1).trim();
+			}
 		}
 
 		if (line.startsWith(M_SLOT) || line.startsWith(M_BEAMLINE) || line.startsWith(M_MARKER)
@@ -478,6 +482,7 @@ public class TraceWinImporter implements TraceWinTags {
 			}
 			if (line.startsWith(M_SLOT)) {
 				Subsystem slot = bledComponentFactory.getSlot(values[1], originalLine, lastSubsystem);
+				slot.setParentSubsystem(parentSubsystem);
 				section.addSlot(slot);
 				lastSubsystem = lastSubsystem + 1;
 
@@ -486,6 +491,7 @@ public class TraceWinImporter implements TraceWinTags {
 					writeFeedback(validation.getMessage());
 			} else if (line.startsWith(M_BEAMLINE)) {
 				Subsystem beamline = bledComponentFactory.getBeamline(values[1], originalLine, lastSubsystem);
+				beamline.setParentSubsystem(parentSubsystem);
 				section.addBeamline(beamline);
 				lastSubsystem = lastSubsystem + 1;
 
@@ -494,10 +500,12 @@ public class TraceWinImporter implements TraceWinTags {
 					writeFeedback(validation.getMessage());
 			} else if (line.startsWith(M_MARKER)) {
 				Marker marker = bledComponentFactory.getMarker(values[1], lastSubsystem);
+				marker.setParentSubsystem(parentSubsystem);
 				section.addComponent(marker);
 				lastSubsystem = lastSubsystem + 1;
 			} else if (line.startsWith(M_BEGINBEAMLINE)) {
 				currentBeamline = bledComponentFactory.getBeamline(values[1], originalLine, lastSubsystem);
+				currentBeamline.setParentSubsystem(parentSubsystem);
 				section.addBeamline(currentBeamline);
 				lastSubsystem = lastSubsystem + 1;
 			}
@@ -509,8 +517,8 @@ public class TraceWinImporter implements TraceWinTags {
 	/**
 	 * Reads a command from the line.
 	 */
-	private void readLatticeCommand(BufferedReader reader, String originalLine, Section section, String name)
-			throws IOException {
+	private void readLatticeCommand(BufferedReader reader, String originalLine, Section section, String name,
+			Subsystem parentSubsystem) throws IOException {
 		LOG.finest("Importing command " + name + " from line: " + originalLine);
 		LatticeCommand latticeCommand = bledComponentFactory.getLatticeCommand(name, originalLine, lastSubsystem);
 		section.addComponent(latticeCommand);
