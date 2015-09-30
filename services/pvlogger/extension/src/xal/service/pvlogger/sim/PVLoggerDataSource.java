@@ -242,6 +242,7 @@ public class PVLoggerDataSource {
 	
 	
 	/** Get the logged magnets that are in the specified sequence */
+	// CHECK: This returns ALL magnets?
 	private List<Electromagnet> getLoggedMagnets( final AcceleratorSeq sequence ) {
 		// inlclude quadrupoles, dipole correctors and optionally bends
 		final OrTypeQualifier magnetQualifier = OrTypeQualifier.qualifierForKinds( Quadrupole.s_strType, HDipoleCorr.s_strType, VDipoleCorr.s_strType );
@@ -381,15 +382,13 @@ public class PVLoggerDataSource {
 	/**
 	 * set the model lattice with PV logger data source
 	 * @param sequence accelerator sequence
-	 * @param scenario Model Scenario object
-	 * @return a new scenario with lattice from PV logger data
+	 * @param scenario Model Scenario object that will be changed
 	 */
-	public Scenario setModelSource( final AcceleratorSeq sequence, final Scenario scenario ) {
+	public void setModelSource( final AcceleratorSeq sequence, final Scenario scenario ) {
 		_sequence = sequence;
 		
 		final List<Electromagnet> magnets = getLoggedMagnets( sequence );
-		for ( int i = 0; i < magnets.size(); i++ ) {
-			final Electromagnet magnet = magnets.get(i);
+		for ( final Electromagnet magnet : magnets) {
 			final double field = getLoggedField( magnet );
 			scenario.setModelInput( magnet, ElectromagnetPropertyAccessor.PROPERTY_FIELD, field );
 		}
@@ -399,8 +398,6 @@ public class PVLoggerDataSource {
 		} catch (SynchronizationException e) {
 			System.out.println(e);
 		}
-
-		return scenario;
 	}
 
 	public void setAccelSequence(AcceleratorSeq seq) {

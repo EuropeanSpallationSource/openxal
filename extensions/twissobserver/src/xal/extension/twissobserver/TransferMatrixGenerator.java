@@ -246,8 +246,7 @@ public class TransferMatrixGenerator {
 	public void setSyncToMachineHistory(final long lngPvLogId) throws SynchronizationException {
 	    
         PVLoggerDataSource  srcPvLog = new PVLoggerDataSource(lngPvLogId);
-        this.mdlBeamline = srcPvLog.setModelSource(this.smfSeq, this.mdlBeamline);
-        this.mdlBeamline.resync();
+        srcPvLog.setModelSource(this.smfSeq, this.mdlBeamline);
 	}
 	
 	

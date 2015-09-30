@@ -122,9 +122,7 @@ class PVLoggerSnapshotDeviceDataSource extends MeasurementDataSource {
 		if ( magnet.isPermanent() ) {
 			return magnet.getDesignField();
 		}
-		else {
-			return LOGGER_DATA_SOURCE.getLoggedField( (Electromagnet)magnet );
-		}
+		return LOGGER_DATA_SOURCE.getLoggedField( (Electromagnet)magnet );
 	}
 }
 
