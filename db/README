@@ -1,0 +1,25 @@
+Openxal-gui database
+
+1. Creating database
+	- To create database simply run "openxal-gui-db-installation.sh" as superuser.
+		Script info:
+		The script will by default do the following:
+			- Create user "machinemodel"
+			- Set user machinemodel PASSWORD to "physicsl1nacstuff"
+			- create database "machine_model"
+			- create schema "MACHINE_MODEL" on database "machine_model" and gives permissions to user "machinemodel"
+			- run database configuration file as user "machinemodel" on database "machine_model" which creates tables, etc.
+			-restart postgresql
+2. Running openxal-gui
+	- To run openxal-gui we need to give it some parameters:
+		-Necessary are:
+			-DDB_CONNECTION
+			-DDB_USERNAME
+			-DDB_PASSWORD
+	-example:
+		java -DDB_CONNECTION=jdbc:postgresql://localhost:5432/machine_model -DDB_USERNAME=machinemodel -DDB_PASSWORD=physicsl1nacstuff -jar ModelManagerMain.jar
+
+
+
+3. database description
+	- Database schema can be found under openxal-gui/db/scheme.jpg and openxal-gui/db/scheme.html
