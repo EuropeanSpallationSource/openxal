@@ -822,7 +822,7 @@ public class ToolBarView implements SwingConstants {
 				setBackground(list.getBackground());
 				setForeground(list.getForeground());
 			} 
-			if (! value.isEnabled()) {
+			if (value != null && ! value.isEnabled()) {
 				setBackground(list.getBackground());
 				setForeground(UIManager.getColor("Label.disabledForeground"));
 			}

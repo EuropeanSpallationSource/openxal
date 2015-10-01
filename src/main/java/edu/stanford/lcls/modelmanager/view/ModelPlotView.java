@@ -190,7 +190,7 @@ public class ModelPlotView implements SwingConstants {
 								dataTable, value, isSelected, hasFocus, row,
 								column);
 						if (column == plotFunctionID1
-								| column == plotFunctionID2)
+								|| column == plotFunctionID2)
 							cell.setBackground(Color.LIGHT_GRAY);
 						else
 							cell.setBackground(Color.WHITE);
@@ -243,7 +243,7 @@ public class ModelPlotView implements SwingConstants {
 															hasFocus, row,
 															column);
 											if (column == plotFunctionID1
-													| column == plotFunctionID2)
+													|| column == plotFunctionID2)
 												cell.setBackground(Color.LIGHT_GRAY);
 											else
 												cell.setBackground(Color.WHITE);

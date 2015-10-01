@@ -6,17 +6,14 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import javax.swing.ComboBoxModel;
 import javax.swing.JFrame;
 
 import xal.model.ModelException;
 import xal.sim.scenario.Scenario;
 import xal.smf.Accelerator;
-import xal.smf.AcceleratorSeq;
 import xal.tools.data.DataAdaptor;
 import xal.tools.messaging.MessageCenter;
 import xal.tools.xml.XmlDataAdaptor;
@@ -237,7 +234,7 @@ public class BrowserModel {
 
 	/** beamline selection */
 	public void setModelMode(String _modelMode) throws SQLException {
-		if (modelMode != _modelMode && runState.equals(RunState.FETCHED_DATA)) resetRunData();
+		if (!modelMode.equals(_modelMode) && runState.equals(RunState.FETCHED_DATA)) resetRunData();
 		modelMode = _modelMode;
 		rm.setModelMode(modelMode);
 		filterMachineModelInMode(_allMachineModels, _goldMachineModels, modelMode);

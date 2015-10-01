@@ -147,7 +147,7 @@ public class ModelPlotData {
 			if (deviceType.equals("BPM")) {
 				devices1[i] = new CartoonDevice(deviceName, Startz,
 						new BPMWidget());
-			} else if (deviceType.equals("LRG") | deviceType.equals("Bnch")) {
+			} else if (deviceType.equals("LRG") || deviceType.equals("Bnch")) {
 				devices1[i] = new CartoonDevice(deviceName, Startz,
 						length, new CavityWidget());
 			} else if (deviceType.equals("XBEND") || deviceType.equals("YBEND") || deviceType.equals("BEND")) {
@@ -189,7 +189,7 @@ public class ModelPlotData {
 			} else if (deviceType.equals("YCOR")) {
 				devices1[i] = new CartoonDevice(deviceName, Startz,
 						new YCorWidget());
-			} else if (deviceType.equals("marker") | deviceType.equals("MARK")) {
+			} else if (deviceType.equals("marker") || deviceType.equals("MARK")) {
 				devices1[i] = new CartoonDevice(deviceName, Startz,
 						new MarkerWidget());
 			} else {
@@ -383,7 +383,7 @@ public class ModelPlotData {
 			if (deviceType.equals("BPM")) {
 				devices1[i] = new CartoonDevice(deviceName, Startz,
 						new BPMWidget());
-			} else if (deviceType.equals("LRG") | deviceType.equals("Bnch")) {
+			} else if (deviceType.equals("LRG") || deviceType.equals("Bnch")) {
 				devices1[i] = new CartoonDevice(deviceName, Startz,
 						length, new CavityWidget());
 			} else if (deviceType.equals("YBEND") || deviceType.equals("XBEND") ) {
@@ -425,7 +425,7 @@ public class ModelPlotData {
 			} else if (deviceType.equals("YCOR")) {
 				devices1[i] = new CartoonDevice(deviceName, Startz,
 						new YCorWidget());
-			} else if (deviceType.equals("marker") | deviceType.equals("MARK")) {
+			} else if (deviceType.equals("marker") || deviceType.equals("MARK")) {
 				devices1[i] = new CartoonDevice(deviceName, Startz,
 						new MarkerWidget());
 			} else {
@@ -610,7 +610,7 @@ public class ModelPlotData {
 			} else if (deviceType.equals("YCOR") || deviceType.equals("DCV")) {
 				devices[i] = new CartoonDevice(deviceName, Startz,
 						new YCorWidget());
-			} else if (deviceType.equals("marker") | deviceType.equals("MARK")) {
+			} else if (deviceType.equals("marker") || deviceType.equals("MARK")) {
 				devices[i] = new CartoonDevice(deviceName, Startz,
 						new MarkerWidget());
 			} else {

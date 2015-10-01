@@ -17,7 +17,6 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 import xal.extension.application.XalWindow;
-import xal.extension.application.smf.AcceleratorDocument;
 import edu.stanford.lcls.modelmanager.view.ModelManagerFeature;
 
 

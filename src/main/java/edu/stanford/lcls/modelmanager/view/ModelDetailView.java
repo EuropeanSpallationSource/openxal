@@ -69,7 +69,7 @@ public class ModelDetailView implements SwingConstants {
         		new ListSelectionListener() {
         			public void valueChanged(ListSelectionEvent event) {
 						if ((!event.getValueIsAdjusting())
-								& detailTable.getSelectedRow() > -1) {
+								&& detailTable.getSelectedRow() > -1) {
 							detailTable.setDefaultRenderer(Object.class,
 									new DefaultTableCellRenderer() {
 										private static final long serialVersionUID = 1L;
@@ -84,13 +84,16 @@ public class ModelDetailView implements SwingConstants {
 															isSelected,
 															hasFocus, row,
 															column);
-											if (row == detailTable.getSelectedRow())
+											if (row == detailTable.getSelectedRow()) {
 												cell.setBackground(cell.getBackground());
+											}
 											else if (column == model.getPlotFunctionID1()
-													| column == model.getPlotFunctionID2())
+													|| column == model.getPlotFunctionID2()) {
 												cell.setBackground(Color.LIGHT_GRAY);
-											else
+											}
+											else {
 												cell.setBackground(Color.WHITE);
+											}
 											return cell;
 										}
 									});
