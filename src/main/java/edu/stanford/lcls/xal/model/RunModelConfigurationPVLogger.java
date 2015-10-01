@@ -20,7 +20,6 @@ public class RunModelConfigurationPVLogger extends RunModelConfiguration {
 	public void initialize(Scenario scenario) throws ModelException {
 		PVLoggerDataSource plds = new PVLoggerDataSource(pvLoggerId);
 		plds.setModelSource(scenario.getSequence(), scenario);
-		scenario.resync();
 	}
 
 }
