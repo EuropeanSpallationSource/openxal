@@ -475,28 +475,30 @@ public class BrowserModel {
 				Double startElementZPos = Double
 						.valueOf(_selectedMachineModelDetail[0]
 								.getPropertyValue("ZPOS").toString());
-				for (int i = 0; i < _referenceMachineModelDetail.length; i++) {
-					if (_referenceMachineModelDetail[i].getPropertyValue(
-							"ELEMENT_NAME").toString().equals(startElementName)) {
-						Double startElementRealZPos = Double
-								.valueOf(_referenceMachineModelDetail[i]
-										.getPropertyValue("ZPOS").toString());
-						if (!startElementRealZPos.equals(startElementZPos)) {
-							Double offSet = startElementRealZPos
+				if (_referenceMachineModel != null) {
+					for (int i = 0; i < _referenceMachineModelDetail.length; i++) {
+						if (_referenceMachineModelDetail[i].getPropertyValue(
+								"ELEMENT_NAME").toString().equals(startElementName)) {
+							Double startElementRealZPos = Double
+									.valueOf(_referenceMachineModelDetail[i]
+											.getPropertyValue("ZPOS").toString());
+							if (!startElementRealZPos.equals(startElementZPos)) {
+								Double offSet = startElementRealZPos
 
-									- startElementZPos;
-							for (int j = 0; j < _selectedMachineModelDetail.length; j++) {
-								Double newElementZPos = Double
-										.valueOf(_selectedMachineModelDetail[j]
-												.getPropertyValue("ZPOS")
-												.toString())
-										+ offSet;
-								_selectedMachineModelDetail[j]
-										.setPropertyValue("ZPOS",
-												newElementZPos.toString());
+										- startElementZPos;
+								for (int j = 0; j < _selectedMachineModelDetail.length; j++) {
+									Double newElementZPos = Double
+											.valueOf(_selectedMachineModelDetail[j]
+													.getPropertyValue("ZPOS")
+													.toString())
+											+ offSet;
+									_selectedMachineModelDetail[j]
+											.setPropertyValue("ZPOS",
+													newElementZPos.toString());
+								}
 							}
+							break;
 						}
-						break;
 					}
 				}
 			}
