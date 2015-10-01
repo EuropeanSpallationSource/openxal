@@ -26,8 +26,11 @@ import xal.tools.transforms.ValueTransform;
 /**
  * This class provides an interface for online model with PV logger data source.
  *
- * @version 0.1 03 Jan 2005
+ * @version 0.2 1 Oct 2015
  * @author Paul Chu
+ * @author Blaz Kranjc
+ * 
+ * TODO Things with hardcoded PV names should be redesigned
  */
 public class PVLoggerDataSource {
 	/** PV Logger */
@@ -35,7 +38,7 @@ public class PVLoggerDataSource {
     
 	private Map<String,ChannelSnapshot> SNAPSHOT_MAP;
 
-    private ChannelSnapshot[] CHANNEL_SNAPSHOTS;
+	private ChannelSnapshot[] CHANNEL_SNAPSHOTS;
 	
 	/** magnet values keyed by PV */
 	private Map<String,Double> _magnetFields;
@@ -79,7 +82,7 @@ public class PVLoggerDataSource {
     
     
 	/**
-     * Constructor
+	 * Constructor
 	 * @param id the PV logger ID
 	 */
 	public PVLoggerDataSource( final long id ) {
@@ -122,7 +125,7 @@ public class PVLoggerDataSource {
 			_magnetFields = getMagnetMap();
 			_magnetPowerSupplyValues = getMagnetPSMap();
 		}
-		catch( Exception exception ) {
+		catch ( Exception exception ) {
 			throw new RuntimeException( exception );
 		}
 	}
@@ -156,6 +159,7 @@ public class PVLoggerDataSource {
 
 		for (int i = 0; i < CHANNEL_SNAPSHOTS.length; i++) {
 			final String snapshotPV = CHANNEL_SNAPSHOTS[i].getPV();
+			// CHECK: This also matches all the power supplies
 			if ( CHANNEL_SNAPSHOTS[i].getPV().contains( "Mag:" ) ) {
 				double[] val = CHANNEL_SNAPSHOTS[i].getValue();
 				pvMap.put( snapshotPV, val[0] );
@@ -241,10 +245,14 @@ public class PVLoggerDataSource {
 	}
 	
 	
-	/** Get the logged magnets that are in the specified sequence */
-	// CHECK: This returns ALL magnets?
+	/**
+	 * Get all magnets that are in the specified sequence
+	 * TODO Misnamed method, returns all the magnets in the sequence not just the logged ones.
+	 * @param sequence Accelerator sequence to get magnets from
+	 * @return List of magnets in the sequence
+	 */
 	private List<Electromagnet> getLoggedMagnets( final AcceleratorSeq sequence ) {
-		// inlclude quadrupoles, dipole correctors and optionally bends
+		// include quadrupoles, dipole correctors and optionally bends
 		final OrTypeQualifier magnetQualifier = OrTypeQualifier.qualifierForKinds( Quadrupole.s_strType, HDipoleCorr.s_strType, VDipoleCorr.s_strType );
 		if ( _usesLoggedBendFields )  magnetQualifier.or( Bend.s_strType );	// optionally include bends
 		
@@ -298,8 +306,14 @@ public class PVLoggerDataSource {
 	}
 
 
-	/** Get the magnet's field from the PV Logger Snapshot */
-	public double getLoggedField( final Electromagnet magnet ) {
+	/**
+	 * Get the magnet's field from the PV Logger Snapshot
+	 * Throw an exception if the field is not found in the snapshot.
+	 * @param magnet The magnet to check the snapshot for
+	 * @return field of the magnet from the snapshot
+	 * @throws PvLoggerException if the field for the magnet is not in the snapshot
+	 */
+	public double getLoggedField( final Electromagnet magnet ) throws PvLoggerException {
 		double totalField = 0.0;
 
 		// use field readback
@@ -330,6 +344,7 @@ public class PVLoggerDataSource {
 					}
 					else {
 						System.out.println( "No logged field for " + magnet.getId() + " after trying: " + pvName + ", " + mainSupplyReadbackPV + ", " + mainSupplySetpointPV  );
+						throw new PvLoggerException("No logged field for magnet " + magnet.getId());
 					}
 				}
 			}
@@ -372,6 +387,9 @@ public class PVLoggerDataSource {
 					final double rawValue = _magnetFields.get( fieldReadbackPV );
 					totalField = toFieldFromRaw( magnet, readbackChannel, rawValue );
 				}
+				else {
+					throw new PvLoggerException("No logged field for magnet " + magnet.getId());
+				}
 			}
 		}
 
@@ -389,8 +407,12 @@ public class PVLoggerDataSource {
 		
 		final List<Electromagnet> magnets = getLoggedMagnets( sequence );
 		for ( final Electromagnet magnet : magnets) {
-			final double field = getLoggedField( magnet );
-			scenario.setModelInput( magnet, ElectromagnetPropertyAccessor.PROPERTY_FIELD, field );
+			try {
+				final double field = getLoggedField( magnet );
+				scenario.setModelInput( magnet, ElectromagnetPropertyAccessor.PROPERTY_FIELD, field );
+			} catch (PvLoggerException e) {
+				continue;
+			}
 		}
 
 		try {
