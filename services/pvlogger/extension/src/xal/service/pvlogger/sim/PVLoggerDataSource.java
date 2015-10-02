@@ -8,18 +8,37 @@
  */
 package xal.service.pvlogger.sim;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import xal.smf.*;
-import xal.smf.impl.*;
-import xal.smf.impl.qualify.*;
-import xal.smf.proxy.*;
-import xal.tools.ArrayValue;
-import xal.service.pvlogger.*;
-import xal.tools.database.*;
-import xal.sim.scenario.*;
-import xal.sim.sync.SynchronizationException;
 import xal.ca.Channel;
+import xal.service.pvlogger.ChannelSnapshot;
+import xal.service.pvlogger.MachineSnapshot;
+import xal.service.pvlogger.PVLogger;
+import xal.service.pvlogger.PvLoggerException;
+import xal.sim.scenario.Scenario;
+import xal.sim.sync.SynchronizationException;
+import xal.smf.AcceleratorNode;
+import xal.smf.AcceleratorSeq;
+import xal.smf.impl.Bend;
+import xal.smf.impl.CurrentMonitor;
+import xal.smf.impl.Electromagnet;
+import xal.smf.impl.HDipoleCorr;
+import xal.smf.impl.MagnetMainSupply;
+import xal.smf.impl.MagnetTrimSupply;
+import xal.smf.impl.Quadrupole;
+import xal.smf.impl.TrimmedQuadrupole;
+import xal.smf.impl.VDipoleCorr;
+import xal.smf.impl.qualify.AndTypeQualifier;
+import xal.smf.impl.qualify.KindQualifier;
+import xal.smf.impl.qualify.OrTypeQualifier;
+import xal.smf.impl.qualify.TypeQualifier;
+import xal.smf.proxy.ElectromagnetPropertyAccessor;
+import xal.tools.ArrayValue;
+import xal.tools.database.ConnectionDictionary;
+import xal.tools.database.ConnectionPreferenceController;
 import xal.tools.transforms.ValueTransform;
 
 
@@ -175,7 +194,7 @@ public class PVLoggerDataSource {
 		final Map<String, Double> pvMap = new HashMap<String, Double>();
 
 		for (int i = 0; i < CHANNEL_SNAPSHOTS.length; i++) {
-			if (CHANNEL_SNAPSHOTS[i].getPV().indexOf("Mag:PS_Q") > -1) {
+			if (CHANNEL_SNAPSHOTS[i].getPV().contains("Mag:PS_Q")) {
 				double[] val = CHANNEL_SNAPSHOTS[i].getValue();
 				pvMap.put(CHANNEL_SNAPSHOTS[i].getPV(), new Double(val[0]));
 			}
@@ -190,7 +209,7 @@ public class PVLoggerDataSource {
 		final Map<String, Double> bpmXMap = new HashMap<String, Double>();
 
 		for (int i = 0; i < CHANNEL_SNAPSHOTS.length; i++) {
-			if (CHANNEL_SNAPSHOTS[i].getPV().indexOf(":xAvg") > -1) {
+			if (CHANNEL_SNAPSHOTS[i].getPV().contains(":xAvg")) {
 				double[] val = CHANNEL_SNAPSHOTS[i].getValue();
 				bpmXMap.put(CHANNEL_SNAPSHOTS[i].getPV(), new Double(val[0]));
 			}
@@ -205,7 +224,7 @@ public class PVLoggerDataSource {
 		Map<String, Double> bpmYMap = new HashMap<String, Double>();
 
 		for (int i = 0; i < CHANNEL_SNAPSHOTS.length; i++) {
-			if (CHANNEL_SNAPSHOTS[i].getPV().indexOf(":yAvg") > -1) {
+			if (CHANNEL_SNAPSHOTS[i].getPV().contains(":yAvg")) {
 				double[] val = CHANNEL_SNAPSHOTS[i].getValue();
 				bpmYMap.put(CHANNEL_SNAPSHOTS[i].getPV(), new Double(val[0]));
 			}
@@ -220,7 +239,7 @@ public class PVLoggerDataSource {
 		final Map<String, Double> bpmYMap = new HashMap<String, Double>();
 
 		for (int i = 0; i < CHANNEL_SNAPSHOTS.length; i++) {
-			if (CHANNEL_SNAPSHOTS[i].getPV().indexOf(":amplitudeAvg") > -1) {
+			if (CHANNEL_SNAPSHOTS[i].getPV().contains(":amplitudeAvg")) {
 				double[] val = CHANNEL_SNAPSHOTS[i].getValue();
 				bpmYMap.put(CHANNEL_SNAPSHOTS[i].getPV(), new Double(val[0]));
 			}
@@ -235,7 +254,7 @@ public class PVLoggerDataSource {
 		final Map<String, Double> bpmYMap = new HashMap<String, Double>();
 
 		for (int i = 0; i < CHANNEL_SNAPSHOTS.length; i++) {
-			if (CHANNEL_SNAPSHOTS[i].getPV().indexOf(":phaseAvg") > -1) {
+			if (CHANNEL_SNAPSHOTS[i].getPV().contains(":phaseAvg")) {
 				double[] val = CHANNEL_SNAPSHOTS[i].getValue();
 				bpmYMap.put(CHANNEL_SNAPSHOTS[i].getPV(), new Double(val[0]));
 			}
@@ -368,7 +387,7 @@ public class PVLoggerDataSource {
 
 						// todo: this logic needs to move to the TrimmedQuadrupole class
 						// handle shunt PS differently
-						if ( trimFieldPV.indexOf( "ShntC" ) > -1 ) {
+						if ( trimFieldPV.contains( "ShntC" ) ) {
 							final double shuntField = Math.abs( trimField );	// shunt is unipolar
 							// shunt always opposes the main field
 							totalField = totalField * trimField > 0 ? totalField - shuntField : totalField + shuntField;
@@ -441,8 +460,8 @@ public class PVLoggerDataSource {
 		if (_sequence.getAllNodesOfType("BCM").size() > 0) {
 			String firstBCM = ((CurrentMonitor) allBCMs.get(0)).getId();
 			for (int i = 0; i < CHANNEL_SNAPSHOTS.length; i++) {
-				if (CHANNEL_SNAPSHOTS[i].getPV().indexOf(firstBCM) > -1
-						&& CHANNEL_SNAPSHOTS[i].getPV().indexOf(":currentMax") > -1) {
+				if (CHANNEL_SNAPSHOTS[i].getPV().contains(firstBCM)
+						&& CHANNEL_SNAPSHOTS[i].getPV().contains(":currentMax")) {
 					current = CHANNEL_SNAPSHOTS[i].getValue()[0];
 					return current;
 				} else if (CHANNEL_SNAPSHOTS[i].getPV().equals("MEBT_Diag:BCM02:currentMax")) {
@@ -466,8 +485,8 @@ public class PVLoggerDataSource {
 	public double getBeamCurrent(String bcm) {
 		double current = 20;
 		for (int i = 0; i < CHANNEL_SNAPSHOTS.length; i++) {
-			if (CHANNEL_SNAPSHOTS[i].getPV().indexOf(bcm) > -1
-					&& CHANNEL_SNAPSHOTS[i].getPV().indexOf(":currentMax") > -1) {
+			if (CHANNEL_SNAPSHOTS[i].getPV().contains(bcm)
+					&& CHANNEL_SNAPSHOTS[i].getPV().contains(":currentMax")) {
 				current = CHANNEL_SNAPSHOTS[i].getValue()[0];
 				return current;
 			}
