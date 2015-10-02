@@ -133,7 +133,7 @@ public class ModelPlotData {
 				     .getPropertyValue("EPICS_NAME");
 			else
 				deviceName = (String) designMachineModelDetails[i]
-				                            					.getPropertyValue("ELEMENT_NAME");
+				     .getPropertyValue("ELEMENT_NAME");
 				
 			double length = Double
 					.valueOf((String) designMachineModelDetails[i]
@@ -144,58 +144,8 @@ public class ModelPlotData {
 					- length / 2;
 			String deviceType = (String) designMachineModelDetails[i]
 					.getPropertyValue("DEVICE_TYPE");
-			if (deviceType.equals("BPM")) {
-				devices1[i] = new CartoonDevice(deviceName, Startz,
-						new BPMWidget());
-			} else if (deviceType.equals("LRG") || deviceType.equals("Bnch")) {
-				devices1[i] = new CartoonDevice(deviceName, Startz,
-						length, new CavityWidget());
-			} else if (deviceType.equals("XBEND") || deviceType.equals("YBEND") || deviceType.equals("BEND")) {
-				devices1[i] = new CartoonDevice(deviceName, Startz, length,
-						new DipoleWidget());
-			} else if (deviceType.equals("DQUAD")) {
-				devices1[i] = new CartoonDevice(deviceName, Startz, length,
-						new DQuadWidget());
-			} else if (deviceType.equals("FQUAD")) {
-				devices1[i] = new CartoonDevice(deviceName, Startz, length,
-						new FQuadWidget());
-			} else if (deviceType.equals("INST")) {
-				devices1[i] = new CartoonDevice(deviceName, Startz,
-						new LossMonitorWidget());
-			} else if (deviceType.equals("PROF")) {
-				devices1[i] = new CartoonDevice(deviceName, Startz,
-						new ProfileMonitorWidget());
-			} else if (deviceType.equals("SOLE")) {
-				devices1[i] = new CartoonDevice(deviceName, Startz, length,
-						new SolenoidWidget());
-			} else if (deviceType.equals("TORO")) {
-				devices1[i] = new CartoonDevice(deviceName, Startz, length,
-						new ToroidWidget());
-			} else if (deviceType.equals("USEG")) {
-				devices1[i] = new CartoonDevice(deviceName, Startz, length,
-						new UndulatorWidget());
-			} else if (deviceType.equals("WIRE")) {
-				devices1[i] = new CartoonDevice(deviceName, Startz,
-						new WireScannerWidget());
-			} else if (deviceType.equals("COLL")) {
-				devices1[i] = new CartoonDevice(deviceName, Startz,
-						new XCollimatorWidget());
-			} else if (deviceType.equals("COLL")) {
-				devices1[i] = new CartoonDevice(deviceName, Startz,
-						new YCollimatorWidget());
-			} else if (deviceType.equals("XCOR")) {
-				devices1[i] = new CartoonDevice(deviceName, Startz,
-						new XCorWidget());
-			} else if (deviceType.equals("YCOR")) {
-				devices1[i] = new CartoonDevice(deviceName, Startz,
-						new YCorWidget());
-			} else if (deviceType.equals("marker") || deviceType.equals("MARK")) {
-				devices1[i] = new CartoonDevice(deviceName, Startz,
-						new MarkerWidget());
-			} else {
-				devices1[i] = new CartoonDevice(deviceName, Startz,
-						new MarkerWidget());
-			}
+
+			devices1[i] = getCartoonDevice(deviceName, Startz, length, deviceType);
 		}
 		Arrays.sort(devices1);
 		final CartoonDevice[] cartoonDevices = new CartoonDevice[devices1.length];
@@ -380,58 +330,8 @@ public class ModelPlotData {
 					- length / 2;
 			String deviceType = (String) designMachineModelDetails[i]
 					.getPropertyValue("DEVICE_TYPE");
-			if (deviceType.equals("BPM")) {
-				devices1[i] = new CartoonDevice(deviceName, Startz,
-						new BPMWidget());
-			} else if (deviceType.equals("LRG") || deviceType.equals("Bnch")) {
-				devices1[i] = new CartoonDevice(deviceName, Startz,
-						length, new CavityWidget());
-			} else if (deviceType.equals("YBEND") || deviceType.equals("XBEND") ) {
-				devices1[i] = new CartoonDevice(deviceName, Startz, length,
-						new DipoleWidget());
-			} else if (deviceType.equals("DQUAD")) {
-				devices1[i] = new CartoonDevice(deviceName, Startz, length,
-						new DQuadWidget());
-			} else if (deviceType.equals("FQUAD")) {
-				devices1[i] = new CartoonDevice(deviceName, Startz, length,
-						new FQuadWidget());
-			} else if (deviceType.equals("INST")) {
-				devices1[i] = new CartoonDevice(deviceName, Startz,
-						new LossMonitorWidget());
-			} else if (deviceType.equals("PROF")) {
-				devices1[i] = new CartoonDevice(deviceName, Startz,
-						new ProfileMonitorWidget());
-			} else if (deviceType.equals("SOLE")) {
-				devices1[i] = new CartoonDevice(deviceName, Startz, length,
-						new SolenoidWidget());
-			} else if (deviceType.equals("TORO")) {
-				devices1[i] = new CartoonDevice(deviceName, Startz, length,
-						new ToroidWidget());
-			} else if (deviceType.equals("USEG")) {
-				devices1[i] = new CartoonDevice(deviceName, Startz, length,
-						new UndulatorWidget());
-			} else if (deviceType.equals("WIRE")) {
-				devices1[i] = new CartoonDevice(deviceName, Startz,
-						new WireScannerWidget());
-			} else if (deviceType.equals("COLL")) {
-				devices1[i] = new CartoonDevice(deviceName, Startz,
-						new XCollimatorWidget());
-			} else if (deviceType.equals("COLL")) {
-				devices1[i] = new CartoonDevice(deviceName, Startz,
-						new YCollimatorWidget());
-			} else if (deviceType.equals("XCOR")) {
-				devices1[i] = new CartoonDevice(deviceName, Startz,
-						new XCorWidget());
-			} else if (deviceType.equals("YCOR")) {
-				devices1[i] = new CartoonDevice(deviceName, Startz,
-						new YCorWidget());
-			} else if (deviceType.equals("marker") || deviceType.equals("MARK")) {
-				devices1[i] = new CartoonDevice(deviceName, Startz,
-						new MarkerWidget());
-			} else {
-				devices1[i] = new CartoonDevice(deviceName, Startz,
-						new MarkerWidget());
-			}
+
+			devices1[i] = getCartoonDevice(deviceName, Startz, length, deviceType);
 		}
 		Arrays.sort(devices1);
 		final CartoonDevice[] cartoonDevices = new CartoonDevice[devices1.length];
@@ -565,58 +465,8 @@ public class ModelPlotData {
 					- length / 2;
 			String deviceType = (String) machineModelDetails[i]
 					.getPropertyValue("DEVICE_TYPE");
-			if (deviceType.equals("BPM")) {
-				devices[i] = new CartoonDevice(deviceName, Startz,
-						new BPMWidget());
-			} else if (deviceType.equals("LRG") || deviceType.equals("Bnch") || deviceType.equals("RG")) {
-				devices[i] = new CartoonDevice(deviceName, Startz,
-						length, new CavityWidget());
-			} else if (deviceType.equals("YBEND") || deviceType.equals("XBEND")) {
-				devices[i] = new CartoonDevice(deviceName, Startz, length,
-						new DipoleWidget());
-			} else if (deviceType.equals("DQUAD")) {
-				devices[i] = new CartoonDevice(deviceName, Startz, length,
-						new DQuadWidget());
-			} else if (deviceType.equals("FQUAD")) {
-				devices[i] = new CartoonDevice(deviceName, Startz, length,
-						new FQuadWidget());
-			} else if (deviceType.equals("INST")) {
-				devices[i] = new CartoonDevice(deviceName, Startz,
-						new LossMonitorWidget());
-			} else if (deviceType.equals("PROF")) {
-				devices[i] = new CartoonDevice(deviceName, Startz,
-						new ProfileMonitorWidget());
-			} else if (deviceType.equals("SOLE")) {
-				devices[i] = new CartoonDevice(deviceName, Startz, length,
-						new SolenoidWidget());
-			} else if (deviceType.equals("TORO")) {
-				devices[i] = new CartoonDevice(deviceName, Startz, length,
-						new ToroidWidget());
-			} else if (deviceType.equals("USEG")) {
-				devices[i] = new CartoonDevice(deviceName, Startz, length,
-						new UndulatorWidget());
-			} else if (deviceType.equals("WIRE")) {
-				devices[i] = new CartoonDevice(deviceName, Startz,
-						new WireScannerWidget());
-			} else if (deviceType.equals("COLL")) {
-				devices[i] = new CartoonDevice(deviceName, Startz,
-						new XCollimatorWidget());
-			} else if (deviceType.equals("COLL")) {
-				devices[i] = new CartoonDevice(deviceName, Startz,
-						new YCollimatorWidget());
-			} else if (deviceType.equals("XCOR") || deviceType.equals("DCH")) {
-				devices[i] = new CartoonDevice(deviceName, Startz,
-						new XCorWidget());
-			} else if (deviceType.equals("YCOR") || deviceType.equals("DCV")) {
-				devices[i] = new CartoonDevice(deviceName, Startz,
-						new YCorWidget());
-			} else if (deviceType.equals("marker") || deviceType.equals("MARK")) {
-				devices[i] = new CartoonDevice(deviceName, Startz,
-						new MarkerWidget());
-			} else {
-				devices[i] = new CartoonDevice(deviceName, Startz,
-						new MarkerWidget());
-			}
+
+			devices[i] = getCartoonDevice(deviceName, Startz, length, deviceType);
 		}
 		Arrays.sort(devices);
 		final CartoonDevice[] cartoonDevices = new CartoonDevice[devices.length];
@@ -672,6 +522,61 @@ public class ModelPlotData {
 		return zPlotPanel;
 	}
 	
+	private static CartoonDevice getCartoonDevice(String deviceName, double startZ, double length, String deviceType) {
+		if (deviceType.equals("BPM")) {
+			return new CartoonDevice(deviceName, startZ,
+					new BPMWidget());
+		} else if (deviceType.equals("LRG") || deviceType.equals("Bnch") || deviceType.equals("RG")) {
+			return new CartoonDevice(deviceName, startZ,
+					length, new CavityWidget());
+		} else if (deviceType.equals("YBEND") || deviceType.equals("XBEND") || deviceType.equals("BEND")) {
+			return new CartoonDevice(deviceName, startZ, length,
+					new DipoleWidget());
+		} else if (deviceType.equals("DQUAD")) {
+			return new CartoonDevice(deviceName, startZ, length,
+					new DQuadWidget());
+		} else if (deviceType.equals("FQUAD")) {
+			return new CartoonDevice(deviceName, startZ, length,
+					new FQuadWidget());
+		} else if (deviceType.equals("INST")) {
+			return new CartoonDevice(deviceName, startZ,
+					new LossMonitorWidget());
+		} else if (deviceType.equals("PROF")) {
+			return new CartoonDevice(deviceName, startZ,
+					new ProfileMonitorWidget());
+		} else if (deviceType.equals("SOLE")) {
+			return new CartoonDevice(deviceName, startZ, length,
+					new SolenoidWidget());
+		} else if (deviceType.equals("TORO")) {
+			return new CartoonDevice(deviceName, startZ, length,
+					new ToroidWidget());
+		} else if (deviceType.equals("USEG")) {
+			return new CartoonDevice(deviceName, startZ, length,
+					new UndulatorWidget());
+		} else if (deviceType.equals("WIRE")) {
+			return new CartoonDevice(deviceName, startZ,
+					new WireScannerWidget());
+		} else if (deviceType.equals("COLL")) {
+			return new CartoonDevice(deviceName, startZ,
+					new XCollimatorWidget());
+		} else if (deviceType.equals("COLL")) {
+			return new CartoonDevice(deviceName, startZ,
+					new YCollimatorWidget());
+		} else if (deviceType.equals("XCOR") || deviceType.equals("DCH")) {
+			return new CartoonDevice(deviceName, startZ,
+					new XCorWidget());
+		} else if (deviceType.equals("YCOR") || deviceType.equals("DCV")) {
+			return new CartoonDevice(deviceName, startZ,
+					new YCorWidget());
+		} else if (deviceType.equals("marker") || deviceType.equals("MARK")) {
+			return new CartoonDevice(deviceName, startZ,
+					new MarkerWidget());
+		} else {
+			return new CartoonDevice(deviceName, startZ,
+					new MarkerWidget());
+		}
+	}
+
 	public static void setRange(Range zPlotDomainAxis){
 		zPlot.getDomainAxis().setRange(zPlotDomainAxis);
 	}
