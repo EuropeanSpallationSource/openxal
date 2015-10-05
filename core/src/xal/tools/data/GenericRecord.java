@@ -7,6 +7,7 @@
 package xal.tools.data;
 
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.logging.*;
 import java.lang.reflect.*;
 
@@ -69,8 +70,13 @@ public class GenericRecord implements KeyedRecord, DataListener {
 	 */
     public Object valueForKey( final String key ) {
 		synchronized ( ATTRIBUTE_TABLE ) {
-			return ATTRIBUTE_TABLE.get( key );			
+			if (ATTRIBUTE_TABLE.containsKey(key)) return ATTRIBUTE_TABLE.get( key );			
 		}
+		
+		DataAttribute attribute = DATA_TABLE.getSchema().ATTRIBUTE_TABLE.get(key);
+		final Class<?> type = attribute.type();
+		String stringValue = attribute.getDefaultStringValue();
+		return stringValue == null ? null : valueOfTypeFromString( type, stringValue );
     }
     
     
@@ -232,9 +238,11 @@ public class GenericRecord implements KeyedRecord, DataListener {
             final Class<?> type = attribute.type();
 			
             try {
-                final String stringValue = adaptor.hasAttribute( key ) ? adaptor.stringValue( key ) : attribute.getDefaultStringValue();
-                final Object value = valueOfTypeFromString( type, stringValue );
-                setValueForKey( value, key );
+            	if (adaptor.hasAttribute(key)) {
+            		final String stringValue = adaptor.stringValue( key );
+            		final Object value = valueOfTypeFromString( type, stringValue );
+            		setValueForKey( value, key );
+            	}
             }
             catch ( ParseException exception ) {
                 System.out.println( "Error during record upate when parsing value for \"" + key + "\" attribute in table, \"" + DATA_TABLE.name() + "\"" );
@@ -250,9 +258,8 @@ public class GenericRecord implements KeyedRecord, DataListener {
 	 * @param type The class of the Object.
 	 * @param stringValue The Object's string representation.
 	 * @return The Object from the specified string.
-	 */
-    @SuppressWarnings( { "unchecked", "rawtypes" } )
-    private Object valueOfTypeFromString( final Class<?> type, final String stringValue ) throws ParseException {
+	 */    
+	private Object valueOfTypeFromString( final Class<?> type, final String stringValue ) throws ParseException {
         if ( type.equals(String.class) )  return stringValue;
         
         Object value = null;

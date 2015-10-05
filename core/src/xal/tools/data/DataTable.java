@@ -360,6 +360,10 @@ public class DataTable {
 		}
 	}
 	
+
+	Schema getSchema() {
+		return _schema;
+	}
 	
     
     /*************************************************************************
@@ -537,7 +541,7 @@ public class DataTable {
      * holds all values associated with the primary key.  The value acts as the key in the map and the set of all records sharing that value is the 
      * value in the map.  Each ValueHash contains exactly one reference to each record in the table.
      */
-    final private class ValueHash {
+    final private static class ValueHash {
 		/** The primary key for which to maintain a hash of values. */
         final private String PRIMARY_KEY;
 		
@@ -657,7 +661,7 @@ public class DataTable {
      * inconsistency.  Most likely this happens when a record with the same
      * primary key(s) already exist in the table.
      */
-    public class AddRecordException extends RuntimeException {
+    public static class AddRecordException extends RuntimeException {
         /** serialization ID */
         private static final long serialVersionUID = 1L;
         
