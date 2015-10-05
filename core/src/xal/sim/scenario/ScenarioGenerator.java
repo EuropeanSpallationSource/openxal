@@ -149,12 +149,9 @@ class ScenarioGenerator {
 		int originalPosition = 0; // used to record original position
 		double sequenceLength = sequence.getLength(); // workaround for sequences that don't have length set
 		List<LatticeElement> elements = new ArrayList<LatticeElement>();		
-		
-		elements.add(new LatticeElement(new Marker("BEGIN_" + sequence.getId()), 0.0, 
-				elementMapping.getDefaultConverter(), originalPosition++));
 
 		// generate elements for every node in the sequence which is marked as having good status
-		for ( AcceleratorNode node : sequence.getAllNodes( true ) ) {
+		for ( AcceleratorNode node : sequence.getAllInclusiveNodes( true ) ) {
 			if (node instanceof AcceleratorSeq) {
 				elements.add(new LatticeElement(new Marker("BEGIN_" + node.getId()), sequence.getPosition(node), 
 						elementMapping.getDefaultConverter(), originalPosition++));			

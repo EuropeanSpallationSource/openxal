@@ -180,6 +180,7 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
 		if ( comboSequence == null ) {
 			comboSequence = instantiateComboSequence(comboType, comboID, comboAdaptor);
 			comboSequence.setAccelerator(this.getAccelerator());
+			comboSequence.setParent(this);
 			addComboSequence(comboSequence);
 		}
 		else {

@@ -283,6 +283,7 @@ public class AcceleratorSeqCombo extends AcceleratorSeq {
      * @param node - the node for which the position is wanted
      */
     public double getPosition( final AcceleratorNode node ) {
+    	if (node == this) return m_dblPos;
         if( m_arrNodes == null || m_arrNodes.isEmpty() )  return m_dblPos + node.m_dblPos;
 
 		final AcceleratorSeq baseSequence = node.getPrimaryAncestor();
