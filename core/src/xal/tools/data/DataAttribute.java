@@ -18,6 +18,7 @@ public class DataAttribute {
     private String name;
     private Class<?> type;
     private boolean isPrimaryKey;
+    private Object defaultValue;
 
 	
     /** Creates new DataAttribute */
@@ -62,13 +63,25 @@ public class DataAttribute {
 	
 	
 	/**
-	 * Get the default value to assign for this attribute if a value is not specified.
+	 * Get the serialized default value to assign for this attribute if a value is not specified.
 	 * @return the default value for this attribute
 	 */
 	public String getDefaultStringValue() {
 		return DEFAULT_VALUE;
 	}
     
+	/**
+     * Get the deserialized default value to assign for this attribute if a value is not specified.
+	 * @return the default value for this attribute
+	 */
+	public Object getDefaultValue()
+	{
+		if (DEFAULT_VALUE == null) return null;
+		if (defaultValue == null) {
+			defaultValue = GenericRecord.valueOfTypeFromString( type, DEFAULT_VALUE );
+		}
+		return defaultValue;
+	}
     
     
     /*

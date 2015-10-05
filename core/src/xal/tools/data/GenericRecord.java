@@ -72,11 +72,7 @@ public class GenericRecord implements KeyedRecord, DataListener {
 		synchronized ( ATTRIBUTE_TABLE ) {
 			if (ATTRIBUTE_TABLE.containsKey(key)) return ATTRIBUTE_TABLE.get( key );			
 		}
-		
-		DataAttribute attribute = DATA_TABLE.getSchema().ATTRIBUTE_TABLE.get(key);
-		final Class<?> type = attribute.type();
-		String stringValue = attribute.getDefaultStringValue();
-		return stringValue == null ? null : valueOfTypeFromString( type, stringValue );
+		return DATA_TABLE.getSchema().ATTRIBUTE_TABLE.get(key).getDefaultValue();		
     }
     
     
@@ -259,7 +255,7 @@ public class GenericRecord implements KeyedRecord, DataListener {
 	 * @param stringValue The Object's string representation.
 	 * @return The Object from the specified string.
 	 */    
-	private Object valueOfTypeFromString( final Class<?> type, final String stringValue ) throws ParseException {
+	static Object valueOfTypeFromString( final Class<?> type, final String stringValue ) throws ParseException {
         if ( type.equals(String.class) )  return stringValue;
         
         Object value = null;
@@ -324,7 +320,7 @@ public class GenericRecord implements KeyedRecord, DataListener {
 	 * A runtime exception thrown while attempting to parse values stored as strings into an object of 
 	 * the appropriate type.
 	 */
-	public class ParseException extends RuntimeException {
+	public static class ParseException extends RuntimeException {
         /** serialization ID */
         private static final long serialVersionUID = 1L;
         
