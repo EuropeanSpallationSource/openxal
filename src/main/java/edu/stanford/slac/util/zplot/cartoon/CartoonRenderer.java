@@ -151,7 +151,8 @@ class CartoonRenderer extends XYLineAndShapeRenderer {
 			Shape s = null;
 			if (d instanceof CartoonDevice) {
 				CartoonDevice cd = (CartoonDevice) d;
-				int length = (int) (cd.getLength() * getPixelPerM());
+				// Length is rounded up to fill the virtual gaps between magnets.
+				int length = (int) Math.ceil(cd.getLength() * getPixelPerM() + 0.5);
 				s = cd.getWidget().getShape(length);
 			} else {
 				s = d.getWidget().getShape();

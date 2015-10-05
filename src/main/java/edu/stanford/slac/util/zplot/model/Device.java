@@ -63,7 +63,7 @@ public class Device implements Comparable<Device> {
 	}
 
 	public final double getZ() {
-		return Math.floor(z*100.+0.5)/100.;
+		return z;
 	}
 
 	public final double getY() {
