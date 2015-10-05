@@ -386,63 +386,7 @@ public class DataManager {
 					machineModelDetail.setPropertyValue("R64", df.format(rMat.getElem(5, 3)));
 					machineModelDetail.setPropertyValue("R65", df.format(rMat.getElem(5, 4)));
 					machineModelDetail.setPropertyValue("R66", df.format(rMat.getElem(5, 5)));
-				} /*else if (state instanceof TransferMapState) {
-					PhaseMatrix transferMatrix = ((TransferMapState) state).getPartialTransferMap().getFirstOrder();
-					CovarianceMatrix covMatrix = new CovarianceMatrix(transferMatrix);
-					
-					Twiss[] twiss = covMatrix.computeTwiss();							
-					PhaseVector betatronPhase = covMatrix.getMean();
-					
-					machineModelDetail.setPropertyValue("BETA_X", df.format(twiss[0].getBeta()));
-					machineModelDetail.setPropertyValue("ALPHA_X", df.format(twiss[0].getAlpha()));
-					machineModelDetail.setPropertyValue("BETA_Y", df.format(twiss[1].getBeta()));
-					machineModelDetail.setPropertyValue("ALPHA_Y", df.format(twiss[1].getAlpha()));
-					/* TODO OPENXAL
-					machineModelDetail.setPropertyValue("ETA_X", df.format(((TransferMapState) state).getChromDispersionX()));
-					machineModelDetail.setPropertyValue("ETA_Y", df.format(((TransferMapState) state).getChromDispersionY()));
-					machineModelDetail.setPropertyValue("ETAP_X", df.format(((TransferMapState) state).getChromDispersionSlopeX()));
-					machineModelDetail.setPropertyValue("ETAP_Y", df.format(((TransferMapState) state).getChromDispersionSlopeY()));
-					machineModelDetail.setPropertyValue("PSI_X", df.format(betatronPhase.getx()));
-					machineModelDetail.setPropertyValue("PSI_Y", df.format(betatronPhase.gety()));
-					machineModelDetail.setPropertyValue("EK", df.format(getTotalEnergyFromKinetic(state.getSpeciesRestEnergy() / 1.e9,state.getKineticEnergy() / 1.e9)));
-
-					machineModelDetail.setPropertyValue("R11", df.format(transferMatrix.getElem(0, 0)));
-					machineModelDetail.setPropertyValue("R12", df.format(transferMatrix.getElem(0, 1)));
-					machineModelDetail.setPropertyValue("R13", df.format(transferMatrix.getElem(0, 2)));
-					machineModelDetail.setPropertyValue("R14", df.format(transferMatrix.getElem(0, 3)));
-					machineModelDetail.setPropertyValue("R15", df.format(transferMatrix.getElem(0, 4)));
-					machineModelDetail.setPropertyValue("R16", df.format(transferMatrix.getElem(0, 5)));
-					machineModelDetail.setPropertyValue("R21", df.format(transferMatrix.getElem(1, 0)));
-					machineModelDetail.setPropertyValue("R22", df.format(transferMatrix.getElem(1, 1)));
-					machineModelDetail.setPropertyValue("R23", df.format(transferMatrix.getElem(1, 2)));
-					machineModelDetail.setPropertyValue("R24", df.format(transferMatrix.getElem(1, 3)));
-					machineModelDetail.setPropertyValue("R25", df.format(transferMatrix.getElem(1, 4)));
-					machineModelDetail.setPropertyValue("R26", df.format(transferMatrix.getElem(1, 5)));
-					machineModelDetail.setPropertyValue("R31", df.format(transferMatrix.getElem(2, 0)));
-					machineModelDetail.setPropertyValue("R32", df.format(transferMatrix.getElem(2, 1)));
-					machineModelDetail.setPropertyValue("R33", df.format(transferMatrix.getElem(2, 2)));
-					machineModelDetail.setPropertyValue("R34", df.format(transferMatrix.getElem(2, 3)));
-					machineModelDetail.setPropertyValue("R35", df.format(transferMatrix.getElem(2, 4)));
-					machineModelDetail.setPropertyValue("R36", df.format(transferMatrix.getElem(2, 5)));
-					machineModelDetail.setPropertyValue("R41", df.format(transferMatrix.getElem(3, 0)));
-					machineModelDetail.setPropertyValue("R42", df.format(transferMatrix.getElem(3, 1)));
-					machineModelDetail.setPropertyValue("R43", df.format(transferMatrix.getElem(3, 2)));
-					machineModelDetail.setPropertyValue("R44", df.format(transferMatrix.getElem(3, 3)));
-					machineModelDetail.setPropertyValue("R45", df.format(transferMatrix.getElem(3, 4)));
-					machineModelDetail.setPropertyValue("R46", df.format(transferMatrix.getElem(3, 5)));
-					machineModelDetail.setPropertyValue("R51", df.format(transferMatrix.getElem(4, 0)));
-					machineModelDetail.setPropertyValue("R52", df.format(transferMatrix.getElem(4, 1)));
-					machineModelDetail.setPropertyValue("R53", df.format(transferMatrix.getElem(4, 2)));
-					machineModelDetail.setPropertyValue("R54", df.format(transferMatrix.getElem(4, 3)));
-					machineModelDetail.setPropertyValue("R55", df.format(transferMatrix.getElem(4, 4)));
-					machineModelDetail.setPropertyValue("R56", df.format(transferMatrix.getElem(4, 5)));
-					machineModelDetail.setPropertyValue("R61", df.format(transferMatrix.getElem(5, 0)));
-					machineModelDetail.setPropertyValue("R62", df.format(transferMatrix.getElem(5, 1)));
-					machineModelDetail.setPropertyValue("R63", df.format(transferMatrix.getElem(5, 2)));
-					machineModelDetail.setPropertyValue("R64", df.format(transferMatrix.getElem(5, 3)));
-					machineModelDetail.setPropertyValue("R65", df.format(transferMatrix.getElem(5, 4)));
-					machineModelDetail.setPropertyValue("R66", df.format(transferMatrix.getElem(5, 5)));
-				}	*/				
+				}
 				runMachineModelDetail.add(machineModelDetail);
 			
 			}
@@ -690,8 +634,8 @@ public class DataManager {
     "\"ZPOS\", \"EK\", \"ALPHA_X\", \"ALPHA_Y\", \"BETA_X\", \"BETA_Y\" , \"PSI_X\"  , \"PSI_Y\", \"ETA_X\", \"ETA_Y\", \"ETAP_X\", \"ETAP_Y\","+
     "\"R11\", \"R12\", \"R13\", \"R14\", \"R15\", \"R16\", \"R21\", \"R22\", \"R23\", \"R24\", \"R25\", \"R26\" , \"R31\" , \"R32\" , \"R33\" , \"R34\" , \"R35\" , \"R36\" ,"+
     "\"R41\" , \"R42\" , \"R43\" , \"R44\" , \"R45\" , \"R46\" , \"R51\" , \"R52\" , \"R53\" , \"R54\" , \"R55\" , \"R56\" , \"R61\" , \"R62\" , \"R63\" , \"R64\" , \"R65\" , \"R66\" ,"+ 
-    "\"LEFF\", \"SLEFF\" , \"ORDINAL\", \"SUML\") " + 
-    " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+    "\"LEFF\", \"SLEFF\" , \"ORDINAL\", \"SUML\", \"DEVICE_TYPE\" ) " + 
+    " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 			for(int i=0; i<runMachineModelDetail.length; i++){
 				index = elementName.indexOf(runMachineModelDetail[i].getPropertyValue("ELEMENT_NAME").toString());
 				if(index >= 0){
@@ -755,6 +699,7 @@ public class DataManager {
 				stmt4.setDouble(54, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("SLEFF")));
 				stmt4.setDouble(55, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("ORDINAL")));
 				stmt4.setDouble(56, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("SUML")));
+				stmt4.setString(57, (String)runMachineModelDetail[i].getPropertyValue("DEVICE_TYPE"));
 
 				stmt4.addBatch();
 			}

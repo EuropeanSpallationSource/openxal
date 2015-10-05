@@ -27,8 +27,8 @@ public class MachineModelDetailTable {
 		"r24", "r25", "r26", "r31", "r32", "r33", "r34", "r35", "r36",
 		"r41", "r42", "r43", "r44", "r45", "r46", "r51", "r52", "r53",
 		"r54", "r55", "r56", "r61", "r62", "r63", "r64", "r65", "r66",
-		"leff", "sleff", "ordinal", "suml"};
-	static final private int TABLE_SIZE = _TABLE_COLUMN_NAME.length; // 54
+		"leff", "sleff", "ordinal", "suml", "device_type"};
+	static final private int TABLE_SIZE = _TABLE_COLUMN_NAME.length; // 55
 
 	/** Constructor */
 	public MachineModelDetailTable(final DBTableConfiguration configuration) {
@@ -80,16 +80,12 @@ public class MachineModelDetailTable {
 					machineModelDetail.setPropertyValue(i, modelResult
 							.getString(DB_TABLE_COLUMN_NAME.get(i)));
 				}
-				// add Device length
-				if (machineModelDetail.getPropertyValue("SLEFF") == null) {
-					machineModelDetail.setPropertyValue("SLEFF", deviceType
-							.getDeviceLength(machineModelDetail.getPropertyValue(
-									"ELEMENT_NAME").toString()));
-				}
-				// add Device Type
-				machineModelDetail.setPropertyValue("DEVICE_TYPE", deviceType
-						.getDeviceType(machineModelDetail.getPropertyValue(
+				// try to get Device Type from acc if not in database
+				if (machineModelDetail.getPropertyValue("DEVICE_TYPE") == null) {
+					machineModelDetail.setPropertyValue("DEVICE_TYPE", deviceType
+							.getDeviceType(machineModelDetail.getPropertyValue(
 								"ELEMENT_NAME").toString()));
+				}
 				
 				// add EPICS name
 				machineModelDetail.setPropertyValue("EPICS_NAME", deviceType

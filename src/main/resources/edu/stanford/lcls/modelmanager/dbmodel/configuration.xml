@@ -65,6 +65,7 @@
 			<column attribute="leff" column="LEFF"/>
 			<column attribute="sleff" column="SLEFF"/>			
 			<column attribute="suml" column="SUML"/>
+			<column attribute="device_type" column="DEVICE_TYPE"/>
 			<column attribute="ordinal" column="ORDINAL"/>
 		</dbtable>
 		<dbtable entity="MachineModelDevice" schema="MACHINE_MODEL" table="MODEL_DEVICES">
