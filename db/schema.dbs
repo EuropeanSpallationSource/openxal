@@ -100,6 +100,7 @@ For example quads correspond to 3, being the twiss and R-matrices at the begnnin
 			<column name="SLEFF" type="numeric" decimal="0" jt="0" />
 			<column name="ORDINAL" type="numeric" decimal="0" jt="0" />
 			<column name="SUML" type="numeric" decimal="0" jt="0" />
+			<column name="DEVICE_TYPE" type="varchar" length="30" decimal="0" jt="0" />
 			<index name="ELEMENT_MODELS_pkey" unique="PRIMARY_KEY" >
 				<column name="ID" />
 			</index>

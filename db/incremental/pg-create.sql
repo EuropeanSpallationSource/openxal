@@ -106,6 +106,7 @@ CREATE TABLE "MACHINE_MODEL"."DEVICE_TYPES"
     "SLEFF"                    NUMERIC ,
     "ORDINAL"                  NUMERIC ,
     "SUML"                     NUMERIC ,
+    "DEVICE_TYPE"              VARCHAR(30),
     PRIMARY KEY ( "ID" )
   );
 
