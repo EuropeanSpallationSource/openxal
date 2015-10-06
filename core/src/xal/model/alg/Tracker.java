@@ -163,7 +163,7 @@ public abstract class Tracker implements IAlgorithm, IArchive {
 
     // EditContext
     /** EditContext table name for Tracker Data */
-    private static final String     TBL_LBL_ALGORITHM = "Algorithm";
+    public static final String     TBL_LBL_ALGORITHM = "Algorithm";
       
     /** Table record primary key name */
     public final static String      TBL_PRIM_KEY_NAME = "name";

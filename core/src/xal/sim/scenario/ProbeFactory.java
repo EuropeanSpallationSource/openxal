@@ -11,12 +11,15 @@
 package xal.sim.scenario;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import xal.model.IAlgorithm;
+import xal.model.alg.EnvelopeTrackerBase;
+import xal.model.alg.Tracker;
 import xal.model.probe.BunchProbe;
 import xal.model.probe.EnvelopeProbe;
 import xal.model.probe.ParticleProbe;
@@ -24,12 +27,14 @@ import xal.model.probe.Probe;
 import xal.model.probe.TransferMapProbe;
 import xal.model.probe.TwissProbe;
 import xal.model.probe.traj.BunchProbeState;
+import xal.model.probe.traj.EnvelopeProbeState;
 import xal.smf.Accelerator;
 import xal.smf.AcceleratorSeq;
 import xal.tools.beam.CovarianceMatrix;
 import xal.tools.beam.PhaseVector;
 import xal.tools.beam.Twiss;
 import xal.tools.beam.Twiss3D;
+import xal.tools.data.DataAttribute;
 import xal.tools.data.DataTable;
 import xal.tools.data.EditContext;
 import xal.tools.data.GenericRecord;
@@ -580,6 +585,116 @@ public class ProbeFactory {
         return vecCoords;
     }
     
+    
+	private static void addDefaultRecord(DataTable dt)
+	{
+		GenericRecord defaultRec = new GenericRecord(dt);
+		defaultRec.setValueForKey("default", Tracker.TBL_PRIM_KEY_NAME);
+		dt.add(defaultRec);
+	}
+    
+	public static void createSchema(EditContext ecTableData, EnvelopeProbe defaultProbe)
+	{
+		Tracker algorithm = (Tracker)defaultProbe.getAlgorithm();
+		DataTable tblAlgorithm = new DataTable(Tracker.TBL_LBL_ALGORITHM, Arrays.asList(new DataAttribute[] {
+		  new DataAttribute( Tracker.TBL_PRIM_KEY_NAME, String.class, true),
+		  new DataAttribute( Tracker.ATTRTAG_TYPE, String.class, false, algorithm.getType()),
+		  new DataAttribute( Tracker.ATTRTAG_UPDATE, Integer.class, false, Integer.toString(algorithm.getProbeUpdatePolicy())),
+		  new DataAttribute( Tracker.ATTRTAG_DEBUG, Boolean.class, false, Boolean.toString(algorithm.getDebugMode())),
+		  new DataAttribute( Tracker.ATTRTAG_RFGAP_PHASE, Boolean.class, false, Boolean.toString(algorithm.getRfGapPhaseCalculation())),
+		})); 				
+		addDefaultRecord(tblAlgorithm);		
+		ecTableData.addTableToGroup(tblAlgorithm, "params" );							        
+        		
+		EnvelopeTrackerBase envTracker = (EnvelopeTrackerBase)defaultProbe.getAlgorithm();
+    	DataTable tblEnvBaseTracker = new DataTable(EnvelopeTrackerBase.TBL_LBL_ENVBASETRACKER, Arrays.asList(new DataAttribute[] {
+    			  new DataAttribute( EnvelopeTrackerBase.TBL_PRIM_KEY_NAME, String.class, true),
+    			  new DataAttribute( EnvelopeTrackerBase.ATTR_EMITGROWTH, Boolean.class, false, Boolean.toString(envTracker.getEmittanceGrowth())),
+    			  new DataAttribute( EnvelopeTrackerBase.ATTR_SCHEFF, Boolean.class, false, Boolean.toString(envTracker.getUseSpacecharge())),
+    			  new DataAttribute( EnvelopeTrackerBase.ATTR_STEPSIZE, Double.class, false, Double.toString(envTracker.getStepSize()))    			  
+    			})); 
+    	addDefaultRecord(tblEnvBaseTracker);
+		ecTableData.addTableToGroup(tblEnvBaseTracker, "params" );					
+		
+		DataTable tblSpecies = new DataTable(SPECIES_TABLE, Arrays.asList(new DataAttribute[] {
+  			  new DataAttribute( SPECIES_NAME_PARAM, String.class, true),
+  			  new DataAttribute( MASS_PARAM, Double.class, false),
+  			  new DataAttribute( CHARGE_PARAM, Double.class, false)  			 			 
+  			}));		
+		GenericRecord hminus = new GenericRecord(tblSpecies);
+		hminus.setValueForKey(defaultProbe.getSpeciesName(), SPECIES_NAME_PARAM);
+		hminus.setValueForKey(defaultProbe.getSpeciesRestEnergy(), MASS_PARAM);
+		hminus.setValueForKey(defaultProbe.getSpeciesCharge(), CHARGE_PARAM);	    
+		tblSpecies.add(hminus);
+		ecTableData.addTableToGroup(tblSpecies, "params" );					
+				
+		DataTable tblBeam = new DataTable(BEAM_TABLE, Arrays.asList(new DataAttribute[] {
+			new DataAttribute("name", String.class, true),
+			new DataAttribute("current", Double.class, false, Double.toString(defaultProbe.getBeamCurrent())),
+			new DataAttribute("bunchFreq", Double.class, false, Double.toString(defaultProbe.getBunchFrequency())),
+			new DataAttribute("phase", String.class, false, "(0,0,0)"), //// ???????
+		}));
+		addDefaultRecord(tblBeam);
+		ecTableData.addTableToGroup(tblBeam, "params" );					
+		
+		
+		DataTable tblTwiss = new DataTable(TWISS_TABLE, Arrays.asList(new DataAttribute[] {
+				new DataAttribute("name", String.class, true),
+				new DataAttribute("coordinate", String.class, true),
+				new DataAttribute("alpha", Double.class, false),
+				new DataAttribute("beta", Double.class, false),
+				new DataAttribute("emittance", Double.class, false)
+		}));	
+		ecTableData.addTableToGroup(tblTwiss, "params" );		
+
+		DataTable tblLocation = new DataTable(LOCATION_TABLE, Arrays.asList(new DataAttribute[] {				
+				new DataAttribute("name", String.class, true),
+				new DataAttribute("species", String.class, false, defaultProbe.getSpeciesName()),
+				new DataAttribute("W", Double.class, false),
+				new DataAttribute("elem", String.class, false, ""),
+				new DataAttribute("s", Double.class, false, "0"),
+				new DataAttribute("t", Double.class, false, "0"),
+		}));
+		ecTableData.addTableToGroup(tblLocation, "params" );
+	}	
+	
+	private static void addTwissToTable(String seq, Twiss[] twiss, DataTable tblTwiss)
+	{		
+		for (int i = 0; i < 3; i++) {
+				String axis = new String[] {"x","y","z"}[i];				
+				GenericRecord record = new GenericRecord(tblTwiss);
+				record.setValueForKey(seq, "name");
+				record.setValueForKey(axis, "coordinate");
+				record.setValueForKey(twiss[i].getAlpha(), "alpha");
+				record.setValueForKey(twiss[i].getBeta(), "beta");
+				record.setValueForKey(twiss[i].getEmittance(), "emittance");
+				tblTwiss.add(record);
+		}
+		
+	}
+		
+	private static boolean hasTwiss(String seqId, DataTable tblTwiss) {
+        final Map<String, String> bindings = new HashMap<String, String>();
+        bindings.put( "name", seqId);		        
+        bindings.put( "coordinate", "x" );        
+	    return tblTwiss.record(bindings) != null;
+	}
+	
+	public static void storeInitialValues(EditContext ecTableData, List<EnvelopeProbeState> states)
+	{
+		DataTable tblTwiss = ecTableData.getTable(ProbeFactory.TWISS_TABLE);
+		DataTable tblLocation = ecTableData.getTable(ProbeFactory.LOCATION_TABLE);
+				
+		for (EnvelopeProbeState state : states) {					
+		    if (!hasTwiss(state.getElementId(), tblTwiss))    
+		    	addTwissToTable(state.getElementId(), state.getCovarianceMatrix().computeTwiss(), tblTwiss);
+		    
+		    GenericRecord record = new GenericRecord(tblLocation);
+			record.setValueForKey(state.getElementId(), "name");		
+			record.setValueForKey(state.getKineticEnergy(), "W");
+			tblLocation.add(record);			
+		}
+	}
 	
 }
 

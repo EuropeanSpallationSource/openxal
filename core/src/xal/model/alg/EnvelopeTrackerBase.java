@@ -181,7 +181,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
     public static final String ATTR_USESPACECHARGE = "useSpacecharge";
     
     /** label for emittance growth flag */
-    protected static final String ATTR_EMITGROWTH = "emitgrowth";
+    public static final String ATTR_EMITGROWTH = "emitgrowth";
     
     /** label for maximum step size **/
     public static final String ATTR_STEPSIZE = "stepsize";
