@@ -228,6 +228,19 @@ UNION
 UNION
 ( SELECT g."ID",
     g."RUNS_ID" AS "RUN_ID",
+    'PRESENT'::text AS "GOLD_STATUS_NO_CSS",
+    g."COMMENTS",
+    g."CREATED_BY",
+    g."DATE_CREATED",
+    r."RUN_SOURCE_CHK"
+   FROM "MACHINE_MODEL"."GOLD" g,
+    "MACHINE_MODEL"."RUNS" r
+  WHERE ((g."RUNS_ID" = r."ID") AND ((r."RUN_SOURCE_CHK")::text = 'MANUAL'::text))
+  ORDER BY g."DATE_CREATED" DESC
+ LIMIT 1)
+UNION
+( SELECT g."ID",
+    g."RUNS_ID" AS "RUN_ID",
     'PREVIOUS'::text AS "GOLD_STATUS_NO_CSS",
     g."COMMENTS",
     g."CREATED_BY",
