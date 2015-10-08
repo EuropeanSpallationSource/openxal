@@ -3,13 +3,12 @@ package edu.stanford.lcls.modelmanager.util;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.List;
 
 import eu.ess.lt.tracewin.TraceWin;
+import se.lu.esss.ics.jels.ImporterHelpers;
+import se.lu.esss.ics.jels.model.elem.jels.JElsElementMapping;
 import se.lu.esss.linaclego.LinacLego;
 import xal.smf.Accelerator;
-import xal.smf.AcceleratorSeq;
-import xal.smf.AcceleratorSeqCombo;
 import xal.smf.data.XMLDataManager;
 
 
@@ -31,18 +30,16 @@ public enum AcceleratorLoader {
 	// Loader for  LinacLego accelerator files.
 	LINAC_LEGO("xml", "LinacLego files") {
 		@Override
-		public Accelerator loadAccelerator(URI uri) {			
-			Accelerator accelerator = LinacLego.loadAcceleator(uri.toString());
-			if (accelerator != null) addDefaultComboSeq(accelerator);
-			return accelerator;
+		public Accelerator loadAccelerator(URI uri) {
+			return LinacLego.loadAcceleatorWithInitialConditions(uri.toString(), JElsElementMapping.getInstance());			
 		}
-	},//TODO put TraceWin in openxal.extensions
+	},
 	TRACE_WIN("dat", "TraceWin files"){
 		@Override
 		public Accelerator loadAccelerator(URI uri) {
 			try {
 				Accelerator accelerator = TraceWin.loadAcceleator(uri);
-				if (accelerator != null) addDefaultComboSeq(accelerator);
+				ImporterHelpers.addHardcodedInitialParameters(accelerator);				
 				return accelerator;
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -82,9 +79,7 @@ public enum AcceleratorLoader {
 	 * @throws URISyntaxException 
 	 */
 	public Accelerator getAccelerator(URI url) {
-        Accelerator acc = loadAccelerator(url);
-        DefaultTableLoader tableLoader = new DefaultTableLoader();
-        tableLoader.loadDefaultTables(acc.editContext());
+        Accelerator acc = loadAccelerator(url);     
 	    return acc;
 	}
 
@@ -133,16 +128,7 @@ public enum AcceleratorLoader {
 		return descs;
 	}
 	
-	protected void addDefaultComboSeq(Accelerator acc)
-	{		
-		List<AcceleratorSeq> seqs = acc.getSequences();
-		String name;
-		if (seqs.size() >= 2) 
-			name = seqs.get(0).getId() + "-" + seqs.get(seqs.size()-1).getId();
-		else 
-			name = "ALL";		
-		acc.addComboSequence(new AcceleratorSeqCombo(name, seqs));
-	}
+
 	
 }
 
