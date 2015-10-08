@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -26,7 +25,7 @@ import se.lu.esss.linaclego.Cell;
 import se.lu.esss.linaclego.FieldProfile;
 import se.lu.esss.linaclego.Linac;
 import se.lu.esss.linaclego.LinacLego;
-import se.lu.esss.linaclego.LinacParameterImporter;
+import se.lu.esss.linaclego.Parameters;
 import se.lu.esss.linaclego.Section;
 import se.lu.esss.linaclego.Slot;
 import se.lu.esss.linaclego.elements.BeamlineElement;
@@ -42,6 +41,7 @@ import se.lu.esss.linaclego.elements.Monitor;
 import se.lu.esss.linaclego.elements.Quad;
 import se.lu.esss.linaclego.elements.RfGap;
 import se.lu.esss.linaclego.elements.ThinSteering;
+import xal.model.probe.EnvelopeProbe;
 import xal.smf.Accelerator;
 import xal.smf.AcceleratorNode;
 import xal.smf.AcceleratorSeq;
@@ -57,9 +57,8 @@ import xal.smf.impl.MagnetPowerSupply;
 import xal.smf.impl.RfCavity;
 import xal.smf.impl.VDipoleCorr;
 import xal.smf.impl.qualify.MagnetType;
+import xal.tools.beam.Twiss;
 import xal.tools.data.DataAdaptor;
-import xal.tools.data.DataTable;
-import xal.tools.data.EditContext;
 import xal.tools.xml.XmlDataAdaptor;
 import xal.tools.xml.XmlWriter;
 
@@ -82,11 +81,11 @@ public class OpenXALExporter implements BLEVisitor {
 	}
 	
 	public static Accelerator convert(Linac linac) {
-		return convertInternal(linac).accelerator;
+		return convertFull(linac).accelerator;		
 	}
 		
 	
-	private static OpenXALExporter convertInternal(Linac linac) {
+	public static OpenXALExporter convertFull(Linac linac) {
 		final OpenXALExporter exporter = new OpenXALExporter();
 		
 		exporter.acceleratorPosition = 0.0;
@@ -106,17 +105,13 @@ public class OpenXALExporter implements BLEVisitor {
 		};
 		linac.accept(exporter);
 		exporter.accelerator.setLength(exporter.acceleratorPosition + exporter.sectionPosition);
-		
-		final List<DataTable> tables = LinacParameterImporter.getTables(linac);
-		EditContext accContext = exporter.accelerator.editContext();
-		accContext.addTablesToGroup(tables, "params");
 
 		return  exporter;
 	}
 	
 	public static void export(Linac linac, String fileName) throws IOException, URISyntaxException {
 		System.out.println("Converting linac lego to openxal.");
-		OpenXALExporter exporter = convertInternal(linac);
+		OpenXALExporter exporter = convertFull(linac);
 		Accelerator accelerator = exporter.accelerator;
 
 		XmlDataAdaptor da = XmlDataAdaptor.newEmptyDocumentAdaptor();
@@ -807,6 +802,40 @@ public class OpenXALExporter implements BLEVisitor {
 			add(bpm);
 		}
 	}
+	
+	
+	/**
+	 * Reads info about initial parameters from linac lego parameters into a probe.
+	 *
+	 * @param baseProbe probe over which to set inital parameters
+	 */
+	public void readInitialParameters(EnvelopeProbe baseProbe) {
+		Parameters params = linac.getLinacData();
+		
+		// generate a probe
+		baseProbe.setSpeciesCharge(1);
+		baseProbe.setSpeciesRestEnergy(9.3827202900E8);
+		baseProbe.setSpeciesName("PROTON");
+		//elsbaseProbe.setSpeciesRestEnergy(9.38272013e8);	
+		baseProbe.setKineticEnergy(params.getDoubleValue("ekin")*1E+6);//energy
+		baseProbe.setPosition(0.0);
+		baseProbe.setTime(0.0);		
+		
+		double beta_gamma = baseProbe.getBeta() * baseProbe.getGamma();
+	
+		Twiss[] twiss = new Twiss[3];
+		for (int i=0; i<3; i++) {			
+			String axis = new String[] {"X", "Y", "Z"}[i];
+			double dblAlpha = params.getDoubleValue("alpha"+axis);
+			double dblBeta = params.getDoubleValue("beta"+axis);
+			double dblEmitt = params.getDoubleValue("emit"+axis) * 1e-6 / beta_gamma; // / beta_gamma
+			twiss[i] = new Twiss(dblAlpha, dblBeta, dblEmitt);
+		}
+		
+		baseProbe.initFromTwiss(twiss);
+		baseProbe.setBeamCurrent(params.getDoubleValue("beamCurrent")*1E-3);
+		baseProbe.setBunchFrequency(params.getDoubleValue("beamFrequency")*1E+6); 	
+	}
 
 	public static void main(String[] args) throws JAXBException, SAXException, ParserConfigurationException, IOException, URISyntaxException {
 		if (args.length < 2) {
@@ -815,5 +844,9 @@ public class OpenXALExporter implements BLEVisitor {
 		}
 
 		export(args[0], args[1]);		
+	}
+
+	public Accelerator getAccelerator() {
+		return accelerator;
 	}
 }
