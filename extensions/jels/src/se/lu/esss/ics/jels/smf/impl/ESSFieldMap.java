@@ -1,12 +1,8 @@
 package se.lu.esss.ics.jels.smf.impl;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 
-import gov.aps.jca.Channel;
 import se.lu.esss.ics.jels.smf.attr.ESSFieldMapBucket;
 import xal.ca.ChannelFactory;
 import xal.smf.attr.AttributeBucket;
