@@ -1,5 +1,6 @@
 package se.lu.esss.ics.jels.smf.impl;
 
+import xal.ca.ChannelFactory;
 import xal.smf.impl.RfGap;
 import xal.tools.math.poly.UnivariateRealPolynomial;
 
@@ -13,6 +14,10 @@ public class ESSRfGap extends RfGap {
 
 	public ESSRfGap(String strId) {
 		super(strId);
+	}
+	
+	public ESSRfGap(String strId, ChannelFactory channelFactory) {
+		super(strId, channelFactory);
 	}
 
 	/** return a polynomial fit of the transit time factor as a function of beta */

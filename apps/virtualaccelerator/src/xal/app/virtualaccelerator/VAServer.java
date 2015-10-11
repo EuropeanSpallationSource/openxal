@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Set;
 
 import xal.ca.Channel;
-import xal.plugin.jcaserver.JcaServerChannel;
+import xal.ca.IServerChannel;
 import xal.smf.AcceleratorNode;
 import xal.smf.AcceleratorSeq;
 import xal.smf.TimingCenter;
@@ -48,14 +48,14 @@ import xal.smf.impl.qualify.TypeQualifier;
  * 
  * @version 0.2 13 Jul 2015
  * @author unkwnon
- * @author Blaž Kranjc <blaz.kranjc@cosylab.com>
+ * @author Blaz Kranjc <blaz.kranjc@cosylab.com>
  */
 public class VAServer {	
 	/** The sequence for which to server channels */
 	final private AcceleratorSeq SEQUENCE;
 	
 	
-	final protected static int DEFAULT_ARRAY_SIZE = JcaServerChannel.DEFAULT_ARRAY_SIZE ;
+	final protected static int DEFAULT_ARRAY_SIZE = 1024;
 	/**
 	 * Constructor
 	 * @param sequence The sequence for which to serve channels
@@ -136,7 +136,8 @@ public class VAServer {
 					final SignalEntry entry = new SignalEntry( signal, handle );
 					if ( !signals.contains( entry ) ) {
 						signals.add( entry );
-						processor.appendLimits( entry, (JcaServerChannel)channel);
+						if (channel instanceof IServerChannel)
+							processor.appendLimits( entry, (IServerChannel)channel);
 					}
 				} else {
 					System.err.println( "Warning! No valid channel for handle: " + handle );
@@ -164,7 +165,8 @@ public class VAServer {
 				final SignalEntry entry = new SignalEntry( signal, handle );
 				if ( !signals.contains( entry ) ) {
 					signals.add( entry );					
-					processor.appendLimits( entry, (JcaServerChannel)channel);
+					if (channel instanceof IServerChannel)
+						processor.appendLimits( entry, (IServerChannel)channel);
 				}
 			}
 		}
@@ -175,10 +177,10 @@ public class VAServer {
 
 /** Default processor for a signal */
 abstract class SignalProcessor {
-	protected abstract void appendLimits( final SignalEntry entry, final JcaServerChannel pv );
+	protected abstract void appendLimits( final SignalEntry entry, final IServerChannel pv );
 	
 	
-	protected void setLimits( final JcaServerChannel pv, final double lowerLimit, final double upperLimit ) {
+	protected void setLimits( final IServerChannel pv, final double lowerLimit, final double upperLimit ) {
 		pv.setLowerDispLimit( lowerLimit );
 		pv.setUpperDispLimit( upperLimit );
 		
@@ -229,7 +231,7 @@ class NodeSignalProcessor extends SignalProcessor {
 
 
 	@Override
-	protected void appendLimits(SignalEntry entry, JcaServerChannel pv) {		
+	protected void appendLimits(SignalEntry entry, IServerChannel pv) {		
 	}
 }
 
@@ -320,7 +322,7 @@ class SextupoleProcessor extends NodeSignalProcessor {
 	}
 	
 	
-	protected void appendLimits( final SignalEntry entry, final JcaServerChannel pv ) {
+	protected void appendLimits( final SignalEntry entry, final IServerChannel pv ) {
 		if ( LIMIT_HANDLES.contains( entry.getHandle() ) ) {
 			setLimits( pv, -10.0, 10.0 );
 		}
@@ -344,7 +346,7 @@ class UnipolarEMProcessor extends NodeSignalProcessor {
 	}
 	
 	@Override
-	protected void appendLimits( final SignalEntry entry, final JcaServerChannel pv ) {
+	protected void appendLimits( final SignalEntry entry, final IServerChannel pv ) {
 		if ( LIMIT_HANDLES.contains( entry.getHandle() ) ) {
 			setLimits( pv, 0.0, 50.0 );
 		}
@@ -373,7 +375,7 @@ class TrimmedQuadrupoleProcessor extends NodeSignalProcessor {
 	}
 	
 	
-	protected void appendLimits( final SignalEntry entry, final JcaServerChannel pv ) {
+	protected void appendLimits( final SignalEntry entry, final IServerChannel pv ) {
 		if ( MAIN_LIMIT_HANDLES.contains( entry.getHandle() ) ) {
 			setLimits( pv, 0.0, 50.0 );
 		}
@@ -387,7 +389,7 @@ class TrimmedQuadrupoleProcessor extends NodeSignalProcessor {
 
 /** Signal processor appropriate for processing BPMs */
 class BPMProcessor extends NodeSignalProcessor {
-	protected void appendLimits( final SignalEntry entry, final JcaServerChannel pv ) {
+	protected void appendLimits( final SignalEntry entry, final IServerChannel pv ) {
 		final String handle = entry.getHandle();
 		if ( BPM.AMP_AVG_HANDLE.equals( handle ) ) {
 			setLimits( pv, 0.0, 50.0 );
@@ -417,7 +419,7 @@ class BendProcessor extends NodeSignalProcessor {
 	
 	
 	
-	protected void appendLimits( final SignalEntry entry, final JcaServerChannel pv ) {
+	protected void appendLimits( final SignalEntry entry, final IServerChannel pv ) {
 		if ( LIMIT_HANDLES.contains( entry.getHandle() ) ) {
 			setLimits( pv, -1.5, 1.5 );
 		}
@@ -442,7 +444,7 @@ class DipoleCorrectorProcessor extends NodeSignalProcessor {
 	}
 	
 	
-	protected void appendLimits( final SignalEntry entry, final JcaServerChannel pv ) {
+	protected void appendLimits( final SignalEntry entry, final IServerChannel pv ) {
 		if ( LIMIT_HANDLES.contains( entry.getHandle() ) ) {
 			setLimits( pv, -0.01, 0.01 );
 		}
@@ -463,7 +465,7 @@ class TimingCenterProcessor extends SignalProcessor {
 	}
 
 	@Override
-	protected void appendLimits(SignalEntry entry, JcaServerChannel pv) {
+	protected void appendLimits(SignalEntry entry, IServerChannel pv) {
 	}
 }
 

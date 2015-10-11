@@ -1,10 +1,4 @@
-/*
- * JcaSystem.java
- *
- * Created on August 27, 2002, 2:38 PM
- */
-
-package xal.plugin.jcaserver;
+package xal.plugin.jca.server;
 
 import gov.aps.jca.cas.ServerContext;
 import xal.ca.ChannelSystem;
@@ -13,7 +7,7 @@ import xal.ca.ChannelSystem;
  * JcaServerChannelSystem is the same as JcaSystem
  * 
  * @version 0.1 13 Jul 2015
- * @author Blaž Kranjc <blaz.kranjc@cosylab.com>
+ * @author Blaz Kranjc <blaz.kranjc@cosylab.com>
  */
 class JcaServerChannelSystem extends ChannelSystem {
 

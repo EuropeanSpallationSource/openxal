@@ -102,21 +102,21 @@ import xal.tools.dispatch.DispatchTimer;
 import xal.tools.xml.XmlDataAdaptor;
 
 /**
- * <h3>CKA NOTES:</h3>
  * <p>
+ * <h4>CKA NOTES:</h4>
  * - In method <code>{@link #createDefaultProbe()}</code> a <code>TransferMapProbe</code>
  * is created in the case of a ring.  The method <code>TransferMapState#setPhaseCoordinates</code>
  * is called to create an initial offset.  This does nothing because transfer map probes
  * do not have phase coordinates any longer, the method is deprecated.
- * <br>
- * <br>
+ * <br/>
+ * <br/>
  * - The offset for the above call is hard coded.  As are many features in this class.
  * </p>
  * 
  * VADocument is a custom AcceleratorDocument for virtual accelerator application.
  * @version 1.6 13 Jul 2015
  * @author Paul Chu
- * @author Blaž Kranjc <blaz.kranjc@cosylab.com>
+ * @author Blaz Kranjc <blaz.kranjc@cosylab.com>
  */
 public class VADocument extends AcceleratorDocument implements ActionListener, PutListener {
     /** default BPM waveform size */
@@ -124,6 +124,12 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
     
     /** default BPM waveform data size (part of the waveform to populate with data) */
     final static private int DEFAULT_BPM_WAVEFORM_DATA_SIZE = 250;
+
+	/** factory for server channels 
+	 * Not sure whether it is better for this to be static and shared across all documents.
+	 * For now we will just use a common server factory across all documents (possibly prevents server conflicts).
+	 */
+	final static private ChannelFactory CHANNEL_SERVER_FACTORY = ChannelFactory.newServerFactory();
     
 	/** The document for the text pane in the main window. */
 	protected PlainDocument textDocument;
@@ -290,6 +296,17 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 		_lastUpdate = new Date();
         
 		if ( url == null )  return;
+	}
+
+
+	/**
+	 * Override the nextChannelFactory() method to return this document's channel server factory.
+	 * @return this document's channel server factory
+	 */
+	@Override
+	public ChannelFactory nextChannelFactory() {
+		//System.out.println( "Getting the server channel factory..." );
+		return CHANNEL_SERVER_FACTORY;
 	}
 	
 	
@@ -826,25 +843,25 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
                         
                         final String[] warningPVs = fieldChannel.getWarningLimitPVs();
                         
-                        final Channel lowerWarningChannel = ChannelFactory.defaultFactory().getChannel( warningPVs[0], fieldChannel.getValueTransform() );
+                        final Channel lowerWarningChannel = CHANNEL_SERVER_FACTORY.getChannel( warningPVs[0], fieldChannel.getValueTransform() );
                         //                        System.out.println( "Lower Limit PV: " + lowerWarningChannel.channelName() );
                         if ( lowerWarningChannel.connectAndWait() ) {
                             lowerWarningChannel.putValCallback( bookField - warningOffset, this );
                         }
                         
-                        final Channel upperWarningChannel = ChannelFactory.defaultFactory().getChannel( warningPVs[1], fieldChannel.getValueTransform() );
+                        final Channel upperWarningChannel = CHANNEL_SERVER_FACTORY.getChannel( warningPVs[1], fieldChannel.getValueTransform() );
                         if ( upperWarningChannel.connectAndWait() ) {
                             upperWarningChannel.putValCallback( bookField + warningOffset, this );
                         }
                         
                         final String[] alarmPVs = fieldChannel.getAlarmLimitPVs();
                         
-                        final Channel lowerAlarmChannel = ChannelFactory.defaultFactory().getChannel( alarmPVs[0], fieldChannel.getValueTransform() );
+                        final Channel lowerAlarmChannel = CHANNEL_SERVER_FACTORY.getChannel( alarmPVs[0], fieldChannel.getValueTransform() );
                         if ( lowerAlarmChannel.connectAndWait() ) {
                             lowerAlarmChannel.putValCallback( bookField - alarmOffset, this );
                         }
                         
-                        final Channel upperAlarmChannel = ChannelFactory.defaultFactory().getChannel( alarmPVs[1], fieldChannel.getValueTransform() );
+                        final Channel upperAlarmChannel = CHANNEL_SERVER_FACTORY.getChannel( alarmPVs[1], fieldChannel.getValueTransform() );
                         if ( upperAlarmChannel.connectAndWait() ) {
                             upperAlarmChannel.putValCallback( bookField + alarmOffset, this );
                         }

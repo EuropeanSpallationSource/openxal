@@ -6,7 +6,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
+import gov.aps.jca.Channel;
 import se.lu.esss.ics.jels.smf.attr.ESSFieldMapBucket;
+import xal.ca.ChannelFactory;
 import xal.smf.attr.AttributeBucket;
 import xal.smf.impl.Electrostatic;
 import xal.smf.impl.qualify.ElementTypeManager;
@@ -34,7 +36,11 @@ public class ESSFieldMap extends Electrostatic {
     }
     
     public ESSFieldMap(String strId) {
-		super(strId);
+		this(strId, null);
+	}
+    
+    public ESSFieldMap(String strId, ChannelFactory channelFactory) {
+		super(strId, channelFactory);
 		setFieldMapBucket(new ESSFieldMapBucket());
 	}
     

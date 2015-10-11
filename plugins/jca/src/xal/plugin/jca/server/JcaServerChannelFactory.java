@@ -1,4 +1,4 @@
-package xal.plugin.jcaserver;
+package xal.plugin.jca.server;
 
 import com.cosylab.epics.caj.cas.util.DefaultServerImpl;
 
@@ -12,7 +12,7 @@ import xal.ca.ChannelSystem;
  * Concrete implementation of ChannelFactory that uses JCA.
  * 
  * @version 0.1 13 Jul 2015
- * @author Blaž Kranjc <blaz.kranjc@cosylab.com>
+ * @author Blaz Kranjc <blaz.kranjc@cosylab.com>
  */
 public class JcaServerChannelFactory extends ChannelFactory {
     /** JCA channel system */
@@ -48,20 +48,7 @@ public class JcaServerChannelFactory extends ChannelFactory {
      *            The name of the PV signal
      */
     protected xal.ca.Channel newChannel(final String signalName) {
-        // Changes writable to true if name ends with any of the suffixes in {@link #WRITEABLE_CHANNEL_NAME_SUFFIXES}.
-    	boolean writable = false;
-        
-    	// Array of suffixes, the channel can have to be writable.      
-        final String[] WRITEABLE_CHANNEL_NAME_SUFFIXES = { "FldSet", "Ctl" };
-        
-        // We disable writing to all channels whose suffix is not in WRITEABLE_CHANNEL_NAME_SUFFIXES
-        for (String suffix : WRITEABLE_CHANNEL_NAME_SUFFIXES) {
-            if (signalName.endsWith(suffix)) {
-                writable = true;
-                break;
-            }
-        }
-        return (xal.ca.Channel) new JcaServerChannel(signalName, CHANNEL_SERVER, writable);
+        return (xal.ca.Channel) new JcaServerChannel(signalName, CHANNEL_SERVER);
     }
 
     /**

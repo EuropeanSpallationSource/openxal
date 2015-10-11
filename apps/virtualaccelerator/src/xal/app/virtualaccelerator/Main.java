@@ -28,7 +28,7 @@ import xal.extension.application.smf.AcceleratorApplication;
  * 
  * @version 0.2 13 Jul 2015
  * @author Paul Chu
- * @author Blaž Kranjc <blaz.kranjc@cosylab.com>
+ * @author Blaz Kranjc <blaz.kranjc@cosylab.com>
  */
 public class Main extends ApplicationAdaptor {
     /**
@@ -46,6 +46,7 @@ public class Main extends ApplicationAdaptor {
     static public void main(String[] args) {
         try {
             System.out.println("Starting application...");
+
             // set command-line option(s) for opening existing document(s)
             setOptions( args );
             AcceleratorApplication.launch( new Main() );

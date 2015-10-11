@@ -11,7 +11,7 @@
  * _NO_ RESPONSIBILITY FOR ANY CONSEQUENCE RESULTING FROM THE USE, MODIFICATION,
  * OR REDISTRIBUTION OF THIS SOFTWARE.
  */
-package xal.plugin.jcaserver;
+package xal.plugin.jca.server;
 
 import gov.aps.jca.cas.ProcessVariableEventCallback;
 
@@ -23,7 +23,7 @@ import com.cosylab.epics.caj.cas.util.MemoryProcessVariable;
  * method, to disable writing to read-only channels.
  * 
  * @version 0.1 13 Jul 2015
- * @author Blaž Kranjc <blaz.kranjc@cosylab.com>
+ * @author Blaz Kranjc <blaz.kranjc@cosylab.com>
  */
 public class ServerMemoryRecord extends ServerMemoryProcessVariable {
 	protected ServerMemoryProcessVariable lowerWarningLimitPV, upperWarningLimitPV;
@@ -40,22 +40,22 @@ public class ServerMemoryRecord extends ServerMemoryProcessVariable {
 	 * 
      * @see MemoryProcessVariable
      */
-    public ServerMemoryRecord(String name, ProcessVariableEventCallback eventCallback, double[] initialValue, DefaultServerImpl channelServer, boolean writable) {
-        super(name, eventCallback, initialValue, channelServer, writable);
+    public ServerMemoryRecord(String name, ProcessVariableEventCallback eventCallback, double[] initialValue, DefaultServerImpl channelServer) {
+        super(name, eventCallback, initialValue, channelServer);
         
         channelServer.registerProcessVaribale(name+".VAL", this);
         
-        lowerWarningLimitPV = new ServerMemoryProcessVariable(name+".LOW", eventCallback, new double[] {0.}, channelServer, false);
-        upperWarningLimitPV = new ServerMemoryProcessVariable(name+".HIGH", eventCallback, new double[] {0.}, channelServer, false);
+        lowerWarningLimitPV = new ServerMemoryProcessVariable(name+".LOW", eventCallback, new double[] {0.}, channelServer);
+        upperWarningLimitPV = new ServerMemoryProcessVariable(name+".HIGH", eventCallback, new double[] {0.}, channelServer);
         
-        lowerAlarmLimitPV = new ServerMemoryProcessVariable(name+".LOLO", eventCallback, new double[] {0.}, channelServer, false);
-        upperAlarmLimitPV = new ServerMemoryProcessVariable(name+".HIHI", eventCallback, new double[] {0.}, channelServer, false);
+        lowerAlarmLimitPV = new ServerMemoryProcessVariable(name+".LOLO", eventCallback, new double[] {0.}, channelServer);
+        upperAlarmLimitPV = new ServerMemoryProcessVariable(name+".HIHI", eventCallback, new double[] {0.}, channelServer);
         
-        lowerDispLimitPV = new ServerMemoryProcessVariable(name+".LOPR", eventCallback, new double[] {0.}, channelServer, false);
-        upperDispLimitPV = new ServerMemoryProcessVariable(name+".HOPR", eventCallback, new double[] {0.}, channelServer, false);
+        lowerDispLimitPV = new ServerMemoryProcessVariable(name+".LOPR", eventCallback, new double[] {0.}, channelServer);
+        upperDispLimitPV = new ServerMemoryProcessVariable(name+".HOPR", eventCallback, new double[] {0.}, channelServer);
         
-        lowerCtrlLimitPV = new ServerMemoryProcessVariable(name+".DRVL", eventCallback, new double[] {0.}, channelServer, false);
-        upperCtrlLimitPV = new ServerMemoryProcessVariable(name+".DRVH", eventCallback, new double[] {0.}, channelServer, false);        
+        lowerCtrlLimitPV = new ServerMemoryProcessVariable(name+".DRVL", eventCallback, new double[] {0.}, channelServer);
+        upperCtrlLimitPV = new ServerMemoryProcessVariable(name+".DRVH", eventCallback, new double[] {0.}, channelServer);        
     }
     
     @Override

@@ -50,6 +50,7 @@ class JcaSystem extends ChannelSystem {
 			exception.printStackTrace();
 		}
     }
+
 	
 	/**
 	 * Determine the user's preferred JCA Context otherwise defaulting to JCALibrary.CHANNEL_ACCESS_JAVA 

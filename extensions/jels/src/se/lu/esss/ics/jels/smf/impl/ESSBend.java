@@ -1,6 +1,7 @@
 package se.lu.esss.ics.jels.smf.impl;
 
 import se.lu.esss.ics.jels.smf.attr.ESSMagnetBucket;
+import xal.ca.ChannelFactory;
 import xal.smf.impl.qualify.ElementTypeManager;
 import xal.tools.data.DataAdaptor;
 
@@ -40,7 +41,24 @@ public class ESSBend extends xal.smf.impl.Bend {
 	 * @param strId node id
 	 */
 	public ESSBend(String strId) {
-		this(strId, HORIZONTAL);
+		this(strId, HORIZONTAL, null);
+	}
+
+	/**
+	 * Creates Bend with horizontal orientation.
+	 * @param strId node id
+	 */
+	public ESSBend(String strId, ChannelFactory channelFactory) {
+		this(strId, HORIZONTAL, channelFactory);
+	}
+
+	/**
+	 * Creates Bend with arbitrary orientation.
+	 * @param strId node id
+	 * @param orientation orientation of the magnet, either HORIZONTAL or VERTICAL as defined by MagnetType. 
+	 */
+	public ESSBend(String strId, int orientation) {
+		this(strId, orientation, null);				
 	}
 	
 	/**
@@ -48,8 +66,8 @@ public class ESSBend extends xal.smf.impl.Bend {
 	 * @param strId node id
 	 * @param orientation orientation of the magnet, either HORIZONTAL or VERTICAL as defined by MagnetType. 
 	 */
-	public ESSBend(String strId, int orientation) {
-		super(strId);		
+	public ESSBend(String strId, int orientation, ChannelFactory channelFactory) {
+		super(strId, channelFactory);		
 		this._type = orientation == HORIZONTAL ? HORIZONTAL_TYPE : VERTICAL_TYPE;
 		setMagBucket(magnet2Bucket);
 	}

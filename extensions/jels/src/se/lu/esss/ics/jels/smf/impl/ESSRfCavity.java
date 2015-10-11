@@ -2,6 +2,7 @@ package se.lu.esss.ics.jels.smf.impl;
 
 import se.lu.esss.ics.jels.smf.attr.ESSRfCavityBucket;
 import se.lu.esss.ics.jels.tools.math.InverseRealPolynomial;
+import xal.ca.ChannelFactory;
 import xal.smf.attr.RfCavityBucket;
 import xal.smf.impl.RfCavity;
 
@@ -14,6 +15,11 @@ import xal.smf.impl.RfCavity;
  *
  */
 public class ESSRfCavity extends RfCavity {
+	public ESSRfCavity(String strId, ChannelFactory channelFactory) {
+		super(strId, channelFactory);
+		setRfField(new ESSRfCavityBucket());
+	}
+	
 	public ESSRfCavity(String strId) {
 		super(strId);
 		setRfField(new ESSRfCavityBucket());

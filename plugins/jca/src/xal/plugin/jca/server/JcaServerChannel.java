@@ -1,4 +1,4 @@
-package xal.plugin.jcaserver;
+package xal.plugin.jca.server;
 
 import gov.aps.jca.cas.ProcessVariableEventCallback;
 import gov.aps.jca.dbr.DBR;
@@ -20,6 +20,7 @@ import xal.ca.Monitor;
 import xal.ca.MonitorException;
 import xal.ca.PutException;
 import xal.ca.PutListener;
+import xal.ca.IServerChannel;
 import xal.ca.TimeAdaptor;
 import xal.ca.ValueAdaptor;
 import xal.tools.ArrayValue;
@@ -31,10 +32,10 @@ import com.cosylab.epics.caj.cas.util.DefaultServerImpl;
  * JcaServerChannel imitiating client channel, so it is instatiate directly in SMF layer.
  * 
  * @version 0.1 13 Jul 2015
- * @author Blaž Kranjc <blaz.kranjc@cosylab.com>
+ * @author Blaz Kranjc <blaz.kranjc@cosylab.com>
  */
 
-public class JcaServerChannel extends Channel {
+public class JcaServerChannel extends Channel implements IServerChannel {
 	private ServerMemoryRecord pv;
     private ProcessVariableEventDispatcher pved;;
 
@@ -43,19 +44,23 @@ public class JcaServerChannel extends Channel {
 
     private final int size;
 
-    JcaServerChannel(String signal, DefaultServerImpl channelServer, boolean writable) {
+    JcaServerChannel( final String signal, final DefaultServerImpl channelServer ) {
         super(signal);
         m_strId = signal;
-        size = signal.matches(".*(TBT|A)") ? DEFAULT_ARRAY_SIZE : 1;
-       
-        pv = new ServerMemoryRecord(signal, null, new double[size], channelServer, writable);
-       
-        pv.setUnits("units");
-        
-        pved = new ProcessVariableEventDispatcher(pv);
-        pv.setEventCallback(pved);
-        
-        connectionFlag = true;
+
+		if ( signal.length() > 0 ) {
+			size = signal.matches(".*(TBT|A)") ? DEFAULT_ARRAY_SIZE : 1;
+			pv = new ServerMemoryRecord(signal, null, new double[size], channelServer);
+			pv.setUnits("units");
+
+			pved = new ProcessVariableEventDispatcher(pv);
+			pv.setEventCallback(pved);
+			connectionFlag = true;
+		} else {
+			size = 0;
+			setValid( false );
+			connectionFlag = false;
+		}
     }
 
     @Override
@@ -97,8 +102,13 @@ public class JcaServerChannel extends Channel {
     }
 
     @Override
-    public String getUnits() throws ConnectionException, GetException {
-        return "units";
+    public String getUnits() {
+        return pv.getUnits();
+    }
+    
+    @Override
+    public void setUnits(String units) {
+        pv.setUnits(units);
     }
 
     /**
@@ -439,4 +449,10 @@ public class JcaServerChannel extends Channel {
 	public void setUpperWarningLimit(Number upperWarningLimit) {
 		pv.setUpperWarningLimit(upperWarningLimit);
 	}    
+	
+	public void setSettable(boolean settable) {
+		if ( pv != null ) {
+			pv.setSettable(settable);
+		}
+	}
 }
