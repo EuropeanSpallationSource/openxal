@@ -79,7 +79,7 @@ public class LinacLego {
 
 			EnvelopeProbe probe = ImporterHelpers.defaultProbe();
 			exporter.readInitialParameters(probe);
-					        
+			probe.initialize();		        
 	        ProbeFactory.createSchema(accelerator.editContext(), probe);
 		    
 		    List<EnvelopeProbeState> states = ImporterHelpers.simulateInitialValues(probe, comboSeq);

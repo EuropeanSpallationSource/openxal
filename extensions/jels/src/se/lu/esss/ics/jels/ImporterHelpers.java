@@ -49,7 +49,7 @@ public class ImporterHelpers {
 		envelopeTracker.setRfGapPhaseCalculation(true);
 		envelopeTracker.setUseSpacecharge(true);
 		envelopeTracker.setEmittanceGrowth(false);
-		envelopeTracker.setStepSize(0.01);
+		envelopeTracker.setStepSize(0.1);
 		envelopeTracker.setProbeUpdatePolicy(Tracker.UPDATE_ALWAYS);
 		
 		EnvelopeProbe envelopeProbe = new EnvelopeProbe();
@@ -100,6 +100,9 @@ public class ImporterHelpers {
 			
 			initialValues.add(state);		    
 		}
+		
+		probe.reset();
+		System.gc();
 		
 		return initialValues;
 	}
