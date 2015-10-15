@@ -32,36 +32,49 @@
 			<column attribute="r14" column="R14"/>
 			<column attribute="r15" column="R15"/>
 			<column attribute="r16" column="R16"/>
+			<column attribute="r17" column="R17"/>
 			<column attribute="r21" column="R21"/>
 			<column attribute="r22" column="R22"/>
 			<column attribute="r23" column="R23"/>
 			<column attribute="r24" column="R24"/>
 			<column attribute="r25" column="R25"/>
 			<column attribute="r26" column="R26"/>
+			<column attribute="r27" column="R27"/>
 			<column attribute="r31" column="R31"/>
 			<column attribute="r32" column="R32"/>
 			<column attribute="r33" column="R33"/>
 			<column attribute="r34" column="R34"/>
 			<column attribute="r35" column="R35"/>
 			<column attribute="r36" column="R36"/>
+			<column attribute="r37" column="R37"/>
 			<column attribute="r41" column="R41"/>
 			<column attribute="r42" column="R42"/>
 			<column attribute="r43" column="R43"/>
 			<column attribute="r44" column="R44"/>
 			<column attribute="r45" column="R45"/>
 			<column attribute="r46" column="R46"/>
+			<column attribute="r47" column="R47"/>
 			<column attribute="r51" column="R51"/>
 			<column attribute="r52" column="R52"/>
 			<column attribute="r53" column="R53"/>
 			<column attribute="r54" column="R54"/>
 			<column attribute="r55" column="R55"/>
 			<column attribute="r56" column="R56"/>
+			<column attribute="r57" column="R57"/>
 			<column attribute="r61" column="R61"/>
 			<column attribute="r62" column="R62"/>
 			<column attribute="r63" column="R63"/>
 			<column attribute="r64" column="R64"/>
 			<column attribute="r65" column="R65"/>
 			<column attribute="r66" column="R66"/>
+			<column attribute="r67" column="R67"/>
+			<column attribute="r71" column="R71"/>
+			<column attribute="r72" column="R72"/>
+			<column attribute="r73" column="R73"/>
+			<column attribute="r74" column="R74"/>
+			<column attribute="r75" column="R75"/>
+			<column attribute="r76" column="R76"/>
+			<column attribute="r77" column="R77"/>
 			<column attribute="leff" column="LEFF"/>
 			<column attribute="sleff" column="SLEFF"/>			
 			<column attribute="suml" column="SUML"/>

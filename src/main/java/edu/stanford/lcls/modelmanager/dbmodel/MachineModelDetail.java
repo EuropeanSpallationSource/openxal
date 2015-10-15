@@ -14,16 +14,25 @@ public class MachineModelDetail {
 				"RUNS_ID", "ELEMENT_NAME", "INDEX_SLICE_CHK", "ZPOS", "E", 
 				"ALPHA_X", "ALPHA_Y", "BETA_X", "BETA_Y", "PSI_X", "PSI_Y",
 				"ETA_X", "ETA_Y", "ETAP_X", "ETAP_Y",
-				"R11", "R12", "R13", "R14", "R15", "R16", "R21", "R22", "R23",
-				"R24", "R25", "R26", "R31", "R32", "R33", "R34", "R35", "R36",
-				"R41", "R42", "R43", "R44", "R45", "R46", "R51", "R52", "R53",
-				"R54", "R55", "R56", "R61", "R62", "R63", "R64", "R65", "R66",
+				"R11", "R12", "R13", "R14", "R15", "R16", "R17",
+				"R21", "R22", "R23", "R24", "R25", "R26", "R27",
+				"R31", "R32", "R33", "R34", "R35", "R36", "R37",
+				"R41", "R42", "R43", "R44", "R45", "R46", "R47",
+				"R51", "R52", "R53", "R54", "R55", "R56", "R57",
+				"R61", "R62", "R63", "R64", "R65", "R66", "R67",
+				"R71", "R72", "R73", "R74", "R75", "R76", "R77",
 				"LEFF", "SLEFF", "ORDINAL", "SUML", "DEVICE_TYPE", "EPICS_NAME",
 				"P" , "Bmag_X", "Bmag_Y"});
-		propertyType = Arrays.asList(new String[] {"String", "String", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", 
-				"Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double",
-				"Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "String", "String", "Double", "Double", "Double"});
-		PROPERTY_SIZE = PROPERTY_NAME.size(); // 58
+		propertyType = Arrays.asList(new String[] {"String", "String", "Double", "Double", "Double",
+				"Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double",
+				"Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double",
+				"Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double",
+				"Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double",
+				"Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double",
+				"Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double",
+				"Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double",
+				"String", "String", "Double", "Double", "Double"});
+		PROPERTY_SIZE = PROPERTY_NAME.size(); // 71 
 	}
 
 	// Construction
