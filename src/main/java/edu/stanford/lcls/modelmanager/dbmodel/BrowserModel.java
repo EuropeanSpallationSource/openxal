@@ -62,8 +62,8 @@ public class BrowserModel {
 	protected MachineModel _goldMachineModel;
 	protected MachineModelDetail[] _goldMachineModelDetail;
 	
-	private int plotFunctionID1;
-	private int plotFunctionID2;
+	private String plotFunctionID1;
+	private String plotFunctionID2;
 	
 	protected RunModel rm;
 	
@@ -208,11 +208,11 @@ public class BrowserModel {
 		return _runMachineModelDevice;
 	}
 	
-	public void setPlotFunctionID1(int plotFunctionID1) {
+	public void setPlotFunctionID1(String plotFunctionID1) {
 		this.plotFunctionID1 = plotFunctionID1;
 	}
 
-	public int getPlotFunctionID1() {
+	public String getPlotFunctionID1() {
 		return plotFunctionID1;
 	}
 
@@ -220,11 +220,11 @@ public class BrowserModel {
 		return rm;
 	}
 
-	public void setPlotFunctionID2(int plotFunctionID2) {
+	public void setPlotFunctionID2(String plotFunctionID2) {
 		this.plotFunctionID2 = plotFunctionID2;
 	}
 
-	public int getPlotFunctionID2() {
+	public String getPlotFunctionID2() {
 		return plotFunctionID2;
 	}
 

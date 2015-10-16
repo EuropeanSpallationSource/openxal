@@ -53,8 +53,8 @@ public class ModelPlotView implements SwingConstants {
 	private static JPanel modelPlotBox;
 	private JPanel plotSelectBox;
 	private ZPlotPanel zPlotPanel;
-	private static int plotFunctionID1;
-	private static int plotFunctionID2;
+	private static String plotFunctionID1;
+	private static String plotFunctionID2;
 	private static int plotSignMethod;
 	private static boolean plotNodeMethod;
 	private static int plotMethod;
@@ -189,8 +189,8 @@ public class ModelPlotView implements SwingConstants {
 						Component cell = super.getTableCellRendererComponent(
 								dataTable, value, isSelected, hasFocus, row,
 								column);
-						if (column == plotFunctionID1
-								|| column == plotFunctionID2)
+						if (table.getColumnName(column) == plotFunctionID1
+								|| table.getColumnName(column) == plotFunctionID2)
 							cell.setBackground(Color.LIGHT_GRAY);
 						else
 							cell.setBackground(Color.WHITE);
@@ -242,8 +242,8 @@ public class ModelPlotView implements SwingConstants {
 															isSelected,
 															hasFocus, row,
 															column);
-											if (column == plotFunctionID1
-													|| column == plotFunctionID2)
+											if (table.getColumnName(column) == plotFunctionID1
+													|| table.getColumnName(column) == plotFunctionID2)
 												cell.setBackground(Color.LIGHT_GRAY);
 											else
 												cell.setBackground(Color.WHITE);
@@ -346,51 +346,4 @@ public class ModelPlotView implements SwingConstants {
 		return modelPlotView;
 	}
 
-}
-
-class ListData extends AbstractListModel<String> {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	static final private List<String> PLOT_FUNCTION;
-
-	static {
-		PLOT_FUNCTION = new ArrayList<String>(Arrays.asList(new String[] {
-				"ALPHA X & Y", "BETA X & Y", "PSI X & Y", "ETA X & Y",
-				"ETAP X & Y", "R11 & R33", "R12 & R34", "R21 & R43", 
-				"R22 & R44", "ENERGY & P", "Bmag X & Y"}));
-	}
-
-	public ListData() {
-	}
-
-	public int getSize() {
-		return PLOT_FUNCTION.size();
-	}
-
-	public String getElementAt(int index) {
-		return PLOT_FUNCTION.get(index);
-	}
-
-	static public List<String> getPlotFunction() {
-		return PLOT_FUNCTION;
-	}
-	
-	static public int getPlotFunctionID(int rowNumber, int plotNumber){
-		if ( rowNumber <= 4 ){
-			return rowNumber * 2 + plotNumber + 4;
-		} else if( rowNumber <= 6 ){
-			return rowNumber + plotNumber * 14 - 4;
-		} else if( rowNumber <= 8 ){
-			return rowNumber + plotNumber * 14;
-		} else if( rowNumber == 9 & plotNumber == 1){
-			return 4;
-		} else if( rowNumber == 9 & plotNumber == 2){
-				return 57;
-		} else if( rowNumber == 10 ){
-				return 57 + plotNumber;
-		}
-		return 54;
-	}
 }

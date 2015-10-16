@@ -51,7 +51,7 @@ public class ModelPlotData {
 	public static ZPlotPanel plotOriginal(
 			MachineModelDetail[] designMachineModelDetails,
 			MachineModelDetail[] selectMachineModelDetails,
-			int plotFunctionID1, int plotFunctionID2,
+			String plotFunctionID1, String plotFunctionID2,
 			int plotSignMethod, boolean plotNodeMethod, JPanel parent,  boolean isGold) {
 
 		Color goldColor;
@@ -190,8 +190,7 @@ public class ModelPlotData {
 			renderer = (XYLineAndShapeRenderer) xPlot.getRenderer(0);
 			renderer.setBaseShapesVisible(plotNodeMethod);
 		}
-		xPlot.getRangeAxis().setLabel(
-				MachineModelDetail.getPropertyName(plotFunctionID1));
+		xPlot.getRangeAxis().setLabel(plotFunctionID1);
 		xPlot.getRangeAxis().setAutoRange(true);
 
 		yPlot = zPlot.getSubplot(Y_PLOT_INDEX);
@@ -203,8 +202,7 @@ public class ModelPlotData {
 			renderer = (XYLineAndShapeRenderer) yPlot.getRenderer(0);
 			renderer.setBaseShapesVisible(plotNodeMethod);
 		}
-		yPlot.getRangeAxis().setLabel(
-				MachineModelDetail.getPropertyName(plotFunctionID2));
+		yPlot.getRangeAxis().setLabel(plotFunctionID2);
 		yPlot.getRangeAxis().setAutoRange(true);
 
 		zPlot.setCartoonDevices(cartoonDevices);
@@ -226,7 +224,7 @@ public class ModelPlotData {
 	public static ZPlotPanel plotDifferent(
 			MachineModelDetail[] designMachineModelDetails,
 			MachineModelDetail[] selectMachineModelDetails,
-			int plotFunctionID1, int plotFunctionID2,
+			String plotFunctionID1, String plotFunctionID2,
 			int plotSignMethod, boolean plotNodeMethod, JPanel parent) {
 
 		// construct devices
@@ -368,8 +366,7 @@ public class ModelPlotData {
 			XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) xPlot.getRenderer(0);
 			renderer.setBaseShapesVisible(plotNodeMethod);
 		}
-		xPlot.getRangeAxis().setLabel("d_" +
-				MachineModelDetail.getPropertyName(plotFunctionID1));
+		xPlot.getRangeAxis().setLabel("d_" + plotFunctionID1);
 		xPlot.getRangeAxis().setAutoRange(true);
 
 		yPlot = zPlot.getSubplot(Y_PLOT_INDEX);
@@ -378,8 +375,7 @@ public class ModelPlotData {
 			XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) yPlot.getRenderer(0);
 			renderer.setBaseShapesVisible(plotNodeMethod);
 		}
-		yPlot.getRangeAxis().setLabel("d_" +
-				MachineModelDetail.getPropertyName(plotFunctionID2));
+		yPlot.getRangeAxis().setLabel("d_" + plotFunctionID2);
 		yPlot.getRangeAxis().setAutoRange(true);
 
 		zPlot.setCartoonDevices(cartoonDevices);
@@ -400,7 +396,7 @@ public class ModelPlotData {
 	// Only plot one machine mode
 
 	public static ZPlotPanel plotData(MachineModelDetail[] machineModelDetails,
-			int plotFunctionID1, int plotFunctionID2,
+			String plotFunctionID1, String plotFunctionID2,
 			int plotSignMethod, boolean plotNodeMethod, JPanel parent, boolean isGold) {
 		// construct devices
 		final int DEVICES_NUMBER = machineModelDetails.length;
@@ -495,8 +491,7 @@ public class ModelPlotData {
 			XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) xPlot.getRenderer(0);
 			renderer.setBaseShapesVisible(plotNodeMethod);
 		}	
-		xPlot.getRangeAxis().setLabel(
-				MachineModelDetail.getPropertyName(plotFunctionID1));
+		xPlot.getRangeAxis().setLabel(plotFunctionID1);
 		xPlot.getRangeAxis().setAutoRange(true);
 
 		yPlot = zPlot.getSubplot(Y_PLOT_INDEX);
@@ -505,8 +500,7 @@ public class ModelPlotData {
 			XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) yPlot.getRenderer(0);
 			renderer.setBaseShapesVisible(plotNodeMethod);
 		}
-		yPlot.getRangeAxis().setLabel(
-				MachineModelDetail.getPropertyName(plotFunctionID2));
+		yPlot.getRangeAxis().setLabel(plotFunctionID2);
 		yPlot.getRangeAxis().setAutoRange(true);
 
 		zPlot.setCartoonDevices(cartoonDevices);
