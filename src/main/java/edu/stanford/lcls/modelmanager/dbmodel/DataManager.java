@@ -320,15 +320,15 @@ public class DataManager {
 					machineModelDetail.setPropertyValue("PSI_Y", df.format(betatronPhase.gety()));
 					machineModelDetail.setPropertyValue("E", df.format(getTotalEnergyFromKinetic(state.getSpeciesRestEnergy() / 1.e9, state.getKineticEnergy() / 1.e9)));
 					machineModelDetail.setPropertyValue("P", df.format(RelativisticParameterConverter.
-							computeMomentumFromEnergies(state.getKineticEnergy(), state.getSpeciesRestEnergy())/1e9));
+							computeMomentumFromEnergies(state.getKineticEnergy(), state.getSpeciesRestEnergy()) / 1e9));
 					machineModelDetail.setPropertyValue("Bmag_X", "1");
 					machineModelDetail.setPropertyValue("Bmag_Y", "1");
 					
 					PhaseMatrix rMat = state
 							.getResponseMatrix();
 					// Set response matrix elements to machineModelDetail
-					for (int row_index = 0; row_index < 6; row_index++) {
-						for (int col_index = 0; col_index < 6; col_index++) {
+					for (int row_index = 0; row_index < 7; row_index++) {
+						for (int col_index = 0; col_index < 7; col_index++) {
 							machineModelDetail.setPropertyValue("R" + String.valueOf(row_index+1) + String.valueOf(col_index+1),
 									df.format(rMat.getElem(row_index, col_index)));
 						}
