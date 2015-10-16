@@ -581,75 +581,36 @@ public class DataManager {
 					stmt4.setNull(2, Types.INTEGER);
 				}
 				stmt4.setInt(1, runID);
-				
-				stmt4.setString(3, (String)runMachineModelDetail[i].getPropertyValue("ELEMENT_NAME"));
-				stmt4.setInt(4, Integer.parseInt((String)runMachineModelDetail[i].getPropertyValue("INDEX_SLICE_CHK")));
-				stmt4.setDouble(5, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("ZPOS")));
-				stmt4.setDouble(6, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("E")));
-				stmt4.setDouble(7, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("ALPHA_X")));
-				stmt4.setDouble(8, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("ALPHA_Y")));
-				stmt4.setDouble(9, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("BETA_X")));
-				stmt4.setDouble(10, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("BETA_Y")));
-				stmt4.setDouble(11, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("PSI_X")));
-				stmt4.setDouble(12, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("PSI_Y")));
-				stmt4.setDouble(13, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("ETA_X")));
-				stmt4.setDouble(14, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("ETA_Y")));
-				stmt4.setDouble(15, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("ETAP_X")));
-				stmt4.setDouble(16, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("ETAP_Y")));
-				stmt4.setDouble(17, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R11")));
-				stmt4.setDouble(18, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R12")));
-				stmt4.setDouble(19, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R13")));
-				stmt4.setDouble(20, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R14")));
-				stmt4.setDouble(21, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R15")));
-				stmt4.setDouble(22, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R16")));
-				stmt4.setDouble(23, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R17")));
-				stmt4.setDouble(24, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R21")));
-				stmt4.setDouble(25, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R22")));
-				stmt4.setDouble(26, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R23")));
-				stmt4.setDouble(27, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R24")));
-				stmt4.setDouble(28, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R25")));
-				stmt4.setDouble(29, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R26")));
-				stmt4.setDouble(30, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R27")));
-				stmt4.setDouble(31, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R31")));
-				stmt4.setDouble(32, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R32")));
-				stmt4.setDouble(33, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R33")));
-				stmt4.setDouble(34, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R34")));
-				stmt4.setDouble(35, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R35")));
-				stmt4.setDouble(36, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R36")));
-				stmt4.setDouble(37, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R37")));
-				stmt4.setDouble(38, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R41")));
-				stmt4.setDouble(39, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R42")));
-				stmt4.setDouble(40, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R43")));
-				stmt4.setDouble(41, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R44")));
-				stmt4.setDouble(42, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R45")));
-				stmt4.setDouble(43, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R46")));
-				stmt4.setDouble(44, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R47")));
-				stmt4.setDouble(45, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R51")));
-				stmt4.setDouble(46, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R52")));
-				stmt4.setDouble(47, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R53")));
-				stmt4.setDouble(48, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R54")));
-				stmt4.setDouble(49, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R55")));
-				stmt4.setDouble(50, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R56")));
-				stmt4.setDouble(51, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R57")));
-				stmt4.setDouble(52, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R61")));
-				stmt4.setDouble(53, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R62")));
-				stmt4.setDouble(54, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R63")));
-				stmt4.setDouble(55, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R64")));
-				stmt4.setDouble(56, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R65")));
-				stmt4.setDouble(57, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R66")));
-				stmt4.setDouble(58, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R67")));
-				stmt4.setDouble(59, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R71")));
-				stmt4.setDouble(60, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R72")));
-				stmt4.setDouble(61, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R73")));
-				stmt4.setDouble(62, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R74")));
-				stmt4.setDouble(63, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R75")));
-				stmt4.setDouble(64, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R76")));
-				stmt4.setDouble(65, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("R77")));
-				stmt4.setDouble(66, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("LEFF")));
-				stmt4.setDouble(67, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("SLEFF")));
-				stmt4.setDouble(68, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("ORDINAL")));
-				stmt4.setDouble(69, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("SUML")));
-				stmt4.setString(70, (String)runMachineModelDetail[i].getPropertyValue("DEVICE_TYPE"));
+
+				// Indexing for other properties
+				int prop_index = 3;	
+
+				stmt4.setString(prop_index++, (String)runMachineModelDetail[i].getPropertyValue("ELEMENT_NAME"));
+				stmt4.setInt(prop_index++, Integer.parseInt((String)runMachineModelDetail[i].getPropertyValue("INDEX_SLICE_CHK")));
+				stmt4.setDouble(prop_index++, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("ZPOS")));
+				stmt4.setDouble(prop_index++, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("E")));
+				stmt4.setDouble(prop_index++, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("ALPHA_X")));
+				stmt4.setDouble(prop_index++, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("ALPHA_Y")));
+				stmt4.setDouble(prop_index++, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("BETA_X")));
+				stmt4.setDouble(prop_index++, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("BETA_Y")));
+				stmt4.setDouble(prop_index++, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("PSI_X")));
+				stmt4.setDouble(prop_index++, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("PSI_Y")));
+				stmt4.setDouble(prop_index++, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("ETA_X")));
+				stmt4.setDouble(prop_index++, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("ETA_Y")));
+				stmt4.setDouble(prop_index++, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("ETAP_X")));
+				stmt4.setDouble(prop_index++, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("ETAP_Y")));
+				for (int row_index = 0; row_index < 7; row_index++) {
+					for (int col_index = 0; col_index < 7; col_index++) {
+						stmt4.setDouble(prop_index++, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue(
+							"R" + String.valueOf(row_index+1) + String.valueOf(col_index+1)
+							)));
+					}
+				}
+				stmt4.setDouble(prop_index++, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("LEFF")));
+				stmt4.setDouble(prop_index++, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("SLEFF")));
+				stmt4.setDouble(prop_index++, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("ORDINAL")));
+				stmt4.setDouble(prop_index++, Double.parseDouble((String)runMachineModelDetail[i].getPropertyValue("SUML")));
+				stmt4.setString(prop_index++, (String)runMachineModelDetail[i].getPropertyValue("DEVICE_TYPE"));
 
 				stmt4.addBatch();
 			}
