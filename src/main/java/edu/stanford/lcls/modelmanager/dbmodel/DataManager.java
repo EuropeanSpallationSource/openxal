@@ -135,28 +135,6 @@ public class DataManager {
 	
 	public static MachineModelDetail[] calculateBmag(MachineModelDetail[] selectedMachineModelDetail,
 			MachineModelDetail[] referenceMachineModelDetail){
-/*       if(selectedMachineModelDetail.length == referenceMachineModelDetail.length){
-			Double alpha_X, alpha0_X, beta_X, beta0_X, gamma_X, gamma0_X,
-			       alpha_Y, alpha0_Y, beta_Y, beta0_Y, gamma_Y, gamma0_Y, Bmag_X, Bmag_Y;
-			for (int i = 0; i < selectedMachineModelDetail.length; i++) {
-				alpha_X = Double.valueOf(selectedMachineModelDetail[i].getPropertyValue("ALPHA_X").toString());
-				alpha_Y = Double.valueOf(selectedMachineModelDetail[i].getPropertyValue("ALPHA_Y").toString());
-				beta_X = Double.valueOf(selectedMachineModelDetail[i].getPropertyValue("BETA_X").toString());
-				beta_Y = Double.valueOf(selectedMachineModelDetail[i].getPropertyValue("BETA_Y").toString());
-				gamma_X = (1 + alpha_X * alpha_X) / beta_X;
-				gamma_Y = (1 + alpha_Y * alpha_Y) / beta_Y;
-				alpha0_X = Double.valueOf(referenceMachineModelDetail[i].getPropertyValue("ALPHA_X").toString());
-				alpha0_Y = Double.valueOf(referenceMachineModelDetail[i].getPropertyValue("ALPHA_Y").toString());
-				beta0_X = Double.valueOf(referenceMachineModelDetail[i].getPropertyValue("BETA_X").toString());
-				beta0_Y = Double.valueOf(referenceMachineModelDetail[i].getPropertyValue("BETA_Y").toString());
-				gamma0_X = (1 + alpha0_X * alpha0_X) / beta0_X;
-				gamma0_Y = (1 + alpha0_Y * alpha0_Y) / beta0_Y;
-				Bmag_X = 0.5 * ( beta_X*gamma0_X - 2*alpha_X*alpha0_X + gamma_X*beta0_X);
-				Bmag_Y = 0.5 * ( beta_Y*gamma0_Y - 2*alpha_Y*alpha0_Y + gamma_Y*beta0_Y);
-				selectedMachineModelDetail[i].setPropertyValue("Bmag_X", Bmag_X.toString());
-				selectedMachineModelDetail[i].setPropertyValue("Bmag_Y", Bmag_Y.toString());
-			}
-		}else{*/
 			if (referenceMachineModelDetail == null) return selectedMachineModelDetail;
 			
 			Double alpha_X, alpha0_X, beta_X, beta0_X, gamma_X, gamma0_X,
@@ -244,9 +222,6 @@ public class DataManager {
 			firstSeqId = scenario.getSequence().getId();
 		}
 		
-		// initial element ID
-		String elem0 = "Begin_Of_" + firstSeqId;
-		
 		Iterator<AcceleratorNode> it = allNodes.iterator();
 		// order the elements
 		HashMap<String, Integer> elemOrders = new HashMap<String, Integer>();
@@ -296,7 +271,7 @@ public class DataManager {
 						.getEPICSName(machineModelDetail.getPropertyValue("ELEMENT_NAME").toString()));
 				
 				//double s = 0.;
-				// CHECK: is this still relevant?
+				// TODO CHECK: is this still relevant?
 				// treat Q30615x and Q30715x differently
 				if (node.isKindOf(RfGap.s_strType)) {						
 					machineModelDetail.setPropertyValue("INDEX_SLICE_CHK", i == 0 ? "0" : "2");					
@@ -351,55 +326,13 @@ public class DataManager {
 					
 					PhaseMatrix rMat = state
 							.getResponseMatrix();
-					machineModelDetail.setPropertyValue("R11", df.format(rMat.getElem(0, 0)));
-					machineModelDetail.setPropertyValue("R12", df.format(rMat.getElem(0, 1)));
-					machineModelDetail.setPropertyValue("R13", df.format(rMat.getElem(0, 2)));
-					machineModelDetail.setPropertyValue("R14", df.format(rMat.getElem(0, 3)));
-					machineModelDetail.setPropertyValue("R15", df.format(rMat.getElem(0, 4)));
-					machineModelDetail.setPropertyValue("R16", df.format(rMat.getElem(0, 5)));
-					machineModelDetail.setPropertyValue("R17", df.format(rMat.getElem(0, 6)));
-					machineModelDetail.setPropertyValue("R21", df.format(rMat.getElem(1, 0)));
-					machineModelDetail.setPropertyValue("R22", df.format(rMat.getElem(1, 1)));
-					machineModelDetail.setPropertyValue("R23", df.format(rMat.getElem(1, 2)));
-					machineModelDetail.setPropertyValue("R24", df.format(rMat.getElem(1, 3)));
-					machineModelDetail.setPropertyValue("R25", df.format(rMat.getElem(1, 4)));
-					machineModelDetail.setPropertyValue("R26", df.format(rMat.getElem(1, 5)));
-					machineModelDetail.setPropertyValue("R27", df.format(rMat.getElem(1, 6)));
-					machineModelDetail.setPropertyValue("R31", df.format(rMat.getElem(2, 0)));
-					machineModelDetail.setPropertyValue("R32", df.format(rMat.getElem(2, 1)));
-					machineModelDetail.setPropertyValue("R33", df.format(rMat.getElem(2, 2)));
-					machineModelDetail.setPropertyValue("R34", df.format(rMat.getElem(2, 3)));
-					machineModelDetail.setPropertyValue("R35", df.format(rMat.getElem(2, 4)));
-					machineModelDetail.setPropertyValue("R36", df.format(rMat.getElem(2, 5)));
-					machineModelDetail.setPropertyValue("R37", df.format(rMat.getElem(2, 6)));
-					machineModelDetail.setPropertyValue("R41", df.format(rMat.getElem(3, 0)));
-					machineModelDetail.setPropertyValue("R42", df.format(rMat.getElem(3, 1)));
-					machineModelDetail.setPropertyValue("R43", df.format(rMat.getElem(3, 2)));
-					machineModelDetail.setPropertyValue("R44", df.format(rMat.getElem(3, 3)));
-					machineModelDetail.setPropertyValue("R45", df.format(rMat.getElem(3, 4)));
-					machineModelDetail.setPropertyValue("R46", df.format(rMat.getElem(3, 5)));
-					machineModelDetail.setPropertyValue("R47", df.format(rMat.getElem(3, 6)));
-					machineModelDetail.setPropertyValue("R51", df.format(rMat.getElem(4, 0)));
-					machineModelDetail.setPropertyValue("R52", df.format(rMat.getElem(4, 1)));
-					machineModelDetail.setPropertyValue("R53", df.format(rMat.getElem(4, 2)));
-					machineModelDetail.setPropertyValue("R54", df.format(rMat.getElem(4, 3)));
-					machineModelDetail.setPropertyValue("R55", df.format(rMat.getElem(4, 4)));
-					machineModelDetail.setPropertyValue("R56", df.format(rMat.getElem(4, 5)));
-					machineModelDetail.setPropertyValue("R57", df.format(rMat.getElem(4, 6)));
-					machineModelDetail.setPropertyValue("R61", df.format(rMat.getElem(5, 0)));
-					machineModelDetail.setPropertyValue("R62", df.format(rMat.getElem(5, 1)));
-					machineModelDetail.setPropertyValue("R63", df.format(rMat.getElem(5, 2)));
-					machineModelDetail.setPropertyValue("R64", df.format(rMat.getElem(5, 3)));
-					machineModelDetail.setPropertyValue("R65", df.format(rMat.getElem(5, 4)));
-					machineModelDetail.setPropertyValue("R66", df.format(rMat.getElem(5, 5)));
-					machineModelDetail.setPropertyValue("R67", df.format(rMat.getElem(5, 6)));
-					machineModelDetail.setPropertyValue("R71", df.format(rMat.getElem(6, 0)));
-					machineModelDetail.setPropertyValue("R72", df.format(rMat.getElem(6, 1)));
-					machineModelDetail.setPropertyValue("R73", df.format(rMat.getElem(6, 2)));
-					machineModelDetail.setPropertyValue("R74", df.format(rMat.getElem(6, 3)));
-					machineModelDetail.setPropertyValue("R75", df.format(rMat.getElem(6, 4)));
-					machineModelDetail.setPropertyValue("R76", df.format(rMat.getElem(6, 5)));
-					machineModelDetail.setPropertyValue("R77", df.format(rMat.getElem(6, 6)));
+					// Set response matrix elements to machineModelDetail
+					for (int row_index = 0; row_index < 6; row_index++) {
+						for (int col_index = 0; col_index < 6; col_index++) {
+							machineModelDetail.setPropertyValue("R" + String.valueOf(row_index+1) + String.valueOf(col_index+1),
+									df.format(rMat.getElem(row_index, col_index)));
+						}
+					}
 				}
 				runMachineModelDetail.add(machineModelDetail);
 			
@@ -577,14 +510,12 @@ public class DataManager {
 		Connection writeConnection;
 		
 		
-//			writeConnection = dialog.showConnectionDialog(DatabaseAdaptor.getInstance());
 			writeConnection = DataManager.getConnection();
 			
 			ArrayList<String> elementName = new ArrayList<String>();
 			ArrayList<Integer> elementID = new ArrayList<>();
 			//ArrayList<Integer> elementTypeID = new ArrayList<>();
 			int index;
-			ResultSet rs;
 	
 			// prepare for MACHINE_MODEL.RUNS
 			PreparedStatement stmt1 = null;
@@ -605,19 +536,6 @@ public class DataManager {
 			// update the RUN ID
 			runID = rs1.getInt(1);
 			
-			/*PreparedStatement stmt2 = writeConnection.prepareStatement("SELECT L.\"ELEMENT\", L.\"ELEMENT_ID\", D.\"ID\" " +
-					"FROM \"MACHINE_MODEL\".\"DEVICE_TYPES\" D, \"LCLS_INFRASTRUCTURE\".\"LCLS_ELEMENTS\" L " +
-			"WHERE L.\"KEYWORD\" = D.\"DEVICE_TYPE\"");*/
-			// TODO OPENXAL
-			/*PreparedStatement stmt2 = writeConnection.prepareStatement("SELECT D.\"DEVICE_TYPE\", D.\"ID\", D.\"ID\" " +
-					"FROM \"MACHINE_MODEL\".\"DEVICE_TYPES\" D");
-			rs = stmt2.executeQuery();
-			while(rs.next()){
-				elementName.add(rs.getString(1));
-				elementID.add(rs.getInt(2));
-				elementTypeID.add(rs.getInt(3));
-			}*/
-
 			PreparedStatement stmt3 = writeConnection.prepareStatement("INSERT INTO \"MACHINE_MODEL\".\"MODEL_DEVICES\" (\"RUNS_ID\", \"LCLS_ELEMENTS_ELEMENT_ID\", \"ELEMENT_NAME\", \"DEVICE_TYPES_ID\", \"DEVICE_PROPERTY\", \"DEVICE_VALUE\", \"UNITS\", \"ZPOS\") "+
 			  "VALUES (?,?,?,?,?,?,?,?)");
 			stmt3.setInt(1, runID);
@@ -762,13 +680,6 @@ public class DataManager {
 			
 			return null;
 		}
-		/* catch (Exception exception) {
-			JOptionPane.showMessageDialog(parent, exception.getMessage(),
-					"Connection Error!  Cannot connect to " + url, JOptionPane.ERROR_MESSAGE);
-			Logger.getLogger("global").log(Level.SEVERE,
-					"Database connection error.  Cannot connect to " + url, exception);
-			Message.error("Connection exception: Cannot connect to database" + url, true);
-		}*/
 	}		
 	
 	/**
@@ -838,11 +749,8 @@ public class DataManager {
 	public static void makeGold(String comment, MachineModel selectedMachineModel) throws SQLException {
 		// TODO also update other DB instances, if necessary
 		
-//		PrefsConnectionDialog dialog = PrefsConnectionDialog.getInstance(parent, false, true);
 		Connection writeConnection = null;
 		
-//			writeConnection = dialog.showConnectionDialog(DatabaseAdaptor
-//					.getInstance());
 		writeConnection = DataManager.getConnection();
 		
 		if (writeConnection != null) {			
@@ -860,7 +768,6 @@ public class DataManager {
 			cstmt.registerOutParameter(1, java.sql.Types.VARCHAR);
 
 			cstmt.execute();
-//				System.out.println("A new GOLD Model tagged!");
 			String msg = cstmt.getString(1);
 			
 			if (msg == null) {
@@ -871,7 +778,6 @@ public class DataManager {
 			}
 
 			cstmt.close();
-//				Message.info("A new GOLD Model is tagged!");
 			writeConnection.close();					
 		}
 	}
