@@ -87,8 +87,8 @@ public class ModelDetailView implements SwingConstants {
 											if (row == detailTable.getSelectedRow()) {
 												cell.setBackground(cell.getBackground());
 											}
-											else if (table.getColumnName(column) == model.getPlotFunctionID1()
-													|| table.getColumnName(column) == model.getPlotFunctionID2()) {
+											else if (table.getColumnName(column).equals(model.getPlotFunctionID1())
+													|| table.getColumnName(column).equals(model.getPlotFunctionID2())) {
 												cell.setBackground(Color.LIGHT_GRAY);
 											}
 											else {

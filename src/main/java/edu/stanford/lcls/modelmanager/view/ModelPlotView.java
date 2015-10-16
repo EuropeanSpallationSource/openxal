@@ -189,8 +189,8 @@ public class ModelPlotView implements SwingConstants {
 						Component cell = super.getTableCellRendererComponent(
 								dataTable, value, isSelected, hasFocus, row,
 								column);
-						if (table.getColumnName(column) == plotFunctionID1
-								|| table.getColumnName(column) == plotFunctionID2)
+						if (table.getColumnName(column).equals(plotFunctionID1)
+								|| table.getColumnName(column).equals(plotFunctionID2))
 							cell.setBackground(Color.LIGHT_GRAY);
 						else
 							cell.setBackground(Color.WHITE);
@@ -242,8 +242,8 @@ public class ModelPlotView implements SwingConstants {
 															isSelected,
 															hasFocus, row,
 															column);
-											if (table.getColumnName(column) == plotFunctionID1
-													|| table.getColumnName(column) == plotFunctionID2)
+											if (table.getColumnName(column).equals(plotFunctionID1)
+													|| table.getColumnName(column).equals(plotFunctionID2))
 												cell.setBackground(Color.LIGHT_GRAY);
 											else
 												cell.setBackground(Color.WHITE);
