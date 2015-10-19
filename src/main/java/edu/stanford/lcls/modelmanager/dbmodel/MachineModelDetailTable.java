@@ -75,6 +75,7 @@ public class MachineModelDetailTable {
 			DeviceType deviceType = new DeviceType(acc);
 			MachineModelDetail machineModelDetail;
 			Double E;
+			Double Ek;
 			Double P;
 			
 			while (modelResult.next()) {
@@ -98,7 +99,9 @@ public class MachineModelDetailTable {
 				
 				// add P
 				E = Double.parseDouble(machineModelDetail.getPropertyValue("E").toString());
-				P = RelativisticParameterConverter.computeMomentumFromEnergies(E * 1e9 - PROTON_MASS, PROTON_MASS) / 1e9;
+				Ek = E - PROTON_MASS / 1e9;
+				machineModelDetail.setPropertyValue("Ek", Ek.toString());
+				P = RelativisticParameterConverter.computeMomentumFromEnergies(Ek * 1e9, PROTON_MASS) / 1e9;
 				machineModelDetail.setPropertyValue("P", P.toString());
 				
 				// add Bmag_X & Bmag_Y

@@ -44,6 +44,7 @@ public class MachineModelDetail {
 		properties.put("SUML", "Double");
 		properties.put("DEVICE_TYPE", "String");
 		properties.put("EPICS_NAME", "String");
+		properties.put("Ek", "Double");
 		properties.put("P", "Double");
 		properties.put("Bmag_X", "Double");
 		properties.put("Bmag_Y", "Double");
