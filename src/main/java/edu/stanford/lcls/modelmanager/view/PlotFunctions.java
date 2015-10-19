@@ -23,6 +23,7 @@ class PlotFunctions {
 		functions.put("R21 & R43", new String[]{"R21", "R43"});
 		functions.put("R22 & R44", new String[]{"R22", "R44"});
 		functions.put("ENERGY & P", new String[]{"E", "P"});
+		functions.put("meanX & meanY", new String[]{"R17", "R37"});
 		functions.put("Bmax X & Y", new String[]{"Bmag_X", "Bmag_Y"});
 		PLOT_FUNCTIONS = functions;
 	}
