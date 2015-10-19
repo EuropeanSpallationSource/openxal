@@ -5,6 +5,12 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+/**
+ * Details extracted from calculation for an element.
+ * 
+ * @author unknown
+ * @author Blaz Kranjc
+ */
 public class MachineModelDetail {
 	private List<Object> propertyValue;
 
@@ -46,7 +52,6 @@ public class MachineModelDetail {
 	static final private List<String> PROPERTY_NAMES = new ArrayList<String>(PROPERTY_TYPES.keySet());
 	static final int PROPERTY_SIZE = PROPERTY_NAMES.size();
 
-	// Construction
 	public MachineModelDetail() {
 		this.propertyValue = Arrays.asList(new Object[PROPERTY_SIZE]);
 	}

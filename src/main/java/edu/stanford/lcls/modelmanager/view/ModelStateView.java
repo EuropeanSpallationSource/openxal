@@ -15,10 +15,6 @@ import javax.swing.SwingConstants;
 
 import edu.stanford.lcls.modelmanager.dbmodel.BrowserModel;
 import edu.stanford.lcls.modelmanager.dbmodel.BrowserModelListener;
-import edu.stanford.lcls.modelmanager.dbmodel.MachineModel;
-import edu.stanford.lcls.modelmanager.dbmodel.MachineModelDetail;
-import edu.stanford.lcls.modelmanager.dbmodel.MachineModelDevice;
-import edu.stanford.lcls.modelmanager.dbmodel.BrowserModelListener.BrowserModelAction;
 
 public class ModelStateView extends Thread implements SwingConstants {
 	protected BrowserModel _model;
