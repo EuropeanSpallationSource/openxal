@@ -28,7 +28,6 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
 
 import edu.stanford.lcls.modelmanager.dbmodel.BrowserModel;
 import edu.stanford.lcls.modelmanager.dbmodel.MachineModelDeviceTableModel;
@@ -57,7 +56,8 @@ public class ModelDeviceView  implements SwingConstants{
 	public ModelDeviceView(BrowserModel model) {
 		_model = model;
         final MachineModelDeviceTableModel machineModelDeviceTableModel = new MachineModelDeviceTableModel(){
-        	@Override
+
+			@Override
         	public void modelStateChanged(BrowserModel model, BrowserModelAction action) {
         		//Overriding modelStateChanged to show/hide initial values column
         		super.modelStateChanged(model, action);

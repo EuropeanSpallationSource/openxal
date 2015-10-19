@@ -1,39 +1,50 @@
 package edu.stanford.lcls.modelmanager.dbmodel;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 public class MachineModelDetail {
-	static final private List<String> PROPERTY_NAME;
-	static final private int PROPERTY_SIZE;
-	static private List<String> propertyType;
 	private List<Object> propertyValue;
 
+	static final private LinkedHashMap<String, String> PROPERTY_TYPES;
 	static {
-		PROPERTY_NAME = Arrays.asList(new String[] {
-				"RUNS_ID", "ELEMENT_NAME", "INDEX_SLICE_CHK", "ZPOS", "E", 
-				"ALPHA_X", "ALPHA_Y", "BETA_X", "BETA_Y", "PSI_X", "PSI_Y",
-				"ETA_X", "ETA_Y", "ETAP_X", "ETAP_Y",
-				"R11", "R12", "R13", "R14", "R15", "R16", "R17",
-				"R21", "R22", "R23", "R24", "R25", "R26", "R27",
-				"R31", "R32", "R33", "R34", "R35", "R36", "R37",
-				"R41", "R42", "R43", "R44", "R45", "R46", "R47",
-				"R51", "R52", "R53", "R54", "R55", "R56", "R57",
-				"R61", "R62", "R63", "R64", "R65", "R66", "R67",
-				"R71", "R72", "R73", "R74", "R75", "R76", "R77",
-				"LEFF", "SLEFF", "ORDINAL", "SUML", "DEVICE_TYPE", "EPICS_NAME",
-				"P" , "Bmag_X", "Bmag_Y"});
-		propertyType = Arrays.asList(new String[] {"String", "String", "Double", "Double", "Double",
-				"Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double",
-				"Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double",
-				"Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double",
-				"Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double",
-				"Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double",
-				"Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double",
-				"Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double", "Double",
-				"String", "String", "Double", "Double", "Double"});
-		PROPERTY_SIZE = PROPERTY_NAME.size(); // 71 
+		LinkedHashMap<String, String> properties = new LinkedHashMap<String, String>();
+		properties.put("RUNS_ID", "String");
+		properties.put("ELEMENT_NAME", "String");
+		properties.put("INDEX_SLICE_CHK", "Double");
+		properties.put("ZPOS", "Double");
+		properties.put("E", "Double");
+		properties.put("ALPHA_X", "Double");
+		properties.put("ALPHA_Y", "Double");
+		properties.put("BETA_X", "Double");
+		properties.put("BETA_Y", "Double");
+		properties.put("PSI_X", "Double");
+		properties.put("PSI_Y", "Double");
+		properties.put("ETA_X", "Double");
+		properties.put("ETA_Y", "Double");
+		properties.put("ETAP_X", "Double");
+		properties.put("ETAP_Y", "Double");
+		// Matrix
+		for (int i = 0; i < 7; i++) {
+			for (int j = 0; j < 7; j++) {
+				properties.put("R" + Integer.toString(i+1) + Integer.toString(j+1), "Double");
+			}
+		}
+		properties.put("LEFF", "Double");
+		properties.put("SLEFF", "Double");
+		properties.put("ORDINAL", "Double");
+		properties.put("SUML", "Double");
+		properties.put("DEVICE_TYPE", "String");
+		properties.put("EPICS_NAME", "String");
+		properties.put("P", "Double");
+		properties.put("Bmag_X", "Double");
+		properties.put("Bmag_Y", "Double");
+		PROPERTY_TYPES = properties;
 	}
+	static final private List<String> PROPERTY_NAMES = new ArrayList<String>(PROPERTY_TYPES.keySet());
+	static final int PROPERTY_SIZE = PROPERTY_NAMES.size();
 
 	// Construction
 	public MachineModelDetail() {
@@ -42,24 +53,20 @@ public class MachineModelDetail {
 
 	// About propertyName
 	public static String getPropertyName(int index) {
-		return PROPERTY_NAME.get(index);
+		return PROPERTY_NAMES.get(index);
 	}
 
 	public static List<String> getAllPropertyName() {
-		return PROPERTY_NAME;
+		return PROPERTY_NAMES;
 	}
 
 	// About propertyType
 	public static String getPropertyType(int index) {
-		return propertyType.get(index);
+		return getPropertyType(getPropertyName(index));
 	}
 
 	public static String getPropertyType(String propertyName) {
-		return getPropertyType(PROPERTY_NAME.indexOf(propertyName));
-	}
-
-	public static List<String> getAllPropertyType() {
-		return propertyType;
+		return PROPERTY_TYPES.get(propertyName);
 	}
 
 	// About PropertyValue
@@ -68,7 +75,7 @@ public class MachineModelDetail {
 	}
 
 	public Object getPropertyValue(String propertyName) {
-		return getPropertyValue(PROPERTY_NAME.indexOf(propertyName));
+		return getPropertyValue(PROPERTY_NAMES.indexOf(propertyName));
 	}
 
 	public List<Object> getAllPropertyValue() {
@@ -80,11 +87,10 @@ public class MachineModelDetail {
 	}
 
 	public void setPropertyValue(String propertyName, Object propertyValue) {
-		this.propertyValue.set(PROPERTY_NAME.indexOf(propertyName),
+		this.propertyValue.set(PROPERTY_NAMES.indexOf(propertyName),
 				propertyValue);
 	}
 
-	// About propertySize
 	public static int getPropertySize() {
 		return PROPERTY_SIZE;
 	}

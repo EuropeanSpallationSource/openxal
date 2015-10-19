@@ -10,11 +10,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
-import javax.swing.AbstractListModel;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -43,8 +39,6 @@ import edu.stanford.lcls.modelmanager.dbmodel.BrowserModel;
 import edu.stanford.lcls.modelmanager.dbmodel.BrowserModelListener;
 import edu.stanford.lcls.modelmanager.dbmodel.MachineModel;
 import edu.stanford.lcls.modelmanager.dbmodel.MachineModelDetail;
-import edu.stanford.lcls.modelmanager.dbmodel.MachineModelDevice;
-import edu.stanford.lcls.modelmanager.dbmodel.BrowserModelListener.BrowserModelAction;
 import edu.stanford.slac.Message.Message;
 import edu.stanford.slac.util.zplot.ZPlotPanel;
 
@@ -85,12 +79,10 @@ public class ModelPlotView implements SwingConstants {
 		// Plot Function
 		plotSelectBox.add(new JLabel("Select A Plot Function :"),
 				BorderLayout.PAGE_START);
-		ListData ld = new ListData();
-		plotFunctionList = new JList<String>(ld);
+		plotFunctionList = new JList<String>(PlotFunctions.getPlotFunctions());
 		plotFunctionList.setSelectedIndex(1);
 		Box listBox = new Box(BoxLayout.Y_AXIS);
 		listBox.add(new JScrollPane(plotFunctionList));
-		//listBox.add(Box.createVerticalGlue());
 		plotSelectBox.add(listBox, BorderLayout.CENTER);
 
 		// Plot Button
@@ -107,8 +99,6 @@ public class ModelPlotView implements SwingConstants {
 					plotSignMethod = 0;
 				else if (e.getSource() == plotMADNameSign)
 					plotSignMethod = 1;
-				//else if (e.getSource() == plotEPICSNameSign)
-				//	plotSignMethod = 2;
 				else if (e.getSource() == plotNode)
 					plotNodeMethod = plotNode.isSelected();
 				plotAction();
@@ -173,10 +163,10 @@ public class ModelPlotView implements SwingConstants {
 		// Set default Plot Function
 		plotMethod = 0;
 		plotSignMethod = 0;
-		int defaultSelectedRow = 1;
-		modelPlotView.setResizeWeight(defaultSelectedRow);
-		plotFunctionID1 = ListData.getPlotFunctionID(defaultSelectedRow, 1);
-		plotFunctionID2 = ListData.getPlotFunctionID(defaultSelectedRow, 2);
+		modelPlotView.setResizeWeight(1);
+		String selectedRow = plotFunctionList.getSelectedValue();
+		plotFunctionID1 = PlotFunctions.getPlotFunctionID(selectedRow, 1);
+		plotFunctionID2 = PlotFunctions.getPlotFunctionID(selectedRow, 2);
 		_model.setPlotFunctionID1(plotFunctionID1);
 		_model.setPlotFunctionID2(plotFunctionID2);
 		setPlotPanelEnable(false);
@@ -222,10 +212,10 @@ public class ModelPlotView implements SwingConstants {
 				new ListSelectionListener() {
 					public void valueChanged(ListSelectionEvent event) {
 						if (!event.getValueIsAdjusting()) {
-							int selectedRow = plotFunctionList
-									.getSelectedIndex();
-							plotFunctionID1 = ListData.getPlotFunctionID(selectedRow, 1);
-							plotFunctionID2 = ListData.getPlotFunctionID(selectedRow, 2);
+							String selectedRow = plotFunctionList
+									.getSelectedValue();
+							plotFunctionID1 = PlotFunctions.getPlotFunctionID(selectedRow, 1);
+							plotFunctionID2 = PlotFunctions.getPlotFunctionID(selectedRow, 2);
 							_model.setPlotFunctionID1(plotFunctionID1);
 							_model.setPlotFunctionID2(plotFunctionID2);
 							dataTable.setDefaultRenderer(Object.class,

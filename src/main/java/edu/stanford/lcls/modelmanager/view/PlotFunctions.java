@@ -4,18 +4,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.swing.AbstractListModel;
-
 /**
- * ListData provides mapping between names of plots and plot data location in table.
+ * Provides mapping between names of plots and plot data location in table.
  * 
  * @author Blaz Kranjc
  */
-class ListData extends AbstractListModel<String> {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+class PlotFunctions {
+	// TODO Change this to LinkedHashMap
 	static final private List<String> PLOT_FUNCTION = 
 			new ArrayList<String>(Arrays.asList(new String[] {
 				"ALPHA X & Y", "BETA X & Y", "PSI X & Y", "ETA X & Y",
@@ -34,27 +29,17 @@ class ListData extends AbstractListModel<String> {
 				"ETAP_Y", "R33", "R34", "R43", 
 				"R44", "P", "Bmag_Y"}));
 
-	public ListData() {
+	public static String[] getPlotFunctions() {
+		return PLOT_FUNCTION.toArray(new String[PLOT_FUNCTION.size()]);
 	}
 
-	public int getSize() {
-		return PLOT_FUNCTION.size();
-	}
-
-	public String getElementAt(int index) {
-		return PLOT_FUNCTION.get(index);
-	}
-
-	static public List<String> getPlotFunction() {
-		return PLOT_FUNCTION;
-	}
-	
-	static public String getPlotFunctionID(int rowNumber, int plotNumber){
+	static public String getPlotFunctionID(String selected, int plotNumber){
+		int index = PLOT_FUNCTION.indexOf(selected);
 		if (plotNumber == 1) {
-			return PLOT_FUNCTIONS_IDS_1.get(rowNumber);
+			return PLOT_FUNCTIONS_IDS_1.get(index);
 		}
 		else {
-			return PLOT_FUNCTIONS_IDS_2.get(rowNumber);
+			return PLOT_FUNCTIONS_IDS_2.get(index);
 		}
 	}
 }

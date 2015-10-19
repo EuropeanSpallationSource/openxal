@@ -10,7 +10,6 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.*;
 
 import edu.stanford.lcls.modelmanager.dbmodel.*;
-import edu.stanford.lcls.modelmanager.dbmodel.BrowserModelListener.BrowserModelAction;
 
 public class ModelDetailView implements SwingConstants {
 	private JSplitPane modelDetailView;
