@@ -9,10 +9,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.swing.JFrame;
-
 import xal.smf.AcceleratorSeq;
-import edu.stanford.lcls.modelmanager.view.ModelManagerFeature;
+import xal.tools.beam.RelativisticParameterConverter;
 import edu.stanford.slac.Message.Message;
 import static edu.stanford.lcls.modelmanager.dbmodel.DataManager.escape;
 
@@ -32,6 +30,9 @@ public class MachineModelDetailTable {
 		"r71", "r72", "r73", "r74", "r75", "r76", "r77",
 		"leff", "sleff", "ordinal", "suml", "device_type"};
 	static final private int TABLE_SIZE = _TABLE_COLUMN_NAME.length; // 68
+
+	// Proton mass in eV
+	private static final double PROTON_MASS = 938272310;
 
 	/** Constructor */
 	public MachineModelDetailTable(final DBTableConfiguration configuration) {
@@ -97,7 +98,7 @@ public class MachineModelDetailTable {
 				
 				// add P
 				E = Double.parseDouble(machineModelDetail.getPropertyValue("E").toString());
-				P = Math.sqrt(1+2/(E/0.000511-1))*E;
+				P = RelativisticParameterConverter.computeMomentumFromEnergies(E * 1e9 - PROTON_MASS, PROTON_MASS) / 1e9;
 				machineModelDetail.setPropertyValue("P", P.toString());
 				
 				// add Bmag_X & Bmag_Y
