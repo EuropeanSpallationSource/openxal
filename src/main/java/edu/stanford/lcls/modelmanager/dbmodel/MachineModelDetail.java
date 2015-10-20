@@ -24,14 +24,19 @@ public class MachineModelDetail {
 		properties.put("E", "Double");
 		properties.put("ALPHA_X", "Double");
 		properties.put("ALPHA_Y", "Double");
+		properties.put("ALPHA_Z", "Double");
 		properties.put("BETA_X", "Double");
 		properties.put("BETA_Y", "Double");
+		properties.put("BETA_Z", "Double");
 		properties.put("PSI_X", "Double");
 		properties.put("PSI_Y", "Double");
+		properties.put("PSI_Z", "Double");
 		properties.put("ETA_X", "Double");
 		properties.put("ETA_Y", "Double");
+		properties.put("ETA_Z", "Double");
 		properties.put("ETAP_X", "Double");
 		properties.put("ETAP_Y", "Double");
+		properties.put("ETAP_Z", "Double");
 		// Matrix
 		for (int i = 0; i < 7; i++) {
 			for (int j = 0; j < 7; j++) {

@@ -19,8 +19,9 @@ public class MachineModelDetailTable {
 	protected final String TABLE_NAME;
 	protected final List<String> DB_TABLE_COLUMN_NAME;
 	static protected final String[] _TABLE_COLUMN_NAME = {"run_id", "element_name",
-		"index_slice_chk", "zpos", "e", "alpha_x", "alpha_y", "beta_x",
-		"beta_y", "psi_x", "psi_y", "eta_x", "eta_y", "etap_x", "etap_y",
+		"index_slice_chk", "zpos", "e", "alpha_x", "alpha_y", "alpha_z", "beta_x",
+		"beta_y", "beta_z", "psi_x", "psi_y", "psi_z", "eta_x", "eta_y", "eta_z",
+		"etap_x", "etap_y", "etap_z",
 		"r11", "r12", "r13", "r14", "r15", "r16", "r17",
 		"r21", "r22", "r23", "r24", "r25", "r26", "r27",
 		"r31", "r32", "r33", "r34", "r35", "r36", "r37",
@@ -29,11 +30,12 @@ public class MachineModelDetailTable {
 		"r61", "r62", "r63", "r64", "r65", "r66", "r67",
 		"r71", "r72", "r73", "r74", "r75", "r76", "r77",
 		"leff", "sleff", "ordinal", "suml", "device_type"};
-	static final private int TABLE_SIZE = _TABLE_COLUMN_NAME.length; // 68
+	static final private int TABLE_SIZE = _TABLE_COLUMN_NAME.length;
 
 	// Proton mass in eV
 	private static final double PROTON_MASS = 938272310;
 
+	// TODO the configuration is not really required?
 	/** Constructor */
 	public MachineModelDetailTable(final DBTableConfiguration configuration) {
 		TABLE_NAME = configuration.getTableName();

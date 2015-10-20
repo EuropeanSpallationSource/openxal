@@ -18,14 +18,19 @@
 			<column attribute="e" column="EK"/>
 			<column attribute="alpha_x" column="ALPHA_X"/>
 			<column attribute="alpha_y" column="ALPHA_Y"/>
+			<column attribute="alpha_z" column="ALPHA_Z"/>
 			<column attribute="beta_x" column="BETA_X"/>
 			<column attribute="beta_y" column="BETA_Y"/>
+			<column attribute="beta_z" column="BETA_Z"/>
 			<column attribute="psi_x" column="PSI_X"/>
 			<column attribute="psi_y" column="PSI_Y"/>
+			<column attribute="psi_z" column="PSI_Z"/>
 			<column attribute="eta_x" column="ETA_X"/>
 			<column attribute="eta_y" column="ETA_Y"/>
+			<column attribute="eta_z" column="ETA_Z"/>
 			<column attribute="etap_x" column="ETAP_X"/>
 			<column attribute="etap_y" column="ETAP_Y"/>
+			<column attribute="etap_z" column="ETAP_Z"/>
 			<column attribute="r11" column="R11"/>
 			<column attribute="r12" column="R12"/>
 			<column attribute="r13" column="R13"/>
