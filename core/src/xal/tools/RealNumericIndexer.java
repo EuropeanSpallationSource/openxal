@@ -204,8 +204,8 @@ public class RealNumericIndexer<T> implements Iterable<T> {
 		double xmin = getLocation( nmin );
 		double xmax = getLocation( nmax );
 		
-		if (xmin <= location) return nmin;
-		if (xmax >= location) return nmax;
+		if (xmin >= location) return nmin;
+		if (xmax <= location) return nmax;
 		
 		int iterations = 0;
 		while ( nmax - nmin > 1 ) {
