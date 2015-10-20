@@ -25,6 +25,9 @@ class PlotFunctions {
 		functions.put("ENERGY & P", new String[]{"E", "P"});
 		functions.put("meanX & meanY", new String[]{"R17", "R37"});
 		functions.put("Bmax X & Y", new String[]{"Bmag_X", "Bmag_Y"});
+		functions.put("Ek & ALPHA Z", new String[]{"Ek", "ALPHA_Z"});
+		functions.put("BETA Z & PSI Z", new String[]{"BETA_Z", "PSI_Z"});
+		functions.put("ETA Z & ETAP Z", new String[]{"ETA_Z", "ETAP_Z"});
 		PLOT_FUNCTIONS = functions;
 	}
 	static final private List<String> FUNCTION_NAMES = new ArrayList<String>(PLOT_FUNCTIONS.keySet());
