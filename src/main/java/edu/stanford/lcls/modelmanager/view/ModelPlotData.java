@@ -47,12 +47,29 @@ public class ModelPlotData {
 	private static XYPlot yPlot;
 	private static Range zPlotDomainAxis;
 
+	private static double getZPos(MachineModelDetail mmd) {
+		return getDouble(mmd, "ZPOS");
+	}
+	
+	private static double getDouble(MachineModelDetail mmd, String column) {
+		String valueString = (String) mmd.getPropertyValue(column);
+		return valueString == null ? 0 : Double.valueOf(valueString);
+	}
+
+	private static String getName(MachineModelDetail mmd) {
+		return getString(mmd, "ELEMENT_NAME");
+	}
+
+	private static String getString(MachineModelDetail mmd, String column) {
+		return (String) mmd.getPropertyValue(column);
+	}
+
 	// plot original
 	public static ZPlotPanel plotOriginal(
-			MachineModelDetail[] designMachineModelDetails,
-			MachineModelDetail[] selectMachineModelDetails,
-			String plotFunctionID1, String plotFunctionID2,
-			int plotSignMethod, boolean plotNodeMethod, JPanel parent,  boolean isGold) {
+		MachineModelDetail[] designMachineModelDetails,
+		MachineModelDetail[] selectMachineModelDetails,
+		String plotFunctionID1, String plotFunctionID2,
+		int plotSignMethod, boolean plotNodeMethod, JPanel parent,  boolean isGold) {
 
 		Color goldColor;
 		if (isGold)
@@ -68,12 +85,9 @@ public class ModelPlotData {
 
 		// -----------------------Design X--------------
 		for (int i = 0; i < DESIGN_DEVICES_NUMBER; i++) {
-			String deviceName = (String) designMachineModelDetails[i]
-					.getPropertyValue("ELEMENT_NAME");
-			double z = Double.valueOf((String) designMachineModelDetails[i]
-					.getPropertyValue("ZPOS"));// - Double.valueOf((String) designMachineModelDetails[0].getPropertyValue("ZPOS"));
-			double value = Double.valueOf((String) designMachineModelDetails[i]
-					.getPropertyValue(plotFunctionID1));
+			String deviceName = getName(designMachineModelDetails[i]);
+			double z = getZPos(designMachineModelDetails[i]);
+			double value = getDouble(designMachineModelDetails[i], plotFunctionID1);
 			devices1[i] = new Device(deviceName, z, value, new ReferenceWidget(goldColor));
 		}
 		Arrays.sort(devices1);
@@ -82,12 +96,9 @@ public class ModelPlotData {
 
 		// -----------------------Select X--------------
 		for (int i = 0; i < SELECT_DEVICES_NUMBER; i++) {
-			String deviceName = (String) selectMachineModelDetails[i]
-					.getPropertyValue("ELEMENT_NAME");
-			double z = Double.valueOf((String) selectMachineModelDetails[i]
-					.getPropertyValue("ZPOS"));
-			double value = Double.valueOf((String) selectMachineModelDetails[i]
-					.getPropertyValue(plotFunctionID1));
+			String deviceName = getName(selectMachineModelDetails[i]);
+			double z = getZPos(selectMachineModelDetails[i]);
+			double value = getDouble(selectMachineModelDetails[i], plotFunctionID1);
 			devices2[i] = new Device(deviceName, z, value, new SelectedWidget());
 		}
 		Arrays.sort(devices2);
@@ -96,12 +107,9 @@ public class ModelPlotData {
 
 		// -----------------------Design Y--------------
 		for (int i = 0; i < DESIGN_DEVICES_NUMBER; i++) {
-			String deviceName = (String) designMachineModelDetails[i]
-					.getPropertyValue("ELEMENT_NAME");
-			double z = Double.valueOf((String) designMachineModelDetails[i]
-					.getPropertyValue("ZPOS"));
-			double value = Double.valueOf((String) designMachineModelDetails[i]
-					.getPropertyValue(plotFunctionID2));
+			String deviceName = getName(designMachineModelDetails[i]);
+			double z = getZPos(designMachineModelDetails[i]);
+			double value = getDouble(designMachineModelDetails[i], plotFunctionID2);
 			devices1[i] = new Device(deviceName, z, value, new ReferenceWidget(goldColor));
 		}
 		Arrays.sort(devices1);
@@ -110,12 +118,9 @@ public class ModelPlotData {
 
 		// -----------------------Select Y--------------
 		for (int i = 0; i < SELECT_DEVICES_NUMBER; i++) {
-			String deviceName = (String) selectMachineModelDetails[i]
-					.getPropertyValue("ELEMENT_NAME");
-			double z = Double.valueOf((String) selectMachineModelDetails[i]
-					.getPropertyValue("ZPOS"));
-			double value = Double.valueOf((String) selectMachineModelDetails[i]
-					.getPropertyValue(plotFunctionID2));
+			String deviceName = getName(selectMachineModelDetails[i]);
+			double z = getZPos(selectMachineModelDetails[i]);
+			double value = getDouble(selectMachineModelDetails[i], plotFunctionID2);
 			devices2[i] = new Device(deviceName, z, value, new SelectedWidget());
 		}
 		Arrays.sort(devices2);
@@ -125,25 +130,14 @@ public class ModelPlotData {
 		// -----------------CartoonDevice--------------
 		for (int i = 0; i < DESIGN_DEVICES_NUMBER; i++) {
 			String deviceName = null;
-			if(plotSignMethod == 1)
-				deviceName = (String) designMachineModelDetails[i]
-					.getPropertyValue("ELEMENT_NAME");
-			else if(plotSignMethod == 2)
-				deviceName = (String) designMachineModelDetails[i]
-				     .getPropertyValue("EPICS_NAME");
+			if(plotSignMethod == 2)
+				deviceName = getString(designMachineModelDetails[i], "EPICS_NAME");
 			else
-				deviceName = (String) designMachineModelDetails[i]
-				     .getPropertyValue("ELEMENT_NAME");
+				deviceName = getName(designMachineModelDetails[i]);
 				
-			double length = Double
-					.valueOf((String) designMachineModelDetails[i]
-							.getPropertyValue("SLEFF"));
-			double Startz = Double
-					.valueOf((String) designMachineModelDetails[i]
-							.getPropertyValue("ZPOS"))
-					- length / 2;
-			String deviceType = (String) designMachineModelDetails[i]
-					.getPropertyValue("DEVICE_TYPE");
+			double length = getDouble(designMachineModelDetails[i], "SLEFF");
+			double Startz = getDouble(designMachineModelDetails[i], "ZPOS") - length / 2;
+			String deviceType = getString(designMachineModelDetails[i], "DEVICE_TYPE");
 
 			devices1[i] = getCartoonDevice(deviceName, Startz, length, deviceType);
 		}
@@ -155,13 +149,10 @@ public class ModelPlotData {
 		double startZ;
 		double length;
 		for (int i = 0; i < beamlines.length; i++) {
-			length = Double.valueOf((String) designMachineModelDetails[i]
-					.getPropertyValue("SLEFF"));
-			startZ = Double.valueOf((String) designMachineModelDetails[i]
-					.getPropertyValue("ZPOS"))
-					- length;
-			beamlines[i] = new Beamline((String) designMachineModelDetails[i]
-					.getPropertyValue("ELEMENT_NAME"), startZ, startZ + length);
+			length = getDouble(designMachineModelDetails[i], "SLEFF");
+			startZ = getZPos(designMachineModelDetails[i]) - length;
+			beamlines[i] = new Beamline(getName(designMachineModelDetails[i]),
+					startZ, startZ + length);
 		}
 
 		// create z plot listener
@@ -231,23 +222,20 @@ public class ModelPlotData {
 		final int DESIGN_DEVICES_NUMBER = designMachineModelDetails.length;
 		final int SELECT_DEVICES_NUMBER = selectMachineModelDetails.length;
 		Device[] devices1 = new Device[DESIGN_DEVICES_NUMBER];
-		ArrayList<Double> allDeveiceZPos = new ArrayList<Double>(
+		ArrayList<Double> allDeviceZPos = new ArrayList<Double>(
 				DESIGN_DEVICES_NUMBER);
 		ArrayList<Integer> indexInDesignDevice = new ArrayList<Integer>();
 		ArrayList<Integer> indexInSelectDevice = new ArrayList<Integer>();
 
 		// -----------------------Get match devices in design--------------
 		for (int i = 0; i < DESIGN_DEVICES_NUMBER; i++)
-			allDeveiceZPos.add(Double
-					.valueOf((String) designMachineModelDetails[i]
-							.getPropertyValue("ZPOS")));
+			allDeviceZPos.add(getZPos(designMachineModelDetails[i]));
 
 		for (int i = 0; i < SELECT_DEVICES_NUMBER; i++) {
-			Double z = Double.valueOf((String) selectMachineModelDetails[i]
-					.getPropertyValue("ZPOS"));
+			Double z = getZPos(selectMachineModelDetails[i]);
 			int indexInDesign = -1;
-			for (int j = 0; j < allDeveiceZPos.size(); j++) {
-				if (Math.abs(allDeveiceZPos.get(j) - z) < 0.0001){
+			for (int j = 0; j < allDeviceZPos.size(); j++) {
+				if (Math.abs(allDeviceZPos.get(j) - z) < 0.0001){
 					indexInDesign = j;
 				}
 			}
@@ -262,18 +250,11 @@ public class ModelPlotData {
 		// -----------------------Different in X--------------
 
 		for (int i = 0; i < indexInSelectDevice.size(); i++) {
-			String selectDeviceName = (String) selectMachineModelDetails[indexInSelectDevice
-					.get(i)].getPropertyValue("ELEMENT_NAME");
-			double z = Double
-					.valueOf((String) selectMachineModelDetails[indexInSelectDevice
-							.get(i)].getPropertyValue("ZPOS"));
+			String selectDeviceName = getName(selectMachineModelDetails[indexInSelectDevice.get(i)]);
+			double z = getZPos(selectMachineModelDetails[indexInSelectDevice.get(i)]);
 
-			double value = Double
-					.valueOf((String) selectMachineModelDetails[indexInSelectDevice
-							.get(i)].getPropertyValue(plotFunctionID1))
-					- Double
-							.valueOf((String) designMachineModelDetails[indexInDesignDevice
-									.get(i)].getPropertyValue(plotFunctionID1));
+			double value = getDouble(selectMachineModelDetails[indexInSelectDevice.get(i)], plotFunctionID1) -
+					getDouble(designMachineModelDetails[indexInDesignDevice.get(i)], plotFunctionID1);
 			devices2[i] = new Device(selectDeviceName, z, value, new DifferenceWidget());
 
 		}
@@ -283,18 +264,10 @@ public class ModelPlotData {
 
 		// -----------------------Different in Y--------------
 		for (int i = 0; i < indexInSelectDevice.size(); i++) {
-			String selectDeviceName = (String) selectMachineModelDetails[indexInSelectDevice
-					.get(i)].getPropertyValue("ELEMENT_NAME");
-			double z = Double
-					.valueOf((String) selectMachineModelDetails[indexInSelectDevice
-							.get(i)].getPropertyValue("ZPOS"));
-
-			double value = Double
-					.valueOf((String) selectMachineModelDetails[indexInSelectDevice
-							.get(i)].getPropertyValue(plotFunctionID2))
-					- Double
-							.valueOf((String) designMachineModelDetails[indexInDesignDevice
-									.get(i)].getPropertyValue(plotFunctionID2));
+			String selectDeviceName = getName(selectMachineModelDetails[indexInSelectDevice.get(i)]);
+			double z = getZPos(selectMachineModelDetails[indexInSelectDevice.get(i)]);
+			double value = getDouble(selectMachineModelDetails[indexInSelectDevice.get(i)], plotFunctionID2) -
+					getDouble(designMachineModelDetails[indexInDesignDevice.get(i)], plotFunctionID2);
 			devices2[i] = new Device(selectDeviceName, z, value, new DifferenceWidget());
 
 		}
@@ -305,25 +278,14 @@ public class ModelPlotData {
 		// -----------------CartoonDevice--------------
 		for (int i = 0; i < DESIGN_DEVICES_NUMBER; i++) {
 			String deviceName = null;
-			if(plotSignMethod == 1)
-				deviceName = (String) designMachineModelDetails[i]
-					.getPropertyValue("ELEMENT_NAME");
-			else if(plotSignMethod == 2)
-				deviceName = (String) designMachineModelDetails[i]
-				     .getPropertyValue("EPICS_NAME");
+			if(plotSignMethod == 2)
+				deviceName = getString(designMachineModelDetails[i], "EPICS_NAME");
 			else
-				deviceName = (String) designMachineModelDetails[i]
-				                            					.getPropertyValue("ELEMENT_NAME");
+				deviceName = getName(designMachineModelDetails[i]);
 
-			double length = Double
-					.valueOf((String) designMachineModelDetails[i]
-							.getPropertyValue("SLEFF"));
-			double Startz = Double
-					.valueOf((String) designMachineModelDetails[i]
-							.getPropertyValue("ZPOS"))
-					- length / 2;
-			String deviceType = (String) designMachineModelDetails[i]
-					.getPropertyValue("DEVICE_TYPE");
+			double length = getDouble(designMachineModelDetails[i], "SLEFF");
+			double Startz = getZPos(designMachineModelDetails[i]) - length / 2;
+			String deviceType = getString(designMachineModelDetails[i], "DEVICE_TYPE");
 
 			devices1[i] = getCartoonDevice(deviceName, Startz, length, deviceType);
 		}
@@ -335,13 +297,10 @@ public class ModelPlotData {
 		double startZ;
 		double length;
 		for (int i = 0; i < beamlines.length; i++) {
-			length = Double.valueOf((String) designMachineModelDetails[i]
-					.getPropertyValue("SLEFF"));
-			startZ = Double.valueOf((String) designMachineModelDetails[i]
-					.getPropertyValue("ZPOS"))
-					- length;
-			beamlines[i] = new Beamline((String) designMachineModelDetails[i]
-					.getPropertyValue("ELEMENT_NAME"), startZ, startZ + length);
+			length = getDouble(designMachineModelDetails[i], "SLEFF");
+			startZ = getZPos(designMachineModelDetails[i]) - length;
+			beamlines[i] = new Beamline(getName(designMachineModelDetails[i]),
+					startZ, startZ + length);
 		}
 
 		// create z plot listener
@@ -410,12 +369,9 @@ public class ModelPlotData {
 
 		// -----------------------X--------------
 		for (int i = 0; i < DEVICES_NUMBER; i++) {
-			String deviceName = (String) machineModelDetails[i]
-					.getPropertyValue("ELEMENT_NAME");
-			double z = Double.valueOf((String) machineModelDetails[i]
-					.getPropertyValue("ZPOS"));
-			double value = Double.valueOf((String) machineModelDetails[i]
-					.getPropertyValue(plotFunctionID1));
+			String deviceName = getName(machineModelDetails[i]);
+			double z = getZPos(machineModelDetails[i]);
+			double value = getDouble(machineModelDetails[i], plotFunctionID1);
 			devices[i] = new Device(deviceName, z, value, new ReferenceWidget(goldColor));
 		}
 		Arrays.sort(devices);
@@ -424,12 +380,9 @@ public class ModelPlotData {
 
 		// -----------------------Y--------------
 		for (int i = 0; i < DEVICES_NUMBER; i++) {
-			String deviceName = (String) machineModelDetails[i]
-					.getPropertyValue("ELEMENT_NAME");
-			double z = Double.valueOf((String) machineModelDetails[i]
-					.getPropertyValue("ZPOS"));
-			double value = Double.valueOf((String) machineModelDetails[i]
-					.getPropertyValue(plotFunctionID2));
+			String deviceName = getName(machineModelDetails[i]);
+			double z = getZPos(machineModelDetails[i]);
+			double value = getDouble(machineModelDetails[i], plotFunctionID2);
 			devices[i] = new Device(deviceName, z, value, new ReferenceWidget(goldColor));
 		}
 		Arrays.sort(devices);
@@ -439,24 +392,14 @@ public class ModelPlotData {
 		// -----------------CartoonDevice--------------
 		for (int i = 0; i < DEVICES_NUMBER; i++) {
 			String deviceName = null;
-			if(plotSignMethod == 1)
-				deviceName = (String) machineModelDetails[i]
-					.getPropertyValue("ELEMENT_NAME");
-			else if(plotSignMethod == 2)
-				deviceName = (String) machineModelDetails[i]
-				     .getPropertyValue("EPICS_NAME");	
+			if(plotSignMethod == 2)
+				deviceName = getString(machineModelDetails[i], "EPICS_NAME");	
 			else
-				deviceName = (String) machineModelDetails[i]
-				                            					.getPropertyValue("ELEMENT_NAME");
+				deviceName = getName(machineModelDetails[i]);
 
-			double length = Double.valueOf((String) machineModelDetails[i]
-					.getPropertyValue("SLEFF"));
-			double Startz = Double.valueOf((String) machineModelDetails[i]
-					.getPropertyValue("ZPOS"))
-
-					- length / 2;
-			String deviceType = (String) machineModelDetails[i]
-					.getPropertyValue("DEVICE_TYPE");
+			double length = getDouble(machineModelDetails[i], "SLEFF");
+			double Startz = getZPos(machineModelDetails[i]) - length / 2;
+			String deviceType = getString(machineModelDetails[i], "DEVICE_TYPE");
 
 			devices[i] = getCartoonDevice(deviceName, Startz, length, deviceType);
 		}
@@ -468,14 +411,10 @@ public class ModelPlotData {
 		double startZ;
 		double length;
 		for (int i = 0; i < beamlines.length; i++) {
-			length = Double.valueOf((String) machineModelDetails[i]
-						.getPropertyValue("SLEFF"));
-			startZ = Double.valueOf((String) machineModelDetails[i]
-						.getPropertyValue("ZPOS"))
-
-						- length;				
-			beamlines[i] = new Beamline((String) machineModelDetails[i]
-						.getPropertyValue("ELEMENT_NAME"), startZ, startZ + length);				
+			length = getDouble(machineModelDetails[i], "SLEFF");
+			startZ = getZPos(machineModelDetails[i]) - length;
+			beamlines[i] = new Beamline(getName(machineModelDetails[i]),
+					startZ, startZ + length);				
 		}
 
 		// create z plot
