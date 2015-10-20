@@ -274,7 +274,7 @@ public class ModelPlotView implements SwingConstants {
 		ModelPlotData.getRange();
 		if (_selectedMachineModel != null && _referenceMachineModel != null){
 			if (plotMethod == 0){
-				zPlotPanel = ModelPlotData.plotOriginal(_referenceMachineModelDetail, 
+				zPlotPanel = ModelPlotData.plotData(_referenceMachineModelDetail, 
 						_selectedMachineModelDetail, plotFunctionID1, plotFunctionID2, 
 						plotSignMethod, plotNodeMethod, modelPlotBox, isGold);
 				zPlotPanel.setTitle("Selected Model & Reference Model", Color.WHITE);

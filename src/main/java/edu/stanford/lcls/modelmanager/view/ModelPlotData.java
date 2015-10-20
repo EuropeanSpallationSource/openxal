@@ -277,6 +277,25 @@ public class ModelPlotData {
 		zPlotPanel.repaint();
 		return zPlotPanel;
 	}
+
+	/**
+	 * Plot model details properties.
+	 * @param machineModelDetails Element details for model.
+	 * @param plotFunctionID1 Property value to plot on first graph.
+	 * @param plotFunctionID2 Property value to plot on second graph.
+	 * @param plotSignMethod Switch for names to use in plots.
+	 * @param plotNodeMethod 
+	 * @param parent Panel that contains the plot.
+	 * @param isGold Flag to note if the model is marked as gold.
+	 * @return The panel with graphs.
+	 */
+	public static ZPlotPanel plotData(MachineModelDetail[] machineModelDetails,
+			String plotFunctionID1, String plotFunctionID2,
+			int plotSignMethod, boolean plotNodeMethod, JPanel parent, boolean isGold) {
+
+		return plotData(machineModelDetails, null,  plotFunctionID1, plotFunctionID2,
+			plotSignMethod, plotNodeMethod, parent,  isGold);
+	}
 	
 	/**
 	 * Plot the reference and selected models properties on the same graph.
@@ -290,7 +309,7 @@ public class ModelPlotData {
 	 * @param isGold Flag to note if reference model marked as gold.
 	 * @return The panel with graphs.
 	 */
-	public static ZPlotPanel plotOriginal(
+	public static ZPlotPanel plotData(
 			MachineModelDetail[] designMachineModelDetails,
 			MachineModelDetail[] selectMachineModelDetails,
 			String plotFunctionID1, String plotFunctionID2,
@@ -303,12 +322,16 @@ public class ModelPlotData {
 			plotColor = Color.CYAN;
 		
 		final Device[] designXmagnets = constructPlotDevices(designMachineModelDetails, plotFunctionID1, plotColor);
-		final Device[] selectXmagnets = constructPlotDevices(selectMachineModelDetails, plotFunctionID1);
 		final Device[] designYmagnets = constructPlotDevices(designMachineModelDetails, plotFunctionID2, plotColor);
-		final Device[] selectYmagnets = constructPlotDevices(selectMachineModelDetails, plotFunctionID2);
 		final CartoonDevice[] cartoonDevices = constructCartoonDevices(designMachineModelDetails, plotSignMethod);
 		final Beamline[] beamlines = constructBeamlines(designMachineModelDetails);
+		if (selectMachineModelDetails == null) {
+			return generatePlot(designXmagnets, designYmagnets, cartoonDevices, beamlines, plotFunctionID1, plotFunctionID2,
+					plotSignMethod, plotNodeMethod, parent);
+		}
 
+		final Device[] selectXmagnets = constructPlotDevices(selectMachineModelDetails, plotFunctionID1);
+		final Device[] selectYmagnets = constructPlotDevices(selectMachineModelDetails, plotFunctionID2);
 		return generatePlot(designXmagnets, designYmagnets, selectXmagnets, selectYmagnets,
 				cartoonDevices, beamlines, plotFunctionID1, plotFunctionID2, plotSignMethod, plotNodeMethod, parent);
 	}
@@ -393,35 +416,6 @@ public class ModelPlotData {
 				"d_"+plotFunctionID1,  "d_"+plotFunctionID2, plotSignMethod, plotNodeMethod, parent);
 	}
 
-	/**
-	 * Plot model details properties.
-	 * @param machineModelDetails Element details for model.
-	 * @param plotFunctionID1 Property value to plot on first graph.
-	 * @param plotFunctionID2 Property value to plot on second graph.
-	 * @param plotSignMethod Switch for names to use in plots.
-	 * @param plotNodeMethod 
-	 * @param parent Panel that contains the plot.
-	 * @param isGold Flag to note if the model is marked as gold.
-	 * @return The panel with graphs.
-	 */
-	public static ZPlotPanel plotData(MachineModelDetail[] machineModelDetails,
-			String plotFunctionID1, String plotFunctionID2,
-			int plotSignMethod, boolean plotNodeMethod, JPanel parent, boolean isGold) {
-
-		Color plotColor;
-		if (isGold)
-			plotColor = Color.ORANGE;
-		else
-			plotColor = Color.CYAN;
-
-		final Device[] xmagnets = constructPlotDevices(machineModelDetails, plotFunctionID1, plotColor);
-		final Device[] ymagnets = constructPlotDevices(machineModelDetails, plotFunctionID2, plotColor);
-		final CartoonDevice[] cartoonDevices = constructCartoonDevices(machineModelDetails, plotSignMethod);
-		final Beamline[] beamlines = constructBeamlines(machineModelDetails);
-
-		return generatePlot(xmagnets, ymagnets, cartoonDevices, beamlines,
-				plotFunctionID1, plotFunctionID2, plotSignMethod, plotNodeMethod, parent);
-	}
 	
 	/**
 	 * Factory method for CartoonDevice object.
