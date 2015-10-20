@@ -38,6 +38,12 @@ import edu.stanford.slac.util.zplot.cartoon.model.widget.YCorWidget;
 import edu.stanford.slac.util.zplot.model.Beamline;
 import edu.stanford.slac.util.zplot.model.Device;
 
+/**
+ * Plots for ModelPlotView
+ * 
+ * @author unknown
+ * @author Blaz Kranjc
+ */
 public class ModelPlotData {
 	private static ZPlotPanel zPlotPanel;
 	private static ZPlot zPlot;
@@ -47,115 +53,169 @@ public class ModelPlotData {
 	private static XYPlot yPlot;
 	private static Range zPlotDomainAxis;
 
+	/**
+	 * Return the Z position of element.
+	 * @param mmd Details of element.
+	 * @return Z position of element.
+	 */
 	private static double getZPos(MachineModelDetail mmd) {
 		return getDouble(mmd, "ZPOS");
 	}
 	
-	private static double getDouble(MachineModelDetail mmd, String column) {
-		String valueString = (String) mmd.getPropertyValue(column);
+	/**
+	 * Get double property from element details.
+	 * @param mmd Details of element.
+	 * @param property Name of the property.
+	 * @return Value of property for element.
+	 */
+	private static double getDouble(MachineModelDetail mmd, String property) {
+		String valueString = (String) mmd.getPropertyValue(property);
 		return valueString == null ? 0 : Double.valueOf(valueString);
 	}
 
+	/**
+	 * Get the name of the element.
+	 * @param mmd Details of element.
+	 * @return Name of the element.
+	 */
 	private static String getName(MachineModelDetail mmd) {
 		return getString(mmd, "ELEMENT_NAME");
 	}
 
-	private static String getString(MachineModelDetail mmd, String column) {
-		return (String) mmd.getPropertyValue(column);
+	/**
+	 * Get the string value of property for element.
+	 * @param mmd Details of element.
+	 * @param property Name of the property.
+	 * @return String value of property for element.
+	 */
+	private static String getString(MachineModelDetail mmd, String property) {
+		return (String) mmd.getPropertyValue(property);
+	}
+	
+	/**
+	 * Construct array used in plots.
+	 * @param mmds Details for all elements in accelerator.
+	 * @param property Property to plot.
+	 * @return Array of devices which is to be plotted.
+	 */
+	private static Device[] constructPlotDevices(MachineModelDetail[] mmds, 
+			String property) {
+		return constructPlotDevices(mmds, property, null);
 	}
 
-	// plot original
-	public static ZPlotPanel plotOriginal(
-		MachineModelDetail[] designMachineModelDetails,
-		MachineModelDetail[] selectMachineModelDetails,
-		String plotFunctionID1, String plotFunctionID2,
-		int plotSignMethod, boolean plotNodeMethod, JPanel parent,  boolean isGold) {
+	/**
+	 * Construct array used in plots.
+	 * @param mmds Details for all elements in accelerator.
+	 * @param property Property to plot.
+	 * @param color Color used for the plot.
+	 * @return Array of devices which is to be plotted.
+	 */
+	private static Device[] constructPlotDevices(MachineModelDetail[] mmds, 
+			String property, Color color) {
 
-		Color goldColor;
-		if (isGold)
-			goldColor = Color.ORANGE;
-		else
-			goldColor = Color.CYAN;
-		
-		// construct devices
-		final int DESIGN_DEVICES_NUMBER = designMachineModelDetails.length;
-		final int SELECT_DEVICES_NUMBER = selectMachineModelDetails.length;
-		Device[] devices1 = new Device[DESIGN_DEVICES_NUMBER];
-		Device[] devices2 = new Device[SELECT_DEVICES_NUMBER];
-
-		// -----------------------Design X--------------
-		for (int i = 0; i < DESIGN_DEVICES_NUMBER; i++) {
-			String deviceName = getName(designMachineModelDetails[i]);
-			double z = getZPos(designMachineModelDetails[i]);
-			double value = getDouble(designMachineModelDetails[i], plotFunctionID1);
-			devices1[i] = new Device(deviceName, z, value, new ReferenceWidget(goldColor));
+		int deviceNumber = mmds.length;
+		Device[] devices = new Device[deviceNumber];
+		for (int i = 0; i < deviceNumber; i++) {
+			String deviceName = getName(mmds[i]);
+			double z = getZPos(mmds[i]);
+			double value = getDouble(mmds[i], property);
+			if (color != null) {
+				devices[i] = new Device(deviceName, z, value, new ReferenceWidget(color));
+			}
+			else {
+				devices[i] = new Device(deviceName, z, value, new SelectedWidget());
+			}
 		}
-		Arrays.sort(devices1);
-		final Device[] designXmagnets = new Device[devices1.length];
-		System.arraycopy(devices1, 0, designXmagnets, 0, devices1.length);
+		Arrays.sort(devices);
 
-		// -----------------------Select X--------------
-		for (int i = 0; i < SELECT_DEVICES_NUMBER; i++) {
-			String deviceName = getName(selectMachineModelDetails[i]);
-			double z = getZPos(selectMachineModelDetails[i]);
-			double value = getDouble(selectMachineModelDetails[i], plotFunctionID1);
-			devices2[i] = new Device(deviceName, z, value, new SelectedWidget());
-		}
-		Arrays.sort(devices2);
-		final Device[] selectXmagnets = new Device[devices2.length];
-		System.arraycopy(devices2, 0, selectXmagnets, 0, devices2.length);
-
-		// -----------------------Design Y--------------
-		for (int i = 0; i < DESIGN_DEVICES_NUMBER; i++) {
-			String deviceName = getName(designMachineModelDetails[i]);
-			double z = getZPos(designMachineModelDetails[i]);
-			double value = getDouble(designMachineModelDetails[i], plotFunctionID2);
-			devices1[i] = new Device(deviceName, z, value, new ReferenceWidget(goldColor));
-		}
-		Arrays.sort(devices1);
-		final Device[] designYmagnets = new Device[devices1.length];
-		System.arraycopy(devices1, 0, designYmagnets, 0, devices1.length);
-
-		// -----------------------Select Y--------------
-		for (int i = 0; i < SELECT_DEVICES_NUMBER; i++) {
-			String deviceName = getName(selectMachineModelDetails[i]);
-			double z = getZPos(selectMachineModelDetails[i]);
-			double value = getDouble(selectMachineModelDetails[i], plotFunctionID2);
-			devices2[i] = new Device(deviceName, z, value, new SelectedWidget());
-		}
-		Arrays.sort(devices2);
-		final Device[] selectYmagnets = new Device[devices2.length];
-		System.arraycopy(devices2, 0, selectYmagnets, 0, devices2.length);
-
-		// -----------------CartoonDevice--------------
-		for (int i = 0; i < DESIGN_DEVICES_NUMBER; i++) {
+		return devices;
+	}
+	
+	/**
+	 * Constructs cartoon device from machine model details.
+	 * @param mmds Array of machine model details.
+	 * @param plotSignMethod Flag to note what names to use for devices.
+	 * @return
+	 */
+	private static CartoonDevice[] constructCartoonDevices(MachineModelDetail[] mmds, int plotSignMethod) {
+		int deviceNumber = mmds.length;
+		CartoonDevice[] devices = new CartoonDevice[deviceNumber];
+		for (int i = 0; i < deviceNumber; i++) {
 			String deviceName = null;
 			if(plotSignMethod == 2)
-				deviceName = getString(designMachineModelDetails[i], "EPICS_NAME");
+				deviceName = getString(mmds[i], "EPICS_NAME");
 			else
-				deviceName = getName(designMachineModelDetails[i]);
+				deviceName = getName(mmds[i]);
 				
-			double length = getDouble(designMachineModelDetails[i], "SLEFF");
-			double Startz = getDouble(designMachineModelDetails[i], "ZPOS") - length / 2;
-			String deviceType = getString(designMachineModelDetails[i], "DEVICE_TYPE");
+			double length = getDouble(mmds[i], "SLEFF");
+			double Startz = getDouble(mmds[i], "ZPOS") - length / 2;
+			String deviceType = getString(mmds[i], "DEVICE_TYPE");
 
-			devices1[i] = getCartoonDevice(deviceName, Startz, length, deviceType);
+			devices[i] = getCartoonDevice(deviceName, Startz, length, deviceType);
 		}
-		Arrays.sort(devices1);
-		final CartoonDevice[] cartoonDevices = new CartoonDevice[devices1.length];
-		System.arraycopy(devices1, 0, cartoonDevices, 0, devices1.length);
+		
+		return devices;
+	}
 
-		final Beamline[] beamlines = new Beamline[DESIGN_DEVICES_NUMBER];
+	/**
+	 * Construct beamlines used in the cartoon plot.
+	 * @param mmds Array of machine model details.
+	 * @return beamlines
+	 */
+	private static Beamline[] constructBeamlines(MachineModelDetail[] mmds) {
+		final Beamline[] beamlines = new Beamline[mmds.length];
 		double startZ;
 		double length;
 		for (int i = 0; i < beamlines.length; i++) {
-			length = getDouble(designMachineModelDetails[i], "SLEFF");
-			startZ = getZPos(designMachineModelDetails[i]) - length;
-			beamlines[i] = new Beamline(getName(designMachineModelDetails[i]),
-					startZ, startZ + length);
+			length = getDouble(mmds[i], "SLEFF");
+			startZ = getZPos(mmds[i]) - length;
+			beamlines[i] = new Beamline(getName(mmds[i]), startZ, startZ + length);
 		}
+		return beamlines;
+	}
+	
+	/**
+	 * Generates plots.
+	 * @param devicesX Data for first plot.
+	 * @param devicesY Data for second plot.
+	 * @param cartoonDevices Data for cartoon device plot.
+	 * @param beamlines Beamlines.
+	 * @param plotXLabel Label for first plot.
+	 * @param plotYLabel Label for second plot.
+	 * @param plotSignMethod
+	 * @param plotNodeMethod
+	 * @param parent
+	 * @return Panel containing the plots.
+	 */
+	private static ZPlotPanel generatePlot(Device[] devicesX, Device[] devicesY, 
+			CartoonDevice[] cartoonDevices, Beamline[] beamlines, String plotXLabel,
+			String plotYLabel, int plotSignMethod, boolean plotNodeMethod, JPanel parent) {
+		
+		return generatePlot(devicesX, devicesY, null, null, cartoonDevices, 
+			beamlines, plotXLabel, plotYLabel, plotSignMethod, plotNodeMethod, parent);
 
-		// create z plot listener
+	}
+
+	/**
+	 * Generates plots.
+	 * @param designX Reference model data for first plot.
+	 * @param designY Reference model data for second plot.
+	 * @param selectX Selected model data for first plot.
+	 * @param selectY Selected model data for second plot.
+	 * @param cartoonDevices Data for cartoon device plot.
+	 * @param beamlines Beamlines.
+	 * @param plotXLabel Label for first plot.
+	 * @param plotYLabel Label for second plot.
+	 * @param plotSignMethod
+	 * @param plotNodeMethod
+	 * @param parent
+	 * @return Panel containing the plots.
+	 */
+	private static ZPlotPanel generatePlot(Device[] designX, Device[] designY, 
+			Device[] selectX, Device[] selectY, CartoonDevice[] cartoonDevices, 
+			Beamline[] beamlines, String plotXLabel, String plotYLabel, 
+			int plotSignMethod, boolean plotNodeMethod, JPanel parent) {
+
 		final ZPlotListener zPlotListener = new ZPlotListener() {
 			public void tooltipShown(ZPlotEvent event) {
 			}
@@ -164,36 +224,43 @@ public class ModelPlotData {
 			}
 		};
 
-		// create z plot
 		zPlot = new ZPlot(2);
 		
 		if(plotSignMethod != 0)
-			zPlot.labelDevices(devices1, beamlines);
+			zPlot.labelDevices(cartoonDevices, beamlines);
 		
 		zPlot.setGap(30);
 
 		xPlot = zPlot.getSubplot(X_PLOT_INDEX);
-		zPlot.setDevices(xPlot, designXmagnets, 1, RendererType.LINE);
-		zPlot.setDevices(xPlot, selectXmagnets, 0, RendererType.LINE);
-		{
-			XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) xPlot.getRenderer(1);
-			renderer.setBaseShapesVisible(plotNodeMethod);
-			renderer = (XYLineAndShapeRenderer) xPlot.getRenderer(0);
-			renderer.setBaseShapesVisible(plotNodeMethod);
+		zPlot.setDevices(xPlot, designX, 1, RendererType.LINE);
+		if (selectX != null) {
+			zPlot.setDevices(xPlot, selectX, 0, RendererType.LINE);
 		}
-		xPlot.getRangeAxis().setLabel(plotFunctionID1);
+		{
+            XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) xPlot.getRenderer(1);
+            renderer.setBaseShapesVisible(plotNodeMethod);
+            if (selectX != null) {
+                renderer = (XYLineAndShapeRenderer) xPlot.getRenderer(0);
+                renderer.setBaseShapesVisible(plotNodeMethod);
+            }
+		}
+		xPlot.getRangeAxis().setLabel(plotXLabel);
 		xPlot.getRangeAxis().setAutoRange(true);
 
 		yPlot = zPlot.getSubplot(Y_PLOT_INDEX);
-		zPlot.setDevices(yPlot, designYmagnets, 1, RendererType.LINE);
-		zPlot.setDevices(yPlot, selectYmagnets, 0, RendererType.LINE);
+		zPlot.setDevices(yPlot, designY, 1, RendererType.LINE);
+		if (selectY != null) {
+			zPlot.setDevices(yPlot, selectY, 0, RendererType.LINE);
+		}
 		{
 			XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) yPlot.getRenderer(1);
 			renderer.setBaseShapesVisible(plotNodeMethod);
-			renderer = (XYLineAndShapeRenderer) yPlot.getRenderer(0);
-			renderer.setBaseShapesVisible(plotNodeMethod);
+			if (selectY != null) {
+				renderer = (XYLineAndShapeRenderer) yPlot.getRenderer(0);
+				renderer.setBaseShapesVisible(plotNodeMethod);
+			}
 		}
-		yPlot.getRangeAxis().setLabel(plotFunctionID2);
+		yPlot.getRangeAxis().setLabel(plotYLabel);
 		yPlot.getRangeAxis().setAutoRange(true);
 
 		zPlot.setCartoonDevices(cartoonDevices);
@@ -210,8 +277,53 @@ public class ModelPlotData {
 		zPlotPanel.repaint();
 		return zPlotPanel;
 	}
+	
+	/**
+	 * Plot the reference and selected models properties on the same graph.
+	 * @param designMachineModelDetails Element details for reference model.
+	 * @param selectMachineModelDetails Element details for selected model.
+	 * @param plotFunctionID1 Property value to plot on first graph.
+	 * @param plotFunctionID2 Property value to plot on second graph.
+	 * @param plotSignMethod Switch for names to use in plots.
+	 * @param plotNodeMethod 
+	 * @param parent Panel that contains the plot.
+	 * @param isGold Flag to note if reference model marked as gold.
+	 * @return The panel with graphs.
+	 */
+	public static ZPlotPanel plotOriginal(
+			MachineModelDetail[] designMachineModelDetails,
+			MachineModelDetail[] selectMachineModelDetails,
+			String plotFunctionID1, String plotFunctionID2,
+			int plotSignMethod, boolean plotNodeMethod, JPanel parent,  boolean isGold) {
 
-	// plot different
+		Color plotColor;
+		if (isGold)
+			plotColor = Color.ORANGE;
+		else
+			plotColor = Color.CYAN;
+		
+		final Device[] designXmagnets = constructPlotDevices(designMachineModelDetails, plotFunctionID1, plotColor);
+		final Device[] selectXmagnets = constructPlotDevices(selectMachineModelDetails, plotFunctionID1);
+		final Device[] designYmagnets = constructPlotDevices(designMachineModelDetails, plotFunctionID2, plotColor);
+		final Device[] selectYmagnets = constructPlotDevices(selectMachineModelDetails, plotFunctionID2);
+		final CartoonDevice[] cartoonDevices = constructCartoonDevices(designMachineModelDetails, plotSignMethod);
+		final Beamline[] beamlines = constructBeamlines(designMachineModelDetails);
+
+		return generatePlot(designXmagnets, designYmagnets, selectXmagnets, selectYmagnets,
+				cartoonDevices, beamlines, plotFunctionID1, plotFunctionID2, plotSignMethod, plotNodeMethod, parent);
+	}
+
+	/**
+	 * Plot the reference and selected models properties differences.
+	 * @param designMachineModelDetails Element details for reference model.
+	 * @param selectMachineModelDetails Element details for selected model.
+	 * @param plotFunctionID1 Property value to plot on first graph.
+	 * @param plotFunctionID2 Property value to plot on second graph.
+	 * @param plotSignMethod Switch for names to use in plots.
+	 * @param plotNodeMethod 
+	 * @param parent Panel that contains the plot.
+	 * @return The panel with graphs.
+	 */
 	public static ZPlotPanel plotDifferent(
 			MachineModelDetail[] designMachineModelDetails,
 			MachineModelDetail[] selectMachineModelDetails,
@@ -221,7 +333,6 @@ public class ModelPlotData {
 		// construct devices
 		final int DESIGN_DEVICES_NUMBER = designMachineModelDetails.length;
 		final int SELECT_DEVICES_NUMBER = selectMachineModelDetails.length;
-		Device[] devices1 = new Device[DESIGN_DEVICES_NUMBER];
 		ArrayList<Double> allDeviceZPos = new ArrayList<Double>(
 				DESIGN_DEVICES_NUMBER);
 		ArrayList<Integer> indexInDesignDevice = new ArrayList<Integer>();
@@ -275,182 +386,51 @@ public class ModelPlotData {
 		final Device[] differentYmagnets = new Device[devices2.length];
 		System.arraycopy(devices2, 0, differentYmagnets, 0, devices2.length);
 
-		// -----------------CartoonDevice--------------
-		for (int i = 0; i < DESIGN_DEVICES_NUMBER; i++) {
-			String deviceName = null;
-			if(plotSignMethod == 2)
-				deviceName = getString(designMachineModelDetails[i], "EPICS_NAME");
-			else
-				deviceName = getName(designMachineModelDetails[i]);
+		final CartoonDevice[] cartoonDevices = constructCartoonDevices(designMachineModelDetails, plotSignMethod);
+		final Beamline[] beamlines = constructBeamlines(designMachineModelDetails);
 
-			double length = getDouble(designMachineModelDetails[i], "SLEFF");
-			double Startz = getZPos(designMachineModelDetails[i]) - length / 2;
-			String deviceType = getString(designMachineModelDetails[i], "DEVICE_TYPE");
-
-			devices1[i] = getCartoonDevice(deviceName, Startz, length, deviceType);
-		}
-		Arrays.sort(devices1);
-		final CartoonDevice[] cartoonDevices = new CartoonDevice[devices1.length];
-		System.arraycopy(devices1, 0, cartoonDevices, 0, devices1.length);
-
-		final Beamline[] beamlines = new Beamline[DESIGN_DEVICES_NUMBER];
-		double startZ;
-		double length;
-		for (int i = 0; i < beamlines.length; i++) {
-			length = getDouble(designMachineModelDetails[i], "SLEFF");
-			startZ = getZPos(designMachineModelDetails[i]) - length;
-			beamlines[i] = new Beamline(getName(designMachineModelDetails[i]),
-					startZ, startZ + length);
-		}
-
-		// create z plot listener
-		final ZPlotListener zPlotListener = new ZPlotListener() {
-			public void tooltipShown(ZPlotEvent event) {
-			}
-
-			public void zoomCompleted(ZPlotEvent event) {
-			}
-		};
-
-		// create z plot
-		zPlot = new ZPlot(2);
-		
-		if(plotSignMethod != 0)
-			zPlot.labelDevices(devices1, beamlines);
-		zPlot.setGap(30);
-
-		xPlot = zPlot.getSubplot(X_PLOT_INDEX);
-		zPlot.setDevices(xPlot, differentXmagnets, 0, RendererType.LINE);
-		{
-			XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) xPlot.getRenderer(0);
-			renderer.setBaseShapesVisible(plotNodeMethod);
-		}
-		xPlot.getRangeAxis().setLabel("d_" + plotFunctionID1);
-		xPlot.getRangeAxis().setAutoRange(true);
-
-		yPlot = zPlot.getSubplot(Y_PLOT_INDEX);
-		zPlot.setDevices(yPlot, differentYmagnets, 0, RendererType.LINE);
-		{
-			XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) yPlot.getRenderer(0);
-			renderer.setBaseShapesVisible(plotNodeMethod);
-		}
-		yPlot.getRangeAxis().setLabel("d_" + plotFunctionID2);
-		yPlot.getRangeAxis().setAutoRange(true);
-
-		zPlot.setCartoonDevices(cartoonDevices);
-
-		// label subplots
-		zPlot.setSubplotLabel(X_PLOT_INDEX, "X Plot");
-		zPlot.setSubplotLabel(Y_PLOT_INDEX, "Y Plot");
-
-		// create plot panel
-		zPlotPanel = new ZPlotPanel(parent, zPlot);
-		zPlotPanel.addZPlotListener(zPlotListener);
-		if (zPlotDomainAxis != null)
-			setRange(zPlotDomainAxis);
-		zPlotPanel.repaint();
-		return zPlotPanel;
+		return generatePlot(differentXmagnets, differentYmagnets, cartoonDevices, beamlines, 
+				"d_"+plotFunctionID1,  "d_"+plotFunctionID2, plotSignMethod, plotNodeMethod, parent);
 	}
 
-	// Only plot one machine mode
-
+	/**
+	 * Plot model details properties.
+	 * @param machineModelDetails Element details for model.
+	 * @param plotFunctionID1 Property value to plot on first graph.
+	 * @param plotFunctionID2 Property value to plot on second graph.
+	 * @param plotSignMethod Switch for names to use in plots.
+	 * @param plotNodeMethod 
+	 * @param parent Panel that contains the plot.
+	 * @param isGold Flag to note if the model is marked as gold.
+	 * @return The panel with graphs.
+	 */
 	public static ZPlotPanel plotData(MachineModelDetail[] machineModelDetails,
 			String plotFunctionID1, String plotFunctionID2,
 			int plotSignMethod, boolean plotNodeMethod, JPanel parent, boolean isGold) {
-		// construct devices
-		final int DEVICES_NUMBER = machineModelDetails.length;
-		Color goldColor;
+
+		Color plotColor;
 		if (isGold)
-			goldColor = Color.ORANGE;
+			plotColor = Color.ORANGE;
 		else
-			goldColor = Color.CYAN;
+			plotColor = Color.CYAN;
 
-		Device[] devices = new Device[DEVICES_NUMBER];
+		final Device[] xmagnets = constructPlotDevices(machineModelDetails, plotFunctionID1, plotColor);
+		final Device[] ymagnets = constructPlotDevices(machineModelDetails, plotFunctionID2, plotColor);
+		final CartoonDevice[] cartoonDevices = constructCartoonDevices(machineModelDetails, plotSignMethod);
+		final Beamline[] beamlines = constructBeamlines(machineModelDetails);
 
-		// -----------------------X--------------
-		for (int i = 0; i < DEVICES_NUMBER; i++) {
-			String deviceName = getName(machineModelDetails[i]);
-			double z = getZPos(machineModelDetails[i]);
-			double value = getDouble(machineModelDetails[i], plotFunctionID1);
-			devices[i] = new Device(deviceName, z, value, new ReferenceWidget(goldColor));
-		}
-		Arrays.sort(devices);
-		final Device[] xmagnets = new Device[devices.length];
-		System.arraycopy(devices, 0, xmagnets, 0, devices.length);
-
-		// -----------------------Y--------------
-		for (int i = 0; i < DEVICES_NUMBER; i++) {
-			String deviceName = getName(machineModelDetails[i]);
-			double z = getZPos(machineModelDetails[i]);
-			double value = getDouble(machineModelDetails[i], plotFunctionID2);
-			devices[i] = new Device(deviceName, z, value, new ReferenceWidget(goldColor));
-		}
-		Arrays.sort(devices);
-		final Device[] ymagnets = new Device[devices.length];
-		System.arraycopy(devices, 0, ymagnets, 0, devices.length);
-
-		// -----------------CartoonDevice--------------
-		for (int i = 0; i < DEVICES_NUMBER; i++) {
-			String deviceName = null;
-			if(plotSignMethod == 2)
-				deviceName = getString(machineModelDetails[i], "EPICS_NAME");	
-			else
-				deviceName = getName(machineModelDetails[i]);
-
-			double length = getDouble(machineModelDetails[i], "SLEFF");
-			double Startz = getZPos(machineModelDetails[i]) - length / 2;
-			String deviceType = getString(machineModelDetails[i], "DEVICE_TYPE");
-
-			devices[i] = getCartoonDevice(deviceName, Startz, length, deviceType);
-		}
-		Arrays.sort(devices);
-		final CartoonDevice[] cartoonDevices = new CartoonDevice[devices.length];
-		System.arraycopy(devices, 0, cartoonDevices, 0, devices.length);
-
-		final Beamline[] beamlines = new Beamline[DEVICES_NUMBER];
-		double startZ;
-		double length;
-		for (int i = 0; i < beamlines.length; i++) {
-			length = getDouble(machineModelDetails[i], "SLEFF");
-			startZ = getZPos(machineModelDetails[i]) - length;
-			beamlines[i] = new Beamline(getName(machineModelDetails[i]),
-					startZ, startZ + length);				
-		}
-
-		// create z plot
-		zPlot = new ZPlot(2);
-
-		if(plotSignMethod != 0)
-			zPlot.labelDevices(devices, beamlines);
-		zPlot.setGap(30);
-
-		xPlot = zPlot.getSubplot(X_PLOT_INDEX);
-		zPlot.setDevices(xPlot, xmagnets, 0, RendererType.LINE);		
-		{
-			XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) xPlot.getRenderer(0);
-			renderer.setBaseShapesVisible(plotNodeMethod);
-		}	
-		xPlot.getRangeAxis().setLabel(plotFunctionID1);
-		xPlot.getRangeAxis().setAutoRange(true);
-
-		yPlot = zPlot.getSubplot(Y_PLOT_INDEX);
-		zPlot.setDevices(yPlot, ymagnets, 0, RendererType.LINE);
-		{
-			XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) yPlot.getRenderer(0);
-			renderer.setBaseShapesVisible(plotNodeMethod);
-		}
-		yPlot.getRangeAxis().setLabel(plotFunctionID2);
-		yPlot.getRangeAxis().setAutoRange(true);
-
-		zPlot.setCartoonDevices(cartoonDevices);
-
-		// create plot panel
-		zPlotPanel = new ZPlotPanel(parent, zPlot);
-		if (zPlotDomainAxis != null)
-			setRange(zPlotDomainAxis);
-		return zPlotPanel;
+		return generatePlot(xmagnets, ymagnets, cartoonDevices, beamlines,
+				plotFunctionID1, plotFunctionID2, plotSignMethod, plotNodeMethod, parent);
 	}
 	
+	/**
+	 * Factory method for CartoonDevice object.
+	 * @param deviceName Name of the device.
+	 * @param startZ Center position of the device.
+	 * @param length Length of the device.
+	 * @param deviceType Type of the device.
+	 * @return CartoonDevice widget corresponding to deviceType.
+	 */
 	private static CartoonDevice getCartoonDevice(String deviceName, double startZ, double length, String deviceType) {
 		if (deviceType.equals("BPM")) {
 			return new CartoonDevice(deviceName, startZ,
@@ -506,18 +486,32 @@ public class ModelPlotData {
 		}
 	}
 
+	/**
+	 * Set range of the plot.
+	 * @param zPlotDomainAxis
+	 */
 	public static void setRange(Range zPlotDomainAxis){
 		zPlot.getDomainAxis().setRange(zPlotDomainAxis);
 	}
 	
+	/**
+	 * Clear the ranges on the plot.
+	 */
 	public static void clearRange(){
 		zPlot = null;
 	}
 	
+	/**
+	 * Get Range of the plot.
+	 */
 	public static void getRange(){
 		zPlotDomainAxis = getZPlotDomainAxis();
 	}
 	
+	/**
+	 * Get Z plot domain range.
+	 * @return plot range
+	 */
 	public static Range getZPlotDomainAxis(){
 		if (zPlot != null)
 			return new Range(zPlot.getDomainAxis().getRange().getLowerBound(),
