@@ -55,8 +55,11 @@ public class MachineModelDetailTableModel extends AbstractTableModel implements
 				return Double.valueOf((String)modelDetail.getPropertyValue(columnIndex)); 
 			else 
 				return (String)modelDetail.getPropertyValue(columnIndex);
-		} else
+		} else if (type.equals("Long") || type.equals("Double")) {
+			return 0;
+		} else {
 			return "";
+		}
 	}
 
 	public String getColumnName(int columnIndex) {

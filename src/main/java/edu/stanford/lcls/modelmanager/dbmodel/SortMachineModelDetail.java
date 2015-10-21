@@ -30,13 +30,17 @@ public class SortMachineModelDetail implements Comparator<MachineModelDetail> {
 	}
 
 	private int sortUp(MachineModelDetail o1, MachineModelDetail o2) {
-		if (Double
-				.valueOf(o1.getPropertyValue(sortColumnNumber).toString()) < Double
-				.valueOf(o2.getPropertyValue(sortColumnNumber).toString())) {
+		Object value1 = o1.getPropertyValue(sortColumnNumber);
+		Object value2 = o1.getPropertyValue(sortColumnNumber);
+		if (value1 == null && value2 == null) {
+			return 0;
+		} else if (value1 == null) {
 			return -1;
-		} else if (Double.valueOf(o1.getPropertyValue(sortColumnNumber)
-				.toString()) > Double.valueOf(o2.getPropertyValue(
-				sortColumnNumber).toString())) {
+		} else if (value2 == null) {
+			return 1;
+		} else if (Double.valueOf(value1.toString()) < Double.valueOf(value2.toString())) {
+			return -1;
+		} else if (Double.valueOf(value1.toString()) > Double.valueOf(value2.toString())) {
 			return 1;
 		} else {
 			return 0;
@@ -44,17 +48,7 @@ public class SortMachineModelDetail implements Comparator<MachineModelDetail> {
 	}
 
 	private int sortDown(MachineModelDetail o1, MachineModelDetail o2) {
-		if (Double
-				.valueOf(o1.getPropertyValue(sortColumnNumber).toString()) > Double
-				.valueOf(o2.getPropertyValue(sortColumnNumber).toString())) {
-			return -1;
-		} else if (Double.valueOf(o1.getPropertyValue(sortColumnNumber)
-				.toString()) < Double.valueOf(o2.getPropertyValue(
-				sortColumnNumber).toString())) {
-			return 1;
-		} else {
-			return 0;
-		}
+		return -1 * sortUp(o1, o2);
 	}
 }
 
