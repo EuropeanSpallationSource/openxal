@@ -3,6 +3,7 @@ package xal.smf.impl;
 import xal.smf.Accelerator;
 import xal.smf.ChannelSuite;
 import xal.smf.attr.ApertureBucket;
+import xal.smf.impl.qualify.MagnetType;
 
 public class ElementFactory {
 
@@ -84,22 +85,10 @@ public class ElementFactory {
 		return quad;
 	}
 
-	public static VDipoleCorr createVCorrector(String name, double length, ApertureBucket aper,
-			Accelerator acc, double position) {
-		VDipoleCorr corr = new VDipoleCorr(name);
-		MagnetMainSupply ps = createMainSupply(name + "-PS", acc);
-		corr.mainSupplyId = ps.getId();
-		addElectromagnetChannels(name, "B",  corr.channelSuite());
-		corr.setPosition(position);
-		corr.setLength(length);
-		corr.getMagBucket().setEffLength(length);
-		corr.setAper(aper);
-		return corr;
-	}
-
-	public static HDipoleCorr createHCorrector(String name, double length, ApertureBucket aper,
-			Accelerator acc, double position) {
-		HDipoleCorr corr = new HDipoleCorr(name);
+	public static DipoleCorr createCorrector(String name, int orientation, double length, 
+			ApertureBucket aper, Accelerator acc, double position) {
+		DipoleCorr corr = (orientation == MagnetType.HORIZONTAL) ? 
+				new HDipoleCorr(name) : new VDipoleCorr(name);
 		MagnetMainSupply ps = createMainSupply(name + "-PS", acc);
 		corr.mainSupplyId = ps.getId();
 		addElectromagnetChannels(name, "B",  corr.channelSuite());
