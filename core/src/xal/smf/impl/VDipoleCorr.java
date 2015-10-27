@@ -1,22 +1,19 @@
 package xal.smf.impl;
 
-import xal.smf.*;
-import xal.smf.attr.*;
-import xal.smf.impl.qualify.*;
-import xal.ca.*;
+import xal.ca.ChannelFactory;
+import xal.smf.impl.qualify.ElementTypeManager;
 
 
 /** 
- * The implementation of the Vertical Dipole corrector element. This class 
- * extends the dipole class,  and is meant to hold dipole objects  
- * that are specifically correctors.
+ * The implementation of the Vertical Dipole corrector element.
  * 
  * @author  J. Galambos (jdg@ornl.gov)
+ * @author  Blaz Kranjc
  */
 
-public class VDipoleCorr extends Dipole {
+public class VDipoleCorr extends DipoleCorr {
 	/** standard type for nodes of this class */
-    public static final String      s_strType   = "DCV";
+    public static final String s_strType   = "DCV";
   
 
 	// static initialization
@@ -25,7 +22,7 @@ public class VDipoleCorr extends Dipole {
     }
 
     
-    /*
+    /**
      * Register type for qualification
      */
     private static void registerType() {
@@ -40,16 +37,15 @@ public class VDipoleCorr extends Dipole {
 	/** Constructor */
 	public VDipoleCorr( final String strId, final ChannelFactory channelFactory )     {
 		super( strId, channelFactory );
-
 	}
+
 
 	/** Constructor */
     public VDipoleCorr( final String strId )     {
         this( strId, null );
-        
     }
-
     
+
     /**
      * Get the orientation of the magnet as defined by MagnetType.  The orientation
      * of all vertical correctors is VERTICAL.
@@ -59,13 +55,4 @@ public class VDipoleCorr extends Dipole {
         return VERTICAL;
     }
     
-    
-    /**
-     * Determine whether this magnet is a corrector.
-     * @return true since vertical correctors are always correctors.
-     */
-    public boolean isCorrector() {
-        return true;
-    }
 }
-

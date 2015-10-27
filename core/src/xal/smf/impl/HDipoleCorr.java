@@ -1,20 +1,17 @@
 package xal.smf.impl;
 
-import xal.smf.*;
-import xal.smf.attr.*;
-import xal.smf.impl.qualify.*;
-import xal.ca.*;
+import xal.ca.ChannelFactory;
+import xal.smf.impl.qualify.ElementTypeManager;
 
 
 /** 
- * The implementation of the Horizontal Dipole corrector element. This class 
- * extends the dipole class,  and is meant to hold dipole objects  
- * that are specifically correctors.
+ * The implementation of the Horizontal Dipole corrector element.
  * 
  * @author  J. Galambos (jdg@ornl.gov)
+ * @author  Blaz Kranjc
  */
 
-public class HDipoleCorr extends Dipole {
+public class HDipoleCorr extends DipoleCorr {
 	/** standard type for nodes of this class */
     public static final String s_strType   = "DCH";
   
@@ -47,7 +44,7 @@ public class HDipoleCorr extends Dipole {
     public HDipoleCorr( final String strId )     {
         this( strId, null );
     }
-    
+
     
     /**
      * Get the orientation of the magnet as defined by MagnetType.  The orientation
@@ -58,13 +55,4 @@ public class HDipoleCorr extends Dipole {
         return HORIZONTAL;
     }
     
-    
-    /**
-     * Determine whether this magnet is a corrector.
-     * @return true since horizontal correctors are always correctors.
-     */
-    public boolean isCorrector() {
-        return true;
-    }
 }
-
