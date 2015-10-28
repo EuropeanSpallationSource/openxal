@@ -171,6 +171,14 @@ abstract public class Electromagnet extends Magnet {
         return getAccelerator().getMagnetMainSupply( mainSupplyId );
     }
 
+    /**
+     * Set the main power supply for this magnet by id.
+     * @param mainSupplyId Id of main power supply;
+     */
+    public void setMainSupplyId(String id) {
+    	mainSupplyId = id;
+    }
+
 
 	/** Get the design value for the specified property */
 	public double getDesignPropertyValue( final String propertyName ) {

@@ -6,6 +6,8 @@ import xal.smf.attr.ApertureBucket;
 import xal.smf.impl.qualify.MagnetType;
 
 public class ElementFactory {
+	
+	private ElementFactory() {};
 
 	public static Marker createMarker(String name, double position) {
 		Marker marker = new Marker(name);
@@ -72,7 +74,7 @@ public class ElementFactory {
 		quad._type = "Q";
 		addElectromagnetChannels(name, "B", quad.channelSuite());				
 		MagnetMainSupply ps = createMainSupply(name + "-PS", acc);
-		quad.mainSupplyId = ps.getId();
+		quad.setMainSupplyId(ps.getId());
 
 		quad.setPosition(position + length * 0.5); // always position on center!
 		quad.setLength(length);
@@ -90,7 +92,7 @@ public class ElementFactory {
 		DipoleCorr corr = (orientation == MagnetType.HORIZONTAL) ? 
 				new HDipoleCorr(name) : new VDipoleCorr(name);
 		MagnetMainSupply ps = createMainSupply(name + "-PS", acc);
-		corr.mainSupplyId = ps.getId();
+		corr.setMainSupplyId(ps.getId());
 		addElectromagnetChannels(name, "B",  corr.channelSuite());
 		corr.setPosition(position);
 		corr.setLength(length);
@@ -99,8 +101,6 @@ public class ElementFactory {
 		return corr;
 	}
 
-		// rho [m]
-		// G [m]
 	public static Bend createBend(String name, double alpha_deg, double k, double rho, double entry_angle, 
 			double exit_angle, ApertureBucket aper, Accelerator acc, double position) {
 
@@ -111,7 +111,7 @@ public class ElementFactory {
 		Bend bend = new Bend(name);
 		addElectromagnetChannels(name, "B", bend.channelSuite());				
 		MagnetMainSupply ps = createMainSupply(name + "-PS", acc);
-		bend.mainSupplyId = ps.getId();
+		bend.setMainSupplyId(ps.getId());
 		bend.setPosition(position + len * 0.5); // always position on center!
 		bend.setLength(len);
 		bend.getMagBucket().setPathLength(len);
@@ -120,30 +120,32 @@ public class ElementFactory {
 		bend.getMagBucket().setBendAngle(alpha_deg);
 		bend.getMagBucket().setDipoleExitRotAngle(-exit_angle);
 		bend.setDfltField(B0);
+		bend.getMagBucket().setDipoleQuadComponent(0);
 		bend.setAper(aper);
 
 		return bend;
 	}
 	
-	public static RfGap createRfGap(String name, ApertureBucket aper, double length) {
+	public static RfGap createRfGap(String name, boolean isFirst, 
+			double ampFactor, ApertureBucket aper, double length) {
 		final RfGap gap = new RfGap(name);
-		gap.setFirstGap(true);
+		gap.setFirstGap(isFirst);
 		gap.getRfGap().setEndCell(0);
 		gap.setLength(length);
-		gap.getRfGap().setAmpFactor(1.0);
+		gap.getRfGap().setAmpFactor(ampFactor);
 		gap.getRfGap().setTTF(1.0);
 		gap.setAper(aper);
 		return gap;
 	}
 	
-	public static RfCavity createRfCavity(String name, RfGap gap, double Phis, double E0TL, double betas,
+	public static RfCavity createRfCavity(String name, RfGap gap, double Phis, double amplitude, double betas,
 			double frequency, double[] TTFCoefs, double[] STFCoefs, double position) {
 		RfCavity cavity = new RfCavity(name);
 		addRFCavityChannels(name + ":Amp", name + ":Phs", cavity.channelSuite());
 		cavity.addNode(gap);
 		cavity.getRfField().setPhase(Phis);
-		cavity.getRfField().setAmplitude(E0TL * 1e-6 / gap.getLength());
-		cavity.getRfField().setFrequency(frequency * 1e-6);
+		cavity.getRfField().setAmplitude(amplitude);
+		cavity.getRfField().setFrequency(frequency);
 		cavity.setPosition(position);
 		cavity.setLength(0.0);
 		if (betas == 0.0) {
