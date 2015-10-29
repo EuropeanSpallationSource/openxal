@@ -78,6 +78,7 @@ public final class ESSElementFactory {
 	public static ESSFieldMap createESSFieldMap(String name, double length, double frequency, double xelmax,
 			double rfphase, String fieldFile, FieldProfile fieldProfile, ApertureBucket aper, double position) {
 		ESSFieldMap fm = new ESSFieldMap(name);
+		fm.setLength(length);
 		fm.setPosition(position);
 		fm.setFrequency(frequency);
 		fm.setXelmax(xelmax);
