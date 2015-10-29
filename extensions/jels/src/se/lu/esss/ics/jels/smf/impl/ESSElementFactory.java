@@ -1,13 +1,13 @@
 package se.lu.esss.ics.jels.smf.impl;
 
 import xal.smf.Accelerator;
+import xal.smf.AcceleratorNode;
 import xal.smf.ChannelSuite;
 import xal.smf.attr.ApertureBucket;
 import xal.smf.impl.Electromagnet;
 import xal.smf.impl.ElementFactory;
 import xal.smf.impl.MagnetMainSupply;
 import xal.smf.impl.RfCavity;
-import xal.smf.impl.RfGap;
 import xal.smf.impl.qualify.MagnetType;
 
 public final class ESSElementFactory {
@@ -40,7 +40,7 @@ public final class ESSElementFactory {
 		ESSBend bend = new ESSBend(name, (orientation == MagnetType.HORIZONTAL) ? MagnetType.HORIZONTAL : MagnetType.VERTICAL);
 		bend.setMainSupplyId(ps.getId());
 		addElectromagnetChannels(name, "B", bend.channelSuite());				
-		bend.setPosition(position + len * 0.5); // always position on center!
+		bend.setPosition(position);
 		bend.setLength(len);
 		bend.getMagBucket().setPathLength(len);
 
@@ -62,13 +62,15 @@ public final class ESSElementFactory {
 	}
 	
 	public static ESSRfGap createESSRfGap(String name, boolean isFirst, double ampFactor, 
-			ApertureBucket aper, double length) {
+			ApertureBucket aper, double length, double position) {
 		final ESSRfGap gap = new ESSRfGap(name);
 		gap.setFirstGap(isFirst);
 		gap.getRfGap().setEndCell(0);
-		gap.setLength(length);
+		gap.setLength(0.0);
 		gap.getRfGap().setAmpFactor(ampFactor);
 		gap.getRfGap().setTTF(1.0);
+		gap.getRfGap().setLength(length);
+		gap.setPosition(position);
 		gap.setAper(aper);
 		return gap;
 	}
@@ -76,7 +78,7 @@ public final class ESSElementFactory {
 	public static ESSFieldMap createESSFieldMap(String name, double length, double frequency, double xelmax,
 			double rfphase, String fieldFile, FieldProfile fieldProfile, ApertureBucket aper, double position) {
 		ESSFieldMap fm = new ESSFieldMap(name);
-		fm.setPosition(position + length * 0.5);
+		fm.setPosition(position);
 		fm.setFrequency(frequency);
 		fm.setXelmax(xelmax);
 		fm.setPhase(rfphase);
@@ -87,25 +89,25 @@ public final class ESSElementFactory {
 		return fm;
 	}
 	
-	public static ESSRfCavity createESSRfCavity(String name, RfGap gap, double Phis, double amplitude, 
-			double betas, double frequency, double[] TTFCoefs, double[] STFCoefs, double position) {
+	public static ESSRfCavity createESSRfCavity(String name, double length, AcceleratorNode gap, double Phis, double amplitude, 
+			double betas, double frequency, double position) {
+		return createESSRfCavity(name, length, new AcceleratorNode[] { gap }, Phis, amplitude, betas, frequency, position);
+	}
+
+	public static ESSRfCavity createESSRfCavity(String name, double length, AcceleratorNode[] gaps, double Phis, double amplitude, 
+			double betas, double frequency, double position) {
+
 		ESSRfCavity cavity = new ESSRfCavity(name);
 		addRFCavityChannels(name + ":Amp", name + ":Phs", cavity.channelSuite());
-		cavity.addNode(gap);
+		for (AcceleratorNode gap : gaps)
+			cavity.addNode(gap);
+
 		cavity.getRfField().setPhase(Phis);
 		cavity.getRfField().setAmplitude(amplitude);
 		cavity.getRfField().setFrequency(frequency);
 		cavity.setPosition(position);
-		cavity.setLength(0.0);
-		if (betas == 0.0) {
-			cavity.getRfField().setTTFCoefs(new double[] {});
-			cavity.getRfField().setTTF_endCoefs(new double[] {});
-		} else {
-			cavity.getRfField().setTTFCoefs(TTFCoefs);
-			cavity.getRfField().setTTF_endCoefs(TTFCoefs);
-			cavity.getRfField().setSTFCoefs(STFCoefs);
-			cavity.getRfField().setSTF_endCoefs(STFCoefs);
-		}
+		cavity.setLength(length);
+
 		return cavity;
 	}
 

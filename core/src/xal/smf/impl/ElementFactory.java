@@ -1,6 +1,7 @@
 package xal.smf.impl;
 
 import xal.smf.Accelerator;
+import xal.smf.AcceleratorNode;
 import xal.smf.ChannelSuite;
 import xal.smf.attr.ApertureBucket;
 import xal.smf.impl.qualify.MagnetType;
@@ -28,11 +29,11 @@ public class ElementFactory {
     	channelSuite.putChannel(BPM.PHASE_TBT_HANDLE, name+":PhsTBT", false);
 	}
 
-	public static BPM createBPM(String name, double frequency, double position) {
+	public static BPM createBPM(String name, double frequency, double length, double position) {
 		BPM bpm = new BPM(name);
 		addBPMChannels(bpm.getId(), bpm.channelSuite());
 		bpm.getBPMBucket().setFrequency(frequency);
-		bpm.getBPMBucket().setLength(1.0);
+		bpm.getBPMBucket().setLength(length);
 		bpm.getBPMBucket().setOrientation(1);
 		bpm.setPosition(position);
 		return bpm;
@@ -76,7 +77,7 @@ public class ElementFactory {
 		MagnetMainSupply ps = createMainSupply(name + "-PS", acc);
 		quad.setMainSupplyId(ps.getId());
 
-		quad.setPosition(position + length * 0.5); // always position on center!
+		quad.setPosition(position);
 		quad.setLength(length);
 		quad.getMagBucket().setEffLength(length);
 
@@ -112,7 +113,7 @@ public class ElementFactory {
 		addElectromagnetChannels(name, "B", bend.channelSuite());				
 		MagnetMainSupply ps = createMainSupply(name + "-PS", acc);
 		bend.setMainSupplyId(ps.getId());
-		bend.setPosition(position + len * 0.5); // always position on center!
+		bend.setPosition(position);
 		bend.setLength(len);
 		bend.getMagBucket().setPathLength(len);
 
@@ -126,37 +127,36 @@ public class ElementFactory {
 		return bend;
 	}
 	
-	public static RfGap createRfGap(String name, boolean isFirst, 
-			double ampFactor, ApertureBucket aper, double length) {
+	public static RfGap createRfGap(String name, boolean isFirst, double ampFactor,
+			ApertureBucket aper, double length, double position) {
 		final RfGap gap = new RfGap(name);
 		gap.setFirstGap(isFirst);
 		gap.getRfGap().setEndCell(0);
-		gap.setLength(length);
+		gap.setLength(0.0);
+		gap.setPosition(position);
+		gap.getRfGap().setLength(length);
 		gap.getRfGap().setAmpFactor(ampFactor);
 		gap.getRfGap().setTTF(1.0);
 		gap.setAper(aper);
 		return gap;
 	}
 	
-	public static RfCavity createRfCavity(String name, RfGap gap, double Phis, double amplitude, double betas,
-			double frequency, double[] TTFCoefs, double[] STFCoefs, double position) {
+	public static RfCavity createRfCavity(String name, double length, AcceleratorNode gap, double Phis, double amplitude, 
+			double betas, double frequency, double position) {
+		return createRfCavity(name, length, new AcceleratorNode[] {gap}, Phis, amplitude, betas, frequency, position);
+	}
+	public static RfCavity createRfCavity(String name, double length, AcceleratorNode[] gaps, double Phis, double amplitude,
+			double betas, double frequency, double position) {
 		RfCavity cavity = new RfCavity(name);
 		addRFCavityChannels(name + ":Amp", name + ":Phs", cavity.channelSuite());
-		cavity.addNode(gap);
+		for(AcceleratorNode gap : gaps)
+			cavity.addNode(gap);
+
 		cavity.getRfField().setPhase(Phis);
 		cavity.getRfField().setAmplitude(amplitude);
 		cavity.getRfField().setFrequency(frequency);
 		cavity.setPosition(position);
-		cavity.setLength(0.0);
-		if (betas == 0.0) {
-			cavity.getRfField().setTTFCoefs(new double[] {});
-			cavity.getRfField().setTTF_endCoefs(new double[] {});
-		} else {
-			cavity.getRfField().setTTFCoefs(TTFCoefs);
-			cavity.getRfField().setTTF_endCoefs(TTFCoefs);
-			cavity.getRfField().setSTFCoefs(STFCoefs);
-			cavity.getRfField().setSTF_endCoefs(STFCoefs);
-		}
+		cavity.setLength(length);
 		return cavity;
 	}
 }
