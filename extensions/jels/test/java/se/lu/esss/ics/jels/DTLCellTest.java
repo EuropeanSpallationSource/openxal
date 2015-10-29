@@ -396,11 +396,54 @@ public class DTLCellTest extends SingleElementTest {
 			};
 			TMerrTolerance = 1e-5;
 			CMerrTolerance = 1e-4;
-		}}});
+		}}}); 
 
+		// 11: misalignment test dx & dy, E=2.5MeV		
+		tests.add(new Object[] {new SingleElementTestData() {{
+			description = "misalignment dx,dy";
+			probe = setupOpenXALProbe( 2.5e6, frequency, current); 
+			elementMapping = JElsElementMapping.getInstance();
+			sequence = dtlcell(4.025e8, 68.534, 22.5, 22.5, 0.00864202, 0, 46.964,
+					148174, -35, 10, 0,
+					0.0805777, 0.772147, -0.386355, -0.142834, 0, 0, 1, 2, 0, 0, 0, 0);
+			
+			// TW transfer matrix
+			TWTransferMatrix = new double[][]{
+					{+9.749908e-01, +6.610770e-02, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00}, 
+					{-3.621475e+00, +7.571430e-01, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, +1.077946e+00, +7.155936e-02, +0.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, +5.560820e+00, +1.276079e+00, +0.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +9.388414e-01, +6.531479e-02}, 
+					{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, -1.794280e+00, +9.164720e-01},
+			};
+			
+			// TW correlation matrix
+			TWGamma = 1.002787652; 
+			TWCorrelationMatrix = new double[][] {
+					{+7.849968e-13, -1.616913e-12, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00}, 
+					{-1.616913e-12, +1.337361e-11, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, +1.505982e-12, +9.194360e-12, +0.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, +9.194360e-12, +6.133377e-11, +0.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +3.249099e-12, -3.800717e-12}, 
+					{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, -3.800717e-12, +8.926809e-12},
+			};
+						
+			TMerrTolerance = 1e-2;
+			CMerrTolerance = 1e-2;
+		}}});
 		
 		return tests;
 	}
+	
+	public static AcceleratorSeq dtlcell(double frequency, double L, double Lq1, double Lq2, double g, double B1, double B2, 
+			double E0TL, double Phis, double R,	double p, 
+			double betas, double Ts, double kTs, double k2Ts, double kS, double k2S)
+	{
+		return dtlcell( frequency,  L,  Lq1,  Lq2,  g,  B1,  B2, 
+				 E0TL,  Phis,  R,	 p, 
+				 betas,  Ts,  kTs,  k2Ts,  kS,  k2S, 0, 0, 0, 0, 0, 0);
+	}
+	
 	
 	/**
 	 * 
@@ -424,7 +467,7 @@ public class DTLCellTest extends SingleElementTest {
 	 */
 	public static AcceleratorSeq dtlcell(double frequency, double L, double Lq1, double Lq2, double g, double B1, double B2, 
 			double E0TL, double Phis, double R,	double p, 
-			double betas, double Ts, double kTs, double k2Ts, double kS, double k2S)
+			double betas, double Ts, double kTs, double k2Ts, double kS, double k2S, double dx, double dy, double dz, double fx, double fy, double fz)
 	{
 		AcceleratorSeq sequence = new AcceleratorSeq("DTLCellTest");
 		
@@ -469,6 +512,15 @@ public class DTLCellTest extends SingleElementTest {
 		/*gap.getRfGap().setGapOffset(dblVal)*/		
 		
 		ESSRfCavity dtlTank = new ESSRfCavity("d"); // this could also be rfcavity, makes no difference
+		
+
+		dtlTank.getAlign().setX(dx*1e-3);
+		dtlTank.getAlign().setY(dy*1e-3);
+		dtlTank.getAlign().setZ(dz*1e-3);
+		dtlTank.getAlign().setPitch(fx*Math.PI/180.);
+		dtlTank.getAlign().setYaw(fy*Math.PI/180.);
+		dtlTank.getAlign().setRoll(fz*Math.PI/180.);
+		
 		dtlTank.addNode(quad1);
 		dtlTank.addNode(gap);
 		dtlTank.addNode(quad2);
@@ -487,6 +539,7 @@ public class DTLCellTest extends SingleElementTest {
 			dtlTank.getRfField().setSTF_endCoefs(new double[] {betas, 0., kS, k2S});
 		}		
 		
+		dtlTank.setLength(L);
 		sequence.addNode(dtlTank);
 		sequence.setLength(L);
 		

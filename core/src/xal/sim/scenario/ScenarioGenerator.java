@@ -18,6 +18,7 @@ import xal.model.IElement;
 import xal.model.Lattice;
 import xal.model.ModelException;
 import xal.model.Sector;
+import xal.model.elem.SectionEndpoint;
 import xal.model.xml.LatticeXmlParser;
 import xal.sim.sync.SynchronizationManager;
 import xal.smf.AcceleratorNode;
@@ -147,6 +148,8 @@ class ScenarioGenerator {
 	 */
 	private List<LatticeElement> collectElements() {
 		int originalPosition = 0; // used to record original position
+		int reverseOriginalPosition = Integer.MAX_VALUE;
+		
 		double sequenceLength = sequence.getLength(); // workaround for sequences that don't have length set
 		List<LatticeElement> elements = new ArrayList<LatticeElement>();		
 		
@@ -157,7 +160,15 @@ class ScenarioGenerator {
 		for ( AcceleratorNode node : sequence.getAllNodes( true ) ) {
 			if (node instanceof AcceleratorSeq) {
 				elements.add(new LatticeElement(new Marker("BEGIN_" + node.getId()), sequence.getPosition(node), 
-						elementMapping.getDefaultConverter(), originalPosition++));			
+						elementMapping.getDefaultConverter(), originalPosition++));
+				
+				LatticeElement sectionStart = new LatticeElement(node, sequence.getPosition(node), SectionEndpoint.SectionStart.class, originalPosition++);
+				sectionStart.setModelingElementId("START_"+node.getId());
+				elements.add(sectionStart);
+				
+				LatticeElement sectionEnd = new LatticeElement(node, sequence.getPosition(node)+((AcceleratorSeq)node).getLength(), SectionEndpoint.SectionEnd.class, reverseOriginalPosition--); 
+				sectionEnd.setModelingElementId("END_"+node.getId());
+				elements.add(sectionEnd);
 				continue; 
 			}						
 			
@@ -177,7 +188,7 @@ class ScenarioGenerator {
 			    //   to set Element's hardware ID attribute.  If changed you must modify both!
 //				LatticeElement center = new LatticeElement(new Marker("ELEMENT_CENTER:" + node.getId()), element.getCenter(),
               LatticeElement center = new LatticeElement(new Marker(node.getId()), element.getCenter(),
-						elementMapping.getDefaultConverter(), 0);
+						elementMapping.getDefaultConverter(), 0); // TODO why not use original position
               center.setModelingElementId("ELEMENT_CENTER:" + node.getId());    // CKA Sep 5, 2014
 				elements.add(center);
 			}
