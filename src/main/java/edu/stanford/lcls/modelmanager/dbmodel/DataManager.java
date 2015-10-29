@@ -325,6 +325,7 @@ public class DataManager {
 					machineModelDetail.setPropertyValue("PSI_Y", df.format(betatronPhase.gety()));
 					machineModelDetail.setPropertyValue("PSI_Z", df.format(betatronPhase.getz()));
 					machineModelDetail.setPropertyValue("E", df.format(getTotalEnergyFromKinetic(state.getSpeciesRestEnergy() / 1.e9, state.getKineticEnergy() / 1.e9)));
+					machineModelDetail.setPropertyValue("Ek", df.format(state.getKineticEnergy() / 1.e9));
 					machineModelDetail.setPropertyValue("P", df.format(RelativisticParameterConverter.
 							computeMomentumFromEnergies(state.getKineticEnergy(), state.getSpeciesRestEnergy()) / 1e9));
 					machineModelDetail.setPropertyValue("Bmag_X", "1");
