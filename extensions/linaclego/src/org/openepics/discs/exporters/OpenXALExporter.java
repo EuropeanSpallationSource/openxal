@@ -248,7 +248,7 @@ public class OpenXALExporter implements BLEVisitor {
 
 		xal.smf.impl.RfGap gap = ElementFactory.createRfGap(rfGap.getEssId()+":G", true, 1, aper, 1, 0);
 		
-		ESSRfCavity cavity = ESSElementFactory.createESSRfCavity(rfGap.getEssId(), 0, gap, Phis, E0TL*1e-6, betas,
+		ESSRfCavity cavity = ESSElementFactory.createESSRfCavity(rfGap.getEssId(), 0, gap, Phis, E0TL*1e-6,
 				rfGap.getFrequency(), sectionPosition);
 		
 		// TTF		
@@ -444,7 +444,7 @@ public class OpenXALExporter implements BLEVisitor {
 		xal.smf.impl.RfGap gap = ElementFactory.createRfGap(dtlRfGap.getEssId()+":G", true, 1, aper, length, length/2);
 		
 		ESSRfCavity cavity = ESSElementFactory.createESSRfCavity(dtlRfGap.getEssId(), length, gap, Phis, E0TL*1e-6/length,
-				betas, dtlRfGap.getFrequency(), sectionPosition);
+				dtlRfGap.getFrequency(), sectionPosition);
 		
 		// TTF		
 		if (betas == 0.0) {
@@ -508,7 +508,7 @@ public class OpenXALExporter implements BLEVisitor {
 		xal.smf.impl.RfGap gap = ElementFactory.createRfGap(essId+":G", true, 1.0, new ApertureBucket(), length, L/2.-g);
 		
 		ESSRfCavity dtlTank = ESSElementFactory.createESSRfCavity(essId, L, new AcceleratorNode[] {quad1, gap, quad2}, Phis,
-				E0TL*1e-6/length, betas, dtlCell.getFrequency(), sectionPosition); 
+				E0TL*1e-6/length, dtlCell.getFrequency(), sectionPosition); 
 				
 		// TTF		
 		if (betas == 0.0) {			

@@ -347,7 +347,7 @@ public class OpenXalExporter {
 		ApertureBucket aper = generateApertureBucket(element);
 		
 		final RfGap gap = ElementFactory.createRfGap(element.getName()+":G", true, 1.0, aper, 1.0, 0);
-		ESSRfCavity cavity = ESSElementFactory.createESSRfCavity(element.getName(), 0, gap, Phis, amplitude, betas, 
+		ESSRfCavity cavity = ESSElementFactory.createESSRfCavity(element.getName(), 0, gap, Phis, amplitude,
 				getFrequency(element) * 1e-6, currentPosition);
 		if (betas == 0.0) {
 			cavity.getRfField().setTTFCoefs(new double[] {});
@@ -440,7 +440,7 @@ public class OpenXalExporter {
 
 
 		ESSRfCavity cavity = ESSElementFactory.createESSRfCavity(element.getName(), Lc0+(n-2)*Lc+Lcn, nodes, Phis, E0T*1e-6, 
-				betas, frequency, currentPosition);
+				frequency, currentPosition);
 
 		if (betas == 0.0) {
 			cavity.getRfField().setTTF_startCoefs(new double[] {});
@@ -489,7 +489,7 @@ public class OpenXalExporter {
 
 
 		ESSRfCavity cavity = ESSElementFactory.createESSRfCavity(element.getName(), L, new AcceleratorNode[] {quad1, gap, quad2},
-				Phis, E0TL*1e-6/length, betas, getFrequency(element)*1e-6, currentPosition);
+				Phis, E0TL*1e-6/length, getFrequency(element)*1e-6, currentPosition);
 		
 		if (betas == 0.0) {
 			cavity.getRfField().setTTFCoefs(new double[] {});
