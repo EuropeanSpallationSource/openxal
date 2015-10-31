@@ -103,7 +103,7 @@ public class ElementFactory {
 	/**
 	 * Creates the BPM node with specified properties.
 	 * @param name Name of the BPM.
-	 * @param frequency TODO.
+	 * @param frequency Frequency before this BPM.
 	 * @param length Length of the BPM in meters. 
 	 * @param position Position of BPM.
 	 * @return BPM object.
@@ -122,7 +122,7 @@ public class ElementFactory {
 	 * Creates the Quadrupole node with specified properties.
 	 * @param name Name of the Quadrupole.
 	 * @param length Length of the Quadrupole in meters.
-	 * @param gradient TODO
+	 * @param gradient Magnetic field gradient in T/m.
 	 * @param aper Aperture details.
 	 * @param acc Accelerator containing the Quadrupole.
 	 * @param position Position of Quadrupole.
@@ -175,8 +175,8 @@ public class ElementFactory {
 	 * Creates the Bend node with specified properties.
 	 * @param name Name of the bend magnets.
 	 * @param alpha Bend angle in degrees.
-	 * @param k TODO
-	 * @param rho TODO
+	 * @param k beta*gamma*Er/(e0*c).
+	 * @param rho Curvature radius in meter.
 	 * @param entry_angle Entry angle in degrees.
 	 * @param exit_angle Exit angle in degrees.
 	 * @param aper Aperture details.
@@ -213,7 +213,7 @@ public class ElementFactory {
 	 * Creates the RfGap node with specified properties.
 	 * @param name Name of the RF gap.
 	 * @param isFirst Is this the first gap in cavity.
-	 * @param ampFactor TODO
+	 * @param ampFactor Amplification factor.
 	 * @param aper Aperture details.
 	 * @param length Length of gap in meters.
 	 * @param position Position of RF gap.
@@ -238,9 +238,9 @@ public class ElementFactory {
 	 * @param name Name of the RF cavity.
 	 * @param length Length of the cavity in meters.
 	 * @param node Node to include in the cavity.
-	 * @param Phis TODO
-	 * @param amplitude TODO
-	 * @param frequency TODO
+	 * @param Phis Phase.
+	 * @param amplitude Amplitude.
+	 * @param frequency Frequency at the start of the element.
 	 * @param position Position of the cavity.
 	 * @return RfCavity object.
 	 */
@@ -254,9 +254,9 @@ public class ElementFactory {
 	 * @param name Name of the RF cavity.
 	 * @param length Length of the cavity in meters.
 	 * @param nodes Nodes to include in the cavity.
-	 * @param Phis TODO
-	 * @param amplitude TODO
-	 * @param frequency TODO
+	 * @param Phis Phase.
+	 * @param amplitude Amplitude.
+	 * @param frequency Frequency at the start of the element.
 	 * @param position Position of the cavity.
 	 * @return RfCavity object.
 	 */

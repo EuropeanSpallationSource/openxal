@@ -319,7 +319,7 @@ public class OpenXalExporter {
 
 	private AcceleratorNode exportBend(final Bend element, double currentPosition) {
 		double alpha_deg = element.getBendAngle();
-		double rho = element.getCurvatureRadius();
+		double rho = element.getCurvatureRadius() * 1e-3;
 		double entry_angle_deg = element.getEntranceAngle();
 		double exit_angle_deg = element.getExitAngle();
 		double k = beta_gamma_Er_by_e0_c;
@@ -329,7 +329,7 @@ public class OpenXalExporter {
 
 		ApertureBucket aper = generateApertureBucket(element);
 
-		return ESSElementFactory.createESSBend(element.getName(), alpha_deg, k, rho * 1e-3, entry_angle_deg, exit_angle_deg, 
+		return ESSElementFactory.createESSBend(element.getName(), alpha_deg, k, rho, entry_angle_deg, exit_angle_deg, 
 				aper, acc, orientation, G * 1e-3, currentPosition + len/2);
 	}
 

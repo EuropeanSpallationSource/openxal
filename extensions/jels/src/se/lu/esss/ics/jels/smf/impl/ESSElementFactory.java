@@ -49,8 +49,8 @@ public final class ESSElementFactory {
 	 * Creates the Bend node with specified properties.
 	 * @param name Name of the bend magnets.
 	 * @param alpha Bend angle in degrees.
-	 * @param k TODO
-	 * @param rho TODO
+	 * @param k beta*gamma*Er/(e0*c).
+	 * @param rho Curvature radius in meter.
 	 * @param entry_angle Entry angle in degrees.
 	 * @param exit_angle Exit angle in degrees.
 	 * @param aper Aperture details.
@@ -96,7 +96,7 @@ public final class ESSElementFactory {
 	 * Creates the RfGap node with specified properties.
 	 * @param name Name of the RF gap.
 	 * @param isFirst Is this the first gap in cavity.
-	 * @param ampFactor TODO
+	 * @param ampFactor Amplification factor.
 	 * @param aper Aperture details.
 	 * @param length Length of gap in meters.
 	 * @param position Position of RF gap.
@@ -120,9 +120,9 @@ public final class ESSElementFactory {
 	 * Creates the field map node with specified properties.
 	 * @param name Name of the field map.
 	 * @param length Length of the fieldmap.
-	 * @param frequency TODO
-	 * @param xelmax TODO
-	 * @param rfphase TODO
+	 * @param frequency Frequency at the start of the element.
+	 * @param xelmax Electric field intensity factor.
+	 * @param rfphase RF phase.
 	 * @param fieldFile File containing the filed profile.
 	 * @param fieldProfile Field profile.
 	 * @param aper Aperture details.
@@ -149,9 +149,9 @@ public final class ESSElementFactory {
 	 * @param name Name of the RF cavity.
 	 * @param length Length of the cavity in meters.
 	 * @param node Node to include in the cavity.
-	 * @param Phis TODO
-	 * @param amplitude TODO
-	 * @param frequency TODO
+	 * @param Phis Phase.
+	 * @param amplitude Amplitude.
+	 * @param frequency Frequency at the start of the element.
 	 * @param position Position of the cavity.
 	 * @return RfCavity object.
 	 */
@@ -165,9 +165,9 @@ public final class ESSElementFactory {
 	 * @param name Name of the RF cavity.
 	 * @param length Length of the cavity in meters.
 	 * @param nodes Nodes to include in the cavity.
-	 * @param Phis TODO
-	 * @param amplitude TODO
-	 * @param frequency TODO
+	 * @param Phis Phase.
+	 * @param amplitude Amplitude.
+	 * @param frequency Frequency at the start of the element.
 	 * @param position Position of the cavity.
 	 * @return RfCavity object.
 	 */
