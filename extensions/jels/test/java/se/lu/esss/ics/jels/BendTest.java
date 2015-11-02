@@ -316,9 +316,7 @@ public class BendTest extends TestCommon {
 	    int orientation = HV == 0 ? MagnetType.HORIZONTAL : MagnetType.VERTICAL;
 
 	    ESSBend bend = ESSElementFactory.createESSBend("b", alpha_deg, k, rho, entry_angle_deg, exit_angle_deg, entrK1, entrK2,
-	    		exitK1, exitK2, new ApertureBucket(), null, orientation, G, len/2.);
-	    // FIXME this is not included in Factory
-		bend.getMagBucket().setDipoleQuadComponent(quadComp);
+	    		exitK1, exitK2, quadComp, new ApertureBucket(), null, orientation, G, len/2.);
 		
 		sequence.addNode(bend);
 		sequence.setLength(len);

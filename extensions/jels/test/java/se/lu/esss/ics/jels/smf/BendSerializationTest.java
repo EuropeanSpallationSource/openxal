@@ -44,7 +44,7 @@ public class BendSerializationTest {
 		
 	    for (int HV = 0; HV <= 1; HV++) {
 			ESSBend bend = ESSElementFactory.createESSBend("b", alpha_deg, k, rho, entry_angle_deg,
-					exit_angle_deg, entrK1, entrK2, exitK1, exitK2, new ApertureBucket(), null, HV, G, len/2);
+					exit_angle_deg, entrK1, entrK2, exitK1, exitK2, quadComp, new ApertureBucket(), null, HV, G, len/2);
 			
 			sequence.addNode(bend);
 			sequence.setLength(len);

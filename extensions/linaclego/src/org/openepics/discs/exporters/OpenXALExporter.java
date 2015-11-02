@@ -285,7 +285,7 @@ public class OpenXALExporter implements BLEVisitor {
 
 		MagnetMainSupply ps = ElementFactory.createMainSupply(ibend.getEssId()+"-PS", accelerator);
 	    ESSBend bend = ESSElementFactory.createESSBend(ibend.getEssId(), alpha_deg, k, rho, entry_angle_deg,
-	    		exit_angle_deg, entrK1, entrK2, exitK1, exitK2, aper, ps, MagnetType.VERTICAL, G, 
+	    		exit_angle_deg, entrK1, entrK2, exitK1, exitK2, 0, aper, ps, MagnetType.VERTICAL, G, 
 	    		sectionPosition + len*0.5);
 		
 		add(bend);		

@@ -55,13 +55,14 @@ public final class ESSElementFactory {
 	 * @param enterK2 TODO
 	 * @param exitK1 TODO
 	 * @param exitK2 TODO
+	 * @param quadComp Quadrupole component error of the dipole.
 	 * @param aper Aperture details.
 	 * @param ps Power supply for magnet. Can be null.
 	 * @param position Position of the magnet in the accelerator.
 	 * @return Bend object.
 	 */
 	public static ESSBend createESSBend(String name, double alpha, double k, double rho, double entry_angle, 
-			double exit_angle, double enterK1, double enterK2, double exitK1, double exitK2,
+			double exit_angle, double enterK1, double enterK2, double exitK1, double exitK2, double quadComp,
 			ApertureBucket aper, MagnetMainSupply ps, int orientation, double gap, double position) {
 
 		// calculations
@@ -82,7 +83,7 @@ public final class ESSElementFactory {
 		bend.getMagBucket().setBendAngle(alpha);
 		bend.getMagBucket().setDipoleExitRotAngle(-exit_angle);
 		bend.setDfltField(B0);
-		bend.getMagBucket().setDipoleQuadComponent(0);
+		bend.getMagBucket().setDipoleQuadComponent(quadComp);
 
 		bend.setGap(gap);
 		bend.setEntrK1(enterK1);

@@ -182,13 +182,14 @@ public class ElementFactory {
 	 * @param rho Curvature radius in meter.
 	 * @param entry_angle Entry angle in degrees.
 	 * @param exit_angle Exit angle in degrees.
+	 * @param quadComp Quadrupole component error on dipole.
 	 * @param aper Aperture details.
 	 * @param ps Power supply for the magnet. Can be null.
 	 * @param position Position of the magnet in the accelerator.
 	 * @return Bend object.
 	 */
 	public static Bend createBend(String name, double alpha, double k, double rho, double entry_angle, 
-			double exit_angle, ApertureBucket aper, MagnetMainSupply ps, double position) {
+			double exit_angle, double quadComp, ApertureBucket aper, MagnetMainSupply ps, double position) {
 
 		double len = Math.abs(rho * alpha * Math.PI / 180.0);
 
@@ -207,7 +208,7 @@ public class ElementFactory {
 		bend.getMagBucket().setBendAngle(alpha);
 		bend.getMagBucket().setDipoleExitRotAngle(-exit_angle);
 		bend.setDfltField(B0);
-		bend.getMagBucket().setDipoleQuadComponent(0);
+		bend.getMagBucket().setDipoleQuadComponent(quadComp);
 		bend.setAper(aper);
 
 		return bend;

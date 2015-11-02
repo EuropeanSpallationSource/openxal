@@ -337,7 +337,7 @@ public class OpenXalExporter {
 
 		MagnetMainSupply ps = ElementFactory.createMainSupply(element.getName()+"-PS", acc);
 		return ESSElementFactory.createESSBend(element.getName(), alpha_deg, k, rho, entry_angle_deg, exit_angle_deg, 
-				entrK1, entrK2, exitK1, exitK2, aper, ps, orientation, G * 1e-3, currentPosition + len/2);
+				entrK1, entrK2, exitK1, exitK2, 0, aper, ps, orientation, G * 1e-3, currentPosition + len/2);
 	}
 
 	private AcceleratorNode exportRFCavity(final RFCavity element, double currentPosition) {
