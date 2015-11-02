@@ -5,10 +5,13 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import se.lu.esss.ics.jels.smf.impl.ESSBend;
+import se.lu.esss.ics.jels.smf.impl.ESSElementFactory;
 import xal.model.ModelException;
 import xal.model.probe.Probe;
 import xal.sim.scenario.ElementMapping;
+import xal.smf.Accelerator;
 import xal.smf.AcceleratorSeq;
+import xal.smf.attr.ApertureBucket;
 import xal.smf.impl.qualify.MagnetType;
 import xal.tools.beam.IConstants;
 
@@ -310,25 +313,12 @@ public class BendTest extends TestCommon {
 	    double b  = probe.getBeta();
 	    
 	    double k = b*gamma*Er/(e*c); // = -0.22862458629665997
-	    double B0 = k/rho*Math.signum(alpha_deg);
-	    //double B0 = b*gamma*Er/(e*c*rho)*Math.signum(alpha);
-			    
-		ESSBend bend = new ESSBend("b", HV == 0 ? MagnetType.HORIZONTAL : MagnetType.VERTICAL);
-		bend.setPosition(len*0.5); //always position on center!
-		bend.setLength(len); // both paths are used in calculation
-		bend.getMagBucket().setPathLength(len);
-		
-		bend.getMagBucket().setDipoleEntrRotAngle(-entry_angle_deg);
-		bend.getMagBucket().setBendAngle(alpha_deg);
-		bend.getMagBucket().setDipoleExitRotAngle(-exit_angle_deg);		
-		bend.setDfltField(B0);		
+	    int orientation = HV == 0 ? MagnetType.HORIZONTAL : MagnetType.VERTICAL;
+
+	    ESSBend bend = ESSElementFactory.createESSBend("b", alpha_deg, k, rho, entry_angle_deg, exit_angle_deg, entrK1, entrK2,
+	    		exitK1, exitK2, new ApertureBucket(), null, orientation, G, len/2.);
+	    // FIXME this is not included in Factory
 		bend.getMagBucket().setDipoleQuadComponent(quadComp);
-		
-		bend.setGap(G);
-		bend.setEntrK1(entrK1);
-		bend.setEntrK2(entrK2);
-		bend.setExitK1(exitK1);
-		bend.setExitK2(exitK2);
 		
 		sequence.addNode(bend);
 		sequence.setLength(len);

@@ -8,8 +8,11 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import se.lu.esss.ics.jels.model.elem.jels.JElsElementMapping;
+import se.lu.esss.ics.jels.smf.impl.ESSElementFactory;
 import se.lu.esss.ics.jels.smf.impl.ESSRfCavity;
 import xal.smf.AcceleratorSeq;
+import xal.smf.attr.ApertureBucket;
+import xal.smf.impl.ElementFactory;
 import xal.smf.impl.RfGap;
 
 @RunWith(Parameterized.class)
@@ -260,41 +263,26 @@ public class GapTest extends SingleElementTest  {
 	{
 		AcceleratorSeq sequence = new AcceleratorSeq("GapTest");
 		
-		// setup		
-			RfGap gap = new RfGap("g");
-			gap.setFirstGap(true); // this uses only phase for calculations
-			gap.getRfGap().setEndCell(0);
-			gap.setLength(0.0); // used only for positioning
-			
-			// following are used to calculate E0TL
-			double length = 1.0; // length is not given in TraceWin, but is used only as a factor in E0TL in OpenXal
-			gap.getRfGap().setLength(length); 		
-			gap.getRfGap().setAmpFactor(1.0);
-			/*gap.getRfGap().setGapOffset(dblVal)*/	
-			
-			ESSRfCavity cavity = new ESSRfCavity("c");
-			cavity.addNode(gap);
-			cavity.getRfField().setPhase(Phis);		
-			cavity.getRfField().setAmplitude(E0TL * 1e-6 / length);
-			cavity.getRfField().setFrequency(frequency * 1e-6);		
-			/*cavity.getRfField().setStructureMode(dblVal);*/
-			gap.getRfGap().setTTF(1.0);		
-			
-			// TTF		
-			if (betas == 0.0) {
-				cavity.getRfField().setTTFCoefs(new double[] {});
-				cavity.getRfField().setTTF_endCoefs(new double[] {});
-			} else {				
-				cavity.getRfField().setTTFCoefs(new double[] {betas, Ts, kTs, k2Ts});
-				cavity.getRfField().setTTF_endCoefs(new double[] {betas, Ts, kTs, k2Ts});
-				cavity.getRfField().setSTFCoefs(new double[] {betas, 0., kS, k2S});
-				cavity.getRfField().setSTF_endCoefs(new double[] {betas, 0., kS, k2S});
-			}		
-			
-			sequence.addNode(cavity);
-			sequence.setLength(0.0);
-			
-			return sequence;
+		double length = 1.0; // length is not given in TraceWin, but is used only as a factor in E0TL in OpenXal
+
+		// FIXME position == 0?
+		RfGap gap = ElementFactory.createRfGap("g", true, 1, new ApertureBucket(), length, 0);
+		// FIXME position == 0?
+		ESSRfCavity cavity = ESSElementFactory.createESSRfCavity("c", 0, gap, Phis, E0TL*1e-6/length, frequency*1e-6, 0);
+		
+		// TTF		
+		if (betas == 0.0) {
+			cavity.getRfField().setTTFCoefs(new double[] {});
+			cavity.getRfField().setTTF_endCoefs(new double[] {});
+		} else {				
+			cavity.getRfField().setTTFCoefs(new double[] {betas, Ts, kTs, k2Ts});
+			cavity.getRfField().setTTF_endCoefs(new double[] {betas, Ts, kTs, k2Ts});
+			cavity.getRfField().setSTFCoefs(new double[] {betas, 0., kS, k2S});
+			cavity.getRfField().setSTF_endCoefs(new double[] {betas, 0., kS, k2S});
+		}		
+		
+		sequence.addNode(cavity);
+		
+		return sequence;
 	}
-	
 }

@@ -10,6 +10,7 @@ import org.junit.runners.Parameterized.Parameters;
 import se.lu.esss.ics.jels.model.elem.jels.JElsElementMapping;
 import xal.smf.AcceleratorSeq;
 import xal.smf.attr.ApertureBucket;
+import xal.smf.impl.ElementFactory;
 import xal.smf.impl.Quadrupole;
 
 @RunWith(Parameterized.class)
@@ -278,17 +279,11 @@ public class QuadTest extends SingleElementTest {
 	public static AcceleratorSeq quad(double L, double G, double R, double Phi, double G3, double G4, double G5, double G6)
 	{
 		AcceleratorSeq sequence = new AcceleratorSeq("QuadTest");
-		Quadrupole quad = new Quadrupole("quad") { // there's no setter for type (you need to extend class)
-			{_type="Q"; }
-		};
-		quad.setPosition(L*1e-3*0.5); //always position on center!
-		quad.setLength(L*1e-3); // effLength below is actually the only one read 
-		quad.getMagBucket().setEffLength(L*1e-3);
-		quad.setDfltField(G);
-		quad.getMagBucket().setPolarity(1);
-		quad.getAper().setAperX(R*1e-3);
-		quad.getAper().setAperY(R*1e-3);
-		quad.getAper().setShape(ApertureBucket.iRectangle);
+		ApertureBucket aper = new ApertureBucket();
+		aper.setAperX(R*1e-3);
+		aper.setAperY(R*1e-3);
+		aper.setShape(ApertureBucket.iRectangle);
+		Quadrupole quad = ElementFactory.createQuadrupole("quad", L*1e-3, G, aper, null, L*1e-3*0.5);
 		sequence.addNode(quad);
 		sequence.setLength(L*1e-3);	
 		return sequence;

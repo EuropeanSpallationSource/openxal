@@ -12,12 +12,17 @@ import org.junit.runners.Parameterized.Parameters;
 import se.lu.esss.ics.jels.SingleElementTest.SingleElementTestData;
 import se.lu.esss.ics.jels.model.elem.els.ElsElementMapping;
 import se.lu.esss.ics.jels.model.elem.jels.JElsElementMapping;
+import se.lu.esss.ics.jels.smf.impl.ESSElementFactory;
 import se.lu.esss.ics.jels.smf.impl.ESSRfCavity;
 import xal.model.ModelException;
 import xal.model.probe.Probe;
 import xal.sim.scenario.DefaultElementMapping;
 import xal.sim.scenario.ElementMapping;
+import xal.smf.Accelerator;
+import xal.smf.AcceleratorNode;
 import xal.smf.AcceleratorSeq;
+import xal.smf.attr.ApertureBucket;
+import xal.smf.impl.ElementFactory;
 import xal.smf.impl.Quadrupole;
 import xal.smf.impl.RfGap;
 
@@ -417,51 +422,17 @@ public class DTLCellTest extends SingleElementTest {
 		Lq1 *= 1e-3;
 		Lq2 *= 1e-3;
 		g *= 1e-3;
-		
-		// setup		
-		// QUAD1,2
-		Quadrupole quad1 = new Quadrupole("quad1") { // there's no setter for type (you need to extend class)
-			{_type="Q"; }
-		};
-		quad1.setPosition(0.5*Lq1); //always position on center!
-		quad1.setLength(Lq1); // effLength below is actually the only one read 
-		quad1.getMagBucket().setEffLength(Lq1);
-		quad1.setDfltField(B1);
-		quad1.getMagBucket().setPolarity(1);
-		
-		Quadrupole quad2 = new Quadrupole("quad2") { // there's no setter for type (you need to extend class)
-			{_type="Q"; }
-		};
-		quad2.setPosition(L-0.5*Lq2); //always position on center!
-		quad2.setLength(Lq2); // effLength below is actually the only one read 
-		quad2.getMagBucket().setEffLength(Lq2);
-		quad2.setDfltField(B2);
-		quad2.getMagBucket().setPolarity(1);
-		
-		
-		// GAP
-		RfGap gap = new RfGap("g");
-		gap.setFirstGap(true); // this uses only phase for calculations
-		gap.getRfGap().setEndCell(0);
-		gap.setLength(0.0); // used only for positioning
-		gap.setPosition(0.5*L-g);
-		// following are used to calculate E0TL
 		double length = g; // length is not given in TraceWin, but is used only as a factor in E0TL in OpenXal
-		gap.getRfGap().setLength(length); 		
-		gap.getRfGap().setAmpFactor(1.0);
-		gap.getRfGap().setTTF(1.0);		
-		/*gap.getRfGap().setGapOffset(dblVal)*/		
 		
-		ESSRfCavity dtlTank = new ESSRfCavity("d"); // this could also be rfcavity, makes no difference
-		dtlTank.addNode(quad1);
-		dtlTank.addNode(gap);
-		dtlTank.addNode(quad2);
-		dtlTank.getRfField().setPhase(Phis);		
-		dtlTank.getRfField().setAmplitude(E0TL * 1e-6 / length);
-		dtlTank.getRfField().setFrequency(frequency * 1e-6);		
-		/*cavity.getRfField().setStructureMode(dblVal);*/
+		Quadrupole quad1 = ElementFactory.createQuadrupole("quad1", Lq1, B1, new ApertureBucket(), null, Lq1/2.);
+		Quadrupole quad2 = ElementFactory.createQuadrupole("quad2", Lq2, B2, new ApertureBucket(), null, L-Lq2/2.);
+		
+		RfGap gap = ElementFactory.createRfGap("g", true, 1, new ApertureBucket(), length, L/2.-g);
+		
+		ESSRfCavity dtlTank = ESSElementFactory.createESSRfCavity("d", 0, new AcceleratorNode[] {quad1, gap, quad2}, Phis, E0TL*1e-6/length,
+				frequency*1e-6, 0);
 				
-		// TTF		
+		// TTF
 		if (betas == 0.0) {			
 			dtlTank.getRfField().setTTFCoefs(new double[] {0.0});
 		} else {

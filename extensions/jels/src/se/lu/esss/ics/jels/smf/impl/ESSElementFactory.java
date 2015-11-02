@@ -1,11 +1,9 @@
 package se.lu.esss.ics.jels.smf.impl;
 
-import xal.smf.Accelerator;
 import xal.smf.AcceleratorNode;
 import xal.smf.ChannelSuite;
 import xal.smf.attr.ApertureBucket;
 import xal.smf.impl.Electromagnet;
-import xal.smf.impl.ElementFactory;
 import xal.smf.impl.MagnetMainSupply;
 import xal.smf.impl.RfCavity;
 import xal.smf.impl.qualify.MagnetType;
@@ -58,22 +56,23 @@ public final class ESSElementFactory {
 	 * @param exitK1 TODO
 	 * @param exitK2 TODO
 	 * @param aper Aperture details.
-	 * @param acc Accelerator that contains the magnet. 
+	 * @param ps Power supply for magnet. Can be null.
 	 * @param position Position of the magnet in the accelerator.
 	 * @return Bend object.
 	 */
 	public static ESSBend createESSBend(String name, double alpha, double k, double rho, double entry_angle, 
 			double exit_angle, double enterK1, double enterK2, double exitK1, double exitK2,
-			ApertureBucket aper, Accelerator acc, int orientation, double gap, double position) {
+			ApertureBucket aper, MagnetMainSupply ps, int orientation, double gap, double position) {
 
 		// calculations
 		double len = Math.abs(rho * alpha * Math.PI / 180.0);
 
 		double B0 = k / rho * Math.signum(alpha);
 
-		final MagnetMainSupply ps = ElementFactory.createMainSupply(name + "-PS", acc);
 		ESSBend bend = new ESSBend(name, (orientation == MagnetType.HORIZONTAL) ? MagnetType.HORIZONTAL : MagnetType.VERTICAL);
-		bend.setMainSupplyId(ps.getId());
+		if (ps != null) {
+			bend.setMainSupplyId(ps.getId());
+		}
 		addElectromagnetChannels(name, "B", bend.channelSuite());				
 		bend.setPosition(position);
 		bend.setLength(len);

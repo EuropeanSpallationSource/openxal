@@ -53,6 +53,7 @@ import xal.smf.impl.DipoleCorr;
 import xal.smf.impl.ElementFactory;
 import xal.smf.impl.HDipoleCorr;
 import xal.smf.impl.Magnet;
+import xal.smf.impl.MagnetMainSupply;
 import xal.smf.impl.MagnetPowerSupply;
 import xal.smf.impl.VDipoleCorr;
 import xal.smf.impl.qualify.MagnetType;
@@ -230,7 +231,8 @@ public class OpenXALExporter implements BLEVisitor {
 		double L = iquad.getLength()*1e-3;		
 		double G = iquad.getFieldGradient();
 		
-		add(ElementFactory.createQuadrupole(iquad.getEssId(), L, G, aper, accelerator, sectionPosition+L/2));
+		MagnetMainSupply ps = ElementFactory.createMainSupply(iquad.getEssId()+"-PS", accelerator);
+		add(ElementFactory.createQuadrupole(iquad.getEssId(), L, G, aper, ps, sectionPosition+L/2));
 	}
 
 	@Override
@@ -280,9 +282,10 @@ public class OpenXALExporter implements BLEVisitor {
 	    double k = beta_gamma_Er_by_e0_c;
 	    
 	    ApertureBucket aper = generateApertureBucket(ibend);
-	    
+
+		MagnetMainSupply ps = ElementFactory.createMainSupply(ibend.getEssId()+"-PS", accelerator);
 	    ESSBend bend = ESSElementFactory.createESSBend(ibend.getEssId(), alpha_deg, k, rho, entry_angle_deg,
-	    		exit_angle_deg, entrK1, entrK2, exitK1, exitK2, aper, accelerator, MagnetType.VERTICAL, G, 
+	    		exit_angle_deg, entrK1, entrK2, exitK1, exitK2, aper, ps, MagnetType.VERTICAL, G, 
 	    		sectionPosition + len*0.5);
 		
 		add(bend);		
@@ -295,10 +298,12 @@ public class OpenXALExporter implements BLEVisitor {
 		final String essId = thinSteering.getEssId();
 		ApertureBucket aper = generateApertureBucket(thinSteering);
 		
-		DipoleCorr vcorr = ElementFactory.createCorrector(essId+"-VC", MagnetType.VERTICAL, L, aper, accelerator,
+		MagnetMainSupply vps = ElementFactory.createMainSupply(essId+"-VC-PS", accelerator);
+		DipoleCorr vcorr = ElementFactory.createCorrector(essId+"-VC", MagnetType.VERTICAL, L, aper, vps,
 				sectionPosition + L/2);
 		add(vcorr);
-		DipoleCorr hcorr = ElementFactory.createCorrector(essId+"-HC", MagnetType.HORIZONTAL, L, aper, accelerator,
+		MagnetMainSupply hps = ElementFactory.createMainSupply(essId+"-HC-PS", accelerator);
+		DipoleCorr hcorr = ElementFactory.createCorrector(essId+"-HC", MagnetType.HORIZONTAL, L, aper, hps,
 				sectionPosition + L/2);
 		add(hcorr);
 	}
@@ -469,7 +474,8 @@ public class OpenXALExporter implements BLEVisitor {
 		final String essId = dtlDriftTube.getEssId();
 		ApertureBucket aper = generateApertureBucket(dtlDriftTube);
 		
-		xal.smf.impl.Quadrupole quad = ElementFactory.createQuadrupole(essId+":Q", Lq, G, aper, accelerator, L1+Lq/2.);
+		MagnetMainSupply ps = ElementFactory.createMainSupply(essId+":Q-PS", accelerator);
+		xal.smf.impl.Quadrupole quad = ElementFactory.createQuadrupole(essId+":Q", Lq, G, aper, ps, L1+Lq/2.);
 		
 		AcceleratorSeq dt = new AcceleratorSeq(essId);
 		dt.addNode(quad);
@@ -501,10 +507,13 @@ public class OpenXALExporter implements BLEVisitor {
 		
 		final String essId = dtlCell.getEssId();
 		
+		MagnetMainSupply ps1= ElementFactory.createMainSupply(essId+":Q1-PS", accelerator);
 		xal.smf.impl.Quadrupole quad1 = ElementFactory.createQuadrupole(essId+":Q1", Lq1, B1, new ApertureBucket(),
-				accelerator, Lq1/2.);
+				ps1, Lq1/2.);
+		MagnetMainSupply ps2= ElementFactory.createMainSupply(essId+":Q2-PS", accelerator);
 		xal.smf.impl.Quadrupole quad2 = ElementFactory.createQuadrupole(essId+":Q2", Lq2, B2, new ApertureBucket(),
-				accelerator, L - Lq2/2.);
+				ps2, L - Lq2/2.);
+
 		double length = L-Lq1-Lq2; // length is not given in TraceWin, but is used only as a factor in E0TL in OpenXal
 		xal.smf.impl.RfGap gap = ElementFactory.createRfGap(essId+":G", true, 1.0, new ApertureBucket(), length, L/2.-g);
 		

@@ -103,7 +103,7 @@ public class ElementFactory {
 	/**
 	 * Creates the BPM node with specified properties.
 	 * @param name Name of the BPM.
-	 * @param frequency Frequency before this BPM.
+	 * @param frequency Frequency before this element.
 	 * @param length Length of the BPM in meters. 
 	 * @param position Position of BPM.
 	 * @return BPM object.
@@ -124,17 +124,18 @@ public class ElementFactory {
 	 * @param length Length of the Quadrupole in meters.
 	 * @param gradient Magnetic field gradient in T/m.
 	 * @param aper Aperture details.
-	 * @param acc Accelerator containing the Quadrupole.
+	 * @param ps Power supply for the magnet. Can be null.
 	 * @param position Position of Quadrupole.
 	 * @return Quadrupole object.
 	 */
 	public static Quadrupole createQuadrupole(String name, double length, double gradient,
-			ApertureBucket aper, Accelerator acc, double position) {
+			ApertureBucket aper, MagnetMainSupply ps, double position) {
 		Quadrupole quad = new Quadrupole(name);
 		quad._type = "Q";
 		addElectromagnetChannels(name, "B", quad.channelSuite());				
-		MagnetMainSupply ps = createMainSupply(name + "-PS", acc);
-		quad.setMainSupplyId(ps.getId());
+		if (ps != null) {
+			quad.setMainSupplyId(ps.getId());
+		}
 
 		quad.setPosition(position);
 		quad.setLength(length);
@@ -153,16 +154,17 @@ public class ElementFactory {
 	 * @param orientation Orientation of the corrector.
 	 * @param length Length of the corrector in meters.
 	 * @param aper Aperture details.
-	 * @param acc Accelerator that contains the corrector.
+	 * @param ps Power supply for the magnet. Can be null.
 	 * @param position Position of the corrector in the accelerator.
 	 * @return Dipole correctors.
 	 */
 	public static DipoleCorr createCorrector(String name, int orientation, double length, 
-			ApertureBucket aper, Accelerator acc, double position) {
+			ApertureBucket aper, MagnetMainSupply ps, double position) {
 		DipoleCorr corr = (orientation == MagnetType.HORIZONTAL) ? 
 				new HDipoleCorr(name) : new VDipoleCorr(name);
-		MagnetMainSupply ps = createMainSupply(name + "-PS", acc);
-		corr.setMainSupplyId(ps.getId());
+		if (ps != null) {
+			corr.setMainSupplyId(ps.getId());
+		}
 		addElectromagnetChannels(name, "B",  corr.channelSuite());
 		corr.setPosition(position);
 		corr.setLength(length);
@@ -173,6 +175,7 @@ public class ElementFactory {
 
 	/**
 	 * Creates the Bend node with specified properties.
+	 * Length is calculated from provided arguments. // TODO CHECK IF THIS IS OK! Probably it makes more sense to calculate rho.
 	 * @param name Name of the bend magnets.
 	 * @param alpha Bend angle in degrees.
 	 * @param k beta*gamma*Er/(e0*c).
@@ -180,12 +183,12 @@ public class ElementFactory {
 	 * @param entry_angle Entry angle in degrees.
 	 * @param exit_angle Exit angle in degrees.
 	 * @param aper Aperture details.
-	 * @param acc Accelerator that contains the magnet. 
+	 * @param ps Power supply for the magnet. Can be null.
 	 * @param position Position of the magnet in the accelerator.
 	 * @return Bend object.
 	 */
 	public static Bend createBend(String name, double alpha, double k, double rho, double entry_angle, 
-			double exit_angle, ApertureBucket aper, Accelerator acc, double position) {
+			double exit_angle, ApertureBucket aper, MagnetMainSupply ps, double position) {
 
 		double len = Math.abs(rho * alpha * Math.PI / 180.0);
 
@@ -193,8 +196,9 @@ public class ElementFactory {
 
 		Bend bend = new Bend(name);
 		addElectromagnetChannels(name, "B", bend.channelSuite());				
-		MagnetMainSupply ps = createMainSupply(name + "-PS", acc);
-		bend.setMainSupplyId(ps.getId());
+		if (ps != null) {
+			bend.setMainSupplyId(ps.getId());
+		}
 		bend.setPosition(position);
 		bend.setLength(len);
 		bend.getMagBucket().setPathLength(len);

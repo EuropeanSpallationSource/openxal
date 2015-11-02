@@ -32,6 +32,7 @@ import xal.smf.attr.ApertureBucket;
 import xal.smf.attr.SequenceBucket;
 import xal.smf.impl.ElementFactory;
 import xal.smf.impl.Magnet;
+import xal.smf.impl.MagnetMainSupply;
 import xal.smf.impl.MagnetPowerSupply;
 import xal.smf.impl.RfGap;
 import xal.smf.impl.qualify.MagnetType;
@@ -291,8 +292,9 @@ public class OpenXalExporter {
 	
 	private AcceleratorNode exportQuadrupole(final Quadrupole element, double currentPosition) {
 		ApertureBucket aper = generateApertureBucket(element);
+		MagnetMainSupply ps = ElementFactory.createMainSupply(element.getName()+"-PS", acc);
 		return ElementFactory.createQuadrupole(element.getName(), element.getLength(), element.getQuadrupoleGradient(),
-				aper, acc, currentPosition + element.getLength()/2);
+				aper, ps, currentPosition + element.getLength()/2);
 	}
 
 	private AcceleratorNode exportCorrector(final Corrector element, double currentPosition) {
@@ -307,12 +309,15 @@ public class OpenXalExporter {
 			double L) {
 
 		ApertureBucket vAper = generateApertureBucket(element);
+		MagnetMainSupply vps = ElementFactory.createMainSupply(element.getName()+"-VC-PS", acc);
 		AcceleratorNode vcorr = ElementFactory.createCorrector(element.getName() + "-VC", MagnetType.VERTICAL,
-				L, vAper, acc, currentPosition + L/2);
+				L, vAper, vps, currentPosition + L/2);
 		seq.addNode(vcorr);
+
+		MagnetMainSupply hps = ElementFactory.createMainSupply(element.getName()+"-HC-PS", acc);
 		ApertureBucket hAper = generateApertureBucket(element);
 		AcceleratorNode hcorr = ElementFactory.createCorrector(element.getName() + "-HC", MagnetType.HORIZONTAL,
-				L, hAper, acc, currentPosition + L/2);
+				L, hAper, hps, currentPosition + L/2);
 		seq.addNode(hcorr);
 		return seq;
 	}
@@ -330,8 +335,9 @@ public class OpenXalExporter {
 		ApertureBucket aper = generateApertureBucket(element);
 		double entrK1 = 0.45, entrK2 = 2.8, exitK1 = 0.45, exitK2 = 2.8;
 
+		MagnetMainSupply ps = ElementFactory.createMainSupply(element.getName()+"-PS", acc);
 		return ESSElementFactory.createESSBend(element.getName(), alpha_deg, k, rho, entry_angle_deg, exit_angle_deg, 
-				entrK1, entrK2, exitK1, exitK2, aper, acc, orientation, G * 1e-3, currentPosition + len/2);
+				entrK1, entrK2, exitK1, exitK2, aper, ps, orientation, G * 1e-3, currentPosition + len/2);
 	}
 
 	private AcceleratorNode exportRFCavity(final RFCavity element, double currentPosition) {
@@ -481,10 +487,12 @@ public class OpenXalExporter {
 		
 		double length = L - Lq1 - Lq2;
 
-		xal.smf.impl.Quadrupole quad1 = ElementFactory.createQuadrupole(element.getName()+"Q1", Lq1, B1, new ApertureBucket(),
-				acc, Lq1/2);
-		xal.smf.impl.Quadrupole quad2 = ElementFactory.createQuadrupole(element.getName()+"Q2", Lq2, B2, new ApertureBucket(),
-				acc, L - Lq2/2);
+		MagnetMainSupply ps1 = ElementFactory.createMainSupply(element.getName()+":Q1-PS", acc);
+		xal.smf.impl.Quadrupole quad1 = ElementFactory.createQuadrupole(element.getName()+":Q1", Lq1, B1, new ApertureBucket(),
+				ps1, Lq1/2);
+		MagnetMainSupply ps2 = ElementFactory.createMainSupply(element.getName()+":Q2-PS", acc);
+		xal.smf.impl.Quadrupole quad2 = ElementFactory.createQuadrupole(element.getName()+":Q2", Lq2, B2, new ApertureBucket(),
+				ps2, L - Lq2/2);
 
 		RfGap gap = ElementFactory.createRfGap(element.getName()+":G", true, 1, new ApertureBucket(), length, L/2-g);
 
