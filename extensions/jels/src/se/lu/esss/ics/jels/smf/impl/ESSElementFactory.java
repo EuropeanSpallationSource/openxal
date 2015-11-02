@@ -53,14 +53,18 @@ public final class ESSElementFactory {
 	 * @param rho Curvature radius in meter.
 	 * @param entry_angle Entry angle in degrees.
 	 * @param exit_angle Exit angle in degrees.
+	 * @param enterK1 TODO
+	 * @param enterK2 TODO
+	 * @param exitK1 TODO
+	 * @param exitK2 TODO
 	 * @param aper Aperture details.
 	 * @param acc Accelerator that contains the magnet. 
 	 * @param position Position of the magnet in the accelerator.
 	 * @return Bend object.
 	 */
 	public static ESSBend createESSBend(String name, double alpha, double k, double rho, double entry_angle, 
-			double exit_angle, ApertureBucket aper, Accelerator acc, int orientation, double gap, double position) {
-		double entrK1 = 0.45, entrK2 = 2.8, exitK1 = 0.45, exitK2 = 2.8;
+			double exit_angle, double enterK1, double enterK2, double exitK1, double exitK2,
+			ApertureBucket aper, Accelerator acc, int orientation, double gap, double position) {
 
 		// calculations
 		double len = Math.abs(rho * alpha * Math.PI / 180.0);
@@ -82,8 +86,8 @@ public final class ESSElementFactory {
 		bend.getMagBucket().setDipoleQuadComponent(0);
 
 		bend.setGap(gap);
-		bend.setEntrK1(entrK1);
-		bend.setEntrK2(entrK2);
+		bend.setEntrK1(enterK1);
+		bend.setEntrK2(enterK2);
 		bend.setExitK1(exitK1);
 		bend.setExitK2(exitK2);
 

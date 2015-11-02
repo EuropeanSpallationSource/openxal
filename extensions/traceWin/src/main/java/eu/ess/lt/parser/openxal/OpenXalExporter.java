@@ -328,9 +328,10 @@ public class OpenXalExporter {
 		double len = Math.abs(rho * alpha_deg * Math.PI / 180.);
 
 		ApertureBucket aper = generateApertureBucket(element);
+		double entrK1 = 0.45, entrK2 = 2.8, exitK1 = 0.45, exitK2 = 2.8;
 
 		return ESSElementFactory.createESSBend(element.getName(), alpha_deg, k, rho, entry_angle_deg, exit_angle_deg, 
-				aper, acc, orientation, G * 1e-3, currentPosition + len/2);
+				entrK1, entrK2, exitK1, exitK2, aper, acc, orientation, G * 1e-3, currentPosition + len/2);
 	}
 
 	private AcceleratorNode exportRFCavity(final RFCavity element, double currentPosition) {
