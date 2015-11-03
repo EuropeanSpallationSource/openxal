@@ -168,7 +168,8 @@ public class ElementFactory {
 		addElectromagnetChannels(name, "B",  corr.channelSuite());
 		corr.setPosition(position);
 		corr.setLength(length);
-		corr.getMagBucket().setEffLength(length);
+		double effLength = length == 0 ? 1 : length;
+		corr.getMagBucket().setEffLength(effLength);
 		corr.setAper(aper);
 		return corr;
 	}
