@@ -471,7 +471,7 @@ public class OpenXALExporter implements BLEVisitor {
 		final String essId = dtlDriftTube.getEssId();
 		ApertureBucket aper = generateApertureBucket(dtlDriftTube);
 		
-		MagnetMainSupply ps = ElementFactory.createMainSupply(essId+":Q-PS", accelerator);
+		MagnetMainSupply ps = ElementFactory.createMainSupply(essId+"-PS", accelerator);
 		xal.smf.impl.Quadrupole quad = ElementFactory.createQuadrupole(essId+":Q", Lq, G, aper, ps, L1+Lq/2.);
 		
 		AcceleratorSeq dt = new AcceleratorSeq(essId);
@@ -504,10 +504,10 @@ public class OpenXALExporter implements BLEVisitor {
 		
 		final String essId = dtlCell.getEssId();
 		
-		MagnetMainSupply ps1= ElementFactory.createMainSupply(essId+":Q1-PS", accelerator);
+		MagnetMainSupply ps1= ElementFactory.createMainSupply(essId+"A-PS", accelerator);
 		xal.smf.impl.Quadrupole quad1 = ElementFactory.createQuadrupole(essId+":Q1", Lq1, B1, new ApertureBucket(),
 				ps1, Lq1/2.);
-		MagnetMainSupply ps2= ElementFactory.createMainSupply(essId+":Q2-PS", accelerator);
+		MagnetMainSupply ps2= ElementFactory.createMainSupply(essId+"B-PS", accelerator);
 		xal.smf.impl.Quadrupole quad2 = ElementFactory.createQuadrupole(essId+":Q2", Lq2, B2, new ApertureBucket(),
 				ps2, L - Lq2/2.);
 

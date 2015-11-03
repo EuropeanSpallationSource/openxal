@@ -486,10 +486,10 @@ public class OpenXalExporter {
 		
 		double length = L - Lq1 - Lq2;
 
-		MagnetMainSupply ps1 = ElementFactory.createMainSupply(element.getName()+":Q1-PS", acc);
+		MagnetMainSupply ps1 = ElementFactory.createMainSupply(element.getName()+"A-PS", acc);
 		xal.smf.impl.Quadrupole quad1 = ElementFactory.createQuadrupole(element.getName()+":Q1", Lq1, B1, new ApertureBucket(),
 				ps1, Lq1/2);
-		MagnetMainSupply ps2 = ElementFactory.createMainSupply(element.getName()+":Q2-PS", acc);
+		MagnetMainSupply ps2 = ElementFactory.createMainSupply(element.getName()+"B-PS", acc);
 		xal.smf.impl.Quadrupole quad2 = ElementFactory.createQuadrupole(element.getName()+":Q2", Lq2, B2, new ApertureBucket(),
 				ps2, L - Lq2/2);
 
