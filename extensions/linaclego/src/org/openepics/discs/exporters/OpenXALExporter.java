@@ -273,9 +273,6 @@ public class OpenXALExporter implements BLEVisitor {
 		double exit_angle_deg = Math.abs(alpha_deg / 2.); //ibend.getExitAngle();
 		double G = 0. * 1e-3;//ibend.getGap();
 		
-		// TODO put those values into the database
-		double entrK1 = 0.45, entrK2 = 2.8, exitK1 = 0.45, exitK2 = 2.8;
-						
 		// calculations		
 		double len = Math.abs(rho*alpha_deg * Math.PI/180.0);
 		
@@ -285,7 +282,7 @@ public class OpenXALExporter implements BLEVisitor {
 
 		MagnetMainSupply ps = ElementFactory.createMainSupply(ibend.getEssId()+"-PS", accelerator);
 	    ESSBend bend = ESSElementFactory.createESSBend(ibend.getEssId(), alpha_deg, k, rho, entry_angle_deg,
-	    		exit_angle_deg, entrK1, entrK2, exitK1, exitK2, 0, aper, ps, MagnetType.VERTICAL, G, 
+	    		exit_angle_deg, 0, aper, ps, MagnetType.VERTICAL, G, 
 	    		sectionPosition + len*0.5);
 		
 		add(bend);		

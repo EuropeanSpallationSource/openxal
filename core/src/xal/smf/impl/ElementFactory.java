@@ -175,7 +175,7 @@ public class ElementFactory {
 
 	/**
 	 * Creates the Bend node with specified properties.
-	 * Length is calculated from provided arguments. // TODO CHECK IF THIS IS OK! Probably it makes more sense to calculate rho.
+	 * Length is calculated from provided arguments. 
 	 * @param name Name of the bend magnets.
 	 * @param alpha Bend angle in degrees.
 	 * @param k beta*gamma*Er/(e0*c).

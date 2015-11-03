@@ -328,16 +328,15 @@ public class OpenXalExporter {
 		double entry_angle_deg = element.getEntranceAngle();
 		double exit_angle_deg = element.getExitAngle();
 		double k = beta_gamma_Er_by_e0_c;
-		double G = element.getGap();
+		double G = element.getGap() * 1e-3;
 		int orientation = Orientation.HORIZONTAL.equals(element.getOrientation()) ? MagnetType.HORIZONTAL : MagnetType.VERTICAL;
 		double len = Math.abs(rho * alpha_deg * Math.PI / 180.);
 
 		ApertureBucket aper = generateApertureBucket(element);
-		double entrK1 = 0.45, entrK2 = 2.8, exitK1 = 0.45, exitK2 = 2.8;
 
 		MagnetMainSupply ps = ElementFactory.createMainSupply(element.getName()+"-PS", acc);
 		return ESSElementFactory.createESSBend(element.getName(), alpha_deg, k, rho, entry_angle_deg, exit_angle_deg, 
-				entrK1, entrK2, exitK1, exitK2, 0, aper, ps, orientation, G * 1e-3, currentPosition + len/2);
+				0, aper, ps, orientation, G, currentPosition + len/2);
 	}
 
 	private AcceleratorNode exportRFCavity(final RFCavity element, double currentPosition) {
