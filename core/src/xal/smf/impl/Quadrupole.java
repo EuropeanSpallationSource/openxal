@@ -4,10 +4,10 @@
  */
 package xal.smf.impl;
 
-import xal.smf.*;
-import xal.smf.impl.qualify.*;
-import xal.ca.*;
-import xal.tools.data.*;
+import xal.ca.ChannelFactory;
+import xal.smf.impl.qualify.ElementTypeManager;
+import xal.smf.impl.qualify.MagnetType;
+import xal.tools.data.DataAdaptor;
 
 
 /** 
@@ -22,6 +22,7 @@ import xal.tools.data.*;
  * 
  * @author  Nikolay Malitsky, Christopher K. Allen
  * @author Tom Pelaia
+ * @author Blaz Kranjc
  */
 
 public class Quadrupole extends Electromagnet {
@@ -38,8 +39,9 @@ public class Quadrupole extends Electromagnet {
 	 */
 	public static final String SKEW_TYPE = "QSC";
 
-	/** the type of quadrupole (horizontal or vertical) */
-	protected String _type;
+	/** the type of quadrupole (horizontal or vertical)
+	 * The default value is used if Quadrupole is never updated. */
+	protected String _type = "Q";
 
 
 	// static initializer

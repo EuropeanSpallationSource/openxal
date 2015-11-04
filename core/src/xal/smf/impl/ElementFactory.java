@@ -131,7 +131,6 @@ public class ElementFactory {
 	public static Quadrupole createQuadrupole(String name, double length, double gradient,
 			ApertureBucket aper, MagnetMainSupply ps, double position) {
 		Quadrupole quad = new Quadrupole(name);
-		quad._type = "Q";
 		addElectromagnetChannels(name, "B", quad.channelSuite());				
 		if (ps != null) {
 			quad.setMainSupplyId(ps.getId());
@@ -176,7 +175,7 @@ public class ElementFactory {
 
 	/**
 	 * Creates the Bend node with specified properties.
-	 * Length is calculated from provided arguments. 
+	 * Length of the magnet and magnetic field are calculated from provided arguments. 
 	 * @param name Name of the bend magnets.
 	 * @param alpha Bend angle in degrees.
 	 * @param k beta*gamma*Er/(e0*c).
