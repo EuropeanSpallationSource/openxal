@@ -82,7 +82,7 @@ public class ElementFactory {
 	 */
 	public static MagnetMainSupply createMainSupply(String name, Accelerator acc) {
 		MagnetMainSupply supply = new MagnetMainSupply(acc);
-		supply.strId = name;
+		supply.setId(name);
 		addPowersupplyChannels(name, supply.getChannelSuite());
 		acc.putMagnetMainSupply(supply);
 		return supply;

@@ -39,6 +39,13 @@ public abstract class MagnetPowerSupply implements DataListener {
 		this.channelSuite = anAccelerator != null ? new ChannelSuite( anAccelerator.channelSuite().getChannelFactory() ) : new ChannelSuite();
     }
     
+    /**
+     * Set supply ID.
+     * @param id The power supply ID
+     */
+    public void setId(String id) {
+        strId = id;
+    }
     
     /**
      * Get the unique power supply ID
