@@ -8,7 +8,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import se.lu.esss.ics.jels.model.elem.jels.JElsElementMapping;
-import se.lu.esss.ics.jels.smf.impl.ESSElementFactory;
+import se.lu.esss.ics.jels.smf.ESSElementFactory;
 import se.lu.esss.ics.jels.smf.impl.ESSRfCavity;
 import se.lu.esss.ics.jels.smf.impl.ESSRfGap;
 import xal.model.IElement;

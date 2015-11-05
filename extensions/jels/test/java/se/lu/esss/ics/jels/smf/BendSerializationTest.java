@@ -8,7 +8,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import se.lu.esss.ics.jels.smf.impl.ESSBend;
-import se.lu.esss.ics.jels.smf.impl.ESSElementFactory;
 import xal.model.ModelException;
 import xal.smf.AcceleratorNode;
 import xal.smf.AcceleratorNodeFactory;

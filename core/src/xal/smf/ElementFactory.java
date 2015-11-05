@@ -1,9 +1,18 @@
-package xal.smf.impl;
+package xal.smf;
 
-import xal.smf.Accelerator;
-import xal.smf.AcceleratorNode;
-import xal.smf.ChannelSuite;
 import xal.smf.attr.ApertureBucket;
+import xal.smf.impl.BPM;
+import xal.smf.impl.Bend;
+import xal.smf.impl.DipoleCorr;
+import xal.smf.impl.Electromagnet;
+import xal.smf.impl.HDipoleCorr;
+import xal.smf.impl.MagnetMainSupply;
+import xal.smf.impl.MagnetPowerSupply;
+import xal.smf.impl.Marker;
+import xal.smf.impl.Quadrupole;
+import xal.smf.impl.RfCavity;
+import xal.smf.impl.RfGap;
+import xal.smf.impl.VDipoleCorr;
 import xal.smf.impl.qualify.MagnetType;
 
 /**

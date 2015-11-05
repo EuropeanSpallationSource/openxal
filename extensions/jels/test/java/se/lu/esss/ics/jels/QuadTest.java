@@ -9,8 +9,8 @@ import org.junit.runners.Parameterized.Parameters;
 
 import se.lu.esss.ics.jels.model.elem.jels.JElsElementMapping;
 import xal.smf.AcceleratorSeq;
+import xal.smf.ElementFactory;
 import xal.smf.attr.ApertureBucket;
-import xal.smf.impl.ElementFactory;
 import xal.smf.impl.Quadrupole;
 
 @RunWith(Parameterized.class)

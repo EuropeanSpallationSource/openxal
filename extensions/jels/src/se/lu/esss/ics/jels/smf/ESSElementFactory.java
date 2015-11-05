@@ -1,5 +1,10 @@
-package se.lu.esss.ics.jels.smf.impl;
+package se.lu.esss.ics.jels.smf;
 
+import se.lu.esss.ics.jels.smf.impl.ESSBend;
+import se.lu.esss.ics.jels.smf.impl.ESSFieldMap;
+import se.lu.esss.ics.jels.smf.impl.ESSRfCavity;
+import se.lu.esss.ics.jels.smf.impl.ESSRfGap;
+import se.lu.esss.ics.jels.smf.impl.FieldProfile;
 import xal.smf.AcceleratorNode;
 import xal.smf.ChannelSuite;
 import xal.smf.attr.ApertureBucket;

@@ -12,7 +12,7 @@ import org.junit.runners.Parameterized.Parameters;
 import se.lu.esss.ics.jels.SingleElementTest.SingleElementTestData;
 import se.lu.esss.ics.jels.model.elem.els.ElsElementMapping;
 import se.lu.esss.ics.jels.model.elem.jels.JElsElementMapping;
-import se.lu.esss.ics.jels.smf.impl.ESSElementFactory;
+import se.lu.esss.ics.jels.smf.ESSElementFactory;
 import se.lu.esss.ics.jels.smf.impl.ESSRfCavity;
 import xal.model.ModelException;
 import xal.model.probe.Probe;
@@ -21,8 +21,8 @@ import xal.sim.scenario.ElementMapping;
 import xal.smf.Accelerator;
 import xal.smf.AcceleratorNode;
 import xal.smf.AcceleratorSeq;
+import xal.smf.ElementFactory;
 import xal.smf.attr.ApertureBucket;
-import xal.smf.impl.ElementFactory;
 import xal.smf.impl.Quadrupole;
 import xal.smf.impl.RfGap;
 

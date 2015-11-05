@@ -4,8 +4,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
+import se.lu.esss.ics.jels.smf.ESSElementFactory;
 import se.lu.esss.ics.jels.smf.impl.ESSBend;
-import se.lu.esss.ics.jels.smf.impl.ESSElementFactory;
 import xal.model.ModelException;
 import xal.model.probe.Probe;
 import xal.sim.scenario.ElementMapping;
