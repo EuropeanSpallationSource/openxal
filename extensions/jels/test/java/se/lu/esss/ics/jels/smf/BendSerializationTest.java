@@ -12,6 +12,7 @@ import xal.model.ModelException;
 import xal.smf.AcceleratorNode;
 import xal.smf.AcceleratorNodeFactory;
 import xal.smf.AcceleratorSeq;
+import xal.smf.attr.ApertureBucket;
 import xal.tools.data.TransientDataAdaptor;
 
 @RunWith(JUnit4.class)
@@ -37,24 +38,12 @@ public class BendSerializationTest {
 		double alpha = alpha_deg * Math.PI/180.0;		
 		double len = Math.abs(rho*alpha);
 		double quadComp = N / (rho*rho);
-		double B0 = 10;		
+		double B0 = 10;
+		double k = B0 / rho * Math.signum(alpha);
+		
 	    for (int HV = 0; HV <= 1; HV++) {
-			ESSBend bend = new ESSBend("b", HV);
-			bend.setPosition(len*0.5); //always position on center!
-			bend.setLength(len); // both paths are used in calculation
-			bend.getMagBucket().setPathLength(len);
-			
-			bend.getMagBucket().setDipoleEntrRotAngle(-entry_angle_deg);
-			bend.getMagBucket().setBendAngle(alpha_deg);
-			bend.getMagBucket().setDipoleExitRotAngle(-exit_angle_deg);		
-			bend.setDfltField(B0);		
-			bend.getMagBucket().setDipoleQuadComponent(quadComp);
-			
-			bend.setGap(G);
-			bend.setEntrK1(entrK1);
-			bend.setEntrK2(entrK2);
-			bend.setExitK1(exitK1);
-			bend.setExitK2(exitK2);
+			ESSBend bend = ESSElementFactory.createESSBend("b", alpha_deg, k, rho, entry_angle_deg,
+					exit_angle_deg, entrK1, entrK2, exitK1, exitK2, quadComp, new ApertureBucket(), null, HV, G, len/2);
 			
 			sequence.addNode(bend);
 			sequence.setLength(len);

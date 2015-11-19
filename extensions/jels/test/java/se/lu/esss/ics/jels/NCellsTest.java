@@ -8,10 +8,13 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import se.lu.esss.ics.jels.model.elem.jels.JElsElementMapping;
+import se.lu.esss.ics.jels.smf.ESSElementFactory;
 import se.lu.esss.ics.jels.smf.impl.ESSRfCavity;
 import se.lu.esss.ics.jels.smf.impl.ESSRfGap;
 import xal.model.IElement;
+import xal.smf.AcceleratorNode;
 import xal.smf.AcceleratorSeq;
+import xal.smf.attr.ApertureBucket;
 
 @RunWith(Parameterized.class)
 public class NCellsTest extends SingleElementTest {
@@ -350,26 +353,8 @@ public class NCellsTest extends SingleElementTest {
 			double betas, double Ts, double kTs, double k2Ts, double Ti, double kTi, double k2Ti, double To, double kTo, double k2To)
 	{
 		AcceleratorSeq sequence = new AcceleratorSeq("GapTest");
-		ESSRfCavity cavity = new ESSRfCavity("c");
-		cavity.getRfField().setPhase(Phis);
-		cavity.getRfField().setAmplitude(E0T * 1e-6);
-		cavity.getRfField().setFrequency(frequency * 1e-6);	
+		AcceleratorNode[] nodes = new AcceleratorNode[n];
 
-		// TTF		
-		if (betas == 0.0) {
-			cavity.getRfField().setTTF_startCoefs(new double[] {});
-			cavity.getRfField().setTTFCoefs(new double[] {});
-			cavity.getRfField().setTTF_endCoefs(new double[] {});
-		} else {
-			cavity.getRfField().setTTF_startCoefs(new double[] {betas, Ti, kTi, k2Ti});
-			cavity.getRfField().setTTFCoefs(new double[] {betas, Ts, kTs, k2Ts});
-			cavity.getRfField().setTTF_endCoefs(new double[] {betas, To, kTo, k2To});			
-		}		
-
-		
-		// setup		
-		ESSRfGap firstgap = new ESSRfGap("g0");
-		
 		double lambda = IElement.LightSpeed/frequency;
 		double Lc0,Lc,Lcn;
 		double amp0,ampn;
@@ -385,7 +370,6 @@ public class NCellsTest extends SingleElementTest {
 			Lc = Lc0 = Lcn = 0.5 * betag * lambda;
 			pos0 = 0.5*Lc0 + dzi*1e-3;
 			posn = Lc0 + (n-2)*Lc + 0.5*Lcn + dzo*1e-3;
-			cavity.getRfField().setStructureMode(1);
 		} else { //m==2
 			Lc0 = Lcn = 0.75 * betag * lambda;
 			Lc = betag * lambda;			
@@ -393,39 +377,32 @@ public class NCellsTest extends SingleElementTest {
 			posn = Lc0 + (n-2)*Lc + 0.5 * betag * lambda + dzo*1e-3;
 		}
 						
-		firstgap.setFirstGap(true); // this uses only phase for calculations
-		firstgap.getRfGap().setEndCell(0);
-		firstgap.setLength(0); // used only for positioning
-		firstgap.setPosition(pos0);
-		
-		// following are used to calculate E0TL		
-		firstgap.getRfGap().setLength(Lc0); 		
-		firstgap.getRfGap().setAmpFactor(amp0);
-		firstgap.getRfGap().setTTF(1);
-		
-		cavity.addNode(firstgap);
+		// setup		
+		nodes[0] = ESSElementFactory.createESSRfGap("g0", true, amp0, new ApertureBucket(), Lc0, pos0);
 				
 		for (int i = 1; i<n-1; i++) {
-			ESSRfGap gap = new ESSRfGap("g"+i);
-			gap.getRfGap().setTTF(1);
-			gap.setPosition(Lc0 + (i-0.5)*Lc);
-			gap.setLength(0);
-			gap.getRfGap().setLength(Lc);
-			gap.getRfGap().setAmpFactor(1.0);
-			cavity.addNode(gap);
+			nodes[i] = ESSElementFactory.createESSRfGap("g"+i, false, 1, new ApertureBucket(), 0, Lc0 + (i-0.5)*Lc);
 		}
 		
-		ESSRfGap lastgap = new ESSRfGap("g"+(n-1));
+		ESSRfGap lastgap = ESSElementFactory.createESSRfGap("g"+(n-1), false, ampn, new ApertureBucket(), Lcn, posn);
 		lastgap.getRfGap().setEndCell(1);
-		lastgap.setLength(0); // used only for positioning
-		lastgap.setPosition(posn);
+		nodes[n-1] = lastgap;
 		
-		// following are used to calculate E0TL		
-		lastgap.getRfGap().setLength(Lcn); 		
-		lastgap.getRfGap().setAmpFactor(ampn);
-		lastgap.getRfGap().setTTF(1);
-		cavity.addNode(lastgap);		
-		
+		ESSRfCavity cavity = ESSElementFactory.createESSRfCavity("c", 0, nodes, Phis, E0T*1e-6, frequency*1e-6, 0);
+		// TTF		
+		if (betas == 0.0) {
+			cavity.getRfField().setTTF_startCoefs(new double[] {});
+			cavity.getRfField().setTTFCoefs(new double[] {});
+			cavity.getRfField().setTTF_endCoefs(new double[] {});
+		} else {
+			cavity.getRfField().setTTF_startCoefs(new double[] {betas, Ti, kTi, k2Ti});
+			cavity.getRfField().setTTFCoefs(new double[] {betas, Ts, kTs, k2Ts});
+			cavity.getRfField().setTTF_endCoefs(new double[] {betas, To, kTo, k2To});			
+		}		
+		if (m==1) {
+			cavity.getRfField().setStructureMode(1);
+		}
+
 		sequence.addNode(cavity);
 		sequence.setLength(Lc0+(n-2)*Lc+Lcn);
 

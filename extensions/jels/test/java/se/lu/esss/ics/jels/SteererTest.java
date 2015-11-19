@@ -7,10 +7,11 @@ import xal.model.ModelException;
 import xal.model.probe.Probe;
 import xal.sim.scenario.ElementMapping;
 import xal.smf.AcceleratorSeq;
+import xal.smf.ElementFactory;
 import xal.smf.attr.ApertureBucket;
-import xal.smf.impl.HDipoleCorr;
+import xal.smf.impl.DipoleCorr;
 import xal.smf.impl.Quadrupole;
-import xal.smf.impl.VDipoleCorr;
+import xal.smf.impl.qualify.MagnetType;
 
 @RunWith(Parameterized.class)
 public class SteererTest extends TestCommon {	
@@ -92,29 +93,22 @@ public class SteererTest extends TestCommon {
 	 */
 	public AcceleratorSeq quad_steerer(double L, double G, double R, double Phi, double G3, double G4, double G5, double G6, double Bx, double By)
 	{
+		ApertureBucket aper = new ApertureBucket();
+		aper.setAperX(R*1e-3);
+		aper.setAperY(R*1e-3);
+		aper.setShape(ApertureBucket.iRectangle);
 		AcceleratorSeq sequence = new AcceleratorSeq("QuadTest");
-		Quadrupole quad = new Quadrupole("quad") { // there's no setter for type (you need to extend class)
-			{_type="Q"; }
-		};
-		quad.setPosition(L*1e-3*0.5); //always position on center!
-		quad.setLength(L*1e-3); // effLength below is actually the only one read 
-		quad.getMagBucket().setEffLength(L*1e-3);
-		quad.setDfltField(G*Math.signum(probe.getSpeciesCharge()));
-		quad.getMagBucket().setPolarity(1);
-		quad.getAper().setAperX(R*1e-3);
-		quad.getAper().setAperY(R*1e-3);
-		quad.getAper().setShape(ApertureBucket.iRectangle);
+		Quadrupole quad = ElementFactory.createQuadrupole("quad", L*1e-3, G*Math.signum(probe.getSpeciesCharge()), aper,
+				null, L/2.*1e-3);
 		sequence.addNode(quad);
 		
-		VDipoleCorr vcorr = new VDipoleCorr("VC");
-		vcorr.setPosition(L*1e-3*0.5);
-		vcorr.getMagBucket().setEffLength(L*1e-3);
+		DipoleCorr vcorr = ElementFactory.createCorrector("VC", MagnetType.VERTICAL, L*1e-3, new ApertureBucket(), null, L/2.*1e-3);
+		// FIXME Bx is not in create corrector!
 		vcorr.setDfltField(Bx);
 		sequence.addNode(vcorr);
 		
-		HDipoleCorr hcorr = new HDipoleCorr("HC");
-		hcorr.setPosition(L*1e-3*0.5);
-		hcorr.getMagBucket().setEffLength(L*1e-3);
+		DipoleCorr hcorr = ElementFactory.createCorrector("HC", MagnetType.HORIZONTAL, L*1e-3, new ApertureBucket(), null, L/2.*1e-3);
+		// FIXME Bx is not in create corrector!
 		hcorr.setDfltField(-By);
 		sequence.addNode(hcorr);
 		
