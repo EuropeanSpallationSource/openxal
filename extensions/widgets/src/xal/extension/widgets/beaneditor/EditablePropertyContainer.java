@@ -219,10 +219,28 @@ class TwissCovarianceMatrixBridge {
 		mean = m.getMean();
 		this.m = m;
 	}
-	
+
 	protected void update()
 	{
 		m.setMatrix( CovarianceMatrix.buildCovariance(twiss[0], twiss[1], twiss[2], mean).getArrayCopy() );
+	}
+	
+	public void setXOffset(double X) {
+		mean.setx(X);
+		update();
+	}
+
+	public double getXOffset() {
+		return mean.getx();
+	}
+
+	public void setYOffset(double Y) {
+		mean.sety(Y);
+		update();
+	}
+
+	public double getYOffset() {
+		return mean.gety();
 	}
 	
 	public double getAlphaX() {
