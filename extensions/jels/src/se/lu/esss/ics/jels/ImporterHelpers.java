@@ -1,6 +1,7 @@
 package se.lu.esss.ics.jels;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import xal.model.ModelException;
@@ -121,8 +122,11 @@ public class ImporterHelpers {
 	        try {
 	        	List<EnvelopeProbeState> states = simulateInitialValues(probe, comboSeq);
 	        	ProbeFactory.storeInitialValues(editContext, states);			
-			} catch (ModelException e) {			
-				e.printStackTrace();
+			} catch (ModelException e) {
+				System.err.println("Unable to simulate initial states on sequences. Only setting the first sequence.");
+				List<EnvelopeProbeState> states = Arrays.asList(probe.cloneCurrentProbeState());
+				states.get(0).setElementId(comboSeq.getConstituents().get(0).getId());
+				ProbeFactory.storeInitialValues(editContext, states);
 			}
 		}
 		
