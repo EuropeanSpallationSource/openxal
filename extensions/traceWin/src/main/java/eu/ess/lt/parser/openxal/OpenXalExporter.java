@@ -374,7 +374,7 @@ public class OpenXalExporter {
 		ApertureBucket aper =  generateApertureBucket(element);
 		return ESSElementFactory.createESSFieldMap(element.getName(), element.getLength(),
 				getFrequency(element) * 1e-6, element.getElectricIntensityFactor(), element.getRfPhase(), 
-				element.getFileName(), profile, aper, currentPosition);
+				element.getFileName(), profile, aper, currentPosition + element.getLength()/2);
 	}
 
 	private AcceleratorNode exportNCell(final NCell element, double currentPosition) {
