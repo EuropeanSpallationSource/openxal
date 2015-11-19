@@ -58,73 +58,54 @@ CREATE TABLE "MACHINE_MODEL"."DEVICE_TYPES"
     "EK"                       NUMERIC ,
     "ALPHA_X"                  NUMERIC ,
     "ALPHA_Y"                  NUMERIC ,
-    "ALPHA_Z"                  NUMERIC ,
     "BETA_X"                   NUMERIC ,
     "BETA_Y"                   NUMERIC ,
-    "BETA_Z"                   NUMERIC ,
     "PSI_X"                    NUMERIC ,
     "PSI_Y"                    NUMERIC ,
-    "PSI_Z"                    NUMERIC ,
     "ETA_X"                    NUMERIC ,
     "ETA_Y"                    NUMERIC ,
-    "ETA_Z"                    NUMERIC ,
     "ETAP_X"                   NUMERIC ,
     "ETAP_Y"                   NUMERIC ,
-    "ETAP_Z"                   NUMERIC ,
     "R11"                      NUMERIC ,
     "R12"                      NUMERIC ,
     "R13"                      NUMERIC ,
     "R14"                      NUMERIC ,
     "R15"                      NUMERIC ,
     "R16"                      NUMERIC ,
-    "R17"                      NUMERIC ,
     "R21"                      NUMERIC ,
     "R22"                      NUMERIC ,
     "R23"                      NUMERIC ,
     "R24"                      NUMERIC ,
     "R25"                      NUMERIC ,
     "R26"                      NUMERIC ,
-    "R27"                      NUMERIC ,
     "R31"                      NUMERIC ,
     "R32"                      NUMERIC ,
     "R33"                      NUMERIC ,
     "R34"                      NUMERIC ,
     "R35"                      NUMERIC ,
     "R36"                      NUMERIC ,
-    "R37"                      NUMERIC ,
     "R41"                      NUMERIC ,
     "R42"                      NUMERIC ,
     "R43"                      NUMERIC ,
     "R44"                      NUMERIC ,
     "R45"                      NUMERIC ,
     "R46"                      NUMERIC ,
-    "R47"                      NUMERIC ,
     "R51"                      NUMERIC ,
     "R52"                      NUMERIC ,
     "R53"                      NUMERIC ,
     "R54"                      NUMERIC ,
     "R55"                      NUMERIC ,
     "R56"                      NUMERIC ,
-    "R57"                      NUMERIC ,
     "R61"                      NUMERIC ,
     "R62"                      NUMERIC ,
     "R63"                      NUMERIC ,
     "R64"                      NUMERIC ,
     "R65"                      NUMERIC ,
     "R66"                      NUMERIC ,
-    "R67"                      NUMERIC ,
-    "R71"                      NUMERIC ,
-    "R72"                      NUMERIC ,
-    "R73"                      NUMERIC ,
-    "R74"                      NUMERIC ,
-    "R75"                      NUMERIC ,
-    "R76"                      NUMERIC ,
-    "R77"                      NUMERIC ,
     "LEFF"                     NUMERIC ,
     "SLEFF"                    NUMERIC ,
     "ORDINAL"                  NUMERIC ,
     "SUML"                     NUMERIC ,
-    "DEVICE_TYPE"              VARCHAR(30),
     PRIMARY KEY ( "ID" )
   );
 
@@ -143,17 +124,6 @@ CREATE TABLE "MACHINE_MODEL"."DEVICE_TYPES"
     PRIMARY KEY ( "ID" )
   );
 
--- TEST
-CREATE OR REPLACE VIEW "MACHINE_MODEL"."V_GOLD_REPORT" AS
-(SELECT G."ID", G."RUNS_ID" as "RUN_ID", 'PRESENT' as "GOLD_STATUS_NO_CSS", G."COMMENTS", G."CREATED_BY", G."DATE_CREATED", R."RUN_SOURCE_CHK"  FROM "MACHINE_MODEL"."GOLD" G, "MACHINE_MODEL"."RUNS" R
-WHERE 
-  G."RUNS_ID" = R."ID" and
-  R."RUN_SOURCE_CHK" = 'MANUAL'
-ORDER BY 
-  G."DATE_CREATED" DESC
-LIMIT 1)
-
-UNION
 
 -- displays all GOLD models, the last DESIGN and EXTAND marked with 'PRESENT'
 CREATE OR REPLACE VIEW "MACHINE_MODEL"."V_GOLD_REPORT" AS
@@ -171,16 +141,6 @@ UNION
 WHERE 
   G."RUNS_ID" = R."ID" and
   R."RUN_SOURCE_CHK" = 'EXTANT'
-ORDER BY 
-  G."DATE_CREATED" DESC
-LIMIT 1)
-
-UNION
-
-(SELECT G."ID", G."RUNS_ID" as "RUN_ID", 'PRESENT' as "GOLD_STATUS_NO_CSS", G."COMMENTS", G."CREATED_BY", G."DATE_CREATED", R."RUN_SOURCE_CHK"  FROM "MACHINE_MODEL"."GOLD" G, "MACHINE_MODEL"."RUNS" R
-WHERE 
-  G."RUNS_ID" = R."ID" and
-  R."RUN_SOURCE_CHK" = 'MANUAL'
 ORDER BY 
   G."DATE_CREATED" DESC
 LIMIT 1)
