@@ -162,7 +162,13 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
         SimpleDateFormat dateFormatter = new SimpleDateFormat("MM.dd.yyyy");
         String dateString = dateFormatter.format(today);
         adaptor.setValue("date", dateString);
-        
+
+        // Combo sequences are problematic as they are only defined in Accelerator
+        for (AcceleratorSeqCombo seq : getComboSequences()) {
+			final DataAdaptor constituentAdaptor = adaptor.createChild("comboseq");
+			seq.write(constituentAdaptor);
+        }
+
         super.write(adaptor);
     }
     
