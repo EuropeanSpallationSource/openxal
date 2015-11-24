@@ -604,7 +604,7 @@ public class ProbeFactory {
 		  new DataAttribute( Tracker.ATTRTAG_RFGAP_PHASE, Boolean.class, false, Boolean.toString(algorithm.getRfGapPhaseCalculation())),
 		})); 				
 		addDefaultRecord(tblAlgorithm);		
-		ecTableData.addTableToGroup(tblAlgorithm, "params" );							        
+		ecTableData.addTableToGroup(tblAlgorithm, "modelparams" );							        
         		
 		EnvelopeTrackerBase envTracker = (EnvelopeTrackerBase)defaultProbe.getAlgorithm();
     	DataTable tblEnvBaseTracker = new DataTable(EnvelopeTrackerBase.TBL_LBL_ENVBASETRACKER, Arrays.asList(new DataAttribute[] {
@@ -614,7 +614,7 @@ public class ProbeFactory {
     			  new DataAttribute( EnvelopeTrackerBase.ATTR_STEPSIZE, Double.class, false, Double.toString(envTracker.getStepSize()))    			  
     			})); 
     	addDefaultRecord(tblEnvBaseTracker);
-		ecTableData.addTableToGroup(tblEnvBaseTracker, "params" );					
+		ecTableData.addTableToGroup(tblEnvBaseTracker, "modelparams" );					
 		
 		DataTable tblSpecies = new DataTable(SPECIES_TABLE, Arrays.asList(new DataAttribute[] {
   			  new DataAttribute( SPECIES_NAME_PARAM, String.class, true),
@@ -626,7 +626,7 @@ public class ProbeFactory {
 		hminus.setValueForKey(defaultProbe.getSpeciesRestEnergy(), MASS_PARAM);
 		hminus.setValueForKey(defaultProbe.getSpeciesCharge(), CHARGE_PARAM);	    
 		tblSpecies.add(hminus);
-		ecTableData.addTableToGroup(tblSpecies, "params" );					
+		ecTableData.addTableToGroup(tblSpecies, "modelparams" );					
 				
 		DataTable tblBeam = new DataTable(BEAM_TABLE, Arrays.asList(new DataAttribute[] {
 			new DataAttribute("name", String.class, true),
@@ -635,7 +635,7 @@ public class ProbeFactory {
 			new DataAttribute("phase", String.class, false, "(0,0,0)"), //// ???????
 		}));
 		addDefaultRecord(tblBeam);
-		ecTableData.addTableToGroup(tblBeam, "params" );					
+		ecTableData.addTableToGroup(tblBeam, "modelparams" );					
 		
 		
 		DataTable tblTwiss = new DataTable(TWISS_TABLE, Arrays.asList(new DataAttribute[] {
@@ -645,7 +645,7 @@ public class ProbeFactory {
 				new DataAttribute("beta", Double.class, false),
 				new DataAttribute("emittance", Double.class, false)
 		}));	
-		ecTableData.addTableToGroup(tblTwiss, "params" );		
+		ecTableData.addTableToGroup(tblTwiss, "modelparams" );		
 
 		DataTable tblLocation = new DataTable(LOCATION_TABLE, Arrays.asList(new DataAttribute[] {				
 				new DataAttribute("name", String.class, true),
@@ -655,7 +655,7 @@ public class ProbeFactory {
 				new DataAttribute("s", Double.class, false, "0"),
 				new DataAttribute("t", Double.class, false, "0"),
 		}));
-		ecTableData.addTableToGroup(tblLocation, "params" );
+		ecTableData.addTableToGroup(tblLocation, "modelparams" );
 	}	
 	
 	private static void addTwissToTable(String seq, Twiss[] twiss, DataTable tblTwiss)
