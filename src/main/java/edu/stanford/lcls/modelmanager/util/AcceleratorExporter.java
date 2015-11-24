@@ -125,14 +125,10 @@ public class AcceleratorExporter {
 
 	/**
 	 * Export model parameters.
-	 * TODO two names 'modelparams' and 'params' used for the group.
 	 * @throws IOException
 	 */
 	private void exportModelParams() throws IOException {
-		if (acc.editContext().getTableGroups().contains("modelparams"))
-			XmlTableIO.writeTableGroupToFile(acc.editContext(), "modelparams", paramsFile);
-		else if (acc.editContext().getTableGroups().contains("params"))
-			XmlTableIO.writeTableGroupToFile(acc.editContext(), "params", paramsFile);
+		XmlTableIO.writeTableGroupToFile(acc.editContext(), "modelparams", paramsFile);
 	}
 	
 	/**
