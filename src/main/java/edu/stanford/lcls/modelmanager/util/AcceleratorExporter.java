@@ -6,6 +6,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +54,15 @@ public class AcceleratorExporter {
 		opticsFile = new File(dir, filename+".xdxf");
 		modelConfigFile = new File(dir, filename+"ModelConfig.xml");
 	};
+	
+	/**
+	 * Return the main files that will be saved.
+	 * Files for FieldProfile objects are not included.
+	 * @return Array of files.
+	 */
+	public File[] getFiles() {
+		return new File[]{mainFile, implFile, paramsFile, opticsFile, modelConfigFile};
+	}
 	
 	/**
 	 * Export the Accelerator to files.

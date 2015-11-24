@@ -12,6 +12,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -59,6 +60,7 @@ import xal.tools.apputils.files.FileFilterFactory;
 import xal.tools.beam.Twiss;
 import xal.tools.data.DataTable;
 import xal.tools.data.GenericRecord;
+import xal.tools.data.SortOrdering;
 
 /**
  * QueryView is the view for querying the database for the machine models.
@@ -165,48 +167,77 @@ public class ToolBarView implements SwingConstants {
 			public void actionPerformed(ActionEvent e) {
 				// Update accelerator
 				model.updateAccelerator();
-//				// TODO this should be separated from this view
-//				EnvelopeProbeState probeState = model.getRunModel().getProbe().cloneCurrentProbeState();
-//				String beamline = model.getRunModel().getModelMode();
-//				DataTable twissTable = document.getAccelerator().editContext().getTable("twiss");
-//				System.out.println(twissTable.getRecords(null));
-//				Twiss[] twiss = probeState.getCovarianceMatrix().computeTwiss();
-//				for (int i = 0; i < 3; i++) {
-//					String axis = new String[] {"x","y","z"}[i];				
-//					GenericRecord record = new GenericRecord(twissTable);
-//					record.setValueForKey(beamline, "name");
-//					record.setValueForKey(axis, "coordinate");
-//					record.setValueForKey(twiss[i].getAlpha(), "alpha");
-//					record.setValueForKey(twiss[i].getBeta(), "beta");
-//					record.setValueForKey(twiss[i].getEmittance(), "emittance");
-//					twissTable.add(record);
-//				}
-//			    DataTable locationTable = document.getAccelerator().editContext().getTable("location");
-//			    GenericRecord record = new GenericRecord(locationTable);
-//				record.setValueForKey(probeState.getElementId(), "name");		
-//				record.setValueForKey(probeState.getKineticEnergy(), "W");
-//				locationTable.add(record);
-	
+
+				// TODO this should be separated from this view
+				EnvelopeProbeState probeState = model.getRunModel().getProbe().cloneCurrentProbeState();
+				final String beamline = (probeState.getElementId()!=null && !probeState.getElementId().isEmpty()) ? 
+						probeState.getElementId() : document.getAccelerator().getSequences().get(0).getId();
+						
+				DataTable twissTable = document.getAccelerator().editContext().getTable("twiss");
+				for (GenericRecord r : twissTable.getRecords(new SortOrdering())) {
+					if (beamline.equals(r.stringValueForKey("name"))) twissTable.remove(r);
+				}
+				Twiss[] twiss = probeState.getCovarianceMatrix().computeTwiss();
+				for (int i = 0; i < 3; i++) {
+					String axis = new String[] {"x","y","z"}[i];				
+					GenericRecord record = new GenericRecord(twissTable);
+					record.setValueForKey(beamline, "name");
+					record.setValueForKey(axis, "coordinate");
+					record.setValueForKey(twiss[i].getAlpha(), "alpha");
+					record.setValueForKey(twiss[i].getBeta(), "beta");
+					record.setValueForKey(twiss[i].getEmittance(), "emittance");
+					twissTable.add(record);
+				}
+				
+				DataTable locationTable = document.getAccelerator().editContext().getTable("location");
+				for (GenericRecord r : locationTable.getRecords(new SortOrdering())) {
+					if (beamline.equals(r.stringValueForKey("name"))) locationTable.remove(r);
+				}
+				GenericRecord record = new GenericRecord(locationTable);
+				record.setValueForKey(beamline, "name");
+				record.setValueForKey(probeState.getKineticEnergy(), "W");
+				record.setValueForKey("PROTON", "species");
+				locationTable.add(record);
+
+				DataTable beamTable = document.getAccelerator().editContext().getTable("beam");
+				GenericRecord beamrecord = beamTable.getRecords(new SortOrdering()).get(0);
+				beamrecord.setValueForKey(probeState.getBeamCurrent(), "current");
+				beamrecord.setValueForKey(probeState.getBunchFrequency(), "bunchFreq");
 
 				JFileChooser fileChooser = new JFileChooser(XMLDataManager.defaultPath());
 				fileChooser.setDialogTitle("Choose where to save the accelerator...");
 				fileChooser.setMultiSelectionEnabled(false);
 				fileChooser.setSelectedFile(new File("main.xal"));
 				FileFilterFactory.applyFileFilters(fileChooser, new String[]{"xal"}, new String[]{"OpenXAL accelerator"});
-				int status = fileChooser.showSaveDialog(parent);
-				switch (status) {
-					case JFileChooser.CANCEL_OPTION:
-					case JFileChooser.ERROR_OPTION:
-						return;
-				}
-				// TODO handle overwrite
+				while (true) {
+					int status = fileChooser.showSaveDialog(parent);
+					if (status != JFileChooser.APPROVE_OPTION) return;
+					AcceleratorExporter exporter = new AcceleratorExporter(document.getAccelerator(), fileChooser.getSelectedFile());
+					
+					ArrayList<File> overwriteFiles = new ArrayList<>();
+					for (File f : exporter.getFiles()) {
+						if (f.exists()) overwriteFiles.add(f);
+					}
+					
+					if (!overwriteFiles.isEmpty()) {
+						String message = "Files ";
+						for (File f : exporter.getFiles()) {
+							message = message + f.getName() + ", ";
+						}
+						message = message + "will be overwritten!";
+						int dialogResult = JOptionPane.showConfirmDialog(null, message, "Warning", 
+								JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+						if (dialogResult == JOptionPane.CANCEL_OPTION) continue;
+					}
 
-				AcceleratorExporter exporter = new AcceleratorExporter(document.getAccelerator(), fileChooser.getSelectedFile());
-				try {
-					exporter.export();
-					Message.info("Accelerator successfuly saved.");
-				} catch (Exception exception) {
-					Message.error("Could not save the accelerator.");
+					try {
+						exporter.export();
+						Message.info("Accelerator successfuly saved.");
+					} catch (Exception exception) {
+						exception.printStackTrace();
+						Message.error("Could not save the accelerator.");
+					}
+					break;
 				}
 			}
 		});
