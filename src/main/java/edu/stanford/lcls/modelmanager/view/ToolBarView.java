@@ -11,7 +11,6 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,6 +22,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -36,15 +36,12 @@ import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
-import org.openepics.discs.exporters.OpenXALExporter;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
 import edu.stanford.lcls.modelmanager.ModelManagerDocument;
 import edu.stanford.lcls.modelmanager.ModelManagerWindow;
 import edu.stanford.lcls.modelmanager.dbmodel.BrowserModel;
 import edu.stanford.lcls.modelmanager.dbmodel.BrowserModel.RunState;
 import edu.stanford.lcls.modelmanager.dbmodel.BrowserModelListener;
+import edu.stanford.lcls.modelmanager.util.AcceleratorExporter;
 import edu.stanford.lcls.xal.model.RunModelConfiguration;
 import edu.stanford.lcls.xal.model.RunModelConfigurationDesign;
 import edu.stanford.lcls.xal.model.RunModelConfigurationExtant;
@@ -55,9 +52,13 @@ import se.lu.esss.ics.jels.matcher.Matcher;
 import se.lu.esss.ics.jels.matcher.MatcherDialog;
 import xal.extension.widgets.apputils.SimpleProbeEditor;
 import xal.model.ModelException;
+import xal.model.probe.traj.EnvelopeProbeState;
 import xal.service.pvlogger.apputils.browser.PVLogSnapshotChooser;
-import xal.tools.xml.XmlDataAdaptor;
-import xal.tools.xml.XmlWriter;
+import xal.smf.data.XMLDataManager;
+import xal.tools.apputils.files.FileFilterFactory;
+import xal.tools.beam.Twiss;
+import xal.tools.data.DataTable;
+import xal.tools.data.GenericRecord;
 
 /**
  * QueryView is the view for querying the database for the machine models.
@@ -73,6 +74,7 @@ public class ToolBarView implements SwingConstants {
 	
 	private JButton loadAcceleratorButton;
 	private AcceleratorSelector acceleratorSelector;
+	private JButton saveButton;
 	
 	private JComboBox<String> beamlineSelector;
 	
@@ -142,54 +144,74 @@ public class ToolBarView implements SwingConstants {
 		loadAcceleratorButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// AcceleratorActionFactory.loadAcceleratorAction( document
-				// ).actionPerformed( null );
-				
 				acceleratorSelector.setLocationRelativeTo(null);
 				acceleratorSelector.setVisible(true);
 
 				if (acceleratorSelector.getSelectedAccelerator() != null) {
 					document.setAccelerator(acceleratorSelector.getSelectedAccelerator(), acceleratorSelector.getAcceleratorPath());
+					Message.info("Accelerator has been loaded.");
+				} else {
+					Message.error("Unable to load acclerator.");
 				}
 			}
 		});
 		toolBarView.add(loadAcceleratorButton);
 		
-		
-/*		JButton saveButton = new JButton("Save...");		
+		saveButton = new JButton("Save...");
+		saveButton.setEnabled(false);
 		saveButton.setAlignmentY(0.3f);		
 		saveButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
-				String fileName = "C:\\data\\ESS\\lattices\\export\\test.xdxf";
+				// Update accelerator
+				model.updateAccelerator();
+//				// TODO this should be separated from this view
+//				EnvelopeProbeState probeState = model.getRunModel().getProbe().cloneCurrentProbeState();
+//				String beamline = model.getRunModel().getModelMode();
+//				DataTable twissTable = document.getAccelerator().editContext().getTable("twiss");
+//				System.out.println(twissTable.getRecords(null));
+//				Twiss[] twiss = probeState.getCovarianceMatrix().computeTwiss();
+//				for (int i = 0; i < 3; i++) {
+//					String axis = new String[] {"x","y","z"}[i];				
+//					GenericRecord record = new GenericRecord(twissTable);
+//					record.setValueForKey(beamline, "name");
+//					record.setValueForKey(axis, "coordinate");
+//					record.setValueForKey(twiss[i].getAlpha(), "alpha");
+//					record.setValueForKey(twiss[i].getBeta(), "beta");
+//					record.setValueForKey(twiss[i].getEmittance(), "emittance");
+//					twissTable.add(record);
+//				}
+//			    DataTable locationTable = document.getAccelerator().editContext().getTable("location");
+//			    GenericRecord record = new GenericRecord(locationTable);
+//				record.setValueForKey(probeState.getElementId(), "name");		
+//				record.setValueForKey(probeState.getKineticEnergy(), "W");
+//				locationTable.add(record);
+	
 
-				XmlDataAdaptor da = XmlDataAdaptor.newEmptyDocumentAdaptor();
-
-				Document document = da.document();
-				document.setDocumentURI(new File(fileName).toURI().toString());
-			
-				da.writeNode(ToolBarView.this.document.getAccelerator());
-				OpenXALExporter.cleanup(document);
-			
-				Element root = document.getDocumentElement();
-				
-				root.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
-				root.setAttributeNS("http://www.w3.org/2001/XMLSchema-instance", 
-							    "xsi:noNamespaceSchemaLocation", "http://sourceforge.net/p/xaldev/openxal/ci/master/tree/core/resources/xal/schemas/xdxf.xsd?format=raw");
-
-				System.out.printf("Writing output to: %s\n", fileName);
-				try {
-					XmlWriter.writeToFile(document, new File(fileName));
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+				JFileChooser fileChooser = new JFileChooser(XMLDataManager.defaultPath());
+				fileChooser.setDialogTitle("Choose where to save the accelerator...");
+				fileChooser.setMultiSelectionEnabled(false);
+				fileChooser.setSelectedFile(new File("main.xal"));
+				FileFilterFactory.applyFileFilters(fileChooser, new String[]{"xal"}, new String[]{"OpenXAL accelerator"});
+				int status = fileChooser.showSaveDialog(parent);
+				switch (status) {
+					case JFileChooser.CANCEL_OPTION:
+					case JFileChooser.ERROR_OPTION:
+						return;
 				}
-				
+				// TODO handle overwrite
+
+				AcceleratorExporter exporter = new AcceleratorExporter(document.getAccelerator(), fileChooser.getSelectedFile());
+				try {
+					exporter.export();
+					Message.info("Accelerator successfuly saved.");
+				} catch (Exception exception) {
+					Message.error("Could not save the accelerator.");
+				}
 			}
 		});
 		toolBarView.add(saveButton);
-	*/	
+
 		toolBarView.addSeparator(small);
 	
 		// beamline selection
@@ -674,7 +696,7 @@ public class ToolBarView implements SwingConstants {
 			public void modelStateChanged(BrowserModel model, BrowserModelAction action) {
 				if (model.getStateReady()) setQueryViewEnable(true);		
 				if (action.equals(BrowserModelAction.ACC_LOAD)) {
-					beamlineSelector.setModel(new DefaultComboBoxModel(
+					beamlineSelector.setModel(new DefaultComboBoxModel<String>(
 						model.getRunModel().getBeamlines().toArray(new String[]{})));
 				}
 			}
@@ -707,6 +729,7 @@ public class ToolBarView implements SwingConstants {
 		}*/
 		
 		loadAcceleratorButton.setEnabled(enabled);
+		saveButton.setEnabled(enabled);
 		
 		beamlineSelector.setEnabled(enabled);
 		

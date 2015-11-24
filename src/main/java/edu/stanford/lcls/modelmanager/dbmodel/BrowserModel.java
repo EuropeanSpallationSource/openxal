@@ -14,6 +14,9 @@ import javax.swing.JFrame;
 import xal.model.ModelException;
 import xal.sim.scenario.Scenario;
 import xal.smf.Accelerator;
+import xal.smf.AcceleratorNode;
+import xal.smf.impl.Electromagnet;
+import xal.smf.impl.RfCavity;
 import xal.tools.data.DataAdaptor;
 import xal.tools.messaging.MessageCenter;
 import xal.tools.xml.XmlDataAdaptor;
@@ -363,6 +366,56 @@ public class BrowserModel {
 			setModelMode(modelMode);
 		} catch (SQLException e) {
 			Message.error("SQL connection error!");
+		}
+	}
+	
+	
+	public void updateAccelerator() {
+		if (_selectedMachineModelDevice == null) {
+			return;
+		}
+		for (MachineModelDevice dev : _selectedMachineModelDevice) {
+		    //getting parameter info
+		    final String nodeId = (String)dev.getPropertyValue("ELEMENT_NAME"); 
+		    final AcceleratorNode node = acc.getNodeWithId(nodeId);
+			final Object prop = dev.getPropertyValue("DEVICE_PROPERTY");
+			final double val = Double.parseDouble((String) dev.getPropertyValue("DEVICE_VALUE"));
+			//checking for parameter type
+			switch((String) prop){
+			case "B":          
+                ((Electromagnet)node).setDfltField(val);
+                break;
+			case "P":              
+                ((RfCavity)node).setDfltCavPhase(val);
+                break;
+			case "A":              
+                ((RfCavity)node).setDfltCavAmp(val);
+                break;
+			case "APRX":
+			    node.getAper().setAperX(val);
+			    break;
+			case "MISX":
+			    node.getAlign().setX(val);
+			    break;
+			case "MISY":
+			    node.getAlign().setY(val);
+			    break;
+			case "MISZ":
+			    node.getAlign().setZ(val);
+			    break;
+			case "ROTX":
+			    node.getAlign().setPitch(val);
+			    break;
+			case "ROTY":
+			    node.getAlign().setYaw(val);
+			    break;
+			case "ROTZ":
+			    node.getAlign().setRoll(val);
+			    break;
+			case "ENBL":
+			    node.setStatus((val == 1));
+			    break;
+			}
 		}
 	}
 
