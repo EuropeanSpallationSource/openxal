@@ -168,42 +168,6 @@ public class ToolBarView implements SwingConstants {
 				// Update accelerator
 				model.updateAccelerator();
 
-				// TODO this should be separated from this view
-				EnvelopeProbeState probeState = model.getRunModel().getProbe().cloneCurrentProbeState();
-				final String beamline = (probeState.getElementId()!=null && !probeState.getElementId().isEmpty()) ? 
-						probeState.getElementId() : document.getAccelerator().getSequences().get(0).getId();
-						
-				DataTable twissTable = document.getAccelerator().editContext().getTable("twiss");
-				for (GenericRecord r : twissTable.getRecords(new SortOrdering())) {
-					if (beamline.equals(r.stringValueForKey("name"))) twissTable.remove(r);
-				}
-				Twiss[] twiss = probeState.getCovarianceMatrix().computeTwiss();
-				for (int i = 0; i < 3; i++) {
-					String axis = new String[] {"x","y","z"}[i];				
-					GenericRecord record = new GenericRecord(twissTable);
-					record.setValueForKey(beamline, "name");
-					record.setValueForKey(axis, "coordinate");
-					record.setValueForKey(twiss[i].getAlpha(), "alpha");
-					record.setValueForKey(twiss[i].getBeta(), "beta");
-					record.setValueForKey(twiss[i].getEmittance(), "emittance");
-					twissTable.add(record);
-				}
-				
-				DataTable locationTable = document.getAccelerator().editContext().getTable("location");
-				for (GenericRecord r : locationTable.getRecords(new SortOrdering())) {
-					if (beamline.equals(r.stringValueForKey("name"))) locationTable.remove(r);
-				}
-				GenericRecord record = new GenericRecord(locationTable);
-				record.setValueForKey(beamline, "name");
-				record.setValueForKey(probeState.getKineticEnergy(), "W");
-				record.setValueForKey("PROTON", "species");
-				locationTable.add(record);
-
-				DataTable beamTable = document.getAccelerator().editContext().getTable("beam");
-				GenericRecord beamrecord = beamTable.getRecords(new SortOrdering()).get(0);
-				beamrecord.setValueForKey(probeState.getBeamCurrent(), "current");
-				beamrecord.setValueForKey(probeState.getBunchFrequency(), "bunchFreq");
-
 				JFileChooser fileChooser = new JFileChooser(XMLDataManager.defaultPath());
 				fileChooser.setDialogTitle("Choose where to save the accelerator...");
 				fileChooser.setMultiSelectionEnabled(false);

@@ -12,12 +12,17 @@ import java.util.List;
 import javax.swing.JFrame;
 
 import xal.model.ModelException;
+import xal.model.probe.traj.EnvelopeProbeState;
 import xal.sim.scenario.Scenario;
 import xal.smf.Accelerator;
 import xal.smf.AcceleratorNode;
 import xal.smf.impl.Electromagnet;
 import xal.smf.impl.RfCavity;
+import xal.tools.beam.Twiss;
 import xal.tools.data.DataAdaptor;
+import xal.tools.data.DataTable;
+import xal.tools.data.GenericRecord;
+import xal.tools.data.SortOrdering;
 import xal.tools.messaging.MessageCenter;
 import xal.tools.xml.XmlDataAdaptor;
 import edu.stanford.lcls.modelmanager.view.ModelPlotData;
@@ -369,8 +374,11 @@ public class BrowserModel {
 		}
 	}
 	
-	
+	/**
+	 * Update the accelerator from the model manager objects.
+	 */
 	public void updateAccelerator() {
+		updateTables();
 		if (_selectedMachineModelDevice == null) {
 			return;
 		}
@@ -419,6 +427,45 @@ public class BrowserModel {
 		}
 	}
 
+	/**
+	 * Updates the tables in accelerator's edit context with values from the probe. 
+	 */
+	private void updateTables() {
+		EnvelopeProbeState probeState = rm.getProbe().cloneCurrentProbeState();
+		final String beamline = (probeState.getElementId()!=null && !probeState.getElementId().isEmpty()) ? 
+				probeState.getElementId() : acc.getSequences().get(0).getId();
+				
+		DataTable twissTable = acc.editContext().getTable("twiss");
+		for (GenericRecord r : twissTable.getRecords(new SortOrdering())) {
+			if (beamline.equals(r.stringValueForKey("name"))) twissTable.remove(r);
+		}
+		Twiss[] twiss = probeState.getCovarianceMatrix().computeTwiss();
+		for (int i = 0; i < 3; i++) {
+			String axis = new String[] {"x","y","z"}[i];				
+			GenericRecord record = new GenericRecord(twissTable);
+			record.setValueForKey(beamline, "name");
+			record.setValueForKey(axis, "coordinate");
+			record.setValueForKey(twiss[i].getAlpha(), "alpha");
+			record.setValueForKey(twiss[i].getBeta(), "beta");
+			record.setValueForKey(twiss[i].getEmittance(), "emittance");
+			twissTable.add(record);
+		}
+		
+		DataTable locationTable = acc.editContext().getTable("location");
+		for (GenericRecord r : locationTable.getRecords(new SortOrdering())) {
+			if (beamline.equals(r.stringValueForKey("name"))) locationTable.remove(r);
+		}
+		GenericRecord record = new GenericRecord(locationTable);
+		record.setValueForKey(beamline, "name");
+		record.setValueForKey(probeState.getKineticEnergy(), "W");
+		record.setValueForKey("PROTON", "species");
+		locationTable.add(record);
+
+		DataTable beamTable = acc.editContext().getTable("beam");
+		GenericRecord beamrecord = beamTable.getRecords(new SortOrdering()).get(0);
+		beamrecord.setValueForKey(probeState.getBeamCurrent(), "current");
+		beamrecord.setValueForKey(probeState.getBunchFrequency(), "bunchFreq");
+	}
 
 	/**
 	 * filter machine models
