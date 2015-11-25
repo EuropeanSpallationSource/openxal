@@ -2,11 +2,10 @@ package edu.stanford.lcls.modelmanager.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -126,7 +125,7 @@ public class AcceleratorExporter {
 		List<AcceleratorNode> fieldMapNodes = acc.getAllNodesOfType("FM");
 		for (AcceleratorNode fieldMapNode : fieldMapNodes) {
 			ESSFieldMap fieldMap = (ESSFieldMap)fieldMapNode;
-			String destinationFile = new URL(dir.toURI().toURL(), fieldMap.getFieldMapFile()+".edz").toString(); //TODO
+			String destinationFile = new URL(dir.toURI().toURL(), fieldMap.getFieldMapFile()+".edz").toString();
 			fieldMap.getFieldProfile().saveFile(destinationFile);
 		}
 
@@ -163,13 +162,12 @@ public class AcceleratorExporter {
 
 	/**
 	 * Creates model configuration file.
-	 * TODO This just copies the resource. Might be problematic on MAC.
 	 * @throws IOException
 	 * @throws URISyntaxException
 	 */
 	private void exportModelConfigs() throws IOException, URISyntaxException {
-		File input = new File(getClass().getResource("/edu/stanford/lcls/modelmanager/util/ModelConfig.xml").toURI());
-		Files.copy(input.toPath(), modelConfigFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+		InputStream modelConfigResource= this.getClass().getResourceAsStream("ModelConfig.xml");
+		Files.copy(modelConfigResource, modelConfigFile.toPath());
 	}
 	
 	/**
