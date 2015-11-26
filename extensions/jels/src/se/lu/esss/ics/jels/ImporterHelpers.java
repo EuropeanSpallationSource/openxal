@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
 import xal.model.ModelException;
 import xal.model.alg.EnvelopeTracker;
 import xal.model.alg.Tracker;
@@ -130,5 +134,57 @@ public class ImporterHelpers {
 			}
 		}
 		
+	}
+
+	/**
+	 * Cleans up XML OpenXal produces
+	 * @param parent node to clean
+	 */
+	public static void xmlCleanup(Node parent) {
+		NodeList children = parent.getChildNodes();
+		NamedNodeMap attrs = parent.getAttributes();
+		if (attrs != null) {
+			// unneeded attributes 
+			if (attrs.getNamedItem("s") != null) attrs.removeNamedItem("s");
+			if (attrs.getNamedItem("pid") != null) attrs.removeNamedItem("pid");
+			if (attrs.getNamedItem("status") != null) attrs.removeNamedItem("status");
+			if (attrs.getNamedItem("eid") != null) attrs.removeNamedItem("eid");
+
+			// remove type="sequence" on sequences - import doesn't work otherwise
+			if ("sequence".equals(parent.getNodeName()) && attrs.getNamedItem("type") != null && "sequence".equals(attrs.getNamedItem("type").getNodeValue())) 
+				attrs.removeNamedItem("type");
+
+			if ("xdxf".equals(parent.getNodeName())) {
+				attrs.removeNamedItem("id");
+				attrs.removeNamedItem("len");
+				attrs.removeNamedItem("pos");
+				attrs.removeNamedItem("type");
+			}
+		}
+
+		for (int i = 0; i<children.getLength(); )
+		{
+			Node child = children.item(i);
+			attrs = child.getAttributes();
+
+			if ("align".equals(child.getNodeName()) || "twiss".equals(child.getNodeName()))
+				// remove twiss and align - not needed
+				parent.removeChild(child);
+			else if ("channelsuite".equals(child.getNodeName()) && !child.hasChildNodes()) {
+				parent.removeChild(child);
+			}
+			else if ("aperture".equals(child.getNodeName()) && "0.0".equals(attrs.getNamedItem("x").getNodeValue()))
+				// remove empty apertures
+				parent.removeChild(child);
+			else {
+				xmlCleanup(child);
+				// remove empty attributes
+				if ("attributes".equals(child.getNodeName()) && child.getChildNodes().getLength()==0)
+				{
+					parent.removeChild(child);
+				} else
+					i++;
+			}
+		}
 	}
 }
