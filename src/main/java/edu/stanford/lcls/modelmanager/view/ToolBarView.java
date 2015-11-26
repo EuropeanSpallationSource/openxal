@@ -11,8 +11,8 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -23,6 +23,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -36,15 +37,12 @@ import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
-import org.openepics.discs.exporters.OpenXALExporter;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
 import edu.stanford.lcls.modelmanager.ModelManagerDocument;
 import edu.stanford.lcls.modelmanager.ModelManagerWindow;
 import edu.stanford.lcls.modelmanager.dbmodel.BrowserModel;
 import edu.stanford.lcls.modelmanager.dbmodel.BrowserModel.RunState;
 import edu.stanford.lcls.modelmanager.dbmodel.BrowserModelListener;
+import edu.stanford.lcls.modelmanager.util.AcceleratorExporter;
 import edu.stanford.lcls.xal.model.RunModelConfiguration;
 import edu.stanford.lcls.xal.model.RunModelConfigurationDesign;
 import edu.stanford.lcls.xal.model.RunModelConfigurationExtant;
@@ -55,9 +53,14 @@ import se.lu.esss.ics.jels.matcher.Matcher;
 import se.lu.esss.ics.jels.matcher.MatcherDialog;
 import xal.extension.widgets.apputils.SimpleProbeEditor;
 import xal.model.ModelException;
+import xal.model.probe.traj.EnvelopeProbeState;
 import xal.service.pvlogger.apputils.browser.PVLogSnapshotChooser;
-import xal.tools.xml.XmlDataAdaptor;
-import xal.tools.xml.XmlWriter;
+import xal.smf.data.XMLDataManager;
+import xal.tools.apputils.files.FileFilterFactory;
+import xal.tools.beam.Twiss;
+import xal.tools.data.DataTable;
+import xal.tools.data.GenericRecord;
+import xal.tools.data.SortOrdering;
 
 /**
  * QueryView is the view for querying the database for the machine models.
@@ -73,6 +76,7 @@ public class ToolBarView implements SwingConstants {
 	
 	private JButton loadAcceleratorButton;
 	private AcceleratorSelector acceleratorSelector;
+	private JButton saveButton;
 	
 	private JComboBox<String> beamlineSelector;
 	
@@ -142,54 +146,67 @@ public class ToolBarView implements SwingConstants {
 		loadAcceleratorButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// AcceleratorActionFactory.loadAcceleratorAction( document
-				// ).actionPerformed( null );
-				
 				acceleratorSelector.setLocationRelativeTo(null);
 				acceleratorSelector.setVisible(true);
 
 				if (acceleratorSelector.getSelectedAccelerator() != null) {
 					document.setAccelerator(acceleratorSelector.getSelectedAccelerator(), acceleratorSelector.getAcceleratorPath());
+					Message.info("Accelerator has been loaded.");
+				} else {
+					Message.error("Unable to load acclerator.");
 				}
 			}
 		});
 		toolBarView.add(loadAcceleratorButton);
 		
-		
-/*		JButton saveButton = new JButton("Save...");		
+		saveButton = new JButton("Save...");
+		saveButton.setEnabled(false);
 		saveButton.setAlignmentY(0.3f);		
 		saveButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
-				String fileName = "C:\\data\\ESS\\lattices\\export\\test.xdxf";
+				// Update accelerator
+				model.updateAccelerator();
 
-				XmlDataAdaptor da = XmlDataAdaptor.newEmptyDocumentAdaptor();
+				JFileChooser fileChooser = new JFileChooser(XMLDataManager.defaultPath());
+				fileChooser.setDialogTitle("Choose where to save the accelerator...");
+				fileChooser.setMultiSelectionEnabled(false);
+				fileChooser.setSelectedFile(new File("main.xal"));
+				FileFilterFactory.applyFileFilters(fileChooser, new String[]{"xal"}, new String[]{"OpenXAL accelerator"});
+				while (true) {
+					int status = fileChooser.showSaveDialog(parent);
+					if (status != JFileChooser.APPROVE_OPTION) return;
+					AcceleratorExporter exporter = new AcceleratorExporter(document.getAccelerator(), fileChooser.getSelectedFile());
+					
+					ArrayList<File> overwriteFiles = new ArrayList<>();
+					for (File f : exporter.getFiles()) {
+						if (f.exists()) overwriteFiles.add(f);
+					}
+					
+					if (!overwriteFiles.isEmpty()) {
+						String message = "Files ";
+						for (File f : exporter.getFiles()) {
+							message = message + f.getName() + ", ";
+						}
+						message = message + "will be overwritten!";
+						int dialogResult = JOptionPane.showConfirmDialog(null, message, "Warning", 
+								JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+						if (dialogResult == JOptionPane.CANCEL_OPTION) continue;
+					}
 
-				Document document = da.document();
-				document.setDocumentURI(new File(fileName).toURI().toString());
-			
-				da.writeNode(ToolBarView.this.document.getAccelerator());
-				OpenXALExporter.cleanup(document);
-			
-				Element root = document.getDocumentElement();
-				
-				root.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
-				root.setAttributeNS("http://www.w3.org/2001/XMLSchema-instance", 
-							    "xsi:noNamespaceSchemaLocation", "http://sourceforge.net/p/xaldev/openxal/ci/master/tree/core/resources/xal/schemas/xdxf.xsd?format=raw");
-
-				System.out.printf("Writing output to: %s\n", fileName);
-				try {
-					XmlWriter.writeToFile(document, new File(fileName));
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					try {
+						exporter.export();
+						Message.info("Accelerator successfuly saved.");
+					} catch (Exception exception) {
+						exception.printStackTrace();
+						Message.error("Could not save the accelerator.");
+					}
+					break;
 				}
-				
 			}
 		});
 		toolBarView.add(saveButton);
-	*/	
+
 		toolBarView.addSeparator(small);
 	
 		// beamline selection
@@ -674,7 +691,7 @@ public class ToolBarView implements SwingConstants {
 			public void modelStateChanged(BrowserModel model, BrowserModelAction action) {
 				if (model.getStateReady()) setQueryViewEnable(true);		
 				if (action.equals(BrowserModelAction.ACC_LOAD)) {
-					beamlineSelector.setModel(new DefaultComboBoxModel(
+					beamlineSelector.setModel(new DefaultComboBoxModel<String>(
 						model.getRunModel().getBeamlines().toArray(new String[]{})));
 				}
 			}
@@ -707,6 +724,7 @@ public class ToolBarView implements SwingConstants {
 		}*/
 		
 		loadAcceleratorButton.setEnabled(enabled);
+		saveButton.setEnabled(enabled);
 		
 		beamlineSelector.setEnabled(enabled);
 		

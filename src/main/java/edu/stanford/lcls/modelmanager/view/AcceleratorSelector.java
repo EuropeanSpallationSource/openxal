@@ -59,19 +59,13 @@ public class AcceleratorSelector extends JDialog {
 			public void actionPerformed(ActionEvent evt) {
 				JFileChooser chooser = getJFileChooser(); 
 				int status = chooser.showOpenDialog(parent);
-				try {
-					switch (status) {
+				switch (status) {
 					case JFileChooser.CANCEL_OPTION:
-						break;
-					case JFileChooser.APPROVE_OPTION:
-						final File fileSelection = chooser.getSelectedFile();
-						input.setText(fileSelection.toURI().toString());
-						break;
 					case JFileChooser.ERROR_OPTION:
-						break;
-					}
-				} catch (Exception exception) {
+						return;
 				}
+				final File fileSelection = chooser.getSelectedFile();
+				input.setText(fileSelection.toURI().toString());
 			}
 		});
 		container.add(browseButton);
