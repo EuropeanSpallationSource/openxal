@@ -403,11 +403,12 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
     }
     
     /**
-     *  In-place matrix multiplication.  The final value of this matrix is assigned
-     *  to be the matrix product of the pre-method-call value time the given matrix.
+     * In-place matrix element by element multiplication.
+     * @deprecated Misleading name, this is not real matrix multiplication.
      *
-     *  @param  matMult    multiplicand - right operand of matrix multiplication operator
+     * @param  matMult Matrix providing the factors.
      */
+    @Deprecated
     public void timesEquals(BaseMatrix<M>   matMult) {
         BaseMatrix<M> matBase = matMult;
         
