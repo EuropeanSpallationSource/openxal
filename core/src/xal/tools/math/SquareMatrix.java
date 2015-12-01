@@ -312,31 +312,6 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
      */
 
     /**
-     *  Non-destructive scalar multiplication.  This matrix is unaffected.
-     *
-     *  @param  s   multiplier
-     *
-     *  @return     new matrix equal to the element-wise product of <i>s</i> and this matrix,
-     *                      or <code>null</code> if an error occurred
-     */
-    public M    times(double s) {
-        Matrix impPrd = this.getMatrix().times(s);
-        M           matAns = this.newInstance(impPrd);
-        
-        return matAns;
-    }
-    
-    /**
-     *  In-place scalar multiplication.  Each element of this matrix is replaced
-     *  by its product with the argument.
-     *
-     *  @param  s   multiplier
-     */
-    public void timesEquals(double s) {
-        this.getMatrix().timesEquals(s);
-    }
-    
-    /**
      * <p>
      * Non-destructive matrix-vector multiplication.  The returned value is the
      * usual product of the given vector pre-multiplied by this matrix.  Specifically,
@@ -385,21 +360,17 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
     }
     
     /**
-     *  Non-destructive matrix multiplication.  A new matrix is returned with the
-     *  product while both multiplier and multiplicand are unchanged.  
+     *  @see BaseMatrix#times(BaseMatrix)
+     *  Product of square matrices always produce a square matrix.
      *
      *  @param  matRight    multiplicand - right operand of matrix multiplication operator
      *
      *  @return             new matrix which is the matrix product of this matrix and the argument,
      *                      or <code>null</code> if an error occurred
      */
-    public M    times(M matRight) {
-        BaseMatrix<M>   matBase = (BaseMatrix<M>)matRight;
-        Matrix     impMult = matBase.getMatrix();
-        Matrix     impProd = this.getMatrix().times(impMult);
-        M               matAns  = this.newInstance(impProd);
-
-        return matAns;
+    @SuppressWarnings("unchecked")
+    public M times(M matRight) {
+        return (M)super.times(matRight);
     }
     
     /**

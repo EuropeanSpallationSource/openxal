@@ -440,6 +440,50 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
     }
 
 
+    /**
+     *  Non-destructive scalar multiplication.  This matrix is unaffected.
+     *
+     *  @param  s   multiplier
+     *
+     *  @return     new matrix equal to the element-wise product of <i>s</i> and this matrix,
+     *                      or <code>null</code> if an error occurred
+     */
+    public M times(double s) {
+        Matrix impPrd = this.getMatrix().times(s);
+        M           matAns = this.newInstance(impPrd);
+        
+        return matAns;
+    }
+    
+    /**
+     *  In-place scalar multiplication.  Each element of this matrix is replaced
+     *  by its product with the argument.
+     *
+     *  @param  s   multiplier
+     */
+    public void timesEquals(double s) {
+        this.getMatrix().timesEquals(s);
+    }
+    
+    
+    /**
+     *  Non-destructive matrix multiplication.  A new matrix is returned with the
+     *  product while both multiplier and multiplicand are unchanged.  
+     *
+     *  @param  matRight    multiplicand - right operand of matrix multiplication operator
+     *
+     *  @return             new matrix which is the matrix product of this matrix and the argument,
+     *                      or <code>null</code> if an error occurred
+     */
+    public BaseMatrix<M> times(BaseMatrix<M> matRight) {
+        BaseMatrix<M> matBase = (BaseMatrix<M>)matRight;
+        Matrix impMult = matBase.getMatrix();
+        Matrix impProd = this.getMatrix().times(impMult);
+        BaseMatrix<M> matAns  = this.newInstance(impProd);
+
+        return matAns;
+    }
+
     /*
      *  Topological Operations
      */
