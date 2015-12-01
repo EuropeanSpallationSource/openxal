@@ -11,9 +11,12 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
+import se.lu.esss.ics.jels.tools.math.TTFIntegrator;
+
 public class FieldProfile {
 	private double length;
 	private double[] field;
+	private TTFIntegrator integrator;
 
 	private static Map<String, FieldProfile> instances = new HashMap<>();
 
@@ -57,6 +60,15 @@ public class FieldProfile {
 	public double getLength()
 	{
 		return length;
+	}
+	
+	public double getE0L(double frequency)
+	{
+		if (integrator == null) {
+			integrator = new TTFIntegrator(length, field, frequency, false);
+		}
+		return integrator.getE0TL();
+		
 	}
 	
 	/************************** File manipulation ***************************/
@@ -104,5 +116,9 @@ public class FieldProfile {
 		for (int i = 0; i<field.length; i++)
 			pw.printf("%f\n", field[i]*1e-6);
 		pw.close();
+	}
+
+	public boolean isFirstInverted() {		
+		return TTFIntegrator.getSplitIntegrators(this, 0.)[0].getInverted();
 	}
 }
