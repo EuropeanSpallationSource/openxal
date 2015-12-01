@@ -6,6 +6,8 @@
  */
 package xal.tools.math;
 
+import Jama.Matrix;
+
 /**
  * <p>
  * Class <code>SquareMatrix</code> is the abstract base class for square matrix
@@ -27,10 +29,6 @@ package xal.tools.math;
  */
 public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix<M> {
 
-
-    
-    
-
     
     /*
      *  Local Attributes
@@ -38,10 +36,6 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
 
     /** size of the the square matrix */
     private final int   intSize;
-    
-    
-
-
 
 
     /*
@@ -95,10 +89,6 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
         return this.intSize;
     }
 
-
-    
-    
-    
     /*
      * Matrix Properties
      */
@@ -153,7 +143,7 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
      *  @return     transposed copy of this matrix or <code>null</code> if error
      */
     public M transpose()  {
-        Jama.Matrix impTrans = this.getMatrix().transpose();
+        Matrix impTrans = this.getMatrix().transpose();
         M           matTrans = this.newInstance();
         matTrans.assignMatrix(impTrans);
         
@@ -175,7 +165,7 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
      *  @return     the algebraic inverse of this matrix or <code>null</code> if error
      */
     public M inverse()    {
-        Jama.Matrix impInv = this.getMatrix().inverse();
+        Matrix impInv = this.getMatrix().inverse();
         M           matInv = this.newInstance();
         matInv.assignMatrix(impInv);
         
@@ -233,15 +223,15 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
             throw new IllegalArgumentException(vecObs.getClass().getName() + " vector must have compatible size");
         
         // Get the implementation matrix.
-        Jama.Matrix impL = this.getMatrix();
+        Matrix impL = this.getMatrix();
         
         // Create a Jama matrix for the observation vector 
-        Jama.Matrix impObs = new Jama.Matrix(this.getSize(), 1 ,0.0);
+        Matrix impObs = new Matrix(this.getSize(), 1 ,0.0);
         for (int i=0; i<this.getSize(); i++) 
             impObs.set(i,0, vecObs.getElem(i));
         
         // Solve the matrix-vector system in the Jama package
-        Jama.Matrix impState = impL.solve(impObs);
+        Matrix impState = impL.solve(impObs);
         
         V   vecSoln = vecObs.newInstance();
         
@@ -300,15 +290,15 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
             throw new IllegalArgumentException(vecObs.getClass().getName() + " vector must have compatible size");
         
         // Get the implementation matrix.
-        Jama.Matrix impL = this.getMatrix();
+        Matrix impL = this.getMatrix();
         
         // Create a Jama matrix for the observation vector 
-        Jama.Matrix impObs = new Jama.Matrix(this.getSize(), 1 ,0.0);
+        Matrix impObs = new Matrix(this.getSize(), 1 ,0.0);
         for (int i=0; i<this.getSize(); i++) 
             impObs.set(i,0, vecObs.getElem(i));
         
         // Solve the matrix-vector system in the Jama package
-        Jama.Matrix impState = impL.solve(impObs);
+        Matrix impState = impL.solve(impObs);
         
         for (int i=0; i<this.getSize(); i++) {
             double dblVal = impState.get(i,  0);
@@ -316,24 +306,6 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
             vecObs.setElem(i,  dblVal);
         }
     }
-
-    //    /**
-    //     *  Perform an eigenvalue decomposition of this matrix.
-    //     *  If the matrix is symmetric it can be decomposed as
-    //     * 
-    //     *      A = R*D*R'
-    //     * 
-    //     *  where A is this matrix, R is an (special) orthogonal matrix
-    //     *  in SO(3), and D is the diagonal matrix of eigenvales of A.
-    //     * 
-    //     * @return  eigen-system decomposition object for R2x2 matrix
-    //     */
-    //    public R2x2EigenDecomposition   eigenDecomposition()    {
-    //        return new R2x2EigenDecomposition( this.getMatrix().eig() );
-    //    }
-    //
-
-
 
     /*
      *  Algebraic Operations
@@ -348,7 +320,7 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
      *                      or <code>null</code> if an error occurred
      */
     public M    times(double s) {
-        Jama.Matrix impPrd = this.getMatrix().times(s);
+        Matrix impPrd = this.getMatrix().times(s);
         M           matAns = this.newInstance(impPrd);
         
         return matAns;
@@ -423,8 +395,8 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
      */
     public M    times(M matRight) {
         BaseMatrix<M>   matBase = (BaseMatrix<M>)matRight;
-        Jama.Matrix     impMult = matBase.getMatrix();
-        Jama.Matrix     impProd = this.getMatrix().times(impMult);
+        Matrix     impMult = matBase.getMatrix();
+        Matrix     impProd = this.getMatrix().times(impMult);
         M               matAns  = this.newInstance(impProd);
 
         return matAns;
@@ -464,9 +436,9 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
      *  @return             matPhi*this*matPhi^T, or <code>null</code> if an error occurred
      */
     public M    conjugateTrans(M matPhi) {
-        Jama.Matrix impPhi  = ((BaseMatrix<M>)matPhi).getMatrix();
-        Jama.Matrix impPhiT = impPhi.transpose();
-        Jama.Matrix impAns  = impPhi.times( this.getMatrix().times( impPhiT) );
+        Matrix impPhi  = ((BaseMatrix<M>)matPhi).getMatrix();
+        Matrix impPhiT = impPhi.transpose();
+        Matrix impAns  = impPhi.times( this.getMatrix().times( impPhiT) );
         
         M   matAns = this.newInstance(impAns);
         
@@ -494,21 +466,15 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
      *  @return             matPhi*this*matPhi<sup>-1</sup>
      */
     public M conjugateInv(M matPhi) {  
-        Jama.Matrix impPhi = ((BaseMatrix<M>)matPhi).getMatrix();
-        Jama.Matrix impInv = impPhi.inverse();
-        Jama.Matrix impAns = impPhi.times( this.getMatrix().times( impInv) );
+        Matrix impPhi = ((BaseMatrix<M>)matPhi).getMatrix();
+        Matrix impInv = impPhi.inverse();
+        Matrix impAns = impPhi.times( this.getMatrix().times( impInv) );
         
         M   matAns = this.newInstance(impAns);
         
         return matAns;
     };
     
-    
-    
-
-    
-
-
 
     /*
      * Child Class Support
@@ -597,33 +563,4 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
         
         this.intSize = intSize;
     }
-
-
-
-    
-//    /**
-//     *  <p>
-//     *  Constructor for initializing this matrix from a suitable Jama.Matrix. This
-//     *  constructor should be called from a corresponding child class constructor.  
-//     *  </p>
-//     *  </p>
-//     *  <p>
-//     *  <h4>NOTE</h4>
-//     *  The argument should be a new object not owned by another object, because
-//     *  the internal matrix representation is assigned to the target argument.
-//     *  </p>
-//     *
-//     *  @param  clsType    the class type of this object
-//     *  @param  cntSize    size of the Jama.Matrix
-//     *  @param  matInit     an appropriately sized Jama.Matrix object
-//     */
-//    private BaseMatrix(Class<M> clsType, int cntSize, Jama.Matrix matInit)  {
-//        this.clsType  = clsType;
-//        this.szMatrix = cntSize;
-//        this.matBase  = matInit;
-//    }
-
-
-
-
 }

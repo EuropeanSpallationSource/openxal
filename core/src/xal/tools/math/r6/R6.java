@@ -8,7 +8,6 @@ package xal.tools.math.r6;
 
 import xal.tools.math.IIndex;
 import xal.tools.math.BaseVector;
-import xal.tools.math.r4.R4;
 
 /**
  * Class <code></code>.

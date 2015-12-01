@@ -13,7 +13,6 @@ import java.util.EnumSet;
 
 import xal.tools.math.IIndex;
 import xal.tools.math.SquareMatrix;
-import xal.tools.math.r6.R6x6;
 
 
 

@@ -83,11 +83,6 @@ public class PhaseVector extends BaseVector<PhaseVector> implements java.io.Seri
     private static final int        INT_SIZE = 7;
     
     
-//    /** attribute marker for data */
-//    public static final String     ATTR_DATA   = "values";
-//    
-    
-    
     /*
      * Internal Classes
      */
@@ -307,15 +302,6 @@ public class PhaseVector extends BaseVector<PhaseVector> implements java.io.Seri
 
     
     
-//    /*
-//     *  Local Attributes
-//     */
-//    
-//    /** internal vector representation */
-//    private Jama.Matrix     jamaVector;
-//    
-    
-    
     /**
      *  Creates a new instance of PhaseVector with zero initial value.
      */
@@ -417,90 +403,10 @@ public class PhaseVector extends BaseVector<PhaseVector> implements java.io.Seri
         this.setVector(strTokens);
     }
     
-//    /** 
-//     * Return a deep copy object of the current <code>PhaseVector<code> object.
-//     * Thus, the current object is unmodified and unreferenced.
-//     * 
-//     * @return      deep copy of the current object
-//     */
-//    public PhaseVector  copy()  {
-//        return new PhaseVector(this);
-//    }
-    
     /*
      *  Assignment
      */
-    
 
-//    /**
-//     * Create a new instance of PhaseVector with specified initial value specified 
-//     * by the formatted string argument.  The input
-//     * string may or may not contain the final coordinate which always has value 1.
-//     * 
-//     * The string should be formatted as
-//     * 
-//     *  "(x,x',y,y',z,zp')"
-//     * 
-//     * where x, x', y, y', z, z' are floating point representations.
-//     * 
-//     * @param  strValues   token string representing values phase coordinates
-//     *
-//     * @exception  IllegalArgumentException    wrong number of tokens in argument (must be 6 or 7)
-//     * @exception  NumberFormatException       bad numeric value, unparseable
-//     */
-//    public void setVector(String strValues) 
-//        throws DataFormatException, IllegalArgumentException
-//    {
-//        // Error check the number of token strings
-//        StringTokenizer     tokArgs = new StringTokenizer(strValues, " ,()");
-//        
-//        if (tokArgs.countTokens() < 6)
-//            throw new IllegalArgumentException("PhaseVector#setVector - wrong number of token strings: " + strValues);
-//        
-//        
-//        // Extract initial phase coordinate values
-//        int                 i;      // loop control
-//        
-//        for (i=0; i<5; i++)  {
-//            String  strVal = tokArgs.nextToken();
-//            double  dblVal = Double.valueOf(strVal).doubleValue();
-//            
-//            this.getMatrix().set(i,0, dblVal);
-//        }
-//        
-//        this.getMatrix().set(6,0, 1.0);
-//    }
-//
-//
-//    /**
-//     *  Set the element at index.  Note that you cannot change the last element value,
-//     *  it must remain 1.
-//     *
-//     *  @param  i       index of new element value
-//     *
-//     *  @exception  ArrayIndexOutOfBoundsException  index must be in {0,1,2,3,4,5}
-//     */
-//    public void setElem(int i, double dblVal) throws ArrayIndexOutOfBoundsException {
-//        if (i>5) 
-//            throw new ArrayIndexOutOfBoundsException("PhaseMatrix#set() - index greater than 5.");
-//        
-//        this.getMatrix().set(i,0, dblVal);
-//    }
-//    
-//    /**
-//     *  Set the element at index.  Note that you cannot change the last element value,
-//     *  the projective coordinate value. It must remain 1.
-//     *  
-//     * @param i         index of vector where element will be set
-//     * @param dblVal    value to which it is set
-//     *
-//     * @author Christopher K. Allen
-//     * @since  Oct 7, 2013
-//     */
-//    public void setElem(IIndex i, double dblVal) {
-//        this.getMatrix().set(i.val(), 0, dblVal);
-//    }
-//    
     /**
      * Must override this method to ignore any missing homogeneous coordinate 
      * since it is understood that this value is always there and unchanging.
@@ -600,28 +506,6 @@ public class PhaseVector extends BaseVector<PhaseVector> implements java.io.Seri
     public void setzp(double dblVal)  { this.setElem(5, dblVal); };
     
     
-//    /** 
-//     *  Return the element at index.
-//     *
-//     *  @return     the i-th element of the phase vector
-//     *
-//     *  @exception  ArrayIndexOutOfBoundsException  index must be in {0,1,2,3,4,5,6}
-//     */
-//    public double   getElem(int i)  
-//        throws ArrayIndexOutOfBoundsException
-//    {
-//        return this.getMatrix().get(i, 0);
-//    }
-//    
-//    /** 
-//     *  Return the element at index.
-//     *
-//     *  @return     the i-th element of the phase vector
-//     */
-//    public double   getElem(SquareMatrix.IIndex i)   {
-//        return this.getMatrix().get(i.val(), 0);
-//    }
-//    
     /**
      *  Return the x position coordinate
      */
@@ -677,219 +561,6 @@ public class PhaseVector extends BaseVector<PhaseVector> implements java.io.Seri
     
     
     
-//    /*
-//     * IArchive Interface
-//     */    
-//
-//    /**
-//     * Save the value of this <code>PhaseVector</code> to disk.
-//     * 
-//     * @param daptArchive   interface to data sink 
-//     * 
-//     * @see xal.tools.data.IArchive#save(xal.tools.data.DataAdaptor)
-//     */
-//    public void save(DataAdaptor daptArchive) {
-//        daptArchive.setValue(PhaseVector.ATTR_DATA, this.toString());
-//    }
-//
-//    /**
-//     * Restore the value of the this <code>PhaseVector</code> from the
-//     * contents of a data archive.
-//     * 
-//     * @param daptArchive   interface to data source
-//     * 
-//     * @throws DataFormatException      malformed data
-//     * 
-//     * @see xal.tools.data.IArchive#load(xal.tools.data.DataAdaptor)
-//     */
-//    public void load(DataAdaptor daptArchive) throws DataFormatException {
-//        if ( daptArchive.hasAttribute(PhaseVector.ATTR_DATA) )  {
-//            String  strValues = daptArchive.stringValue(PhaseVector.ATTR_DATA);
-//            this.setVector(strValues);         
-//        }
-//    }
-//    
-    
-    
-//    /*
-//     *  Object method overrides
-//     */
-//     
-//    /**
-//     *  Convert the vector contents to a string.
-//     *
-//     *  @return     vector value as a string (v0, v1, ..., v5)
-//     */
-//    @Override
-//    public String   toString()  {
-//
-//        // Create vector string
-//        String  strVec = "(";
-//
-//        for (int i=0; i<6; i++)
-//            strVec = strVec + this.getElem(i) + ",";
-//        strVec = strVec + this.getElem(6) + ")";
-//        
-//        return strVec;
-//    }
-//    
-//    @Override
-//    public boolean equals(Object o) {
-//        if(o == this) { return true; }
-//        if(! (o instanceof PhaseVector)) { return false; }
-//        
-//        PhaseVector target = (PhaseVector)o;
-//        return getElem(0) == target.getElem(0) &&
-//            getElem(1) == target.getElem(1) &&
-//            getElem(2) == target.getElem(2) &&
-//            getElem(3) == target.getElem(3) &&
-//            getElem(4) == target.getElem(4) &&
-//            getElem(5) == target.getElem(5);
-//    }
-//    
-//    /**
-//     * "Borrowed" implementation from AffineTransform, since it is based on
-//     * double attribute values.  Must implement hashCode to be consistent with
-//     * equals as specified by contract of hashCode in <code>Object</code>.
-//     * 
-//     * @return a hashCode for this object
-//     */
-//    @Override
-//    public int hashCode() {
-//        long bits = Double.doubleToLongBits(getElem(0));
-//        bits = bits * 31 + Double.doubleToLongBits(getElem(1));
-//        bits = bits * 31 + Double.doubleToLongBits(getElem(2));
-//        bits = bits * 31 + Double.doubleToLongBits(getElem(3));
-//        bits = bits * 31 + Double.doubleToLongBits(getElem(4));
-//        bits = bits * 31 + Double.doubleToLongBits(getElem(5));
-//        return (((int) bits) ^ ((int) (bits >> 32)));
-//    }
-//    
-//
-//    
-//    
-    
-    /*
-     *  Algebraic Operations
-     */
-    
-//    /**
-//     * Element by element in-place negation.  The current 
-//     * <code>PhaseVector</code> object is changed in place.
-//     * 
-//     */
-//    public void    negateEquals() {
-//        double val;
-//        for (PhaseIndex i : PhaseIndex.values()) {
-//            val = this.getElem(i);
-//            
-//            this.setElem(i, -val);
-//        }
-//    }
-//    
-//    /** 
-//     * Element by element negation.  A new object is returned and the
-//     * current one is unmodified.
-//     * 
-//     * @return     antipodal vector of the current object
-//     */
-//    public PhaseVector negate()    {
-//        PhaseVector    vecNeg = this.copy();
-//        
-//        vecNeg.negateEquals();
-//        return vecNeg;
-//    }
-//    
-//    /**
-//     *  Vector nondestructive addition.  Note only the phase coordinates are added.
-//     *
-//     *  @param  vec     vector to be added
-//     *  
-//     *  @return         vector sum (componentwise)
-//     */
-//    public PhaseVector  plus(PhaseVector vec)    {
-//        Jama.Matrix     matRes = this.getMatrix().plus( vec.getMatrix() );
-//        matRes.set(6,0, 1.0);
-//        
-//        return new PhaseVector( matRes );
-//    }
-//    
-//    /**
-//     *  Vector in-place addition.  Note only the phase coordinates are added.
-//     *
-//     *  @param  vec     vector to be added
-//     */
-//    public void plusEquals(PhaseVector vec)    {
-//        this.getMatrix().plusEquals( vec.getMatrix() );
-//        this.getMatrix().set(6,0, 1.0);
-//    }
-//    
-//    /** 
-//     *  Nondestructive scalar multiplication
-//     *
-//     *  @param  s   scalar
-//     *
-//     *  @return     result of scalar multiplication
-//     */
-//    public PhaseVector times(double s) {
-//        Jama.Matrix     matRes = this.getMatrix().times(s);
-//        matRes.set(6,0, 1.0);
-//        
-//        return new PhaseVector( matRes );
-//    }
-//    
-//    /** 
-//     *  In-place scalar multiplication
-//     *
-//     *  @param  s   scalar
-//     */
-//    public void timesEquals(double s) {
-//        this.getMatrix().times(s);
-//        this.getMatrix().set(6,0, 1.0);
-//    }
-//    
-//    /** 
-//     *  Premultiply a PhaseMatrix by this PhaseVector.
-//     *
-//     *  @param  mat     matrix operator
-//     *  @return         result of matrix-vector product
-//     */
-//    public PhaseVector times(PhaseMatrix mat) {
-//        
-//        PhaseVector     vecSum = new PhaseVector();
-//        
-//        for (PhaseMatrix.IND j : PhaseMatrix.IND.values()) {
-//            
-//            double  dblVal = 0.0;
-//            
-//            for (PhaseMatrix.IND i : PhaseMatrix.IND.values()) {
-//                dblVal += this.getElem(i) * mat.getElem(i, j);
-//            }
-//            
-//            vecSum.setElem(j,  dblVal);
-//        }
-//        
-//        return vecSum;
-//    }
-//    
-//    /**
-//     *  Vector inner product operation using ONLY the <b>phase coordinates</b>.
-//     *
-//     *  @param  vec     second argument to inner product operation
-//     *
-//     *  @return         inner product (this,vec)
-//     */
-//    public double   innerProd(PhaseVector vec)  {
-//        int     i;          // loop control
-//        double  dblSum;     // running sum
-//        
-//        dblSum = 0.0;
-//        for (i=0; i<6; i++) 
-//            dblSum += this.getElem(i)*vec.getElem(i);
-//        
-//        return dblSum;
-//    }
-//    
     /**
      *  Vector outer product operation.  Returns the tensor outer product
      *  as a <code>PhaseMatrix</code> object
@@ -1176,40 +847,12 @@ public class PhaseVector extends BaseVector<PhaseVector> implements java.io.Seri
      *  Internal Support
      */
     
-//    /**
-//     *  Construct a PhaseVector from a suitable Jama.Matrix.  Note that the
-//     *  argument should be a new object not owned by another object, because
-//     *  the internal matrix representation is assigned to the target argument.
-//     *
-//     *  @param  matInit     a 7x1 Jama.Matrix object
-//     */
-//    PhaseVector(Jama.Matrix matInit)  {
-//        jamaVector = matInit;
-//    }
-//    
-//    /**
-//     *  Return the internal vector representation
-//     *
-//     *  @return     the Jama.Matrix object
-//     */
-//    Jama.Matrix   getMatrix()     { return jamaVector; }
-//    
-
-
     
     /*
      *  Testing and Debugging
      */
 
 
-//    /**
-//     * Print this vector to standard out.
-//     */
-//    public void print() {
-//        jamaVector.print( 10, 5 );
-//    }
-//    
-//    
     /**
      *  Print the vector contents to an output stream,
      *  does not add new line.

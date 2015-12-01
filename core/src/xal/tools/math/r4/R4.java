@@ -6,8 +6,6 @@
  */
 package xal.tools.math.r4;
 
-import xal.tools.dyn.TrnsPhaseMatrix;
-import xal.tools.dyn.TrnsPhaseVector.IND;
 import xal.tools.math.IIndex;
 import xal.tools.math.BaseVector;
 
