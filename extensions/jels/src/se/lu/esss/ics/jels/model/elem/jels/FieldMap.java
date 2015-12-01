@@ -32,10 +32,10 @@ public class FieldMap extends ThickElement  {
 	private double phase[];
 	
 	private double startPosition;
-	private boolean last;
-	private FieldMap masterFieldmap;	
+	private boolean lastSlice;
+	private FieldMap firstSliceFieldmap;	
 	
-	private boolean firstFieldmap = false;	
+	private boolean firstInRFCavity;	
 	
 	public FieldMap() {
 		this(null);
@@ -65,26 +65,28 @@ public class FieldMap extends ThickElement  {
 				inverted = fp.isFirstInverted();										
 				k0 = cavity.getDfltCavAmp()*1e6 * fm.getXelmax() / (fp.getE0L(frequency)/fp.getLength());
 				
-				firstFieldmap = true;
+				firstInRFCavity = true;
 				for (ESSFieldMap fm2 : cavity.getNodesOfClassWithQualifier(ESSFieldMap.class, QualifierFactory.getStatusQualifier(true))) {
-					if (fm2.getPosition() < fm.getPosition()) firstFieldmap = false;
+					if (fm2.getPosition() < fm.getPosition()) {
+						firstInRFCavity = false;
+						break;
+					}
 				}				
 			} else {
 				phi0 = fm.getPhase()/180.*Math.PI;
 				frequency = fm.getFrequency() * 1e6;
 				phipos = 0;
 				k0 = fm.getXelmax();
-			}	
-			System.out.println(getId()+ " " + getPosition());
+			}				
 		} else {			
 			try {
-				masterFieldmap = (FieldMap)latticeElement.getFirstSlice().getComponent();
+				firstSliceFieldmap = (FieldMap)latticeElement.getFirstSlice().getComponent();
 			} catch (ModelException e) {
 			}
 		}
 			
 		if (latticeElement.isLastSlice()) {
-			last = true;					
+			lastSlice = true;					
 		}		
 	}
 	
@@ -119,7 +121,7 @@ public class FieldMap extends ThickElement  {
 	
 	@Override
 	public double energyGain(IProbe probe, double dblLen) {
-		if (masterFieldmap != null) return masterFieldmap.energyGain(probe, dblLen); 
+		if (firstSliceFieldmap != null) return firstSliceFieldmap.energyGain(probe, dblLen); 
 		
 		double p0 = probe.getPosition() - startPosition;
 		
@@ -142,7 +144,7 @@ public class FieldMap extends ThickElement  {
 	@Override
 	public PhaseMap transferMap(IProbe probe, double dblLen)
 			throws ModelException {
-		if (masterFieldmap != null) return masterFieldmap.transferMap(probe, dblLen);
+		if (firstSliceFieldmap != null) return firstSliceFieldmap.transferMap(probe, dblLen);
 					
 		double p0 = probe.getPosition() - startPosition;
 		int i0 = (int)Math.round(p0/totalLength*field.length);
@@ -168,7 +170,7 @@ public class FieldMap extends ThickElement  {
 			gamma = E0/Er + 1.0;
 			double beta = Math.sqrt(1.0 - 1.0/(gamma*gamma));
 			double DE = k0 * Edz * Math.cos(phi);
-			double dgamma = DE/Er;
+			//double dgamma = DE/Er;
 			
 			double Ezdz = k0 * Edz * Math.cos(phi);
 			double pEz_pzdz = k0 * dE * Math.cos(phi);
@@ -275,12 +277,12 @@ public class FieldMap extends ThickElement  {
 	 */
 	@Override
 	public void propagate(IProbe probe) throws ModelException {
-		if (masterFieldmap == null || this == masterFieldmap) {		
+		if (firstSliceFieldmap == null || this == firstSliceFieldmap) {		
 			startPosition = probe.getPosition();
 			    		
     		double phi00;
     		
-			if (firstFieldmap) {
+			if (firstInRFCavity) {
 			    double phim = phipos / (probe.getBeta() * IElement.LightSpeed / (2*Math.PI*frequency));
 				//phim = ti.getSyncPhase(probe.getBeta());
 			    
@@ -300,7 +302,7 @@ public class FieldMap extends ThickElement  {
 			probe.setLastGapPosition(startPosition+totalLength);
 		}
 		super.propagate(probe);
-		if (last) {
+		if (lastSlice) {
 			phase = null;
 		}
     }
