@@ -9,6 +9,7 @@ import xal.model.ModelException;
 import xal.model.elem.ThickElement;
 import xal.sim.scenario.LatticeElement;
 import xal.smf.impl.RfCavity;
+import xal.smf.impl.qualify.QualifierFactory;
 import xal.tools.beam.PhaseMap;
 import xal.tools.beam.PhaseMatrix;
 
@@ -34,8 +35,7 @@ public class FieldMap extends ThickElement  {
 	private boolean last;
 	private FieldMap masterFieldmap;	
 	
-	private boolean firstFieldmap = false;
-	private static RfCavity lastCavity;
+	private boolean firstFieldmap = false;	
 	
 	public FieldMap() {
 		this(null);
@@ -65,11 +65,10 @@ public class FieldMap extends ThickElement  {
 				inverted = fp.isFirstInverted();										
 				k0 = cavity.getDfltCavAmp()*1e6 * fm.getXelmax() / (fp.getE0L(frequency)/fp.getLength());
 				
-				
-				if (lastCavity != cavity) {
-					firstFieldmap = true;
-				}
-				lastCavity = cavity;				
+				firstFieldmap = true;
+				for (ESSFieldMap fm2 : cavity.getNodesOfClassWithQualifier(ESSFieldMap.class, QualifierFactory.getStatusQualifier(true))) {
+					if (fm2.getPosition() < fm.getPosition()) firstFieldmap = false;
+				}				
 			} else {
 				phi0 = fm.getPhase()/180.*Math.PI;
 				frequency = fm.getFrequency() * 1e6;
