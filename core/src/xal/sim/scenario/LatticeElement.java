@@ -6,8 +6,6 @@
 
 package xal.sim.scenario;
 
-import java.util.LinkedList;
-
 import xal.model.IComponent;
 import xal.model.ModelException;
 import xal.model.elem.ThinElement;
