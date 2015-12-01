@@ -1,14 +1,16 @@
 package se.lu.esss.ics.jels.model.elem.jels;
 
+import Jama.Matrix;
 import se.lu.esss.ics.jels.smf.impl.ESSFieldMap;
 import se.lu.esss.ics.jels.smf.impl.FieldProfile;
+import xal.model.IElement;
 import xal.model.IProbe;
 import xal.model.ModelException;
 import xal.model.elem.ThickElement;
 import xal.sim.scenario.LatticeElement;
+import xal.smf.impl.RfCavity;
 import xal.tools.beam.PhaseMap;
 import xal.tools.beam.PhaseMatrix;
-import Jama.Matrix;
 
 /**
  * This is direct fieldmap implementation, matching TraceWin implementation.
@@ -17,30 +19,76 @@ import Jama.Matrix;
  *
  */
 public class FieldMap extends ThickElement  {
-	private double field[];
-	private double phi0;
 	private double frequency;
+
+	private double field[];
+	private double totalLength;
 	private double k0;
+	private boolean inverted;
+
+	private double phi0;	
+	private double phipos;
 	private double phase[];
+	
+	private double startPosition;
+	private boolean first, last;
+	private FieldMap masterFieldmap;
+	
+	private static FieldMap staticMasterFieldmap;
+	
+	private boolean firstFieldmap = false;
+	private static RfCavity lastCavity;
 	
 	public FieldMap() {
 		this(null);
 	}
 	
 	public FieldMap(String strId) {
-		super("FieldMap", strId, 3);
+		super("FieldMap", strId);
 	}
 
 	@Override
 	public void initializeFrom(LatticeElement latticeElement) {
-		super.initializeFrom(latticeElement);
-		final ESSFieldMap fm = (ESSFieldMap)latticeElement.getNode();
-		FieldProfile fp = fm.getFieldProfile();
-		field = fp.getField();
-		phi0 = fm.getPhase()/180.*Math.PI;
-		frequency = fm.getFrequency() * 1e6;
-		setLength(fp.getLength());
-		k0 = fm.getXelmax();
+		super.initializeFrom(latticeElement);	
+		
+		if (latticeElement.getPartNr() == 0) {
+			staticMasterFieldmap = this;	
+			first = true;
+			startPosition = latticeElement.getStartPosition();
+			
+			final ESSFieldMap fm = (ESSFieldMap)latticeElement.getNode();
+			FieldProfile fp = fm.getFieldProfile();
+			field = fp.getField();
+			totalLength = fp.getLength();			
+											
+			if (fm.getParent() instanceof RfCavity) {
+				RfCavity cavity = (RfCavity)fm.getParent();
+				phi0 = cavity.getDfltCavPhase()/180.*Math.PI;
+				frequency = cavity.getCavFreq() * 1e6;
+				phipos = fm.getPhasePosition();
+				inverted = fp.isFirstInverted();										
+				k0 = cavity.getDfltCavAmp()*1e6 * fm.getXelmax() / (fp.getE0L(frequency)/fp.getLength());
+				
+				
+				if (lastCavity != cavity) {
+					firstFieldmap = true;
+				}
+				lastCavity = cavity;				
+			} else {
+				phi0 = fm.getPhase()/180.*Math.PI;
+				frequency = fm.getFrequency() * 1e6;
+				phipos = 0;
+				k0 = fm.getXelmax();
+			}	
+			System.out.println(getId()+ " " + getPosition());
+		} else {			
+			masterFieldmap = staticMasterFieldmap;
+		}
+			
+		if (latticeElement.getPartNr() == latticeElement.getParts()-1) {
+			last = true;		
+			staticMasterFieldmap = null;
+		}		
 	}
 	
 	/**
@@ -51,39 +99,42 @@ public class FieldMap extends ThickElement  {
 	 * @param E0 energy at the start of the element
 	 * @param Er particles rest energy
 	 */
-	private void initPhase(double beta, double E0, double Er)
+	private double[] initPhase(double E0, double Er, double phi0)
 	{	
-		phase = new double[field.length];
+		double[] phase = new double[field.length];
 		
 		double phi = phi0;
-		double dz = getLength() / field.length;
+		double dz = totalLength / field.length;
 		double DE = 0.;
 		
 		for (int i = 0; i < field.length; i++)
 		{
 			phase[i] = phi;
-			//System.out.printf("%E %E\n", getPosition()-getLength()/2.+dz*i, phi);
 			
 			DE += k0 * field[i]*Math.cos(phi)*dz;
 			double gamma = (E0+DE)/Er + 1.0;
-			beta = Math.sqrt(1.0 - 1.0/(gamma*gamma));
+			double beta = Math.sqrt(1.0 - 1.0/(gamma*gamma));
 			phi += 2*Math.PI*frequency*dz / (beta * LightSpeed);
 		}
-	}
-	
+		
+		return phase;
+	}	
 	
 	@Override
 	public double energyGain(IProbe probe, double dblLen) {
-		double p0 = probe.getPosition() - (getPosition() - getLength()/2.);
-		int i0 = (int)Math.round(p0/getLength()*field.length);
-		int in = (int)Math.round((p0+dblLen)/getLength()*field.length);
+		if (!first) return masterFieldmap.energyGain(probe, dblLen); 
+		
+		double p0 = probe.getPosition() - startPosition;
+		
+		int i0 = (int)Math.round(p0/totalLength*field.length);
+		int in = (int)Math.round((p0+dblLen)/totalLength*field.length);
 		
 		double DE = 0;
-		double dz = getLength() / field.length;
+		double dz = totalLength / field.length;
 		
 		for (int i = i0; i < Math.min(in,field.length-1); i++)
 			DE += k0 * field[i]*Math.cos(phase[i])*dz;
-		
+		//System.out.println(p0 + " "+ DE);
 		return  DE;
 	}
 	
@@ -94,12 +145,14 @@ public class FieldMap extends ThickElement  {
 	@Override
 	public PhaseMap transferMap(IProbe probe, double dblLen)
 			throws ModelException {
-		double p0 = probe.getPosition() - (getPosition() - getLength()/2.);
-		int i0 = (int)Math.round(p0/getLength()*field.length);
-		int in = (int)Math.round((p0+dblLen)/getLength()*field.length);
+		if (!first) return masterFieldmap.transferMap(probe, dblLen);
+					
+		double p0 = probe.getPosition() - startPosition;
+		int i0 = (int)Math.round(p0/totalLength*field.length);
+		int in = (int)Math.round((p0+dblLen)/totalLength*field.length);
 		if (in >= field.length) in = field.length;
 		
-		double dz = getLength() / field.length;
+		double dz = totalLength / field.length;
 		double E0 = probe.getKineticEnergy();
 		double Er = probe.getSpeciesRestEnergy();
 		
@@ -225,9 +278,34 @@ public class FieldMap extends ThickElement  {
 	 */
 	@Override
 	public void propagate(IProbe probe) throws ModelException {
-		initPhase(probe.getBeta(), probe.getKineticEnergy(), probe.getSpeciesRestEnergy());
+		if (first) {		
+			startPosition = probe.getPosition();
+			    		
+    		double phi00;
+    		
+			if (firstFieldmap) {
+			    double phim = phipos / (probe.getBeta() * IElement.LightSpeed / (2*Math.PI*frequency));
+				//phim = ti.getSyncPhase(probe.getBeta());
+			    
+			    phi00 = Math.IEEEremainder(phi0 - phim - (inverted ? Math.PI : 0.), 2*Math.PI);
+			} else {
+				double lastGapPosition = probe.getLastGapPosition();
+	    		double position = probe.getPosition();
+	    		
+				phi00 = probe.getLastGapPhase();
+	    		phi00 += (position - lastGapPosition)/(probe.getBeta() * IElement.LightSpeed / (2*Math.PI*frequency));	
+	    		phi00 -= Math.PI;
+			}
+						
+			phase = initPhase(probe.getKineticEnergy(), probe.getSpeciesRestEnergy(), phi00);
+			
+			probe.setLastGapPhase(phase[phase.length-1]);
+			probe.setLastGapPosition(startPosition+totalLength);
+		}
 		super.propagate(probe);
-		phase = null;
+		if (last) {
+			phase = null;
+		}
     }
 	
 }
