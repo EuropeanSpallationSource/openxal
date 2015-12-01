@@ -90,6 +90,8 @@ public class ESSFieldMap extends Electrostatic {
     /** FieldMap file */
     public String   getFieldMapFile()  { return m_bucFieldMap.getFieldMapFile(); }
     
+    /** Position + gapOffset where cavity RF phase is given (m) relative to element's start */
+    public double   getPhasePosition()      { return m_bucFieldMap.getPhasePosition() + m_bucFieldMap.getGapOffset(); }
     
     /** Electric field intensity factor */
     public void setXelmax(double dblVal)  { m_bucFieldMap.setXelmax(dblVal); }

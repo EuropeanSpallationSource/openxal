@@ -27,7 +27,7 @@ public class ESSFieldMapBucket extends AttributeBucket {
     public final static String  c_strType = "fieldmap"; 
 
     final static String[]       c_arrNames = { 
-    	"xelmax", 
+        "xelmax", 
         "phase",
         "freq",                                              
         //"ampFactor",
@@ -35,7 +35,9 @@ public class ESSFieldMapBucket extends AttributeBucket {
         //"structureMode",
         //"qLoaded",
         //"structureTTF"  	
-    	"fieldMapFile"
+        "fieldMapFile",
+        "phasePosition",
+        "gapOffset"
     };
     
     
@@ -56,6 +58,11 @@ public class ESSFieldMapBucket extends AttributeBucket {
     /** FieldMap file */
     private Attribute   m_attFieldMapFile;
     
+    /** Position where cavity RF phase is given (m) relative to element's start */
+    private Attribute   m_attPhasePosition;
+    
+    /** Additional offset of the position where cavity RF phase is given (m) */
+    private Attribute   m_attGapOffset;
     
     /*
      *  User Interface
@@ -70,15 +77,19 @@ public class ESSFieldMapBucket extends AttributeBucket {
     public ESSFieldMapBucket() {
         super();
         
-        m_attXelmax = new Attribute( 0. );
-        m_attPhase = new Attribute(0. );
-        m_attFreq = new Attribute(0. );
+        m_attXelmax = new Attribute(1.);
+        m_attPhase = new Attribute(0.);
+        m_attFreq = new Attribute(0.);
         m_attFieldMapFile = new Attribute("");
+        m_attPhasePosition = new Attribute(0.);
+        m_attGapOffset = new Attribute(0.);
 	
         super.registerAttribute(c_arrNames[0], m_attXelmax);
         super.registerAttribute(c_arrNames[1], m_attPhase);
         super.registerAttribute(c_arrNames[2], m_attFreq);
         super.registerAttribute(c_arrNames[3], m_attFieldMapFile);
+        super.registerAttribute(c_arrNames[4], m_attPhasePosition);
+        super.registerAttribute(c_arrNames[5], m_attGapOffset);
     }
     
     /** Electric field intensity factor */ 
@@ -93,6 +104,12 @@ public class ESSFieldMapBucket extends AttributeBucket {
     /** FieldMap file */
     public String   getFieldMapFile()  { return m_attFieldMapFile.getString(); }
     
+    /** Position where cavity RF phase is given (m) relative to element's start */
+    public double   getPhasePosition()      { return m_attPhasePosition.getDouble(); }
+
+    /** Additional offset of the position where cavity RF phase is given (m) */
+    public double   getGapOffset()      { return m_attGapOffset.getDouble(); }
+
     
     /** Electric field intensity factor */
     public void setXelmax(double dblVal)  { m_attXelmax.set(dblVal); }
@@ -105,4 +122,10 @@ public class ESSFieldMapBucket extends AttributeBucket {
     
     /** FieldMap file */
     public void setFieldMapFile(String strVal)  { m_attFieldMapFile.set(strVal); }
+    
+    /** Position where cavity RF phase is given (m) relative to element's start */
+    public void setPhasePosition(double dblVal)      { m_attPhasePosition.set(dblVal); }
+    
+    /** Additional offset of the position where cavity RF phase is given (m) */
+    public void setGapOffset(double dblVal)      { m_attGapOffset.set(dblVal); }
 }
