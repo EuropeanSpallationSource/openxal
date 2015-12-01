@@ -581,12 +581,12 @@ public class IdealMagWedgeDipole2 extends ElectromagnetSeq {
 		setFieldIndex(fld_ind0);
 		setDesignBendAngle(ang_bend);
 		
-		if (element.getPartNr() == 0) // first piece
+		if (element.isFirstSlice()) // first piece
 		{
 			setEntrPoleAngle(magnet.getEntrRotAngle() * Math.PI / 180.);
 	    	if (fld_ind0 < 0. || fld_ind0 > 1.0) System.err.println("FieldIndex of a bend not in [0,1]. Element: "+getId()+" N="+fld_ind0); 
 		}
-		if (element.getParts()-1 == element.getPartNr()) // last piece					
+		if (element.isLastSlice()) // last piece					
 		{
 			setExitPoleAngle(magnet.getExitRotAngle() * Math.PI / 180.);
 		}
@@ -594,12 +594,12 @@ public class IdealMagWedgeDipole2 extends ElectromagnetSeq {
 		if (magnet instanceof ESSBend) {
 			ESSBend magnet2 = (ESSBend)magnet;
 			setGapSize(magnet2.getGap());
-			if (element.getPartNr() == 0) // first piece
+			if (element.isFirstSlice()) // first piece
 			{
 				setEntrFringeIntegral(magnet2.getEntrK1());
 				setEntrFringeIntegral2(magnet2.getEntrK2());
 			}
-			if (element.getParts()-1 == element.getPartNr()) // last piece					
+			if (element.isLastSlice()) // last piece					
 			{
 				setExitFringeIntegral(magnet2.getExitK1());
 				setExitFringeIntegral2(magnet2.getExitK2());

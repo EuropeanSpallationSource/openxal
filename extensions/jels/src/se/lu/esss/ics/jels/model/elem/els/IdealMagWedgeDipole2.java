@@ -585,13 +585,13 @@ public class IdealMagWedgeDipole2 extends ElectromagnetSeq {
 		setDesignBendAngle(ang_bend);
 		setGapSize(magnet.getGap());
 		
-		if (element.getPartNr() == 0) // first piece
+		if (element.isFirstSlice()) // first piece
 		{
 			setEntrPoleAngle(magnet.getEntrRotAngle() * Math.PI / 180.);
 			setEntrFringeIntegral(magnet.getEntrK1());
 			setEntrFringeIntegral2(magnet.getEntrK2());
 		}
-		if (element.getParts()-1 == element.getPartNr()) // last piece					
+		if (element.isLastSlice()) // last piece					
 		{
 			setExitPoleAngle(magnet.getExitRotAngle() * Math.PI / 180.);
 			setExitFringeIntegral(magnet.getExitK1());

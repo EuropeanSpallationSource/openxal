@@ -31,10 +31,8 @@ public class FieldMap extends ThickElement  {
 	private double phase[];
 	
 	private double startPosition;
-	private boolean first, last;
-	private FieldMap masterFieldmap;
-	
-	private static FieldMap staticMasterFieldmap;
+	private boolean last;
+	private FieldMap masterFieldmap;	
 	
 	private boolean firstFieldmap = false;
 	private static RfCavity lastCavity;
@@ -51,9 +49,7 @@ public class FieldMap extends ThickElement  {
 	public void initializeFrom(LatticeElement latticeElement) {
 		super.initializeFrom(latticeElement);	
 		
-		if (latticeElement.getPartNr() == 0) {
-			staticMasterFieldmap = this;	
-			first = true;
+		if (latticeElement.isFirstSlice()) {			
 			startPosition = latticeElement.getStartPosition();
 			
 			final ESSFieldMap fm = (ESSFieldMap)latticeElement.getNode();
@@ -82,12 +78,14 @@ public class FieldMap extends ThickElement  {
 			}	
 			System.out.println(getId()+ " " + getPosition());
 		} else {			
-			masterFieldmap = staticMasterFieldmap;
+			try {
+				masterFieldmap = (FieldMap)latticeElement.getFirstSlice().getComponent();
+			} catch (ModelException e) {
+			}
 		}
 			
-		if (latticeElement.getPartNr() == latticeElement.getParts()-1) {
-			last = true;		
-			staticMasterFieldmap = null;
+		if (latticeElement.isLastSlice()) {
+			last = true;					
 		}		
 	}
 	
@@ -122,7 +120,7 @@ public class FieldMap extends ThickElement  {
 	
 	@Override
 	public double energyGain(IProbe probe, double dblLen) {
-		if (!first) return masterFieldmap.energyGain(probe, dblLen); 
+		if (masterFieldmap != null) return masterFieldmap.energyGain(probe, dblLen); 
 		
 		double p0 = probe.getPosition() - startPosition;
 		
@@ -145,7 +143,7 @@ public class FieldMap extends ThickElement  {
 	@Override
 	public PhaseMap transferMap(IProbe probe, double dblLen)
 			throws ModelException {
-		if (!first) return masterFieldmap.transferMap(probe, dblLen);
+		if (masterFieldmap != null) return masterFieldmap.transferMap(probe, dblLen);
 					
 		double p0 = probe.getPosition() - startPosition;
 		int i0 = (int)Math.round(p0/totalLength*field.length);
@@ -278,7 +276,7 @@ public class FieldMap extends ThickElement  {
 	 */
 	@Override
 	public void propagate(IProbe probe) throws ModelException {
-		if (first) {		
+		if (masterFieldmap == null || this == masterFieldmap) {		
 			startPosition = probe.getPosition();
 			    		
     		double phi00;

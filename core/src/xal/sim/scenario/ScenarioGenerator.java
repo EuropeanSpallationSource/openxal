@@ -187,7 +187,7 @@ class ScenarioGenerator {
 	
 	private void addSplitElement(List<LatticeElement> splitElements, LatticeElement element)
 	{
-		if (element.getLength() > EPS || element.getParts() <= 1) splitElements.add(element);
+		splitElements.add(element);
 	}
 	
 	
@@ -274,7 +274,7 @@ class ScenarioGenerator {
 				sector.addChild(elementMapping.createDrift("DR" + (++driftCount), driftLength));
 				//sector.addChild(elementMapping.createDrift("DRFT", driftLength));
 			}
-			IComponent modelElement = element.convert();
+			IComponent modelElement = element.getComponent();
 			
 			sector.addChild(modelElement);
 

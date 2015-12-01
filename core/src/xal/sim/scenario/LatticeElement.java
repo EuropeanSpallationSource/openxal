@@ -6,6 +6,8 @@
 
 package xal.sim.scenario;
 
+import java.util.LinkedList;
+
 import xal.model.IComponent;
 import xal.model.ModelException;
 import xal.model.elem.ThinElement;
@@ -42,13 +44,15 @@ public class LatticeElement implements Comparable<LatticeElement> {
 	private double length;
 	private double start, end;
 	private AcceleratorNode node;
-	private int partnr = 0, parts = 1;	
 	private Class<? extends IComponent> elementClass;
 	private int originalPosition;
 	
 	/** CKA Modeling element identifier, which can be different that the Accelerater node's ID */
 	private String     strElemId;
 
+	private IComponent component;
+	private LatticeElement firstSlice;
+	private LatticeElement nextSlice;
 	
 	public LatticeElement(AcceleratorNode node, double position, Class<? extends IComponent> elementClass, int originalPosition) {
 	    this.strElemId = null;
@@ -76,6 +80,8 @@ public class LatticeElement implements Comparable<LatticeElement> {
 		}
 		
 		this.originalPosition = originalPosition;
+		
+		firstSlice = this;
 	}
 
 	private LatticeElement(AcceleratorNode node, double start, double end, Class<? extends IComponent> elementClass, int originalPosition) {
@@ -87,7 +93,7 @@ public class LatticeElement implements Comparable<LatticeElement> {
 		this.end = end;
 		this.length = 1.0;
 		
-		this.originalPosition = originalPosition;
+		this.originalPosition = originalPosition;		
 	}
 
 	
@@ -144,29 +150,19 @@ public class LatticeElement implements Comparable<LatticeElement> {
 	}
 
 	public LatticeElement split(LatticeElement splitter) {
-		if (splitter.position == start || splitter.position == end) return null;
-		parts *= 2;
-		partnr *= 2;
-		LatticeElement secondPart = new LatticeElement(node, splitter.position, end, elementClass, originalPosition);
+		if (splitter.position == start || splitter.position == end) return null;		
+		LatticeElement secondPart = new LatticeElement(node, splitter.position, end, elementClass, originalPosition);		
 		end = splitter.position;
-		secondPart.parts = parts;
-		secondPart.partnr = partnr + 1;		
+		
+		secondPart.firstSlice = firstSlice;
+		secondPart.nextSlice = nextSlice;
+		nextSlice = secondPart;		
+		
 		return secondPart;
 	}
 
 	public boolean isThin() {
 		return length == 0.0 || ThinElement.class.isAssignableFrom(elementClass);
-	}
-
-	public IComponent convert() throws ModelException {		 
-		try {
-			IComponent component = elementClass.newInstance();		
-			component.initializeFrom(this);
-			
-			return component;
-		} catch (InstantiationException | IllegalAccessException e) {
-			throw new ModelException("Exception while instantiating class "+elementClass.getName()+" for node "+node.getId(), e);
-		}
 	}
 
 	@Override
@@ -182,18 +178,43 @@ public class LatticeElement implements Comparable<LatticeElement> {
 		}
 		return d;
 	}
-
-	public int getPartNr() {
-		return partnr;
-	}
-
-	public int getParts() {
-		return parts;
-	}
 	
 	@Override
 	public String toString() { 		
 		return getNode().getId() + " I=["+getStartPosition()+","+getEndPosition()+"]" +
 				", p=" + getCenter() + ", l= " + getLength();
+	}
+	
+	
+	public IComponent getComponent() throws ModelException
+	{
+		if (component == null) {
+			try {
+				component = elementClass.newInstance();		
+				component.initializeFrom(this);
+				
+				return component;
+			} catch (InstantiationException | IllegalAccessException e) {
+				throw new ModelException("Exception while instantiating class "+elementClass.getName()+" for node "+node.getId(), e);
+			}		
+		}
+		return component;
+	}
+	
+	public LatticeElement getFirstSlice() {
+		return firstSlice;
+	}
+	
+	public LatticeElement getNextSlice() {
+		return nextSlice;
+	}
+	
+	
+	public boolean isFirstSlice() {
+		return firstSlice == this;
+	}
+	
+	public boolean isLastSlice() {
+		return nextSlice == null; 
 	}
 }
