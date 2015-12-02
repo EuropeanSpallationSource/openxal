@@ -43,19 +43,6 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
      */
 
     /**
-     * Set the element specified by the given position indices to the
-     * given new value.
-     * 
-     * @param   iRow    matrix row location
-     * @param   iCol    matrix column index
-     * 
-     * @param   dblVal  matrix element at given row and column will be set to this value
-     */
-    public void setElem(IIndex iRow, IIndex iCol, double dblVal) {
-        this.getMatrix().set(iRow.val(), iCol.val(), dblVal);
-    }
-
-    /**
      * Assign this matrix to be the identity matrix.  The
      * identity matrix is the square matrix with 1's on the
      * diagonal and 0's everywhere else.
@@ -108,46 +95,17 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
         return true;
     }
 
-    /**
-     * Checks if the given matrix is algebraically equivalent to this
-     * matrix.  That is, it is equal in size and element values.
-     * 
-     * @param matTest   matrix under equivalency test
-     * 
-     * @return          <code>true</code> if the argument is equivalent to this matrix,
-     *                  <code>false</code> if otherwise
-     *
-     * @author Christopher K. Allen
-     * @since  Oct 1, 2013
-     */
-    public boolean isEquivalentTo(BaseMatrix<M> matTest) {
-        if ( !this.getClass().equals(matTest.getClass()) )
-            return false;
-
-        for (int i=0; i<this.getSize(); i++)
-            for (int j=0; j<this.getSize(); j++)
-                if (this.getElem(i, j) != matTest.getElem(i, j))
-                    return false;
-
-        return true;
-    }
-
 
     /*
      *  Matrix Operations
      */
-
+    
     /**
-     *  Non-destructive transpose of this matrix.
-     * 
-     *  @return     transposed copy of this matrix or <code>null</code> if error
+     *  @see BaseMatrix#transpose()
      */
+    @SuppressWarnings("unchecked")
     public M transpose()  {
-        Matrix impTrans = this.getMatrix().transpose();
-        M           matTrans = this.newInstance();
-        matTrans.assignMatrix(impTrans);
-        
-        return matTrans;
+        return (M)super.transpose();
     }
 
     /**
@@ -312,65 +270,21 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
      */
 
     /**
-     * <p>
-     * Non-destructive matrix-vector multiplication.  The returned value is the
-     * usual product of the given vector pre-multiplied by this matrix.  Specifically,
-     * denote by <b>A</b> this matrix and by <b>x</b> the argument vector, then
-     * the components {<i>y<sub>i</sub></i>} of the returned vector <b>y</b> are given by
-     * <br>
-     * <br>
-     * &nbsp; &nbsp; <i>y</i><sub><i>i</i></sub> = &Sigma;<sub><i>j</i></sub> <i>A<sub>ij</sub>x<sub>j</sbu></i>
-     * <br>
-     * <br>
-     * </p>
-     * <p>
-     * The returned vector must be created using Java reflection, so this operation
-     * is somewhat more risky and expensive than and in place multiplication.
-     * </p>
-     *  
-     * @param vecFac    the vector factor
-     * 
-     * @return          the matrix-vector product of this matrix with the argument
-     * 
-     * @throws IllegalArgumentException the argument vector must be the same size
-     * 
-     * @author Christopher K. Allen
-     * @since  Oct 11, 2013
-     */
-    public <V extends BaseVector<V>> V times(V vecFac) throws IllegalArgumentException {
-        // Check sizes
-        if ( vecFac.getSize() != this.getSize() ) 
-            throw new IllegalArgumentException(vecFac.getClass().getName() + " vector must have compatible size");
-    
-        V   vecSoln = vecFac.newInstance();
-        
-        for (int i=0; i<this.getSize(); i++) {
-            double dblSum = 0.0;
-
-            for (int j=0; j<this.getSize(); j++) {
-                double dblFac = this.getElem(i, j)*vecFac.getElem(j);
-             
-                dblSum += dblFac;
-            }
-            
-            vecSoln.setElem(i,  dblSum);
-        }
-        
-        return vecSoln;
-    }
-    
-    /**
      *  @see BaseMatrix#times(BaseMatrix)
      *  Product of square matrices always produce a square matrix.
-     *
-     *  @param  matRight    multiplicand - right operand of matrix multiplication operator
-     *
-     *  @return             new matrix which is the matrix product of this matrix and the argument,
-     *                      or <code>null</code> if an error occurred
      */
     @SuppressWarnings("unchecked")
     public M times(M matRight) {
-        return (M)super.times(matRight);
+        return (M)super.times(matRight); // Product of square matrices is always a square matrix
+    }
+
+    /**
+     * @see BaseMatrix#times(BaseVector)
+     * Square matrix preserves the size of the vector
+     */
+    @SuppressWarnings("unchecked")
+    public <V extends BaseVector<V>> V times(V vecFac) throws IllegalArgumentException {
+    	return (V)super.times(vecFac); // Product of square matrix and vector returns the same size of vector
     }
     
     /**
@@ -532,7 +446,19 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
      */
     protected SquareMatrix(int intSize, double[][] arrVals) throws ArrayIndexOutOfBoundsException {
         super(intSize, intSize, arrVals);
-        
         this.intSize = intSize;
+    }
+
+    /**
+     * @see BaseMatrix#BaseMatrix(Matrix)
+     * 
+     * @throws IllegalArgumentException if provided matrix is not square.
+     */
+    protected SquareMatrix(Matrix mat) {
+        super(mat);
+        if (mat.getRowDimension() != mat.getColumnDimension()) {
+        	throw new IllegalArgumentException("Provided matrix is not square!");
+        }
+        this.intSize = mat.getRowDimension();
     }
 }

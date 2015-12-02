@@ -51,10 +51,10 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      */
 
     /** internal matrix implementation */
-    private final Matrix vecImpl;
+    private Matrix vecImpl;
 
     /** Size of the vector */
-    private final int intSize;
+    private int intSize;
 
 
     /*
@@ -931,9 +931,9 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      *
      *  @return     the Jama matrix object
      */
-    private Matrix getVector()   { 
+    protected Matrix getVector()   { 
         return vecImpl; 
-    };
+    }
     
     /**
      * Sets the internal matrix implementation to that given in the argument. This
@@ -948,9 +948,8 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
     	if (vecValue.getColumnDimension() > 1) {
     		throw new IllegalArgumentException("Provided object has more than one column.");
     	}
-        for (int i=0; i<this.getSize(); i++) {
-            this.setElem(i, vecValue.get(i, 0));
-        }
+    	this.intSize = vecValue.getRowDimension();
+    	this.vecImpl = vecValue.copy();
     }
 
 
@@ -974,8 +973,8 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      * @author Christopher K. Allen
      * @since  Oct 1, 2013
      */
-    private V newInstance(Matrix vecInit) {
-        V   vecNewInst = this.newInstance();
+    V newInstance(Matrix vecInit) {
+        V vecNewInst = this.newInstance();
         ((BaseVector<V>)vecNewInst).assignVector(vecInit);
         return vecNewInst;
     }

@@ -76,14 +76,14 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      */
     
     /** number of matrix rows */
-    private final int               cntRows;
+    private int cntRows;
     
     /** number of matrix columns */
-    private final int               cntCols;
+    private int cntCols;
     
     
     /** internal matrix implementation */
-    protected Matrix     matImpl;
+    protected Matrix matImpl;
 
     
     /*
@@ -121,6 +121,20 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
 
         this.getMatrix().set(i,j, s);
     }
+    
+    /**
+     * Set the element specified by the given position indices to the
+     * given new value.
+     * 
+     * @param   iRow    matrix row location
+     * @param   iCol    matrix column index
+     * 
+     * @param   dblVal  matrix element at given row and column will be set to this value
+     */
+    public void setElem(IIndex iRow, IIndex iCol, double dblVal) {
+        this.getMatrix().set(iRow.val(), iCol.val(), dblVal);
+    }
+
 
     /**
      *  Set a block sub-matrix within the current matrix.  If the given two-dimensional
@@ -309,10 +323,8 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * @return  a deep copy object of this matrix
      */
     public M copy() {
-    
         M  matClone = this.newInstance();
         ((BaseMatrix<M>)matClone).assignMatrix( this.getMatrix() );
-            
         return matClone;
     }
 
@@ -328,6 +340,32 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
             for (int j=0; j<this.getColCnt(); j++)
                 this.setElem(i, j, 0.0);
     }
+
+    /**
+     * Checks if the given matrix is algebraically equivalent to this
+     * matrix.  That is, it is equal in size and element values.
+     * 
+     * @param matTest   matrix under equivalency test
+     * 
+     * @return          <code>true</code> if the argument is equivalent to this matrix,
+     *                  <code>false</code> if otherwise
+     *
+     * @author Christopher K. Allen
+     * @since  Oct 1, 2013
+     */
+    public boolean isEquivalentTo(BaseMatrix<M> matTest) {
+        if ( !this.getClass().equals(matTest.getClass()) )
+            return false;
+
+        for (int i=0; i<this.getRowCnt(); i++)
+            for (int j=0; j<this.getColCnt(); j++)
+            	// TODO this is problematic with doubles
+                if (this.getElem(i, j) != matTest.getElem(i, j))
+                    return false;
+
+        return true;
+    }
+
 
     /**
      * Ratio of the largest singular value over the smallest singular value.
@@ -382,6 +420,19 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
     /*
      *  Algebraic Operations
      */
+
+    /**
+     *  Non-destructive transpose of this matrix.
+     * 
+     *  @return     transposed copy of this matrix or <code>null</code> if error
+     */
+    public BaseMatrix<M> transpose()  {
+        Matrix impTrans = this.getMatrix().transpose();
+        BaseMatrix<M> matTrans = this.newInstance(impTrans);
+        
+        return matTrans;
+    }
+
 
     /**
      *  Non-destructive matrix addition. This matrix is unaffected.
@@ -482,6 +533,34 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
         BaseMatrix<M> matAns  = this.newInstance(impProd);
 
         return matAns;
+    }
+
+
+    /**
+     * <p>
+     * Non-destructive matrix-vector multiplication.  The returned value is the
+     * usual product of the given vector pre-multiplied by this matrix.  Specifically,
+     * denote by <b>A</b> this matrix and by <b>x</b> the argument vector, then
+     * the components {<i>y<sub>i</sub></i>} of the returned vector <b>y</b> are given by
+     * <br>
+     * &nbsp; &nbsp; <i>y</i><sub><i>i</i></sub> = &Sigma;<sub><i>j</i></sub> <i>A<sub>ij</sub>x<sub>j</sbu></i>
+     * <br>
+     *  
+     * @param vecFac    the vector factor
+     * 
+     * @return          the matrix-vector product of this matrix with the argument
+     * 
+     * @throws IllegalArgumentException the argument vector must be the same size
+     */
+    public <V extends BaseVector<V>> BaseVector<V> times(V vecFac) throws IllegalArgumentException {
+        // Check sizes
+        if ( vecFac.getSize() != this.getColCnt() ) 
+            throw new IllegalArgumentException(vecFac.getClass().getName() + " vector must have compatible size");
+        
+        Matrix vector = vecFac.getVector();
+        Matrix result = this.getMatrix().times(vector);
+    
+        return vecFac.newInstance(result);
     }
 
     /*
@@ -826,9 +905,9 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * @since  Oct 1, 2013
      */
     protected void assignMatrix(Matrix matValue) {
-        double[][]  arrInternal = matValue.getArrayCopy();
-        
-        this.matImpl = new Matrix(arrInternal);
+    	this.cntCols = matValue.getColumnDimension();
+    	this.cntRows = matValue.getRowDimension();
+        this.matImpl = matValue.copy();
     }
 
     /**
@@ -863,10 +942,8 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * @since  Oct 1, 2013
      */
     protected M newInstance(Matrix impInit)     {
-        
-        M   matNewInst = this.newInstance();
-        
-        ((BaseMatrix<M>)matNewInst).assignMatrix(impInit);
+        M matNewInst = this.newInstance();
+        matNewInst.assignMatrix(impInit);
         
         return matNewInst;
     }
@@ -885,7 +962,7 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      *  
      * @throws UnsupportedOperationException  child class has not defined a public, zero-argument constructor
      */
-    protected BaseMatrix(int cntRows, int cntCols) /*throws UnsupportedOperationException*/ {
+    protected BaseMatrix(int cntRows, int cntCols) {
         this.cntRows = cntRows;
         this.cntCols = cntCols;
         this.matImpl = new Matrix(cntRows, cntCols, 0.0);
@@ -907,8 +984,7 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
         this.cntRows = matParent.getRowCnt();
         this.cntCols = matParent.getColCnt();
         
-        BaseMatrix<M> matBase = (BaseMatrix<M>)matParent;
-        this.assignMatrix(matBase.getMatrix());
+        this.assignMatrix(matParent.getMatrix());
     }
     
     /**
@@ -950,7 +1026,7 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
     
     /**
      * <p>
-     * Initializing constructor for bases class <code>SquareMatrix</code>.  
+     * Initializing constructor for bases class <code>BaseMatrix</code>.  
      * Sets the entire matrix to the values given in the Java primitive type 
      * double array. The argument itself remains unchanged. 
      * </p>
@@ -976,6 +1052,17 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
         this.matImpl = new Matrix(arrVals);
     }
 
+    /**
+     * Initializing constructor for class <code>BaseMatrix</code>.  
+     * Sets the internal matrix to the copy of the argument.
+     * 
+     * @param matrix Jama.Matrix object to populate the array with
+     */
+    protected BaseMatrix(Matrix matrix) {
+        this.cntRows = matrix.getRowDimension();
+        this.cntCols = matrix.getColumnDimension();
+        this.matImpl = matrix.copy();
+    }
 
     
 }
