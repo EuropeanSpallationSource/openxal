@@ -975,8 +975,6 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      *
      * @param matParent     the matrix to be cloned
      *
-     * @throws UnsupportedOperationException  base class has not defined a public, zero-argument constructor
-     *  
      * @author Christopher K. Allen
      * @since  Sep 25, 2013
      */
@@ -1064,5 +1062,4 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
         this.matImpl = matrix.copy();
     }
 
-    
 }
