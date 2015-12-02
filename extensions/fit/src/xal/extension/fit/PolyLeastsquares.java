@@ -1,10 +1,10 @@
 package xal.extension.fit;
 
-
-import java.io.*;
-import java.util.*;
-import java.text.*;
-import Jama.Matrix;
+import xal.tools.math.BaseMatrix;
+import xal.tools.math.BaseVector;
+import xal.tools.math.GenericMatrix;
+import xal.tools.math.GenericVector;
+import xal.tools.math.SquareMatrix;
 
 /**
  *
@@ -39,11 +39,6 @@ import Jama.Matrix;
  * Equation()- 	returns the characteristic equation as a String
 */ 
 
-import java.io.*;
-import java.util.*;
-import java.text.*;
-import Jama.Matrix;
-
 public class PolyLeastsquares{
 
    private int m;		//number of data points
@@ -51,7 +46,7 @@ public class PolyLeastsquares{
 
    private double[] dX, dY;      //points to fit
 
-   private Matrix mC;		//equation coefficent vector
+   private BaseVector mC;		//equation coefficent vector
    private double dR; 		//correlation coefficient factor
 
     /**
@@ -79,7 +74,9 @@ public class PolyLeastsquares{
 
    private void Init(){
 
-      Matrix mA, mAl, mY;
+      BaseMatrix mA;
+      BaseVector mY;
+      SquareMatrix<?> mAl;
 
       double[][] dCols= new double[m][k+1];
 
@@ -88,10 +85,11 @@ public class PolyLeastsquares{
             dCols[i][j]= Math.pow(dX[i], j);
          }
       }
-      mA= new Matrix(dCols,m,k+1);      mY= new Matrix(dY,m);
+      mA = new GenericMatrix(m,k+1,dCols);
+      mY = new GenericVector(m,dY);
  
-      mAl= (mA.transpose()).times(mA);	//mAl= mA'mA
-      mC= mAl.inverse().times(mA.transpose()).times(mY);
+      mAl = (SquareMatrix<?>)((mA.transpose()).times(mA));	//mAl= mA'mA
+      mC = mAl.inverse().times(mA.transpose()).times(mY);
             
       return;
    }
@@ -104,7 +102,7 @@ public class PolyLeastsquares{
       double dY= 0;
 
       for (int j=0; j<k+1; j++){
-         dY += mC.get(j,0)*Math.pow(dX, j); 
+         dY += mC.getElem(j)*Math.pow(dX, j); 
       }
 
       return dY;
@@ -122,9 +120,9 @@ public class PolyLeastsquares{
    //to calculate dYfit:
       for (int i=0; i<m; i++){
 
-         dYfit[i]= mC.get(0,0);
+         dYfit[i]= mC.getElem(0);
          for (int j=1; j<k+1; j++){
-            dYfit[i] += mC.get(j,0)*Math.pow(dX[i],j); 
+            dYfit[i] += mC.getElem(j)*Math.pow(dX[i],j); 
          }
          //System.out.println(""+ dYfit[i]);
       }
@@ -167,14 +165,14 @@ public class PolyLeastsquares{
       //round the constants to two decimal places
       double dz;
       for (int i=0; i<k+1; i++){
-         dz= Math.round( mC.get(i,0) *100.0 ) /100.0;
-         mC.set(i,0, dz);
+         dz= Math.round( mC.getElem(i) *100.0 ) /100.0;
+         mC.setElem(i, dz);
       }
 
 
-      eq= "Y = " +mC.get(0,0)+ " + " +mC.get(1,0) + " X";
+      eq= "Y = " +mC.getElem(0)+ " + " +mC.getElem(1) + " X";
       for (int j=2; j<k+1; j++){
-         eq += " + " +mC.get(j,0)+ " X^" +j;       
+         eq += " + " +mC.getElem(j)+ " X^" +j;       
       }
 
      return eq;
