@@ -101,14 +101,6 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
      */
     
     /**
-     *  @see BaseMatrix#transpose()
-     */
-    @SuppressWarnings("unchecked")
-    public M transpose()  {
-        return (M)super.transpose();
-    }
-
-    /**
      *  Matrix determinant function.
      *
      *  @return     the determinant of this square matrix
@@ -116,19 +108,6 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
     public double det()     { 
         return this.getMatrix().det(); 
     };
-
-    /**
-     *  Non-destructive inverse of this matrix.
-     *
-     *  @return     the algebraic inverse of this matrix or <code>null</code> if error
-     */
-    public M inverse()    {
-        Matrix impInv = this.getMatrix().inverse();
-        M           matInv = this.newInstance();
-        matInv.assignMatrix(impInv);
-        
-        return matInv;
-    }
     
     /**
      * <p>

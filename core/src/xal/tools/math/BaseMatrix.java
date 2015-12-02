@@ -365,6 +365,15 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
 
         return true;
     }
+    
+    /**
+     * Check if matrix is a square matrix.
+     * 
+     * @return true if matrix is square.
+     */
+    public boolean isSquare() {
+    	return (this.getColCnt() == this.getRowCnt());
+    }
 
 
     /**
@@ -426,11 +435,22 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * 
      *  @return     transposed copy of this matrix or <code>null</code> if error
      */
-    public BaseMatrix<M> transpose()  {
+    public M transpose()  {
         Matrix impTrans = this.getMatrix().transpose();
-        BaseMatrix<M> matTrans = this.newInstance(impTrans);
+        M matTrans = this.newInstance(impTrans);
         
         return matTrans;
+    }
+
+    /**
+     *  Non-destructive pseudo-inverse of this matrix.
+     *  If the matrix is square the returned inverse is the true inverse of the matrix.
+     * 
+     *  @return inverse of the matrix.
+     */
+    public M inverse()  {
+        Matrix impInv = this.getMatrix().inverse();
+        return this.newInstance(impInv);
     }
 
 

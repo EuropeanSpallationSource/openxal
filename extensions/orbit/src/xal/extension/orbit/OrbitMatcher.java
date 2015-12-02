@@ -17,7 +17,6 @@ import xal.smf.AcceleratorNode;
 import xal.tools.beam.PhaseMatrix;
 import xal.tools.math.BaseMatrix;
 import xal.tools.math.GenericMatrix;
-import xal.tools.math.SquareMatrix;
 
 
 /** using the online model (ignoring coupling), determines a beam position and momentum at an element which best matches the measured positions at a series of specified elements */
@@ -140,7 +139,7 @@ class BeamPositionTransform {
 		
 		// projection transform:  (A<sup>T</sup> A)<sup>-1</sup> A<sup>T</sup>
 		final BaseMatrix phaseTransformTranspose = phaseTransform.transpose();
-		PROJECTION_TRANSFORM = ((SquareMatrix<?>)(phaseTransformTranspose.times( phaseTransform ))).inverse().times( phaseTransformTranspose );
+		PROJECTION_TRANSFORM = phaseTransformTranspose.times( phaseTransform ).inverse().times( phaseTransformTranspose );
 	}
 	
 	

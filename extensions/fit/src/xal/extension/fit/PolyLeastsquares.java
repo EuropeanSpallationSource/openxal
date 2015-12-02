@@ -4,7 +4,6 @@ import xal.tools.math.BaseMatrix;
 import xal.tools.math.BaseVector;
 import xal.tools.math.GenericMatrix;
 import xal.tools.math.GenericVector;
-import xal.tools.math.SquareMatrix;
 
 /**
  *
@@ -74,9 +73,9 @@ public class PolyLeastsquares{
 
    private void Init(){
 
-      BaseMatrix mA;
+      BaseMatrix mA, mAl;
       BaseVector mY;
-      SquareMatrix<?> mAl;
+      
 
       double[][] dCols= new double[m][k+1];
 
@@ -88,7 +87,7 @@ public class PolyLeastsquares{
       mA = new GenericMatrix(m,k+1,dCols);
       mY = new GenericVector(m,dY);
  
-      mAl = (SquareMatrix<?>)((mA.transpose()).times(mA));	//mAl= mA'mA
+      mAl = mA.transpose().times(mA);	//mAl= mA'mA
       mC = mAl.inverse().times(mA.transpose()).times(mY);
             
       return;
