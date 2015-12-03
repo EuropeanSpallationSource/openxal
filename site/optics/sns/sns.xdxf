@@ -1447,6 +1447,11 @@
           <rfgap length="0.13" phaseFactor="0" ampFactor="1" TTF="0.445" endCell="0" gapOffset="0.0"/>
          </attributes>
        </node>
+       <!--<node type="FM" id="MEBT_RF:Bnch01:Fm01" pos="0" len="0.10096">
+         <attributes>
+            <fieldmap fieldMapFile="MEBT1Rg1" xelmax="1" phasePosition="0.05048"/>
+         </attributes>
+       </node>-->
     </sequence>
     <sequence type="Bnch" id="MEBT_RF:Bnch02" pos="1.288" len=".13" status="true">
        <attributes>
@@ -6539,7 +6544,67 @@
           <channel handle="lossInt" signal="CCL_Diag:BLM112:Slow60PulsesTotalLoss" settable="false"/>
        </channelsuite>
     </node>
-    <node type="RG" id="CCL_RF:Cav01:Rg01" pos=".133243">
+    <node type="FM" id="CCL_RF:Cav01:Fm01" pos="0.3965235" len="0.601784">
+      <attributes>
+        <fieldmap fieldMapFile="CCL1Rg1" phasePosition="0.0376115" xelmax="1" gapOffset="-.000163"/>
+       </attributes>
+    </node>
+    <node type="FM" id="CCL_RF:Cav01:Fm02" pos="1.3779495" len="0.606088">
+      <attributes>
+        <fieldmap fieldMapFile="CCL1Rg2" xelmax="1.028987"/>
+       </attributes>
+    </node>
+    <node type="FM" id="CCL_RF:Cav01:Fm03" pos="2.366449" len="0.610496">
+      <attributes>
+        <fieldmap fieldMapFile="CCL1Rg3" xelmax="1.058007"/>
+       </attributes>
+    </node>
+    <node type="FM" id="CCL_RF:Cav01:Fm04" pos="3.3621915" len="0.615000">
+      <attributes>
+        <fieldmap fieldMapFile="CCL1Rg4" xelmax="1.086993"/>
+       </attributes>
+    </node>
+    <node type="FM" id="CCL_RF:Cav01:Fm05" pos="4.36535" len="0.619616">
+      <attributes>
+        <fieldmap fieldMapFile="CCL1Rg5" xelmax="1.116013"/>
+       </attributes>
+    </node>
+    <node type="FM" id="CCL_RF:Cav01:Fm06" pos="5.3760885" len="0.624328">
+      <attributes>
+        <fieldmap fieldMapFile="CCL1Rg6" xelmax="1.145"/>
+       </attributes>
+    </node>
+    <node type="FM" id="CCL_RF:Cav01:Fm07" pos="6.3945705" len="0.629144">
+      <attributes>
+        <fieldmap fieldMapFile="CCL1Rg7" xelmax="1.17402"/>
+       </attributes>
+    </node>
+    <node type="FM" id="CCL_RF:Cav01:Fm08" pos="7.4209535" len="0.634056">
+      <attributes>
+        <fieldmap fieldMapFile="CCL1Rg8" xelmax="1.203007"/>
+       </attributes>
+    </node>
+    <node type="FM" id="CCL_RF:Cav01:Fm09" pos="8.4553985" len="0.639064">
+      <attributes>
+        <fieldmap fieldMapFile="CCL1Rg9" xelmax="1.232026"/>
+       </attributes>
+    </node>
+    <node type="FM" id="CCL_RF:Cav01:Fm10" pos="9.4980375" len="0.644104">
+      <attributes>
+        <fieldmap fieldMapFile="CCL1Rg10" xelmax="1.23268"/>
+       </attributes>
+    </node>
+    <node type="FM" id="CCL_RF:Cav01:Fm11" pos="10.5488585" len="0.649128">
+      <attributes>
+        <fieldmap fieldMapFile="CCL1Rg11" xelmax="1.23268"/>
+       </attributes>
+    </node>
+    <node type="FM" id="CCL_RF:Cav01:Fm12" pos="11.6078145" len="0.654120">
+      <attributes>
+        <fieldmap fieldMapFile="CCL1Rg12" xelmax="1.23268"/>
+       </attributes>
+    </node>
+<!--    <node type="RG" id="CCL_RF:Cav01:Rg01" pos=".133243">
        <attributes>
           <rfgap length=".075223" phaseFactor="0" ampFactor="1" TTF=".8821" endCell="1" gapOffset="-.000163"/>
        </attributes>
@@ -7018,7 +7083,7 @@
        <attributes>
           <rfgap length=".081765" phaseFactor=".563" ampFactor="1.23268" TTF=".8875" endCell="1" gapOffset=".000121"/>
        </attributes>
-    </node>
+    </node>-->
   </sequence>
   <sequence id="CCL2" len="13.392076" type="CCL">
    <attributes>
@@ -7771,7 +7836,67 @@
           <channel handle="lossInt" signal="CCL_Diag:BLM212:Slow60PulsesTotalLoss" settable="false"/>
        </channelsuite>
     </node>
-    <node type="RG" id="CCL_RF:Cav02:Rg01" pos=".083837">
+    <node type="FM" id="CCL_RF:Cav02:Fm01" pos="0.3721915" len="0.659096">
+      <attributes>
+        <fieldmap fieldMapFile="CCL2Rg1" phasePosition="0.0411935" xelmax="1" gapOffset="-.000121"/>
+       </attributes>
+    </node>
+    <node type="FM" id="CCL_RF:Cav02:Fm02" pos="1.44729955" len="0.664040">
+      <attributes>
+        <fieldmap fieldMapFile="CCL2Rg2" xelmax="1"/>
+       </attributes>
+    </node>
+    <node type="FM" id="CCL_RF:Cav02:Fm03" pos="2.530423" len="0.668960">
+      <attributes>
+        <fieldmap fieldMapFile="CCL2Rg3" xelmax="1"/>
+       </attributes>
+    </node>
+    <node type="FM" id="CCL_RF:Cav02:Fm04" pos="3.6215155" len="0.673848">
+      <attributes>
+        <fieldmap fieldMapFile="CCL2Rg4" xelmax="1"/>
+       </attributes>
+    </node>
+    <node type="FM" id="CCL_RF:Cav02:Fm05" pos="4.7205365" len="0.678712">
+      <attributes>
+        <fieldmap fieldMapFile="CCL2Rg5" xelmax="1"/>
+       </attributes>
+    </node>
+    <node type="FM" id="CCL_RF:Cav02:Fm06" pos="5.8274495" len="0.683560">
+      <attributes>
+        <fieldmap fieldMapFile="CCL2Rg6" xelmax="1"/>
+       </attributes>
+    </node>
+    <node type="FM" id="CCL_RF:Cav02:Fm07" pos="6.942201" len="0.688368">
+      <attributes>
+        <fieldmap fieldMapFile="CCL2Rg7" xelmax="1"/>
+       </attributes>
+    </node>
+    <node type="FM" id="CCL_RF:Cav02:Fm08" pos="8.0647585" len="0.693160">
+      <attributes>
+        <fieldmap fieldMapFile="CCL2Rg8" xelmax="1"/>
+       </attributes>
+    </node>
+    <node type="FM" id="CCL_RF:Cav02:Fm09" pos="9.195073" len="0.697920">
+      <attributes>
+        <fieldmap fieldMapFile="CCL2Rg9" xelmax="1"/>
+       </attributes>
+    </node>
+    <node type="FM" id="CCL_RF:Cav02:Fm10" pos="10.333105" len="0.702656">
+      <attributes>
+        <fieldmap fieldMapFile="CCL2Rg10" xelmax="1"/>
+       </attributes>
+    </node>
+    <node type="FM" id="CCL_RF:Cav02:Fm11" pos="11.4788125" len="0.707368">
+      <attributes>
+        <fieldmap fieldMapFile="CCL2Rg11" xelmax="1"/>
+       </attributes>
+    </node>
+    <node type="FM" id="CCL_RF:Cav02:Fm12" pos="12.632148" len="0.712048">
+      <attributes>
+        <fieldmap fieldMapFile="CCL2Rg12" xelmax="1"/>
+       </attributes>
+    </node>
+<!--    <node type="RG" id="CCL_RF:Cav02:Rg01" pos=".083837">
        <attributes>
           <rfgap length=".082387" phaseFactor="0" ampFactor="1" TTF=".8878" endCell="1" gapOffset="-.000121"/>
        </attributes>
@@ -8250,7 +8375,7 @@
        <attributes>
           <rfgap length=".089006" phaseFactor=".48" ampFactor="1" TTF=".8909" endCell="1" gapOffset=".000092"/>
        </attributes>
-    </node>
+    </node>-->
   </sequence>
   <sequence id="CCL3" len="14.481755" type="CCL">
    <attributes>
@@ -9003,7 +9128,67 @@
           <channel handle="lossInt" signal="CCL_Diag:BLM312:Slow60PulsesTotalLoss" settable="false"/>
        </channelsuite>
     </node>
-    <node type="RG" id="CCL_RF:Cav03:Rg01" pos=".167446">
+    <node type="FM" id="CCL_RF:Cav03:Fm01" pos="0.481004" len="0.716704">
+      <attributes>
+        <fieldmap fieldMapFile="CCL3Rg1" phasePosition="0.044794" xelmax="1" gapOffset="-.000091"/>
+       </attributes>
+    </node>
+    <node type="FM" id="CCL_RF:Cav03:Fm02" pos="1.6494735" len="0.721336">
+      <attributes>
+        <fieldmap fieldMapFile="CCL3Rg2" xelmax="1"/>
+       </attributes>
+    </node>
+    <node type="FM" id="CCL_RF:Cav03:Fm03" pos="2.825444" len="0.725936">
+      <attributes>
+        <fieldmap fieldMapFile="CCL3Rg3" xelmax="1"/>
+       </attributes>
+    </node>
+    <node type="FM" id="CCL_RF:Cav03:Fm04" pos="4.008873" len="0.730512">
+      <attributes>
+        <fieldmap fieldMapFile="CCL3Rg4" xelmax="1"/>
+       </attributes>
+    </node>
+    <node type="FM" id="CCL_RF:Cav03:Fm05" pos="5.1997175" len="0.735064">
+      <attributes>
+        <fieldmap fieldMapFile="CCL3Rg5" xelmax="1"/>
+       </attributes>
+    </node>
+    <node type="FM" id="CCL_RF:Cav03:Fm06" pos="6.3979355" len="0.739592">
+      <attributes>
+        <fieldmap fieldMapFile="CCL3Rg6" xelmax="1"/>
+       </attributes>
+    </node>
+    <node type="FM" id="CCL_RF:Cav03:Fm07" pos="7.603645" len="0.744096">
+      <attributes>
+        <fieldmap fieldMapFile="CCL3Rg7" xelmax="1"/>
+       </attributes>
+    </node>
+    <node type="FM" id="CCL_RF:Cav03:Fm08" pos="8.8165825" len="0.748584">
+      <attributes>
+        <fieldmap fieldMapFile="CCL3Rg8" xelmax="1"/>
+       </attributes>
+    </node>
+    <node type="FM" id="CCL_RF:Cav03:Fm09" pos="10.0367945" len="0.753048">
+      <attributes>
+        <fieldmap fieldMapFile="CCL3Rg9" xelmax="1"/>
+       </attributes>
+    </node>
+    <node type="FM" id="CCL_RF:Cav03:Fm10" pos="11.2642525" len="0.757496">
+      <attributes>
+        <fieldmap fieldMapFile="CCL3Rg10" xelmax="1"/>
+       </attributes>
+    </node>
+    <node type="FM" id="CCL_RF:Cav03:Fm11" pos="12.4989235" len="0.761928">
+      <attributes>
+        <fieldmap fieldMapFile="CCL3Rg11" xelmax="1"/>
+       </attributes>
+    </node>
+    <node type="FM" id="CCL_RF:Cav03:Fm12" pos="13.740773" len="0.766336">
+      <attributes>
+        <fieldmap fieldMapFile="CCL3Rg12" xelmax="1"/>
+       </attributes>
+    </node>
+<!--    <node type="RG" id="CCL_RF:Cav03:Rg01" pos=".167446">
        <attributes>
           <rfgap length=".089588" phaseFactor="0" ampFactor="1" TTF=".8911" endCell="1" gapOffset="-.000091"/>
        </attributes>
@@ -9482,7 +9667,7 @@
        <attributes>
           <rfgap length=".095792" phaseFactor="1.443" ampFactor="1" TTF=".8924" endCell="1" gapOffset=".000072"/>
        </attributes>
-    </node>
+    </node>-->
   </sequence>
   <sequence id="CCL4" len="15.097716" type="CCL">
    <attributes>
@@ -10124,7 +10309,67 @@
           <channel handle="lossInt" signal="CCL_Diag:BLM412:Slow60PulsesTotalLoss" settable="false"/>
        </channelsuite>
     </node>
-    <node type="RG" id="CCL_RF:Cav04:Rg01" pos=".130816">
+    <node type="FM" id="CCL_RF:Cav04:Fm01" pos="0.468006" len="0.770720">
+      <attributes>
+        <fieldmap fieldMapFile="CCL4Rg1" phasePosition="0.04817" xelmax="1" gapOffset="-.000072"/>
+       </attributes>
+    </node>
+    <node type="FM" id="CCL_RF:Cav04:Fm02" pos="1.724114" len="0.775088">
+      <attributes>
+        <fieldmap fieldMapFile="CCL4Rg2" xelmax="1"/>
+       </attributes>
+    </node>
+    <node type="FM" id="CCL_RF:Cav04:Fm03" pos="2.9873005" len="0.779432">
+      <attributes>
+        <fieldmap fieldMapFile="CCL4Rg3" xelmax="1"/>
+       </attributes>
+    </node>
+    <node type="FM" id="CCL_RF:Cav04:Fm04" pos="4.257533" len="0.783760">
+      <attributes>
+        <fieldmap fieldMapFile="CCL4Rg4" xelmax="1"/>
+       </attributes>
+    </node>
+    <node type="FM" id="CCL_RF:Cav04:Fm05" pos="5.534775" len="0.788064">
+      <attributes>
+        <fieldmap fieldMapFile="CCL4Rg5" xelmax="1"/>
+       </attributes>
+    </node>
+    <node type="FM" id="CCL_RF:Cav04:Fm06" pos="6.8189935" len="0.792344">
+      <attributes>
+        <fieldmap fieldMapFile="CCL4Rg6" xelmax="1"/>
+       </attributes>
+    </node>
+    <node type="FM" id="CCL_RF:Cav04:Fm07" pos="8.110158" len="0.796608">
+      <attributes>
+        <fieldmap fieldMapFile="CCL4Rg7" xelmax="1"/>
+       </attributes>
+    </node>
+    <node type="FM" id="CCL_RF:Cav04:Fm08" pos="9.40823" len="0.800848">
+      <attributes>
+        <fieldmap fieldMapFile="CCL4Rg8" xelmax="1"/>
+       </attributes>
+    </node>
+    <node type="FM" id="CCL_RF:Cav04:Fm09" pos="10.713178" len="0.805072">
+      <attributes>
+        <fieldmap fieldMapFile="CCL4Rg9" xelmax="1"/>
+       </attributes>
+    </node>
+    <node type="FM" id="CCL_RF:Cav04:Fm10" pos="12.024961" len="0.809264">
+      <attributes>
+        <fieldmap fieldMapFile="CCL4Rg10" xelmax="1"/>
+       </attributes>
+    </node>
+    <node type="FM" id="CCL_RF:Cav04:Fm11" pos="13.3435555" len="0.813448">
+      <attributes>
+        <fieldmap fieldMapFile="CCL4Rg11" xelmax="1"/>
+       </attributes>
+    </node>
+    <node type="FM" id="CCL_RF:Cav04:Fm12" pos="14.668915" len="0.817600">
+      <attributes>
+        <fieldmap fieldMapFile="CCL4Rg12" xelmax="1"/>
+       </attributes>
+    </node>
+<!--    <node type="RG" id="CCL_RF:Cav04:Rg01" pos=".130816">
        <attributes>
           <rfgap length=".09634" phaseFactor="0" ampFactor="1" TTF=".8925" endCell="1" gapOffset="-.000072"/>
        </attributes>
@@ -10603,7 +10848,7 @@
        <attributes>
           <rfgap length=".1022" phaseFactor="1.988" ampFactor="1" TTF=".8926" endCell="1" gapOffset=".000058"/>
        </attributes>
-    </node>
+    </node>-->
   </sequence>
   <sequence id="SCLMed" len="66.962">
    <attributes>
@@ -11990,7 +12235,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM01a:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav01a:RF_ON" settable="false"/>
        </channelsuite>
-       <node type="RG" id="SCL_RF:Cav01a:Rg01" pos="-0.284">
+       <node type="FM" id="SCL_RF:Cav01a:Fm" pos="0" len="1.0316">
+         <attributes>
+           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318" gapOffset="-0.011264" xelmax="0.81"/>
+          </attributes>
+       </node>
+<!--       <node type="RG" id="SCL_RF:Cav01a:Rg01" pos="-0.284">
          <attributes>
           <rfgap length="0.1136" phaseFactor="0" ampFactor="1.21488" TTF="0.5101" endCell="1" gapOffset="-0.011264"/>
          </attributes>
@@ -12019,7 +12269,7 @@
          <attributes>
           <rfgap length="0.1136" phaseFactor="133.757" ampFactor="1.21488" TTF="0.5166" endCell="1" gapOffset="0.011344"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav01b" pos="4.399238" len=".6816" status="true">
        <attributes>
@@ -12052,7 +12302,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM01b:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav01b:RF_ON" settable="false"/>
        </channelsuite>
-       <node type="RG" id="SCL_RF:Cav01b:Rg01" pos="-0.284">
+       <node type="FM" id="SCL_RF:Cav01b:Fm" pos="0" len="1.0316">
+         <attributes>
+           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318" gapOffset="-0.011359" xelmax="0.81"/>
+          </attributes>
+       </node>
+<!--       <node type="RG" id="SCL_RF:Cav01b:Rg01" pos="-0.284">
          <attributes>
           <rfgap length="0.1136" phaseFactor="0" ampFactor="1.214883" TTF="0.5163" endCell="1" gapOffset="-0.011359"/>
          </attributes>
@@ -12081,7 +12336,7 @@
          <attributes>
           <rfgap length="0.1136" phaseFactor="124.169" ampFactor="1.214883" TTF="0.5227" endCell="1" gapOffset="0.011442"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav01c" pos="5.557666" len=".6816" status="true">
        <attributes>
@@ -12114,7 +12369,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM01c:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav01c:RF_ON" settable="false"/>
        </channelsuite>
-       <node type="RG" id="SCL_RF:Cav01c:Rg01" pos="-0.284">
+       <node type="FM" id="SCL_RF:Cav01c:Fm" pos="0" len="1.0316">
+         <attributes>
+           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318" gapOffset="-0.011457" xelmax="0.81"/>
+          </attributes>
+       </node>
+<!--       <node type="RG" id="SCL_RF:Cav01c:Rg01" pos="-0.284">
          <attributes>
           <rfgap length="0.1136" phaseFactor="0" ampFactor="1.21488" TTF="0.5226" endCell="1" gapOffset="-0.011457"/>
          </attributes>
@@ -12143,7 +12403,7 @@
          <attributes>
           <rfgap length="0.1136" phaseFactor="114.754" ampFactor="1.21488" TTF="0.5287" endCell="1" gapOffset="0.011536"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav02a" pos="9.014812" len=".6816" status="true">
        <attributes>
@@ -12176,7 +12436,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM02a:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav02a:RF_ON" settable="false"/>
        </channelsuite>
-       <node type="RG" id="SCL_RF:Cav02a:Rg01" pos="-0.284">
+       <node type="FM" id="SCL_RF:Cav02a:Fm" pos="0" len="1.0316">
+         <attributes>
+           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318"  gapOffset="-0.011552" xelmax="0.81"/>
+          </attributes>
+       </node>	   
+<!--       <node type="RG" id="SCL_RF:Cav02a:Rg01" pos="-0.284">
          <attributes>
           <rfgap length="0.1136" phaseFactor="0" ampFactor="1.21488" TTF="0.5289" endCell="1" gapOffset="-0.011552"/>
          </attributes>
@@ -12205,7 +12470,7 @@
          <attributes>
           <rfgap length="0.1136" phaseFactor="105.201" ampFactor="1.21488" TTF="0.5349" endCell="1" gapOffset="0.011632"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav02b" pos="10.238238" len=".6816" status="true">
        <attributes>
@@ -12238,7 +12503,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM02b:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav02b:RF_ON" settable="false"/>
        </channelsuite>
-       <node type="RG" id="SCL_RF:Cav02b:Rg01" pos="-0.284">
+       <node type="FM" id="SCL_RF:Cav02b:Fm" pos="0" len="1.0316">
+         <attributes>
+           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318" gapOffset="-0.011648" xelmax="0.81"/>
+          </attributes>
+       </node>
+<!--       <node type="RG" id="SCL_RF:Cav02b:Rg01" pos="-0.284">
          <attributes>
           <rfgap length="0.1136" phaseFactor="0" ampFactor="1.214876" TTF="0.5352" endCell="1" gapOffset="-0.011648"/>
          </attributes>
@@ -12267,7 +12537,7 @@
          <attributes>
           <rfgap length="0.1136" phaseFactor="95.243" ampFactor="1.214876" TTF="0.5411" endCell="1" gapOffset="0.011728"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav02c" pos="11.396666" len=".6816" status="true">
        <attributes>
@@ -12300,7 +12570,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM02c:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav02c:RF_ON" settable="false"/>
        </channelsuite>
-       <node type="RG" id="SCL_RF:Cav02c:Rg01" pos="-0.284">
+       <node type="FM" id="SCL_RF:Cav02c:Fm" pos="0" len="1.0316">
+         <attributes>
+           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318"  gapOffset="-0.011742" xelmax="0.81"/>
+          </attributes>
+       </node>
+<!--       <node type="RG" id="SCL_RF:Cav02c:Rg01" pos="-0.284">
          <attributes>
           <rfgap length="0.1136" phaseFactor="0" ampFactor="1.21488" TTF="0.5415" endCell="1" gapOffset="-0.011742"/>
          </attributes>
@@ -12329,7 +12604,7 @@
          <attributes>
           <rfgap length="0.1136" phaseFactor="86.191" ampFactor="1.21488" TTF="0.5471" endCell="1" gapOffset="0.011818"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav03a" pos="14.853812" len=".6816" status="true">
        <attributes>
@@ -12362,7 +12637,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM03a:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav03a:RF_ON" settable="false"/>
        </channelsuite>
-       <node type="RG" id="SCL_RF:Cav03a:Rg01" pos="-0.284">
+       <node type="FM" id="SCL_RF:Cav03a:Fm" pos="0" len="1.0316">
+         <attributes>
+           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318"  gapOffset="-0.011834" xelmax="0.81"/>
+          </attributes>
+       </node>
+<!--       <node type="RG" id="SCL_RF:Cav03a:Rg01" pos="-0.284">
          <attributes>
           <rfgap length="0.1136" phaseFactor="0" ampFactor="1.214874" TTF="0.5478" endCell="1" gapOffset="-0.011834"/>
          </attributes>
@@ -12391,7 +12671,7 @@
          <attributes>
           <rfgap length="0.1136" phaseFactor="76.823" ampFactor="1.214874" TTF="0.5532" endCell="1" gapOffset="0.011908"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav03b" pos="16.077238" len=".6816" status="true">
        <attributes>
@@ -12424,6 +12704,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM03b:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav03b:RF_ON" settable="false"/>
        </channelsuite>
+       <node type="FM" id="SCL_RF:Cav03b:Fm" pos="0" len="1.0316">
+         <attributes>
+           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318"  gapOffset="-0.011925" xelmax="0.81"/>
+          </attributes>
+       </node>
+<!--
        <node type="RG" id="SCL_RF:Cav03b:Rg01" pos="-0.284">
          <attributes>
           <rfgap length="0.1136" phaseFactor="0" ampFactor="1.214874" TTF="0.554" endCell="1" gapOffset="-0.011925"/>
@@ -12453,7 +12739,7 @@
          <attributes>
           <rfgap length="0.1136" phaseFactor="67.593" ampFactor="1.214874" TTF="0.5592" endCell="1" gapOffset="0.011996"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav03c" pos="17.235666" len=".6816" status="true">
        <attributes>
@@ -12486,6 +12772,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM03c:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav03c:RF_ON" settable="false"/>
        </channelsuite>
+       <node type="FM" id="SCL_RF:Cav03c:Fm" pos="0" len="1.0316">
+         <attributes>
+           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318"  gapOffset="-0.012012" xelmax="0.81"/>
+          </attributes>
+       </node>
+<!--
        <node type="RG" id="SCL_RF:Cav03c:Rg01" pos="-0.284">
          <attributes>
           <rfgap length="0.1136" phaseFactor="0" ampFactor="1.214874" TTF="0.5601" endCell="1" gapOffset="-0.012012"/>
@@ -12515,7 +12807,7 @@
          <attributes>
           <rfgap length="0.1136" phaseFactor="58.532" ampFactor="1.214874" TTF="0.5652" endCell="1" gapOffset="0.012083"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav04a" pos="20.692812" len=".6816" status="true">
        <attributes>
@@ -12548,6 +12840,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM04a:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav04a:RF_ON" settable="false"/>
        </channelsuite>
+       <node type="FM" id="SCL_RF:Cav04a:Fm" pos="0" len="1.0316">
+         <attributes>
+           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318"  gapOffset="-0.012098" xelmax="0.81"/>
+          </attributes>
+       </node>
+<!--
        <node type="RG" id="SCL_RF:Cav04a:Rg01" pos="-0.284">
          <attributes>
           <rfgap length="0.1136" phaseFactor="0" ampFactor="1.214874" TTF="0.5661" endCell="1" gapOffset="-0.012098"/>
@@ -12577,7 +12875,7 @@
          <attributes>
           <rfgap length="0.1136" phaseFactor="49.669" ampFactor="1.214874" TTF="0.571" endCell="1" gapOffset="0.012165"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav04b" pos="21.916238" len=".6816" status="true">
        <attributes>
@@ -12610,6 +12908,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM04b:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav04b:RF_ON" settable="false"/>
        </channelsuite>
+       <node type="FM" id="SCL_RF:Cav04b:Fm" pos="0" len="1.0316">
+         <attributes>
+           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318"  gapOffset="-0.01218" xelmax="0.81"/>
+          </attributes>
+       </node>
+<!--
        <node type="RG" id="SCL_RF:Cav04b:Rg01" pos="-0.284">
          <attributes>
           <rfgap length="0.1136" phaseFactor="0" ampFactor="1.214874" TTF="0.572" endCell="1" gapOffset="-0.01218"/>
@@ -12639,7 +12943,7 @@
          <attributes>
           <rfgap length="0.1136" phaseFactor="41.025" ampFactor="1.214874" TTF="0.5767" endCell="1" gapOffset="0.012246"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav04c" pos="23.074666" len=".6816" status="true">
        <attributes>
@@ -12672,6 +12976,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM04c:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav04c:RF_ON" settable="false"/>
        </channelsuite>
+       <node type="FM" id="SCL_RF:Cav04c:Fm" pos="0" len="1.0316">
+         <attributes>
+           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318"  gapOffset="-0.012261" xelmax="0.81"/>
+          </attributes>
+       </node>
+<!--
        <node type="RG" id="SCL_RF:Cav04c:Rg01" pos="-0.284">
          <attributes>
           <rfgap length="0.1136" phaseFactor="0" ampFactor="1.214874" TTF="0.5777" endCell="1" gapOffset="-0.012261"/>
@@ -12701,7 +13011,7 @@
          <attributes>
           <rfgap length="0.1136" phaseFactor="32.62" ampFactor="1.214874" TTF="0.5822" endCell="1" gapOffset="0.012323"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav05a" pos="26.531812" len=".6816" status="true">
        <attributes>
@@ -12734,6 +13044,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM05a:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav05a:RF_ON" settable="false"/>
        </channelsuite>
+       <node type="FM" id="SCL_RF:Cav05a:Fm" pos="0" len="1.0316">
+         <attributes>
+           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318"  gapOffset="-0.012337" xelmax="0.81"/>
+          </attributes>
+       </node>
+<!--
        <node type="RG" id="SCL_RF:Cav05a:Rg01" pos="-0.284">
          <attributes>
           <rfgap length="0.1136" phaseFactor="0" ampFactor="1.214874" TTF="0.5832" endCell="1" gapOffset="-0.012337"/>
@@ -12763,7 +13079,7 @@
          <attributes>
           <rfgap length="0.1136" phaseFactor="24.469" ampFactor="1.214874" TTF="0.5876" endCell="1" gapOffset="0.012398"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav05b" pos="27.755238" len=".6816" status="true">
        <attributes>
@@ -12796,6 +13112,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM05b:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav05b:RF_ON" settable="false"/>
        </channelsuite>
+       <node type="FM" id="SCL_RF:Cav05b:Fm" pos="0" len="1.0316">
+         <attributes>
+           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318"  gapOffset="-0.012411" xelmax="0.81"/>
+          </attributes>
+       </node>
+<!--
        <node type="RG" id="SCL_RF:Cav05b:Rg01" pos="-0.284">
          <attributes>
           <rfgap length="0.1136" phaseFactor="0" ampFactor="1.214874" TTF="0.5886" endCell="1" gapOffset="-0.012411"/>
@@ -12825,7 +13147,7 @@
          <attributes>
           <rfgap length="0.1136" phaseFactor="16.581" ampFactor="1.214874" TTF="0.5928" endCell="1" gapOffset="0.01247"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav05c" pos="28.913666" len=".6816" status="true">
        <attributes>
@@ -12858,6 +13180,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM05c:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav05c:RF_ON" settable="false"/>
        </channelsuite>
+       <node type="FM" id="SCL_RF:Cav05c:Fm" pos="0" len="1.0316">
+         <attributes>
+           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318"  gapOffset="-0.012482" xelmax="0.81"/>
+          </attributes>
+       </node>
+<!--
        <node type="RG" id="SCL_RF:Cav05c:Rg01" pos="-0.284">
          <attributes>
           <rfgap length="0.1136" phaseFactor="0" ampFactor="1.214874" TTF="0.5938" endCell="1" gapOffset="-0.012482"/>
@@ -12887,7 +13215,7 @@
          <attributes>
           <rfgap length="0.1136" phaseFactor="8.962" ampFactor="1.214874" TTF="0.5979" endCell="1" gapOffset="0.012538"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav06a" pos="32.370812" len=".6816" status="true">
        <attributes>
@@ -12920,6 +13248,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM06a:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav06a:RF_ON" settable="false"/>
        </channelsuite>
+       <node type="FM" id="SCL_RF:Cav06a:Fm" pos="0" len="1.0316">
+         <attributes>
+           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318" gapOffset="-0.01255" xelmax="0.81"/>
+          </attributes>
+       </node>
+<!--
        <node type="RG" id="SCL_RF:Cav06a:Rg01" pos="-0.284">
          <attributes>
           <rfgap length="0.1136" phaseFactor="0" ampFactor="1.214874" TTF="0.5989" endCell="1" gapOffset="-0.01255"/>
@@ -12949,7 +13283,7 @@
          <attributes>
           <rfgap length="0.1136" phaseFactor="1.615" ampFactor="1.214874" TTF="0.6028" endCell="1" gapOffset="0.012604"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav06b" pos="33.594238" len=".6816" status="true">
        <attributes>
@@ -12982,6 +13316,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM06b:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav06b:RF_ON" settable="false"/>
        </channelsuite>
+       <node type="FM" id="SCL_RF:Cav06b:Fm" pos="0" len="1.0316">
+         <attributes>
+           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318" gapOffset="-0.012615" xelmax="0.81"/>
+          </attributes>
+       </node>
+<!--
        <node type="RG" id="SCL_RF:Cav06b:Rg01" pos="-0.284">
          <attributes>
           <rfgap length="0.1136" phaseFactor="0" ampFactor="1.214874" TTF="0.6037" endCell="1" gapOffset="-0.012615"/>
@@ -13011,7 +13351,7 @@
          <attributes>
           <rfgap length="0.1136" phaseFactor="-5.459" ampFactor="1.214874" TTF="0.6075" endCell="1" gapOffset="0.012667"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav06c" pos="34.752666" len=".6816" status="true">
        <attributes>
@@ -13044,6 +13384,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM06c:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav06c:RF_ON" settable="false"/>
        </channelsuite>
+       <node type="FM" id="SCL_RF:Cav06c:Fm" pos="0" len="1.0316">
+         <attributes>
+           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318" gapOffset="-0.012677" xelmax="0.81"/>
+          </attributes>
+       </node>
+<!--
        <node type="RG" id="SCL_RF:Cav06c:Rg01" pos="-0.284">
          <attributes>
           <rfgap length="0.1136" phaseFactor="0" ampFactor="1.214874" TTF="0.6084" endCell="1" gapOffset="-0.012677"/>
@@ -13073,7 +13419,7 @@
          <attributes>
           <rfgap length="0.1136" phaseFactor="-12.263" ampFactor="1.214874" TTF="0.612" endCell="1" gapOffset="0.012727"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav07a" pos="38.209812" len=".6816" status="true">
        <attributes>
@@ -13106,6 +13452,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM07a:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav07a:RF_ON" settable="false"/>
        </channelsuite>
+       <node type="FM" id="SCL_RF:Cav07a:Fm" pos="0" len="1.0316">
+         <attributes>
+           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318"  gapOffset="-0.012736" xelmax="0.81"/>
+          </attributes>
+       </node>
+<!--
        <node type="RG" id="SCL_RF:Cav07a:Rg01" pos="-0.284">
          <attributes>
           <rfgap length="0.1136" phaseFactor="0" ampFactor="1.214874" TTF="0.6129" endCell="1" gapOffset="-0.012736"/>
@@ -13135,7 +13487,7 @@
          <attributes>
           <rfgap length="0.1136" phaseFactor="-18.802" ampFactor="1.214874" TTF="0.6164" endCell="1" gapOffset="0.012784"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav07b" pos="39.433238" len=".6816" status="true">
        <attributes>
@@ -13168,6 +13520,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM07b:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav07b:RF_ON" settable="false"/>
        </channelsuite>
+       <node type="FM" id="SCL_RF:Cav07b:Fm" pos="0" len="1.0316">
+         <attributes>
+           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318" gapOffset="-0.012793" xelmax="0.81"/>
+          </attributes>
+       </node>
+<!--
        <node type="RG" id="SCL_RF:Cav07b:Rg01" pos="-0.284">
          <attributes>
           <rfgap length="0.1136" phaseFactor="0" ampFactor="1.214874" TTF="0.6172" endCell="1" gapOffset="-0.012793"/>
@@ -13197,7 +13555,7 @@
          <attributes>
           <rfgap length="0.1136" phaseFactor="-25.08" ampFactor="1.214874" TTF="0.6206" endCell="1" gapOffset="0.012838"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav07c" pos="40.591666" len=".6816" status="true">
        <attributes>
@@ -13230,6 +13588,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM07c:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav07c:RF_ON" settable="false"/>
        </channelsuite>
+       <node type="FM" id="SCL_RF:Cav07c:Fm" pos="0" len="1.0316">
+         <attributes>
+           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318" gapOffset="-0.012847" xelmax="0.81"/>
+          </attributes>
+       </node>
+<!--
        <node type="RG" id="SCL_RF:Cav07c:Rg01" pos="-0.284">
          <attributes>
           <rfgap length="0.1136" phaseFactor="0" ampFactor="1.214874" TTF="0.6213" endCell="1" gapOffset="-0.012847"/>
@@ -13259,7 +13623,7 @@
          <attributes>
           <rfgap length="0.1136" phaseFactor="-31.106" ampFactor="1.214874" TTF="0.6246" endCell="1" gapOffset="0.01289"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav08a" pos="44.048812" len=".6816" status="true">
        <attributes>
@@ -13292,6 +13656,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM08a:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav08a:RF_ON" settable="false"/>
        </channelsuite>
+       <node type="FM" id="SCL_RF:Cav08a:Fm" pos="0" len="1.0316">
+         <attributes>
+           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318"  gapOffset="-0.012898" xelmax="0.81"/>
+          </attributes>
+       </node>
+<!--
        <node type="RG" id="SCL_RF:Cav08a:Rg01" pos="-0.284">
          <attributes>
           <rfgap length="0.1136" phaseFactor="0" ampFactor="1.21488" TTF="0.6253" endCell="1" gapOffset="-0.012898"/>
@@ -13321,7 +13691,7 @@
          <attributes>
           <rfgap length="0.1136" phaseFactor="-36.888" ampFactor="1.21488" TTF="0.6285" endCell="1" gapOffset="0.01294"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav08b" pos="45.272238" len=".6816" status="true">
        <attributes>
@@ -13354,6 +13724,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM08b:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav08b:RF_ON" settable="false"/>
        </channelsuite>
+       <node type="FM" id="SCL_RF:Cav08b:Fm" pos="0" len="1.0316">
+         <attributes>
+           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318" gapOffset="-0.012947" xelmax="0.81"/>
+          </attributes>
+       </node>
+<!--
        <node type="RG" id="SCL_RF:Cav08b:Rg01" pos="-0.284">
          <attributes>
           <rfgap length="0.1136" phaseFactor="0" ampFactor="1.21488" TTF="0.6291" endCell="1" gapOffset="-0.012947"/>
@@ -13383,7 +13759,7 @@
          <attributes>
           <rfgap length="0.1136" phaseFactor="-42.433" ampFactor="1.21488" TTF="0.6322" endCell="1" gapOffset="0.012987"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav08c" pos="46.430666" len=".6816" status="true">
        <attributes>
@@ -13416,6 +13792,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM08c:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav08c:RF_ON" settable="false"/>
        </channelsuite>
+       <node type="FM" id="SCL_RF:Cav08c:Fm" pos="0" len="1.0316">
+         <attributes>
+           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318" gapOffset="-0.012994" xelmax="0.81"/>
+          </attributes>
+       </node>
+<!--
        <node type="RG" id="SCL_RF:Cav08c:Rg01" pos="-0.284">
          <attributes>
           <rfgap length="0.1136" phaseFactor="0" ampFactor="1.21488" TTF="0.6328" endCell="1" gapOffset="-0.012994"/>
@@ -13445,7 +13827,7 @@
          <attributes>
           <rfgap length="0.1136" phaseFactor="-47.752" ampFactor="1.21488" TTF="0.6357" endCell="1" gapOffset="0.013032"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav09a" pos="49.887812" len=".6816" status="true">
        <attributes>
@@ -13478,6 +13860,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM09a:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav09a:RF_ON" settable="false"/>
        </channelsuite>
+       <node type="FM" id="SCL_RF:Cav09a:Fm" pos="0" len="1.0316">
+         <attributes>
+           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318" gapOffset="-0.013038" xelmax="0.81"/>
+          </attributes>
+       </node>
+<!--
        <node type="RG" id="SCL_RF:Cav09a:Rg01" pos="-0.284">
          <attributes>
           <rfgap length="0.1136" phaseFactor="0" ampFactor="1.21488" TTF="0.6362" endCell="1" gapOffset="-0.013038"/>
@@ -13507,7 +13895,7 @@
          <attributes>
           <rfgap length="0.1136" phaseFactor="-52.853" ampFactor="1.21488" TTF="0.6392" endCell="1" gapOffset="0.013076"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav09b" pos="51.111238" len=".6816" status="true">
        <attributes>
@@ -13540,6 +13928,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM09b:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav09b:RF_ON" settable="false"/>
        </channelsuite>
+       <node type="FM" id="SCL_RF:Cav09b:Fm" pos="0" len="1.0316">
+         <attributes>
+           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318"  gapOffset="-0.013082" xelmax="0.81"/>
+          </attributes>
+       </node>
+<!--
        <node type="RG" id="SCL_RF:Cav09b:Rg01" pos="-0.284">
          <attributes>
           <rfgap length="0.1136" phaseFactor="0" ampFactor="1.21488" TTF="0.6396" endCell="1" gapOffset="-0.013082"/>
@@ -13569,7 +13963,7 @@
          <attributes>
           <rfgap length="0.1136" phaseFactor="-57.746" ampFactor="1.21488" TTF="0.6424" endCell="1" gapOffset="0.013116"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav09c" pos="52.269666" len=".6816" status="true">
        <attributes>
@@ -13602,6 +13996,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM09c:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav09c:RF_ON" settable="false"/>
        </channelsuite>
+       <node type="FM" id="SCL_RF:Cav09c:Fm" pos="0" len="1.0316">
+         <attributes>
+           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318" gapOffset="-0.013122" xelmax="0.81"/>
+          </attributes>
+       </node>
+<!--
        <node type="RG" id="SCL_RF:Cav09c:Rg01" pos="-0.284">
          <attributes>
           <rfgap length="0.1136" phaseFactor="0" ampFactor="1.21488" TTF="0.6428" endCell="1" gapOffset="-0.013122"/>
@@ -13631,7 +14031,7 @@
          <attributes>
           <rfgap length="0.1136" phaseFactor="-62.44" ampFactor="1.21488" TTF="0.6456" endCell="1" gapOffset="0.013156"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav10a" pos="55.726812" len=".6816" status="true">
        <attributes>
@@ -13664,6 +14064,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM10a:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav10a:RF_ON" settable="false"/>
        </channelsuite>
+       <node type="FM" id="SCL_RF:Cav10a:Fm" pos="0" len="1.0316">
+         <attributes>
+           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318"  gapOffset="-0.013161" xelmax="0.81"/>
+          </attributes>
+       </node>
+<!--
        <node type="RG" id="SCL_RF:Cav10a:Rg01" pos="-0.284">
          <attributes>
           <rfgap length="0.1136" phaseFactor="0" ampFactor="1.21488" TTF="0.6459" endCell="1" gapOffset="-0.013161"/>
@@ -13693,7 +14099,7 @@
          <attributes>
           <rfgap length="0.1136" phaseFactor="-66.945" ampFactor="1.21488" TTF="0.6486" endCell="1" gapOffset="0.013193"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav10b" pos="56.950238" len=".6816" status="true">
        <attributes>
@@ -13726,6 +14132,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM10b:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav10b:RF_ON" settable="false"/>
        </channelsuite>
+       <node type="FM" id="SCL_RF:Cav10b:Fm" pos="0" len="1.0316">
+         <attributes>
+           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318"  gapOffset="-0.013198" xelmax="0.81"/>
+          </attributes>
+       </node>
+<!--
        <node type="RG" id="SCL_RF:Cav10b:Rg01" pos="-0.284">
          <attributes>
           <rfgap length="0.1136" phaseFactor="0" ampFactor="1.21488" TTF="0.6489" endCell="1" gapOffset="-0.013198"/>
@@ -13755,7 +14167,7 @@
          <attributes>
           <rfgap length="0.1136" phaseFactor="-71.269" ampFactor="1.21488" TTF="0.6514" endCell="1" gapOffset="0.013229"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav10c" pos="58.108666" len=".6816" status="true">
        <attributes>
@@ -13788,6 +14200,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM10c:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav10c:RF_ON" settable="false"/>
        </channelsuite>
+       <node type="FM" id="SCL_RF:Cav10c:Fm" pos="0" len="1.0316">
+         <attributes>
+           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318" gapOffset="-0.013233" xelmax="0.81"/>
+          </attributes>
+       </node>
+<!--
        <node type="RG" id="SCL_RF:Cav10c:Rg01" pos="-0.284">
          <attributes>
           <rfgap length="0.1136" phaseFactor="0" ampFactor="1.21488" TTF="0.6517" endCell="1" gapOffset="-0.013233"/>
@@ -13817,7 +14235,7 @@
          <attributes>
           <rfgap length="0.1136" phaseFactor="-75.422" ampFactor="1.21488" TTF="0.6542" endCell="1" gapOffset="0.013263"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav11a" pos="61.565812" len=".6816" status="true">
        <attributes>
@@ -13850,6 +14268,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM11a:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav11a:RF_ON" settable="false"/>
        </channelsuite>
+       <node type="FM" id="SCL_RF:Cav11a:Fm" pos="0" len="1.0316">
+         <attributes>
+           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318"  gapOffset="-0.013267" xelmax="0.81"/>
+          </attributes>
+       </node>
+<!--
        <node type="RG" id="SCL_RF:Cav11a:Rg01" pos="-0.284">
          <attributes>
           <rfgap length="0.1136" phaseFactor="0" ampFactor="1.21488" TTF="0.6544" endCell="1" gapOffset="-0.013267"/>
@@ -13879,7 +14303,7 @@
          <attributes>
           <rfgap length="0.1136" phaseFactor="-79.41" ampFactor="1.21488" TTF="0.6569" endCell="1" gapOffset="0.013296"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav11b" pos="62.789238" len=".6816" status="true">
        <attributes>
@@ -13912,6 +14336,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM11b:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav11b:RF_ON" settable="false"/>
        </channelsuite>
+       <node type="FM" id="SCL_RF:Cav11b:Fm" pos="0" len="1.0316">
+         <attributes>
+           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318" gapOffset="-0.013299" xelmax="0.81"/>
+          </attributes>
+       </node>
+<!--
        <node type="RG" id="SCL_RF:Cav11b:Rg01" pos="-0.284">
          <attributes>
           <rfgap length="0.1136" phaseFactor="0" ampFactor="1.21488" TTF="0.6571" endCell="1" gapOffset="-0.013299"/>
@@ -13941,7 +14371,7 @@
          <attributes>
           <rfgap length="0.1136" phaseFactor="-83.243" ampFactor="1.21488" TTF="0.6594" endCell="1" gapOffset="0.013327"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav11c" pos="63.947666" len=".6816" status="true">
        <attributes>
@@ -13974,6 +14404,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM11c:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav11c:RF_ON" settable="false"/>
        </channelsuite>
+       <node type="FM" id="SCL_RF:Cav11c:Fm" pos="0" len="1.0316">
+         <attributes>
+           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318" gapOffset="-0.01333" xelmax="0.81"/>
+          </attributes>
+       </node>
+<!--
        <node type="RG" id="SCL_RF:Cav11c:Rg01" pos="-0.284">
          <attributes>
           <rfgap length="0.1136" phaseFactor="0" ampFactor="1.21488" TTF="0.6596" endCell="1" gapOffset="-0.01333"/>
@@ -14003,7 +14439,7 @@
          <attributes>
           <rfgap length="0.1136" phaseFactor="-86.904" ampFactor="1.21488" TTF="0.6618" endCell="1" gapOffset="0.013357"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
   </sequence>
   <sequence id="SCLHigh" len="171.294012">
@@ -16000,7 +16436,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM12a:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav12a:RF_ON" settable="false"/>
        </channelsuite>
-       <node type="RG" id="SCL_RF:Cav12a:Rg01" pos="-0.3775">
+       <node type="FM" id="SCL_RF:Cav12a:Fm" pos="0" len="1.226000">
+         <attributes>
+           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.011884"/>
+          </attributes>
+       </node>
+<!--       <node type="RG" id="SCL_RF:Cav12a:Rg01" pos="-0.3775">
          <attributes>
           <rfgap length="0.151" phaseFactor="0" ampFactor="1.165349" TTF="0.5277" endCell="1" gapOffset="-0.011884"/>
          </attributes>
@@ -16029,7 +16470,7 @@
          <attributes>
           <rfgap length="0.151" phaseFactor="160.039" ampFactor="1.165349" TTF="0.5327" endCell="1" gapOffset="0.011943"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav12b" pos="1.983317" len=".906" status="true">
        <attributes>
@@ -16062,7 +16503,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM12b:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav12b:RF_ON" settable="false"/>
        </channelsuite>
-       <node type="RG" id="SCL_RF:Cav12b:Rg01" pos="-0.3775">
+       <node type="FM" id="SCL_RF:Cav12b:Fm" pos="0" len="1.226000">
+         <attributes>
+           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.011948"/>
+          </attributes>
+       </node>
+<!--       <node type="RG" id="SCL_RF:Cav12b:Rg01" pos="-0.3775">
          <attributes>
           <rfgap length="0.151" phaseFactor="0" ampFactor="1.165348" TTF="0.5317" endCell="1" gapOffset="-0.011948"/>
          </attributes>
@@ -16091,7 +16537,7 @@
          <attributes>
           <rfgap length="0.151" phaseFactor="154.265" ampFactor="1.165348" TTF="0.5366" endCell="1" gapOffset="0.012003"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav12c" pos="3.29874" len=".906" status="true">
        <attributes>
@@ -16124,6 +16570,11 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM12c:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav12c:RF_ON" settable="false"/>
        </channelsuite>
+       <node type="FM" id="SCL_RF:Cav12c:Fm" pos="0" len="1.226000">
+         <attributes>
+           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.011948"/>
+          </attributes>
+       </node><!--
        <node type="RG" id="SCL_RF:Cav12c:Rg01" pos="-0.3775">
          <attributes>
           <rfgap length="0.151" phaseFactor="0" ampFactor="1.165348" TTF="0.5357" endCell="1" gapOffset="-0.012011"/>
@@ -16153,7 +16604,7 @@
          <attributes>
           <rfgap length="0.151" phaseFactor="148.031" ampFactor="1.165348" TTF="0.5405" endCell="1" gapOffset="0.012066"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav12d" pos="4.746166" len=".906" status="true">
        <attributes>
@@ -16186,7 +16637,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM12d:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav12d:RF_ON" settable="false"/>
        </channelsuite>
-       <node type="RG" id="SCL_RF:Cav12d:Rg01" pos="-0.3775">
+       <node type="FM" id="SCL_RF:Cav12d:Fm" pos="0" len="1.226000">
+         <attributes>
+           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.012075"/>
+          </attributes>
+       </node>
+<!--       <node type="RG" id="SCL_RF:Cav12d:Rg01" pos="-0.3775">
          <attributes>
           <rfgap length="0.151" phaseFactor="0" ampFactor="1.165346" TTF="0.5398" endCell="1" gapOffset="-0.012075"/>
          </attributes>
@@ -16215,7 +16671,7 @@
          <attributes>
           <rfgap length="0.151" phaseFactor="141.609" ampFactor="1.165346" TTF="0.5444" endCell="1" gapOffset="0.01213"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav13a" pos="8.426891" len=".906" status="true">
        <attributes>
@@ -16248,7 +16704,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM13a:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav13a:RF_ON" settable="false"/>
        </channelsuite>
-       <node type="RG" id="SCL_RF:Cav13a:Rg01" pos="-0.3775">
+       <node type="FM" id="SCL_RF:Cav13a:Fm" pos="0" len="1.226000">
+         <attributes>
+           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.012138"/>
+          </attributes>
+       </node>
+<!--       <node type="RG" id="SCL_RF:Cav13a:Rg01" pos="-0.3775">
          <attributes>
           <rfgap length="0.151" phaseFactor="0" ampFactor="1.165348" TTF="0.5439" endCell="1" gapOffset="-0.012138"/>
          </attributes>
@@ -16277,7 +16738,7 @@
          <attributes>
           <rfgap length="0.151" phaseFactor="135.546" ampFactor="1.165348" TTF="0.5483" endCell="1" gapOffset="0.012191"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav13b" pos="9.874317" len=".906" status="true">
        <attributes>
@@ -16310,7 +16771,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM13b:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav13b:RF_ON" settable="false"/>
        </channelsuite>
-       <node type="RG" id="SCL_RF:Cav13b:Rg01" pos="-0.3775">
+       <node type="FM" id="SCL_RF:Cav13b:Fm" pos="0" len="1.226000">
+         <attributes>
+           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.012201"/>
+          </attributes>
+       </node>
+<!--       <node type="RG" id="SCL_RF:Cav13b:Rg01" pos="-0.3775">
          <attributes>
           <rfgap length="0.151" phaseFactor="0" ampFactor="1.165348" TTF="0.5479" endCell="1" gapOffset="-0.012201"/>
          </attributes>
@@ -16339,7 +16805,7 @@
          <attributes>
           <rfgap length="0.151" phaseFactor="129.334" ampFactor="1.165348" TTF="0.5522" endCell="1" gapOffset="0.012252"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav13c" pos="11.18974" len=".906" status="true">
        <attributes>
@@ -16372,7 +16838,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM13c:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav13c:RF_ON" settable="false"/>
        </channelsuite>
-       <node type="RG" id="SCL_RF:Cav13c:Rg01" pos="-0.3775">
+       <node type="FM" id="SCL_RF:Cav13c:Fm" pos="0" len="1.226000">
+         <attributes>
+           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.012262"/>
+          </attributes>
+       </node>
+<!--       <node type="RG" id="SCL_RF:Cav13c:Rg01" pos="-0.3775">
          <attributes>
           <rfgap length="0.151" phaseFactor="0" ampFactor="1.165348" TTF="0.5519" endCell="1" gapOffset="-0.012262"/>
          </attributes>
@@ -16401,7 +16872,7 @@
          <attributes>
           <rfgap length="0.151" phaseFactor="123.158" ampFactor="1.165348" TTF="0.5561" endCell="1" gapOffset="0.012313"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav13d" pos="12.637166" len=".906" status="true">
        <attributes>
@@ -16434,7 +16905,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM13d:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav13d:RF_ON" settable="false"/>
        </channelsuite>
-       <node type="RG" id="SCL_RF:Cav13d:Rg01" pos="-0.3775">
+       <node type="FM" id="SCL_RF:Cav13d:Fm" pos="0" len="1.226000">
+         <attributes>
+           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.012323"/>
+          </attributes>
+       </node>
+<!--       <node type="RG" id="SCL_RF:Cav13d:Rg01" pos="-0.3775">
          <attributes>
           <rfgap length="0.151" phaseFactor="0" ampFactor="1.165348" TTF="0.556" endCell="1" gapOffset="-0.012323"/>
          </attributes>
@@ -16463,7 +16939,7 @@
          <attributes>
           <rfgap length="0.151" phaseFactor="117.038" ampFactor="1.165348" TTF="0.5599" endCell="1" gapOffset="0.012373"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav14a" pos="16.317891" len=".906" status="true">
        <attributes>
@@ -16496,7 +16972,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM14a:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav14a:RF_ON" settable="false"/>
        </channelsuite>
-       <node type="RG" id="SCL_RF:Cav14a:Rg01" pos="-0.3775">
+       <node type="FM" id="SCL_RF:Cav14a:Fm" pos="0" len="1.226000">
+         <attributes>
+           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.012382"/>
+          </attributes>
+       </node>
+<!--       <node type="RG" id="SCL_RF:Cav14a:Rg01" pos="-0.3775">
          <attributes>
           <rfgap length="0.151" phaseFactor="0" ampFactor="1.165348" TTF="0.5599" endCell="1" gapOffset="-0.012382"/>
          </attributes>
@@ -16525,7 +17006,7 @@
          <attributes>
           <rfgap length="0.151" phaseFactor="110.983" ampFactor="1.165348" TTF="0.5638" endCell="1" gapOffset="0.012431"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav14b" pos="17.765317" len=".906" status="true">
        <attributes>
@@ -16558,7 +17039,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM14b:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav14b:RF_ON" settable="false"/>
        </channelsuite>
-       <node type="RG" id="SCL_RF:Cav14b:Rg01" pos="-0.3775">
+       <node type="FM" id="SCL_RF:Cav14b:Fm" pos="0" len="1.226000">
+         <attributes>
+           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.012441"/>
+          </attributes>
+       </node>
+<!--       <node type="RG" id="SCL_RF:Cav14b:Rg01" pos="-0.3775">
          <attributes>
           <rfgap length="0.151" phaseFactor="0" ampFactor="1.165348" TTF="0.5639" endCell="1" gapOffset="-0.012441"/>
          </attributes>
@@ -16587,7 +17073,7 @@
          <attributes>
           <rfgap length="0.151" phaseFactor="105.011" ampFactor="1.165348" TTF="0.5676" endCell="1" gapOffset="0.012489"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav14c" pos="19.08074" len=".906" status="true">
        <attributes>
@@ -16620,7 +17106,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM14c:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav14c:RF_ON" settable="false"/>
        </channelsuite>
-       <node type="RG" id="SCL_RF:Cav14c:Rg01" pos="-0.3775">
+       <node type="FM" id="SCL_RF:Cav14c:Fm" pos="0" len="1.226000">
+         <attributes>
+           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.012498"/>
+          </attributes>
+       </node>
+<!--       <node type="RG" id="SCL_RF:Cav14c:Rg01" pos="-0.3775">
          <attributes>
           <rfgap length="0.151" phaseFactor="0" ampFactor="1.165348" TTF="0.5677" endCell="1" gapOffset="-0.012498"/>
          </attributes>
@@ -16649,7 +17140,7 @@
          <attributes>
           <rfgap length="0.151" phaseFactor="99.128" ampFactor="1.165348" TTF="0.5713" endCell="1" gapOffset="0.012545"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav14d" pos="20.528166" len=".906" status="true">
        <attributes>
@@ -16682,7 +17173,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM14d:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav14d:RF_ON" settable="false"/>
        </channelsuite>
-       <node type="RG" id="SCL_RF:Cav14d:Rg01" pos="-0.3775">
+       <node type="FM" id="SCL_RF:Cav14d:Fm" pos="0" len="1.226000">
+         <attributes>
+           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.012554"/>
+          </attributes>
+       </node>
+<!--       <node type="RG" id="SCL_RF:Cav14d:Rg01" pos="-0.3775">
          <attributes>
           <rfgap length="0.151" phaseFactor="0" ampFactor="1.165348" TTF="0.5715" endCell="1" gapOffset="-0.012554"/>
          </attributes>
@@ -16711,7 +17207,7 @@
          <attributes>
           <rfgap length="0.151" phaseFactor="93.349" ampFactor="1.165348" TTF="0.575" endCell="1" gapOffset="0.0126"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav15a" pos="24.208891" len=".906" status="true">
        <attributes>
@@ -16744,7 +17240,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM15a:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav15a:RF_ON" settable="false"/>
        </channelsuite>
-       <node type="RG" id="SCL_RF:Cav15a:Rg01" pos="-0.3775">
+       <node type="FM" id="SCL_RF:Cav15a:Fm" pos="0" len="1.226000">
+         <attributes>
+           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.012609"/>
+          </attributes>
+       </node>
+<!--       <node type="RG" id="SCL_RF:Cav15a:Rg01" pos="-0.3775">
          <attributes>
           <rfgap length="0.151" phaseFactor="0" ampFactor="1.165348" TTF="0.5753" endCell="1" gapOffset="-0.012609"/>
          </attributes>
@@ -16773,7 +17274,7 @@
          <attributes>
           <rfgap length="0.151" phaseFactor="87.679" ampFactor="1.165348" TTF="0.5786" endCell="1" gapOffset="0.012653"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav15b" pos="25.656317" len=".906" status="true">
        <attributes>
@@ -16806,7 +17307,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM15b:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav15b:RF_ON" settable="false"/>
        </channelsuite>
-       <node type="RG" id="SCL_RF:Cav15b:Rg01" pos="-0.3775">
+       <node type="FM" id="SCL_RF:Cav15b:Fm" pos="0" len="1.226000">
+         <attributes>
+           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.012662"/>
+          </attributes>
+       </node>
+<!--       <node type="RG" id="SCL_RF:Cav15b:Rg01" pos="-0.3775">
          <attributes>
           <rfgap length="0.151" phaseFactor="0" ampFactor="1.165348" TTF="0.5789" endCell="1" gapOffset="-0.012662"/>
          </attributes>
@@ -16835,7 +17341,7 @@
          <attributes>
           <rfgap length="0.151" phaseFactor="82.13" ampFactor="1.165348" TTF="0.5821" endCell="1" gapOffset="0.012705"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav15c" pos="26.97174" len=".906" status="true">
        <attributes>
@@ -16868,7 +17374,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM15c:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav15c:RF_ON" settable="false"/>
        </channelsuite>
-       <node type="RG" id="SCL_RF:Cav15c:Rg01" pos="-0.3775">
+       <node type="FM" id="SCL_RF:Cav15c:Fm" pos="0" len="1.226000">
+         <attributes>
+           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.012714"/>
+          </attributes>
+       </node>
+<!--       <node type="RG" id="SCL_RF:Cav15c:Rg01" pos="-0.3775">
          <attributes>
           <rfgap length="0.151" phaseFactor="0" ampFactor="1.165348" TTF="0.5825" endCell="1" gapOffset="-0.012714"/>
          </attributes>
@@ -16897,7 +17408,7 @@
          <attributes>
           <rfgap length="0.151" phaseFactor="76.703" ampFactor="1.165348" TTF="0.5856" endCell="1" gapOffset="0.012755"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav15d" pos="28.419166" len=".906" status="true">
        <attributes>
@@ -16930,7 +17441,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM15d:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav15d:RF_ON" settable="false"/>
        </channelsuite>
-       <node type="RG" id="SCL_RF:Cav15d:Rg01" pos="-0.3775">
+       <node type="FM" id="SCL_RF:Cav15d:Fm" pos="0" len="1.226000">
+         <attributes>
+           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.012764"/>
+          </attributes>
+       </node>
+<!--       <node type="RG" id="SCL_RF:Cav15d:Rg01" pos="-0.3775">
          <attributes>
           <rfgap length="0.151" phaseFactor="0" ampFactor="1.165348" TTF="0.586" endCell="1" gapOffset="-0.012764"/>
          </attributes>
@@ -16959,7 +17475,7 @@
          <attributes>
           <rfgap length="0.151" phaseFactor="71.408" ampFactor="1.165348" TTF="0.589" endCell="1" gapOffset="0.012804"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav16a" pos="32.099891" len=".906" status="true">
        <attributes>
@@ -16992,7 +17508,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM16a:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav16a:RF_ON" settable="false"/>
        </channelsuite>
-       <node type="RG" id="SCL_RF:Cav16a:Rg01" pos="-0.3775">
+       <node type="FM" id="SCL_RF:Cav16a:Fm" pos="0" len="1.226000">
+         <attributes>
+           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.012813"/>
+          </attributes>
+       </node>
+<!--       <node type="RG" id="SCL_RF:Cav16a:Rg01" pos="-0.3775">
          <attributes>
           <rfgap length="0.151" phaseFactor="0" ampFactor="1.165348" TTF="0.5894" endCell="1" gapOffset="-0.012813"/>
          </attributes>
@@ -17021,7 +17542,7 @@
          <attributes>
           <rfgap length="0.151" phaseFactor="66.246" ampFactor="1.165348" TTF="0.5923" endCell="1" gapOffset="0.012852"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav16b" pos="33.547317" len=".906" status="true">
        <attributes>
@@ -17054,7 +17575,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM16b:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav16b:RF_ON" settable="false"/>
        </channelsuite>
-       <node type="RG" id="SCL_RF:Cav16b:Rg01" pos="-0.3775">
+       <node type="FM" id="SCL_RF:Cav16b:Fm" pos="0" len="1.226000">
+         <attributes>
+           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.01286"/>
+          </attributes>
+       </node>
+<!--       <node type="RG" id="SCL_RF:Cav16b:Rg01" pos="-0.3775">
          <attributes>
           <rfgap length="0.151" phaseFactor="0" ampFactor="1.165348" TTF="0.5927" endCell="1" gapOffset="-0.01286"/>
          </attributes>
@@ -17083,7 +17609,7 @@
          <attributes>
           <rfgap length="0.151" phaseFactor="61.22" ampFactor="1.165348" TTF="0.5955" endCell="1" gapOffset="0.012898"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav16c" pos="34.86274" len=".906" status="true">
        <attributes>
@@ -17116,7 +17642,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM16c:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav16c:RF_ON" settable="false"/>
        </channelsuite>
-       <node type="RG" id="SCL_RF:Cav16c:Rg01" pos="-0.3775">
+       <node type="FM" id="SCL_RF:Cav16c:Fm" pos="0" len="1.226000">
+         <attributes>
+           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.012906"/>
+          </attributes>
+       </node>
+<!--       <node type="RG" id="SCL_RF:Cav16c:Rg01" pos="-0.3775">
          <attributes>
           <rfgap length="0.151" phaseFactor="0" ampFactor="1.165348" TTF="0.596" endCell="1" gapOffset="-0.012906"/>
          </attributes>
@@ -17145,7 +17676,7 @@
          <attributes>
           <rfgap length="0.151" phaseFactor="56.334" ampFactor="1.165348" TTF="0.5987" endCell="1" gapOffset="0.012942"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav16d" pos="36.310166" len=".906" status="true">
        <attributes>
@@ -17178,7 +17709,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM16d:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav16d:RF_ON" settable="false"/>
        </channelsuite>
-       <node type="RG" id="SCL_RF:Cav16d:Rg01" pos="-0.3775">
+       <node type="FM" id="SCL_RF:Cav16d:Fm" pos="0" len="1.226000">
+         <attributes>
+           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.01295"/>
+          </attributes>
+       </node>
+<!--       <node type="RG" id="SCL_RF:Cav16d:Rg01" pos="-0.3775">
          <attributes>
           <rfgap length="0.151" phaseFactor="0" ampFactor="1.165348" TTF="0.5991" endCell="1" gapOffset="-0.01295"/>
          </attributes>
@@ -17207,7 +17743,7 @@
          <attributes>
           <rfgap length="0.151" phaseFactor="51.586" ampFactor="1.165348" TTF="0.6017" endCell="1" gapOffset="0.012985"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav17a" pos="39.990891" len=".906" status="true">
        <attributes>
@@ -17240,7 +17776,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM17a:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav17a:RF_ON" settable="false"/>
        </channelsuite>
-       <node type="RG" id="SCL_RF:Cav17a:Rg01" pos="-0.3775">
+       <node type="FM" id="SCL_RF:Cav17a:Fm" pos="0" len="1.226000">
+         <attributes>
+           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.012992"/>
+          </attributes>
+       </node>
+<!--       <node type="RG" id="SCL_RF:Cav17a:Rg01" pos="-0.3775">
          <attributes>
           <rfgap length="0.151" phaseFactor="0" ampFactor="1.165348" TTF="0.6022" endCell="1" gapOffset="-0.012992"/>
          </attributes>
@@ -17269,7 +17810,7 @@
          <attributes>
           <rfgap length="0.151" phaseFactor="46.976" ampFactor="1.165348" TTF="0.6047" endCell="1" gapOffset="0.013027"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav17b" pos="41.438317" len=".906" status="true">
        <attributes>
@@ -17302,7 +17843,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM17b:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav17b:RF_ON" settable="false"/>
        </channelsuite>
-       <node type="RG" id="SCL_RF:Cav17b:Rg01" pos="-0.3775">
+       <node type="FM" id="SCL_RF:Cav17b:Fm" pos="0" len="1.226000">
+         <attributes>
+           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013034"/>
+          </attributes>
+       </node>
+<!--       <node type="RG" id="SCL_RF:Cav17b:Rg01" pos="-0.3775">
          <attributes>
           <rfgap length="0.151" phaseFactor="0" ampFactor="1.165348" TTF="0.6051" endCell="1" gapOffset="-0.013034"/>
          </attributes>
@@ -17331,7 +17877,7 @@
          <attributes>
           <rfgap length="0.151" phaseFactor="42.506" ampFactor="1.165348" TTF="0.6075" endCell="1" gapOffset="0.013066"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav17c" pos="42.75374" len=".906" status="true">
        <attributes>
@@ -17364,7 +17910,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM17c:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav17c:RF_ON" settable="false"/>
        </channelsuite>
-       <node type="RG" id="SCL_RF:Cav17c:Rg01" pos="-0.3775">
+       <node type="FM" id="SCL_RF:Cav17c:Fm" pos="0" len="1.226000">
+         <attributes>
+           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013073"/>
+          </attributes>
+       </node>
+<!--       <node type="RG" id="SCL_RF:Cav17c:Rg01" pos="-0.3775">
          <attributes>
           <rfgap length="0.151" phaseFactor="0" ampFactor="1.165348" TTF="0.608" endCell="1" gapOffset="-0.013073"/>
          </attributes>
@@ -17393,7 +17944,7 @@
          <attributes>
           <rfgap length="0.151" phaseFactor="38.173" ampFactor="1.165348" TTF="0.6103" endCell="1" gapOffset="0.013105"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav17d" pos="44.201166" len=".906" status="true">
        <attributes>
@@ -17426,7 +17977,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM17d:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav17d:RF_ON" settable="false"/>
        </channelsuite>
-       <node type="RG" id="SCL_RF:Cav17d:Rg01" pos="-0.3775">
+       <node type="FM" id="SCL_RF:Cav17d:Fm" pos="0" len="1.226000">
+         <attributes>
+           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013112"/>
+          </attributes>
+       </node>
+<!--       <node type="RG" id="SCL_RF:Cav17d:Rg01" pos="-0.3775">
          <attributes>
           <rfgap length="0.151" phaseFactor="0" ampFactor="1.165348" TTF="0.6108" endCell="1" gapOffset="-0.013112"/>
          </attributes>
@@ -17455,7 +18011,7 @@
          <attributes>
           <rfgap length="0.151" phaseFactor="33.974" ampFactor="1.165348" TTF="0.613" endCell="1" gapOffset="0.013142"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav18a" pos="47.881891" len=".906" status="true">
        <attributes>
@@ -17488,7 +18044,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM18a:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav18a:RF_ON" settable="false"/>
        </channelsuite>
-       <node type="RG" id="SCL_RF:Cav18a:Rg01" pos="-0.3775">
+       <node type="FM" id="SCL_RF:Cav18a:Fm" pos="0" len="1.226000">
+         <attributes>
+           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013149"/>
+          </attributes>
+       </node>
+<!--       <node type="RG" id="SCL_RF:Cav18a:Rg01" pos="-0.3775">
          <attributes>
           <rfgap length="0.151" phaseFactor="0" ampFactor="1.165348" TTF="0.6135" endCell="1" gapOffset="-0.013149"/>
          </attributes>
@@ -17517,7 +18078,7 @@
          <attributes>
           <rfgap length="0.151" phaseFactor="29.908" ampFactor="1.165348" TTF="0.6156" endCell="1" gapOffset="0.013178"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav18b" pos="49.329317" len=".906" status="true">
        <attributes>
@@ -17550,7 +18111,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM18b:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav18b:RF_ON" settable="false"/>
        </channelsuite>
-       <node type="RG" id="SCL_RF:Cav18b:Rg01" pos="-0.3775">
+       <node type="FM" id="SCL_RF:Cav18b:Fm" pos="0" len="1.226000">
+         <attributes>
+           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013184"/>
+          </attributes>
+       </node>
+<!--       <node type="RG" id="SCL_RF:Cav18b:Rg01" pos="-0.3775">
          <attributes>
           <rfgap length="0.151" phaseFactor="0" ampFactor="1.165348" TTF="0.6161" endCell="1" gapOffset="-0.013184"/>
          </attributes>
@@ -17579,7 +18145,7 @@
          <attributes>
           <rfgap length="0.151" phaseFactor="25.973" ampFactor="1.165348" TTF="0.6182" endCell="1" gapOffset="0.013212"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav18c" pos="50.64474" len=".906" status="true">
        <attributes>
@@ -17612,7 +18178,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM18c:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav18c:RF_ON" settable="false"/>
        </channelsuite>
-       <node type="RG" id="SCL_RF:Cav18c:Rg01" pos="-0.3775">
+       <node type="FM" id="SCL_RF:Cav18c:Fm" pos="0" len="1.226000">
+         <attributes>
+           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013218"/>
+          </attributes>
+       </node>
+<!--       <node type="RG" id="SCL_RF:Cav18c:Rg01" pos="-0.3775">
          <attributes>
           <rfgap length="0.151" phaseFactor="0" ampFactor="1.165348" TTF="0.6186" endCell="1" gapOffset="-0.013218"/>
          </attributes>
@@ -17641,7 +18212,7 @@
          <attributes>
           <rfgap length="0.151" phaseFactor="22.164" ampFactor="1.165348" TTF="0.6206" endCell="1" gapOffset="0.013246"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav18d" pos="52.092166" len=".906" status="true">
        <attributes>
@@ -17674,7 +18245,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM18d:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav18d:RF_ON" settable="false"/>
        </channelsuite>
-       <node type="RG" id="SCL_RF:Cav18d:Rg01" pos="-0.3775">
+       <node type="FM" id="SCL_RF:Cav18d:Fm" pos="0" len="1.226000">
+         <attributes>
+           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013252"/>
+          </attributes>
+       </node>
+<!--       <node type="RG" id="SCL_RF:Cav18d:Rg01" pos="-0.3775">
          <attributes>
           <rfgap length="0.151" phaseFactor="0" ampFactor="1.165348" TTF="0.6211" endCell="1" gapOffset="-0.013252"/>
          </attributes>
@@ -17703,7 +18279,7 @@
          <attributes>
           <rfgap length="0.151" phaseFactor="18.48" ampFactor="1.165348" TTF="0.623" endCell="1" gapOffset="0.013278"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav19a" pos="55.772891" len=".906" status="true">
        <attributes>
@@ -17736,7 +18312,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM19a:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav19a:RF_ON" settable="false"/>
        </channelsuite>
-       <node type="RG" id="SCL_RF:Cav19a:Rg01" pos="-0.3775">
+       <node type="FM" id="SCL_RF:Cav19a:Fm" pos="0" len="1.226000">
+         <attributes>
+           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013283"/>
+          </attributes>
+       </node>
+<!--       <node type="RG" id="SCL_RF:Cav19a:Rg01" pos="-0.3775">
          <attributes>
           <rfgap length="0.151" phaseFactor="0" ampFactor="1.165348" TTF="0.6234" endCell="1" gapOffset="-0.013283"/>
          </attributes>
@@ -17765,7 +18346,7 @@
          <attributes>
           <rfgap length="0.151" phaseFactor="14.915" ampFactor="1.165348" TTF="0.6253" endCell="1" gapOffset="0.013309"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav19b" pos="57.220317" len=".906" status="true">
        <attributes>
@@ -17798,7 +18379,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM19b:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav19b:RF_ON" settable="false"/>
        </channelsuite>
-       <node type="RG" id="SCL_RF:Cav19b:Rg01" pos="-0.3775">
+       <node type="FM" id="SCL_RF:Cav19b:Fm" pos="0" len="1.226000">
+         <attributes>
+           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013314"/>
+          </attributes>
+       </node>
+<!--       <node type="RG" id="SCL_RF:Cav19b:Rg01" pos="-0.3775">
          <attributes>
           <rfgap length="0.151" phaseFactor="0" ampFactor="1.165348" TTF="0.6257" endCell="1" gapOffset="-0.013314"/>
          </attributes>
@@ -17827,7 +18413,7 @@
          <attributes>
           <rfgap length="0.151" phaseFactor="11.468" ampFactor="1.165348" TTF="0.6275" endCell="1" gapOffset="0.013339"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav19c" pos="58.53574" len=".906" status="true">
        <attributes>
@@ -17860,7 +18446,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM19c:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav19c:RF_ON" settable="false"/>
        </channelsuite>
-       <node type="RG" id="SCL_RF:Cav19c:Rg01" pos="-0.3775">
+       <node type="FM" id="SCL_RF:Cav19c:Fm" pos="0" len="1.226000">
+         <attributes>
+           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013344"/>
+          </attributes>
+       </node>
+<!--       <node type="RG" id="SCL_RF:Cav19c:Rg01" pos="-0.3775">
          <attributes>
           <rfgap length="0.151" phaseFactor="0" ampFactor="1.165348" TTF="0.6279" endCell="1" gapOffset="-0.013344"/>
          </attributes>
@@ -17889,7 +18480,7 @@
          <attributes>
           <rfgap length="0.151" phaseFactor="8.134" ampFactor="1.165348" TTF="0.6296" endCell="1" gapOffset="0.013367"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav19d" pos="59.983166" len=".906" status="true">
        <attributes>
@@ -17922,7 +18513,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM19d:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav19d:RF_ON" settable="false"/>
        </channelsuite>
-       <node type="RG" id="SCL_RF:Cav19d:Rg01" pos="-0.3775">
+       <node type="FM" id="SCL_RF:Cav19d:Fm" pos="0" len="1.226000">
+         <attributes>
+           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013372"/>
+          </attributes>
+       </node>
+<!--       <node type="RG" id="SCL_RF:Cav19d:Rg01" pos="-0.3775">
          <attributes>
           <rfgap length="0.151" phaseFactor="0" ampFactor="1.165348" TTF="0.63" endCell="1" gapOffset="-0.013372"/>
          </attributes>
@@ -17951,7 +18547,7 @@
          <attributes>
           <rfgap length="0.151" phaseFactor="4.909" ampFactor="1.165348" TTF="0.6317" endCell="1" gapOffset="0.013394"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav20a" pos="63.663891" len=".906" status="true">
        <attributes>
@@ -17984,7 +18580,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM20a:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav20a:RF_ON" settable="false"/>
        </channelsuite>
-       <node type="RG" id="SCL_RF:Cav20a:Rg01" pos="-0.3775">
+       <node type="FM" id="SCL_RF:Cav20a:Fm" pos="0" len="1.226000">
+         <attributes>
+           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013399"/>
+          </attributes>
+       </node>
+<!--       <node type="RG" id="SCL_RF:Cav20a:Rg01" pos="-0.3775">
          <attributes>
           <rfgap length="0.151" phaseFactor="0" ampFactor="1.165348" TTF="0.6321" endCell="1" gapOffset="-0.013399"/>
          </attributes>
@@ -18013,7 +18614,7 @@
          <attributes>
           <rfgap length="0.151" phaseFactor="1.791" ampFactor="1.165348" TTF="0.6337" endCell="1" gapOffset="0.013421"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav20b" pos="65.111317" len=".906" status="true">
        <attributes>
@@ -18046,7 +18647,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM20b:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav20b:RF_ON" settable="false"/>
        </channelsuite>
-       <node type="RG" id="SCL_RF:Cav20b:Rg01" pos="-0.3775">
+       <node type="FM" id="SCL_RF:Cav20b:Fm" pos="0" len="1.226000">
+         <attributes>
+           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013426"/>
+          </attributes>
+       </node>
+<!--       <node type="RG" id="SCL_RF:Cav20b:Rg01" pos="-0.3775">
          <attributes>
           <rfgap length="0.151" phaseFactor="0" ampFactor="1.165348" TTF="0.6341" endCell="1" gapOffset="-0.013426"/>
          </attributes>
@@ -18075,7 +18681,7 @@
          <attributes>
           <rfgap length="0.151" phaseFactor="-1.225" ampFactor="1.165348" TTF="0.6357" endCell="1" gapOffset="0.013447"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav20c" pos="66.42674" len=".906" status="true">
        <attributes>
@@ -18108,7 +18714,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM20c:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav20c:RF_ON" settable="false"/>
        </channelsuite>
-       <node type="RG" id="SCL_RF:Cav20c:Rg01" pos="-0.3775">
+       <node type="FM" id="SCL_RF:Cav20c:Fm" pos="0" len="1.226000">
+         <attributes>
+           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013451"/>
+          </attributes>
+       </node>
+<!--       <node type="RG" id="SCL_RF:Cav20c:Rg01" pos="-0.3775">
          <attributes>
           <rfgap length="0.151" phaseFactor="0" ampFactor="1.165348" TTF="0.636" endCell="1" gapOffset="-0.013451"/>
          </attributes>
@@ -18137,7 +18748,7 @@
          <attributes>
           <rfgap length="0.151" phaseFactor="-4.144" ampFactor="1.165348" TTF="0.6375" endCell="1" gapOffset="0.013471"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav20d" pos="67.874166" len=".906" status="true">
        <attributes>
@@ -18170,7 +18781,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM20d:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav20d:RF_ON" settable="false"/>
        </channelsuite>
-       <node type="RG" id="SCL_RF:Cav20d:Rg01" pos="-0.3775">
+       <node type="FM" id="SCL_RF:Cav20d:Fm" pos="0" len="1.226000">
+         <attributes>
+           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013476"/>
+          </attributes>
+       </node>
+<!--       <node type="RG" id="SCL_RF:Cav20d:Rg01" pos="-0.3775">
          <attributes>
           <rfgap length="0.151" phaseFactor="0" ampFactor="1.165348" TTF="0.6379" endCell="1" gapOffset="-0.013476"/>
          </attributes>
@@ -18199,7 +18815,7 @@
          <attributes>
           <rfgap length="0.151" phaseFactor="-6.967" ampFactor="1.165348" TTF="0.6394" endCell="1" gapOffset="0.013495"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav21a" pos="71.554891" len=".906" status="true">
        <attributes>
@@ -18232,7 +18848,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM21a:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav21a:RF_ON" settable="false"/>
        </channelsuite>
-       <node type="RG" id="SCL_RF:Cav21a:Rg01" pos="-0.3775">
+       <node type="FM" id="SCL_RF:Cav21a:Fm" pos="0" len="1.226000">
+         <attributes>
+           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013499"/>
+          </attributes>
+       </node>
+<!--       <node type="RG" id="SCL_RF:Cav21a:Rg01" pos="-0.3775">
          <attributes>
           <rfgap length="0.151" phaseFactor="0" ampFactor="1.165348" TTF="0.6397" endCell="1" gapOffset="-0.013499"/>
          </attributes>
@@ -18261,7 +18882,7 @@
          <attributes>
           <rfgap length="0.151" phaseFactor="-9.698" ampFactor="1.165348" TTF="0.6411" endCell="1" gapOffset="0.013519"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav21b" pos="73.002317" len=".906" status="true">
        <attributes>
@@ -18294,7 +18915,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM21b:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav21b:RF_ON" settable="false"/>
        </channelsuite>
-       <node type="RG" id="SCL_RF:Cav21b:Rg01" pos="-0.3775">
+       <node type="FM" id="SCL_RF:Cav21b:Fm" pos="0" len="1.226000">
+         <attributes>
+           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013522"/>
+          </attributes>
+       </node>
+<!--       <node type="RG" id="SCL_RF:Cav21b:Rg01" pos="-0.3775">
          <attributes>
           <rfgap length="0.151" phaseFactor="0" ampFactor="1.165348" TTF="0.6414" endCell="1" gapOffset="-0.013522"/>
          </attributes>
@@ -18323,7 +18949,7 @@
          <attributes>
           <rfgap length="0.151" phaseFactor="-12.341" ampFactor="1.165348" TTF="0.6428" endCell="1" gapOffset="0.013541"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav21c" pos="74.31774" len=".906" status="true">
        <attributes>
@@ -18356,7 +18982,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM21c:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav21c:RF_ON" settable="false"/>
        </channelsuite>
-       <node type="RG" id="SCL_RF:Cav21c:Rg01" pos="-0.3775">
+       <node type="FM" id="SCL_RF:Cav21c:Fm" pos="0" len="1.226000">
+         <attributes>
+           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013544"/>
+          </attributes>
+       </node>
+<!--       <node type="RG" id="SCL_RF:Cav21c:Rg01" pos="-0.3775">
          <attributes>
           <rfgap length="0.151" phaseFactor="0" ampFactor="1.165348" TTF="0.6431" endCell="1" gapOffset="-0.013544"/>
          </attributes>
@@ -18385,7 +19016,7 @@
          <attributes>
           <rfgap length="0.151" phaseFactor="-14.9" ampFactor="1.165348" TTF="0.6445" endCell="1" gapOffset="0.013562"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav21d" pos="75.765166" len=".906" status="true">
        <attributes>
@@ -18418,7 +19049,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM21d:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav21d:RF_ON" settable="false"/>
        </channelsuite>
-       <node type="RG" id="SCL_RF:Cav21d:Rg01" pos="-0.3775">
+       <node type="FM" id="SCL_RF:Cav21d:Fm" pos="0" len="1.226000">
+         <attributes>
+           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013565"/>
+          </attributes>
+       </node>
+<!--       <node type="RG" id="SCL_RF:Cav21d:Rg01" pos="-0.3775">
          <attributes>
           <rfgap length="0.151" phaseFactor="0" ampFactor="1.165348" TTF="0.6447" endCell="1" gapOffset="-0.013565"/>
          </attributes>
@@ -18447,7 +19083,7 @@
          <attributes>
           <rfgap length="0.151" phaseFactor="-17.377" ampFactor="1.165348" TTF="0.646" endCell="1" gapOffset="0.013583"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav22a" pos="79.445891" len=".906" status="true">
        <attributes>
@@ -18480,7 +19116,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM22a:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav22a:RF_ON" settable="false"/>
        </channelsuite>
-       <node type="RG" id="SCL_RF:Cav22a:Rg01" pos="-0.3775">
+       <node type="FM" id="SCL_RF:Cav22a:Fm" pos="0" len="1.226000">
+         <attributes>
+           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013586"/>
+          </attributes>
+       </node>
+<!--       <node type="RG" id="SCL_RF:Cav22a:Rg01" pos="-0.3775">
          <attributes>
           <rfgap length="0.151" phaseFactor="0" ampFactor="1.165348" TTF="0.6463" endCell="1" gapOffset="-0.013586"/>
          </attributes>
@@ -18509,7 +19150,7 @@
          <attributes>
           <rfgap length="0.151" phaseFactor="-19.775" ampFactor="1.165348" TTF="0.6476" endCell="1" gapOffset="0.013603"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav22b" pos="80.893317" len=".906" status="true">
        <attributes>
@@ -18542,7 +19183,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM22b:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav22b:RF_ON" settable="false"/>
        </channelsuite>
-       <node type="RG" id="SCL_RF:Cav22b:Rg01" pos="-0.3775">
+       <node type="FM" id="SCL_RF:Cav22b:Fm" pos="0" len="1.226000">
+         <attributes>
+           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013606"/>
+          </attributes>
+       </node>
+<!--       <node type="RG" id="SCL_RF:Cav22b:Rg01" pos="-0.3775">
          <attributes>
           <rfgap length="0.151" phaseFactor="0" ampFactor="1.165348" TTF="0.6479" endCell="1" gapOffset="-0.013606"/>
          </attributes>
@@ -18571,7 +19217,7 @@
          <attributes>
           <rfgap length="0.151" phaseFactor="-22.099" ampFactor="1.165348" TTF="0.6491" endCell="1" gapOffset="0.013622"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav22c" pos="82.20874" len=".906" status="true">
        <attributes>
@@ -18604,7 +19250,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM22c:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav22c:RF_ON" settable="false"/>
        </channelsuite>
-       <node type="RG" id="SCL_RF:Cav22c:Rg01" pos="-0.3775">
+       <node type="FM" id="SCL_RF:Cav22c:Fm" pos="0" len="1.226000">
+         <attributes>
+           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013625"/>
+          </attributes>
+       </node>
+<!--       <node type="RG" id="SCL_RF:Cav22c:Rg01" pos="-0.3775">
          <attributes>
           <rfgap length="0.151" phaseFactor="0" ampFactor="1.165348" TTF="0.6493" endCell="1" gapOffset="-0.013625"/>
          </attributes>
@@ -18633,7 +19284,7 @@
          <attributes>
           <rfgap length="0.151" phaseFactor="-24.35" ampFactor="1.165348" TTF="0.6505" endCell="1" gapOffset="0.01364"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav22d" pos="83.656166" len=".906" status="true">
        <attributes>
@@ -18666,7 +19317,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM22d:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav22d:RF_ON" settable="false"/>
        </channelsuite>
-       <node type="RG" id="SCL_RF:Cav22d:Rg01" pos="-0.3775">
+       <node type="FM" id="SCL_RF:Cav22d:Fm" pos="0" len="1.226000">
+         <attributes>
+           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013643"/>
+          </attributes>
+       </node>
+<!--       <node type="RG" id="SCL_RF:Cav22d:Rg01" pos="-0.3775">
          <attributes>
           <rfgap length="0.151" phaseFactor="0" ampFactor="1.165348" TTF="0.6508" endCell="1" gapOffset="-0.013643"/>
          </attributes>
@@ -18695,7 +19351,7 @@
          <attributes>
           <rfgap length="0.151" phaseFactor="-26.531" ampFactor="1.165348" TTF="0.6519" endCell="1" gapOffset="0.013658"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav23a" pos="87.336891" len=".906" status="true">
        <attributes>
@@ -18728,7 +19384,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM23a:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav23a:RF_ON" settable="false"/>
        </channelsuite>
-       <node type="RG" id="SCL_RF:Cav23a:Rg01" pos="-0.3775">
+       <node type="FM" id="SCL_RF:Cav23a:Fm" pos="0" len="1.226000">
+         <attributes>
+           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013661"/>
+          </attributes>
+       </node>
+<!--       <node type="RG" id="SCL_RF:Cav23a:Rg01" pos="-0.3775">
          <attributes>
           <rfgap length="0.151" phaseFactor="0" ampFactor="1.165348" TTF="0.6522" endCell="1" gapOffset="-0.013661"/>
          </attributes>
@@ -18757,7 +19418,7 @@
          <attributes>
           <rfgap length="0.151" phaseFactor="-28.646" ampFactor="1.165348" TTF="0.6533" endCell="1" gapOffset="0.013676"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav23b" pos="88.784317" len=".906" status="true">
        <attributes>
@@ -18790,7 +19451,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM23b:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav23b:RF_ON" settable="false"/>
        </channelsuite>
-       <node type="RG" id="SCL_RF:Cav23b:Rg01" pos="-0.3775">
+       <node type="FM" id="SCL_RF:Cav23b:Fm" pos="0" len="1.226000">
+         <attributes>
+           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013679"/>
+          </attributes>
+       </node>
+<!--       <node type="RG" id="SCL_RF:Cav23b:Rg01" pos="-0.3775">
          <attributes>
           <rfgap length="0.151" phaseFactor="0" ampFactor="1.165348" TTF="0.6535" endCell="1" gapOffset="-0.013679"/>
          </attributes>
@@ -18819,7 +19485,7 @@
          <attributes>
           <rfgap length="0.151" phaseFactor="-30.696" ampFactor="1.165348" TTF="0.6546" endCell="1" gapOffset="0.013693"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav23c" pos="90.09974" len=".906" status="true">
        <attributes>
@@ -18852,7 +19518,12 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM23c:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav23c:RF_ON" settable="false"/>
        </channelsuite>
-       <node type="RG" id="SCL_RF:Cav23c:Rg01" pos="-0.3775">
+       <node type="FM" id="SCL_RF:Cav23c:Fm" pos="0" len="1.226000">
+         <attributes>
+           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013695"/>
+          </attributes>
+       </node>
+<!--       <node type="RG" id="SCL_RF:Cav23c:Rg01" pos="-0.3775">
          <attributes>
           <rfgap length="0.151" phaseFactor="0" ampFactor="1.165348" TTF="0.6548" endCell="1" gapOffset="-0.013695"/>
          </attributes>
@@ -18881,7 +19552,7 @@
          <attributes>
           <rfgap length="0.151" phaseFactor="-32.685" ampFactor="1.165348" TTF="0.6559" endCell="1" gapOffset="0.013709"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
     <sequence type="SCLCavity" id="SCL_RF:Cav23d" pos="91.547166" len=".906" status="true">
        <attributes>
@@ -18914,6 +19585,11 @@
         <channel handle="blankBeam" signal="SCL_LLRF:FCM23d:BlnkBeam" settable="true"/>
         <channel handle="RF_ON" signal="SCL_LLRF:Cav23d:RF_ON" settable="false"/>
        </channelsuite>
+       <node type="FM" id="SCL_RF:Cav23d:Fm" pos="0" len="1.226000">
+         <attributes>
+           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013711"/>
+          </attributes>
+       </node><!--
        <node type="RG" id="SCL_RF:Cav23d:Rg01" pos="-0.3775">
          <attributes>
           <rfgap length="0.151" phaseFactor="0" ampFactor="1.165348" TTF="0.6561" endCell="1" gapOffset="-0.013711"/>
@@ -18943,7 +19619,7 @@
          <attributes>
           <rfgap length="0.151" phaseFactor="-34.615" ampFactor="1.165348" TTF="0.6571" endCell="1" gapOffset="0.013725"/>
          </attributes>
-       </node>
+       </node>-->
     </sequence>
   </sequence>
   <sequence id="HEBT1" len="41.973095">

@@ -25,6 +25,7 @@
 	<device type="QSC" class="xal.smf.impl.Quadrupole"/>
 	<device type="Bnch" class="xal.smf.impl.ReBuncher"/>
 	<device type="RF" class="xal.smf.impl.RfCavity"/>
+	<device type="FM" class="se.lu.esss.ics.jels.smf.impl.ESSFieldMap"/>
 	<device type="RG" class="xal.smf.impl.RfGap"/>
 	<device type="SCLCavity" class="xal.smf.impl.SCLCavity"/>
 	<device type="Scrp" class="xal.smf.impl.Marker"/>

@@ -9,6 +9,9 @@
 	<associations>
 		<map smf="xal.smf.impl.Marker" model="xal.model.elem.Marker"/>
 
+		<map smf="fm" model="se.lu.esss.ics.jels.model.elem.jels.FieldMap"/> 
+		<map smf="fm" model="se.lu.esss.ics.jels.model.elem.jels.FieldMapNCells"/>
+
 		<map smf="dh" model="se.lu.esss.ics.jels.model.elem.jels.IdealMagWedgeDipole2"/>
 <!--		<map smf="EDipole" model="xal.model.elem.IdealEDipole"/>
 		<map smf="QSC" model="xal.model.elem.IdealMagSkewQuad3"/>-->
