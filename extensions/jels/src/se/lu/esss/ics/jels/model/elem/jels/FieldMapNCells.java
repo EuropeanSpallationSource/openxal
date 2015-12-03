@@ -9,6 +9,8 @@ import xal.model.ModelException;
 import xal.model.elem.ElementSeq;
 import xal.model.elem.IdealDrift;
 import xal.sim.scenario.LatticeElement;
+import xal.smf.impl.RfCavity;
+import xal.smf.impl.qualify.QualifierFactory;
 
 /**
  * Implementation of NCells simulation of fieldmaps.
@@ -18,13 +20,19 @@ import xal.sim.scenario.LatticeElement;
  *
  */
 public class FieldMapNCells extends ElementSeq {
-	private ESSFieldMap fm;
-	private IdealDrift[] drifts;
+	private double frequency;
+	
 	private IdealRfGap[] gaps;
 	private TTFIntegrator[] splitIntgrs;
-	private double phiInput;
-	private double frequency;
-	private double startPos;
+	
+	private double phi0;
+	private double phipos;
+	
+	private double startPosition;
+	private double sliceStartPosition;
+	private double sliceEndPosition;
+	
+	private FieldMapNCells firstSliceElement;
 	
 	public FieldMapNCells() {
         this(null);
@@ -37,70 +45,123 @@ public class FieldMapNCells extends ElementSeq {
 	@Override
 	public void initializeFrom(LatticeElement latticeElement) {
 		super.initializeFrom(latticeElement);
-	    fm  = (ESSFieldMap)latticeElement.getNode();
-	    FieldProfile fp = fm.getFieldProfile();	    
-	    splitIntgrs = TTFIntegrator.getSplitIntegrators(fp, fm.getFrequency()*1e6);
-	    
-	    /*
-	     * Old implementation of IdealRfGap is used. First gap phase is calculated when the energy at the
-	     * entrace into the gap is known. Also TTF integrator is supplied with the necessary offset.
-	     */
-	    gaps = new IdealRfGap[splitIntgrs.length];
-	    drifts = new IdealDrift[splitIntgrs.length*2];
-	    frequency = fm.getFrequency()*1e6;
-	    phiInput = fm.getPhase()*Math.PI/180.;
-	    startPos = latticeElement.getStartPosition();
-	    
-	    for (int i=0; i<splitIntgrs.length; i++) {
-	    	final double l1 = splitIntgrs[i].getLength() / 2.;	    	
-	    	double l2 = splitIntgrs[i].getLength() - l1;
-	    	
-	    	drifts[2*i] = new IdealDrift();
-	    	drifts[2*i].setId(fm.getId()+":DR"+2*i);
-			drifts[2*i].setLength(l1);
-			drifts[2*i].setPosition(startPos + l1/2.);
-						
-		    gaps[i] = new IdealRfGap(fm.getId(), splitIntgrs[i].getE0TL()*fm.getXelmax(), 0, fm.getFrequency()*1e6);
+		sliceStartPosition = latticeElement.getStartPosition();
+		sliceEndPosition = latticeElement.getEndPosition();
+		
+		if (latticeElement.isFirstSlice()) {		
+			startPosition = sliceStartPosition;
 			
-			gaps[i].setFirstGap(i==0);
-			gaps[i].setCellLength(fm.getLength());
-			gaps[i].setE0(splitIntgrs[i].getE0TL()*fm.getXelmax()/fm.getLength());
-			gaps[i].setStructureMode(1);
-			gaps[i].setPosition(startPos + l1);
-			
-			drifts[2*i+1] = new IdealDrift();
-			drifts[2*i+1].setId(fm.getId()+":DR"+(2*i+1));
-			drifts[2*i+1].setLength(l2);	
-			drifts[2*i+1].setPosition(startPos + l1 + l2/2.);
-			
-			addChild(drifts[2*i]);
-			addChild(gaps[i]);
-			addChild(drifts[2*i+1]);	
-	    }
+		    final ESSFieldMap fm  = (ESSFieldMap)latticeElement.getNode();
+		    FieldProfile fp = fm.getFieldProfile();	    		    
+		    
+		    double k0;
+		    boolean firstInRFCavity;
+		    
+		    if (fm.getParent() instanceof RfCavity) {
+		    	RfCavity cavity = (RfCavity)fm.getParent();
+				phi0 = cavity.getDfltCavPhase()/180.*Math.PI;
+				frequency = cavity.getCavFreq() * 1e6;
+				phipos = fm.getPhasePosition();	
+				k0 = cavity.getDfltCavAmp()*1e6 * fm.getXelmax() / (fp.getE0L(frequency)/fp.getLength());
+				
+				firstInRFCavity = true;
+				for (ESSFieldMap fm2 : cavity.getNodesOfClassWithQualifier(ESSFieldMap.class, QualifierFactory.getStatusQualifier(true))) {
+					if (fm2.getPosition() < fm.getPosition()) {
+						firstInRFCavity = false;
+						break;
+					}
+				}		
+		    } else {
+		    	frequency = fm.getFrequency()*1e6;
+		    	phi0 = fm.getPhase()*Math.PI/180.;		    	
+		    	k0 = fm.getXelmax();
+		    	firstInRFCavity = true;
+		    }
+		    
+		    /*
+		     * Old implementation of IdealRfGap is used. First gap phase is calculated when the energy at the
+		     * entrance into the gap is known. Also TTF integrator is supplied with the necessary offset.
+		     */
+		    
+		    splitIntgrs = TTFIntegrator.getSplitIntegrators(fp, frequency);
+		    gaps = new IdealRfGap[splitIntgrs.length];		    
+		    
+		    for (int i=0; i<splitIntgrs.length; i++) {
+		    	gaps[i] = new IdealRfGap(fm.getId(), splitIntgrs[i].getE0TL()*k0, 0, frequency);
+				
+				gaps[i].setFirstGap(i==0 && firstInRFCavity);
+				gaps[i].setCellLength(fm.getLength());
+				gaps[i].setE0(splitIntgrs[i].getE0TL()*k0/fm.getLength());				
+				gaps[i].setStructureMode(1);
+		    }
+		    
+		} 
+		try {
+			firstSliceElement = (FieldMapNCells)latticeElement.getFirstSlice().getComponent();
+		} catch (ModelException e) {
+		}
 	}
 	
 	
 	public void propagate(IProbe probe) throws ModelException {
-		for (int i=0; i<splitIntgrs.length; i++) {			
+		firstSliceElement.propagate(probe, sliceStartPosition, sliceEndPosition);				
+	}
+	
+	public void propagate(IProbe probe, double sliceStartPosition, double sliceEndPosition) throws ModelException {			
+		double cellPos = startPosition;
+		double pos = probe.getPosition();
+		
+		//if (sliceStartPosition > pos || pos > sliceEndPosition) 
+		//	throw new ModelException("Bad slicing");
+		
+		System.out.println("#"+"propagate: " + sliceStartPosition + " " + sliceEndPosition);
+		
+		for (int i=0; i<splitIntgrs.length; i++) {
+			if (cellPos + splitIntgrs[i].getLength() < pos) {
+				cellPos += splitIntgrs[i].getLength();
+				continue;
+			}  // invariant: cellPos + splitIntgrs[i].getLength() >= pos && cellPos < pos
+						
+			// initialize the cell
 			double phim = splitIntgrs[i].getSyncPhase(probe.getBeta()); // phis = phim + phi
 			if (phim < 0) phim += 2*Math.PI;
 			double l1 =  phim * probe.getBeta() * IElement.LightSpeed / (2*Math.PI*frequency);		
 			double l2 = splitIntgrs[i].getLength() - l1;
 			if (i==0) {
-    			gaps[i].setPhase(this.phiInput + phim + (splitIntgrs[i].getInverted() ? Math.PI : 0));
+				double phim0 = phipos / (probe.getBeta() * IElement.LightSpeed / (2*Math.PI*frequency));			    
+			    double phiInput = Math.IEEEremainder(phi0 - phim0 - (splitIntgrs[i].getInverted() ? Math.PI : 0.), 2*Math.PI);			    
+    			gaps[i].setPhase(phiInput + phim + (splitIntgrs[i].getInverted() ? Math.PI : 0));
 			}
 			gaps[i].setTTFFit(splitIntgrs[i]);
+		
+			// propagate
+			// before gap
+			if (pos - cellPos <= l1) {
+				double plen = Math.min(l1 - (pos - cellPos), sliceEndPosition - pos);
+				boolean doGap = (plen == l1 - (pos - cellPos));
+				new IdealDrift("", plen).propagate(probe);
+				pos += plen;
+				System.out.println("#"+i+":drift1 "+l1+" for "+plen);
+		
+				// the gap
+				if (doGap) {
+					gaps[i].propagate(probe);
+					System.out.println("#"+i+":gap");
+				}				
+				
+				if (pos >= sliceEndPosition) break;				
+			}
 			
-			drifts[2*i].setLength(l1);
-			drifts[2*i].setPosition(startPos + l1/2.);
-			gaps[i].setPosition(startPos+l1);
-			drifts[2*i+1].setLength(l2);
-			drifts[2*i+1].setPosition(startPos + l1 + l2/2.);
+		
 			
-			drifts[2*i].propagate(probe);
-			gaps[i].propagate(probe);
-			drifts[2*i+1].propagate(probe);
-        }
+			// after gap
+			double plen2 = Math.min(l2 - (pos - cellPos - l1), sliceEndPosition - pos);			
+			new IdealDrift("", plen2).propagate(probe);
+			System.out.println("#"+i+":drift2 "+l2+" for "+plen2);
+			pos += plen2;
+			if (pos >= sliceEndPosition) break;
+			cellPos += splitIntgrs[i].getLength();
+	    }
     }
 
 }
