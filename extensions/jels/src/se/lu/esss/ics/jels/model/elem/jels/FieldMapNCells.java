@@ -117,7 +117,7 @@ public class FieldMapNCells extends ElementSeq {
 		//if (sliceStartPosition > pos || pos > sliceEndPosition) 
 		//	throw new ModelException("Bad slicing");
 		
-		System.out.println("#"+"propagate: " + sliceStartPosition + " " + sliceEndPosition);
+		//System.out.println("#"+"propagate: " + sliceStartPosition + " " + sliceEndPosition);
 		
 		for (int i=0; i<splitIntgrs.length; i++) {
 			if (cellPos + splitIntgrs[i].getLength() < pos) {
@@ -144,12 +144,12 @@ public class FieldMapNCells extends ElementSeq {
 				boolean doGap = (plen == l1 - (pos - cellPos));
 				new IdealDrift("", plen).propagate(probe);
 				pos += plen;
-				System.out.println("#"+i+":drift1 "+l1+" for "+plen);
+				//System.out.println("#"+i+":drift1 "+l1+" for "+plen);
 		
 				// the gap
 				if (doGap) {
 					gaps[i].propagate(probe);
-					System.out.println("#"+i+":gap");
+					//System.out.println("#"+i+":gap");
 				}				
 				
 				if (pos >= sliceEndPosition) break;				
@@ -160,7 +160,7 @@ public class FieldMapNCells extends ElementSeq {
 			// after gap
 			double plen2 = Math.min(l2 - (pos - cellPos - l1), sliceEndPosition - pos);			
 			new IdealDrift("", plen2).propagate(probe);
-			System.out.println("#"+i+":drift2 "+l2+" for "+plen2);
+			//System.out.println("#"+i+":drift2 "+l2+" for "+plen2);
 			pos += plen2;
 			if (pos >= sliceEndPosition) break;
 			cellPos += splitIntgrs[i].getLength();
