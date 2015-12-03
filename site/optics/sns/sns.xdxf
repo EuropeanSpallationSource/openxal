@@ -1449,7 +1449,7 @@
        </node>
        <!--<node type="FM" id="MEBT_RF:Bnch01:Fm01" pos="0" len="0.10096">
          <attributes>
-            <fieldmap fieldMapFile="MEBT1Rg1" xelmax="1" phasePosition="0.05048"/>
+            <fieldmap fieldMapFile="fieldmaps/MEBT1Rg1" xelmax="1" phasePosition="0.05048"/>
          </attributes>
        </node>-->
     </sequence>
@@ -6546,62 +6546,62 @@
     </node>
     <node type="FM" id="CCL_RF:Cav01:Fm01" pos="0.3965235" len="0.601784">
       <attributes>
-        <fieldmap fieldMapFile="CCL1Rg1" phasePosition="0.0376115" xelmax="1" gapOffset="-.000163"/>
+        <fieldmap fieldMapFile="fieldmaps/CCL1Rg1" phasePosition="0.0376115" xelmax="1" gapOffset="-.000163"/>
        </attributes>
     </node>
     <node type="FM" id="CCL_RF:Cav01:Fm02" pos="1.3779495" len="0.606088">
       <attributes>
-        <fieldmap fieldMapFile="CCL1Rg2" xelmax="1.028987"/>
+        <fieldmap fieldMapFile="fieldmaps/CCL1Rg2" xelmax="1.028987"/>
        </attributes>
     </node>
     <node type="FM" id="CCL_RF:Cav01:Fm03" pos="2.366449" len="0.610496">
       <attributes>
-        <fieldmap fieldMapFile="CCL1Rg3" xelmax="1.058007"/>
+        <fieldmap fieldMapFile="fieldmaps/CCL1Rg3" xelmax="1.058007"/>
        </attributes>
     </node>
     <node type="FM" id="CCL_RF:Cav01:Fm04" pos="3.3621915" len="0.615000">
       <attributes>
-        <fieldmap fieldMapFile="CCL1Rg4" xelmax="1.086993"/>
+        <fieldmap fieldMapFile="fieldmaps/CCL1Rg4" xelmax="1.086993"/>
        </attributes>
     </node>
     <node type="FM" id="CCL_RF:Cav01:Fm05" pos="4.36535" len="0.619616">
       <attributes>
-        <fieldmap fieldMapFile="CCL1Rg5" xelmax="1.116013"/>
+        <fieldmap fieldMapFile="fieldmaps/CCL1Rg5" xelmax="1.116013"/>
        </attributes>
     </node>
     <node type="FM" id="CCL_RF:Cav01:Fm06" pos="5.3760885" len="0.624328">
       <attributes>
-        <fieldmap fieldMapFile="CCL1Rg6" xelmax="1.145"/>
+        <fieldmap fieldMapFile="fieldmaps/CCL1Rg6" xelmax="1.145"/>
        </attributes>
     </node>
     <node type="FM" id="CCL_RF:Cav01:Fm07" pos="6.3945705" len="0.629144">
       <attributes>
-        <fieldmap fieldMapFile="CCL1Rg7" xelmax="1.17402"/>
+        <fieldmap fieldMapFile="fieldmaps/CCL1Rg7" xelmax="1.17402"/>
        </attributes>
     </node>
     <node type="FM" id="CCL_RF:Cav01:Fm08" pos="7.4209535" len="0.634056">
       <attributes>
-        <fieldmap fieldMapFile="CCL1Rg8" xelmax="1.203007"/>
+        <fieldmap fieldMapFile="fieldmaps/CCL1Rg8" xelmax="1.203007"/>
        </attributes>
     </node>
     <node type="FM" id="CCL_RF:Cav01:Fm09" pos="8.4553985" len="0.639064">
       <attributes>
-        <fieldmap fieldMapFile="CCL1Rg9" xelmax="1.232026"/>
+        <fieldmap fieldMapFile="fieldmaps/CCL1Rg9" xelmax="1.232026"/>
        </attributes>
     </node>
     <node type="FM" id="CCL_RF:Cav01:Fm10" pos="9.4980375" len="0.644104">
       <attributes>
-        <fieldmap fieldMapFile="CCL1Rg10" xelmax="1.23268"/>
+        <fieldmap fieldMapFile="fieldmaps/CCL1Rg10" xelmax="1.23268"/>
        </attributes>
     </node>
     <node type="FM" id="CCL_RF:Cav01:Fm11" pos="10.5488585" len="0.649128">
       <attributes>
-        <fieldmap fieldMapFile="CCL1Rg11" xelmax="1.23268"/>
+        <fieldmap fieldMapFile="fieldmaps/CCL1Rg11" xelmax="1.23268"/>
        </attributes>
     </node>
     <node type="FM" id="CCL_RF:Cav01:Fm12" pos="11.6078145" len="0.654120">
       <attributes>
-        <fieldmap fieldMapFile="CCL1Rg12" xelmax="1.23268"/>
+        <fieldmap fieldMapFile="fieldmaps/CCL1Rg12" xelmax="1.23268"/>
        </attributes>
     </node>
 <!--    <node type="RG" id="CCL_RF:Cav01:Rg01" pos=".133243">
@@ -7838,62 +7838,62 @@
     </node>
     <node type="FM" id="CCL_RF:Cav02:Fm01" pos="0.3721915" len="0.659096">
       <attributes>
-        <fieldmap fieldMapFile="CCL2Rg1" phasePosition="0.0411935" xelmax="1" gapOffset="-.000121"/>
+        <fieldmap fieldMapFile="fieldmaps/CCL2Rg1" phasePosition="0.0411935" xelmax="1" gapOffset="-.000121"/>
        </attributes>
     </node>
     <node type="FM" id="CCL_RF:Cav02:Fm02" pos="1.44729955" len="0.664040">
       <attributes>
-        <fieldmap fieldMapFile="CCL2Rg2" xelmax="1"/>
+        <fieldmap fieldMapFile="fieldmaps/CCL2Rg2" xelmax="1"/>
        </attributes>
     </node>
     <node type="FM" id="CCL_RF:Cav02:Fm03" pos="2.530423" len="0.668960">
       <attributes>
-        <fieldmap fieldMapFile="CCL2Rg3" xelmax="1"/>
+        <fieldmap fieldMapFile="fieldmaps/CCL2Rg3" xelmax="1"/>
        </attributes>
     </node>
     <node type="FM" id="CCL_RF:Cav02:Fm04" pos="3.6215155" len="0.673848">
       <attributes>
-        <fieldmap fieldMapFile="CCL2Rg4" xelmax="1"/>
+        <fieldmap fieldMapFile="fieldmaps/CCL2Rg4" xelmax="1"/>
        </attributes>
     </node>
     <node type="FM" id="CCL_RF:Cav02:Fm05" pos="4.7205365" len="0.678712">
       <attributes>
-        <fieldmap fieldMapFile="CCL2Rg5" xelmax="1"/>
+        <fieldmap fieldMapFile="fieldmaps/CCL2Rg5" xelmax="1"/>
        </attributes>
     </node>
     <node type="FM" id="CCL_RF:Cav02:Fm06" pos="5.8274495" len="0.683560">
       <attributes>
-        <fieldmap fieldMapFile="CCL2Rg6" xelmax="1"/>
+        <fieldmap fieldMapFile="fieldmaps/CCL2Rg6" xelmax="1"/>
        </attributes>
     </node>
     <node type="FM" id="CCL_RF:Cav02:Fm07" pos="6.942201" len="0.688368">
       <attributes>
-        <fieldmap fieldMapFile="CCL2Rg7" xelmax="1"/>
+        <fieldmap fieldMapFile="fieldmaps/CCL2Rg7" xelmax="1"/>
        </attributes>
     </node>
     <node type="FM" id="CCL_RF:Cav02:Fm08" pos="8.0647585" len="0.693160">
       <attributes>
-        <fieldmap fieldMapFile="CCL2Rg8" xelmax="1"/>
+        <fieldmap fieldMapFile="fieldmaps/CCL2Rg8" xelmax="1"/>
        </attributes>
     </node>
     <node type="FM" id="CCL_RF:Cav02:Fm09" pos="9.195073" len="0.697920">
       <attributes>
-        <fieldmap fieldMapFile="CCL2Rg9" xelmax="1"/>
+        <fieldmap fieldMapFile="fieldmaps/CCL2Rg9" xelmax="1"/>
        </attributes>
     </node>
     <node type="FM" id="CCL_RF:Cav02:Fm10" pos="10.333105" len="0.702656">
       <attributes>
-        <fieldmap fieldMapFile="CCL2Rg10" xelmax="1"/>
+        <fieldmap fieldMapFile="fieldmaps/CCL2Rg10" xelmax="1"/>
        </attributes>
     </node>
     <node type="FM" id="CCL_RF:Cav02:Fm11" pos="11.4788125" len="0.707368">
       <attributes>
-        <fieldmap fieldMapFile="CCL2Rg11" xelmax="1"/>
+        <fieldmap fieldMapFile="fieldmaps/CCL2Rg11" xelmax="1"/>
        </attributes>
     </node>
     <node type="FM" id="CCL_RF:Cav02:Fm12" pos="12.632148" len="0.712048">
       <attributes>
-        <fieldmap fieldMapFile="CCL2Rg12" xelmax="1"/>
+        <fieldmap fieldMapFile="fieldmaps/CCL2Rg12" xelmax="1"/>
        </attributes>
     </node>
 <!--    <node type="RG" id="CCL_RF:Cav02:Rg01" pos=".083837">
@@ -9130,62 +9130,62 @@
     </node>
     <node type="FM" id="CCL_RF:Cav03:Fm01" pos="0.481004" len="0.716704">
       <attributes>
-        <fieldmap fieldMapFile="CCL3Rg1" phasePosition="0.044794" xelmax="1" gapOffset="-.000091"/>
+        <fieldmap fieldMapFile="fieldmaps/CCL3Rg1" phasePosition="0.044794" xelmax="1" gapOffset="-.000091"/>
        </attributes>
     </node>
     <node type="FM" id="CCL_RF:Cav03:Fm02" pos="1.6494735" len="0.721336">
       <attributes>
-        <fieldmap fieldMapFile="CCL3Rg2" xelmax="1"/>
+        <fieldmap fieldMapFile="fieldmaps/CCL3Rg2" xelmax="1"/>
        </attributes>
     </node>
     <node type="FM" id="CCL_RF:Cav03:Fm03" pos="2.825444" len="0.725936">
       <attributes>
-        <fieldmap fieldMapFile="CCL3Rg3" xelmax="1"/>
+        <fieldmap fieldMapFile="fieldmaps/CCL3Rg3" xelmax="1"/>
        </attributes>
     </node>
     <node type="FM" id="CCL_RF:Cav03:Fm04" pos="4.008873" len="0.730512">
       <attributes>
-        <fieldmap fieldMapFile="CCL3Rg4" xelmax="1"/>
+        <fieldmap fieldMapFile="fieldmaps/CCL3Rg4" xelmax="1"/>
        </attributes>
     </node>
     <node type="FM" id="CCL_RF:Cav03:Fm05" pos="5.1997175" len="0.735064">
       <attributes>
-        <fieldmap fieldMapFile="CCL3Rg5" xelmax="1"/>
+        <fieldmap fieldMapFile="fieldmaps/CCL3Rg5" xelmax="1"/>
        </attributes>
     </node>
     <node type="FM" id="CCL_RF:Cav03:Fm06" pos="6.3979355" len="0.739592">
       <attributes>
-        <fieldmap fieldMapFile="CCL3Rg6" xelmax="1"/>
+        <fieldmap fieldMapFile="fieldmaps/CCL3Rg6" xelmax="1"/>
        </attributes>
     </node>
     <node type="FM" id="CCL_RF:Cav03:Fm07" pos="7.603645" len="0.744096">
       <attributes>
-        <fieldmap fieldMapFile="CCL3Rg7" xelmax="1"/>
+        <fieldmap fieldMapFile="fieldmaps/CCL3Rg7" xelmax="1"/>
        </attributes>
     </node>
     <node type="FM" id="CCL_RF:Cav03:Fm08" pos="8.8165825" len="0.748584">
       <attributes>
-        <fieldmap fieldMapFile="CCL3Rg8" xelmax="1"/>
+        <fieldmap fieldMapFile="fieldmaps/CCL3Rg8" xelmax="1"/>
        </attributes>
     </node>
     <node type="FM" id="CCL_RF:Cav03:Fm09" pos="10.0367945" len="0.753048">
       <attributes>
-        <fieldmap fieldMapFile="CCL3Rg9" xelmax="1"/>
+        <fieldmap fieldMapFile="fieldmaps/CCL3Rg9" xelmax="1"/>
        </attributes>
     </node>
     <node type="FM" id="CCL_RF:Cav03:Fm10" pos="11.2642525" len="0.757496">
       <attributes>
-        <fieldmap fieldMapFile="CCL3Rg10" xelmax="1"/>
+        <fieldmap fieldMapFile="fieldmaps/CCL3Rg10" xelmax="1"/>
        </attributes>
     </node>
     <node type="FM" id="CCL_RF:Cav03:Fm11" pos="12.4989235" len="0.761928">
       <attributes>
-        <fieldmap fieldMapFile="CCL3Rg11" xelmax="1"/>
+        <fieldmap fieldMapFile="fieldmaps/CCL3Rg11" xelmax="1"/>
        </attributes>
     </node>
     <node type="FM" id="CCL_RF:Cav03:Fm12" pos="13.740773" len="0.766336">
       <attributes>
-        <fieldmap fieldMapFile="CCL3Rg12" xelmax="1"/>
+        <fieldmap fieldMapFile="fieldmaps/CCL3Rg12" xelmax="1"/>
        </attributes>
     </node>
 <!--    <node type="RG" id="CCL_RF:Cav03:Rg01" pos=".167446">
@@ -10311,62 +10311,62 @@
     </node>
     <node type="FM" id="CCL_RF:Cav04:Fm01" pos="0.468006" len="0.770720">
       <attributes>
-        <fieldmap fieldMapFile="CCL4Rg1" phasePosition="0.04817" xelmax="1" gapOffset="-.000072"/>
+        <fieldmap fieldMapFile="fieldmaps/CCL4Rg1" phasePosition="0.04817" xelmax="1" gapOffset="-.000072"/>
        </attributes>
     </node>
     <node type="FM" id="CCL_RF:Cav04:Fm02" pos="1.724114" len="0.775088">
       <attributes>
-        <fieldmap fieldMapFile="CCL4Rg2" xelmax="1"/>
+        <fieldmap fieldMapFile="fieldmaps/CCL4Rg2" xelmax="1"/>
        </attributes>
     </node>
     <node type="FM" id="CCL_RF:Cav04:Fm03" pos="2.9873005" len="0.779432">
       <attributes>
-        <fieldmap fieldMapFile="CCL4Rg3" xelmax="1"/>
+        <fieldmap fieldMapFile="fieldmaps/CCL4Rg3" xelmax="1"/>
        </attributes>
     </node>
     <node type="FM" id="CCL_RF:Cav04:Fm04" pos="4.257533" len="0.783760">
       <attributes>
-        <fieldmap fieldMapFile="CCL4Rg4" xelmax="1"/>
+        <fieldmap fieldMapFile="fieldmaps/CCL4Rg4" xelmax="1"/>
        </attributes>
     </node>
     <node type="FM" id="CCL_RF:Cav04:Fm05" pos="5.534775" len="0.788064">
       <attributes>
-        <fieldmap fieldMapFile="CCL4Rg5" xelmax="1"/>
+        <fieldmap fieldMapFile="fieldmaps/CCL4Rg5" xelmax="1"/>
        </attributes>
     </node>
     <node type="FM" id="CCL_RF:Cav04:Fm06" pos="6.8189935" len="0.792344">
       <attributes>
-        <fieldmap fieldMapFile="CCL4Rg6" xelmax="1"/>
+        <fieldmap fieldMapFile="fieldmaps/CCL4Rg6" xelmax="1"/>
        </attributes>
     </node>
     <node type="FM" id="CCL_RF:Cav04:Fm07" pos="8.110158" len="0.796608">
       <attributes>
-        <fieldmap fieldMapFile="CCL4Rg7" xelmax="1"/>
+        <fieldmap fieldMapFile="fieldmaps/CCL4Rg7" xelmax="1"/>
        </attributes>
     </node>
     <node type="FM" id="CCL_RF:Cav04:Fm08" pos="9.40823" len="0.800848">
       <attributes>
-        <fieldmap fieldMapFile="CCL4Rg8" xelmax="1"/>
+        <fieldmap fieldMapFile="fieldmaps/CCL4Rg8" xelmax="1"/>
        </attributes>
     </node>
     <node type="FM" id="CCL_RF:Cav04:Fm09" pos="10.713178" len="0.805072">
       <attributes>
-        <fieldmap fieldMapFile="CCL4Rg9" xelmax="1"/>
+        <fieldmap fieldMapFile="fieldmaps/CCL4Rg9" xelmax="1"/>
        </attributes>
     </node>
     <node type="FM" id="CCL_RF:Cav04:Fm10" pos="12.024961" len="0.809264">
       <attributes>
-        <fieldmap fieldMapFile="CCL4Rg10" xelmax="1"/>
+        <fieldmap fieldMapFile="fieldmaps/CCL4Rg10" xelmax="1"/>
        </attributes>
     </node>
     <node type="FM" id="CCL_RF:Cav04:Fm11" pos="13.3435555" len="0.813448">
       <attributes>
-        <fieldmap fieldMapFile="CCL4Rg11" xelmax="1"/>
+        <fieldmap fieldMapFile="fieldmaps/CCL4Rg11" xelmax="1"/>
        </attributes>
     </node>
     <node type="FM" id="CCL_RF:Cav04:Fm12" pos="14.668915" len="0.817600">
       <attributes>
-        <fieldmap fieldMapFile="CCL4Rg12" xelmax="1"/>
+        <fieldmap fieldMapFile="fieldmaps/CCL4Rg12" xelmax="1"/>
        </attributes>
     </node>
 <!--    <node type="RG" id="CCL_RF:Cav04:Rg01" pos=".130816">
@@ -12237,7 +12237,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav01a:Fm" pos="0" len="1.0316">
          <attributes>
-           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318" gapOffset="-0.011264" xelmax="0.81"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLMed" phasePosition="0.2318" gapOffset="-0.011264" xelmax="0.81"/>
           </attributes>
        </node>
 <!--       <node type="RG" id="SCL_RF:Cav01a:Rg01" pos="-0.284">
@@ -12304,7 +12304,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav01b:Fm" pos="0" len="1.0316">
          <attributes>
-           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318" gapOffset="-0.011359" xelmax="0.81"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLMed" phasePosition="0.2318" gapOffset="-0.011359" xelmax="0.81"/>
           </attributes>
        </node>
 <!--       <node type="RG" id="SCL_RF:Cav01b:Rg01" pos="-0.284">
@@ -12371,7 +12371,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav01c:Fm" pos="0" len="1.0316">
          <attributes>
-           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318" gapOffset="-0.011457" xelmax="0.81"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLMed" phasePosition="0.2318" gapOffset="-0.011457" xelmax="0.81"/>
           </attributes>
        </node>
 <!--       <node type="RG" id="SCL_RF:Cav01c:Rg01" pos="-0.284">
@@ -12438,7 +12438,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav02a:Fm" pos="0" len="1.0316">
          <attributes>
-           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318"  gapOffset="-0.011552" xelmax="0.81"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLMed" phasePosition="0.2318"  gapOffset="-0.011552" xelmax="0.81"/>
           </attributes>
        </node>	   
 <!--       <node type="RG" id="SCL_RF:Cav02a:Rg01" pos="-0.284">
@@ -12505,7 +12505,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav02b:Fm" pos="0" len="1.0316">
          <attributes>
-           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318" gapOffset="-0.011648" xelmax="0.81"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLMed" phasePosition="0.2318" gapOffset="-0.011648" xelmax="0.81"/>
           </attributes>
        </node>
 <!--       <node type="RG" id="SCL_RF:Cav02b:Rg01" pos="-0.284">
@@ -12572,7 +12572,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav02c:Fm" pos="0" len="1.0316">
          <attributes>
-           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318"  gapOffset="-0.011742" xelmax="0.81"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLMed" phasePosition="0.2318"  gapOffset="-0.011742" xelmax="0.81"/>
           </attributes>
        </node>
 <!--       <node type="RG" id="SCL_RF:Cav02c:Rg01" pos="-0.284">
@@ -12639,7 +12639,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav03a:Fm" pos="0" len="1.0316">
          <attributes>
-           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318"  gapOffset="-0.011834" xelmax="0.81"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLMed" phasePosition="0.2318"  gapOffset="-0.011834" xelmax="0.81"/>
           </attributes>
        </node>
 <!--       <node type="RG" id="SCL_RF:Cav03a:Rg01" pos="-0.284">
@@ -12706,7 +12706,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav03b:Fm" pos="0" len="1.0316">
          <attributes>
-           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318"  gapOffset="-0.011925" xelmax="0.81"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLMed" phasePosition="0.2318"  gapOffset="-0.011925" xelmax="0.81"/>
           </attributes>
        </node>
 <!--
@@ -12774,7 +12774,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav03c:Fm" pos="0" len="1.0316">
          <attributes>
-           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318"  gapOffset="-0.012012" xelmax="0.81"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLMed" phasePosition="0.2318"  gapOffset="-0.012012" xelmax="0.81"/>
           </attributes>
        </node>
 <!--
@@ -12842,7 +12842,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav04a:Fm" pos="0" len="1.0316">
          <attributes>
-           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318"  gapOffset="-0.012098" xelmax="0.81"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLMed" phasePosition="0.2318"  gapOffset="-0.012098" xelmax="0.81"/>
           </attributes>
        </node>
 <!--
@@ -12910,7 +12910,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav04b:Fm" pos="0" len="1.0316">
          <attributes>
-           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318"  gapOffset="-0.01218" xelmax="0.81"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLMed" phasePosition="0.2318"  gapOffset="-0.01218" xelmax="0.81"/>
           </attributes>
        </node>
 <!--
@@ -12978,7 +12978,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav04c:Fm" pos="0" len="1.0316">
          <attributes>
-           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318"  gapOffset="-0.012261" xelmax="0.81"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLMed" phasePosition="0.2318"  gapOffset="-0.012261" xelmax="0.81"/>
           </attributes>
        </node>
 <!--
@@ -13046,7 +13046,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav05a:Fm" pos="0" len="1.0316">
          <attributes>
-           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318"  gapOffset="-0.012337" xelmax="0.81"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLMed" phasePosition="0.2318"  gapOffset="-0.012337" xelmax="0.81"/>
           </attributes>
        </node>
 <!--
@@ -13114,7 +13114,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav05b:Fm" pos="0" len="1.0316">
          <attributes>
-           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318"  gapOffset="-0.012411" xelmax="0.81"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLMed" phasePosition="0.2318"  gapOffset="-0.012411" xelmax="0.81"/>
           </attributes>
        </node>
 <!--
@@ -13182,7 +13182,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav05c:Fm" pos="0" len="1.0316">
          <attributes>
-           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318"  gapOffset="-0.012482" xelmax="0.81"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLMed" phasePosition="0.2318"  gapOffset="-0.012482" xelmax="0.81"/>
           </attributes>
        </node>
 <!--
@@ -13250,7 +13250,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav06a:Fm" pos="0" len="1.0316">
          <attributes>
-           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318" gapOffset="-0.01255" xelmax="0.81"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLMed" phasePosition="0.2318" gapOffset="-0.01255" xelmax="0.81"/>
           </attributes>
        </node>
 <!--
@@ -13318,7 +13318,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav06b:Fm" pos="0" len="1.0316">
          <attributes>
-           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318" gapOffset="-0.012615" xelmax="0.81"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLMed" phasePosition="0.2318" gapOffset="-0.012615" xelmax="0.81"/>
           </attributes>
        </node>
 <!--
@@ -13386,7 +13386,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav06c:Fm" pos="0" len="1.0316">
          <attributes>
-           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318" gapOffset="-0.012677" xelmax="0.81"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLMed" phasePosition="0.2318" gapOffset="-0.012677" xelmax="0.81"/>
           </attributes>
        </node>
 <!--
@@ -13454,7 +13454,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav07a:Fm" pos="0" len="1.0316">
          <attributes>
-           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318"  gapOffset="-0.012736" xelmax="0.81"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLMed" phasePosition="0.2318"  gapOffset="-0.012736" xelmax="0.81"/>
           </attributes>
        </node>
 <!--
@@ -13522,7 +13522,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav07b:Fm" pos="0" len="1.0316">
          <attributes>
-           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318" gapOffset="-0.012793" xelmax="0.81"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLMed" phasePosition="0.2318" gapOffset="-0.012793" xelmax="0.81"/>
           </attributes>
        </node>
 <!--
@@ -13590,7 +13590,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav07c:Fm" pos="0" len="1.0316">
          <attributes>
-           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318" gapOffset="-0.012847" xelmax="0.81"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLMed" phasePosition="0.2318" gapOffset="-0.012847" xelmax="0.81"/>
           </attributes>
        </node>
 <!--
@@ -13658,7 +13658,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav08a:Fm" pos="0" len="1.0316">
          <attributes>
-           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318"  gapOffset="-0.012898" xelmax="0.81"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLMed" phasePosition="0.2318"  gapOffset="-0.012898" xelmax="0.81"/>
           </attributes>
        </node>
 <!--
@@ -13726,7 +13726,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav08b:Fm" pos="0" len="1.0316">
          <attributes>
-           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318" gapOffset="-0.012947" xelmax="0.81"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLMed" phasePosition="0.2318" gapOffset="-0.012947" xelmax="0.81"/>
           </attributes>
        </node>
 <!--
@@ -13794,7 +13794,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav08c:Fm" pos="0" len="1.0316">
          <attributes>
-           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318" gapOffset="-0.012994" xelmax="0.81"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLMed" phasePosition="0.2318" gapOffset="-0.012994" xelmax="0.81"/>
           </attributes>
        </node>
 <!--
@@ -13862,7 +13862,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav09a:Fm" pos="0" len="1.0316">
          <attributes>
-           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318" gapOffset="-0.013038" xelmax="0.81"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLMed" phasePosition="0.2318" gapOffset="-0.013038" xelmax="0.81"/>
           </attributes>
        </node>
 <!--
@@ -13930,7 +13930,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav09b:Fm" pos="0" len="1.0316">
          <attributes>
-           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318"  gapOffset="-0.013082" xelmax="0.81"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLMed" phasePosition="0.2318"  gapOffset="-0.013082" xelmax="0.81"/>
           </attributes>
        </node>
 <!--
@@ -13998,7 +13998,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav09c:Fm" pos="0" len="1.0316">
          <attributes>
-           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318" gapOffset="-0.013122" xelmax="0.81"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLMed" phasePosition="0.2318" gapOffset="-0.013122" xelmax="0.81"/>
           </attributes>
        </node>
 <!--
@@ -14066,7 +14066,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav10a:Fm" pos="0" len="1.0316">
          <attributes>
-           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318"  gapOffset="-0.013161" xelmax="0.81"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLMed" phasePosition="0.2318"  gapOffset="-0.013161" xelmax="0.81"/>
           </attributes>
        </node>
 <!--
@@ -14134,7 +14134,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav10b:Fm" pos="0" len="1.0316">
          <attributes>
-           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318"  gapOffset="-0.013198" xelmax="0.81"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLMed" phasePosition="0.2318"  gapOffset="-0.013198" xelmax="0.81"/>
           </attributes>
        </node>
 <!--
@@ -14202,7 +14202,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav10c:Fm" pos="0" len="1.0316">
          <attributes>
-           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318" gapOffset="-0.013233" xelmax="0.81"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLMed" phasePosition="0.2318" gapOffset="-0.013233" xelmax="0.81"/>
           </attributes>
        </node>
 <!--
@@ -14270,7 +14270,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav11a:Fm" pos="0" len="1.0316">
          <attributes>
-           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318"  gapOffset="-0.013267" xelmax="0.81"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLMed" phasePosition="0.2318"  gapOffset="-0.013267" xelmax="0.81"/>
           </attributes>
        </node>
 <!--
@@ -14338,7 +14338,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav11b:Fm" pos="0" len="1.0316">
          <attributes>
-           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318" gapOffset="-0.013299" xelmax="0.81"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLMed" phasePosition="0.2318" gapOffset="-0.013299" xelmax="0.81"/>
           </attributes>
        </node>
 <!--
@@ -14406,7 +14406,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav11c:Fm" pos="0" len="1.0316">
          <attributes>
-           <fieldmap fieldMapFile="SCLMed" phasePosition="0.2318" gapOffset="-0.01333" xelmax="0.81"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLMed" phasePosition="0.2318" gapOffset="-0.01333" xelmax="0.81"/>
           </attributes>
        </node>
 <!--
@@ -16438,7 +16438,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav12a:Fm" pos="0" len="1.226000">
          <attributes>
-           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.011884"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.011884"/>
           </attributes>
        </node>
 <!--       <node type="RG" id="SCL_RF:Cav12a:Rg01" pos="-0.3775">
@@ -16505,7 +16505,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav12b:Fm" pos="0" len="1.226000">
          <attributes>
-           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.011948"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.011948"/>
           </attributes>
        </node>
 <!--       <node type="RG" id="SCL_RF:Cav12b:Rg01" pos="-0.3775">
@@ -16572,7 +16572,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav12c:Fm" pos="0" len="1.226000">
          <attributes>
-           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.011948"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.011948"/>
           </attributes>
        </node><!--
        <node type="RG" id="SCL_RF:Cav12c:Rg01" pos="-0.3775">
@@ -16639,7 +16639,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav12d:Fm" pos="0" len="1.226000">
          <attributes>
-           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.012075"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.012075"/>
           </attributes>
        </node>
 <!--       <node type="RG" id="SCL_RF:Cav12d:Rg01" pos="-0.3775">
@@ -16706,7 +16706,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav13a:Fm" pos="0" len="1.226000">
          <attributes>
-           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.012138"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.012138"/>
           </attributes>
        </node>
 <!--       <node type="RG" id="SCL_RF:Cav13a:Rg01" pos="-0.3775">
@@ -16773,7 +16773,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav13b:Fm" pos="0" len="1.226000">
          <attributes>
-           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.012201"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.012201"/>
           </attributes>
        </node>
 <!--       <node type="RG" id="SCL_RF:Cav13b:Rg01" pos="-0.3775">
@@ -16840,7 +16840,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav13c:Fm" pos="0" len="1.226000">
          <attributes>
-           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.012262"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.012262"/>
           </attributes>
        </node>
 <!--       <node type="RG" id="SCL_RF:Cav13c:Rg01" pos="-0.3775">
@@ -16907,7 +16907,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav13d:Fm" pos="0" len="1.226000">
          <attributes>
-           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.012323"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.012323"/>
           </attributes>
        </node>
 <!--       <node type="RG" id="SCL_RF:Cav13d:Rg01" pos="-0.3775">
@@ -16974,7 +16974,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav14a:Fm" pos="0" len="1.226000">
          <attributes>
-           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.012382"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.012382"/>
           </attributes>
        </node>
 <!--       <node type="RG" id="SCL_RF:Cav14a:Rg01" pos="-0.3775">
@@ -17041,7 +17041,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav14b:Fm" pos="0" len="1.226000">
          <attributes>
-           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.012441"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.012441"/>
           </attributes>
        </node>
 <!--       <node type="RG" id="SCL_RF:Cav14b:Rg01" pos="-0.3775">
@@ -17108,7 +17108,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav14c:Fm" pos="0" len="1.226000">
          <attributes>
-           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.012498"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.012498"/>
           </attributes>
        </node>
 <!--       <node type="RG" id="SCL_RF:Cav14c:Rg01" pos="-0.3775">
@@ -17175,7 +17175,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav14d:Fm" pos="0" len="1.226000">
          <attributes>
-           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.012554"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.012554"/>
           </attributes>
        </node>
 <!--       <node type="RG" id="SCL_RF:Cav14d:Rg01" pos="-0.3775">
@@ -17242,7 +17242,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav15a:Fm" pos="0" len="1.226000">
          <attributes>
-           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.012609"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.012609"/>
           </attributes>
        </node>
 <!--       <node type="RG" id="SCL_RF:Cav15a:Rg01" pos="-0.3775">
@@ -17309,7 +17309,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav15b:Fm" pos="0" len="1.226000">
          <attributes>
-           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.012662"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.012662"/>
           </attributes>
        </node>
 <!--       <node type="RG" id="SCL_RF:Cav15b:Rg01" pos="-0.3775">
@@ -17376,7 +17376,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav15c:Fm" pos="0" len="1.226000">
          <attributes>
-           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.012714"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.012714"/>
           </attributes>
        </node>
 <!--       <node type="RG" id="SCL_RF:Cav15c:Rg01" pos="-0.3775">
@@ -17443,7 +17443,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav15d:Fm" pos="0" len="1.226000">
          <attributes>
-           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.012764"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.012764"/>
           </attributes>
        </node>
 <!--       <node type="RG" id="SCL_RF:Cav15d:Rg01" pos="-0.3775">
@@ -17510,7 +17510,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav16a:Fm" pos="0" len="1.226000">
          <attributes>
-           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.012813"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.012813"/>
           </attributes>
        </node>
 <!--       <node type="RG" id="SCL_RF:Cav16a:Rg01" pos="-0.3775">
@@ -17577,7 +17577,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav16b:Fm" pos="0" len="1.226000">
          <attributes>
-           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.01286"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.01286"/>
           </attributes>
        </node>
 <!--       <node type="RG" id="SCL_RF:Cav16b:Rg01" pos="-0.3775">
@@ -17644,7 +17644,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav16c:Fm" pos="0" len="1.226000">
          <attributes>
-           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.012906"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.012906"/>
           </attributes>
        </node>
 <!--       <node type="RG" id="SCL_RF:Cav16c:Rg01" pos="-0.3775">
@@ -17711,7 +17711,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav16d:Fm" pos="0" len="1.226000">
          <attributes>
-           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.01295"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.01295"/>
           </attributes>
        </node>
 <!--       <node type="RG" id="SCL_RF:Cav16d:Rg01" pos="-0.3775">
@@ -17778,7 +17778,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav17a:Fm" pos="0" len="1.226000">
          <attributes>
-           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.012992"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.012992"/>
           </attributes>
        </node>
 <!--       <node type="RG" id="SCL_RF:Cav17a:Rg01" pos="-0.3775">
@@ -17845,7 +17845,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav17b:Fm" pos="0" len="1.226000">
          <attributes>
-           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013034"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013034"/>
           </attributes>
        </node>
 <!--       <node type="RG" id="SCL_RF:Cav17b:Rg01" pos="-0.3775">
@@ -17912,7 +17912,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav17c:Fm" pos="0" len="1.226000">
          <attributes>
-           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013073"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013073"/>
           </attributes>
        </node>
 <!--       <node type="RG" id="SCL_RF:Cav17c:Rg01" pos="-0.3775">
@@ -17979,7 +17979,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav17d:Fm" pos="0" len="1.226000">
          <attributes>
-           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013112"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013112"/>
           </attributes>
        </node>
 <!--       <node type="RG" id="SCL_RF:Cav17d:Rg01" pos="-0.3775">
@@ -18046,7 +18046,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav18a:Fm" pos="0" len="1.226000">
          <attributes>
-           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013149"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013149"/>
           </attributes>
        </node>
 <!--       <node type="RG" id="SCL_RF:Cav18a:Rg01" pos="-0.3775">
@@ -18113,7 +18113,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav18b:Fm" pos="0" len="1.226000">
          <attributes>
-           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013184"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013184"/>
           </attributes>
        </node>
 <!--       <node type="RG" id="SCL_RF:Cav18b:Rg01" pos="-0.3775">
@@ -18180,7 +18180,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav18c:Fm" pos="0" len="1.226000">
          <attributes>
-           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013218"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013218"/>
           </attributes>
        </node>
 <!--       <node type="RG" id="SCL_RF:Cav18c:Rg01" pos="-0.3775">
@@ -18247,7 +18247,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav18d:Fm" pos="0" len="1.226000">
          <attributes>
-           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013252"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013252"/>
           </attributes>
        </node>
 <!--       <node type="RG" id="SCL_RF:Cav18d:Rg01" pos="-0.3775">
@@ -18314,7 +18314,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav19a:Fm" pos="0" len="1.226000">
          <attributes>
-           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013283"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013283"/>
           </attributes>
        </node>
 <!--       <node type="RG" id="SCL_RF:Cav19a:Rg01" pos="-0.3775">
@@ -18381,7 +18381,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav19b:Fm" pos="0" len="1.226000">
          <attributes>
-           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013314"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013314"/>
           </attributes>
        </node>
 <!--       <node type="RG" id="SCL_RF:Cav19b:Rg01" pos="-0.3775">
@@ -18448,7 +18448,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav19c:Fm" pos="0" len="1.226000">
          <attributes>
-           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013344"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013344"/>
           </attributes>
        </node>
 <!--       <node type="RG" id="SCL_RF:Cav19c:Rg01" pos="-0.3775">
@@ -18515,7 +18515,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav19d:Fm" pos="0" len="1.226000">
          <attributes>
-           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013372"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013372"/>
           </attributes>
        </node>
 <!--       <node type="RG" id="SCL_RF:Cav19d:Rg01" pos="-0.3775">
@@ -18582,7 +18582,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav20a:Fm" pos="0" len="1.226000">
          <attributes>
-           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013399"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013399"/>
           </attributes>
        </node>
 <!--       <node type="RG" id="SCL_RF:Cav20a:Rg01" pos="-0.3775">
@@ -18649,7 +18649,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav20b:Fm" pos="0" len="1.226000">
          <attributes>
-           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013426"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013426"/>
           </attributes>
        </node>
 <!--       <node type="RG" id="SCL_RF:Cav20b:Rg01" pos="-0.3775">
@@ -18716,7 +18716,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav20c:Fm" pos="0" len="1.226000">
          <attributes>
-           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013451"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013451"/>
           </attributes>
        </node>
 <!--       <node type="RG" id="SCL_RF:Cav20c:Rg01" pos="-0.3775">
@@ -18783,7 +18783,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav20d:Fm" pos="0" len="1.226000">
          <attributes>
-           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013476"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013476"/>
           </attributes>
        </node>
 <!--       <node type="RG" id="SCL_RF:Cav20d:Rg01" pos="-0.3775">
@@ -18850,7 +18850,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav21a:Fm" pos="0" len="1.226000">
          <attributes>
-           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013499"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013499"/>
           </attributes>
        </node>
 <!--       <node type="RG" id="SCL_RF:Cav21a:Rg01" pos="-0.3775">
@@ -18917,7 +18917,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav21b:Fm" pos="0" len="1.226000">
          <attributes>
-           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013522"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013522"/>
           </attributes>
        </node>
 <!--       <node type="RG" id="SCL_RF:Cav21b:Rg01" pos="-0.3775">
@@ -18984,7 +18984,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav21c:Fm" pos="0" len="1.226000">
          <attributes>
-           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013544"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013544"/>
           </attributes>
        </node>
 <!--       <node type="RG" id="SCL_RF:Cav21c:Rg01" pos="-0.3775">
@@ -19051,7 +19051,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav21d:Fm" pos="0" len="1.226000">
          <attributes>
-           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013565"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013565"/>
           </attributes>
        </node>
 <!--       <node type="RG" id="SCL_RF:Cav21d:Rg01" pos="-0.3775">
@@ -19118,7 +19118,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav22a:Fm" pos="0" len="1.226000">
          <attributes>
-           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013586"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013586"/>
           </attributes>
        </node>
 <!--       <node type="RG" id="SCL_RF:Cav22a:Rg01" pos="-0.3775">
@@ -19185,7 +19185,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav22b:Fm" pos="0" len="1.226000">
          <attributes>
-           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013606"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013606"/>
           </attributes>
        </node>
 <!--       <node type="RG" id="SCL_RF:Cav22b:Rg01" pos="-0.3775">
@@ -19252,7 +19252,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav22c:Fm" pos="0" len="1.226000">
          <attributes>
-           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013625"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013625"/>
           </attributes>
        </node>
 <!--       <node type="RG" id="SCL_RF:Cav22c:Rg01" pos="-0.3775">
@@ -19319,7 +19319,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav22d:Fm" pos="0" len="1.226000">
          <attributes>
-           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013643"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013643"/>
           </attributes>
        </node>
 <!--       <node type="RG" id="SCL_RF:Cav22d:Rg01" pos="-0.3775">
@@ -19386,7 +19386,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav23a:Fm" pos="0" len="1.226000">
          <attributes>
-           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013661"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013661"/>
           </attributes>
        </node>
 <!--       <node type="RG" id="SCL_RF:Cav23a:Rg01" pos="-0.3775">
@@ -19453,7 +19453,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav23b:Fm" pos="0" len="1.226000">
          <attributes>
-           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013679"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013679"/>
           </attributes>
        </node>
 <!--       <node type="RG" id="SCL_RF:Cav23b:Rg01" pos="-0.3775">
@@ -19520,7 +19520,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav23c:Fm" pos="0" len="1.226000">
          <attributes>
-           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013695"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013695"/>
           </attributes>
        </node>
 <!--       <node type="RG" id="SCL_RF:Cav23c:Rg01" pos="-0.3775">
@@ -19587,7 +19587,7 @@
        </channelsuite>
        <node type="FM" id="SCL_RF:Cav23d:Fm" pos="0" len="1.226000">
          <attributes>
-           <fieldmap fieldMapFile="SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013711"/>
+           <fieldmap fieldMapFile="fieldmaps/SCLHigh" phasePosition="0.2355" xelmax="0.735" gapOffset="-0.013711"/>
           </attributes>
        </node><!--
        <node type="RG" id="SCL_RF:Cav23d:Rg01" pos="-0.3775">
