@@ -27,6 +27,7 @@ public class FieldMapNCells extends ElementSeq {
 	
 	private double phi0;
 	private double phipos;
+	private boolean inverted;
 	
 	private double startPosition;
 	private double sliceStartPosition;
@@ -64,6 +65,7 @@ public class FieldMapNCells extends ElementSeq {
 				phipos = fm.getPhasePosition();	
 				k0 = cavity.getDfltCavAmp()*1e6 * fm.getXelmax() / (fp.getE0L(frequency)/fp.getLength());
 				
+				inverted = fp.isFirstInverted();
 				firstInRFCavity = true;
 				for (ESSFieldMap fm2 : cavity.getNodesOfClassWithQualifier(ESSFieldMap.class, QualifierFactory.getStatusQualifier(true))) {
 					if (fm2.getPosition() < fm.getPosition()) {
@@ -76,6 +78,7 @@ public class FieldMapNCells extends ElementSeq {
 		    	phi0 = fm.getPhase()*Math.PI/180.;		    	
 		    	k0 = fm.getXelmax();
 		    	firstInRFCavity = true;
+		    	inverted = false;
 		    }
 		    
 		    /*
@@ -129,7 +132,7 @@ public class FieldMapNCells extends ElementSeq {
 			double l2 = splitIntgrs[i].getLength() - l1;
 			if (i==0) {
 				double phim0 = phipos / (probe.getBeta() * IElement.LightSpeed / (2*Math.PI*frequency));			    
-			    double phiInput = Math.IEEEremainder(phi0 - phim0 - (splitIntgrs[i].getInverted() ? Math.PI : 0.), 2*Math.PI);			    
+			    double phiInput = Math.IEEEremainder(phi0 - phim0 - (inverted ? Math.PI : 0.), 2*Math.PI);			    
     			gaps[i].setPhase(phiInput + phim + (splitIntgrs[i].getInverted() ? Math.PI : 0));
 			}
 			gaps[i].setTTFFit(splitIntgrs[i]);

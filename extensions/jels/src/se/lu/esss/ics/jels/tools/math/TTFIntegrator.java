@@ -183,6 +183,7 @@ public class TTFIntegrator extends UnivariateRealPolynomial {
 				if (field[i]*field[i+1] <= 0.) {
 					if (field[i] < 0 && pos.size() == 1) invert = true;
 					while (i<field.length-2 && field[i+1]*field[i+2] <= 0) i++; // staggering zero
+					if (i>=field.length-2) break;
 					pos.add(i+1);				
 				}
 			pos.add(field.length);

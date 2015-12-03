@@ -73,6 +73,7 @@ public class FieldMap extends ThickElement  {
 					}
 				}				
 			} else {
+				firstInRFCavity = true;
 				phi0 = fm.getPhase()/180.*Math.PI;
 				frequency = fm.getFrequency() * 1e6;
 				phipos = 0;
