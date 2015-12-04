@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.xal</groupId>
 		<artifactId>openxal.apps</artifactId>
-		<version>1.0.7-SNAPSHOT</version>
+		<version>1.0.7</version>
 	</parent>
 
 	<artifactId>openxal.apps.meme</artifactId>
