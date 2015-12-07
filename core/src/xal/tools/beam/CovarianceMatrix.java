@@ -299,21 +299,6 @@ public class CovarianceMatrix extends PhaseMatrix {
             throw new IllegalArgumentException("CovarianceMatrix(PhaseMatrix) - argument not symmetric.");
     }
 
-//    /**
-//     * Constructor for CovarianceMatrix.  Takes a symmetric <code>Jama Matrix</code> 
-//     * object to initialize the correlation matrix.
-//     * 
-//     * @param matInit symmetric <code>Jama Matrix</code> object for initial value
-//     * 
-//     * @exception IllegalArgumentException  initializing matrix is not symmetric
-//     */
-//    public CovarianceMatrix(Matrix matInit) throws IllegalArgumentException {
-//        super(matInit);
-//
-//        if (!this.checkSymmetry(this))
-//            throw new IllegalArgumentException("CovarianceMatrix(PhaseMatrix) - argument not symmetric.");
-//    }
-
     /**
      *  (Re)sets the rms emittances for the beam.  This method scales the X,Y,Z diagonal blocks
      *  of the correlation matrix so the beam has the rms emittances provided.  
