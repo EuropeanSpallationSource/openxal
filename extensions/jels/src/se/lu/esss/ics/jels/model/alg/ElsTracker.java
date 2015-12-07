@@ -11,7 +11,8 @@ import xal.model.ModelException;
 import xal.model.alg.EnvelopeTracker;
 import xal.model.probe.EnvelopeProbe;
 import xal.tools.beam.PhaseMatrix;
-import Jama.Matrix;
+import xal.tools.math.BaseMatrix;
+import xal.tools.math.GenericMatrix;
 
 
 /**
@@ -159,13 +160,13 @@ public class ElsTracker extends EnvelopeTracker {
         ElsProbe   probe = (ElsProbe)ifcProbe;
         
         // Get initial conditions of probe
-        Matrix	envelope = probe.getEnvelope();
+        BaseMatrix	envelope = probe.getEnvelope();
         
         // Compute the transfer matrix
         PhaseMatrix matrix  = ifcElem.transferMap(probe, dblLen).getFirstOrder(); 
         
         // Compute optics matrix...          
-        Matrix optics = new Matrix(9, 9);
+        BaseMatrix optics = new GenericMatrix(9, 9);
         
         double[] det = new double[3];
     	
@@ -177,20 +178,20 @@ public class ElsTracker extends EnvelopeTracker {
     		double M22 = matrix.getElem(2*i+1,2*i+1);
     		det[i] = M11*M22-M21*M12;
     		
-    		optics.set(3*i+0, 3*i+0, Math.pow(M11,2));
-    		optics.set(3*i+0, 3*i+1, -2.0*M11*M12);
-    		optics.set(3*i+0, 3*i+2, Math.pow(M12,2));
-    		optics.set(3*i+1, 3*i+0, -M11*M21);
-    		optics.set(3*i+1, 3*i+1, M11*M22+M12*M21);
-    		optics.set(3*i+1, 3*i+2, -M12*M22);
-    		optics.set(3*i+2, 3*i+0, Math.pow(M21,2));
-    		optics.set(3*i+2, 3*i+1, -2.0*M21*M22);
-    		optics.set(3*i+2, 3*i+2, Math.pow(M22,2));
+    		optics.setElem(3*i+0, 3*i+0, Math.pow(M11,2));
+    		optics.setElem(3*i+0, 3*i+1, -2.0*M11*M12);
+    		optics.setElem(3*i+0, 3*i+2, Math.pow(M12,2));
+    		optics.setElem(3*i+1, 3*i+0, -M11*M21);
+    		optics.setElem(3*i+1, 3*i+1, M11*M22+M12*M21);
+    		optics.setElem(3*i+1, 3*i+2, -M12*M22);
+    		optics.setElem(3*i+2, 3*i+0, Math.pow(M21,2));
+    		optics.setElem(3*i+2, 3*i+1, -2.0*M21*M22);
+    		optics.setElem(3*i+2, 3*i+2, Math.pow(M22,2));
     	}
     	
    		optics = optics.times(1./det[0]);
     	    
-        Matrix	envelope1 = optics.times(envelope);        
+        BaseMatrix	envelope1 = optics.times(envelope);        
                
         // Advance the probe states 
         probe.setEnvelope(envelope1);

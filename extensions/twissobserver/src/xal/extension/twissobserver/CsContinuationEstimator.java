@@ -8,13 +8,13 @@ package xal.extension.twissobserver;
 
 import xal.tools.beam.CovarianceMatrix;
 import xal.tools.beam.PhaseMatrix;
+import xal.tools.math.BaseMatrix;
+import xal.tools.math.GenericMatrix;
 import xal.model.ModelException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
-import Jama.Matrix;
 
 /**
  * <p>
@@ -535,27 +535,28 @@ public class CsContinuationEstimator extends CourantSnyderEstimator {
         
         // Compute the partial derivatives of the solution curve w.r.t. the beam charge
         //  at the current beam charge and store them in a map.
-        Map<PHASEPLANE, Matrix>   mapVecDSigdq = new HashMap<PHASEPLANE, Matrix>();
+        Map<PHASEPLANE, BaseMatrix>   mapVecDSigdq = new HashMap<PHASEPLANE, BaseMatrix>();
         
         for (PHASEPLANE plane : PHASEPLANE.values()) {
             int     cntDim    = plane.getCovariantBasisSize();
-            Matrix  matId     = Matrix.identity(cntDim, cntDim);
+            BaseMatrix matId     = new GenericMatrix(cntDim, cntDim); // TODO
+            matId.assignIdentity();
 
             // Compute the moment function resolvent
-            Matrix  matDFdSig = this.computePartialWrtMoments(plane, matSig0, strRecDevId, dblBnchFreq, dblBnchChg, arrData);
-            Matrix  matDGdSig    = matDFdSig.minus(matId);
-            Matrix  matDGdSigInv = matDGdSig.inverse();
+            BaseMatrix  matDFdSig = this.computePartialWrtMoments(plane, matSig0, strRecDevId, dblBnchFreq, dblBnchChg, arrData);
+            BaseMatrix  matDGdSig    = matDFdSig.minus(matId);
+            BaseMatrix  matDGdSigInv = matDGdSig.inverse();
             
             // Compute the partial of the solution curve w.r.t. charge and store
-            Matrix  vecDFdq   = this.computePartialWrtCharge(plane, matSig0, strRecDevId, dblBnchFreq, dblBnchChg, arrData);
-            Matrix  vecDSigDq = matDGdSigInv.times(vecDFdq);
+            BaseMatrix  vecDFdq   = this.computePartialWrtCharge(plane, matSig0, strRecDevId, dblBnchFreq, dblBnchChg, arrData);
+            BaseMatrix  vecDSigDq = matDGdSigInv.times(vecDFdq);
             
             mapVecDSigdq.put(plane, vecDSigDq);
         }
         
-        Matrix  vecDelSigHor = mapVecDSigdq.get(PHASEPLANE.HOR).times(dblDelChg);
-        Matrix  vecDelSigVer = mapVecDSigdq.get(PHASEPLANE.VER).times(dblDelChg);
-        Matrix  vecDelSigLng = mapVecDSigdq.get(PHASEPLANE.LNG).times(dblDelChg);
+        BaseMatrix  vecDelSigHor = mapVecDSigdq.get(PHASEPLANE.HOR).times(dblDelChg);
+        BaseMatrix  vecDelSigVer = mapVecDSigdq.get(PHASEPLANE.VER).times(dblDelChg);
+        BaseMatrix  vecDelSigLng = mapVecDSigdq.get(PHASEPLANE.LNG).times(dblDelChg);
         
         CovarianceMatrix   matDelSig = PHASEPLANE.constructCovariance(vecDelSigHor, vecDelSigVer, vecDelSigLng);
         CovarianceMatrix   matSig1   = new CovarianceMatrix( matSig0.plus(matDelSig) );
@@ -595,22 +596,22 @@ public class CsContinuationEstimator extends CourantSnyderEstimator {
      * @throws ModelException   Failed to generate transfer matrices due to a simulation error 
      *
      */
-    private Matrix  computePartialWrtCharge(PHASEPLANE plane, CovarianceMatrix matSig0, String strRecDevId, double dblBnchFreq, double dblChg, ArrayList<Measurement> arrMsmts) 
+    private BaseMatrix  computePartialWrtCharge(PHASEPLANE plane, CovarianceMatrix matSig0, String strRecDevId, double dblBnchFreq, double dblChg, ArrayList<Measurement> arrMsmts) 
         throws ModelException 
     {
         
         // Compute the current moment vector
         this.genTransMat.generateWithSpaceCharge(dblBnchFreq, dblChg, matSig0);
-        Matrix  vecMmtsInit = this.computeReconSubFunction(plane, strRecDevId, arrMsmts);
+        BaseMatrix  vecMmtsInit = this.computeReconSubFunction(plane, strRecDevId, arrMsmts);
         
         // Perturb the beam charge and recompute the moment vector
         double  dblChgPert  = (1.0 + this.dblDelCurPct)*dblChg;
         this.genTransMat.generateWithSpaceCharge(dblBnchFreq, dblChgPert, matSig0);
-        Matrix  vecMmtsPert = this.computeReconSubFunction(plane, strRecDevId, arrMsmts);
+        BaseMatrix  vecMmtsPert = this.computeReconSubFunction(plane, strRecDevId, arrMsmts);
         
         // Approximate the moment vector derivative by finite difference
-        Matrix vecDelF = vecMmtsPert.minus(vecMmtsInit);
-        Matrix vecDFdq = vecDelF.times(1.0/(this.dblDelCurPct*dblChg));
+        BaseMatrix vecDelF = vecMmtsPert.minus(vecMmtsInit);
+        BaseMatrix vecDFdq = vecDelF.times(1.0/(this.dblDelCurPct*dblChg));
         
         return vecDFdq;
     }
@@ -661,28 +662,28 @@ public class CsContinuationEstimator extends CourantSnyderEstimator {
      * @author Christopher K. Allen
      * @since  Apr 1, 2013
      */
-    private Matrix  computePartialWrtMoments(PHASEPLANE plane, CovarianceMatrix matSig0, String strRecDevId, double dblBnchFreq, double dblChg, ArrayList<Measurement> arrMsmts)
+    private BaseMatrix  computePartialWrtMoments(PHASEPLANE plane, CovarianceMatrix matSig0, String strRecDevId, double dblBnchFreq, double dblChg, ArrayList<Measurement> arrMsmts)
         throws ModelException
     {
         
         // Extract the initial moments from the covariance matrix
         //  These values are the coordinates in the domain about which we are taking 
         //  the numerical partial derivative
-        Matrix  vecSig0 = plane.extractCovarianceVector(matSig0);
+        BaseMatrix  vecSig0 = plane.extractCovarianceVector(matSig0);
         
         // Compute the current value of F(sig0,q) from the initial moments (and charge)
         //  These values are the point in the range of F that which sig0 maps to 
         this.genTransMat.generateWithSpaceCharge(dblBnchFreq, dblChg, matSig0);
-        Matrix  vecMmtsInit = this.computeReconSubFunction(plane, strRecDevId, arrMsmts);
+        BaseMatrix  vecMmtsInit = this.computeReconSubFunction(plane, strRecDevId, arrMsmts);
         
         // Perturb each moment and recompute the result
         //  We compute column vector DF/dSig_i for each independent variable sig_i 
         //  of vector sig.  The partials are computed numerically by perturbing sig 
         //  by del*e_i at sig0 where e_i is the ith covariance basis matrix.
-        ArrayList<Matrix>       arrVecDelF = new ArrayList<Matrix>();
+        ArrayList<BaseMatrix>       arrVecDelF = new ArrayList<BaseMatrix>();
         
         for (int i=0; i<plane.getCovariantBasisSize(); i++) {
-            double  dblMmt0    = vecSig0.get(i, 0);
+            double  dblMmt0    = vecSig0.getElem(i, 0);
             double  dblMmtPert = this.dblDelMmtPct*dblMmt0;
             
             CovarianceMatrix matBasis  = plane.getCovarianceBasis(i);
@@ -690,22 +691,22 @@ public class CsContinuationEstimator extends CourantSnyderEstimator {
             CovarianceMatrix matDelSig = new CovarianceMatrix( matSig0.plus(matPert) );
             
             this.genTransMat.generateWithSpaceCharge(dblBnchFreq, dblChg, matDelSig);
-            Matrix  vecMmtsPert = this.computeReconSubFunction(plane, strRecDevId, arrMsmts);
-            Matrix  vecDelF     = vecMmtsPert.minus(vecMmtsInit);
-            Matrix  vecDFdSig   = vecDelF.times(1.0/dblMmtPert);
+            BaseMatrix  vecMmtsPert = this.computeReconSubFunction(plane, strRecDevId, arrMsmts);
+            BaseMatrix  vecDelF     = vecMmtsPert.minus(vecMmtsInit);
+            BaseMatrix  vecDFdSig   = vecDelF.times(1.0/dblMmtPert);
             
             arrVecDelF.add(vecDFdSig);
         }
         
         // Build the partial derivative matrix
-        int     iRowMaxF   = vecMmtsInit.getRowDimension() - 1;
-        int     iRowMaxSig = vecSig0.getRowDimension() - 1;
-        Matrix  matDFdSig = new Matrix(iRowMaxF + 1, iRowMaxSig + 1);
+        int     iRowMaxF   = vecMmtsInit.getRowCnt() - 1;
+        int     iRowMaxSig = vecSig0.getRowCnt() - 1;
+        BaseMatrix  matDFdSig = new GenericMatrix(iRowMaxF + 1, iRowMaxSig + 1);
         
         for (int j=0; j<=iRowMaxSig; j++) {
-            Matrix vecDelF = arrVecDelF.get(j);
+            BaseMatrix vecDelF = arrVecDelF.get(j);
             
-            matDFdSig.setMatrix(0, iRowMaxF, j, j, vecDelF);
+            matDFdSig.setSubMatrix(0, iRowMaxF, j, j, vecDelF.getArrayCopy());
         }
         
         return matDFdSig;

@@ -9,12 +9,13 @@ package xal.extension.twissobserver;
 import xal.tools.beam.CovarianceMatrix;
 import xal.tools.beam.PhaseMatrix;
 import xal.tools.beam.Twiss;
+import xal.tools.math.BaseMatrix;
+import xal.tools.math.GenericMatrix;
 import xal.model.ModelException;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
-import Jama.Matrix;
 
 /**
  * <p>
@@ -326,9 +327,9 @@ public abstract class CourantSnyderEstimator {
         else
             this.genTransMat.generateWithSpaceCharge(dblBnchFreq, dblBeamCurr, matSig0);
         
-        Matrix  vecMmtsHor = this.computeReconSubFunction(PHASEPLANE.HOR, strRecDevId, arrData);
-        Matrix  vecMmtsVer = this.computeReconSubFunction(PHASEPLANE.VER, strRecDevId, arrData);
-        Matrix  vecMmtsLng = this.computeReconSubFunction(PHASEPLANE.LNG, strRecDevId, arrData);
+        BaseMatrix  vecMmtsHor = this.computeReconSubFunction(PHASEPLANE.HOR, strRecDevId, arrData);
+        BaseMatrix  vecMmtsVer = this.computeReconSubFunction(PHASEPLANE.VER, strRecDevId, arrData);
+        BaseMatrix  vecMmtsLng = this.computeReconSubFunction(PHASEPLANE.LNG, strRecDevId, arrData);
         
         CovarianceMatrix   matSig = PHASEPLANE.constructCovariance(vecMmtsHor, vecMmtsVer, vecMmtsLng);
         
@@ -366,7 +367,7 @@ public abstract class CourantSnyderEstimator {
      * @author Christopher K. Allen
      * @since  Apr 16, 2013
      */
-    public Matrix  computeObservationMatrix(String strReconDevId, ArrayList <Measurement> arrData) 
+    public BaseMatrix  computeObservationMatrix(String strReconDevId, ArrayList <Measurement> arrData) 
         throws IllegalArgumentException, IllegalStateException
     {
         // These are the dimensions of the diagonal blocks
@@ -375,14 +376,14 @@ public abstract class CourantSnyderEstimator {
         int         cntCols = 3;
         
         // Create the returned matrix
-        Matrix      matObs  = new Matrix(3*cntRows, 3*cntCols);
+        BaseMatrix      matObs  = new GenericMatrix(3*cntRows, 3*cntCols);
         
         // Compute the diagonal block for each plane and write it into the returned matrix
         int     cntIter = 0;
         for ( PHASEPLANE plane : PHASEPLANE.values() ) {
             
             // Compute the block diagonal observation matrix, i.e., for this phase plane
-            Matrix      matBlkDiag = this.computeObservationMatrix(plane, strReconDevId, arrData);
+            BaseMatrix      matBlkDiag = this.computeObservationMatrix(plane, strReconDevId, arrData);
             
             // Get the index of the top left corner of the block diagonal with the phase matrix
             //  object.  With that we can set the entire sub array within the phase matrix.
@@ -391,7 +392,7 @@ public abstract class CourantSnyderEstimator {
             
             int         indLft = cntIter * cntCols;
             int         indRgt = indLft + cntCols - 1;
-            matObs.setMatrix(indTop, indBot, indLft, indRgt, matBlkDiag);
+            matObs.setSubMatrix(indTop, indBot, indLft, indRgt, matBlkDiag.getArrayCopy());
             
             cntIter++;
         }
@@ -438,24 +439,24 @@ public abstract class CourantSnyderEstimator {
      * 
      * @return Resulting <b>&sigma;</b> vector of second moments at the given device location
      */
-    protected Matrix computeReconSubFunction(PHASEPLANE plane, String strTargElemId, ArrayList<Measurement> arrData) {
-        Matrix vecData = this.constructDataVector(plane, arrData);
-        Matrix matObs  = this.computeObservationMatrix(plane, strTargElemId, arrData);
+    protected BaseMatrix computeReconSubFunction(PHASEPLANE plane, String strTargElemId, ArrayList<Measurement> arrData) {
+        BaseMatrix vecData = this.constructDataVector(plane, arrData);
+        BaseMatrix matObs  = this.computeObservationMatrix(plane, strTargElemId, arrData);
 
-        Matrix  vecSigma;
+        BaseMatrix  vecSigma;
         int     N = arrData.size();
         if (N == 3) {
             vecSigma = matObs.inverse().times(vecData);
 
         } else if (N < 3) {
-            Matrix	matRngOper   = matObs.times( matObs.transpose() );
-            Matrix  matPseudoInv = matRngOper.inverse();
+            BaseMatrix	matRngOper   = matObs.times( matObs.transpose() );
+            BaseMatrix  matPseudoInv = matRngOper.inverse();
 
             vecSigma = matPseudoInv.times( matObs.times(vecData) );
         } else if (N > 3) {
-            Matrix  matObsT      = matObs.transpose();
-            Matrix	matDomOper   = matObsT.times( matObs );
-            Matrix  matPseudoInv = matDomOper.inverse();
+            BaseMatrix  matObsT      = matObs.transpose();
+            BaseMatrix	matDomOper   = matObsT.times( matObs );
+            BaseMatrix  matPseudoInv = matDomOper.inverse();
 
             vecSigma = matPseudoInv.times( matObsT.times(vecData) );
 
@@ -491,7 +492,7 @@ public abstract class CourantSnyderEstimator {
      * @throws IllegalArgumentException unknown phase plane or unknown device 
      * @throws IllegalStateException    transfer matrices have not been generated
      */
-    protected Matrix computeObservationMatrix(PHASEPLANE plane, String strReconDevId,
+    protected BaseMatrix computeObservationMatrix(PHASEPLANE plane, String strReconDevId,
             ArrayList <Measurement> arrData) throws IllegalArgumentException, IllegalStateException {
                 ArrayList<PhaseMatrix>  arrTransMatrices = new ArrayList<PhaseMatrix>();    
             
@@ -506,7 +507,7 @@ public abstract class CourantSnyderEstimator {
                 }
             
                 // Create the new observation matrix and populate it
-                Matrix matObs = new Matrix(arrData.size(), 3);
+                BaseMatrix matObs = new GenericMatrix(arrData.size(), 3);
             
                 for (int i = 0; i < arrData.size(); i++) {
                     PhaseMatrix matPhi = arrTransMatrices.get(i);
@@ -518,7 +519,7 @@ public abstract class CourantSnyderEstimator {
                         int         indOffSet = plane.getCovIndexOffset();
                         double      dblTE11   = matTE.getElem(indOffSet, indOffSet);
                         
-                        matObs.set(i, j, dblTE11);
+                        matObs.setElem(i, j, dblTE11);
                     }
             
                 }
@@ -544,15 +545,15 @@ public abstract class CourantSnyderEstimator {
     
         double  dblErrTotal = 0.0;
         for (PHASEPLANE plane : PHASEPLANE.values()) {
-            Matrix  vecSig  = plane.extractCovarianceVector(matSigSoln);
+            BaseMatrix  vecSig  = plane.extractCovarianceVector(matSigSoln);
     
             double  dblError = 0.0;
             if (N < 3) {
                 dblError = vecSig.normF(); 
     
             } else if (N >= 3) {
-                Matrix  vecData = this.constructDataVector(plane, arrData);
-                Matrix  matObs  = this.computeObservationMatrix(plane, strRecDevId, arrData);
+                BaseMatrix  vecData = this.constructDataVector(plane, arrData);
+                BaseMatrix  matObs  = this.computeObservationMatrix(plane, strRecDevId, arrData);
     
                 dblError = (vecData.minus( matObs.times(vecSig) )).normF();
     
@@ -604,15 +605,15 @@ public abstract class CourantSnyderEstimator {
      * @since  Jul 20, 2012
      * 
      */
-    private Matrix constructDataVector(PHASEPLANE plane, ArrayList<Measurement> arrMsmt) {
-        Matrix matData = new Matrix(arrMsmt.size(), 1);
+    private BaseMatrix constructDataVector(PHASEPLANE plane, ArrayList<Measurement> arrMsmt) {
+        BaseMatrix matData = new GenericMatrix(arrMsmt.size(), 1);
         
         for (int n = 0; n < arrMsmt.size(); n++) {
             Measurement msmt    = arrMsmt.get(n);
             
             double      dblSigma = plane.extractBeamSize(msmt);
             
-            matData.set(n, 0, dblSigma*dblSigma);
+            matData.setElem(n, 0, dblSigma*dblSigma);
         }
         
         return matData;
@@ -630,11 +631,11 @@ public abstract class CourantSnyderEstimator {
      * @since  Aug 31, 2012
      */
     @SuppressWarnings("unused")
-    private Twiss computeEquivalentTwiss(Matrix vecMmts) {
+    private Twiss computeEquivalentTwiss(BaseMatrix vecMmts) {
         
-        double  dblMmtPos = vecMmts.get(0, 0);
-        double  dblMmtCov = vecMmts.get(1, 0);
-        double  dblMmtAng = vecMmts.get(2, 0);
+        double  dblMmtPos = vecMmts.getElem(0, 0);
+        double  dblMmtCov = vecMmts.getElem(1, 0);
+        double  dblMmtAng = vecMmts.getElem(2, 0);
         Twiss   twsEquiv  = Twiss.createFromMoments(dblMmtPos, dblMmtCov, dblMmtAng);
         
         return twsEquiv;

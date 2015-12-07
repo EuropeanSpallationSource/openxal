@@ -247,6 +247,14 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
     /*
      *  Algebraic Operations
      */
+    
+    /**
+     * Computes trace of the matrix.
+     * @return Trace of the matrix.
+     */
+    public double trace() {
+    	return this.getMatrix().trace();
+    }
 
     /**
      *  @see BaseMatrix#times(BaseMatrix)

@@ -25,6 +25,18 @@ public class GenericMatrix extends BaseMatrix<GenericMatrix> {
 		super(cntRows, cntCols);
 	}
 	
+
+	/**
+	 * Instance a matrix with elements provided in an array.
+	 * @see BaseMatrix#BaseMatrix(int, int, double[][])
+	 * 
+	 * @param arr Array containing the elements of matrix.
+	 */
+	public GenericMatrix(double[][] arr) {
+		super(arr.length, arr[0].length, arr);
+	}
+
+
 	/**
 	 * Instance a matrix with elements provided in an array.
 	 * @see BaseMatrix#BaseMatrix(int, int, double[][])

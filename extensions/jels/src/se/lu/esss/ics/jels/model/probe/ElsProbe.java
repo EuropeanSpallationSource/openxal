@@ -4,7 +4,8 @@ import xal.model.probe.EnvelopeProbe;
 import xal.model.probe.traj.EnvelopeProbeState;
 import xal.tools.beam.CovarianceMatrix;
 import xal.tools.beam.Twiss;
-import Jama.Matrix;
+import xal.tools.math.BaseMatrix;
+import xal.tools.math.GenericMatrix;
 
 
 /**
@@ -15,11 +16,11 @@ import Jama.Matrix;
  * @author Emanuele Laface, Ivo List <ivo.list@cosylab.com>
  */
 public class ElsProbe extends EnvelopeProbe {
-	private Matrix envelope = new Matrix(9,1,0.0);
-	private Matrix normalized_emmitance = new Matrix(3,1,0.0);	
+	private BaseMatrix envelope = new GenericMatrix(9,1);
+	private BaseMatrix normalized_emmitance = new GenericMatrix(3,1);	
 	
-	private Matrix envelope0;
-	private Matrix normalized_emmitance0;
+	private BaseMatrix envelope0;
+	private BaseMatrix normalized_emmitance0;
 	
     @Override
 	public EnvelopeProbeState createProbeState() {
@@ -32,20 +33,20 @@ public class ElsProbe extends EnvelopeProbe {
 	{
 		twiss[2].setTwiss(twiss[2].getAlpha(), twiss[2].getBeta()/Math.pow(getGamma(), 2), twiss[2].getEmittance());
 		for (int i = 0; i<3; i++) {
-			envelope.set(3*i+0,0,twiss[i].getBeta());
-			envelope.set(3*i+1,0,twiss[i].getAlpha());
-			envelope.set(3*i+2,0,twiss[i].getGamma());
-			normalized_emmitance.set(i,0,twiss[i].getEmittance()*getBeta()*getGamma());
+			envelope.setElem(3*i+0,0,twiss[i].getBeta());
+			envelope.setElem(3*i+1,0,twiss[i].getAlpha());
+			envelope.setElem(3*i+2,0,twiss[i].getGamma());
+			normalized_emmitance.setElem(i,0,twiss[i].getEmittance()*getBeta()*getGamma());
 		}		
 		envelope0 = envelope.copy();
 		normalized_emmitance0 = normalized_emmitance.copy();
 	}
 	
-	public Matrix getEnvelope() {
+	public BaseMatrix getEnvelope() {
 		return envelope;
 	}
 
-	public void setEnvelope(Matrix envelope) {
+	public void setEnvelope(BaseMatrix envelope) {
 		this.envelope = envelope;
 	}
 	
@@ -53,7 +54,7 @@ public class ElsProbe extends EnvelopeProbe {
 	{
 		Twiss[] twiss = new Twiss[3];
 		for (int i=0; i<3; i++)
-			twiss[i] = new Twiss(envelope.get(3*i+1,0), envelope.get(3*i,0), normalized_emmitance.get(i,0)/(getBeta()*getGamma()));
+			twiss[i] = new Twiss(envelope.getElem(3*i+1,0), envelope.getElem(3*i,0), normalized_emmitance.getElem(i,0)/(getBeta()*getGamma()));
 		twiss[2].setTwiss(twiss[2].getAlpha(), twiss[2].getBeta()*Math.pow(getGamma(), 2), twiss[2].getEmittance());
 		return twiss;
 	}

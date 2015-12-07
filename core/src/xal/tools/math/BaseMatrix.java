@@ -14,6 +14,7 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.StringTokenizer;
 
+import xal.XalException;
 import xal.tools.beam.PhaseMatrix;
 import xal.tools.data.DataAdaptor;
 import xal.tools.data.DataFormatException;
@@ -340,6 +341,19 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
             for (int j=0; j<this.getColCnt(); j++)
                 this.setElem(i, j, 0.0);
     }
+    
+    /**
+     * Assign this matrix to be the identity matrix.  The
+     * identity matrix is a matrix with 1's on the
+     * diagonal and 0's everywhere else.
+     */
+    public void assignIdentity() {
+        this.assignZero();
+        
+        for (int i=0; i<Math.min(this.getColCnt(), this.getRowCnt()); i++)
+            this.setElem(i, i, 1.0);
+    }
+
 
     /**
      * Checks if the given matrix is algebraically equivalent to this
@@ -375,7 +389,15 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
     	return (this.getColCnt() == this.getRowCnt());
     }
 
-
+    /**
+     * Calculates the rank of the matrix.
+     * 
+     * @return Rank of the matrix
+     */
+    public int rank() {
+    	return this.getMatrix().rank();
+    }
+    
     /**
      * Ratio of the largest singular value over the smallest singular value.
      * Note that this method does a singular value decomposition just to
