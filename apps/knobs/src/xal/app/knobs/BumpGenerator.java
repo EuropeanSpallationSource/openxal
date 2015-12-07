@@ -8,6 +8,7 @@
 
 package xal.app.knobs;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +31,8 @@ import xal.smf.impl.MagnetMainSupply;
 import xal.smf.proxy.ElectromagnetPropertyAccessor;
 import xal.tools.messaging.MessageCenter;
 import xal.tools.beam.calc.*;
-import Jama.Matrix;
+import xal.tools.math.BaseMatrix;
+import xal.tools.math.GenericMatrix;
 
 
 /** Generates closed bump knobs using the specified number of correctors */
@@ -299,24 +301,24 @@ public class BumpGenerator {
 				
 		// response of each node's orbit to the magnets
 		final int orbitSize = _bumpShapeAdaptor.getOrbitSize( _elementCount );
-		final Matrix responseMatrix = new Matrix( orbitSize, numMagnets );
+		final BaseMatrix responseMatrix = new GenericMatrix( orbitSize, numMagnets );
 		for ( int magIndex = 0 ; magIndex < numMagnets ; magIndex++ ) {
 			final double[] response = calculateResponse( targetNode, endNode, magnets.get( magIndex ), 0.01 );
 			for ( int nodeIndex = 0 ; nodeIndex < response.length ; nodeIndex++ ) {
-				responseMatrix.set( nodeIndex, magIndex, response[nodeIndex] );
+				responseMatrix.setElem( nodeIndex, magIndex, response[nodeIndex] );
 			}
 		}
-		responseMatrix.print( 10, 10 );
+		responseMatrix.print(new PrintWriter(System.out));
 		
 		// the minimal magnet fields that produce the desired bump are given by:
 		// f = R<sup>T</sup>(RR<sup>T</sup>)<sup>-1</sup>b  where f is the field vector, b is the bump vector and R is the response matrix
-		final Matrix bumpVector = new Matrix( orbitSize, 1 );		// bump vector ( bumpAmplitude, 0, 0, 0 )
-		bumpVector.set( 0, 0, _bumpShapeAdaptor.getAmplitudeScale() );
-		final Matrix responseTranspose = responseMatrix.transpose();
-		final Matrix fieldVector = responseTranspose.times( ( responseMatrix.times( responseTranspose ) ).inverse() ).times( bumpVector );
+		final BaseMatrix bumpVector = new GenericMatrix( orbitSize, 1 );		// bump vector ( bumpAmplitude, 0, 0, 0 )
+		bumpVector.setElem( 0, 0, _bumpShapeAdaptor.getAmplitudeScale() );
+		final BaseMatrix responseTranspose = responseMatrix.transpose();
+		final BaseMatrix fieldVector = responseTranspose.times( ( responseMatrix.times( responseTranspose ) ).inverse() ).times( bumpVector );
 		final double[] fields = new double[numMagnets];
 		for ( int magIndex = 0 ; magIndex < numMagnets ; magIndex++ ) {
-			fields[magIndex] = fieldVector.get( magIndex, 0 );
+			fields[magIndex] = fieldVector.getElem( magIndex, 0 );
 		}
 		
 		return fields;
