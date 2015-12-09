@@ -6,9 +6,9 @@
  */
 package xal.tools.math.r3;
 
-import  Jama.EigenvalueDecomposition;
-
-
+import org.ejml.data.DenseMatrix64F;
+import org.ejml.factory.DecompositionFactory;
+import org.ejml.interfaces.decomposition.EigenDecomposition;
 
 /**
  *  <p>
@@ -47,12 +47,8 @@ public class R3x3EigenDecomposition {
      *  Local Attributes 
      */
      
-    /** the eigenvalue decomposition results */ 
-    private EigenvalueDecomposition     jamaDecomp;
-
-
-    
-    
+    /** the eigenvalue decomposition results */
+	private EigenDecomposition<DenseMatrix64F> evd;
     
 
     /*
@@ -62,6 +58,7 @@ public class R3x3EigenDecomposition {
      
     /**
      * Package constructor for <code>R3x3JacobiDecomposition</code> objects.
+     * The provided matrix must be symmetric.
      * 
      * @param matTarget     target matrix to factorize
      * 
@@ -75,7 +72,6 @@ public class R3x3EigenDecomposition {
     }
 
     
-    
     /*
      *  Data Query
      */
@@ -85,14 +81,20 @@ public class R3x3EigenDecomposition {
      * Get the real part of the eigenvalues. 
      */
     public double[] getRealEigenvalues()  {
-        return jamaDecomp.getRealEigenvalues();
+    	double[] eigVals = new double[evd.getNumberOfEigenvalues()];
+    	for (int i=0; i < evd.getNumberOfEigenvalues(); i++) {
+    		eigVals[i] = evd.getEigenvalue(i).getReal();
+    	}
+    	return eigVals;
     }
     
     /**
      * Get the imaginary parts of the eigenvalues.
+     * @deprecated These will always be 0, as we only use this class for symmetric matrices.
      */
+    @Deprecated
     public double[] getImagEigenvalues()   {
-        return jamaDecomp.getImagEigenvalues();
+    	return new double[]{0,0,0};
     }
 
 
@@ -108,27 +110,28 @@ public class R3x3EigenDecomposition {
      *  @return     diagonalizing matrix of <b>A</b> 
      */    
     public R3x3 getEigenvectorMatrix()  {
-        Jama.Matrix matV = this.jamaDecomp.getV();
-        double[][]  arrV = matV.getArrayCopy();
-        
-        return new R3x3( arrV );
+        double[][]  arr = new double[3][3];
+        for (int i = 0; i < 3; i++) {
+        	for (int j = 0; j < 3; j++) {
+        		arr[i][j] = evd.getEigenVector(i).get(j);
+        	}
+        }
+        return new R3x3( arr );
     }
     
     
     /**
      * Return the matrix <b>D</b> of eigenvalues in the decomposition.  Note that if 
-     * target matrix <b>A</b> is symmetric then this matrix will be diagonal.  Otherwise
-     * it will be block diagonal in general where the 2x2 blocks are composed of the
-     * real and imaginary parts of the eigenvalues as described in the class 
-     * documentation.
-     *
+     * target matrix <b>A</b> is symmetric then this matrix will be diagonal.
+     * 
      * @return      block diagonal matrix <b>D</b> of eigenvalues of <b>A</b>
      */
     public R3x3 getEigenvalueMatrix()   {
-        Jama.Matrix     matD = jamaDecomp.getD();
-        double[][]      arrD = matD.getArrayCopy();
-        
-        return new R3x3( arrD );    
+        double[][]  arr = new double[3][3];
+        for (int i = 0; i < evd.getNumberOfEigenvalues(); i++) {
+        	arr[i][i] = evd.getEigenvalue(i).getReal();
+        }
+        return new R3x3( arr );    
     }
     
 
@@ -145,9 +148,10 @@ public class R3x3EigenDecomposition {
      */
     private void    decompose(R3x3 matTarget)   {
         double[][]  arrA = matTarget.getArrayCopy();
-        Jama.Matrix matA = new Jama.Matrix(arrA);
+        DenseMatrix64F matA = new DenseMatrix64F(arrA);
         
-        this.jamaDecomp = matA.eig();
+        this.evd = DecompositionFactory.eig(matTarget.getSize(), true);
+        this.evd.decompose(matA);
     }
 
     

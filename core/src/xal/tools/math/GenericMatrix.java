@@ -11,7 +11,7 @@ public class GenericMatrix extends BaseMatrix<GenericMatrix> {
 	 * Creates a matrix instance with size 1x1. Used only by parent methods.
 	 */
 	private GenericMatrix() {
-		super(1, 1);
+		super(1, 1); // TODO: this breaks the library a bit as the sizes are not the same!
 	}
 
 	/**

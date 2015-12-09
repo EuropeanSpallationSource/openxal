@@ -9,7 +9,9 @@ package xal.tools.math;
 import java.io.PrintWriter;
 import java.util.StringTokenizer;
 
-import Jama.Matrix;
+import org.ejml.data.DenseMatrix64F;
+import org.ejml.ops.CommonOps;
+
 import xal.tools.data.DataAdaptor;
 import xal.tools.data.DataFormatException;
 import xal.tools.data.IArchive;
@@ -51,7 +53,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      */
 
     /** internal matrix implementation */
-    private Matrix vecImpl;
+    private DenseMatrix64F vecImpl;
 
     /** Size of the vector */
     private int intSize;
@@ -102,7 +104,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      * @since  Oct 4, 2013
      */
     public void setVector(V vecParent) {
-        Matrix impParent = ((BaseVector<V>)vecParent).getVector();
+        DenseMatrix64F impParent = vecParent.getVector();
                 
         this.assignVector(impParent);
     }
@@ -240,7 +242,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      * @since  Sep 25, 2013
      */
     public double[] getArrayCopy() {
-        return this.vecImpl.getColumnPackedCopy();
+        return this.getVector().getData();
     }
 
     
@@ -333,8 +335,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      * @since  Oct 3, 2013
      */
     public void assignZero() {
-        for (int i=0; i<this.getSize(); i++)
-                this.setElem(i, 0.0);
+    	CommonOps.fill(this.getVector(), 0.0);
     }
     
     /**
@@ -345,8 +346,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      * @since  Oct 3, 2013
      */
     public void assignUnity() {
-        for (int i=0; i<this.getSize(); i++)
-            this.setElem(i, 1.0);
+    	CommonOps.fill(this.getVector(), 1.0);
     }
     
     /**
@@ -485,8 +485,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      *
      */
     public void plusEquals(V vecAdd) {
-        Matrix impAdd = ((BaseVector<V>)vecAdd).getVector();
-        this.getVector().plusEquals( impAdd );
+    	CommonOps.addEquals(this.getVector(), vecAdd.getVector());
     };
     
     /**
@@ -499,12 +498,10 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      *  @exception  IllegalArgumentException    argument is not same dimension as this
      */
     public V plus(V vecAdd){
-        Matrix impAdd = ((BaseVector<V>)vecAdd).getVector();
-        Matrix impSum = this.getVector().plus( impAdd );
+        DenseMatrix64F result = new DenseMatrix64F(this.getSize(), 1);
+        CommonOps.add(this.getVector(), vecAdd.getVector(), result);
 
-        V vecSum = this.newInstance( impSum );
-
-        return vecSum;
+        return newInstanceNoCopy(result);
     };
     
     /**
@@ -515,8 +512,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      *
      */
     public void minusEquals(V vecSub) {
-        Matrix impSub = ((BaseVector<V>)vecSub).getVector();
-        this.getVector().minusEquals( impSub );
+    	CommonOps.subtractEquals(this.getVector(), vecSub.getVector());
     };
     
     /**
@@ -529,12 +525,10 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      *  @exception  IllegalArgumentException    argument is not same dimension as this
      */
     public V minus(V vecSub){
-        Matrix impSub = ((BaseVector<V>)vecSub).getVector();
-        Matrix impDif = this.getVector().minus( impSub );
+        DenseMatrix64F result = new DenseMatrix64F(this.getSize(), 1);
+        CommonOps.subtract(this.getVector(), vecSub.getVector(), result);
 
-        V vecDif = this.newInstance( impDif );
-
-        return vecDif;
+        return newInstanceNoCopy(result);
     }
     
     /** 
@@ -545,10 +539,10 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      *  @return     result of scalar multiplication
      */
     public V times(double s)   {
-        Matrix impProd = this.getVector().times(s);
-        V vecProd = this.newInstance(impProd);
+        DenseMatrix64F result = new DenseMatrix64F(this.getSize(), 1);
+        CommonOps.scale(s, this.getVector(), result);
 
-        return vecProd;
+        return newInstanceNoCopy(result);
     }
     
 
@@ -558,7 +552,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      *  @param  s   scalar
      */
     public void timesEquals(double s)   {
-        this.getVector().timesEquals(s);
+    	CommonOps.scale(s, this.getVector());
     };
     
 
@@ -575,16 +569,10 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      *  @exception  IllegalArgumentException    dimensions must agree
      */
     public double   innerProd(V v)   throws IllegalArgumentException {
-        double      dblSum; // running sum
-        
         if (this.getSize() != v.getSize())
             throw new IllegalArgumentException("Vector#innerProd() - unequal dimensions.");
         
-        dblSum = 0.0;
-        for (int i=0; i<this.getSize(); i++) 
-            dblSum += this.getElem(i)*v.getElem(i);
-        
-        return dblSum;
+        return CommonOps.dot(this.getVector(), v.getVector());
     }
     
     /** 
@@ -604,7 +592,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
             throw new IllegalArgumentException("matrix and vector must be of compatible dimensions");
         
         // Perform covariant multiplication
-        V   vecProd = this.newInstance();
+        DenseMatrix64F result = new DenseMatrix64F(this.getSize(), 1);
         for (int j=0; j<this.getSize(); j++) {
             
             double  dblSum = 0.0;
@@ -613,10 +601,10 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
                 dblSum += mat.getElem(i, j)*this.getElem(i);
             }
             
-            vecProd.setElem(j, dblSum);
+            result.set(j, dblSum);
         }
         
-        return vecProd;
+        return newInstanceNoCopy(result);
     };
     
     /** 
@@ -635,7 +623,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
             throw new IllegalArgumentException("matrix and vector must be of compatible dimensions");
         
         // Perform contra-variant multiplication    
-        V   vecProd = this.newInstance();
+        DenseMatrix64F result = new DenseMatrix64F(this.getSize(), 1);
         for (int i=0; i<this.getSize(); i++) {
             
             double  dblSum = 0.0;
@@ -644,10 +632,10 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
                 dblSum += mat.getElem(i, j)*this.getElem(i);
             }
             
-            vecProd.setElem(i, dblSum);
+            result.set(i, dblSum);
         }
         
-        return vecProd;
+        return newInstanceNoCopy(result);
     };
     
     
@@ -809,7 +797,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      */
     protected BaseVector(int intSize) {
     	this.intSize = intSize;
-    	this.vecImpl = new Matrix(intSize, 1, 0.);
+    	this.vecImpl = new DenseMatrix64F(intSize, 1);
     }
 
     /**
@@ -931,7 +919,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      *
      *  @return     the Jama matrix object
      */
-    protected Matrix getVector()   { 
+    protected DenseMatrix64F getVector()   { 
         return vecImpl; 
     }
     
@@ -944,13 +932,28 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      * @author Christopher K. Allen
      * @since  Oct 1, 2013
      */
-    private void assignVector(Matrix vecValue) {
-    	if (vecValue.getColumnDimension() > 1) {
+    private void assignVector(DenseMatrix64F vecValue) {
+    	if (vecValue.numCols > 1) {
     		throw new IllegalArgumentException("Provided object has more than one column.");
     	}
-    	this.intSize = vecValue.getRowDimension();
+    	this.intSize = vecValue.numRows;
     	this.vecImpl = vecValue.copy();
     }
+
+    /**
+     * Sets the internal matrix implementation to that given in the argument.
+     * The matrix is not copied.
+     * 
+     * @param vecValue  internal implementation of matrix values
+     */
+    private void setVector(DenseMatrix64F vecValue) {
+    	if (vecValue.numCols > 1) {
+    		throw new IllegalArgumentException("Provided object has more than one column.");
+    	}
+    	this.intSize = vecValue.numRows;
+    	this.vecImpl = vecValue;
+    }
+
 
 
     /**
@@ -973,9 +976,25 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      * @author Christopher K. Allen
      * @since  Oct 1, 2013
      */
-    V newInstance(Matrix vecInit) {
+    V newInstance(DenseMatrix64F vecInit) {
         V vecNewInst = this.newInstance();
         ((BaseVector<V>)vecNewInst).assignVector(vecInit);
+        return vecNewInst;
+    }
+
+    /**
+     * Creates a new instance of this vector type initialized to the given
+     * implementation matrix without copying it.
+     * 
+     * @param   vecInit implementation vector containing initialization values    
+     * 
+     * @return          initialized vector object of type <code>V</code>
+     * @author Christopher K. Allen
+     * @since  Oct 1, 2013
+     */
+    V newInstanceNoCopy(DenseMatrix64F vecInit) {
+        V vecNewInst = this.newInstance();
+        ((BaseVector<V>)vecNewInst).setVector(vecInit);
         return vecNewInst;
     }
 

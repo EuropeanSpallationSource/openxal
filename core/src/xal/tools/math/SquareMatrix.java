@@ -6,7 +6,9 @@
  */
 package xal.tools.math;
 
-import Jama.Matrix;
+import org.ejml.data.DenseMatrix64F;
+import org.ejml.ops.CommonOps;
+import org.ejml.ops.MatrixFeatures;
 
 /**
  * <p>
@@ -86,13 +88,7 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
      *  @return true if matrix is symmetric 
      */
     public boolean isSymmetric()   {
-    
-        for (int i=0; i<this.getSize(); i++)
-            for (int j=i; j<this.getSize(); j++) {
-                if (getElem(i,j) != getElem(j,i) )
-                    return false;
-            }
-        return true;
+    	return MatrixFeatures.isSymmetric(this.getMatrix(), 1e-6);
     }
 
 
@@ -105,10 +101,11 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
      *
      *  @return     the determinant of this square matrix
      */
-    public double det()     { 
-        return this.getMatrix().det(); 
+    public double det() { 
+    	return CommonOps.det(this.getMatrix());
     };
-    
+
+
     /**
      * <p>
      * Solves the linear matrix-vector system without destroying the given
@@ -159,27 +156,10 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
         if ( vecObs.getSize() != this.getSize() ) 
             throw new IllegalArgumentException(vecObs.getClass().getName() + " vector must have compatible size");
         
-        // Get the implementation matrix.
-        Matrix impL = this.getMatrix();
+        DenseMatrix64F x = new DenseMatrix64F(vecObs.getSize(), 1);
+        CommonOps.solve(this.getMatrix(), vecObs.getVector(), x);
         
-        // Create a Jama matrix for the observation vector 
-        Matrix impObs = new Matrix(this.getSize(), 1 ,0.0);
-        for (int i=0; i<this.getSize(); i++) 
-            impObs.set(i,0, vecObs.getElem(i));
-        
-        // Solve the matrix-vector system in the Jama package
-        Matrix impState = impL.solve(impObs);
-        
-        V   vecSoln = vecObs.newInstance();
-        
-        for (int i=0; i<this.getSize(); i++) {
-            double dblVal = impState.get(i,  0);
-            
-            vecSoln.setElem(i,  dblVal);
-        }
-        
-        return vecSoln;
- 
+        return vecObs.newInstanceNoCopy(x);
     }
 
     /**
@@ -212,6 +192,7 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
      * solved repeated for the same matrix <b>A</b> it may be preferable to 
      * invert this matrix and solve the multiple system with matrix multiplication.
      * </p>
+     * @deprecated It does not make sense to copy the result vector back to the provided vector.
      * 
      * @param vecObs        the data vector on call, the solution vector upon return
      * 
@@ -220,28 +201,10 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
      * @author Christopher K. Allen
      * @since  Oct 11, 2013
      */
+    @Deprecated
     public <V extends BaseVector<V>> void solveInPlace(V vecObs) throws IllegalArgumentException {
-        
-        // Check sizes
-        if ( vecObs.getSize() != this.getSize() ) 
-            throw new IllegalArgumentException(vecObs.getClass().getName() + " vector must have compatible size");
-        
-        // Get the implementation matrix.
-        Matrix impL = this.getMatrix();
-        
-        // Create a Jama matrix for the observation vector 
-        Matrix impObs = new Matrix(this.getSize(), 1 ,0.0);
-        for (int i=0; i<this.getSize(); i++) 
-            impObs.set(i,0, vecObs.getElem(i));
-        
-        // Solve the matrix-vector system in the Jama package
-        Matrix impState = impL.solve(impObs);
-        
-        for (int i=0; i<this.getSize(); i++) {
-            double dblVal = impState.get(i,  0);
-            
-            vecObs.setElem(i,  dblVal);
-        }
+    	V result = this.solve(vecObs);
+        vecObs.setVector(result);
     }
 
     /*
@@ -253,7 +216,7 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
      * @return Trace of the matrix.
      */
     public double trace() {
-    	return this.getMatrix().trace();
+    	return CommonOps.trace(this.getMatrix());
     }
 
     /**
@@ -282,9 +245,7 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
      */
     @Deprecated
     public void timesEquals(BaseMatrix<M>   matMult) {
-        BaseMatrix<M> matBase = matMult;
-        
-        this.getMatrix().arrayTimesEquals( matBase.getMatrix() );
+       CommonOps.elementMult(this.getMatrix(), matMult.getMatrix());
     }
     
     
@@ -309,11 +270,17 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
      *  @return             matPhi*this*matPhi^T, or <code>null</code> if an error occurred
      */
     public M    conjugateTrans(M matPhi) {
-        Matrix impPhi  = ((BaseMatrix<M>)matPhi).getMatrix();
-        Matrix impPhiT = impPhi.transpose();
-        Matrix impAns  = impPhi.times( this.getMatrix().times( impPhiT) );
+        DenseMatrix64F impPhi  = matPhi.getMatrix();
+        DenseMatrix64F impPhiT = impPhi.copy();
+        CommonOps.transpose(impPhiT);
+
+        DenseMatrix64F impTemp  = new DenseMatrix64F(getSize(), getSize());
+        CommonOps.mult(this.getMatrix(), impPhiT, impTemp);
+
+        DenseMatrix64F impAns  = new DenseMatrix64F(getSize(), getSize());
+        CommonOps.mult(impPhi, impTemp, impAns);
         
-        M   matAns = this.newInstance(impAns);
+        M   matAns = this.newInstanceNoCopy(impAns);
         
         return matAns;
     };
@@ -339,11 +306,17 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
      *  @return             matPhi*this*matPhi<sup>-1</sup>
      */
     public M conjugateInv(M matPhi) {  
-        Matrix impPhi = ((BaseMatrix<M>)matPhi).getMatrix();
-        Matrix impInv = impPhi.inverse();
-        Matrix impAns = impPhi.times( this.getMatrix().times( impInv) );
+        DenseMatrix64F impPhi  = matPhi.getMatrix();
+        DenseMatrix64F impPhiI = impPhi.copy();
+        CommonOps.invert(impPhiI);
+
+        DenseMatrix64F impTemp  = new DenseMatrix64F(getSize(), getSize());
+        CommonOps.mult(this.getMatrix(), impPhiI, impTemp);
+
+        DenseMatrix64F impAns  = new DenseMatrix64F(getSize(), getSize());
+        CommonOps.mult(impPhi, impTemp, impAns);
         
-        M   matAns = this.newInstance(impAns);
+        M   matAns = this.newInstanceNoCopy(impAns);
         
         return matAns;
     };
@@ -441,11 +414,11 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
      * 
      * @throws IllegalArgumentException if provided matrix is not square.
      */
-    protected SquareMatrix(Matrix mat) {
+    protected SquareMatrix(DenseMatrix64F mat) {
         super(mat);
-        if (mat.getRowDimension() != mat.getColumnDimension()) {
+        if (mat.getNumCols() != mat.getNumRows()) {
         	throw new IllegalArgumentException("Provided matrix is not square!");
         }
-        this.intSize = mat.getRowDimension();
+        this.intSize = mat.getNumCols();
     }
 }
