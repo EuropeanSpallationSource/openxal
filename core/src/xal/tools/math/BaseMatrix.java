@@ -75,13 +75,6 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      *  Local Attributes
      */
     
-    /** number of matrix rows */
-    private int cntRows;
-    
-    /** number of matrix columns */
-    private int cntCols;
-    
-    
     /** internal matrix implementation */
     private DenseMatrix64F matImpl;
     
@@ -118,7 +111,7 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      *  @exception  ArrayIndexOutOfBoundsException  an index was equal to or larger than the matrix size
      */
     public void setElem(int i, int j, double s) throws ArrayIndexOutOfBoundsException {
-        this.getMatrix().set(i,j, s);
+        this.matImpl.set(i,j, s);
     }
     
     /**
@@ -131,7 +124,7 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * @param   dblVal  matrix element at given row and column will be set to this value
      */
     public void setElem(IIndex iRow, IIndex iCol, double dblVal) {
-        this.getMatrix().set(iRow.val(), iCol.val(), dblVal);
+        this.matImpl.set(iRow.val(), iCol.val(), dblVal);
     }
 
 
@@ -151,10 +144,6 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      */
     public void setSubMatrix(int i0, int i1, int j0,
             int j1, double[][] arrSub) throws ArrayIndexOutOfBoundsException {
-    	if (i1 >= getRowCnt() || j1 >= getColCnt()) {
-    		throw new ArrayIndexOutOfBoundsException(
-    				"Matrix block does not fit into the matrix.");
-    	}
     	DenseMatrix64F result;
     	DenseMatrix64F submat = new DenseMatrix64F(arrSub);
 
@@ -164,7 +153,7 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
     	} else {
     		result = submat;
     	}
-    	CommonOps.insert(result, this.getMatrix(), i0, j0);
+    	CommonOps.insert(result, this.matImpl, i0, j0);
     }
 
     /**
@@ -197,8 +186,6 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * @param matrix Matrix implementation to set to this matrix
      */
     public void setMatrix(DenseMatrix64F mat) {
-        this.cntRows = mat.numRows;
-        this.cntCols = mat.numCols;
         this.matImpl = mat;
     }
 
@@ -211,11 +198,9 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      *
      *  @param  strValues   token vector of SIZE<sup>2</sup> numeric values
      *
-     *  @exception  IllegalArgumentException    wrong number of token strings
      *  @exception  Numberception       bad number format, unparseable
      */
-    public void setMatrix(String strValues) throws NumberFormatException,
-            IllegalArgumentException {
+    public void setMatrix(String strValues) throws NumberFormatException {
                 
                 // Error check the number of token strings
                 StringTokenizer     tokArgs = new StringTokenizer(strValues, " ,()[]{}"); //$NON-NLS-1$
@@ -251,7 +236,7 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * @since  Oct 14, 2013
      */
     public int getRowCnt() {
-        return this.cntRows;
+        return this.matImpl.numRows;
     }
     
     /**
@@ -265,7 +250,7 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * @since  Oct 14, 2013
      */
     public int getColCnt() {
-        return this.cntCols;
+        return this.matImpl.numCols;
     }
     
     /**
@@ -278,7 +263,7 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      *  @exception  ArrayIndexOutOfBoundsException  an index was equal to or larger than the matrix size
      */
     public double getElem(int i, int j) throws ArrayIndexOutOfBoundsException  {
-        return this.getMatrix().get(i,j);
+        return this.matImpl.get(i,j);
     }
 
     /**
@@ -312,7 +297,7 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
     }
 
     /**
-     * Transform 1D array of data to 2D array needed by the interface.
+     * Copies a 1D array of data to 2D array needed by the interface.
      * This introduces additional overhead.
      * @param arr 1D array with matrix data
      * @return 2D array of matrix
@@ -337,7 +322,7 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * @since  Sep 25, 2013
      */
     public double[][] getArrayCopy() {
-    	double[] data = this.getMatrix().getData();
+    	double[] data = this.matImpl.getData();
         return arrayTo2D(data);
     }
 
@@ -354,7 +339,7 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      */
     public M copy() {
         M  matClone = this.newInstance();
-        ((BaseMatrix<M>)matClone).assignMatrix( this.getMatrix() );
+        ((BaseMatrix<M>)matClone).assignMatrix( this.matImpl );
         return matClone;
     }
 
@@ -366,7 +351,7 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * @since  Oct 3, 2013
      */
     public void assignZero() {
-    	CommonOps.fill(this.getMatrix(), 0.0);
+    	CommonOps.fill(this.matImpl, 0.0);
     }
     
     /**
@@ -375,7 +360,7 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * diagonal and 0's everywhere else.
      */
     public void assignIdentity() {
-    	CommonOps.setIdentity(this.getMatrix());
+    	CommonOps.setIdentity(this.matImpl);
     }
 
 
@@ -395,7 +380,7 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
         if ( !this.getClass().equals(matTest.getClass()) )
             return false;
 
-        return MatrixFeatures.isEquals(this.getMatrix(), matTest.getMatrix(), 10e-6);
+        return MatrixFeatures.isEquals(this.matImpl, matTest.getMatrix(), 10e-6);
     }
     
     /**
@@ -413,7 +398,7 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * @return Rank of the matrix
      */
     public int rank() {
-    	return MatrixFeatures.rank(this.getMatrix());
+    	return MatrixFeatures.rank(this.matImpl);
     }
     
     /**
@@ -429,7 +414,7 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * @since  Oct 16, 2013
      */
     public double conditionNumber() {
-    	return NormOps.conditionP2(this.getMatrix());
+    	return NormOps.conditionP2(this.matImpl);
     }
     
     
@@ -443,8 +428,8 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      *  @return     transposed copy of this matrix or <code>null</code> if error
      */
     public M transpose()  {
-        DenseMatrix64F impTrans = new DenseMatrix64F(cntCols, cntRows);
-        CommonOps.transpose(this.getMatrix(), impTrans);
+        DenseMatrix64F impTrans = new DenseMatrix64F(this.getColCnt(), this.getRowCnt());
+        CommonOps.transpose(this.matImpl, impTrans);
         
         return newInstanceNoCopy(impTrans);
     }
@@ -456,11 +441,11 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      *  @return inverse or pseudo-inverse of the matrix.
      */
     public M inverse()  {
-    	DenseMatrix64F invA = new DenseMatrix64F(cntCols, cntRows);
+    	DenseMatrix64F invA = new DenseMatrix64F(this.getColCnt(), this.getRowCnt());
     	if (this.isSquare()) {
-    		CommonOps.invert(this.getMatrix(), invA);
+    		CommonOps.invert(this.matImpl, invA);
     	} else {
-    		CommonOps.pinv(this.getMatrix(), invA);
+    		CommonOps.pinv(this.matImpl, invA);
     	}
     	return newInstanceNoCopy(invA);
     }
@@ -475,8 +460,8 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      *                  or <code>null</code> if error
      */
     public M plus(M matAddend) {
-        DenseMatrix64F result = new DenseMatrix64F(cntRows, cntCols);
-        CommonOps.add(this.getMatrix(), matAddend.getMatrix(), result);
+        DenseMatrix64F result = new DenseMatrix64F(this.getRowCnt(), this.getColCnt());
+        CommonOps.add(this.matImpl, matAddend.getMatrix(), result);
 
         return newInstanceNoCopy(result);
     }
@@ -488,7 +473,7 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      *  @param  mat     matrix to be added to this (no new objects are created)
      */
     public void plusEquals(M  mat) {
-    	CommonOps.addEquals(this.getMatrix(), mat.getMatrix());
+    	CommonOps.addEquals(this.matImpl, mat.getMatrix());
     }
 
     /**
@@ -500,8 +485,8 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      *                      or <code>null</code> if an error occurred
      */
     public M minus(M matSub) {
-        DenseMatrix64F result = new DenseMatrix64F(cntRows, cntCols);
-        CommonOps.subtract(this.getMatrix(), matSub.getMatrix(), result);
+        DenseMatrix64F result = new DenseMatrix64F(this.getRowCnt(), this.getColCnt());
+        CommonOps.subtract(this.matImpl, matSub.getMatrix(), result);
 
         return newInstanceNoCopy(result);
     }
@@ -513,7 +498,7 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      *  @param  mat     subtrahend
      */
     public void minusEquals(M mat) {
-    	CommonOps.subtractEquals(this.getMatrix(), mat.getMatrix());
+    	CommonOps.subtractEquals(this.matImpl, mat.getMatrix());
     }
 
 
@@ -526,8 +511,8 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      *                      or <code>null</code> if an error occurred
      */
     public M times(double s) {
-        DenseMatrix64F result = new DenseMatrix64F(cntRows, cntCols);
-        CommonOps.scale(s, this.getMatrix(), result);
+        DenseMatrix64F result = new DenseMatrix64F(this.getRowCnt(), this.getColCnt());
+        CommonOps.scale(s, this.matImpl, result);
 
         return newInstanceNoCopy(result);
     }
@@ -539,7 +524,7 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      *  @param  s   multiplier
      */
     public void timesEquals(double s) {
-        CommonOps.scale(s, this.getMatrix());
+        CommonOps.scale(s, this.matImpl);
     }
     
     
@@ -552,9 +537,9 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      *  @return             new matrix which is the matrix product of this matrix and the argument,
      *                      or <code>null</code> if an error occurred
      */
-    public BaseMatrix<M> times(BaseMatrix<M> matRight) {
+    public M times(M matRight) {
     	DenseMatrix64F result = new DenseMatrix64F(this.getRowCnt(), matRight.getColCnt());
-    	CommonOps.mult(this.getMatrix(), matRight.getMatrix(), result);
+    	CommonOps.mult(this.matImpl, matRight.getMatrix(), result);
     	return newInstanceNoCopy(result);
     }
 
@@ -573,15 +558,10 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * 
      * @return          the matrix-vector product of this matrix with the argument
      * 
-     * @throws IllegalArgumentException the argument vector must be the same size
      */
-    public <V extends BaseVector<V>> BaseVector<V> times(V vecFac) throws IllegalArgumentException {
-        // Check sizes
-        if ( vecFac.getSize() != this.getColCnt() ) 
-            throw new IllegalArgumentException(vecFac.getClass().getName() + " vector must have compatible size");
-
+    public <V extends BaseVector<V>> V times(V vecFac) {
         DenseMatrix64F result = new DenseMatrix64F(this.getRowCnt(), 1);
-        CommonOps.mult(this.getMatrix(),vecFac.getVector(), result);
+        CommonOps.mult(this.matImpl,vecFac.getVector(), result);
     
         return vecFac.newInstanceNoCopy(result);
     }
@@ -605,7 +585,7 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * @return  max<sub><i>i,j</i></sub> | <b>A</b><sub><i>i,j</i></sub> | 
      */
     public double max() {
-    	return CommonOps.elementMax(this.getMatrix());
+    	return CommonOps.elementMax(this.matImpl);
     }
 
     /**
@@ -632,7 +612,7 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      *
      *  @return     ||<b>M</b>||<sub>1</sub> = max<sub><i>i</i></sub> &Sigma;<sub><i>j</i></sub> |<i>M<sub>i,j</i></sub>|
      */
-    public double norm1() { return NormOps.normP1(this.getMatrix()); }
+    public double norm1() { return NormOps.normP1(this.matImpl); }
 
     /**
      *  <p>
@@ -652,7 +632,7 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      *
      *  @return     the maximum singular value of this matrix
      */
-    public double norm2() { return NormOps.normP2(this.getMatrix()); }
+    public double norm2() { return NormOps.normP2(this.matImpl); }
 
     /**
      *  <p>
@@ -679,7 +659,7 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      *
      *  @return     ||<b>M</b>||<sub>1</sub> = max<sub><i>i</i></sub> &Sigma;<sub><i>j</i></sub> |<i>M<sub>i,j</i></sub>|
      */
-    public double normInf() { return NormOps.normPInf(this.getMatrix()); }
+    public double normInf() { return NormOps.normPInf(this.matImpl); }
 
     /**
      * <p>
@@ -710,7 +690,7 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      *  @return     ||<b>A</b>||<sub><i>F</i></sub> = [ &Sigma;<sub><i>i,j</i></sub> <i>A<sub>ij</sub></i><sup>2</sup> ]<sup>1/2</sup>
      */
     public double normF() { 
-        return NormOps.normF(this.getMatrix()); 
+        return NormOps.normF(this.matImpl); 
     }
 
     
@@ -724,7 +704,7 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      *  @param  os      output stream to receive text dump
      */
     public void print(PrintWriter os) {
-    	this.getMatrix().print(); // TODO
+    	this.matImpl.print(); // TODO
     }
 
     
@@ -752,7 +732,6 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * @param daptArchive   interface to data source
      * 
      * @throws DataFormatException      malformed data
-     * @throws IllegalArgumentException wrong number of string tokens
      * 
      * @see xal.tools.data.IArchive#load(xal.tools.data.DataAdaptor)
      */
@@ -865,7 +844,7 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * @since  Feb 8, 2013
      */
     public String   toStringMatrix(NumberFormat fmt, int intColWd) {
-        return  this.getMatrix().toString(); // TODO
+        return  this.matImpl.toString(); // TODO
     }
     
     
@@ -914,8 +893,6 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * @since  Oct 1, 2013
      */
     protected void assignMatrix(DenseMatrix64F matValue) {
-    	this.cntRows = matValue.numRows;
-    	this.cntCols = matValue.numCols;
         this.matImpl = matValue.copy();
     }
 
@@ -987,8 +964,6 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * @throws UnsupportedOperationException  child class has not defined a public, zero-argument constructor
      */
     protected BaseMatrix(int cntRows, int cntCols) {
-        this.cntRows = cntRows;
-        this.cntCols = cntCols;
         this.matImpl = new DenseMatrix64F(cntRows, cntCols);
     }
 
@@ -1003,9 +978,6 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * @since  Sep 25, 2013
      */
     protected BaseMatrix(M matParent) {
-        this.cntRows = matParent.getRowCnt();
-        this.cntCols = matParent.getColCnt();
-        
         this.assignMatrix(matParent.getMatrix());
     }
     
@@ -1020,12 +992,10 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      *  @param  cntCols     the matrix column size of this object
      *  @param  strTokens   token vector of getSize()^2 numeric values
      *
-     *  @exception  IllegalArgumentException    wrong number of token strings
      *  @exception  NumberFormatException       bad number format, unparseable
      */
     protected BaseMatrix(int cntRows, int cntCols, String strTokens)    
-        throws IllegalArgumentException, NumberFormatException
-    {
+        throws NumberFormatException {
         this(cntRows, cntCols);
         
         // Error check the number of token strings
@@ -1071,8 +1041,6 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
     	if (cntRows != arrVals.length || cntCols != arrVals[0].length) {
     		throw new ArrayIndexOutOfBoundsException("Array size not compatible with provided matrix size.");
     	}
-        this.cntRows = cntRows;
-        this.cntCols = cntCols;
         this.matImpl = new DenseMatrix64F(arrVals);
     }
 
@@ -1083,8 +1051,6 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * @param matrix Jama.Matrix object to populate the array with
      */
     protected BaseMatrix(DenseMatrix64F matrix) {
-        this.cntRows = matrix.numRows;
-        this.cntCols = matrix.numCols;
         this.matImpl = matrix.copy();
     }
 

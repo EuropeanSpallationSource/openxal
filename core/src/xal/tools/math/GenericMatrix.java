@@ -8,10 +8,10 @@ package xal.tools.math;
 public class GenericMatrix extends BaseMatrix<GenericMatrix> {
 
 	/**
-	 * Creates a matrix instance with size 1x1. Used only by parent methods.
+	 * Creates a matrix instance with size 0x0. Used only by parent methods.
 	 */
 	private GenericMatrix() {
-		super(1, 1); // TODO: this breaks the library a bit as the sizes are not the same!
+		super(0, 0); // TODO: this breaks the library a bit as the sizes are not the same!
 	}
 
 	/**

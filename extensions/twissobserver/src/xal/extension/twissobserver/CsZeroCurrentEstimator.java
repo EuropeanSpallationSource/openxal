@@ -7,7 +7,7 @@
 package xal.extension.twissobserver;
 
 import xal.tools.beam.CovarianceMatrix;
-import xal.tools.math.BaseMatrix;
+import xal.tools.math.GenericMatrix;
 import xal.model.ModelException;
 
 import java.util.ArrayList;
@@ -99,9 +99,9 @@ public class CsZeroCurrentEstimator extends CourantSnyderEstimator {
     {
         this.genTransMat.generateWithoutSpaceCharge();
 
-        BaseMatrix  vecMmtsHor = this.computeReconSubFunction(PHASEPLANE.HOR, strRecDevId, arrData);
-        BaseMatrix  vecMmtsVer = this.computeReconSubFunction(PHASEPLANE.VER, strRecDevId, arrData);
-        BaseMatrix  vecMmtsLng = this.computeReconSubFunction(PHASEPLANE.LNG, strRecDevId, arrData);
+        GenericMatrix  vecMmtsHor = this.computeReconSubFunction(PHASEPLANE.HOR, strRecDevId, arrData);
+        GenericMatrix  vecMmtsVer = this.computeReconSubFunction(PHASEPLANE.VER, strRecDevId, arrData);
+        GenericMatrix  vecMmtsLng = this.computeReconSubFunction(PHASEPLANE.LNG, strRecDevId, arrData);
 
         CovarianceMatrix   matSig = PHASEPLANE.constructCovariance(vecMmtsHor, vecMmtsVer, vecMmtsLng);
 

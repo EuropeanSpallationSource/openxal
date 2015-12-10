@@ -19,7 +19,6 @@ import java.util.ArrayList;
 
 import xal.tools.beam.CovarianceMatrix;
 import xal.tools.beam.PhaseMatrix;
-import xal.tools.math.BaseMatrix;
 import xal.tools.math.GenericMatrix;
 
 /**
@@ -67,7 +66,8 @@ public enum PHASEPLANE {
      * @author Christopher K. Allen
      * @since  Aug 31, 2012
      */
-    static public CovarianceMatrix   constructCovariance(BaseMatrix vecMmtsHor, BaseMatrix vecMmtsVer, BaseMatrix vecMmtsLng) {
+    static public CovarianceMatrix   constructCovariance(GenericMatrix vecMmtsHor, 
+    		GenericMatrix vecMmtsVer, GenericMatrix vecMmtsLng) {
         CovarianceMatrix       matSig = CovarianceMatrix.newZero();
         
         for (int i=0; i<2; i++)
@@ -257,8 +257,8 @@ public enum PHASEPLANE {
      * @author Christopher K. Allen
      * @since  Mar 27, 2013
      */
-    public BaseMatrix   extractCovarianceVector(CovarianceMatrix matCov) {
-        BaseMatrix  vecCov = new GenericMatrix(3,1);
+    public GenericMatrix   extractCovarianceVector(CovarianceMatrix matCov) {
+        GenericMatrix  vecCov = new GenericMatrix(3,1);
         
         vecCov.setElem(0, 0, matCov.getElem(iMatOffset,     iMatOffset) );
         vecCov.setElem(1, 0, matCov.getElem(iMatOffset,     iMatOffset + 1) );

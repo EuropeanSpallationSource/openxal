@@ -31,7 +31,6 @@ import xal.smf.impl.MagnetMainSupply;
 import xal.smf.proxy.ElectromagnetPropertyAccessor;
 import xal.tools.messaging.MessageCenter;
 import xal.tools.beam.calc.*;
-import xal.tools.math.BaseMatrix;
 import xal.tools.math.GenericMatrix;
 
 
@@ -301,7 +300,7 @@ public class BumpGenerator {
 				
 		// response of each node's orbit to the magnets
 		final int orbitSize = _bumpShapeAdaptor.getOrbitSize( _elementCount );
-		final BaseMatrix responseMatrix = new GenericMatrix( orbitSize, numMagnets );
+		final GenericMatrix responseMatrix = new GenericMatrix( orbitSize, numMagnets );
 		for ( int magIndex = 0 ; magIndex < numMagnets ; magIndex++ ) {
 			final double[] response = calculateResponse( targetNode, endNode, magnets.get( magIndex ), 0.01 );
 			for ( int nodeIndex = 0 ; nodeIndex < response.length ; nodeIndex++ ) {
@@ -312,10 +311,10 @@ public class BumpGenerator {
 		
 		// the minimal magnet fields that produce the desired bump are given by:
 		// f = R<sup>T</sup>(RR<sup>T</sup>)<sup>-1</sup>b  where f is the field vector, b is the bump vector and R is the response matrix
-		final BaseMatrix bumpVector = new GenericMatrix( orbitSize, 1 );		// bump vector ( bumpAmplitude, 0, 0, 0 )
+		final GenericMatrix bumpVector = new GenericMatrix( orbitSize, 1 );		// bump vector ( bumpAmplitude, 0, 0, 0 )
 		bumpVector.setElem( 0, 0, _bumpShapeAdaptor.getAmplitudeScale() );
-		final BaseMatrix responseTranspose = responseMatrix.transpose();
-		final BaseMatrix fieldVector = responseTranspose.times( ( responseMatrix.times( responseTranspose ) ).inverse() ).times( bumpVector );
+		final GenericMatrix responseTranspose = responseMatrix.transpose();
+		final GenericMatrix fieldVector = responseTranspose.times( ( responseMatrix.times( responseTranspose ) ).inverse() ).times( bumpVector );
 		final double[] fields = new double[numMagnets];
 		for ( int magIndex = 0 ; magIndex < numMagnets ; magIndex++ ) {
 			fields[magIndex] = fieldVector.getElem( magIndex, 0 );

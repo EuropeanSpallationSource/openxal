@@ -31,36 +31,6 @@ import org.ejml.ops.MatrixFeatures;
  */
 public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix<M> {
 
-    
-    /*
-     *  Local Attributes
-     */
-
-    /** size of the the square matrix */
-    private final int   intSize;
-
-
-    /*
-     *  Assignment
-     */
-
-    /**
-     * Assign this matrix to be the identity matrix.  The
-     * identity matrix is the square matrix with 1's on the
-     * diagonal and 0's everywhere else.
-     *
-     * @author Christopher K. Allen
-     * @since  Oct 3, 2013
-     */
-    public void assignIdentity() {
-        this.assignZero();
-        
-        for (int i=0; i<this.getSize(); i++)
-            this.setElem(i, i, 1.0);
-    }
-    
-
-
     /*
      *  Matrix Attributes
      */
@@ -75,7 +45,7 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
      * @since  Sep 25, 2013
      */
     public int  getSize() {
-        return this.intSize;
+        return this.getMatrix().numCols;
     }
 
     /*
@@ -145,16 +115,11 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
      * 
      * @return              vector which, when multiplied by this matrix, will equal the data vector
      * 
-     * @throws IllegalArgumentException     the argument has the wrong size
      *
      * @author Christopher K. Allen
      * @since  Oct 11, 2013
      */
-    public <V extends BaseVector<V>> V solve(final V vecObs) throws IllegalArgumentException {
-        
-        // Check sizes
-        if ( vecObs.getSize() != this.getSize() ) 
-            throw new IllegalArgumentException(vecObs.getClass().getName() + " vector must have compatible size");
+    public <V extends BaseVector<V>> V solve(final V vecObs) {
         
         DenseMatrix64F x = new DenseMatrix64F(vecObs.getSize(), 1);
         CommonOps.solve(this.getMatrix(), vecObs.getVector(), x);
@@ -196,13 +161,12 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
      * 
      * @param vecObs        the data vector on call, the solution vector upon return
      * 
-     * @throws IllegalArgumentException     the argument has the wrong size
      *
      * @author Christopher K. Allen
      * @since  Oct 11, 2013
      */
     @Deprecated
-    public <V extends BaseVector<V>> void solveInPlace(V vecObs) throws IllegalArgumentException {
+    public <V extends BaseVector<V>> void solveInPlace(V vecObs) {
     	V result = this.solve(vecObs);
         vecObs.setVector(result);
     }
@@ -219,23 +183,6 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
     	return CommonOps.trace(this.getMatrix());
     }
 
-    /**
-     *  @see BaseMatrix#times(BaseMatrix)
-     *  Product of square matrices always produce a square matrix.
-     */
-    @SuppressWarnings("unchecked")
-    public M times(M matRight) {
-        return (M)super.times(matRight); // Product of square matrices is always a square matrix
-    }
-
-    /**
-     * @see BaseMatrix#times(BaseVector)
-     * Square matrix preserves the size of the vector
-     */
-    @SuppressWarnings("unchecked")
-    public <V extends BaseVector<V>> V times(V vecFac) throws IllegalArgumentException {
-    	return (V)super.times(vecFac); // Product of square matrix and vector returns the same size of vector
-    }
     
     /**
      * In-place matrix element by element multiplication.
@@ -340,8 +287,6 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
      */
     protected SquareMatrix(final int intSize) throws UnsupportedOperationException {
         super(intSize, intSize);
-        
-        this.intSize = intSize;
     }
 
     /**
@@ -358,8 +303,6 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
      */
     protected SquareMatrix(M matParent) throws UnsupportedOperationException {
         super(matParent);
-        
-        this.intSize = matParent.getSize();
     }
     
     /**
@@ -372,15 +315,11 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
      *  @param  intSize     the matrix size of this object
      *  @param  strTokens   token vector of getSize()^2 numeric values
      *
-     *  @exception  IllegalArgumentException    wrong number of token strings
      *  @exception  NumberFormatException       bad number format, unparseable
      */
     protected SquareMatrix(int intSize, String strTokens)    
-        throws IllegalArgumentException, NumberFormatException
-    {
+        throws NumberFormatException {
         super(intSize, intSize, strTokens);
-        
-        this.intSize = intSize;
     }
     
     /**
@@ -406,19 +345,15 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
      */
     protected SquareMatrix(int intSize, double[][] arrVals) throws ArrayIndexOutOfBoundsException {
         super(intSize, intSize, arrVals);
-        this.intSize = intSize;
     }
 
     /**
      * @see BaseMatrix#BaseMatrix(Matrix)
-     * 
-     * @throws IllegalArgumentException if provided matrix is not square.
      */
     protected SquareMatrix(DenseMatrix64F mat) {
         super(mat);
         if (mat.getNumCols() != mat.getNumRows()) {
         	throw new IllegalArgumentException("Provided matrix is not square!");
         }
-        this.intSize = mat.getNumCols();
     }
 }

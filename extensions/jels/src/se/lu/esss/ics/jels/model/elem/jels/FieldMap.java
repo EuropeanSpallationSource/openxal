@@ -104,10 +104,10 @@ public class FieldMap extends ThickElement  {
 		double E0 = probe.getKineticEnergy();
 		double Er = probe.getSpeciesRestEnergy();
 		
-		BaseMatrix Ttr = new GenericMatrix(2,2);
+		GenericMatrix Ttr = new GenericMatrix(2,2);
 		Ttr.assignIdentity();
 
-		BaseMatrix Tz = new GenericMatrix(2, 2);
+		GenericMatrix Tz = new GenericMatrix(2, 2);
 		Tz.assignIdentity();
 		
 		double gamma;
@@ -144,7 +144,7 @@ public class FieldMap extends ThickElement  {
 			// Following line fixes the determinant of longitudinal transfer matrix
 			//Az[0][0] = ((beta*gamma)/(betae*gammae) + Az[0][1]*Az[1][0]) / Az[1][1];
 			
-			BaseMatrix Atr = new GenericMatrix(matrix22Exp(Ay)); 
+			GenericMatrix Atr = new GenericMatrix(matrix22Exp(Ay)); 
 			Ttr = Atr.times(Ttr);			
 			Tz = new GenericMatrix(matrix22Exp(Az)).times(Tz);
 			

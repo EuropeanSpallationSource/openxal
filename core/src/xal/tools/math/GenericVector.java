@@ -23,10 +23,10 @@ public class GenericVector extends BaseVector<GenericVector> {
 	}
 
 	/**
-	 * Creates an instance with size 1. Used only by parent methods.
+	 * Creates an instance with size 0. Used only by parent methods.
 	 */
 	private GenericVector() {
-		super(1); // TODO this breaks the internal library a bit as the sizes are not the same!
+		super(0); // TODO this breaks the internal library a bit as the sizes are not the same!
 	}
 
 	/**

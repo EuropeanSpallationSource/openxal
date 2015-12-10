@@ -13,7 +13,6 @@ import xal.tools.collections.LinearBuffer;
 import xal.tools.math.BaseMatrix;
 import xal.tools.math.GenericMatrix;
 import xal.tools.math.SquareMatrix;
-import xal.XalException;
 import xal.model.ModelException;
 
 import java.util.ArrayList;
@@ -181,7 +180,7 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
      * @since  Apr 10, 2013
      *
      */
-    private class MomentVectorBuffer  extends HashMap<PHASEPLANE, LinearBuffer<BaseMatrix>> {
+    private class MomentVectorBuffer  extends HashMap<PHASEPLANE, LinearBuffer<GenericMatrix>> {
         
         /*
          * Global Constants
@@ -205,7 +204,7 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
         public MomentVectorBuffer() {
             for ( PHASEPLANE plane : PHASEPLANE.values() ) {
                 int                     cntSize = plane.getCovariantBasisSize();
-                LinearBuffer<BaseMatrix>  bufVec  = new LinearBuffer<BaseMatrix>(cntSize);
+                LinearBuffer<GenericMatrix>  bufVec  = new LinearBuffer<GenericMatrix>(cntSize);
                 
                 this.put(plane, bufVec);
             }
@@ -226,7 +225,7 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
          * @author Christopher K. Allen
          * @since  Apr 11, 2013
          */
-        public void add(PHASEPLANE plane, BaseMatrix vecCov) {
+        public void add(PHASEPLANE plane, GenericMatrix vecCov) {
             super.get(plane).add(vecCov);
         }
         
@@ -240,10 +239,10 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
         public void initWithBasisVectors() {
             for ( PHASEPLANE plane : PHASEPLANE.values() ) {
                 int                     szBasis    = plane.getCovariantBasisSize();
-                LinearBuffer<BaseMatrix>  bufCovVecs = this.get(plane);
+                LinearBuffer<GenericMatrix>  bufCovVecs = this.get(plane);
                 
                 for (int i=0; i<szBasis; i++) {
-                    BaseMatrix  vecCovBasis = new GenericMatrix(szBasis, 1);
+                    GenericMatrix  vecCovBasis = new GenericMatrix(szBasis, 1);
                     vecCovBasis.setElem(i, 0, 1.0);
                     
                     bufCovVecs.add(vecCovBasis);
@@ -262,17 +261,17 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
          * @author Christopher K. Allen
          * @since  Apr 11, 2013
          */
-        public BaseMatrix   createAugmentedMatrix(PHASEPLANE plane) {
-            LinearBuffer<BaseMatrix>    bufVecs = this.get(plane);
+        public GenericMatrix   createAugmentedMatrix(PHASEPLANE plane) {
+            LinearBuffer<GenericMatrix>    bufVecs = this.get(plane);
             
             // Instantiate the augmented matrix
             int         szRow  = bufVecs.get(0).getRowCnt();
             int         szCol  = bufVecs.size();
-            BaseMatrix      matAug = new GenericMatrix(szRow, szCol);
+            GenericMatrix      matAug = new GenericMatrix(szRow, szCol);
             
             // Pack the matrix with the vectors containing herein
             int         indCol = 0;
-            for (BaseMatrix vecCov : bufVecs) {
+            for (GenericMatrix vecCov : bufVecs) {
                 
                 matAug.setSubMatrix(0, szRow-1, indCol, indCol, vecCov.getArrayCopy());
                 indCol++;
@@ -652,19 +651,19 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
         this.genTransMat.generateWithSpaceCharge(null, dblBnchFreq, dblBmCurr, matSig0);
 
         // Recurse through all the phase planes computing the new value of the recursion function
-        Map<PHASEPLANE, BaseMatrix> mapFcurr = new HashMap<PHASEPLANE, BaseMatrix>();
+        Map<PHASEPLANE, GenericMatrix> mapFcurr = new HashMap<PHASEPLANE, GenericMatrix>();
         
         for ( PHASEPLANE plane : PHASEPLANE.values() ) {
 
             // Compute the new value of the recursion function 
-            BaseMatrix  vecFcurr = this.computeReconSubFunction(plane, strRecDevId, arrData);
+            GenericMatrix  vecFcurr = this.computeReconSubFunction(plane, strRecDevId, arrData);
             mapFcurr.put(plane, vecFcurr);
         }
         
         // Construct the new recursion function value as a covariance matrix 
-        BaseMatrix  vecMmtsHor = mapFcurr.get(PHASEPLANE.HOR);
-        BaseMatrix  vecMmtsVer = mapFcurr.get(PHASEPLANE.VER);
-        BaseMatrix  vecMmtsLng = mapFcurr.get(PHASEPLANE.LNG);
+        GenericMatrix  vecMmtsHor = mapFcurr.get(PHASEPLANE.HOR);
+        GenericMatrix  vecMmtsVer = mapFcurr.get(PHASEPLANE.VER);
+        GenericMatrix  vecMmtsLng = mapFcurr.get(PHASEPLANE.LNG);
         
         CovarianceMatrix   covF1 = PHASEPLANE.constructCovariance(vecMmtsHor, vecMmtsVer, vecMmtsLng);
         
@@ -681,15 +680,15 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
         for ( PHASEPLANE plane : PHASEPLANE.values() ) {
             
             // Now compute the change in the recursion function value
-            BaseMatrix  vecFprev = plane.extractCovarianceVector(this.matCurrF);
-            BaseMatrix  vecFcurr = mapFcurr.get(plane);
-            BaseMatrix  vecDelF  = vecFcurr.minus(vecFprev);
+            GenericMatrix  vecFprev = plane.extractCovarianceVector(this.matCurrF);
+            GenericMatrix  vecFcurr = mapFcurr.get(plane);
+            GenericMatrix  vecDelF  = vecFcurr.minus(vecFprev);
             this.mapDeltaF.add(plane, vecDelF);
             
             // Compute the change in the moments that produces the recursion function change
-            BaseMatrix  vecSigPrev = plane.extractCovarianceVector(this.matCurrSigma);
-            BaseMatrix  vecSigCurr = plane.extractCovarianceVector(covSig1);
-            BaseMatrix  vecDelSig  = vecSigCurr.minus(vecSigPrev);
+            GenericMatrix  vecSigPrev = plane.extractCovarianceVector(this.matCurrSigma);
+            GenericMatrix  vecSigCurr = plane.extractCovarianceVector(covSig1);
+            GenericMatrix  vecDelSig  = vecSigCurr.minus(vecSigPrev);
             this.mapDeltaSig.add(plane, vecDelSig);
         }
         
@@ -717,14 +716,14 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
         for (PHASEPLANE plane : PHASEPLANE.values()) {
             
             // Create the augmented change in values matrices
-            BaseMatrix  matDelF   = this.mapDeltaF.createAugmentedMatrix(plane);
-            BaseMatrix  matDelSig = this.mapDeltaSig.createAugmentedMatrix(plane);
+            GenericMatrix  matDelF   = this.mapDeltaF.createAugmentedMatrix(plane);
+            GenericMatrix  matDelSig = this.mapDeltaSig.createAugmentedMatrix(plane);
             
             // Create an identity matrix
             int     cntRows = matDelSig.getRowCnt();
             int     cntCols = matDelSig.getColCnt();
             
-            BaseMatrix  matIden = new GenericMatrix(cntRows, cntCols); 
+            GenericMatrix  matIden = new GenericMatrix(cntRows, cntCols); 
             matIden.assignIdentity();
             
             // Check the rank of the change in sigma values matrix
@@ -735,11 +734,11 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
                 continue;
             
             // Compute the approximation to the partial of the recusion function
-            BaseMatrix  matDelSigInv = matDelSig.inverse();
-            BaseMatrix  matFpApprox  = matDelF.times(matDelSigInv);
+            GenericMatrix  matDelSigInv = matDelSig.inverse();
+            GenericMatrix  matFpApprox  = matDelF.times(matDelSigInv);
             
             // Compute the alpha value for this plane
-            BaseMatrix  matResolv = matIden.minus(matFpApprox);
+            BaseMatrix<?>  matResolv = matIden.minus(matFpApprox);
             double  dblNumer  = Math.abs( ((SquareMatrix<?>)matResolv).trace() );
             double  dblDenom  = matResolv.normF();
             

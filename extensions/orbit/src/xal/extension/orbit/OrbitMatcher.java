@@ -15,7 +15,6 @@ import xal.model.probe.traj.Trajectory;
 import xal.model.probe.traj.TransferMapState;
 import xal.smf.AcceleratorNode;
 import xal.tools.beam.PhaseMatrix;
-import xal.tools.math.BaseMatrix;
 import xal.tools.math.GenericMatrix;
 
 
@@ -116,16 +115,16 @@ public class OrbitMatcher {
 
 /** best fit transform (in one plane) from a set of beam positions to a beam position at a specified point */
 class BeamPositionTransform {
-	final protected BaseMatrix KICK_TRANSFORM;
-	final protected BaseMatrix PROJECTION_TRANSFORM;
+	final protected GenericMatrix KICK_TRANSFORM;
+	final protected GenericMatrix PROJECTION_TRANSFORM;
 	
 	
 	/** Constructor */
 	public BeamPositionTransform( final List<TransferRow> transferRows ) {
 		final int rowCount = transferRows.size();
 		
-		final BaseMatrix kickTransform = new GenericMatrix( rowCount, 1 );
-		final BaseMatrix phaseTransform = new GenericMatrix( rowCount, 2 );
+		final GenericMatrix kickTransform = new GenericMatrix( rowCount, 1 );
+		final GenericMatrix phaseTransform = new GenericMatrix( rowCount, 2 );
 		
 		int row = 0;
 		for ( final TransferRow transferRow : transferRows ) {
@@ -138,14 +137,14 @@ class BeamPositionTransform {
 		KICK_TRANSFORM = kickTransform;
 		
 		// projection transform:  (A<sup>T</sup> A)<sup>-1</sup> A<sup>T</sup>
-		final BaseMatrix phaseTransformTranspose = phaseTransform.transpose();
+		final GenericMatrix phaseTransformTranspose = phaseTransform.transpose();
 		PROJECTION_TRANSFORM = phaseTransformTranspose.times( phaseTransform ).inverse().times( phaseTransformTranspose );
 	}
 	
 	
 	/** get the best matching beam position in mm at the target node based on the beam position measurements in mm at the measurement nodes */
 	public double getTargetBeamPosition( final double[] measuredBeamPositions ) {
-		final BaseMatrix beamPositionVector = new GenericMatrix( measuredBeamPositions.length, 1 );
+		final GenericMatrix beamPositionVector = new GenericMatrix( measuredBeamPositions.length, 1 );
 		
 		for ( int row = 0 ; row < measuredBeamPositions.length ; row++ ) {
 			beamPositionVector.setElem( row, 0, measuredBeamPositions[row] );

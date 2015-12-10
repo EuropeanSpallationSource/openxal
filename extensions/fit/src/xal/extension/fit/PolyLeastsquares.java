@@ -1,7 +1,5 @@
 package xal.extension.fit;
 
-import xal.tools.math.BaseMatrix;
-import xal.tools.math.BaseVector;
 import xal.tools.math.GenericMatrix;
 import xal.tools.math.GenericVector;
 
@@ -45,7 +43,7 @@ public class PolyLeastsquares{
 
    private double[] dX, dY;      //points to fit
 
-   private BaseVector mC;		//equation coefficent vector
+   private GenericVector mC;		//equation coefficent vector
    private double dR; 		//correlation coefficient factor
 
     /**
@@ -73,8 +71,8 @@ public class PolyLeastsquares{
 
    private void Init(){
 
-      BaseMatrix mA, mAl;
-      BaseVector mY;
+      GenericMatrix mA, mAl;
+      GenericVector mY;
       
 
       double[][] dCols= new double[m][k+1];
