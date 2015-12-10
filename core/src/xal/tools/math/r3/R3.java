@@ -644,7 +644,7 @@ public class R3 extends BaseVector<R3> implements java.io.Serializable {
 	 * @since  Jun 17, 2014
 	 */
 	@Override
-	protected R3 newInstance() {
+	protected R3 newInstance(int size) {
 		return new R3();
 	}
     

@@ -7,6 +7,7 @@
 package xal.tools.math;
 
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.StringTokenizer;
@@ -16,7 +17,6 @@ import org.ejml.ops.CommonOps;
 import org.ejml.ops.MatrixFeatures;
 import org.ejml.ops.NormOps;
 
-import xal.tools.beam.PhaseMatrix;
 import xal.tools.data.DataAdaptor;
 import xal.tools.data.DataFormatException;
 import xal.tools.data.IArchive;
@@ -26,30 +26,27 @@ import xal.tools.data.IArchive;
  * Class <code>BaseMatrix</code>.  This is a base class for objects representing
  * real-number matrix objects.  Thus it contains basic matrix operations where the interacting
  * objects are all of type <code>M</code>, or vectors of the singular type <code>V</code>.
- * (If matrix and vectors are not of compatible dimensions the operations fail.)
  * The template parameter <code>M</code> is the type of the child class.  This 
  * mechanism allows <code>BaseMatrix&lt;M extends BaseMatrix&lt;M&gt;&gt;</code>
  * to recognize the type of it derived classes in order to create and process
  * new objects as necessary. 
  * </p>
  * <p>
- * Currently the internal matrix operations are supported by the <tt>Jama</tt>
- * matrix package.  However, the <tt>Jama</tt> matrix package has been deemed a 
- * "proof of principle" for the Java language and scientific computing and 
- * is, thus, no longer supported.  The objective of this base class is to hide
+ * The objective of this base class is to hide
  * the internal implementation of matrix operations from the child classes and
- * all developers using the matrix packages.  If it is determined that the <tt>Jama</tt>
- * matrix package is to be removed from XAL, the modification will be substantially
- * simplified in the current architecture.
+ * all developers using the matrix packages.
+ * </p>
+ * <p>
+ * Currently the internal matrix operations are supported by the <tt>EJML</tt>
+ * matrix package.
  * </p> 
  *
  * @author Christopher K. Allen
+ * @author Blaz Kranjc
  * @since  Oct 11, 2013
  */
 public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
 
-    
-    
     /*
      * Global Constants
      */
@@ -139,11 +136,9 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      *  @param  j0      column index of upper left block
      *  @param  j1      column index of lower right block
      *  @param  arrSub  two-dimensional sub element array
-     *
-     *  @exception  ArrayIndexOutOfBoundsException  sub-matrix does not fit into base matrix
      */
     public void setSubMatrix(int i0, int i1, int j0,
-            int j1, double[][] arrSub) throws ArrayIndexOutOfBoundsException {
+            int j1, double[][] arrSub) {
     	DenseMatrix64F result;
     	DenseMatrix64F submat = new DenseMatrix64F(arrSub);
 
@@ -163,9 +158,6 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * @param arrMatrix Java primitive array containing new matrix values
      * 
      * @exception  ArrayIndexOutOfBoundsException  the argument must have the same dimensions as this matrix
-     *
-     * @author Christopher K. Allen
-     * @since  Oct 4, 2013
      */
     public void setMatrix(double[][] arrMatrix) throws ArrayIndexOutOfBoundsException {
         
@@ -180,44 +172,35 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
     }
 
     /**
-     * Sets the matrix implementation of this class to the provided matrix implementation.
-     * The provided matrix is used without copying, this reduces overhead in internal functions.
-     * 
-     * @param matrix Matrix implementation to set to this matrix
-     */
-    public void setMatrix(DenseMatrix64F mat) {
-        this.matImpl = mat;
-    }
-
-    /**
-     *  Parsing assignment - set the <code>PhaseMatrix</code> value
-     *  according to a token string of element values.  
+     *  Parsing assignment - set the matrix according to a token
+     *  string of element values.  
      *
      *  The token string argument is assumed to be one-dimensional and packed by
      *  column (aka FORTRAN).
      *
      *  @param  strValues   token vector of SIZE<sup>2</sup> numeric values
      *
-     *  @exception  Numberception       bad number format, unparseable
+     *  @exception  NumberFormatException  bad number format, unparseable
+     *  @exception  IllegalArgumentException  wrong number of token strings
      */
     public void setMatrix(String strValues) throws NumberFormatException {
                 
-                // Error check the number of token strings
-                StringTokenizer     tokArgs = new StringTokenizer(strValues, " ,()[]{}"); //$NON-NLS-1$
+    	// Error check the number of token strings
+    	StringTokenizer     tokArgs = new StringTokenizer(strValues, " ,()[]{}"); //$NON-NLS-1$
                 
-                if (tokArgs.countTokens() != this.getRowCnt()*this.getColCnt())
-                    throw new IllegalArgumentException("PhaseMatrix#setMatrix - wrong number of token strings: " + strValues); //$NON-NLS-1$
+    	if (tokArgs.countTokens() != this.getRowCnt()*this.getColCnt())
+    		throw new IllegalArgumentException("BaseMatrix#setMatrix - wrong number of token strings: " + strValues); //$NON-NLS-1$
                 
                 
-                // Extract initial phase coordinate values
-                for (int i=0; i<this.getRowCnt(); i++)
-                    for (int j=0; j<this.getColCnt(); j++) {
-                        String  strVal = tokArgs.nextToken();
-                        double  dblVal = Double.valueOf(strVal).doubleValue();
-                    
-                        this.setElem(i,j, dblVal);
-                    }
-            }
+    	// Extract initial phase coordinate values
+    	for (int i=0; i<this.getRowCnt(); i++)
+    		for (int j=0; j<this.getColCnt(); j++) {
+    			String  strVal = tokArgs.nextToken();
+    			double  dblVal = Double.valueOf(strVal).doubleValue();
+    			
+    			this.setElem(i,j, dblVal);
+    		}
+    }
 
 
 
@@ -255,7 +238,7 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
     
     /**
      *  Return matrix element value.  Get matrix element value at specified 
-     *  <code>Diagonal</code> position.
+     *  position.
      *
      *  @param  i       row index
      *  @param  j       column index
@@ -291,14 +274,13 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * @since  Sep 30, 2013
      */
     public double getElem(IIndex indRow, IIndex indCol) {
-        double  dblVal = this.matImpl.get(indRow.val(), indCol.val());
-    
+        double dblVal = this.matImpl.get(indRow.val(), indCol.val());
         return dblVal;
     }
 
     /**
      * Copies a 1D array of data to 2D array needed by the interface.
-     * This introduces additional overhead.
+     * 
      * @param arr 1D array with matrix data
      * @return 2D array of matrix
      */
@@ -313,13 +295,9 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
     /**
      * Returns a copy of the internal Java array containing
      * the matrix elements.  The array dimensions are given by
-     * the size of this matrix, available from 
-     * <code>{@link #getSize()}</code>.  
+     * the size of this matrix.
      * 
      * @return  copied array of matrix values
-     *
-     * @author Christopher K. Allen
-     * @since  Sep 25, 2013
      */
     public double[][] getArrayCopy() {
     	double[] data = this.matImpl.getData();
@@ -338,7 +316,7 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * @return  a deep copy object of this matrix
      */
     public M copy() {
-        M  matClone = this.newInstance();
+        M  matClone = this.newInstance(this.getRowCnt(), this.getColCnt());
         ((BaseMatrix<M>)matClone).assignMatrix( this.matImpl );
         return matClone;
     }
@@ -404,9 +382,8 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
     /**
      * Ratio of the largest singular value over the smallest singular value.
      * Note that this method does a singular value decomposition just to
-     * get the number (done in the (wasteful) <code>Jama.Matrix</code>
-     * internal implementation).  Thus, this computation is not cheap
-     * if the matrix is large.
+     * get the number (done in the (wasteful) EJML internal implementation).
+     * Thus, this computation is not cheap if the matrix is large.
      * 
      * @return      the ratio of extreme singular values
      *
@@ -428,10 +405,10 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      *  @return     transposed copy of this matrix or <code>null</code> if error
      */
     public M transpose()  {
-        DenseMatrix64F impTrans = new DenseMatrix64F(this.getColCnt(), this.getRowCnt());
-        CommonOps.transpose(this.matImpl, impTrans);
+    	M result = newInstance(this.getColCnt(), this.getRowCnt());
+        CommonOps.transpose(this.matImpl, result.getMatrix());
         
-        return newInstanceNoCopy(impTrans);
+        return result;
     }
 
     /**
@@ -441,13 +418,13 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      *  @return inverse or pseudo-inverse of the matrix.
      */
     public M inverse()  {
-    	DenseMatrix64F invA = new DenseMatrix64F(this.getColCnt(), this.getRowCnt());
+    	M result = newInstance(this.getColCnt(), this.getRowCnt());
     	if (this.isSquare()) {
-    		CommonOps.invert(this.matImpl, invA);
+    		CommonOps.invert(this.matImpl, result.getMatrix());
     	} else {
-    		CommonOps.pinv(this.matImpl, invA);
+    		CommonOps.pinv(this.matImpl, result.getMatrix());
     	}
-    	return newInstanceNoCopy(invA);
+    	return result;
     }
 
 
@@ -460,10 +437,10 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      *                  or <code>null</code> if error
      */
     public M plus(M matAddend) {
-        DenseMatrix64F result = new DenseMatrix64F(this.getRowCnt(), this.getColCnt());
-        CommonOps.add(this.matImpl, matAddend.getMatrix(), result);
+    	M result = newInstance(this.getRowCnt(), this.getColCnt());
+        CommonOps.add(this.matImpl, matAddend.getMatrix(), result.getMatrix());
 
-        return newInstanceNoCopy(result);
+        return result;
     }
 
     /**
@@ -485,10 +462,10 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      *                      or <code>null</code> if an error occurred
      */
     public M minus(M matSub) {
-        DenseMatrix64F result = new DenseMatrix64F(this.getRowCnt(), this.getColCnt());
-        CommonOps.subtract(this.matImpl, matSub.getMatrix(), result);
+        M result = newInstance(this.getRowCnt(), this.getColCnt());
+        CommonOps.subtract(this.matImpl, matSub.getMatrix(), result.getMatrix());
 
-        return newInstanceNoCopy(result);
+        return result;
     }
 
     /**
@@ -511,10 +488,10 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      *                      or <code>null</code> if an error occurred
      */
     public M times(double s) {
-        DenseMatrix64F result = new DenseMatrix64F(this.getRowCnt(), this.getColCnt());
-        CommonOps.scale(s, this.matImpl, result);
+    	M result = newInstance(this.getRowCnt(), this.getColCnt());
+        CommonOps.scale(s, this.matImpl, result.getMatrix());
 
-        return newInstanceNoCopy(result);
+        return result;
     }
     
     /**
@@ -538,9 +515,9 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      *                      or <code>null</code> if an error occurred
      */
     public M times(M matRight) {
-    	DenseMatrix64F result = new DenseMatrix64F(this.getRowCnt(), matRight.getColCnt());
-    	CommonOps.mult(this.matImpl, matRight.getMatrix(), result);
-    	return newInstanceNoCopy(result);
+    	M result = newInstance(this.getRowCnt(), this.getColCnt());
+    	CommonOps.mult(this.matImpl, matRight.getMatrix(), result.getMatrix());
+    	return result;
     }
 
 
@@ -560,10 +537,10 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * 
      */
     public <V extends BaseVector<V>> V times(V vecFac) {
-        DenseMatrix64F result = new DenseMatrix64F(this.getRowCnt(), 1);
-        CommonOps.mult(this.matImpl,vecFac.getVector(), result);
+    	V result = vecFac.newInstance(this.getRowCnt());
+        CommonOps.mult(this.matImpl,vecFac.getVector(), result.getVector());
     
-        return vecFac.newInstanceNoCopy(result);
+        return result;
     }
 
     /*
@@ -699,12 +676,13 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      */
 
     /**
-     *  Print out the contents of the R2x2 in text format.
+     *  Print out the contents of the matrix in text format.
      *
      *  @param  os      output stream to receive text dump
      */
     public void print(PrintWriter os) {
-    	this.matImpl.print(); // TODO
+    	String strMatrix = this.toStringMatrix(new DecimalFormat("0.#####E0"), this.getColCnt());
+    	os.print(strMatrix);
     }
 
     
@@ -713,7 +691,7 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      */
     
     /**
-     * Save the value of this <code>PhaseMatrix</code> to a data sink 
+     * Save the value of this matrix to a data sink 
      * represented by the <code>DataAdaptor</code> interface.
      * 
      * @param daptArchive   interface to data sink 
@@ -726,7 +704,7 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
     }
 
     /**
-     * Restore the value of the this <code>PhaseMatrix</code> from the
+     * Restore the value of the this matrix from the
      * contents of a data archive.
      * 
      * @param daptArchive   interface to data source
@@ -737,8 +715,8 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      */
     @Override
     public void load(DataAdaptor daptArchive) throws DataFormatException {
-        if ( daptArchive.hasAttribute(PhaseMatrix.ATTR_DATA) )  {
-            String  strValues = daptArchive.stringValue(PhaseMatrix.ATTR_DATA);
+        if ( daptArchive.hasAttribute(BaseMatrix.ATTR_DATA) )  {
+            String  strValues = daptArchive.stringValue(BaseMatrix.ATTR_DATA);
             this.setMatrix(strValues);         
         }
     }
@@ -844,7 +822,20 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * @since  Feb 8, 2013
      */
     public String   toStringMatrix(NumberFormat fmt, int intColWd) {
-        return  this.matImpl.toString(); // TODO
+    	StringWriter sw = new StringWriter();
+    	PrintWriter pw = new PrintWriter(sw);
+
+   		pw.print("{ ");
+    	for (int i=0; i<this.getRowCnt(); i++) {
+    		pw.print("{ ");
+    		for (int j=0; j<this.getColCnt(); j++) {
+    			pw.print(fmt.format(this.getElem(i, j)) + ", ");
+    		}
+    		pw.print(" }\n");
+    	}
+    	pw.print(" }");
+    	
+    	return sw.toString();
     }
     
     
@@ -875,7 +866,7 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
     /**
      *  Return the internal matrix representation.
      *
-     *  @return     the Jama matrix object
+     *  @return     the internal matrix implementation
      */
     protected DenseMatrix64F getMatrix() { 
         return matImpl; 
@@ -908,13 +899,16 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * the compiler to do more error checking.
      * </p>
      * 
+     * @param row Number of rows.
+     * @param col Number of columns.
+     * 
      * @return  uninitialized matrix object of type <code>M</code>
      * 
      * @author Ivo List
      * @author Christopher K. Allen
      * @since  Oct 1, 2013
      */
-    protected abstract M newInstance();
+    protected abstract M newInstance(int row, int col);
     
     /**
      * Creates a new instance of this matrix type initialized to the given
@@ -928,27 +922,12 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * @since  Oct 1, 2013
      */
     protected M newInstance(DenseMatrix64F impInit)     {
-        M matNewInst = this.newInstance();
+        M matNewInst = this.newInstance(impInit.numRows, impInit.numCols);
         matNewInst.assignMatrix(impInit);
         
         return matNewInst;
     }
 
-    /**
-     * Creates a new instance of this matrix. The provided matrix is used
-     * in the new class (is not copied).
-     * 
-     * @param   impInit implementation matrix 
-     * 
-     * @return  initialized matrix object of type <code>M</code>
-     */
-    protected M newInstanceNoCopy(DenseMatrix64F impInit)     {
-        M matNewInst = this.newInstance();
-        matNewInst.setMatrix(impInit);
-        
-        return matNewInst;
-    }
-    
     
     /*
      * Child Class Support
@@ -1048,7 +1027,7 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * Initializing constructor for class <code>BaseMatrix</code>.  
      * Sets the internal matrix to the copy of the argument.
      * 
-     * @param matrix Jama.Matrix object to populate the array with
+     * @param matrix implementation object to copy to this matrix
      */
     protected BaseMatrix(DenseMatrix64F matrix) {
         this.matImpl = matrix.copy();

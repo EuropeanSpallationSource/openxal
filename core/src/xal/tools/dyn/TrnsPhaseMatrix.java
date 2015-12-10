@@ -400,7 +400,7 @@ public class TrnsPhaseMatrix extends SquareMatrix<TrnsPhaseMatrix> {
 	 * @since  Jun 17, 2014
 	 */
 	@Override
-	protected TrnsPhaseMatrix newInstance() {
+	protected TrnsPhaseMatrix newInstance(int row, int cnt) {
 		return new TrnsPhaseMatrix();
 	}
     

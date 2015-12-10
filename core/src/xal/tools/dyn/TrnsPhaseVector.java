@@ -295,7 +295,7 @@ public class TrnsPhaseVector extends BaseVector<TrnsPhaseVector> {
 	 * @since  Jun 17, 2014
 	 */
 	@Override
-	protected TrnsPhaseVector newInstance() {
+	protected TrnsPhaseVector newInstance(int size) {
 		return new TrnsPhaseVector();
 	}
 

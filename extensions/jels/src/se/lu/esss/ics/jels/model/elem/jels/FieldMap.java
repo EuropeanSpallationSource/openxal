@@ -8,7 +8,6 @@ import xal.model.elem.ThickElement;
 import xal.sim.scenario.LatticeElement;
 import xal.tools.beam.PhaseMap;
 import xal.tools.beam.PhaseMatrix;
-import xal.tools.math.BaseMatrix;
 import xal.tools.math.GenericMatrix;
 
 /**

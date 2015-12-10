@@ -8,11 +8,15 @@ package xal.tools.math;
 public class GenericMatrix extends BaseMatrix<GenericMatrix> {
 
 	/**
-	 * Creates a matrix instance with size 0x0. Used only by parent methods.
+	 * Create a copy of provided matrix as a square matrix.
+	 * @param m Generic matrix to be transformed to a square matrix 
 	 */
-	private GenericMatrix() {
-		super(0, 0); // TODO: this breaks the library a bit as the sizes are not the same!
+	public static GenericSquareMatrix createSquare(BaseMatrix<?> m) {
+		if (m.getColCnt() != m.getRowCnt())
+			throw new IllegalArgumentException("Provided matrix must be square.");
+		return new GenericSquareMatrix(m.getMatrix());
 	}
+
 
 	/**
 	 * Instance a zero matrix of provided size.
@@ -71,8 +75,8 @@ public class GenericMatrix extends BaseMatrix<GenericMatrix> {
 	 * @see BaseMatrix#newInstance()
 	 */
 	@Override
-	protected GenericMatrix newInstance() {
-		return new GenericMatrix();
+	protected GenericMatrix newInstance(int row, int cnt) {
+		return new GenericMatrix(row, cnt);
 	}
-	
+
 }

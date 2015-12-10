@@ -596,7 +596,7 @@ public class PhaseVector extends BaseVector<PhaseVector> implements java.io.Seri
      * @since  Jun 17, 2014
      */
     @Override
-    protected PhaseVector newInstance() {
+    protected PhaseVector newInstance(int size) {
         return new PhaseVector();
     }
 

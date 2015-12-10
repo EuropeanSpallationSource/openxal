@@ -16,17 +16,19 @@ import org.ejml.ops.MatrixFeatures;
  * objects supported in the XAL tools packages.
  * </p>
  * <p>
- * Currently the internal matrix operations are supported by the <tt>Jama</tt>
- * matrix package.  However, the <tt>Jama</tt> matrix package has been deemed a 
- * "proof of principle" for the Java language and scientific computing and 
- * is, thus, no longer supported.  The objective of this base class is to hide
+ * <p>
+ * The objective of this base class is to hide
  * the internal implementation of matrix operations from the child classes and
- * all developers using the matrix packages.  If it is determined that the <tt>Jama</tt>
- * matrix package is to be removed from XAL, the modification will be substantially
- * simplified in the current architecture.
+ * all developers using the matrix packages.
+ * </p>
+ * <p>
+ * Currently the internal matrix operations are supported by the <tt>EJML</tt>
+ * matrix package.
  * </p> 
  *
+ *
  * @author Christopher K. Allen
+ * @author Blaz Kranjc
  * @since  Sep 25, 2013
  */
 public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix<M> {
@@ -94,37 +96,26 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
      * &nbsp; &nbsp; <b>x</b> = <b>A</b><sup>-1</sup><b>y</b> ,
      * <br>
      * <br>
-     * that is, the value of vector <b>x</b>.  
-     * <p>
-     * </p>
-     * The vector <b>y</b> is left
-     * unchanged.  However, this is somewhat expensive in that the solution
-     * vector must be created through reflection and exceptions may occur.
-     * For a safer implementation, but where the solution is returned within the
-     * existing data vector <b>y</b> see <code>{@link #solveInPlace(BaseVector)}</code>.
+     * that is, the value of vector <b>x</b>. The vector <b>y</b> is left
+     * unchanged.
      * </p>
      * <p>
-     * Note that the inverse matrix
-     * <b>A</b><sup>-1</sup> is never computed, the system is solved in 
-     * less than <i>N</i><sup>2</sup> time.  However, if this system is to be
-     * solved repeated for the same matrix <b>A</b> it may be preferable to 
-     * invert this matrix and solve the multiple system with matrix multiplication.
+     * Note that the inverse matrix <b>A</b><sup>-1</sup> is never computed.
+     * If this system is to be solved repeated for the same matrix 
+     * <b>A</b> it may be preferable to invert this matrix and solve the multiple
+     * system with matrix multiplication.
      * </p>
      * 
      * @param vecObs        the data vector
      * 
      * @return              vector which, when multiplied by this matrix, will equal the data vector
-     * 
-     *
-     * @author Christopher K. Allen
-     * @since  Oct 11, 2013
      */
     public <V extends BaseVector<V>> V solve(final V vecObs) {
         
-        DenseMatrix64F x = new DenseMatrix64F(vecObs.getSize(), 1);
-        CommonOps.solve(this.getMatrix(), vecObs.getVector(), x);
+        V x = vecObs.newInstance(this.getSize());
+        CommonOps.solve(this.getMatrix(), vecObs.getVector(), x.getVector());
         
-        return vecObs.newInstanceNoCopy(x);
+        return x;
     }
 
     /**
@@ -151,13 +142,11 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
      * The value of <b>x</b> is returned within the argument vector.  Thus,
      * the argument cannot be immutable.
      * <p>
-     * Note that the inverse matrix
-     * <b>A</b><sup>-1</sup> is never computed, the system is solved in 
-     * less than <i>N</i><sup>2</sup> time.  However, if this system is to be
-     * solved repeated for the same matrix <b>A</b> it may be preferable to 
-     * invert this matrix and solve the multiple system with matrix multiplication.
+     * Note that the inverse matrix <b>A</b><sup>-1</sup> is never computed.
+     * If this system is to be solved repeated for the same matrix 
+     * <b>A</b> it may be preferable to invert this matrix and solve the multiple
+     * system with matrix multiplication.
      * </p>
-     * @deprecated It does not make sense to copy the result vector back to the provided vector.
      * 
      * @param vecObs        the data vector on call, the solution vector upon return
      * 
@@ -165,7 +154,6 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
      * @author Christopher K. Allen
      * @since  Oct 11, 2013
      */
-    @Deprecated
     public <V extends BaseVector<V>> void solveInPlace(V vecObs) {
     	V result = this.solve(vecObs);
         vecObs.setVector(result);
@@ -224,12 +212,10 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
         DenseMatrix64F impTemp  = new DenseMatrix64F(getSize(), getSize());
         CommonOps.mult(this.getMatrix(), impPhiT, impTemp);
 
-        DenseMatrix64F impAns  = new DenseMatrix64F(getSize(), getSize());
-        CommonOps.mult(impPhi, impTemp, impAns);
+        M ans  = newInstance(getSize(), getSize());
+        CommonOps.mult(impPhi, impTemp, ans.getMatrix());
         
-        M   matAns = this.newInstanceNoCopy(impAns);
-        
-        return matAns;
+        return ans;
     };
     
     /**
@@ -260,12 +246,10 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
         DenseMatrix64F impTemp  = new DenseMatrix64F(getSize(), getSize());
         CommonOps.mult(this.getMatrix(), impPhiI, impTemp);
 
-        DenseMatrix64F impAns  = new DenseMatrix64F(getSize(), getSize());
-        CommonOps.mult(impPhi, impTemp, impAns);
+        M ans  = newInstance(getSize(), getSize());
+        CommonOps.mult(impPhi, impTemp, ans.getMatrix());
         
-        M   matAns = this.newInstanceNoCopy(impAns);
-        
-        return matAns;
+        return ans;
     };
     
 

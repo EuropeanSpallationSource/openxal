@@ -215,7 +215,7 @@ public class R6 extends BaseVector<R6> {
 	 * @since  Jun 17, 2014
 	 */
 	@Override
-	protected R6 newInstance() {
+	protected R6 newInstance(int size) {
 		return new R6();
 	}
 

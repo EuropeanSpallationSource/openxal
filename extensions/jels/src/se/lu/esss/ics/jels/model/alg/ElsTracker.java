@@ -11,7 +11,6 @@ import xal.model.ModelException;
 import xal.model.alg.EnvelopeTracker;
 import xal.model.probe.EnvelopeProbe;
 import xal.tools.beam.PhaseMatrix;
-import xal.tools.math.BaseMatrix;
 import xal.tools.math.GenericMatrix;
 
 
@@ -160,13 +159,13 @@ public class ElsTracker extends EnvelopeTracker {
         ElsProbe   probe = (ElsProbe)ifcProbe;
         
         // Get initial conditions of probe
-        BaseMatrix	envelope = probe.getEnvelope();
+        GenericMatrix	envelope = probe.getEnvelope();
         
         // Compute the transfer matrix
         PhaseMatrix matrix  = ifcElem.transferMap(probe, dblLen).getFirstOrder(); 
         
         // Compute optics matrix...          
-        BaseMatrix optics = new GenericMatrix(9, 9);
+        GenericMatrix optics = new GenericMatrix(9, 9);
         
         double[] det = new double[3];
     	
@@ -191,7 +190,7 @@ public class ElsTracker extends EnvelopeTracker {
     	
    		optics = optics.times(1./det[0]);
     	    
-        BaseMatrix	envelope1 = optics.times(envelope);        
+        GenericMatrix	envelope1 = optics.times(envelope);        
                
         // Advance the probe states 
         probe.setEnvelope(envelope1);

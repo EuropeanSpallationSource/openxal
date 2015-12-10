@@ -551,7 +551,7 @@ public class R3x3 extends SquareMatrix<R3x3> implements java.io.Serializable {
 	 * @since  Jun 17, 2014
 	 */
 	@Override
-	protected R3x3 newInstance() {
+	protected R3x3 newInstance(int row, int cnt) {
 		return new R3x3();
 	}
 }

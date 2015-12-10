@@ -298,7 +298,7 @@ public class R6x6 extends SquareMatrix<R6x6> {
 	 * @since  Jun 17, 2014
 	 */
 	@Override
-	protected R6x6 newInstance() {
+	protected R6x6 newInstance(int row, int cnt) {
 		return new R6x6();
 	}
     

@@ -730,7 +730,7 @@ public class CovarianceMatrix extends PhaseMatrix {
 	 * @since  Jun 17, 2014
 	 */
 	@Override
-	protected PhaseMatrix newInstance() {
+	protected PhaseMatrix newInstance(int row, int cnt) {
 		return new PhaseMatrix();
 	}
 }

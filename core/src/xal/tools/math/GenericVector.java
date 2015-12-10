@@ -1,6 +1,7 @@
 package xal.tools.math;
 
 /**
+ * Concrete implementation of vector with arbitrary length.
  * 
  * @author Blaz Kranjc
  */
@@ -23,10 +24,11 @@ public class GenericVector extends BaseVector<GenericVector> {
 	}
 
 	/**
-	 * Creates an instance with size 0. Used only by parent methods.
+	 * Creates an instance with specified size. Used only by parent methods.
+	 * @param size Size of the vector.
 	 */
-	private GenericVector() {
-		super(0); // TODO this breaks the internal library a bit as the sizes are not the same!
+	private GenericVector(int size) {
+		super(size);
 	}
 
 	/**
@@ -41,8 +43,8 @@ public class GenericVector extends BaseVector<GenericVector> {
 	 * @see GenericVector#newInstance()
 	 */
 	@Override
-	protected GenericVector newInstance() {
-		return new GenericVector();
+	protected GenericVector newInstance(int size) {
+		return new GenericVector(size);
 	}
 	
 }

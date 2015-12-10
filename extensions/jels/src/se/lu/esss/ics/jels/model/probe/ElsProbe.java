@@ -4,7 +4,6 @@ import xal.model.probe.EnvelopeProbe;
 import xal.model.probe.traj.EnvelopeProbeState;
 import xal.tools.beam.CovarianceMatrix;
 import xal.tools.beam.Twiss;
-import xal.tools.math.BaseMatrix;
 import xal.tools.math.GenericMatrix;
 
 
@@ -16,11 +15,11 @@ import xal.tools.math.GenericMatrix;
  * @author Emanuele Laface, Ivo List <ivo.list@cosylab.com>
  */
 public class ElsProbe extends EnvelopeProbe {
-	private BaseMatrix envelope = new GenericMatrix(9,1);
-	private BaseMatrix normalized_emmitance = new GenericMatrix(3,1);	
+	private GenericMatrix envelope = new GenericMatrix(9,1);
+	private GenericMatrix normalized_emmitance = new GenericMatrix(3,1);	
 	
-	private BaseMatrix envelope0;
-	private BaseMatrix normalized_emmitance0;
+	private GenericMatrix envelope0;
+	private GenericMatrix normalized_emmitance0;
 	
     @Override
 	public EnvelopeProbeState createProbeState() {
@@ -42,11 +41,11 @@ public class ElsProbe extends EnvelopeProbe {
 		normalized_emmitance0 = normalized_emmitance.copy();
 	}
 	
-	public BaseMatrix getEnvelope() {
+	public GenericMatrix getEnvelope() {
 		return envelope;
 	}
 
-	public void setEnvelope(BaseMatrix envelope) {
+	public void setEnvelope(GenericMatrix envelope) {
 		this.envelope = envelope;
 	}
 	

@@ -10,9 +10,8 @@ package xal.extension.twissobserver;
 import xal.tools.beam.CovarianceMatrix;
 import xal.tools.beam.PhaseMatrix;
 import xal.tools.collections.LinearBuffer;
-import xal.tools.math.BaseMatrix;
 import xal.tools.math.GenericMatrix;
-import xal.tools.math.SquareMatrix;
+import xal.tools.math.GenericSquareMatrix;
 import xal.model.ModelException;
 
 import java.util.ArrayList;
@@ -733,13 +732,13 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
             if (szRank < cntRows) 
                 continue;
             
-            // Compute the approximation to the partial of the recusion function
+            // Compute the approximation to the partial of the recursion function
             GenericMatrix  matDelSigInv = matDelSig.inverse();
             GenericMatrix  matFpApprox  = matDelF.times(matDelSigInv);
             
             // Compute the alpha value for this plane
-            BaseMatrix<?>  matResolv = matIden.minus(matFpApprox);
-            double  dblNumer  = Math.abs( ((SquareMatrix<?>)matResolv).trace() );
+            GenericSquareMatrix  matResolv = GenericMatrix.createSquare(matIden.minus(matFpApprox));
+            double  dblNumer  = Math.abs( matResolv.trace() );
             double  dblDenom  = matResolv.normF();
             
             double  dblAlphaNew = dblNumer/(dblDenom);
