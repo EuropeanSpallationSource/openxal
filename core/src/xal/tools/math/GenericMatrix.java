@@ -12,8 +12,6 @@ public class GenericMatrix extends BaseMatrix<GenericMatrix> {
 	 * @param m Generic matrix to be transformed to a square matrix 
 	 */
 	public static GenericSquareMatrix createSquare(BaseMatrix<?> m) {
-		if (m.getColCnt() != m.getRowCnt())
-			throw new IllegalArgumentException("Provided matrix must be square.");
 		return new GenericSquareMatrix(m.getMatrix());
 	}
 

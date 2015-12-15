@@ -205,15 +205,19 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
      *  @return             matPhi*this*matPhi^T, or <code>null</code> if an error occurred
      */
     public M    conjugateTrans(M matPhi) {
-        DenseMatrix64F impPhi  = matPhi.getMatrix();
-        DenseMatrix64F impPhiT = impPhi.copy();
-        CommonOps.transpose(impPhiT);
-
-        DenseMatrix64F impTemp  = new DenseMatrix64F(getSize(), getSize());
-        CommonOps.mult(this.getMatrix(), impPhiT, impTemp);
-
         M ans  = newInstance(getSize(), getSize());
-        CommonOps.mult(impPhi, impTemp, ans.getMatrix());
+        for (int i = 0; i < getSize(); i++) {
+        	for (int j = 0; j < getSize(); j++) {
+        		double result = 0;
+        		for (int alpha = 0; alpha < getSize(); alpha++) {
+        			for (int beta = 0; beta < getSize(); beta++) {
+        				result += matPhi.getElem(i, alpha) * this.getElem(alpha, beta)
+        						* matPhi.getElem(j, beta);
+        			}
+        		}
+        		ans.setElem(i, j, result);
+        	}
+        }
         
         return ans;
     };
