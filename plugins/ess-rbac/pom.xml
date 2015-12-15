@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.xal</groupId>
 		<artifactId>openxal.plugins</artifactId>
-		<version>1.0.5-SNAPSHOT</version>
+		<version>1.0.8-SNAPSHOT</version>
 	</parent>
 	
 	<artifactId>openxal.plugins.ess-rbac</artifactId>

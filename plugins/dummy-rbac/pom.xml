@@ -5,12 +5,12 @@
 	<parent>
 		<groupId>org.xal</groupId>
 		<artifactId>openxal.plugins</artifactId>
-		<version>1.0.5-SNAPSHOT</version>
+		<version>1.0.8-SNAPSHOT</version>
 	</parent>
 
 	<groupId>org.xal</groupId>
 	<artifactId>openxal.plugins.dummy-rbac</artifactId>
-	<version>1.0.5-SNAPSHOT</version>
+	<version>1.0.8-SNAPSHOT</version>
 
 	<build>
 		<sourceDirectory>src</sourceDirectory>
