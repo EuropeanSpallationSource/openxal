@@ -17,6 +17,8 @@
 		<module>jca</module>
 		<module>mysql</module>
 		<module>postgres</module>
+		<module>ess-rbac</module>
+		<module>dummy-rbac</module>
 	</modules>
 	
 	<dependencies>

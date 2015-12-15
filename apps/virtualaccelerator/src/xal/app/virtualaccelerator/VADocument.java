@@ -47,6 +47,7 @@ import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.ca.PutException;
 import xal.ca.PutListener;
+import xal.extension.application.Application;
 import xal.extension.application.Commander;
 import xal.extension.application.XalWindow;
 import xal.extension.application.smf.AcceleratorDocument;
@@ -311,7 +312,8 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 	
 	
 	/** Make a main window by instantiating the my custom window. Set the text pane to use the textDocument variable as its document. */
-	public void makeMainWindow() {
+	@Override
+    public void makeMainWindow() {
 		mainWindow = (XalWindow)_windowReference.getWindow();
 		
 		final JTable readbackTable = (JTable)_windowReference.getView( "ReadbackTable" );
@@ -466,7 +468,8 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 	 * Save the document to the specified URL.
 	 * @param url The URL to which the document should be saved.
 	 */
-	public void saveDocumentAs(URL url) {
+	@Override
+    public void saveDocumentAs(URL url) {
         
 		XmlDataAdaptor xda = XmlDataAdaptor.newEmptyDocumentAdaptor();
 		DataAdaptor daLevel1 = xda.createChild("VA");
@@ -522,15 +525,18 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 	private void makeTextDocument() {
 		textDocument = new PlainDocument();
 		textDocument.addDocumentListener(new DocumentListener() {
-			public void changedUpdate(javax.swing.event.DocumentEvent evt) {
+			@Override
+            public void changedUpdate(javax.swing.event.DocumentEvent evt) {
 				setHasChanges(true);
 			}
             
-			public void removeUpdate(DocumentEvent evt) {
+			@Override
+            public void removeUpdate(DocumentEvent evt) {
 				setHasChanges(true);
 			}
             
-			public void insertUpdate(DocumentEvent evt) {
+			@Override
+            public void insertUpdate(DocumentEvent evt) {
 				setHasChanges(true);
 			}
 		});
@@ -567,13 +573,15 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 	}
     
     
-	public void customizeCommands(Commander commander) {
+	@Override
+    public void customizeCommands(Commander commander) {
 		// open probe editor
         // TODO: implement probe editor support
 	    this.commander = commander;
 		Action probeEditorAction = new AbstractAction("probe-editor") {
 			static final long serialVersionUID = 0;
-			public void actionPerformed(ActionEvent event) {
+			@Override
+            public void actionPerformed(ActionEvent event) {
 				if ( baseProbe != null ) {
 					stopServer();
 					final SimpleProbeEditor probeEditor = new SimpleProbeEditor( getMainWindow(), baseProbe );
@@ -597,7 +605,8 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 		// action for using online model as engine
 		olmModel.setSelected(true);
 		olmModel.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
+			@Override
+            public void actionPerformed(ActionEvent event) {
 				isForOLM = true;
 				isFromPVLogger = false;
 			}
@@ -607,7 +616,8 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 		// action for using PV logger snapshot through online model
 		pvlogModel.setSelected(false);
 		pvlogModel.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
+			@Override
+            public void actionPerformed(ActionEvent event) {
 				isForOLM = true;
 				isFromPVLogger = true;
                 
@@ -624,7 +634,8 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 		// action for direct replaying of PVLogger logged data
 		pvlogMovieModel.setSelected(false);
 		pvlogMovieModel.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
+			@Override
+            public void actionPerformed(ActionEvent event) {
 				isForOLM = false;
 				isFromPVLogger = true;
                 
@@ -641,16 +652,19 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 		// action for running model and Diagnostics acquisition
 		Action runAction = new AbstractAction() {
 			static final long serialVersionUID = 0;
-			public void actionPerformed(ActionEvent event) {
+			@Override
+            public void actionPerformed(ActionEvent event) {
 				if ( vaRunning ) {
 					JOptionPane.showMessageDialog( getMainWindow(), "Virtual Accelerator has already started.", "Warning!", JOptionPane.PLAIN_MESSAGE );
 					return;
 				}
-                
+				if(!Application.getApp().authorizeWithRBAC("Start")){
+				    JOptionPane.showMessageDialog( getMainWindow(), "You are unauthorized for this action.", "Warning!", JOptionPane.PLAIN_MESSAGE );
+                    return;
+				}
 				if ( getSelectedSequence() == null ) {
 					JOptionPane.showMessageDialog( getMainWindow(), "You need to select sequence(s) first.", "Warning!", JOptionPane.PLAIN_MESSAGE );
-				}
-				else {
+				} else {    
 					// use PV logger
 					if ( isFromPVLogger ) {
 						long pvLoggerId = plsc.getPVLogId();
@@ -706,7 +720,8 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 		// stop the channel access server
 		Action stopAction = new AbstractAction() {
 			static final long serialVersionUID = 0;
-			public void actionPerformed(ActionEvent event) {
+			@Override
+            public void actionPerformed(ActionEvent event) {
 				stopServer();
 			}
 		};
@@ -717,7 +732,8 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 		// set noise level
 		Action setNoiseAction = new AbstractAction() {
 			static final long serialVersionUID = 0;
-			public void actionPerformed(ActionEvent event) {
+			@Override
+            public void actionPerformed(ActionEvent event) {
 				df1.setValue(quadNoise);
 				df2.setValue(dipoleNoise);
 				df3.setValue(correctorNoise);
@@ -737,7 +753,8 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 		// configure synchronization
 		final Action synchConfigAction = new AbstractAction() {
 			static final long serialVersionUID = 0;
-			public void actionPerformed(ActionEvent event) {
+			@Override
+            public void actionPerformed(ActionEvent event) {
 				final String result = JOptionPane.showInputDialog( getMainWindow(), "Set the Model Synchronization Period (milliseconds): ", _modelSyncPeriod );
 				if ( result != null ) {
 					try {
@@ -756,7 +773,8 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 	
 	
 	/** handle this document being closed */
-	public void willClose() {
+	@Override
+    public void willClose() {
 		System.out.println( "Document will be closed" );
 		destroyServer();
 	}
@@ -1298,7 +1316,8 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 	
 	
 	/** handle the CA put callback */
-	public void putCompleted( final Channel chan ) {}
+	@Override
+    public void putCompleted( final Channel chan ) {}
 	
     
 	/** create the map between the "readback" and "set" PVs */
@@ -1396,7 +1415,8 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 	}
 	
 	
-	public void acceleratorChanged() {
+	@Override
+    public void acceleratorChanged() {
 		if (accelerator != null) {
 			stopServer();
 
@@ -1412,7 +1432,8 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 		}
 	}
     
-	public void selectedSequenceChanged() {
+	@Override
+    public void selectedSequenceChanged() {
 		destroyServer();
 		
 		if (selectedSequence != null) {
@@ -1476,7 +1497,8 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
         
 	}
     
-	public void actionPerformed(ActionEvent ev) {
+	@Override
+    public void actionPerformed(ActionEvent ev) {
 		if (ev.getActionCommand().equals("noiseSet")) {
 			quadNoise = df1.getDoubleValue();
 			dipoleNoise = df2.getDoubleValue();
@@ -1521,7 +1543,8 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 	/** Get a runnable that syncs the online model */
 	private Runnable getOnlineModelSynchronizer() {
 		return new Runnable() {
-			public void run() {
+			@Override
+            public void run() {
 				syncOnlineModel();
 			}
 		};
@@ -1541,7 +1564,8 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 	/** Get a runnable that syncs with the PV Logger */
 	private Runnable getPVLoggerSynchronizer() {
 		return new Runnable() {
-			public void run() {
+			@Override
+            public void run() {
 				syncPVLogger();
 			}
 		};
@@ -1563,7 +1587,8 @@ class ReadbackSetRecordPositionComparator implements Comparator<ReadbackSetRecor
 	
 	
 	/** compare the records based on location relative to the start of the sequence */
-	public int compare( final ReadbackSetRecord record1, final ReadbackSetRecord record2 ) {
+	@Override
+    public int compare( final ReadbackSetRecord record1, final ReadbackSetRecord record2 ) {
 		if ( record1 == null && record2 == null ) {
 			return 0;
 		}
@@ -1582,13 +1607,15 @@ class ReadbackSetRecordPositionComparator implements Comparator<ReadbackSetRecor
 	
 	
 	/** all comparators of this class are the same */
-	public boolean equals( final Object object ) {
+	@Override
+    public boolean equals( final Object object ) {
 		return object instanceof ReadbackSetRecordPositionComparator;
 	}
 
 
 	/** override hashCode() as required for consistency with equals() */
-	public int hashCode() {
+	@Override
+    public int hashCode() {
 		return 1;	// constant since all comparators of this class are equivalent
 	}
 }
