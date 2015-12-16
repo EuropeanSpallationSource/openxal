@@ -314,6 +314,7 @@ public class JElsDemo {
 	}
 
 	private static Accelerator loadAccelerator() {
+		System.out.println("Loading accelerator from: "+XMLDataManager.defaultPath());
 		/* Loading SMF model */				
 		Accelerator accelerator = XMLDataManager.loadDefaultAccelerator();
 				
@@ -338,9 +339,10 @@ public class JElsDemo {
 	}
 	
 	private static Accelerator loadAccelerator(String path) {
-		/* Loading SMF model */				
+		/* Loading SMF model */
+		System.out.println("Loading accelerator from: "+path);
 		Accelerator accelerator = XMLDataManager.acceleratorWithUrlSpec(new File(path).toURI().toString());
-				
+		
 		
 		if (accelerator == null)
 		{			
