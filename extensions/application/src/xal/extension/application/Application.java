@@ -174,6 +174,20 @@ abstract public class Application {
         try {
             System.out.println("Starting authentication.");
             rbacLogin = RBACLogin.newRBACLogin();
+        } catch (RuntimeException e) {
+            System.out.println("RBAC plugin not found. Continuing without RBAC.");
+            return true;
+        }
+        
+        try {
+        	// Try to use the local token.
+        	rbacLogin.authenticate(null, null);
+        	return true;
+        } catch (Exception e) {
+        	// Fall to authentication pane
+        }
+
+        try {
             final Credentials credentials = AuthenticationPane.getCredentials();
             if(credentials == null){
                 System.out.println("User pressed cancel.");
@@ -181,9 +195,6 @@ abstract public class Application {
             }
             rbacSubject = rbacLogin.authenticate(credentials.getUsername(),credentials.getPassword(),credentials.getPreferredRole(),credentials.getIP());
             System.out.println("Authentication successful.");
-            return true;
-        } catch (RuntimeException e) {
-            System.out.println("RBAC plugin not found. Continuing without RBAC.");
             return true;
         } catch (AccessDeniedException e) {
             System.out.println("Couldn't authenticate.");

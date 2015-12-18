@@ -19,8 +19,13 @@ import xal.rbac.RBACSubject;
  */
 public class EssRbacLogin extends RBACLogin {
 
+	public EssRbacLogin() {
+		System.setProperty("rbac.useLocalService", "true");
+		SecurityFacade.getDefaultInstance().initLocalServiceUsage();
+	}
+
     @Override
-    public String[] getRolesForUser(final String username) throws RBACException {// TODO test
+    public String[] getRolesForUser(final String username) throws RBACException {
         try {
             return SecurityFacade.getDefaultInstance().getRolesForUser(username);
         } catch (Exception e) {
