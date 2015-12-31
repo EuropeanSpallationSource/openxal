@@ -68,16 +68,16 @@ public class ImporterHelpers {
 		probe.setSpeciesRestEnergy(9.3827202900E8);
 		probe.setSpeciesName("PROTON");
 		//elsProbe.setSpeciesRestEnergy(9.38272013e8);	
-		probe.setKineticEnergy(3.6218151e6);//energy
+		probe.setKineticEnergy(3.6217853e6);//energy
 		probe.setPosition(0.0);
 		probe.setTime(0.0);		
 				
 		double beta_gamma = probe.getBeta() * probe.getGamma();
 	
 		
-		probe.initFromTwiss(new Twiss[]{new Twiss(-0.051952048,0.20962859,0.2529362*1e-6 / beta_gamma),
-										  new Twiss(-0.31155119,0.37226081,0.2510271*1e-6 / beta_gamma),
-										  new Twiss(-0.48513031,0.92578192,0.3599253*1e-6 / beta_gamma)});
+		probe.initFromTwiss(new Twiss[]{new Twiss(-0.051805615,0.20954703,0.25288*1e-6 / beta_gamma),
+										  new Twiss(-0.30984478,0.37074849,0.251694*1e-6 / beta_gamma),
+										  new Twiss(-0.48130325,0.92564505,0.3615731*1e-6 / beta_gamma)});
 		probe.setBeamCurrent(62.5e-3);
 		probe.setBunchFrequency(352.21e6); 	
 	}
