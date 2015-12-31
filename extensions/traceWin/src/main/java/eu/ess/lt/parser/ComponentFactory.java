@@ -1,5 +1,7 @@
 package eu.ess.lt.parser;
 
+import java.io.File;
+
 import eu.ess.bled.Subsystem;
 import eu.ess.bled.devices.lattice.Aperture;
 import eu.ess.bled.devices.lattice.BPM;
@@ -36,7 +38,10 @@ import eu.ess.bled.devices.lattice.ThinLens;
  *         Prelog</a>
  */
 public class ComponentFactory {
-
+	private String fieldmapPath = "";
+	private String basePath = "";
+	
+	
 	/**
 	 * Returns an existing {@link Aperture} identified by its name, or creates a
 	 * new one. The returned entity has its fields set to the specified values.
@@ -393,7 +398,8 @@ public class ComponentFactory {
 		fieldMap.setElectricIntensityFactor(electricIntensityFactor);
 		fieldMap.setSpaceChargeCompensationFactor(spaceChargeCompensationFactor);
 		fieldMap.setApertureFlag(apertureFlag);
-		fieldMap.setFileName(fileName);
+		fieldMap.setFileName(fieldmapPath + fileName);
+		fieldMap.setBasePath(basePath);
 		fieldMap.setPreviousSubsystem(previousSubsystem);
 		// CHECK fieldMap.setSubsystemType(defaultType());
 		return fieldMap;
@@ -920,5 +926,13 @@ public class ComponentFactory {
 			return new ValidationResult(false, "Description field too long for subsystem " + subsystem.getName(),
 					"description");
 		return new ValidationResult(true, "Validation successful for " + subsystem.getName(), null);
+	}
+
+	public void setFieldmapPath(String fieldmapPath) {
+		this.fieldmapPath = fieldmapPath + "/";		
+	}
+	
+	public void setBasePath(String basePath) {
+		this.basePath = basePath;
 	}
 }

@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -97,10 +98,11 @@ public class TraceWinImporter implements TraceWinTags {
 		bledComponentFactory = new ComponentFactory();
 	}
 	
-	public List<Subsystem> importFromTraceWin(BufferedReader tracewinInput, PrintWriter responseWriter)
+	public List<Subsystem> importFromTraceWin(BufferedReader tracewinInput, PrintWriter responseWriter, String basePath)
 			throws FileNotFoundException, IOException {
 		// Initializing
 		initClassVariables();
+		bledComponentFactory.setBasePath(basePath);
 		this.responseWriter = responseWriter;		
 
 		// Parsing
@@ -156,8 +158,8 @@ public class TraceWinImporter implements TraceWinTags {
 			} else
 				trailinglen = 0;
 
-			idx = originalLine.indexOf(NAME_VALUE_SEPARATOR + PART_SEPARATOR);
-
+			idx = line.indexOf(NAME_VALUE_SEPARATOR + PART_SEPARATOR);
+			
 			if (idx > 0 && idx < line.length() - 1) {
 				line = line.substring(idx + 1).trim();
 				name = originalLine.substring(0, idx);
@@ -505,7 +507,7 @@ public class TraceWinImporter implements TraceWinTags {
 				marker.setParentSubsystem(parentSubsystem);
 				section.addComponent(marker);
 				lastSubsystem = lastSubsystem + 1;
-			} else if (line.startsWith(M_BEGINBEAMLINE)) {
+			} else if (line.startsWith(M_BEGINBEAMLINE)) {				
 				currentBeamline = bledComponentFactory.getBeamline(values[1], originalLine, lastSubsystem);
 				currentBeamline.setParentSubsystem(parentSubsystem);
 				section.addBeamline(currentBeamline);
@@ -640,6 +642,8 @@ public class TraceWinImporter implements TraceWinTags {
 			// @formatter:on
 			lastSubsystem = lastSubsystem + 1;
 			section.addComponent(esQuad);
+		} else if (line.startsWith(E_FIELD_MAP_PATH)) { 
+			bledComponentFactory.setFieldmapPath(values[1]);
 		} else if (line.startsWith(E_FIELD_MAP)) {
 			values = composeTableValues(values, 10, true);
 			// @formatter:off

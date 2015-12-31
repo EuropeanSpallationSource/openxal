@@ -165,6 +165,7 @@ public interface TraceWinTags {
 	public static final String E_EDGE_BENDING_MAGNET = "EDGE";
 	public static final String E_ELECTROSTATIC_ACCELERATION = "ELECTROSTA_ACC";
 	public static final String E_ELECTROSTATIC_QUADRUPOLE = "QUAD_ELE";
+	public static final String E_FIELD_MAP_PATH = "FIELD_MAP_PATH";
 	public static final String E_FIELD_MAP = "FIELD_MAP";
 	public static final String E_FUNNELING_GAP = "FUNNEL_GAP";
 	public static final String E_MULTIPOLE_FIELD_MAP = "MULTIPOLE";

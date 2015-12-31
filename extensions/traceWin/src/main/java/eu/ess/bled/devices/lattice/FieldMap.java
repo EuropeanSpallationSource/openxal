@@ -16,6 +16,7 @@ public class FieldMap extends BeamlineElement {
 	private Double spaceChargeCompensationFactor;
 	private Integer apertureFlag;
 	private String fileName;
+	private String basePath;
 
 	public Integer getGeom() {
 		return geom;
@@ -71,5 +72,13 @@ public class FieldMap extends BeamlineElement {
 
 	public void setFileName(String fileName) {
 		this.fileName = fileName;
+	}
+
+	public String getBasePath() {
+		return basePath;
+	}
+
+	public void setBasePath(String basePath) {
+		this.basePath = basePath;
 	}
 }

@@ -109,7 +109,9 @@ public class FieldProfile {
 	 * @throws URISyntaxException
 	 */
 	public void saveFile(String path) throws IOException, URISyntaxException {
-		PrintWriter pw = new PrintWriter(new FileWriter(new File(new URI(path))));
+		File fieldMapfile = new File(new URI(path));
+		fieldMapfile.getParentFile().mkdirs();
+		PrintWriter pw = new PrintWriter(new FileWriter(fieldMapfile));
 		double[] field = getField();
 		double zmax = getLength();
 		pw.printf("%d %f\n%f\n", field.length-1, zmax, 1.0);

@@ -1,5 +1,6 @@
 package eu.ess.lt.parser.openxal;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -51,7 +52,7 @@ public class OpenXalExporter {
 	public static final double beta_gamma_Er_by_e0_c = -0.08980392292066133;
 
 	private static List<String> expSections = Arrays.asList("lebt", "rfq", "mebt", "dtl", "spoke", "mb", "sbx", "hb",
-			"hebt");
+			"hebt", "cont", "dog-a2t");
 
 	private List<LatticeCommand> latticeCommands; // a list of all lattice
 													// comands
@@ -369,8 +370,7 @@ public class OpenXalExporter {
 	}
 
 	private AcceleratorNode exportFieldMap(final FieldMap element, double currentPosition) {
-		FieldProfile profile = FieldProfile.getInstance(OpenXalExporter.class.getResource(
-				"/" + element.getFileName() + ".edz").toString());
+		FieldProfile profile = FieldProfile.getInstance(element.getBasePath() + element.getFileName() + ".edz");
 		ApertureBucket aper =  generateApertureBucket(element);
 		return ESSElementFactory.createESSFieldMap(element.getName(), element.getLength(),
 				getFrequency(element) * 1e-6, element.getElectricIntensityFactor(), element.getRfPhase(), 

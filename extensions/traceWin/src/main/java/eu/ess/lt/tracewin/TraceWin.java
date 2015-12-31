@@ -72,7 +72,7 @@ public class TraceWin {
 		// Importing from TraceWin formated file
 		eu.ess.lt.parser.tracewin.TraceWinImporter importer = new TraceWinImporter();
 		BufferedReader br = new BufferedReader(new InputStreamReader(fileName.toURL().openStream()));
-		List<Subsystem> systems = importer.importFromTraceWin(br, new PrintWriter(System.err));
+		List<Subsystem> systems = importer.importFromTraceWin(br, new PrintWriter(System.err), new File(fileName).getParentFile().toURI().toString());
 		br.close();
 
 		// Exporting to openxal format
