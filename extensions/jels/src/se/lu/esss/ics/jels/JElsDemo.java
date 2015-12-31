@@ -65,13 +65,19 @@ public class JElsDemo {
 		
 		
 		// now load the sequence
-		if (comboSequence == null) {
+		if (comboSequence != null) {
+			sequence = accelerator.getComboSequence(comboSequence);
+			if (sequence == null) {
+				sequence = accelerator.getSequence(comboSequence);
+			}
+			if (sequence == null) {
+				System.err.println("No appropriate sequence with name: "+comboSequence);
+				return;
+			}
+		} else {			
 			sequence = accelerator.getComboSequences().get(0);
 			System.out.println("Selecting combo sequence "+sequence.getId());
-		} else {
-			sequence = accelerator.getComboSequence(comboSequence);
-		}
-		
+		}		
 		
 		// path to probe
 		if (args.length > argspos) {

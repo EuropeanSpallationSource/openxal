@@ -18,10 +18,14 @@ import xal.model.IProbe;
 import xal.model.ModelException;
 import xal.model.alg.Tracker;
 import xal.sim.scenario.LatticeElement;
+import xal.smf.attr.AlignmentBucket;
 import xal.tools.beam.IConstants;
 import xal.tools.beam.PhaseMap;
 import xal.tools.beam.PhaseMatrix;
+import xal.tools.beam.PhaseVector;
+import xal.tools.beam.PhaseMatrix.IND;
 import xal.tools.math.r3.R3;
+import xal.tools.math.r3.R3x3;
 
 
 
@@ -67,6 +71,7 @@ public abstract class Element implements IElement {
     /** This is the center position of the element with the lattice - CKA */
     private double      dblLatPos;
     
+    
     //sako closeElements (for fringe field calculations)
     /** 
      * This is a containger of nearest-neighbor elements used for computing
@@ -80,6 +85,9 @@ public abstract class Element implements IElement {
     private double aligny = 0.0;
     private double alignz = 0.0;
     
+    private double phix = 0.0;
+    private double phiy = 0.0;
+    private double phiz = 0.0;
     
   
     
@@ -180,7 +188,16 @@ public abstract class Element implements IElement {
         
     	setId( strElemId != null ? strElemId : strSmfId);
     	setHardwareNodeId(strSmfId);
-		setPosition(latticeElement.getCenter());
+		setPosition(latticeElement.getCenter());	
+		
+		AlignmentBucket alignmentBucket = latticeElement.getNode().getAlign(); 
+		setAlignX(alignmentBucket.getX());
+		setAlignY(alignmentBucket.getY());
+		setAlignZ(alignmentBucket.getZ());
+		
+		setPhiX(alignmentBucket.getPitch());
+		setPhiY(alignmentBucket.getYaw());
+		setPhiZ(alignmentBucket.getRoll());
 		
 //        // CKA: Added to include hardware ID attribute for the new element.
 //        //   This is bound to ScenarioGenerator#collectElements(). 
@@ -223,8 +240,7 @@ public abstract class Element implements IElement {
      */
     public void setPosition(double dblPos) {
         dblLatPos = dblPos;
-    }
-    
+    }    
     
     /**
      * Set the alignment parameters all at once.
@@ -259,6 +275,31 @@ public abstract class Element implements IElement {
     public double getAlignZ() {
         return alignz;
     }
+        
+	public double getPhiX() {
+		return phix;
+	}
+
+	public double getPhiY() {
+		return phiy;
+	}
+
+	public double getPhiZ() {
+		return phiz;
+	}
+
+	public void setPhiX(double phix) {
+		this.phix = phix;
+	}
+
+	public void setPhiY(double phiy) {
+		this.phiy = phiy;
+	}
+
+	public void setPhiZ(double phiz) {
+		this.phiz = phiz;
+	};
+
     
     /**
      * Add an element to the list of nearest neighbor elements used when
@@ -294,40 +335,61 @@ public abstract class Element implements IElement {
     
     
     /**
-     * Returns the given transfer matrix adjusted by the
-     * misalignment parameters of this element.
-     *
-     * @param matPhi    a transfer matrix
+     * <h2>Add Displacement Error to Transfer Matrix</h2>
+     * <p>
+     * Method to add the effects of a spatially displaced to the
+     * beamline element represented by the given 
+     * transfer matrix.  The returned matrix is the
+     * original transfer matrix conjugated by the displacement
+     * matrix representing the displacement vector <b>&Delta;r</b>
+     * <br/>
+     * <br/>
+     * &nbsp; <b>&Delta;r</b> &equiv; (<i>dx,dy,dz</i>).
+     * <br/>
+     * </p>
+     * <p>
+     * <strong>NOTES</strong>: (H. SAKO)
+     * <br/>
+     * &middot; added alignment error in sigma matrix
+     * </p>
      * 
-     * @return          the given transfer matrix modified to contain misalignment errors
-     *
-     * @author Christopher K. Allen
-     * @since  Apr 13, 2011
+     * @param   matPhi      transfer matrix <b>&Phi;</b> to be processed
+     * 
+     * @return  transfer matrix <b>&Phi;</b> after applying displacement
+     * 
+     * @author  Hiroyuki Sako
+     * @author  Christopher K. Allen
+     * 
+     * @see PhaseMatrix
+     * @see PhaseMatrix#translation(PhaseVector)
+     * 
+     * @since Feb 20, 2009, version 2
      */
     protected PhaseMatrix applyAlignError(PhaseMatrix matPhi) {
-
-        double delx = getAlignX();
-         double dely = getAlignY();
-         double delz = getAlignZ();
+    	double dx = getAlignX();
+        double dy = getAlignY();
+        double dz = getAlignZ();
          
-         if ((delx==0)&&(dely==0)&&(delz==0)) {
-             return matPhi; // do nothing
-         }
+        if ((dx != 0)||(dy != 0)||(dz !=0)) {
+             PhaseMatrix T  = PhaseMatrix.identity();
+             PhaseMatrix Ti = PhaseMatrix.identity();
+             
+             T.setElem(IND.X,IND.HOM, -dx);
+             T.setElem(IND.Y,IND.HOM, -dy);
+             T.setElem(IND.Z,IND.HOM, -dz);
+             
+             Ti.setElem(IND.X,IND.HOM, dx);
+             Ti.setElem(IND.Y,IND.HOM, dy);
+             Ti.setElem(IND.Z,IND.HOM, dz);
+             
+             PhaseMatrix matPhiDspl = Ti.times(matPhi).times(T);
+             
+             return matPhiDspl;
+             
+        } 
 
-         PhaseMatrix T = new PhaseMatrix();
-         
-         for (int i=0;i<7;i++) {
-             T.setElem(i,i,1);
-         }
-         
-         T.setElem(0,6,-delx);
-         T.setElem(2,6,-dely);
-         T.setElem(4,6,-delz);
-         PhaseMatrix Phidx = T.inverse().times(matPhi).times(T);
-
-         return Phidx;
-     }
-     
+        return matPhi;
+	}
      
     /**
      * <p>This method is intended to return the location of the probe within
@@ -648,6 +710,5 @@ public abstract class Element implements IElement {
         os.println("  element type       : " + this.getType() );
         os.println("  element UID        : " + this.getUID() );
         os.println("  element length     : " + this.getLength() );
-    };
-
-};
+    }
+}

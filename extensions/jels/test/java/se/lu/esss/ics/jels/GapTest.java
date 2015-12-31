@@ -22,14 +22,15 @@ public class GapTest extends SingleElementTest  {
 		super(data);
 	}
 
-	@Parameters
+	@Parameters(name = "Gap {index}: {0}")
 	public static Collection<Object[]> tests() {
 		final double frequency = 4.025e8, current = 0;
 		
 		List<Object []> tests = new ArrayList<>();
 		
-		// basic test, E=3MeV, Q=-16		
+		// 0: basic test, E=2.5MeV		
 		tests.add(new Object[] {new SingleElementTestData() {{
+			description = "basic test, f=-80";
 			probe = setupOpenXALProbe( 2.5e6, frequency, current); 
 			elementMapping = JElsElementMapping.getInstance();
 			// GAP 78019.7 -80 14.5 0 0 0 0 0 0 0
@@ -59,11 +60,14 @@ public class GapTest extends SingleElementTest  {
 			// ELS results
 			elsPosition = 0.000000E+00;
 			elsSigma = new double[] {8.001089E-04, 1.018977E-03, 1.753257E-03};
-			elsBeta = new double [] {2.442000E-01, 3.974000E-01, 8.628735E-01};			
+			elsBeta = new double [] {2.442000E-01, 3.974000E-01, 8.628735E-01};
+			
+			ELSerrTolerance = 1e-1;
 		}}});
 	
-		
+		// 1: basic test, f=-80, E=2.5GeV
 		tests.add(new Object[] {new SingleElementTestData() {{
+			description = "basic test, f=-80";
 			probe = setupOpenXALProbe( 2.5e9, frequency, current); 
 			elementMapping = JElsElementMapping.getInstance();
 			// GAP 78019.7 -80 14.5 0 0 0 0 0 0 0
@@ -91,7 +95,9 @@ public class GapTest extends SingleElementTest  {
 			};
 		}}});	
 		
+		// 2: basic test f=-80, E=200keV
 		tests.add(new Object[] {new SingleElementTestData() {{
+			description = "basic test, f=-80";
 			probe = setupOpenXALProbe(  0.2e6, frequency, current); 
 			elementMapping = JElsElementMapping.getInstance();
 			// GAP 78019.7 -80 14.5 0 0 0 0 0 0 0
@@ -119,8 +125,9 @@ public class GapTest extends SingleElementTest  {
 			};
 		}}});
 		
-		
+		// 3: TTF test f=-35, E=2.5MeV
 		tests.add(new Object[] {new SingleElementTestData() {{
+			description = "TTF test, f=-35";
 			probe = setupOpenXALProbe(2.5e6, frequency, current); 
 			elementMapping = JElsElementMapping.getInstance();
 			// GAP 78019.7 -35 14.5 0 0.0805777 0.772147 -0.386355 -0.142834 0 0 
@@ -150,10 +157,16 @@ public class GapTest extends SingleElementTest  {
 			// ELS results
 			elsPosition = 0.000000E+00;
 			elsSigma = new double[] {8.001089E-04, 1.018977E-03, 1.753257E-03};
-			elsBeta = new double [] {2.442000E-01, 3.974000E-01, 8.628735E-01};				
+			elsBeta = new double [] {2.442000E-01, 3.974000E-01, 8.628735E-01};
+			
+			ELSerrTolerance = 1e-1;
+			TMerrTolerance = 1e-2;
+			CMerrTolerance = 1e-2;
 		}}});
 		
+		// 4: TTF test f=-35, E=2.5GeV
 		tests.add(new Object[] {new SingleElementTestData() {{
+			description = "TTF test, f=-35";
 			probe = setupOpenXALProbe(2.5e9, frequency, current); 
 			elementMapping = JElsElementMapping.getInstance();
 			// GAP 78019.7 -35 14.5 0 0.0805777 0.772147 -0.386355 -0.142834 0 0 
@@ -180,8 +193,10 @@ public class GapTest extends SingleElementTest  {
 					{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +4.272263e-14, +1.599423e-12}, 
 			};	
 		}}});
-		
+
+		// 5: TTF test f=-35, E=200keV
 		tests.add(new Object[] {new SingleElementTestData() {{
+			description = "TTF test, f=-35";
 			probe = setupOpenXALProbe(0.2e6, frequency, current); 
 			elementMapping = JElsElementMapping.getInstance();
 			// GAP 78019.7 -35 14.5 0 0.0805777 0.772147 -0.386355 -0.142834 0 0 
@@ -206,12 +221,16 @@ public class GapTest extends SingleElementTest  {
 					{+0.000000e+00, +0.000000e+00, -1.820628e-10, +3.645712e-09, +0.000000e+00, +0.000000e+00}, 
 					{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +1.198528e-11, +7.444642e-10}, 
 					{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +7.444642e-10, +4.626513e-08}, 
-			};	
+			};
+			
+			TMerrTolerance = 1e-2;
+			CMerrTolerance = 1e-2;
 		}}});
 		
 		
-		// spacecharge test, E=2.5MeV, Q=-16		
+		// 6: spacecharge test, E=2.5MeV		
 		tests.add(new Object[] {new SingleElementTestData() {{
+			description = "spacechage test, f=-80";
 			probe = setupOpenXALProbe2( 2.5e6, frequency, 30.0e-3); 
 			elementMapping = JElsElementMapping.getInstance();
 			// GAP 78019.7 -80 14.5 0 0 0 0 0 0 0
@@ -241,9 +260,147 @@ public class GapTest extends SingleElementTest  {
 			
 		}}});
 		
+		// 7: misalignment dx, E=2.5MeV		
+		tests.add(new Object[] {new SingleElementTestData() {{
+			description = "misalignment dx";
+			probe = setupOpenXALProbe( 2.5e6, frequency, current); 
+			elementMapping = JElsElementMapping.getInstance();
+			// GAP 78019.7 -80 14.5 0 0 0 0 0 0 0
+			sequence = gap(4.025e8, 78019.7, -80, 14.5, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0);
+			
+			// TW transfer matrix
+			TWTransferMatrix = new double[][]{ 
+					{+9.986471e-01, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00}, 
+					{+8.813454e-01, +9.986471e-01, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, +9.986471e-01, +0.000000e+00, +0.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, +8.813454e-01, +9.986471e-01, +0.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +1.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, -1.772122e+00, +9.972978e-01}, 
+			};
+			
+			// TW correlation matrix
+			TWGamma = 1.002678848; 
+			TWCorrelationMatrix = new double[][] 
+					{{+6.994725e-13, +1.122296e-12, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00}, 
+					{+1.122296e-12, +1.353021e-11, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, +1.134492e-12, +1.928183e-12, +0.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, +1.928183e-12, +1.046080e-11, +0.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +3.371330e-12, -3.918053e-12}, 
+					{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, -3.918053e-12, +9.047444e-12}, 
+				};
+			
+			 TWMean = new double[] {0.00135294, -0.881345, 0, 0, 0, 0 };
+
+			 TMerrTolerance = 1e-2;
+		}}});
+	
+		// 8: misalignment dy
+		tests.add(new Object[] {new SingleElementTestData() {{
+			description = "misalignment dy";
+			probe = setupOpenXALProbe( 2.5e6, frequency, current); 
+			elementMapping = JElsElementMapping.getInstance();
+			// GAP 78019.7 -80 14.5 0 0 0 0 0 0 0
+			sequence = gap(4.025e8, 78019.7, -80, 14.5, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0);
+			
+			// TW transfer matrix
+			TWTransferMatrix = new double[][]{ 
+					{+9.986471e-01, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00}, 
+					{+8.813454e-01, +9.986471e-01, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, +9.986471e-01, +0.000000e+00, +0.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, +8.813454e-01, +9.986471e-01, +0.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +1.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, -1.772122e+00, +9.972978e-01}, 
+			};
+			
+			// TW correlation matrix
+			TWGamma = 1.002678848; 
+			TWCorrelationMatrix = new double[][] 
+					{{+6.994725e-13, +1.122296e-12, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00}, 
+					{+1.122296e-12, +1.353021e-11, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, +1.134492e-12, +1.928183e-12, +0.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, +1.928183e-12, +1.046080e-11, +0.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +3.371330e-12, -3.918053e-12}, 
+					{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, -3.918053e-12, +9.047444e-12}, 
+				};
+			
+			TWMean = new double[] {0,0, 0.00135294, -0.881345, 0, 0 };
+		}}});
+		
+		// 9: rotation
+		tests.add(new Object[] {new SingleElementTestData() {{
+			description = "rotation";
+			probe = setupOpenXALProbe( 2.5e6, frequency, current); 
+			elementMapping = JElsElementMapping.getInstance();
+			// GAP 78019.7 -80 14.5 0 0 0 0 0 0 0
+			sequence = gap(4.025e8, 78019.7, -80, 14.5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0);
+			
+			// TW transfer matrix
+			TWTransferMatrix = new double[][]{ 
+					{+9.986471e-01, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00}, 
+					{+8.813454e-01, +9.986471e-01, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, +9.986471e-01, +0.000000e+00, +0.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, +8.813454e-01, +9.986471e-01, +0.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +1.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, -1.772122e+00, +9.972978e-01}, 
+			};
+			
+			// TW correlation matrix
+			TWGamma = 1.002678848; 
+			TWCorrelationMatrix = new double[][] 
+					{{+6.994725e-13, +1.122296e-12, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00}, 
+					{+1.122296e-12, +1.353021e-11, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, +1.134492e-12, +1.928183e-12, +0.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, +1.928183e-12, +1.046080e-11, +0.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +3.371330e-12, -3.918053e-12}, 
+					{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, -3.918053e-12, +9.047444e-12}, 
+				};
+			
+			TWMean = new double[] {0,0.0236132, 0,0,0,0 };									
+		}}});
+
+		// 10: mislignment & rotation
+		tests.add(new Object[] {new SingleElementTestData() {{
+			description = "misalignment & rotation";
+			probe = setupOpenXALProbe( 2.5e6, frequency, current); 
+			elementMapping = JElsElementMapping.getInstance();
+			// GAP 78019.7 -80 14.5 0 0 0 0 0 0 0
+			sequence = gap(4.025e8, 78019.7, -80, 14.5, 0, 0, 0, 0, 0, 0, 0, 1., 2., 0, 3., 4.);
+			
+			// TW transfer matrix
+			TWTransferMatrix = new double[][]{ 
+					{+9.986471e-01, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00}, 
+					{+8.813454e-01, +9.986471e-01, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, +9.986471e-01, +0.000000e+00, +0.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, +8.813454e-01, +9.986471e-01, +0.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +1.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, -1.772122e+00, +9.972978e-01}, 
+			};
+			
+			// TW correlation matrix
+			TWGamma = 1.002678848; 
+			TWCorrelationMatrix = new double[][] 
+					{{+6.994725e-13, +1.122296e-12, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00}, 
+					{+1.122296e-12, +1.353021e-11, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, +1.134492e-12, +1.928183e-12, +0.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, +1.928183e-12, +1.046080e-11, +0.000000e+00, +0.000000e+00}, 
+					{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +3.371330e-12, -3.918053e-12}, 
+					{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, -3.918053e-12, +9.047444e-12}, 
+				};
+			
+			 TWMean = new double[] { 0.00135294, -0.810506, 0.00270588, -1.66824, 0, 0 };
+		}}});
+		
+		
 		return tests;
 	}
 
+	
+	public static AcceleratorSeq gap(double frequency, double E0TL, double Phis, double R, double p, double betas, double Ts, double kTs, double k2Ts, double kS, double k2S)
+	{
+		
+		return gap(frequency, E0TL, Phis, R, p, betas, Ts, kTs, k2Ts, kS, k2S, 0, 0, 0, 0, 0);
+	}
+	
 	/**
 	 * 
 	 * @param frequency
@@ -259,7 +416,7 @@ public class GapTest extends SingleElementTest  {
 	 * @param k2S
 	 * @return
 	 */
-	public static AcceleratorSeq gap(double frequency, double E0TL, double Phis, double R, double p, double betas, double Ts, double kTs, double k2Ts, double kS, double k2S)
+	public static AcceleratorSeq gap(double frequency, double E0TL, double Phis, double R, double p, double betas, double Ts, double kTs, double k2Ts, double kS, double k2S, double dx, double dy, double dz, double fx, double fy)
 	{
 		AcceleratorSeq sequence = new AcceleratorSeq("GapTest");
 		
@@ -267,6 +424,11 @@ public class GapTest extends SingleElementTest  {
 
 		// FIXME position == 0?
 		RfGap gap = ElementFactory.createRfGap("g", true, 1, new ApertureBucket(), length, 0);
+		gap.getAlign().setX(dx*1e-3);
+		gap.getAlign().setY(dy*1e-3);
+		gap.getAlign().setZ(dz*1e-3);
+		gap.getAlign().setPitch(fx*Math.PI/180);
+		gap.getAlign().setYaw(fy*Math.PI/180);
 		// FIXME position == 0?
 		ESSRfCavity cavity = ESSElementFactory.createESSRfCavity("c", 0, gap, Phis, E0TL*1e-6/length, frequency*1e-6, 0);
 		

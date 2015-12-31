@@ -373,6 +373,9 @@ public class IdealRfGap extends ThinElement implements IRfGap {
     	probe.setLastGapPhase(Phis + deltaPhi);
     	probe.setLastGapPosition(probe.getPosition() + gapOffset);
     	matPhi.setElem(6,6,1);
+    	
+    	matPhi = applyErrors(matPhi);
+    	
         return new PhaseMap(matPhi);
     }
     
