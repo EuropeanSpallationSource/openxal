@@ -12,7 +12,8 @@ import xal.XalException;
  * Static class that provides a simple interface to start a RBAC Single Sign On (SSO) server if it is not already 
  * running on the machine. SSO server is provided as a binary jar file build from ESS RBAC distribution.
  * 
- * @author Blaz Kranjc
+ * @version 0.1 4 Jan 2016
+ * @author Blaz Kranjc <blaz.kranjc@cosylab.com>
  */
 public class SingleSignOnServerManager {
 
