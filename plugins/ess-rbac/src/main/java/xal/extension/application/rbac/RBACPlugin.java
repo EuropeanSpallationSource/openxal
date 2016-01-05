@@ -1,5 +1,6 @@
 package xal.extension.application.rbac;
 
+import xal.XalException;
 import xal.plugins.essrbac.EssRbacLogin;
 import xal.rbac.RBACLogin;
 
@@ -18,8 +19,12 @@ public class RBACPlugin {
      * @return instance of {@link EssRbacLogin}
      */
     public static RBACLogin getRBACLoginInstance() {
+        try {
+            SingleSignOnServerManager.startSSO();
+        } catch (XalException e) {
+            System.err.println("SSO server couldn't be started: " + e.getMessage());
+        }
         return new EssRbacLogin();
-
     }
 
 }
