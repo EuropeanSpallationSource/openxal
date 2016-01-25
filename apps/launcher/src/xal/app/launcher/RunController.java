@@ -13,11 +13,8 @@ import xal.extension.widgets.swing.KeyValueFilteredTableModel;
 
 import java.awt.Point;
 import java.awt.event.*;
-import java.io.File;
 import java.util.*;
 import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.table.*;
 
 
 /** Controller for synchronizing the application view to the model */
@@ -26,7 +23,7 @@ public class RunController {
 	final private LaunchModel MODEL;
 	
 	/** file watcher */
-	final private FileWatcher FILE_WATCHER;
+	//final private FileWatcher FILE_WATCHER; //TODO YIL never used
 	
 	/** table of applications that can be run */
 	final private JTable APP_TABLE;
@@ -41,7 +38,7 @@ public class RunController {
 	/** Constructor */
 	public RunController( final LaunchModel model, final WindowReference windowReference ) {
 		MODEL = model;
-		FILE_WATCHER = model.getFileWatcher();
+		//FILE_WATCHER = model.getFileWatcher(); //TODO YIL never used
 		
 		final JButton appFilterClearButton = (JButton)windowReference.getView( "AppFilterClearButton" );
 		appFilterClearButton.addActionListener( clearFilterAction() );

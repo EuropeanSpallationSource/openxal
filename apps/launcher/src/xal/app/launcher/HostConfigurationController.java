@@ -8,13 +8,11 @@
 
 package xal.app.launcher;
 
-import xal.extension.application.*;
 import xal.extension.bricks.WindowReference;
 import xal.extension.widgets.swing.KeyValueTableModel;
 import xal.tools.data.KeyValueRecordListener;
 
 import javax.swing.*;
-import javax.swing.event.*;
 import javax.swing.table.*;
 import java.awt.event.*;
 import java.util.*;
@@ -23,7 +21,7 @@ import java.util.*;
 /** controller of the host configuration */
 public class HostConfigurationController {
 	/** host configuration dialog */
-	final private WindowReference WINDOW_REFERENCE;
+	//final private WindowReference WINDOW_REFERENCE; //TODO YIL never used
 	
 	/** table model for setting host settings */
 	final private HostSettingsTableModel HOST_SETTINGS_TABLE_MODEL;
@@ -46,7 +44,7 @@ public class HostConfigurationController {
 	
 	/** Constructor */
 	public HostConfigurationController( final LaunchModel model, final WindowReference windowReference ) {
-		WINDOW_REFERENCE = windowReference;
+		//WINDOW_REFERENCE = windowReference;
 		
 		MODEL = model;
 		
@@ -71,7 +69,7 @@ public class HostConfigurationController {
 
 		final JButton deleteHostCommandButton = (JButton)windowReference.getView( "DeleteHostCommandButton" );
 		deleteHostCommandButton.addActionListener( new ActionListener() {
-			private static final long serialVersionUID = 1L;
+			//private static final long serialVersionUID = 1L; //TODO YIL never used
 
 			public void actionPerformed( final ActionEvent event ) {
 				final int[] selectedRows = HOST_COMMAND_TABLE.getSelectedRows();
@@ -88,7 +86,7 @@ public class HostConfigurationController {
 
 		final JButton addHostCommandButton = (JButton)windowReference.getView( "AddHostCommandButton" );
 		addHostCommandButton.addActionListener( new ActionListener() {
-			private static final long serialVersionUID = 1L;
+			//private static final long serialVersionUID = 1L; //TODO YIL never used
 
 			public void actionPerformed( final ActionEvent event ) {
 				final int selectedRow = HOST_COMMAND_TABLE.getSelectedRow();

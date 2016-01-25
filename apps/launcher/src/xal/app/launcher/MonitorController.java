@@ -23,7 +23,7 @@ import xal.tools.UpdateListener;
 /** MonitorController */
 public class MonitorController implements MonitorModelListener, UpdateListener {
 	/** The main model of this document */
-	final private LaunchModel LAUNCH_MODEL;
+	//final private LaunchModel LAUNCH_MODEL; //TODO YIL never used
 
 	/** model for monitoring remote applications */
 	final private MonitorModel MONITOR_MODEL;
@@ -43,7 +43,7 @@ public class MonitorController implements MonitorModelListener, UpdateListener {
 
 	/** Constructor */
 	public MonitorController( final LaunchModel launchModel, final WindowReference windowReference ) {
-		LAUNCH_MODEL = launchModel;
+		//LAUNCH_MODEL = launchModel; //TODO YIL never used
 
 		MONITOR_MODEL = new MonitorModel();
 		MONITOR_MODEL.addMonitorModelListener( this );

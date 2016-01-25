@@ -19,7 +19,7 @@ import javax.swing.*;
 /** manage the File Watcher interface */
 public class FileWatcherController {
 	/** The main model of this document */
-	final private LaunchModel MODEL;
+	// final private LaunchModel MODEL; //TODO YIL never used
 	
 	/** file watcher */
 	final private FileWatcher FILE_WATCHER;
@@ -34,7 +34,7 @@ public class FileWatcherController {
 	/** Constructor */
 	@SuppressWarnings( "unchecked" )		// need to cast JList to appropriate element type
 	public FileWatcherController( final LaunchModel model, final WindowReference windowReference ) {
-		MODEL = model;
+		//MODEL = model;
 		FILE_WATCHER = model.getFileWatcher();
 		
 		FOLDER_CHOOSER = new JFileChooser();
@@ -54,7 +54,6 @@ public class FileWatcherController {
 	
 	
 	/** refresh the view with the model data */
-	@SuppressWarnings( "unchecked" )		// TODO: JList supports generics in Java 7 or later
 	private void refreshView() {
 		final List<File> folders = FILE_WATCHER.getFolders();
 		WATCH_FOLDER_LIST.setListData( new Vector<File>( folders ) );
