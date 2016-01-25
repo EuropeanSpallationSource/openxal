@@ -69,7 +69,6 @@ import xal.service.pvlogger.sim.PVLoggerDataSource;
 import xal.sim.scenario.AlgorithmFactory;
 import xal.sim.scenario.ProbeFactory;
 import xal.sim.scenario.Scenario;
-import xal.smf.AcceleratorNode;
 import xal.smf.AcceleratorSeq;
 import xal.smf.AcceleratorSeqCombo;
 import xal.smf.NoSuchChannelException;
@@ -185,7 +184,7 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
     
 	private volatile boolean vaRunning = false;
 	// add by liyong
-	private java.util.List<AcceleratorNode> nodes;     // TODO: CKA - NEVER USED
+	//private java.util.List<AcceleratorNode> nodes;     // TODO: CKA - NEVER USED
 	private java.util.List<RfCavity> rfCavities;
     
 	private java.util.List<Electromagnet> mags;
@@ -1133,9 +1132,9 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 		// for BPMs
         for ( final BPM bpm : bpms ) {
 			final Channel bpmXAvgChannel = bpm.getChannel( BPM.X_AVG_HANDLE );
-			final Channel bpmXTBTChannel = bpm.getChannel( BPM.X_TBT_HANDLE );   // TODO: CKA - NEVER USED
+			//final Channel bpmXTBTChannel = bpm.getChannel( BPM.X_TBT_HANDLE );   // TODO: CKA - NEVER USED
 			final Channel bpmYAvgChannel = bpm.getChannel( BPM.Y_AVG_HANDLE );
-            final Channel bpmYTBTChannel = bpm.getChannel( BPM.Y_TBT_HANDLE );  // TODO: CKA - NEVER USED
+            //final Channel bpmYTBTChannel = bpm.getChannel( BPM.Y_TBT_HANDLE );  // TODO: CKA - NEVER USED
 			final Channel bpmAmpAvgChannel = bpm.getChannel( BPM.AMP_AVG_HANDLE );
             
 			try {
@@ -1423,7 +1422,7 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 				exception.printStackTrace();
 			}
 			/**get all nodes(add by liyong) */
-			nodes = getSelectedSequence().getAllNodes();
+			//nodes = getSelectedSequence().getAllNodes();
 			
 
 			
@@ -1432,7 +1431,7 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
             mags = getSelectedSequence().<Electromagnet>getAllNodesWithQualifier( typeQualifier );
 			
 			// get all the rf cavities
-			typeQualifier = typeQualifier = QualifierFactory.qualifierWithStatusAndTypes( true, RfCavity.s_strType );  // TODO: CKA - No Effect
+			typeQualifier = QualifierFactory.qualifierWithStatusAndTypes( true, RfCavity.s_strType );  // TODO: CKA - No Effect
 			rfCavities = getSelectedSequence().getAllInclusiveNodesWithQualifier( typeQualifier );
 			
 			// get all the BPMs

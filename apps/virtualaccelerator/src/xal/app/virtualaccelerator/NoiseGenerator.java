@@ -9,9 +9,6 @@
 
 package xal.app.virtualaccelerator;
 
-import xal.ca.Channel;
-import xal.ca.ConnectionException;
-import xal.ca.GetException;
 
 /**
  * NoiseGenerator generates noise for readback PVs 
