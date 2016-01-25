@@ -1,8 +1,5 @@
 package xal.app.mtv;
 
-import javax.swing.*;
-import javax.swing.event.*;
-import java.awt.event.*;
 import java.net.*;
 import java.io.*;
 
@@ -43,11 +40,10 @@ public class Main extends ApplicationAdaptor {
  
     /** this returns a new document to start working with  */ 
     public XalDocument newEmptyDocument() {
-      MTVDocument md;
 
 	// even if url == null, use it. A default accelerator will be created.
 
-	return md = new MTVDocument(url);
+	return new MTVDocument(url);
     }
         
     public XalDocument newDocument(java.net.URL theUrl) {

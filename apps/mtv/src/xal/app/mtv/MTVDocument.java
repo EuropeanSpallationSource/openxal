@@ -7,13 +7,10 @@
 package xal.app.mtv;
 
 import java.net.*;
-import javax.swing.*;
-import java.awt.event.*;
 import java.util.*;
 
 import xal.extension.application.*;
 import xal.extension.application.smf.*;
-import xal.smf.*;
 
 /**
  * MyDocument the managing unit for objecs used by an xio instance

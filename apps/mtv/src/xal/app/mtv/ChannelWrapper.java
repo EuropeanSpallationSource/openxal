@@ -10,7 +10,6 @@ package xal.app.mtv;
 
 import xal.ca.*;
 
-import java.util.*;
 import java.awt.event.*;
 
 public class ChannelWrapper implements IEventSinkValue, ConnectionListener {

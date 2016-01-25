@@ -6,10 +6,7 @@
 
 package xal.app.mtv;
 
-import java.awt.*;
-import java.util.*;
 import javax.swing.table.*;
-import java.text.*;
 
 /** class to handle the display analysis control variable info table */
 public class MagnetTableModel  extends AbstractTableModel {
@@ -27,7 +24,8 @@ public class MagnetTableModel  extends AbstractTableModel {
 	// ---Constructor -//
 	
 	/** number or rows == number of variables */
-	private int nTableRows;
+	// YIL edit: unused
+	//private int nTableRows;
 	
 	public MagnetTableModel (MagnetPanel mp) {
 		magPanel = mp;

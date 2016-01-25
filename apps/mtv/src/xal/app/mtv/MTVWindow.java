@@ -8,12 +8,8 @@ package xal.app.mtv;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
 
-import xal.extension.application.*;
 import xal.extension.application.smf.*;
-import xal.smf.*;
 
 /**
 * The window representation / view of an xiodiag document

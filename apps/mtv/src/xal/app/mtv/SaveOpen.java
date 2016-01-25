@@ -1,6 +1,5 @@
 package xal.app.mtv;
 
-import xal.tools.StringJoiner;
 import xal.tools.data.DataAdaptor;
 import xal.tools.xml.XmlDataAdaptor;
 import xal.smf.AcceleratorSeqCombo;
@@ -24,10 +23,8 @@ public class SaveOpen {
     /** The mtv documentto deal with */
     private final MTVDocument theDoc;
 
-    private XmlDataAdaptor xdaRead, xdaWrite;
-    
-    private final String stringValue = "";
-    private final StringJoiner joiner = new StringJoiner(",");   
+    private XmlDataAdaptor xdaWrite;
+
     /** constructor:
      * @param doc the XyPlot object
      */

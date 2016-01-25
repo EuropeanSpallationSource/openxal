@@ -9,12 +9,9 @@ package xal.app.mtv;
 import javax.swing.*;
 import java.beans.*;
 import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
 
 import xal.extension.widgets.swing.Wheelswitch;
 
-import xal.ca.*;
 import xal.tools.text.ScientificNumberFormat;
 
 /**
@@ -26,7 +23,6 @@ public class WheelPanel extends JPanel {
     /** serialization identifier */
     private static final long serialVersionUID = 1L;
     
-    private MTVDocument theDoc;
     private JLabel pvLabel, upperLabel, lowerLabel, restoreLabel;
     protected Wheelswitch pvWheel;
 		private JRadioButton bindBBookButton = new JRadioButton("Bind to B_Book"); 
@@ -41,7 +37,6 @@ public class WheelPanel extends JPanel {
 		
     /** Creates a new instance of MainWindow */
     public WheelPanel(MTVDocument aDocument) {
-			theDoc = aDocument;
 			makeContent();
 			updateWheelListener();
     }

@@ -2,9 +2,6 @@
 
 package xal.app.mtv;
 
-import javax.swing.JTable;
-import javax.swing.table.TableModel;
-import java.text.*;
 import java.awt.event.*;
 
 import xal.ca.*;

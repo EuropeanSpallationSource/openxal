@@ -10,12 +10,7 @@ import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
-import javax.swing.Timer;
 
-import xal.extension.application.*;
-import xal.extension.application.smf.*;
-import xal.smf.*;
-import xal.smf.impl.*;
 
 import xal.ca.*;
 
@@ -59,7 +54,6 @@ public class PVsPanel extends JPanel {
 					Channel chan = ChannelFactory.defaultFactory().getChannel(chanName);
 					chan.connectAndWait();
 					try{
-						double[] valArr = chan.getArrDbl();
 						PVTableCell cell = getNewCell(chan);
 						PVs.add(cell);
 						updatePVsTable();	
