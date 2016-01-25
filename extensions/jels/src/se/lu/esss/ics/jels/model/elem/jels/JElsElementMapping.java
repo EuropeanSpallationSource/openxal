@@ -28,6 +28,7 @@ public class JElsElementMapping extends ElementMapping {
 
 	public JElsElementMapping() {
 		initialize();
+		bolSubsectionCtrOrigin = false;
 	}
 	
 	/**
