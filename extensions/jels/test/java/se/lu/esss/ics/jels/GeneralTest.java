@@ -118,7 +118,7 @@ public class GeneralTest {
 		double dataTW[][] = loadTWData(tracewinData);
         double dataOX[][] = run(probe, seq);
         
-        //saveResults(tracewinData.getFile() + ".out", dataOX);
+        //saveResults(tracewinData.getFile() + ".out", dataOX, probe.getTrajectory());
         
         System.out.printf("%s\t", probe.getComment());
         Column[] allCols = Column.values();
@@ -142,12 +142,16 @@ public class GeneralTest {
 		System.gc();
 	}
 	
-	
 	protected static void saveResults(String file, double[][] data) throws FileNotFoundException {
+		saveResults(file, data, null);
+	}
+	
+	protected static void saveResults(String file, double[][] data, Trajectory t) throws FileNotFoundException {
 		Formatter f = new Formatter(file);
 		for (int i=0; i<data[0].length; i++) {
 			for (int j=0; j<data.length; j++)
 				f.format(Locale.getDefault(), "%E\t", data[j][i]);
+			if (t!=null && t.stateAtPosition(data[0][i]) != null) f.format(Locale.getDefault(), "%s\t", t.stateAtPosition(data[0][i]).getElementId());
 			f.format(Locale.getDefault(), "\n");
 		}
 		f.close();
