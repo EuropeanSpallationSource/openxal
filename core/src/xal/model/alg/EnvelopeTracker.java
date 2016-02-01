@@ -17,6 +17,7 @@ import xal.model.IProbe;
 import xal.model.ModelException;
 import xal.model.elem.ChargeExchangeFoil;
 import xal.model.elem.IdealRfGap;
+import xal.model.elem.IdealRfGapUpgraded;
 import xal.model.probe.EnvelopeProbe;
 import xal.model.probe.traj.EnvelopeProbeState;
 import xal.tools.beam.CovarianceMatrix;
@@ -336,8 +337,10 @@ public class EnvelopeTracker extends EnvelopeTrackerBase {
         
         
         // Check for exceptional circumstance and modify transfer matrix accordingly
-        if (this.getEmittanceGrowth() && ifcElem instanceof IdealRfGap) {
+        if (this.getEmittanceGrowth() && ifcElem instanceof IdealRfGap) {  // use this part for IdealRfGaps
             IdealRfGap elemRfGap = (IdealRfGap)ifcElem;
+//        if (this.getEmittanceGrowth() && ifcElem instanceof IdealRfGapUpgraded) {
+//            IdealRfGap elemRfGap = (IdealRfGap)ifcElem;
             double      dphi     = this.effPhaseSpread(probe, elemRfGap);
             
             matPhi = this.modTransferMatrixForEmitGrowth(dphi, matPhi);

@@ -47,7 +47,7 @@ import xal.tools.beam.PhaseVector;
  *  <p>
  *  Homogeneous coordinates are parameterizations of the projective spaces <b>P</b><sup><i>n</i></sup>.
  *  They are
- *  useful here to allow vector transpositions, normally produced by vector addition, to 
+ *  useful here to allow vector translations, normally produced by vector addition, to 
  *  be represented as matrix multiplications.  These operations can be embodied by 
  *  <code>PhaseMatrix</code>.  Thus, <code>PhaseMatrix</code> objects can represent any 
  *  linear operation, including translation, on <code>PhaseVector</code> objects.
@@ -61,13 +61,6 @@ import xal.tools.beam.PhaseVector;
  *  @see    SquareMatrix
  *  @see    PhaseVector
  *  @see    CovarianceMatrix
- */
-/**
- * Class <code></code>.
- *
- *
- * @author Christopher K. Allen
- * @since  Oct 16, 2013
  */
 public class PhaseMatrix extends SquareMatrix<PhaseMatrix> implements java.io.Serializable {
 
@@ -245,9 +238,14 @@ public class PhaseMatrix extends SquareMatrix<PhaseMatrix> implements java.io.Se
      *  @return         7x7 real identity matrix
      */
     public static PhaseMatrix  identity()   {
-        PhaseMatrix matIden = new PhaseMatrix();
-        matIden.assignIdentity();
-        matIden.setElem(IND.HOM, IND.HOM, 1.0);
+//        PhaseMatrix matIden = new PhaseMatrix();
+//        matIden.assignIdentity();
+//        matIden.setElem(IND.HOM, IND.HOM, 1.0);
+        double[][]  arrInternal = new double[INT_SIZE][INT_SIZE];
+        for (int i=0; i<INT_SIZE; i++)
+            arrInternal[i][i] = 1.0;
+        
+        PhaseMatrix matIden = new PhaseMatrix( arrInternal );
         return matIden;
     }
     
@@ -433,6 +431,24 @@ public class PhaseMatrix extends SquareMatrix<PhaseMatrix> implements java.io.Se
         throws IllegalArgumentException, NumberFormatException
     {
         return new PhaseMatrix(strTokens);
+    }
+    
+    /**
+     * Create a new <code>PhaseMatrix</code> object and initialize with the data 
+     * source behind the given <code>DataAdaptor</code> interface.
+     * 
+     * @param   daSource    data source containing initialization data
+     * 
+     * @throws DataFormatException      malformed data
+     * 
+     * @see xal.tools.data.IArchive#load(xal.tools.data.DataAdaptor)
+     *
+     * @since  Jan 4, 2016,   Christopher K. Allen
+     */
+    public static PhaseMatrix   loadFrom(DataAdaptor daSource) throws DataFormatException {
+        PhaseMatrix     matNew = new PhaseMatrix(daSource);
+        
+        return matNew;
     }
     
     
@@ -630,7 +646,7 @@ public class PhaseMatrix extends SquareMatrix<PhaseMatrix> implements java.io.Se
      * @since  Oct 7, 2013
      */
     public PhaseMatrix(double[][] arrValues) throws ArrayIndexOutOfBoundsException {
-        super(INT_SIZE, arrValues);
+        super(arrValues);
         this.setElem(IND.HOM, IND.HOM, 1.0);
     }
     
