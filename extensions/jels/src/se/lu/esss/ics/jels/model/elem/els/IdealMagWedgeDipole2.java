@@ -8,7 +8,6 @@ package se.lu.esss.ics.jels.model.elem.els;
 
 import se.lu.esss.ics.jels.smf.impl.ESSBend;
 import xal.model.elem.ElectromagnetSeq;
-import xal.model.elem.IdealMagDipoleFace;
 import xal.sim.scenario.LatticeElement;
 import xal.tools.math.r3.R3;
 
@@ -562,8 +561,8 @@ public class IdealMagWedgeDipole2 extends ElectromagnetSeq {
 	public void initializeFrom(LatticeElement element) {
 		super.initializeFrom(element);
 		
-		ESSBend magnet = (ESSBend) element.getNode();
-		setPosition(element.getCenter(), element.getLength());
+		ESSBend magnet = (ESSBend) element.getHardwareNode();
+		setPosition(element.getCenterPosition(), element.getLength());
 
 		// First retrieve all the physical parameters for a bending dipole				
 		double len_sect = element.getLength();		

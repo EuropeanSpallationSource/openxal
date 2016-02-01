@@ -115,7 +115,7 @@ public class FakeElement extends ThickElement {
     @Override
 	public void initializeFrom(LatticeElement latticeElement) { 
     	super.initializeFrom(latticeElement);
-    	ESSFieldMap fm = (ESSFieldMap)latticeElement.getNode();
+    	ESSFieldMap fm = (ESSFieldMap)latticeElement.getHardwareNode();
 		this.phase = fm.getPhase();
 		this.xelmax = fm.getXelmax();
 		this.frequency = fm.getFrequency();

@@ -1,11 +1,11 @@
 package se.lu.esss.ics.jels.tools.math;
 
-import xal.tools.math.poly.UnivariateRealPolynomial;
+import xal.tools.math.fnc.poly.RealUnivariatePolynomial;
 
-public class MeanFieldPolynomial extends UnivariateRealPolynomial {	
-	private UnivariateRealPolynomial TTF, TTFPrime, STF, STFPrime;
+public class MeanFieldPolynomial extends RealUnivariatePolynomial {	
+	private RealUnivariatePolynomial TTF, TTFPrime, STF, STFPrime;
 	
-	public MeanFieldPolynomial(UnivariateRealPolynomial TTF, UnivariateRealPolynomial TTFPrime, UnivariateRealPolynomial STF, UnivariateRealPolynomial STFPrime)
+	public MeanFieldPolynomial(RealUnivariatePolynomial TTF, RealUnivariatePolynomial TTFPrime, RealUnivariatePolynomial STF, RealUnivariatePolynomial STFPrime)
 	{
 		this.TTF = TTF;
 		this.TTFPrime = TTFPrime;
@@ -13,6 +13,7 @@ public class MeanFieldPolynomial extends UnivariateRealPolynomial {
 		this.STFPrime = STFPrime;
 	}
 
+	@Override
     public double evaluateAt(double dblVal) {
     	/*double T = TTF.evaluateAt(dblVal);
     	double S = STF.evaluateAt(dblVal);
@@ -20,7 +21,8 @@ public class MeanFieldPolynomial extends UnivariateRealPolynomial {
     	return TTF.evaluateAt(dblVal);
     }
 
-    public double evaluateDerivativeAt(double dblVal) {
+    @Override
+    public double derivativeAt(double dblVal) {
     	/*double T = TTF.evaluateAt(dblVal);
     	double S = STF.evaluateAt(dblVal);
     	double Tp = 0.01*TTFPrime.evaluateAt(dblVal);

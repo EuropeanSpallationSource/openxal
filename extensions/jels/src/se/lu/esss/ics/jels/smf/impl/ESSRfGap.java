@@ -2,7 +2,7 @@ package se.lu.esss.ics.jels.smf.impl;
 
 import xal.ca.ChannelFactory;
 import xal.smf.impl.RfGap;
-import xal.tools.math.poly.UnivariateRealPolynomial;
+import xal.tools.math.fnc.poly.RealUnivariatePolynomial;
 
 /**
  * This gap implementation is extended to return correct (special) TTF/STF fits for the start gap. 
@@ -22,7 +22,7 @@ public class ESSRfGap extends RfGap {
 
 	/** return a polynomial fit of the transit time factor as a function of beta */
 	@Override
-	public UnivariateRealPolynomial getTTFFit() {
+	public RealUnivariatePolynomial getTTFFit() {
         ESSRfCavity rfCav = (ESSRfCavity) this.getParent();
         if(isFirstGap()) 
         	return rfCav.getTTFFitStart();
@@ -34,7 +34,7 @@ public class ESSRfGap extends RfGap {
 
 	/** return a polynomial fit of the TTF-prime factor as a function of beta */  
 	@Override
-	public UnivariateRealPolynomial getTTFPrimeFit() {
+	public RealUnivariatePolynomial getTTFPrimeFit() {
 		ESSRfCavity rfCav = (ESSRfCavity) this.getParent();
         if(isFirstGap()) 
         	return rfCav.getTTFPrimeFitStart();
@@ -46,7 +46,7 @@ public class ESSRfGap extends RfGap {
 
 	/** return a polynomial fit of the S factor as a function of beta */  
 	@Override
-	public UnivariateRealPolynomial getSFit() {
+	public RealUnivariatePolynomial getSFit() {
 		ESSRfCavity rfCav = (ESSRfCavity) this.getParent();
         if(isFirstGap()) 
         	return rfCav.getSTFFitStart();
@@ -58,7 +58,7 @@ public class ESSRfGap extends RfGap {
 
 	/** return a polynomial fit of the S-prime factor as a function of beta */  
 	@Override
-	public UnivariateRealPolynomial getSPrimeFit() {
+	public RealUnivariatePolynomial getSPrimeFit() {
 		ESSRfCavity rfCav = (ESSRfCavity) this.getParent();
         if(isFirstGap()) 
         	return rfCav.getSTFPrimeFitStart();

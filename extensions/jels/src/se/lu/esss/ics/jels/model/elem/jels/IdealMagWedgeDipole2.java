@@ -559,8 +559,8 @@ public class IdealMagWedgeDipole2 extends ElectromagnetSeq {
 	public void initializeFrom(LatticeElement element) {
 		super.initializeFrom(element);
 		
-		Bend magnet = (Bend) element.getNode();
-		setPosition(element.getCenter(), element.getLength());
+		Bend magnet = (Bend) element.getHardwareNode();
+		setPosition(element.getCenterPosition(), element.getLength());
 
 		// First retrieve all the physical parameters for a bending dipole				
 		double len_sect = element.getLength();		

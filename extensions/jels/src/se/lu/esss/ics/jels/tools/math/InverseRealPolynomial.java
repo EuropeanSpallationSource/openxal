@@ -1,6 +1,6 @@
 package se.lu.esss.ics.jels.tools.math;
 
-import xal.tools.math.poly.UnivariateRealPolynomial;
+import xal.tools.math.fnc.poly.RealUnivariatePolynomial;
 
 /**
  * <p>Represents a model function of the form: 
@@ -14,7 +14,7 @@ import xal.tools.math.poly.UnivariateRealPolynomial;
  * @author Ivo List
  *
  */
-public class InverseRealPolynomial extends UnivariateRealPolynomial {
+public class InverseRealPolynomial extends RealUnivariatePolynomial {
     /*
      *  Local Attributes
      */
@@ -108,6 +108,7 @@ public class InverseRealPolynomial extends UnivariateRealPolynomial {
      * 
      * @param   dblVal      indeterminate value to evaluate the model function at
      */
+    @Override
     public double evaluateAt(double dblVal) {
         if (this.m_arrCoef == null || this.m_arrCoef.length == 0)
             return 1.0;
@@ -136,7 +137,8 @@ public class InverseRealPolynomial extends UnivariateRealPolynomial {
      * 
      * @param   dblVal      indeterminate value to evaluate the model function derivative
      */
-    public double evaluateDerivativeAt(double dblVal) {
+    @Override
+    public double derivativeAt(double dblVal) {
         if (this.m_arrCoef == null || this.m_arrCoef.length == 0)
             return 0.0;
 
@@ -153,11 +155,11 @@ public class InverseRealPolynomial extends UnivariateRealPolynomial {
         return -dblAccum / m_arrCoef[1];
     }
 
-    public UnivariateRealPolynomial plus(UnivariateRealPolynomial polyAddend)  {
+    public RealUnivariatePolynomial plus(RealUnivariatePolynomial polyAddend)  {
     	throw new UnsupportedOperationException();
     }
 
-    public UnivariateRealPolynomial times(UnivariateRealPolynomial polyFac) {
+    public RealUnivariatePolynomial times(RealUnivariatePolynomial polyFac) {
     	throw new UnsupportedOperationException();
     }
 

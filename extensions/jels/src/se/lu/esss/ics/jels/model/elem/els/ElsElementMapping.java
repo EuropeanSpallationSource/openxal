@@ -7,6 +7,10 @@
 package se.lu.esss.ics.jels.model.elem.els;
 
 import xal.model.IComponent;
+import xal.model.IComposite;
+import xal.model.ModelException;
+import xal.model.Sector;
+import xal.model.elem.IdealRfCavityDrift;
 import xal.model.elem.Marker;
 import xal.sim.scenario.ElementMapping;
 
@@ -37,13 +41,18 @@ public class ElsElementMapping extends ElementMapping {
 	
 	
 	@Override
-	public Class<? extends IComponent> getDefaultConverter() {
+	public Class<? extends IComponent> getDefaultElementType() {
 		return Marker.class;
 	}
 
 	@Override
-	public IComponent createDrift(String name, double len) {
+	public IComponent createDefaultDrift(String name, double len) {
 		return new IdealDrift(name, len);
+	}
+	
+	@Override
+	public IComponent createRfCavityDrift(String name, double len, double freq, double mode) throws ModelException {
+		return new IdealRfCavityDrift(name, len, freq, mode);		
 	}
 	
 	protected void initialize() {
@@ -63,4 +72,8 @@ public class ElsElementMapping extends ElementMapping {
 		}
 	}
 
+	@Override
+	public Class<? extends IComposite> getDefaultSequenceType() {
+		return Sector.class;
+	}
 }

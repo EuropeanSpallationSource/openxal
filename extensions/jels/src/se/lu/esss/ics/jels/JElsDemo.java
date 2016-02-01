@@ -301,7 +301,7 @@ public class JElsDemo {
 
 	static void saveProbe(EnvelopeProbe probe, String file) {		
 		try {
-			probe.setSaveTwissFlag(true);
+			//probe.setSaveTwissFlag(true);
 			ProbeXmlWriter.writeXml(probe, file);			
 		} catch (IOException e) {
 			e.printStackTrace();

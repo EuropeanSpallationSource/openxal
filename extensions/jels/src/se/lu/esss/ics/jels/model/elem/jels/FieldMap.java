@@ -52,7 +52,7 @@ public class FieldMap extends ThickElement  {
 		if (latticeElement.isFirstSlice()) {			
 			startPosition = latticeElement.getStartPosition();
 			
-			final ESSFieldMap fm = (ESSFieldMap)latticeElement.getNode();
+			final ESSFieldMap fm = (ESSFieldMap)latticeElement.getHardwareNode();
 			FieldProfile fp = fm.getFieldProfile();
 			field = fp.getField();
 			totalLength = fp.getLength();			
@@ -81,7 +81,7 @@ public class FieldMap extends ThickElement  {
 			}				
 		} else {			
 			try {
-				firstSliceFieldmap = (FieldMap)latticeElement.getFirstSlice().getComponent();
+				firstSliceFieldmap = (FieldMap)latticeElement.getFirstSlice().createModelingElement();
 			} catch (ModelException e) {
 			}
 		}

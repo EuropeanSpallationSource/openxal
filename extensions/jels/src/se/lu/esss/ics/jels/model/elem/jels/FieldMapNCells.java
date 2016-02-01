@@ -52,7 +52,7 @@ public class FieldMapNCells extends ElementSeq {
 		if (latticeElement.isFirstSlice()) {		
 			startPosition = sliceStartPosition;
 			
-		    final ESSFieldMap fm  = (ESSFieldMap)latticeElement.getNode();
+		    final ESSFieldMap fm  = (ESSFieldMap)latticeElement.getHardwareNode();
 		    FieldProfile fp = fm.getFieldProfile();	    		    
 		    
 		    double k0;
@@ -100,7 +100,7 @@ public class FieldMapNCells extends ElementSeq {
 		    
 		} 
 		try {
-			firstSliceElement = (FieldMapNCells)latticeElement.getFirstSlice().getComponent();
+			firstSliceElement = (FieldMapNCells)latticeElement.getFirstSlice().createModelingElement();
 		} catch (ModelException e) {
 		}
 	}

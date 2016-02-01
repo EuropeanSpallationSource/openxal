@@ -5,14 +5,14 @@ import java.util.List;
 
 import se.lu.esss.ics.jels.smf.impl.FieldProfile;
 import xal.model.IElement;
-import xal.tools.math.poly.UnivariateRealPolynomial;
+import xal.tools.math.fnc.poly.RealUnivariatePolynomial;
 
 /**
  * Taking care of calculating TTF via numerical integration from field data.
  * 
  * @author Ivo List <ivo.list@cosylab.com>
  */
-public class TTFIntegrator extends UnivariateRealPolynomial {
+public class TTFIntegrator extends RealUnivariatePolynomial {
 	private int N;
 	private double zmax;
 	private double[] field;
@@ -226,7 +226,7 @@ public class TTFIntegrator extends UnivariateRealPolynomial {
 	}
 
 	@Override
-	public double evaluateDerivativeAt(double beta) {
+	public double derivativeAt(double beta) {
 		return TTFIntegrator.this.evaluateEzzSin(beta);
 	}
 	

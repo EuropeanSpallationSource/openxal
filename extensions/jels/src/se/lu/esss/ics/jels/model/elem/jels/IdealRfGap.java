@@ -10,13 +10,13 @@ import java.io.PrintWriter;
 import se.lu.esss.ics.jels.tools.math.MeanFieldPolynomial;
 import xal.model.IProbe;
 import xal.model.ModelException;
-import xal.model.elem.IRfGap;
 import xal.model.elem.ThinElement;
+import xal.model.elem.sync.IRfGap;
 import xal.sim.scenario.LatticeElement;
 import xal.smf.impl.RfGap;
 import xal.tools.beam.PhaseMap;
 import xal.tools.beam.PhaseMatrix;
-import xal.tools.math.poly.UnivariateRealPolynomial;
+import xal.tools.math.fnc.poly.RealUnivariatePolynomial;
 
 /**
  *  <p>
@@ -82,7 +82,7 @@ public class IdealRfGap extends ThinElement implements IRfGap {
     private double structureMode =0;
     
     /** fit of the TTF vs. beta */
-    protected UnivariateRealPolynomial TTFFit;
+    protected RealUnivariatePolynomial TTFFit;
     
     /** the energy gained in this gap (eV)  */
     private double energyGain;
@@ -318,7 +318,7 @@ public class IdealRfGap extends ThinElement implements IRfGap {
     			double beta_middle= computeBetaFromGamma(gamma_middle);
     			
     			double E0TL_scaled=E0TL*TTFFit.evaluateAt(beta_middle);
-    			double kToverT =-beta_middle*TTFFit.evaluateDerivativeAt(beta_middle)/TTFFit.evaluateAt(beta_middle);
+    			double kToverT =-beta_middle*TTFFit.derivativeAt(beta_middle)/TTFFit.evaluateAt(beta_middle);
     			
     			energyGain = E0TL_scaled*Math.cos(Phis);
     			gamma_end=gamma_start+energyGain/mass;    			
@@ -407,7 +407,7 @@ public class IdealRfGap extends ThinElement implements IRfGap {
 	public void initializeFrom(LatticeElement element) {		
 		super.initializeFrom(element);
 		
-		RfGap rfgap = (RfGap) element.getNode();
+		RfGap rfgap = (RfGap) element.getHardwareNode();
 		
 	    // Initialize from source values
 	    initialGap = rfgap.isFirstGap();
@@ -439,7 +439,7 @@ public class IdealRfGap extends ThinElement implements IRfGap {
 		this.structureMode = structureMode;
 	}
 
-	public void setTTFFit(UnivariateRealPolynomial TTFFit) {
+	public void setTTFFit(RealUnivariatePolynomial TTFFit) {
 		this.TTFFit = TTFFit;
 	}
 }

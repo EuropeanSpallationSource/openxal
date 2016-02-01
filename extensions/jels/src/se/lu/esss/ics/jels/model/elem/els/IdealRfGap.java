@@ -9,13 +9,13 @@ import java.io.PrintWriter;
 
 import xal.model.IProbe;
 import xal.model.ModelException;
-import xal.model.elem.IRfGap;
 import xal.model.elem.ThinElement;
+import xal.model.elem.sync.IRfGap;
 import xal.sim.scenario.LatticeElement;
 import xal.smf.impl.RfGap;
 import xal.tools.beam.PhaseMap;
 import xal.tools.beam.PhaseMatrix;
-import xal.tools.math.poly.UnivariateRealPolynomial;
+import xal.tools.math.fnc.poly.RealUnivariatePolynomial;
 
 /**
  *  <p>
@@ -83,16 +83,16 @@ public class IdealRfGap extends ThinElement implements IRfGap {
     private double structureMode =0;
     
     /** fit of the TTF vs. beta */
-    private UnivariateRealPolynomial TTFFit;
+    private RealUnivariatePolynomial TTFFit;
     
     /** fit of the TTF-prime vs. beta */
-    private UnivariateRealPolynomial TTFPrimeFit;
+    private RealUnivariatePolynomial TTFPrimeFit;
 
     /** fit of the S factor vs. beta */
-    private UnivariateRealPolynomial SFit;
+    private RealUnivariatePolynomial SFit;
     
     /** fit of the S-prime vs. beta */
-    private UnivariateRealPolynomial SPrimeFit;
+    private RealUnivariatePolynomial SPrimeFit;
 
     
     /** the energy gained in this gap (eV)  */
@@ -312,7 +312,7 @@ public class IdealRfGap extends ThinElement implements IRfGap {
     			double beta_middle= computeBetaFromGamma(gamma_middle);
     			
     			double E0TL_scaled=E0TL*TTFFit.evaluateAt(beta_middle);
-    			double kToverT =-beta_middle*TTFFit.evaluateDerivativeAt(beta_middle)/TTFFit.evaluateAt(beta_middle);
+    			double kToverT =-beta_middle*TTFFit.derivativeAt(beta_middle)/TTFFit.evaluateAt(beta_middle);
 
     			energyGain = E0TL_scaled*Math.cos(Phis);
     			
@@ -401,7 +401,7 @@ public class IdealRfGap extends ThinElement implements IRfGap {
 	public void initializeFrom(LatticeElement element) {		
 		super.initializeFrom(element);
 		
-		RfGap rfgap = (RfGap) element.getNode();
+		RfGap rfgap = (RfGap) element.getHardwareNode();
 		
 	    // Initialize from source values
 	    initialGap = rfgap.isFirstGap();

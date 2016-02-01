@@ -30,7 +30,7 @@ public class DriftGapDrift extends ElementSeq {
 	@Override
 	public void initializeFrom(LatticeElement latticeElement) {
 		super.initializeFrom(latticeElement);
-	    final ESSFieldMap fm = (ESSFieldMap)latticeElement.getNode();
+	    final ESSFieldMap fm = (ESSFieldMap)latticeElement.getHardwareNode();
 	    FieldProfile fp = fm.getFieldProfile();
 	    final TTFIntegrator intgr = new TTFIntegrator(fp.getLength(), fp.getField(), fm.getFrequency()*1e6, false);
 	    
