@@ -29,9 +29,9 @@ public class FieldMapNCells extends ElementSeq {
 	private double phipos;
 	private boolean inverted;
 	
-	private double startPosition;
-	private double sliceStartPosition;
-	private double sliceEndPosition;
+	private Double startPosition;
+	private Double sliceStartPosition;
+	private double sliceLength;
 	
 	private FieldMapNCells firstSliceElement;
 	
@@ -45,13 +45,10 @@ public class FieldMapNCells extends ElementSeq {
 
 	@Override
 	public void initializeFrom(LatticeElement latticeElement) {
-		super.initializeFrom(latticeElement);
-		sliceStartPosition = latticeElement.getStartPosition();
-		sliceEndPosition = latticeElement.getEndPosition();
+		super.initializeFrom(latticeElement);		
+		sliceLength = latticeElement.getLength();
 		
-		if (latticeElement.isFirstSlice()) {		
-			startPosition = sliceStartPosition;
-			
+		if (latticeElement.isFirstSlice()) {
 		    final ESSFieldMap fm  = (ESSFieldMap)latticeElement.getHardwareNode();
 		    FieldProfile fp = fm.getFieldProfile();	    		    
 		    
@@ -107,10 +104,13 @@ public class FieldMapNCells extends ElementSeq {
 	
 	
 	public void propagate(IProbe probe) throws ModelException {
-		firstSliceElement.propagate(probe, sliceStartPosition, sliceEndPosition);				
+		if (sliceStartPosition == null) sliceStartPosition = probe.getPosition();
+		firstSliceElement.propagate(probe, sliceStartPosition, sliceStartPosition + sliceLength);				
 	}
 	
-	public void propagate(IProbe probe, double sliceStartPosition, double sliceEndPosition) throws ModelException {			
+	public void propagate(IProbe probe, double sliceStartPosition, double sliceEndPosition) throws ModelException {
+		if (startPosition == null) startPosition = probe.getPosition();
+		
 		double cellPos = startPosition;
 		double pos = probe.getPosition();
 		
