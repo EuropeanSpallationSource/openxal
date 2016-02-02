@@ -5,8 +5,10 @@ import se.lu.esss.ics.jels.smf.impl.ESSFieldMap;
 import se.lu.esss.ics.jels.smf.impl.FieldProfile;
 import se.lu.esss.ics.jels.tools.math.TTFIntegrator;
 import xal.model.IProbe;
+import xal.model.ModelException;
 import xal.model.elem.ElementSeq;
 import xal.sim.scenario.LatticeElement;
+import xal.tools.beam.PhaseMap;
 
 /**
  * Implementation of drift-gap-drift simulation of fieldmaps.
@@ -46,12 +48,13 @@ public class DriftGapDrift extends ElementSeq {
 	     */
 	    gap = new IdealRfGap(fm.getId(), intgr.getE0TL()*fm.getXelmax(),0, fm.getFrequency()*1e6) {
 	    	@Override
-	    	public void calculatePhase(IProbe probe)
+	    	protected PhaseMap transferMap(IProbe probe) throws ModelException
 	    	{
 	    		double inputphase = fm.getPhase()*Math.PI/180.;
 	    		double phim = 2*Math.PI*getFrequency() * fm.getLength()/2. / probe.getBeta()/LightSpeed;
 	    		setPhase(inputphase + phim + pho);
 	    		setTTFFit(intgr);
+	    		return super.transferMap(probe);
 	    	}
 	    };
 		gap.setFirstGap(true);

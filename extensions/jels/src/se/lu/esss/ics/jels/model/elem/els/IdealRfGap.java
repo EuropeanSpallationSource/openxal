@@ -275,16 +275,8 @@ public class IdealRfGap extends ThinElement implements IRfGap {
     	
     	if (isFirstGap()) Phis = getPhase();
     	else {    		 
-    		double lastGapPosition = probe.getLastGapPosition();
-    		double position = probe.getPosition();
-    		if (lastGapPosition == position) {
-    			Phis = getPhase(); // we are visiting gap for the second time
-    		} else {
-	    		Phis = probe.getLastGapPhase();
-	    		Phis += 2*Math.PI*(position - lastGapPosition)/(lambda*probe.getBeta());
-	    		if (structureMode == 1) Phis += Math.PI;	    		
-	    		setPhase(Phis);	    		
-    		}
+    		Phis = probe.getLongitinalPhase();
+        	setPhase(Phis);
     	}
     	
     	if (E0TL==0)
@@ -366,8 +358,6 @@ public class IdealRfGap extends ThinElement implements IRfGap {
     		matPhi.setElem(5,5,(beta_start*gamma_start)/(beta_end*gamma_end));  		
     	}
          
-    	probe.setLastGapPhase(Phis + deltaPhi);
-    	probe.setLastGapPosition(probe.getPosition());
     	
     	matPhi.setElem(6,6,1);
         return new PhaseMap(matPhi);
@@ -412,6 +402,20 @@ public class IdealRfGap extends ThinElement implements IRfGap {
 	    SPrimeFit = rfgap.getSPrimeFit();
 	    SFit = rfgap.getSFit();
 	    structureMode = rfgap.getStructureMode();
-	}    
+	}
+	
+	@Override
+	protected double longitudinalPhaseAdvance(IProbe probe) {
+		double dphi2 = 0.;
+		if (structureMode == 1) {			
+			dphi2 = Math.PI;
+		}
+		if (isFirstGap()) { // WORKAROUND to set the initial phase 
+			double phi0 = this.getPhase();
+	        double phi = probe.getLongitinalPhase();
+	        dphi2 += -phi + phi0; 
+		}
+		return deltaPhi + dphi2;
+	}
 }
 

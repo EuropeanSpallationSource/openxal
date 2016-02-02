@@ -7,7 +7,7 @@ import xal.model.IElement;
 import xal.model.IProbe;
 import xal.model.ModelException;
 import xal.model.elem.ElementSeq;
-import xal.model.elem.IdealDrift;
+import xal.model.elem.IdealRfCavityDrift;
 import xal.sim.scenario.LatticeElement;
 import xal.smf.impl.RfCavity;
 import xal.smf.impl.qualify.QualifierFactory;
@@ -142,7 +142,7 @@ public class FieldMapNCells extends ElementSeq {
 			if (pos - cellPos <= l1) {
 				double plen = Math.min(l1 - (pos - cellPos), sliceEndPosition - pos);
 				boolean doGap = (plen == l1 - (pos - cellPos));
-				new IdealDrift("", plen).propagate(probe);
+				new IdealRfCavityDrift("", plen, frequency, 0).propagate(probe);
 				pos += plen;
 				//System.out.println("#"+i+":drift1 "+l1+" for "+plen);
 		
@@ -159,7 +159,7 @@ public class FieldMapNCells extends ElementSeq {
 			
 			// after gap
 			double plen2 = Math.min(l2 - (pos - cellPos - l1), sliceEndPosition - pos);			
-			new IdealDrift("", plen2).propagate(probe);
+			new IdealRfCavityDrift("", plen2, frequency, 0).propagate(probe);
 			//System.out.println("#"+i+":drift2 "+l2+" for "+plen2);
 			pos += plen2;
 			if (pos >= sliceEndPosition) break;

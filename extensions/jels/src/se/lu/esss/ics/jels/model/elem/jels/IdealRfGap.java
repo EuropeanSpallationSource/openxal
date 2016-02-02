@@ -149,14 +149,6 @@ public class IdealRfGap extends ThinElement implements IRfGap {
      */
      public double getPhase() { return m_dblPhase; };
      
-     /**
-      * Method is intended to be used by overriding implementations of IdealRfGap, so that
-      * the implementations are able to calculate the phase when input energy is known.
-      * @param probe Probe at the input of the element
-      */
-     public void calculatePhase(IProbe probe) { 
-     }
-     
     /**  
      * Get the operating frequency of the RF gap.
      *
@@ -267,32 +259,16 @@ public class IdealRfGap extends ThinElement implements IRfGap {
     	
     	double Phis;
     	if (isFirstGap() || !probe.getAlgorithm().getRfGapPhaseCalculation()) {
-    		calculatePhase(probe);
     		Phis = getPhase();
     	}
-    	else {    		 
-    		double lastGapPosition = probe.getLastGapPosition();
-    		double position = probe.getPosition() + gapOffset;
-    		if (lastGapPosition == position) {
-    			Phis = getPhase(); // we are visiting gap for the second time
-    		} else {
-    			Phis = probe.getLastGapPhase();
-	    		Phis += 2*Math.PI*(position - lastGapPosition)/(lambda*probe.getBeta());
-	    		if (structureMode == 1) {
-	    			// This code is used to "guess" how far the gaps are apart at SNS; ESS in such cases always uses multiple cavities, so +PI is always correct
-	    			Phis += Math.PI*(int)Math.round(2*(position - lastGapPosition)/(lambda*probe.getBeta()));
-	    			//Phis += Math.PI;
-	    		}
-
-	    		setPhase(Phis);
-    		}
-    	}
-    	
-    	
+    	else {
+    		Phis = probe.getLongitinalPhase();
+    		setPhase(Phis);
+        }
     	
     	if (getETL()==0)
     	{
-    		matPhi = PhaseMatrix.identity();    		
+    		matPhi = PhaseMatrix.identity();
     	}
     	else
     	{        	
@@ -369,11 +345,8 @@ public class IdealRfGap extends ThinElement implements IRfGap {
     		matPhi.setElem(5,4,kz/(beta_end*Math.pow(gamma_end,2)*gamma_start));
     		matPhi.setElem(5,5,(beta_start*Math.pow(gamma_start,2))/(beta_end*Math.pow(gamma_end,2)));
     	}    	
-            
-    	probe.setLastGapPhase(Phis + deltaPhi);
-    	probe.setLastGapPosition(probe.getPosition() + gapOffset);
+        
     	matPhi.setElem(6,6,1);
-    	
     	matPhi = applyErrors(matPhi);
     	
         return new PhaseMap(matPhi);
@@ -418,8 +391,7 @@ public class IdealRfGap extends ThinElement implements IRfGap {
 	    } else {
 	    	TTFFit = rfgap.getTTFFit();
 
-	    }
-
+	    }	    
 	    structureMode = rfgap.getStructureMode();
 	}
 
@@ -441,6 +413,22 @@ public class IdealRfGap extends ThinElement implements IRfGap {
 
 	public void setTTFFit(RealUnivariatePolynomial TTFFit) {
 		this.TTFFit = TTFFit;
+	}
+
+	@Override
+	protected double longitudinalPhaseAdvance(IProbe probe) {
+		double dphi2 = 0.;
+		if (structureMode == 1) {
+			// This code is used to "guess" how far the gaps are apart at SNS; ESS in such cases always uses multiple cavities, so +PI is always correct
+			//Phis += Math.PI*(int)Math.round(2*(position - lastGapPosition)/(lambda*probe.getBeta()));
+			dphi2 = Math.PI;
+		}
+		if (isFirstGap()) { // WORKAROUND to set the initial phase 
+			double phi0 = this.getPhase();
+	        double phi = probe.getLongitinalPhase();
+	        dphi2 += -phi + phi0; 
+		}
+		return deltaPhi + dphi2;
 	}
 }
 
