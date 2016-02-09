@@ -8,6 +8,7 @@ import xal.model.IProbe;
 import xal.model.ModelException;
 import xal.model.elem.ElementSeq;
 import xal.model.elem.IdealRfCavityDrift;
+import xal.model.elem.sync.IRfCavityCell;
 import xal.sim.scenario.LatticeElement;
 import xal.smf.impl.RfCavity;
 import xal.smf.impl.qualify.QualifierFactory;
@@ -34,6 +35,10 @@ public class FieldMapNCells extends ElementSeq {
 	private double sliceLength;
 	
 	private FieldMapNCells firstSliceElement;
+	
+	private int indCell;
+	private double dblCavModeConst;
+	private static int indCellStatic = 0;
 	
 	public FieldMapNCells() {
         this(null);
@@ -69,7 +74,9 @@ public class FieldMapNCells extends ElementSeq {
 						firstInRFCavity = false;
 						break;
 					}
-				}		
+				}
+				if (firstInRFCavity) indCellStatic = 0;
+				indCell = indCellStatic ++;
 		    } else {
 		    	frequency = fm.getFrequency()*1e6;
 		    	phi0 = fm.getPhase()*Math.PI/180.;		    	
@@ -136,7 +143,8 @@ public class FieldMapNCells extends ElementSeq {
     			gaps[i].setPhase(phiInput + phim + (splitIntgrs[i].getInverted() ? Math.PI : 0));
 			}
 			gaps[i].setTTFFit(splitIntgrs[i]);
-		
+			gaps[i].setCavityCellIndex(i + indCell);
+			
 			// propagate
 			// before gap
 			if (pos - cellPos <= l1) {
@@ -166,5 +174,6 @@ public class FieldMapNCells extends ElementSeq {
 			cellPos += splitIntgrs[i].getLength();
 	    }
     }
+	
 
 }

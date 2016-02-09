@@ -11,6 +11,7 @@ import se.lu.esss.ics.jels.tools.math.MeanFieldPolynomial;
 import xal.model.IProbe;
 import xal.model.ModelException;
 import xal.model.elem.ThinElement;
+import xal.model.elem.sync.IRfCavityCell;
 import xal.model.elem.sync.IRfGap;
 import xal.sim.scenario.LatticeElement;
 import xal.smf.impl.RfGap;
@@ -32,7 +33,7 @@ import xal.tools.math.fnc.poly.RealUnivariatePolynomial;
  *@author     Christopher K. Allen
  *@created    November 22, 2005
  */
-public class IdealRfGap extends ThinElement implements IRfGap {
+public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
  
     
 	/*
@@ -89,8 +90,29 @@ public class IdealRfGap extends ThinElement implements IRfGap {
     
     /** the phase kick correction applied at the gap center [rad] */
     private double deltaPhi;
+
     
+    /**
+     *  flag indicating that this gap is in the leading cell of an RF cavity
+     */
+    private boolean bolStartCell = false;
     
+    /**
+     * flag indicating that this gap is in the end cell of an RF cavity
+     */
+    private boolean bolEndCell = false;
+
+    /**
+     *  = 0   if the gap is part of a 0 mode cavity structure (e.g. DTL),
+     *  = 1/2 if the gap is part of a pi/2 mode cavity structure 
+     *  = 1   if the gap is part of a pi mode cavity (e.g. Super-conducting)
+     */
+    private double dblCavModeConst = 0.;
+
+    /** 
+     * The index of the cavity cell (within the parent cavity) containing this gap.
+     */
+    private int     indCell = 0;    
     /*
      * Initialization 
      */
@@ -266,6 +288,8 @@ public class IdealRfGap extends ThinElement implements IRfGap {
     		setPhase(Phis);
         }
     	
+    	Phis += structureMode * Math.PI * indCell;
+    	
     	if (getETL()==0)
     	{
     		matPhi = PhaseMatrix.identity();
@@ -301,7 +325,6 @@ public class IdealRfGap extends ThinElement implements IRfGap {
     			beta_end = computeBetaFromGamma(gamma_end);
     			gamma_avg=(gamma_end+gamma_start)/2;
     			double beta_avg = computeBetaFromGamma(gamma_avg);
-    
     			deltaPhi=E0TL_scaled/mass*Math.sin(Phis)/(Math.pow(gamma_avg,2)*beta_avg)*(kToverT);
     			
     			kxy=-Math.PI*E0TL_scaled/mass*Math.sin(Phis)/(Math.pow(gamma_avg*beta_avg,2)*lambda);
@@ -418,11 +441,7 @@ public class IdealRfGap extends ThinElement implements IRfGap {
 	@Override
 	protected double longitudinalPhaseAdvance(IProbe probe) {
 		double dphi2 = 0.;
-		if (structureMode == 1) {
-			// This code is used to "guess" how far the gaps are apart at SNS; ESS in such cases always uses multiple cavities, so +PI is always correct
-			//Phis += Math.PI*(int)Math.round(2*(position - lastGapPosition)/(lambda*probe.getBeta()));
-			dphi2 = Math.PI;
-		}
+		
 		if (isFirstGap()) { // WORKAROUND to set the initial phase 
 			double phi0 = this.getPhase();
 	        double phi = probe.getLongitinalPhase();
@@ -430,5 +449,105 @@ public class IdealRfGap extends ThinElement implements IRfGap {
 		}
 		return deltaPhi + dphi2;
 	}
+
+    /*
+     * Attribute Query
+     */
+
+
+    /**
+     *
+     * @see xal.model.elem.sync.IRfCavityCell#setCavityCellIndex(int)
+     *
+     * @since  Jan 8, 2015   by Christopher K. Allen
+     */
+    @Override
+    public void setCavityCellIndex(int indCell) {
+        this.indCell = indCell;
+    }
+
+    /**
+     *
+     * @see xal.model.elem.sync.IRfCavityCell#setCavityModeConstant(double)
+     *
+     * @since  Jan 8, 2015   by Christopher K. Allen
+     */
+    @Override
+    public void setCavityModeConstant(double dblCavModeConst) {
+        this.dblCavModeConst = dblCavModeConst;
+    }
+
+    /**
+     *
+     * @see xal.model.elem.sync.IRfCavityCell#getCavityCellIndex()
+     *
+     * @since  Jan 8, 2015   by Christopher K. Allen
+     */
+    @Override
+    public int getCavityCellIndex() {
+        return this.indCell;
+    }
+
+    /**
+     * <p>
+     * Returns the structure mode <b>number</b> <i>q</i> for the cavity in which this 
+     * gap belongs.  Here the structure mode number is defined in terms of
+     * the fractional phase advance between cells, with respect to &pi;.  
+     * To make this explicit
+     * <br/>
+     * <br/>
+     * &nbsp; &nbsp; <i>q</i> = 0  &nbsp; &nbsp; &rAarr;  0 mode
+     * <br/>
+     * &nbsp; &nbsp; <i>q</i> = 1/2 &rArr; &pi;/2 mode
+     * <br/>
+     * &nbsp; &nbsp; <i>q</i> = 1  &nbsp; &nbsp; &rAarr;  &pi; mode
+     * <br/>
+     * <br/>
+     * Thus, a cavity mode constant of <i>q</i> = 1/2 indicates a &pi;/2
+     * phase advance between adjacent cells and a corresponding cell amplitude
+     * function <i>A<sub>n</sub></i> of
+     * <br/>
+     * <br/>
+     * &nbsp; &nbsp; <i>A<sub>n</sub></i> = cos(<i>nq</i>&pi;)
+     * <br/>
+     * <br/>
+     * where <i>n</i> is the index of the cell within the coupled cavity.
+     * </p>
+     * 
+     * @return  the cavity mode constant for the cell containing this gap
+     *
+     * @see <i>RF Linear Accelerators</i>, Thomas P. Wangler (Wiley, 2008).
+     * 
+     * @author Christopher K. Allen
+     * @since  Nov 20, 2014
+     */
+    public double getCavityModeConstant() {
+        return this.dblCavModeConst;
+    }
+
+    /**
+     * Returns flag indicating whether or not this gap is in the initial or terminal cell
+     * in a string of cells within an RF cavity.
+     * 
+     * @return     <code>true</code> if this gap is in a cavity cell at either end of a cavity cell bank,
+     *             <code>false</code> otherwise
+     *
+     * @since  Jan 23, 2015   by Christopher K. Allen
+     */
+    @Override
+    public boolean isEndCell() {
+        return this.bolEndCell;
+    }
+
+    /**
+     *
+     * @see xal.model.elem.sync.IRfCavityCell#isFirstCell()
+     *
+     * @since  Jan 23, 2015   by Christopher K. Allen
+     */
+    @Override
+    public boolean isFirstCell() {
+        return this.bolStartCell;
+    }
 }
 

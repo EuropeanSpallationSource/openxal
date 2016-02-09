@@ -7,6 +7,7 @@ import xal.model.IElement;
 import xal.model.IProbe;
 import xal.model.ModelException;
 import xal.model.elem.ThickElement;
+import xal.model.elem.sync.IRfCavityCell;
 import xal.sim.scenario.LatticeElement;
 import xal.smf.impl.RfCavity;
 import xal.smf.impl.qualify.QualifierFactory;
@@ -19,7 +20,7 @@ import xal.tools.beam.PhaseMatrix;
  * @author Ivo List <ivo.list@cosylab.com>
  *
  */
-public class FieldMap extends ThickElement  {
+public class FieldMap extends ThickElement {
 	private double frequency;
 
 	private double field[];
@@ -36,6 +37,10 @@ public class FieldMap extends ThickElement  {
 	private FieldMap firstSliceFieldmap;	
 	
 	private boolean firstInRFCavity;	
+
+	private int indCell;
+	private double dblCavModeConst = 0.;
+	private static int indCellStatic = 0;
 	
 	public FieldMap() {
 		this(null);
@@ -64,6 +69,7 @@ public class FieldMap extends ThickElement  {
 				phipos = fm.getPhasePosition();
 				inverted = fp.isFirstInverted();										
 				k0 = cavity.getDfltCavAmp()*1e6 * fm.getXelmax() / (fp.getE0L(frequency)/fp.getLength());
+				dblCavModeConst = cavity.getStructureMode();
 				
 				firstInRFCavity = true;
 				for (ESSFieldMap fm2 : cavity.getNodesOfClassWithQualifier(ESSFieldMap.class, QualifierFactory.getStatusQualifier(true))) {
@@ -71,7 +77,9 @@ public class FieldMap extends ThickElement  {
 						firstInRFCavity = false;
 						break;
 					}
-				}				
+				}
+				if (firstInRFCavity) indCellStatic = 0;
+				indCell = indCellStatic ++;
 			} else {
 				firstInRFCavity = true;
 				phi0 = fm.getPhase()/180.*Math.PI;
@@ -289,18 +297,11 @@ public class FieldMap extends ThickElement  {
 			    
 			    phi00 = Math.IEEEremainder(phi0 - phim - (inverted ? Math.PI : 0.), 2*Math.PI);
 			} else {
-				double lastGapPosition = probe.getLastGapPosition();
-	    		double position = probe.getPosition();
-	    		
-				phi00 = probe.getLastGapPhase();
-	    		phi00 += (position - lastGapPosition)/(probe.getBeta() * IElement.LightSpeed / (2*Math.PI*frequency));	
-	    		phi00 -= Math.PI;
+				phi00 = probe.getLongitinalPhase() + dblCavModeConst * Math.PI * indCell;
+				System.out.println(getId()+" "+indCell);
 			}
 						
 			phase = initPhase(probe.getKineticEnergy(), probe.getSpeciesRestEnergy(), phi00);
-			
-			probe.setLastGapPhase(phase[phase.length-1]);
-			probe.setLastGapPosition(startPosition+totalLength);
 		}
 		super.propagate(probe);
 		if (lastSlice) {
@@ -308,4 +309,29 @@ public class FieldMap extends ThickElement  {
 		}
     }
 	
+	@Override
+	public double longitudinalPhaseAdvance(IProbe probe, double dblLen) {
+		if (firstSliceFieldmap != null) return firstSliceFieldmap.longitudinalPhaseAdvance(probe, dblLen);
+		
+		/*double dphi2 = 0.;		
+		
+		if (firstInRFCavity && startPosition == probe.getPosition()) { // WORKAROUND to set the initial phase 
+			double phi0 = phase[0];
+	        double phi = probe.getLongitinalPhase();
+	        dphi2 += -phi + phi0; 
+		}
+		
+		double p0 = probe.getPosition() - startPosition;
+		int i0 = (int)Math.round(p0/totalLength*field.length);
+		int in = (int)Math.round((p0+dblLen)/totalLength*field.length);
+		if (in >= field.length) in = field.length;
+		
+		double deltaPhi = phase[in-1] - phase[i0];
+		return deltaPhi + dphi2;*/
+		
+		double p0 = probe.getPosition() - startPosition;
+		int in = (int)Math.round((p0+dblLen)/totalLength*field.length);
+		if (in >= field.length) in = field.length;
+		return -probe.getLongitinalPhase() + phase[in-1] - dblCavModeConst * Math.PI * indCell;		
+	}
 }
