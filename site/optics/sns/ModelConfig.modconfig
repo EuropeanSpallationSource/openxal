@@ -35,6 +35,12 @@
 		<map smf="ws" model="xal.model.elem.Marker"/>
 		<map smf="harp" model="xal.model.elem.Marker"/>
 		<map smf="marker" model="xal.model.elem.Marker"/>
+		
+		<map smf="DTLTank" model="xal.model.elem.IdealRfCavity"/>
+		<map smf="CCL" model="xal.model.elem.IdealRfCavity"/>
+		<map smf="SCLCavity" model="xal.model.elem.IdealRfCavity"/>
+		<map smf="Bnch" model="xal.model.elem.IdealRfCavity"/>
+
 	</associations>
 
 </configuration>
