@@ -13,6 +13,7 @@ import xal.model.Sector;
 import xal.model.elem.IdealDrift;
 import xal.model.elem.IdealMagQuad;
 import xal.model.elem.IdealMagSteeringDipole;
+import xal.model.elem.IdealRfCavity;
 import xal.model.elem.IdealRfCavityDrift;
 import xal.model.elem.Marker;
 import xal.sim.scenario.ElementMapping;
@@ -68,6 +69,7 @@ public class JElsElementMapping extends ElementMapping {
 		putMap("dch", IdealMagSteeringDipole.class);
 		putMap("dcv", IdealMagSteeringDipole.class);
 		putMap("marker", Marker.class);
+		putMap("rf", IdealRfCavity.class);
 	}
 
 	@Override

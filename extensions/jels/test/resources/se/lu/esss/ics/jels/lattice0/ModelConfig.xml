@@ -16,6 +16,8 @@
 		<map smf="dcv" model="xal.model.elem.IdealMagSteeringDipole"/>
 		<map smf="rfgap" model="se.lu.esss.ics.jels.model.elem.jels.IdealRfGap"/>
 		<map smf="marker" model="xal.model.elem.Marker"/>
+		
+		<map smf="RF" model="xal.model.elem.IdealRfCavity"/>
     </associations>
 </configuration>
 
