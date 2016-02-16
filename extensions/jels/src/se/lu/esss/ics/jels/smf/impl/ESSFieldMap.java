@@ -4,13 +4,11 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import se.lu.esss.ics.jels.smf.attr.ESSFieldMapBucket;
-import xal.ca.Channel;
 import xal.ca.ChannelFactory;
 import xal.smf.attr.AttributeBucket;
 import xal.smf.impl.RfCavity;
 import xal.smf.impl.RfGap;
 import xal.smf.impl.qualify.ElementTypeManager;
-import xal.smf.impl.qualify.QualifierFactory;
 import xal.tools.data.DataAdaptor;
 import xal.tools.xml.XmlDataAdaptor;
 
