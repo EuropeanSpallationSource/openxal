@@ -4,10 +4,13 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import se.lu.esss.ics.jels.smf.attr.ESSFieldMapBucket;
+import xal.ca.Channel;
 import xal.ca.ChannelFactory;
 import xal.smf.attr.AttributeBucket;
-import xal.smf.impl.Electrostatic;
+import xal.smf.impl.RfCavity;
+import xal.smf.impl.RfGap;
 import xal.smf.impl.qualify.ElementTypeManager;
+import xal.smf.impl.qualify.QualifierFactory;
 import xal.tools.data.DataAdaptor;
 import xal.tools.xml.XmlDataAdaptor;
 
@@ -17,7 +20,7 @@ import xal.tools.xml.XmlDataAdaptor;
  * @author Ivo List <ivo.list@cosylab.com>
  *
  */
-public class ESSFieldMap extends Electrostatic {
+public class ESSFieldMap extends RfGap {
 	public static final String      s_strType = "FM";
 	
     /*
@@ -121,6 +124,44 @@ public class ESSFieldMap extends Electrostatic {
 			fieldProfile = FieldProfile.getInstance(new URI(((XmlDataAdaptor)adaptor).document().getDocumentURI()).resolve(getFieldMapFile()+".edz").toString());			
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public double getDesignPropertyValue(String propertyName) {
+		final Property property = Property.valueOf( propertyName );		// throws IllegalArgumentException if no matching property
+		try {
+			if (getParent() instanceof RfCavity) {
+				RfCavity cavity = (RfCavity)getParent();
+				switch( property ) {
+				case ETL:
+					return cavity.getDfltCavAmp() * getXelmax() / (fieldProfile.getE0L(cavity.getCavFreq())/fieldProfile.getLength());
+				case PHASE:					
+					return cavity.getDfltCavPhase();					
+				case FREQUENCY:
+					return cavity.getCavFreq();
+				case FIELD:
+					return getXelmax();
+				default:
+					throw new IllegalArgumentException( "Unsupported FieldMap design value property: " + propertyName );
+				}
+			}
+					
+			switch( property ) {
+				case ETL:
+					return getXelmax()*1e-6;
+				case PHASE:					
+					return getPhase();					
+				case FREQUENCY:
+					return getFrequency();
+				case FIELD:
+					return getXelmax()*1e-6;
+				default:
+					throw new IllegalArgumentException( "Unsupported FieldMap design value property: " + propertyName );
+			}
+		}
+		catch( IllegalArgumentException exception ) {
+			return super.getDesignPropertyValue( propertyName );
 		}
 	}
 }
