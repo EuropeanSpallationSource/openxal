@@ -6,12 +6,13 @@ import se.lu.esss.ics.jels.tools.math.TTFIntegrator;
 import xal.model.IElement;
 import xal.model.IProbe;
 import xal.model.ModelException;
-import xal.model.elem.ElementSeq;
 import xal.model.elem.IdealRfCavityDrift;
+import xal.model.elem.ThickElement;
 import xal.model.elem.sync.IRfCavityCell;
+import xal.model.elem.sync.IRfGap;
 import xal.sim.scenario.LatticeElement;
 import xal.smf.impl.RfCavity;
-import xal.smf.impl.qualify.QualifierFactory;
+import xal.tools.beam.PhaseMap;
 
 /**
  * Implementation of NCells simulation of fieldmaps.
@@ -20,7 +21,7 @@ import xal.smf.impl.qualify.QualifierFactory;
  * @author Ivo List <ivo.list@cosylab.com>
  *
  */
-public class FieldMapNCells extends ElementSeq {
+public class FieldMapNCells extends ThickElement implements IRfGap, IRfCavityCell {
 	private double frequency;
 	
 	private IdealRfGap[] gaps;
@@ -38,7 +39,8 @@ public class FieldMapNCells extends ElementSeq {
 	
 	private int indCell;
 	private double dblCavModeConst;
-	private static int indCellStatic = 0;
+	
+	private double k0;
 	
 	public FieldMapNCells() {
         this(null);
@@ -57,34 +59,16 @@ public class FieldMapNCells extends ElementSeq {
 		    final ESSFieldMap fm  = (ESSFieldMap)latticeElement.getHardwareNode();
 		    FieldProfile fp = fm.getFieldProfile();	    		    
 		    
-		    double k0;
-		    boolean firstInRFCavity;
+		    phipos = fm.getPhasePosition();
 		    
 		    if (fm.getParent() instanceof RfCavity) {
-		    	RfCavity cavity = (RfCavity)fm.getParent();
-				phi0 = cavity.getDfltCavPhase()/180.*Math.PI;
-				frequency = cavity.getCavFreq() * 1e6;
-				phipos = fm.getPhasePosition();	
-				k0 = cavity.getDfltCavAmp()*1e6 * fm.getXelmax() / (fp.getE0L(frequency)/fp.getLength());
-				
-				inverted = fp.isFirstInverted();
-				firstInRFCavity = true;
-				for (ESSFieldMap fm2 : cavity.getNodesOfClassWithQualifier(ESSFieldMap.class, QualifierFactory.getStatusQualifier(true))) {
-					if (fm2.getPosition() < fm.getPosition()) {
-						firstInRFCavity = false;
-						break;
-					}
-				}
-				if (firstInRFCavity) indCellStatic = 0;
-				indCell = indCellStatic ++;
+		    	//WORKAROUND difference between ESS and SNS lattice
+		    	inverted = fp.isFirstInverted();
+		    	frequency = ((RfCavity)fm.getParent()).getCavFreq()*1e6;
 		    } else {
 		    	frequency = fm.getFrequency()*1e6;
-		    	phi0 = fm.getPhase()*Math.PI/180.;		    	
-		    	k0 = fm.getXelmax();
-		    	firstInRFCavity = true;
-		    	inverted = false;
 		    }
-		    
+			
 		    /*
 		     * Old implementation of IdealRfGap is used. First gap phase is calculated when the energy at the
 		     * entrance into the gap is known. Also TTF integrator is supplied with the necessary offset.
@@ -94,14 +78,13 @@ public class FieldMapNCells extends ElementSeq {
 		    gaps = new IdealRfGap[splitIntgrs.length];		    
 		    
 		    for (int i=0; i<splitIntgrs.length; i++) {
-		    	gaps[i] = new IdealRfGap(fm.getId(), splitIntgrs[i].getE0TL()*k0, 0, frequency);
-				
-				gaps[i].setFirstGap(i==0 && firstInRFCavity);
-				gaps[i].setCellLength(fm.getLength());
-				gaps[i].setE0(splitIntgrs[i].getE0TL()*k0/fm.getLength());				
+		    	gaps[i] = new IdealRfGap();
+		    	gaps[i].setFrequency(frequency);
+				gaps[i].setTTFFit(splitIntgrs[i]);
+				gaps[i].setCellLength(1);
 				gaps[i].setStructureMode(1);
 		    }
-		    
+		
 		} 
 		try {
 			firstSliceElement = (FieldMapNCells)latticeElement.getFirstSlice().createModelingElement();
@@ -138,12 +121,10 @@ public class FieldMapNCells extends ElementSeq {
 			double l1 =  phim * probe.getBeta() * IElement.LightSpeed / (2*Math.PI*frequency);		
 			double l2 = splitIntgrs[i].getLength() - l1;
 			if (i==0) {
-				double phim0 = phipos / (probe.getBeta() * IElement.LightSpeed / (2*Math.PI*frequency));			    
-			    double phiInput = Math.IEEEremainder(phi0 - phim0 - (inverted ? Math.PI : 0.), 2*Math.PI);			    
+				double phim0 = phipos / (probe.getBeta() * IElement.LightSpeed / (2*Math.PI*frequency));
+			    double phiInput = Math.IEEEremainder(phi0 - phim0 - (inverted ? Math.PI : 0.), 2*Math.PI);
     			gaps[i].setPhase(phiInput + phim + (splitIntgrs[i].getInverted() ? Math.PI : 0));
-			}
-			gaps[i].setTTFFit(splitIntgrs[i]);
-			gaps[i].setCavityCellIndex(i + indCell);
+			}			
 			
 			// propagate
 			// before gap
@@ -156,6 +137,11 @@ public class FieldMapNCells extends ElementSeq {
 		
 				// the gap
 				if (doGap) {
+					gaps[i].setETL(splitIntgrs[i].getE0TL()*k0);
+					gaps[i].setCavityCellIndex(i + indCell);
+					gaps[i].setFirstGap(i==0 && indCell == 0);
+					gaps[i].setE0(splitIntgrs[i].getE0TL()*k0);
+					
 					gaps[i].propagate(probe);
 					//System.out.println("#"+i+":gap");
 				}				
@@ -174,6 +160,96 @@ public class FieldMapNCells extends ElementSeq {
 			cellPos += splitIntgrs[i].getLength();
 	    }
     }
-	
+
+	@Override
+	public void setETL(double dblETL) {
+		k0 = dblETL;
+	}
+
+	@Override
+	public void setE0(double E) {
+		// We ignore this value. gap amplitude
+	}
+
+	@Override
+	public void setPhase(double dblPhase) {
+		phi0 = dblPhase;			
+	}
+
+	@Override
+	public void setFrequency(double dblFreq) {
+		frequency = dblFreq;
+		
+	}
+
+	@Override
+	public double getETL() {
+		return k0;
+	}
+
+	@Override
+	public double getPhase() {
+		return phi0;
+	}
+
+	@Override
+	public double getFrequency() {
+		return frequency;
+	}
+
+	@Override
+	public double getE0() {
+		return 1; // We ignore cavity amplitude
+	}
+
+	@Override
+	public boolean isFirstGap() {
+		return indCell == 0;
+	}
+
+	@Override
+	public void setCavityCellIndex(int indCell) {
+		this.indCell = indCell;
+	}
+
+	@Override
+	public void setCavityModeConstant(double dblCavModeConst) {
+		this.dblCavModeConst = dblCavModeConst;
+	}
+
+	@Override
+	public int getCavityCellIndex() {
+		return indCell;
+	}
+
+	@Override
+	public double getCavityModeConstant() {
+		return dblCavModeConst;
+	}
+
+	@Override
+	public boolean isEndCell() {
+		return false; // this is ignored
+	}
+
+	@Override
+	public boolean isFirstCell() {
+		return indCell == 0;
+	}
+
+	@Override
+	public double energyGain(IProbe probe, double dblLen) {
+		return 0; // not used
+	}
+
+	@Override
+	public PhaseMap transferMap(IProbe probe, double dblLen) throws ModelException {
+		return null; // not used
+	}
+
+	@Override
+	public double elapsedTime(IProbe probe, double dblLen) {
+		return 0; // not used
+	}
 
 }
