@@ -400,6 +400,8 @@ public class IdealRfCavity extends ElementSeq  implements IRfCavity {
         int                     indCell = 0;
         
         Iterator<IComponent>    iterCmps = super.localIterator();
+        String lastNodeId = null;
+        
         while ( iterCmps.hasNext() ) {
             IComponent cmp = iterCmps.next();
             
@@ -408,6 +410,9 @@ public class IdealRfCavity extends ElementSeq  implements IRfCavity {
                 continue;
 
             IRfCavityCell   mdlCavCell = (IRfCavityCell)cmp;
+            
+            if (lastNodeId != null && lastNodeId.equals(cmp.getHardwareNodeId())) continue;
+            else lastNodeId = cmp.getHardwareNodeId();
 
             // SET THE CELL INDEX
             mdlCavCell.setCavityCellIndex( indCell );
