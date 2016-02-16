@@ -8,9 +8,9 @@ import xal.model.IProbe;
 import xal.model.ModelException;
 import xal.model.elem.ThickElement;
 import xal.model.elem.sync.IRfCavityCell;
+import xal.model.elem.sync.IRfGap;
 import xal.sim.scenario.LatticeElement;
 import xal.smf.impl.RfCavity;
-import xal.smf.impl.qualify.QualifierFactory;
 import xal.tools.beam.PhaseMap;
 import xal.tools.beam.PhaseMatrix;
 
@@ -20,7 +20,7 @@ import xal.tools.beam.PhaseMatrix;
  * @author Ivo List <ivo.list@cosylab.com>
  *
  */
-public class FieldMap extends ThickElement {
+public class FieldMap extends ThickElement implements IRfGap, IRfCavityCell {
 	private double frequency;
 
 	private double field[];
@@ -28,19 +28,16 @@ public class FieldMap extends ThickElement {
 	private double k0;
 	private boolean inverted;
 
-	private double phi0;	
+	private double phi0;
 	private double phipos;
 	private double phase[];
 	
 	private double startPosition;
 	private boolean lastSlice;
-	private FieldMap firstSliceFieldmap;	
-	
-	private boolean firstInRFCavity;	
+	private FieldMap firstSliceFieldmap;
 
 	private int indCell;
 	private double dblCavModeConst = 0.;
-	private static int indCellStatic = 0;
 	
 	public FieldMap() {
 		this(null);
@@ -52,43 +49,21 @@ public class FieldMap extends ThickElement {
 
 	@Override
 	public void initializeFrom(LatticeElement latticeElement) {
-		super.initializeFrom(latticeElement);	
+		super.initializeFrom(latticeElement);
 		
-		if (latticeElement.isFirstSlice()) {			
+		if (latticeElement.isFirstSlice()) {
 			startPosition = latticeElement.getStartPosition();
 			
 			final ESSFieldMap fm = (ESSFieldMap)latticeElement.getHardwareNode();
 			FieldProfile fp = fm.getFieldProfile();
 			field = fp.getField();
-			totalLength = fp.getLength();			
-											
-			if (fm.getParent() instanceof RfCavity) {
-				RfCavity cavity = (RfCavity)fm.getParent();
-				phi0 = cavity.getDfltCavPhase()/180.*Math.PI;
-				frequency = cavity.getCavFreq() * 1e6;
-				phipos = fm.getPhasePosition();
-				inverted = fp.isFirstInverted();										
-				k0 = cavity.getDfltCavAmp()*1e6 * fm.getXelmax() / (fp.getE0L(frequency)/fp.getLength());
-				dblCavModeConst = cavity.getStructureMode();
-				
-				firstInRFCavity = true;
-				for (ESSFieldMap fm2 : cavity.getNodesOfClassWithQualifier(ESSFieldMap.class, QualifierFactory.getStatusQualifier(true))) {
-					if (fm2.getPosition() < fm.getPosition()) {
-						firstInRFCavity = false;
-						break;
-					}
-				}
-				if (firstInRFCavity) indCellStatic = 0;
-				indCell = indCellStatic ++;
-			} else {
-				firstInRFCavity = true;
-				phi0 = fm.getPhase()/180.*Math.PI;
-				frequency = fm.getFrequency() * 1e6;
-				phipos = 0;
-				k0 = fm.getXelmax();
-			}				
-		} else {			
-			try {
+			totalLength = fp.getLength();
+			
+			phipos = fm.getPhasePosition();
+			//WORKAROUND difference between ESS and SNS lattice
+			inverted = getParent() instanceof RfCavity && fp.isFirstInverted(); 
+		} else {
+			try {				
 				firstSliceFieldmap = (FieldMap)latticeElement.getFirstSlice().createModelingElement();
 			} catch (ModelException e) {
 			}
@@ -291,14 +266,13 @@ public class FieldMap extends ThickElement {
 			    		
     		double phi00;
     		
-			if (firstInRFCavity) {
+			if (indCell == 0) {
 			    double phim = phipos / (probe.getBeta() * IElement.LightSpeed / (2*Math.PI*frequency));
 				//phim = ti.getSyncPhase(probe.getBeta());
 			    
 			    phi00 = Math.IEEEremainder(phi0 - phim - (inverted ? Math.PI : 0.), 2*Math.PI);
 			} else {
 				phi00 = probe.getLongitinalPhase() + dblCavModeConst * Math.PI * indCell;
-				System.out.println(getId()+" "+indCell);
 			}
 						
 			phase = initPhase(probe.getKineticEnergy(), probe.getSpeciesRestEnergy(), phi00);
@@ -333,5 +307,81 @@ public class FieldMap extends ThickElement {
 		int in = (int)Math.round((p0+dblLen)/totalLength*field.length);
 		if (in >= field.length) in = field.length;
 		return -probe.getLongitinalPhase() + phase[in-1] - dblCavModeConst * Math.PI * indCell;		
+	}
+
+	@Override
+	public void setETL(double dblETL) {
+		k0 = dblETL;
+	}
+
+	@Override
+	public void setE0(double E) {
+		// We ignore this value. gap amplitude
+	}
+
+	@Override
+	public void setPhase(double dblPhase) {
+		phi0 = dblPhase;			
+	}
+
+	@Override
+	public void setFrequency(double dblFreq) {
+		frequency = dblFreq;
+		
+	}
+
+	@Override
+	public double getETL() {
+		return k0;
+	}
+
+	@Override
+	public double getPhase() {
+		return phi0;
+	}
+
+	@Override
+	public double getFrequency() {
+		return frequency;
+	}
+
+	@Override
+	public double getE0() {
+		return 1; // We ignore cavity amplitude
+	}
+
+	@Override
+	public boolean isFirstGap() {
+		return indCell == 0;
+	}
+
+	@Override
+	public void setCavityCellIndex(int indCell) {
+		this.indCell = indCell;
+	}
+
+	@Override
+	public void setCavityModeConstant(double dblCavModeConst) {
+		this.dblCavModeConst = dblCavModeConst;
+	}
+
+	@Override
+	public int getCavityCellIndex() {
+		return indCell;
+	}
+
+	@Override
+	public double getCavityModeConstant() {
+		return dblCavModeConst;
+	}
+
+	@Override
+	public boolean isEndCell() {
+		return false; // this is ignored
+	}
+
+	@Override
+	public boolean isFirstCell() {
+		return indCell == 0;
 	}
 }
