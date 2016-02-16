@@ -7,7 +7,9 @@
 package xal.sim.scenario;
 
 import xal.model.IComponent;
+import xal.model.IComposite;
 import xal.model.ModelException;
+import xal.model.elem.ThickElement;
 import xal.model.elem.ThinElement;
 import xal.smf.AcceleratorNode;
 import xal.smf.AcceleratorSeq;
@@ -146,12 +148,10 @@ public class LatticeElement implements Comparable<LatticeElement> {
 			else
 				dblLenEffec = ((Magnet) smfNode).getEffLength();
 		    
-		} else if (smfNode instanceof xal.smf.impl.Electrostatic) {
+		} else if (ThickElement.class.isAssignableFrom(clsModElemType)) {
 			dblLenEffec = dblLenElem;
-			
-		} else if (smfNode instanceof AcceleratorSeq) {
+		} else if (IComposite.class.isAssignableFrom(clsModElemType)) {
 		    dblLenEffec = dblLenElem;
-		    
 		}
 		this.dblElemLen = dblLenEffec;
 
