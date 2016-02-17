@@ -371,9 +371,9 @@ public class NCellsTest extends SingleElementTest {
 			CMerrTolerance = 2e-2;
 		}}});
 		
-		/*tests.add(new Object[] {new SingleElementTestData() {{
-			description = "basic test, m=0";
-			probe = setupOpenXALProbe( 2.5e6, frequency, 30e-3); 
+		tests.add(new Object[] {new SingleElementTestData() {{
+			description = "misalignment test, m=0, dx, dy";
+			probe = setupOpenXALProbe( 2.5e6, frequency, 0.); 
 			elementMapping = JElsElementMapping.getInstance();
 			sequence = ncells(4.025e8, 0, 3, 0.5, 5.27924e+06, -72.9826, 31, 0, 
 					0.493611, 0.488812, 12.9359, -14.4824, 
@@ -400,7 +400,8 @@ public class NCellsTest extends SingleElementTest {
 					{+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +2.225560e-05, +1.651268e-04}	
 			};	
 			TWMean = new double[] {	 12.3902, 47.9196, 24.7805, 95.8393, -0.203508, 7.79045 };
-		}}});*/
+			CMerrTolerance = 1e-2;
+		}}});
 		return tests;
 	}
 	
