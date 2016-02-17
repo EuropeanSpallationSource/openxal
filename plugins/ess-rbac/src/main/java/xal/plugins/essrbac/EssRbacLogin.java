@@ -4,6 +4,7 @@ import se.esss.ics.rbac.access.Credentials;
 import se.esss.ics.rbac.access.SecurityCallbackAdapter;
 import se.esss.ics.rbac.access.SecurityFacade;
 import se.esss.ics.rbac.access.SecurityFacadeException;
+import se.esss.ics.rbac.access.Token;
 import xal.rbac.AccessDeniedException;
 import xal.rbac.RBACException;
 import xal.rbac.RBACLogin;
@@ -59,14 +60,19 @@ public class EssRbacLogin extends RBACLogin {
         });
 
         try {
-            return new EssRbacSubject(SecurityFacade.getDefaultInstance().authenticate());
+        	Token t = SecurityFacade.getDefaultInstance().authenticate();
+        	if (!SecurityFacade.getDefaultInstance().isTokenValid()) {
+        		SecurityFacade.getDefaultInstance().logout();
+        		throw new AccessDeniedException("Token expired.");
+        	}
+        	SecurityFacade.getDefaultInstance().setDefaultSecurityCallback(null);
+            return new EssRbacSubject(t);
 
         } catch (SecurityFacadeException e) {
             System.err.println(e.getMessage());
             //e.printStackTrace();
             throw new AccessDeniedException("Unable to authenticate.");
         } catch (Exception e){
-            System.err.println(e.getMessage());
             throw new RBACException("Error while trying to authenticate.");
         }
     }
