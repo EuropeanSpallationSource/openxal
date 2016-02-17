@@ -39,8 +39,7 @@ public class EssRbacSubject implements RBACSubject {
             SecurityFacade.getDefaultInstance().logout();
             this.token = null;
         } catch (SecurityFacadeException e) {
-            e.printStackTrace();
-            throw new RBACException("Error logging out");
+            throw new RBACException(e.getMessage());
         }
 
     }
@@ -51,11 +50,9 @@ public class EssRbacSubject implements RBACSubject {
         try {
             return SecurityFacade.getDefaultInstance().hasPermission(resource, permission);
         } catch (se.esss.ics.rbac.access.AccessDeniedException e) {
-            e.printStackTrace();
-            throw new AccessDeniedException("User logged out.");
+            throw new AccessDeniedException(e.getMessage());
         } catch (SecurityFacadeException e) {
-            e.printStackTrace();
-            throw new RBACException("Error getting permission.");
+            throw new RBACException(e.getMessage());
         }
     }
 
@@ -65,11 +62,9 @@ public class EssRbacSubject implements RBACSubject {
         try {
             return SecurityFacade.getDefaultInstance().hasPermissions(resource, permissions);
         } catch (se.esss.ics.rbac.access.AccessDeniedException e) {
-            e.printStackTrace();
-            throw new AccessDeniedException("User logged out.");
+            throw new AccessDeniedException(e.getMessage());
         } catch (SecurityFacadeException e) {
-            e.printStackTrace();
-            throw new RBACException("Error getting permissions.");
+            throw new RBACException(e.getMessage());
         }
     }
 
@@ -80,18 +75,16 @@ public class EssRbacSubject implements RBACSubject {
             return new EssExclusiveAccess(SecurityFacade.getDefaultInstance().requestExclusiveAccess(resource,
                     permission, durationInMinutes));
         } catch (se.esss.ics.rbac.access.AccessDeniedException e) {
-            e.printStackTrace();
-            throw new AccessDeniedException("User logged out.");
+            throw new AccessDeniedException(e.getMessage());
         } catch (SecurityFacadeException e) {
-            e.printStackTrace();
-            throw new RBACException("Error getting exclusive acceess.");
+            throw new RBACException(e.getMessage());
         }
     }
 
     @Override
     public void setAutoLogoutTimeout(final int timeoutInMinutes, final AutoLogoutCallback callback) {
         SecurityFacade.getDefaultInstance().setAutoLogoutTimeout(timeoutInMinutes);
-         final EssRbacSubject subject = this;
+        final EssRbacSubject subject = this;
         SecurityFacade.getDefaultInstance().setDefaultSecurityCallback(new SecurityCallbackAdapter() {//User is already logged in so we don't need get credentials method.
             @Override
             public boolean autoLogoutConfirm(Token token, int timeoutInSeconds) {
