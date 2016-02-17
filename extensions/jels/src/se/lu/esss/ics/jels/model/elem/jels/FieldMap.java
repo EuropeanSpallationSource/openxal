@@ -61,7 +61,7 @@ public class FieldMap extends ThickElement implements IRfGap, IRfCavityCell {
 			
 			phipos = fm.getPhasePosition();
 			//WORKAROUND difference between ESS and SNS lattice
-			inverted = getParent() instanceof RfCavity && fp.isFirstInverted(); 
+			inverted = fm.getParent() instanceof RfCavity && fp.isFirstInverted(); 
 		} else {
 			try {				
 				firstSliceFieldmap = (FieldMap)latticeElement.getFirstSlice().createModelingElement();
@@ -251,7 +251,16 @@ public class FieldMap extends ThickElement implements IRfGap, IRfCavityCell {
 	
 	@Override
 	public double elapsedTime(IProbe probe, double dblLen) {
-		return 0;
+		if (firstSliceFieldmap != null) return firstSliceFieldmap.elapsedTime(probe, dblLen); 
+		
+		double p0 = probe.getPosition() - startPosition;
+		
+		int i0 = (int)Math.round(p0/totalLength*field.length);
+		int in = (int)Math.round((p0+dblLen)/totalLength*field.length);
+		
+		in = Math.min(in,field.length-1);
+		double dt = (phase[in] - phase[i0]) / (2*Math.PI*frequency);
+		return dt;
 	}
 	
 	/**

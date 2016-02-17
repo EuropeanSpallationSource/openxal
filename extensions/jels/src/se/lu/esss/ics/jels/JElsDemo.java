@@ -177,7 +177,7 @@ public class JElsDemo {
 		    w[i] = ps.getKineticEnergy()/1.e6;
 		    PhaseVector mean = ps.phaseMean();
 			
-		    System.out.printf("%E %E %E %E %E %E %E %E %E %E %E %E %E %E %E %E %E %s\n", ps.getPosition(), ps.getGamma()-1, 		
+		    System.out.printf("%E %E %E %E %E %E %E %E %E %E %E %E %E %E %E %E %E %E %s\n", ps.getPosition(), ps.getGamma()-1, 		
 					twiss[0].getEnvelopeRadius(),
 					Math.sqrt(twiss[0].getGamma()*twiss[0].getEmittance()),
 					twiss[1].getEnvelopeRadius(),
@@ -195,7 +195,7 @@ public class JElsDemo {
 				
 					twiss[0].getBeta(),
 					twiss[1].getBeta(),
-					
+					ps.getTime(),
 		    		ps.getElementId());
 		
 		    /*if (ps.getElementId().startsWith("BEGIN")) {
