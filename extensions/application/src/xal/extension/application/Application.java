@@ -144,20 +144,28 @@ abstract public class Application {
         // assign the global application instance before the setup since it is referenced there (among other places).
         Application._application = this;
         
-        try{
-        while(!authenticateWithRBAC()){
-            System.out.println("Plese try again...");
-            }
-        }catch(NullPointerException e){//If user pressed cancel null was returned.
-            System.out.println("Exiting...");
-            System.exit(0);
+        while (true) { 
+        	if (authenticateWithRBAC()) {
+        		if (authorizeWithRBAC("Run")) {
+        			break;
+        		} else {
+        			final int option = JOptionPane.showConfirmDialog(getActiveWindow(), 
+        					"No authorisation. Would you like to login with another user?", 
+        					"No authorisation", JOptionPane.OK_CANCEL_OPTION);
+        			if (option == JOptionPane.OK_OPTION) {
+        				try {
+							rbacSubject.logout();
+						} catch (RBACException e) {
+							JOptionPane.showMessageDialog(getActiveWindow(), e.getMessage(), "Error while trying to logout", JOptionPane.ERROR_MESSAGE);
+						}
+        				rbacSubject = null;
+        			} else {
+        				quit();
+        			}
+        		}
+        	}
         }
 
-        if(!authorizeWithRBAC("Run")){
-            System.out.println("Not authorized to start this application.");
-            System.out.println("Exiting...");
-            System.exit(0);
-        }
         setup( urls );
     }
     
@@ -169,38 +177,46 @@ abstract public class Application {
      * If RBACPlugin couldn't be loaded the application will not use RBAC !!!
      * @return true if authentication successful, false if not.
      */
-    private Boolean authenticateWithRBAC(){
+    private boolean authenticateWithRBAC(){
       //RBAC authentication
         try {
-            System.out.println("Starting authentication.");
             rbacLogin = RBACLogin.newRBACLogin();
         } catch (RuntimeException e) {
-            System.out.println("RBAC plugin not found. Continuing without RBAC.");
+            System.err.println("RBAC plugin not found. Continuing without RBAC.");
             return true;
         }
         
-        try {
-        	// Try to use the local token.
-        	rbacLogin.authenticate(null, null);
-        	return true;
-        } catch (Exception e) {
-        	// Fall to authentication pane
+        if (rbacSubject == null) {
+	        try {
+	        	// Try to use the local token.
+	        	rbacSubject = rbacLogin.authenticate(null, null);
+	        	System.out.println("Already logged in.");
+	        	if (rbacSubject != null) return true;
+	        } catch (Exception e) {
+	        	// Fall to authentication pane
+	        }
         }
 
         try {
+        	System.out.println("Starting authentication.");
+        	
             final Credentials credentials = AuthenticationPane.getCredentials();
             if(credentials == null){
-                System.out.println("User pressed cancel.");
-                return null;
-            }
+                // User pressed cancel
+            	System.out.println("Exiting...");
+            	quit();
+                return false;
+            }           
             rbacSubject = rbacLogin.authenticate(credentials.getUsername(),credentials.getPassword(),credentials.getPreferredRole(),credentials.getIP());
-            System.out.println("Authentication successful.");
-            return true;
+            System.out.printf("Authentication successful with username %s.\n", credentials.getUsername());
+            return (rbacSubject != null);
         } catch (AccessDeniedException e) {
-            System.out.println("Couldn't authenticate.");
+            System.err.printf("Access denied during authentication: %s\n",e.getMessage());
+            JOptionPane.showMessageDialog(getActiveWindow(), e.getMessage(), "Access denied", JOptionPane.ERROR_MESSAGE);
             return false;
         } catch (RBACException e) {
-            System.out.println("Error while trying to authenticate.");
+            System.err.printf("Error while trying to authenticate: %s\n",e.getMessage());
+            JOptionPane.showMessageDialog(getActiveWindow(), e.getMessage(), "Error while trying to authenticate", JOptionPane.ERROR_MESSAGE);
             return false; 
         }
     }
@@ -221,20 +237,27 @@ abstract public class Application {
         //RBAC authorization
         if(rbacSubject != null){
             try {
-                System.out.println("Starting authorization.");
-                if (!rbacSubject.hasPermission("Xal" + getAdaptor().applicationName().replace(" ", ""), permission)) {
+            	String resource = "Xal" + getAdaptor().applicationName().replace(" ", "");
+                System.out.printf("Starting authorization for resource %s, permission %s.\n", resource, permission);
+                if (rbacSubject.hasPermission(resource, permission)) {
+                	System.out.println("Authorization successful. Proceeding...");
+                	return true;
+                } else {
+                	System.err.printf("No authorisation for resource %s, permission %s.\n", resource, permission);
                     return false;
                 }
             } catch (RBACException e) {
-                System.out.println("Error while trying to authorize.");
+                System.err.printf("Error while trying to authorize: %s.\n", e.getMessage());
+                JOptionPane.showMessageDialog(getActiveWindow(), e.getMessage(), "Error while trying to authorize", JOptionPane.ERROR_MESSAGE);
                 return false;
             } catch (AccessDeniedException e) {
-                System.out.println("User loged out.");
+                System.err.printf("Access denied during authorisation: %s\n", e.getMessage());
+                JOptionPane.showMessageDialog(getActiveWindow(), e.getMessage(), "Access denied", JOptionPane.ERROR_MESSAGE);
                 return false;
             }
-            System.out.println("Authorization successful. Proceeding...");
+        } else {
+        	return true; // no RBAC module
         }
-        return true;
     }
 	
 	public RBACLogin getRbacLogin() {
@@ -1013,8 +1036,19 @@ abstract public class Application {
 				exception.printStackTrace();
 			}
 		}
-        
-        _noticeProxy.applicationWillQuit();
+        if (rbacSubject != null) {
+			final int option = JOptionPane.showConfirmDialog(getActiveWindow(), 
+					"Would you like to logout?",  "Logout", JOptionPane.YES_NO_OPTION);
+			if (option == JOptionPane.YES_OPTION) {
+				try {
+					rbacSubject.logout();
+				} catch (RBACException e) {
+					JOptionPane.showMessageDialog(getActiveWindow(), e.getMessage(), "Error while trying to logout", JOptionPane.ERROR_MESSAGE);
+				}
+				rbacSubject = null;
+			}
+        }
+        if (_noticeProxy != null) _noticeProxy.applicationWillQuit();
 
         System.exit(0);
     }
