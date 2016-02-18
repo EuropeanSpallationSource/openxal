@@ -14,24 +14,56 @@
     <packaging>pom</packaging>
     
     <modules>
+        <module>acceleratorapplicationtemplate</module>
+        <module>acceleratordemo</module>
+        <module>arraypvviewer</module>
+        <module>beam_matcher</module>
+        <module>bpmviewer</module>
         <module>bricks</module>
+        <module>bsmanalysis</module>
         <module>dbbrowser</module>
+        <module>demo</module>
+        <module>demobricks</module>
+        <module>desktopdemo</module>
+        <module>diagtiming</module>
+        <module>ema</module>
+        <module>emittanceanalysis</module>
+        <module>energymanager</module>
         <module>experimentautomator</module>
         <module>extlatgenerator</module>
+        <module>injdumpwizard</module>
         <module>knobs</module>
+        <module>labbook</module>
         <module>launcher</module>
+        <module>lossviewer</module>
+        <module>machinerecorder</module>
         <module>machinesimulator</module>
+        <module>magnetcycling</module>
+        <module>mpsclient</module>
         <module>mtv</module>
         <module>opticseditor</module>
         <module>opticsswitcher</module>
         <module>orbitcorrect</module>
+        <module>pasta</module>
+        <module>pta</module>
         <module>pvhistogram</module>
         <module>pvlogger</module>
+        <module>quadshaker</module>
+        <module>rfphaseshaker</module>
+        <module>saddam</module>
+        <module>scalarpvviewer</module>
         <module>scan1d</module>
         <module>scan2d</module>
+        <module>sclmonitor</module>
         <module>scope</module>
         <module>score</module>
+        <module>template</module>
+        <module>timestamptest</module>
+        <module>tripviewer</module>
+        <module>ttffactory</module>
         <module>virtualaccelerator</module>
+        <module>wireanalysis</module>
+        <module>wirescan</module>
         <module>xyzcorrelator</module>
     </modules>
 
