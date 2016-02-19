@@ -38,7 +38,6 @@
         <module>machinerecorder</module>
         <module>machinesimulator</module>
         <module>magnetcycling</module>
-        <module>mpsclient</module>
         <module>mtv</module>
         <module>opticseditor</module>
         <module>opticsswitcher</module>
