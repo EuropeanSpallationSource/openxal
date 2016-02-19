@@ -55,7 +55,6 @@
         <module>score</module>
         <module>template</module>
         <module>timestamptest</module>
-        <module>tripviewer</module>
         <module>ttffactory</module>
         <module>virtualaccelerator</module>
         <module>wireanalysis</module>
