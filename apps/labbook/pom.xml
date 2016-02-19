@@ -37,4 +37,14 @@
             </plugin>
         </plugins>
     </build>
+    <dependencies>
+        <dependency>
+            <groupId>org.xal</groupId>
+            <artifactId>openxal.extensions.bricks</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.xal</groupId>
+            <artifactId>openxal.extensions.logbook</artifactId>
+        </dependency>
+    </dependencies>
 </project>
