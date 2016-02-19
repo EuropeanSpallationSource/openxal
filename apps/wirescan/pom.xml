@@ -37,4 +37,14 @@
             </plugin>
         </plugins>
     </build>
+    <dependencies>
+        <dependency>
+            <groupId>org.xal</groupId>
+            <artifactId>openxal.extensions.application</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.xal</groupId>
+            <artifactId>openxal.extensions.wirescan</artifactId>
+        </dependency>
+    </dependencies>
 </project>
