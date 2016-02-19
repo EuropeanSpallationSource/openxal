@@ -45,7 +45,6 @@
         <module>pasta</module>
         <module>pvhistogram</module>
         <module>pvlogger</module>
-        <module>quadshaker</module>
         <module>rfphaseshaker</module>
         <module>saddam</module>
         <module>scalarpvviewer</module>
