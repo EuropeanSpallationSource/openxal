@@ -35,7 +35,6 @@
         <module>knobs</module>
         <module>labbook</module>
         <module>launcher</module>
-        <module>lossviewer</module>
         <module>machinerecorder</module>
         <module>machinesimulator</module>
         <module>magnetcycling</module>
