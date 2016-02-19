@@ -114,6 +114,10 @@
         </dependency>
         <dependency>
             <groupId>org.xal</groupId>
+            <artifactId>openxal.extensions.wirescan</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.xal</groupId>
             <artifactId>openxal.extensions.worker</artifactId>
         </dependency>
         <dependency>
