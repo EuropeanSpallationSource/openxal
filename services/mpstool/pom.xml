@@ -21,7 +21,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>xal.service.pvslogger.Main</mainClass>
+                            <mainClass>xal.service.mpstool.Main</mainClass>
                         </manifest>
                         <manifestEntries>
                             <Class-Path>openxal.library-${project.version}.jar</Class-Path>
