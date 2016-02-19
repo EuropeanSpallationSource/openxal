@@ -43,7 +43,6 @@
         <module>opticsswitcher</module>
         <module>orbitcorrect</module>
         <module>pasta</module>
-        <module>pta</module>
         <module>pvhistogram</module>
         <module>pvlogger</module>
         <module>quadshaker</module>
