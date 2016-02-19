@@ -1,49 +1,49 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	
-	<parent>
-		<groupId>org.xal</groupId>
-		<artifactId>openxal.extensions</artifactId>
-		<version>1.0.8-SNAPSHOT</version>
-	</parent>
-	
-	<groupId>se.lu.esss.ics.jels</groupId>
-	<artifactId>jels</artifactId>
-	<version>1.0.8-SNAPSHOT</version>
-	<packaging>jar</packaging>
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-	<name>ESS JElS</name>
-	<url>http://europeanspallationsource.se/</url>
+    <parent>
+        <groupId>org.xal</groupId>
+        <artifactId>openxal.extensions</artifactId>
+        <version>1.0.8-SNAPSHOT</version>
+    </parent>
 
-	<build>
-		<sourceDirectory>src</sourceDirectory>
-		<testSourceDirectory>test/java</testSourceDirectory>
-		<resources>
-			<resource>
-				<directory>resources</directory>
-			</resource>
-		</resources>
-		<testResources>
-			<testResource>
-				<directory>test/resources</directory>
-			</testResource>
-		</testResources>
-	</build>
+    <groupId>se.lu.esss.ics.jels</groupId>
+    <artifactId>jels</artifactId>
+    <version>1.0.8-SNAPSHOT</version>
+    <packaging>jar</packaging>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.xal</groupId>
-			<artifactId>openxal.plugins.jca</artifactId>
-			<scope>runtime</scope>			
-		</dependency>
-		<dependency>
-			<groupId>org.xal</groupId>
-			<artifactId>openxal.extensions.solver</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.xal</groupId>
-			<artifactId>openxal.extensions.widgets</artifactId>
-		</dependency>						
-	</dependencies>
+    <name>ESS JElS</name>
+    <url>http://europeanspallationsource.se/</url>
+
+    <build>
+        <sourceDirectory>src</sourceDirectory>
+        <testSourceDirectory>test/java</testSourceDirectory>
+        <resources>
+            <resource>
+                <directory>resources</directory>
+            </resource>
+        </resources>
+        <testResources>
+            <testResource>
+                <directory>test/resources</directory>
+            </testResource>
+        </testResources>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.xal</groupId>
+            <artifactId>openxal.plugins.jca</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.xal</groupId>
+            <artifactId>openxal.extensions.solver</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.xal</groupId>
+            <artifactId>openxal.extensions.widgets</artifactId>
+        </dependency>
+    </dependencies>
 </project>
