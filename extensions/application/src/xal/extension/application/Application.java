@@ -237,7 +237,8 @@ abstract public class Application {
         //RBAC authorization
         if(rbacSubject != null){
             try {
-            	String resource = "Xal" + getAdaptor().applicationName().replace(" ", "");
+            	String appName = getAdaptor().applicationName().replace(" ", "");
+            	String resource = "Xal" + appName.substring(0, 1).toUpperCase() + appName.substring(1);
                 System.out.printf("Starting authorization for resource %s, permission %s.\n", resource, permission);
                 if (rbacSubject.hasPermission(resource, permission)) {
                 	System.out.println("Authorization successful. Proceeding...");
