@@ -119,7 +119,11 @@ public class AuthenticationPane extends JOptionPane {
      */
     public static Credentials getCredentials() {
         AuthenticationPane pane = new AuthenticationPane();
-        pane.createDialog((Component) null).setVisible(true);
+        JDialog dlg = pane.createDialog((Component) null);
+        dlg.setModal(true);
+        dlg.setAlwaysOnTop(true);
+        dlg.setVisible(true);
+        
         Object o = pane.getValue();
         if (o == UNINITIALIZED_VALUE) {
             return null;
