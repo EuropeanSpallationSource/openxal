@@ -47,12 +47,12 @@ import edu.stanford.slac.meme.support.sys.MemeConstants;
  * BPMS:UND1:32/twiss - returns NTTable
  * </pre>
  * 
- * @author Greg White, 25-Oct-2013 (greg@slac.stanford.edu)
- * @author Blaž Kranjc 30-Aug-2015 (blaz.kranjc@cosylab.com)
- * @see [1] <a href=
+ * See [1] <a href=
  *      "http://epics-pvdata.sourceforge.net/alpha/normativeTypes/normativeTypes.html#ntmatrix">
  *      Normative Type Specification</a>
  * 
+ * @author Greg White, 25-Oct-2013 (greg@slac.stanford.edu)
+ * @author Blaž Kranjc 30-Aug-2015 (blaz.kranjc@cosylab.com)
  */
 public class OpticsService {
 	// Acquire the logging interface
