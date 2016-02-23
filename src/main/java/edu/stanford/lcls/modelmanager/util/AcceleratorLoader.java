@@ -65,7 +65,7 @@ public enum AcceleratorLoader {
 	 * Method dedicated to loading of Accelerator from file.
          * Every loader must implement this method.
 	 * 
-	 * @param url Url of accelerator file.
+	 * @param uri Uri of accelerator file.
 	 * @return Loaded Accelerator object.
 	 */
 	protected abstract Accelerator loadAccelerator(URI uri);
@@ -75,11 +75,10 @@ public enum AcceleratorLoader {
 	 * and injects missing default tables.
 	 * 
 	 * @param url Url of accelerator file.
-	 * @return Loaded Accelerator object.
-	 * @throws URISyntaxException 
+	 * @return Loaded Accelerator object. 
 	 */
 	public Accelerator getAccelerator(URI url) {
-        Accelerator acc = loadAccelerator(url);     
+        Accelerator acc = loadAccelerator(url);
 	    return acc;
 	}
 

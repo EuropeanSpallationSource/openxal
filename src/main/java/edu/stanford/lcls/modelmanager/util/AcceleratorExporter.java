@@ -41,7 +41,7 @@ public class AcceleratorExporter {
 	/**
 	 * Constructor.
 	 * @param acc Accelerator to export.
-	 * @param path Path to the main file.
+	 * @param mainFile Path to the main file.
 	 */
 	public AcceleratorExporter(Accelerator acc, File mainFile) {
 		this.acc = acc;
