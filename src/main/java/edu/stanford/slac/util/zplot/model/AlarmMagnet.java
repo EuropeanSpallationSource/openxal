@@ -21,7 +21,7 @@ public class AlarmMagnet extends Device {
 	 * @param name from MAD; or alias if Non-MAD, or CA device name can be used
 	 * @param z = z position from MAD 
 	 * @param widget = widget from WidgetsRepository
-	 * @parram bact = MagnetBactRecord whose toString() method is overwritten to provide the magnet's bact value
+	 * @param bact = MagnetBactRecord whose toString() method is overwritten to provide the magnet's bact value
 	 * @param statusMessage = MagnetStatMsgRecord whose toString() method is overwritten to provide STATMSG string
 	 */
 	public AlarmMagnet(String name, double z, Widget widget, Object bact, Object statusMessage) {

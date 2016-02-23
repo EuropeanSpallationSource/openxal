@@ -11,7 +11,6 @@ public interface ZPlotListener {
 	
 	/**
 	 * My Method (please, document me!)
-	 * @param plotPanel
 	 */
 	public void tooltipShown(ZPlotEvent event);
 
