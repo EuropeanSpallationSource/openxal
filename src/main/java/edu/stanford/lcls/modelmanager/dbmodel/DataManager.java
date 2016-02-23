@@ -287,7 +287,7 @@ public class DataManager {
 				
 				// get state for the element
 			
-				EnvelopeProbeState state = trajectory.stateNearestPosition(elem.getPosition()+elem.getLength()/2.);
+				EnvelopeProbeState state = trajectory.stateNearestPosition(elem.getLatticePosition()+elem.getLength()/2.);
 						//.trajectoryStatesForElement(elem.getId());
 				// We only output begin/middle/end for a thick device,
 				// therefore, no need to go through all the states but only the
@@ -296,7 +296,7 @@ public class DataManager {
 										
 
 				// z-pos offset correction
-				machineModelDetail.setPropertyValue("ZPOS", df.format(elem.getPosition()+elem.getLength()/2.));
+				machineModelDetail.setPropertyValue("ZPOS", df.format(elem.getLatticePosition()+elem.getLength()/2.));
 				machineModelDetail.setPropertyValue("SUML", df.format(state.getPosition()));
 				machineModelDetail.setPropertyValue("ORDINAL", elemOrders.get(state.getElementId()).toString());
 
