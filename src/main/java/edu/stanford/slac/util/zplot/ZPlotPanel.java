@@ -309,8 +309,6 @@ public class ZPlotPanel extends ChartPanel {
 	/**
 	 * My Constructor (please, document me!)
 	 * 
-	 * @param chart
-	 * @param useBuffer
 	 */
 	public ZPlotPanel(Container parent, ZPlot zPlot) {
 		super(null, USE_BUFFER);
