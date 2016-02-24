@@ -9,7 +9,6 @@
 	</parent>
 	
 	<artifactId>openxal.services</artifactId>
-	<version>1.0.8-SNAPSHOT</version>
 	
 	<packaging>pom</packaging>
 	
