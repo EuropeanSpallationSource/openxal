@@ -270,13 +270,13 @@ public class RealNumericIndexer<T> implements Iterable<T> {
 		final int NUM_RECORDS = _records.size();
 		if ( NUM_RECORDS > 0 ) {
 			final int index = getUpperIndex( location );
-			if ( location < getMinLocation() ) {
+			if ( location <= getMinLocation() ) {
 				_records.add( 0, newRecord );
 			}
 			else if ( location >= getMaxLocation() ) {
 				_records.add( newRecord );
 			}
-			else if ( index > 0 && index < NUM_RECORDS ) {
+			else if ( index >= 0 && index < NUM_RECORDS ) {
 				_records.add( index, newRecord );
 			}
 			else {
