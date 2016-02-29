@@ -311,7 +311,7 @@ public class EnergyVector extends BaseVector<EnergyVector> {
      * @since  Oct 12, 2015,  Christopher K. Allen
      */
     @Override
-    protected EnergyVector newInstance() {
+    protected EnergyVector newInstance(int size) {
         EnergyVector    vec = new EnergyVector();
         
         return vec;

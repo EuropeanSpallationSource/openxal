@@ -46,7 +46,7 @@ public class TranslationMatrix extends PhaseMatrix {
 	 * @since  Jun 17, 2014
 	 */
 	@Override
-	protected PhaseMatrix newInstance() {
+	protected PhaseMatrix newInstance(int row, int cnt) {
 		return new TranslationMatrix(0.,0.,0.);
 	}
 }

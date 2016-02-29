@@ -158,9 +158,7 @@ public class Rn extends BaseVector<Rn> {
      * @since  Jul 22, 2015   by Christopher K. Allen
      */
     @Override
-    protected Rn newInstance() {
-        int intSize = this.getSize();
-        
+    protected Rn newInstance(int intSize) {
         return new Rn(intSize);
     }
 

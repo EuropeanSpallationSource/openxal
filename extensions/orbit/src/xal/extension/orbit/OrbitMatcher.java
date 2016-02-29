@@ -11,11 +11,11 @@ package xal.extension.orbit;
 import java.util.ArrayList;
 import java.util.List;
 
-import Jama.Matrix;
 import xal.model.probe.traj.Trajectory;
 import xal.model.probe.traj.TransferMapState;
 import xal.smf.AcceleratorNode;
 import xal.tools.beam.PhaseMatrix;
+import xal.tools.math.GenericMatrix;
 
 
 /** using the online model (ignoring coupling), determines a beam position and momentum at an element which best matches the measured positions at a series of specified elements */
@@ -115,42 +115,42 @@ public class OrbitMatcher {
 
 /** best fit transform (in one plane) from a set of beam positions to a beam position at a specified point */
 class BeamPositionTransform {
-	final protected Matrix KICK_TRANSFORM;
-	final protected Matrix PROJECTION_TRANSFORM;
+	final protected GenericMatrix KICK_TRANSFORM;
+	final protected GenericMatrix PROJECTION_TRANSFORM;
 	
 	
 	/** Constructor */
 	public BeamPositionTransform( final List<TransferRow> transferRows ) {
 		final int rowCount = transferRows.size();
 		
-		final Matrix kickTransform = new Matrix( rowCount, 1 );
-		final Matrix phaseTransform = new Matrix( rowCount, 2 );
+		final GenericMatrix kickTransform = new GenericMatrix( rowCount, 1 );
+		final GenericMatrix phaseTransform = new GenericMatrix( rowCount, 2 );
 		
 		int row = 0;
 		for ( final TransferRow transferRow : transferRows ) {
-			phaseTransform.set( row, 0, transferRow.T11 );
-			phaseTransform.set( row, 1, transferRow.T12 );
-			kickTransform.set( row, 0, transferRow.T13 );
+			phaseTransform.setElem( row, 0, transferRow.T11 );
+			phaseTransform.setElem( row, 1, transferRow.T12 );
+			kickTransform.setElem( row, 0, transferRow.T13 );
 			++row;
 		}
 		
 		KICK_TRANSFORM = kickTransform;
 		
 		// projection transform:  (A<sup>T</sup> A)<sup>-1</sup> A<sup>T</sup>
-		final Matrix phaseTransformTranspose = phaseTransform.transpose();
+		final GenericMatrix phaseTransformTranspose = phaseTransform.transpose();
 		PROJECTION_TRANSFORM = phaseTransformTranspose.times( phaseTransform ).inverse().times( phaseTransformTranspose );
 	}
 	
 	
 	/** get the best matching beam position in mm at the target node based on the beam position measurements in mm at the measurement nodes */
 	public double getTargetBeamPosition( final double[] measuredBeamPositions ) {
-		final Matrix beamPositionVector = new Matrix( measuredBeamPositions.length, 1 );
+		final GenericMatrix beamPositionVector = new GenericMatrix( measuredBeamPositions.length, 1 );
 		
 		for ( int row = 0 ; row < measuredBeamPositions.length ; row++ ) {
-			beamPositionVector.set( row, 0, measuredBeamPositions[row] );
+			beamPositionVector.setElem( row, 0, measuredBeamPositions[row] );
 		}
 		
-		return PROJECTION_TRANSFORM.times( beamPositionVector.minus( KICK_TRANSFORM ) ).get( 0, 0 );
+		return PROJECTION_TRANSFORM.times( beamPositionVector.minus( KICK_TRANSFORM ) ).getElem( 0, 0 );
 	}
 }
 

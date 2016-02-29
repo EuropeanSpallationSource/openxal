@@ -6,6 +6,7 @@
  */
 package xal.tools.math.r4;
 
+import xal.tools.math.IIndex;
 import xal.tools.math.BaseVector;
 import xal.tools.math.IIndex;
 
@@ -206,7 +207,7 @@ public class R4 extends BaseVector<R4> {
 	 * @since  Jun 17, 2014
 	 */
 	@Override
-	protected R4 newInstance() {
+	protected R4 newInstance(int size) {
 		return new R4();
 	}
 

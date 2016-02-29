@@ -63,10 +63,6 @@
 	</build>
 	<dependencies>
 		<dependency>
-			<groupId>gov.nist.math.jama</groupId>
-			<artifactId>jama</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>net.sf.jsci</groupId>
 			<artifactId>jsci</artifactId>
 		</dependency>
