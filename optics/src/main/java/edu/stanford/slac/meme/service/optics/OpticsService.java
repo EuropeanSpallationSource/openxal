@@ -14,6 +14,9 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+
+import org.ejml.data.DenseMatrix64F;
+import org.ejml.ops.CommonOps;
 import org.epics.pvaccess.PVAException;
 import org.epics.pvaccess.server.rpc.RPCRequestException;
 import org.epics.pvaccess.server.rpc.RPCServer;
@@ -30,7 +33,7 @@ import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.ScalarType;
 import org.epics.pvdata.pv.Status.StatusType;
 import org.epics.pvdata.pv.Structure;
-import Jama.Matrix;
+
 import edu.stanford.slac.meme.support.err.UnableToGetDataException;
 import edu.stanford.slac.meme.support.sys.MemeConstants;
 
@@ -678,17 +681,26 @@ public class OpticsService {
 			}
 
 			// Now we have the Rmat of A and of B, compute the transfer matrix.
-			final Matrix A = new Matrix(rmatA, 6).transpose();
+			final DenseMatrix64F A = DenseMatrix64F.wrap(6, 6, rmatA);
+			CommonOps.transpose(A);
+			
 			if (logger.isLoggable(Level.FINE))
 				printMatrix("rmatA", A);
-			final Matrix B = new Matrix(rmatB, 6).transpose();
+			
+			final DenseMatrix64F B = DenseMatrix64F.wrap(6, 6, rmatB);
+			CommonOps.transpose(B);			
 			if (logger.isLoggable(Level.FINE))
 				printMatrix("rmatB", B);
-			final Matrix RmatAB = B.times(A.inverse());
+			
+			CommonOps.invert(A);
+			
+			final DenseMatrix64F RmatAB = new DenseMatrix64F(6,6); 
+			CommonOps.mult(B, A, RmatAB);
+			
 			if (logger.isLoggable(Level.FINE))
 				printMatrix("RmatAB", RmatAB);
 
-			return RmatAB.getRowPackedCopy();
+			return RmatAB.getData();
 		}
 
 		/**
@@ -818,9 +830,9 @@ public class OpticsService {
 		}
 
 		// TODO: redirect stdout to log.
-		private static void printMatrix(final String label, final Matrix M) {
+		private static void printMatrix(final String label, final DenseMatrix64F M) {
 			System.out.println(label);
-			M.print(8, 4);
+			M.print("%8.4f");
 		}
 
 	}
