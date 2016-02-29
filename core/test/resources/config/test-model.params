@@ -100,7 +100,7 @@
 		</schema>
 		<record name="default" />
 		<record name="HEBT1" errortol="1.0e-8" initstep="0.1" maxiter="1000" />
-		<record name="HEBT2" errortol="1.0e-8" initstep="0.1" maxiter="1000" />
+		<record name="HEBT2" errortol="1.0e-6" initstep="0.1" maxiter="1000" />
 		<record name="RTBT1" errortol="1.0e-8" initstep="0.1" maxiter="1000" />
 		<record name="RTBT2" errortol="1.0e-8" initstep="0.1" maxiter="1000" />
 	</table>
