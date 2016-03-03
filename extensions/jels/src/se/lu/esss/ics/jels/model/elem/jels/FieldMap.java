@@ -1,6 +1,5 @@
 package se.lu.esss.ics.jels.model.elem.jels;
 
-import Jama.Matrix;
 import se.lu.esss.ics.jels.smf.impl.ESSFieldMap;
 import se.lu.esss.ics.jels.smf.impl.FieldProfile;
 import xal.model.IElement;
@@ -13,6 +12,7 @@ import xal.sim.scenario.LatticeElement;
 import xal.smf.impl.RfCavity;
 import xal.tools.beam.PhaseMap;
 import xal.tools.beam.PhaseMatrix;
+import xal.tools.math.GenericMatrix;
 
 /**
  * This is direct fieldmap implementation, matching TraceWin implementation.
@@ -139,8 +139,11 @@ public class FieldMap extends ThickElement implements IRfGap, IRfCavityCell {
 		double E0 = probe.getKineticEnergy();
 		double Er = probe.getSpeciesRestEnergy();
 		
-		Matrix Ttr = Matrix.identity(2, 2), 
-				Tz = Matrix.identity(2, 2);
+		GenericMatrix Ttr = new GenericMatrix(2,2);
+		Ttr.assignIdentity();
+
+		GenericMatrix Tz = new GenericMatrix(2, 2);
+		Tz.assignIdentity();
 		
 		double gamma;
 		
@@ -176,17 +179,17 @@ public class FieldMap extends ThickElement implements IRfGap, IRfCavityCell {
 			// Following line fixes the determinant of longitudinal transfer matrix
 			//Az[0][0] = ((beta*gamma)/(betae*gammae) + Az[0][1]*Az[1][0]) / Az[1][1];
 			
-			Matrix Atr = new Matrix(matrix22Exp(Ay)); 
+			GenericMatrix Atr = new GenericMatrix(matrix22Exp(Ay)); 
 			Ttr = Atr.times(Ttr);			
-			Tz = new Matrix(matrix22Exp(Az)).times(Tz);
+			Tz = new GenericMatrix(matrix22Exp(Az)).times(Tz);
 			
 			E0 += DE;
 		}
 		
 		PhaseMatrix T = PhaseMatrix.identity();
-		T.setSubMatrix(0, 1, 0, 1, Ttr.getArray());
-		T.setSubMatrix(2, 3, 2, 3, Ttr.getArray());
-		T.setSubMatrix(4, 5, 4, 5, Tz.getArray());
+		T.setSubMatrix(0, 1, 0, 1, Ttr.getArrayCopy());
+		T.setSubMatrix(2, 3, 2, 3, Ttr.getArrayCopy());
+		T.setSubMatrix(4, 5, 4, 5, Tz.getArrayCopy());
 		
 		//Following is a handy printout of transfer matrices useful for comparison with TW transfer matrices
 		/*PhaseMap tw = new PhaseMap(T);

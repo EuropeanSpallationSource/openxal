@@ -7,7 +7,6 @@
 package xal.tools.math.rn;
 
 import xal.tools.math.BaseMatrix;
-import xal.tools.math.BaseVector;
 
 /**
  * Real matrix with arbitrary row and column dimensions.  This class supports the usual
@@ -201,35 +200,6 @@ public class Rmxn extends BaseMatrix<Rmxn> {
         this.checkEqualDimensions(matSub);
         super.minusEquals(matSub);
     }
-
-    /**
-     *  Non-destructive matrix multiplication.  A new matrix is returned with the
-     *  product while both multiplier and multiplicand are unchanged.  
-     *
-     *  @param  matRight    multiplicand - right operand of matrix multiplication operator
-     *
-     *  @return             new matrix which is the matrix product of this matrix and the argument,
-     *                      or <code>null</code> if an error occurred
-     */
-    public Rmxn times(Rmxn matRight) {
-        this.checkInternalDimensions(matRight);
-        
-        Jama.Matrix     impRight = matRight.getMatrix();
-        Jama.Matrix     impProd  = this.getMatrix().times( impRight);
-        Rmxn            matProd  = this.newInstance(impProd);
-
-        return matProd;
-    }
-    
-    /**
-     *  In-place matrix multiplication.  The final value of this matrix is assigned
-     *  to be the matrix product of the pre-method-call value time the given matrix.
-     *
-     *  @param  matMult    multiplicand - right operand of matrix multiplication operator
-     */
-    public void timesEquals(Rmxn   matMult) {
-        this.getMatrix().arrayTimesEquals( matMult.getMatrix() );
-    }
     
     /**
      * <p>
@@ -307,13 +277,8 @@ public class Rmxn extends BaseMatrix<Rmxn> {
      * @since  Jul 21, 2015   by Christopher K. Allen
      */
     @Override
-    protected Rmxn newInstance() {
-        int     cntRows = this.getRowCnt();
-        int     cntCols = this.getColCnt();
-        
-        Rmxn    matNew = new Rmxn(cntRows, cntCols);
-        
-        return matNew;
+    protected Rmxn newInstance(int row, int col) {
+        return new Rmxn(row, col);
     }
     
     
@@ -356,5 +321,4 @@ public class Rmxn extends BaseMatrix<Rmxn> {
         if (cntColThis != cntRowTest)
             throw new IllegalArgumentException("Inconsistent internal dimensions");
     }
-
 }

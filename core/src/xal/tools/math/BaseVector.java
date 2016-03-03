@@ -9,7 +9,10 @@ package xal.tools.math;
 import java.io.PrintWriter;
 import java.util.StringTokenizer;
 
-import Jama.Matrix;
+import org.ejml.data.DenseMatrix64F;
+import org.ejml.ops.CommonOps;
+import org.ejml.ops.MatrixFeatures;
+
 import xal.tools.data.DataAdaptor;
 import xal.tools.data.DataFormatException;
 import xal.tools.data.IArchive;
@@ -21,12 +24,13 @@ import xal.tools.data.IArchive;
  * objects supported in the XAL tools packages.
  * </p>
  * </p>
- *  The current implementation uses an <i>n</i>&times;1 Jama matrix to
+ *  The current implementation uses an <i>n</i>&times;1 EJML matrix to
  *  represent the underlying vector. That is, the internal representation
  *  is a column vector.
  *  </p>
  *
  * @author  Christopher K. Allen
+ * @author  Blaz Kranjc
  * @since   Aug, 2002
  * @version Oct, 2013
  */
@@ -47,449 +51,12 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
     
     
     /*
-     * Internal Classes
-     */
-
-//    /**
-//     * Interface <code>BaseMatrix.Ind</code> is exposed by objects
-//     * representing matrix indices.  In particular, the <code>enum</code>
-//     * types that are matrix indices expose this interface.
-//     *
-//     * @author Christopher K. Allen
-//     * @since  Sep 25, 2013
-//     */
-//    public interface IIndex extends BaseMatrix.IIndex {
-//
-////        /**
-////         * Returns the value of this matrix index object.
-////         * 
-////         * @return  the numerical index represented by this object 
-////         *
-////         * @author Christopher K. Allen
-////         * @since  Sep 25, 2013
-////         */
-////        public int val();
-//    }
-
-    
-    /**
-     * <p>
-     * Class <code>JVector</code> is an encapsulating class for the <code>Jama.Matrix</code>
-     * class.  <code>JVector</code> allows access to the internal <code>Matrix</code> object
-     * only as a vector object.  Internally this vector is represented as a column vector
-     * matrix, that is, a contra-variant representation, although these details matter
-     * little.  The intent is to further abstract the actual implementation from the 
-     * vector classes allowing us to replace the <code>Jama</code> matrix package when
-     * necessary.
-     * </p>
-     * <p>
-     * The origin for vector indexing is 0, consistent with the Java convention.
-     * </p>
-     *
-     * @author Christopher K. Allen
-     * @since  Oct 9, 2013
-     */
-    private class JVector {
-        
-        
-        /*
-         * Local Attributes
-         */
-        
-        /** Size of the vector */
-        private final int               intSize;
-        
-        /** Implementation of the vector */
-        private final Jama.Matrix       matVectImpl;
-        
-        
-        /*
-         * Initialization
-         */
-        
-        /**
-         * Constructor for JVector, creates a vector of the given size
-         * with all zero elements.
-         *
-         * @param intSize   length of the new vector
-         *
-         * @author Christopher K. Allen
-         * @since  Oct 9, 2013
-         */
-        public JVector(int intSize) {
-            this.intSize     = intSize;
-            this.matVectImpl = new Matrix(intSize, 1, 0.0);
-        }
-        
-        /**
-         * <p>
-         * Copy constructor for <code>JVector</code>.  A deep copy is made
-         * of the given argument.
-         * </p>
-         * <p>
-         * <h4>NOTES</h4>
-         * &middot; This is where the <code>JVector</code> object is assigned
-         * via the Jama matrix.  That is, all assignments are done here, including
-         * that for <code>{@link #clone()}</code>.
-         * </p>
-         *
-         * @param vecTemplate   vector to be cloned
-         *
-         * @since  Jul 22, 2015   by Christopher K. Allen
-         */
-        public JVector(JVector vecTemplate) {
-            int       intSize = vecTemplate.getSize();
-            double[]  arrInt  = vecTemplate.getArrayCopy();
-            
-            this.intSize     = intSize;
-            this.matVectImpl = new Jama.Matrix(arrInt, intSize);
-        }
-        
-        /**
-         * Initializing constructor for <code>JVector</code>.  Creates a new
-         * <code>JVector</code> object with the size given but the length of 
-         * the given array and the internal vector set to the given array.
-         * Thus, it is not immutable.
-         *
-         * @param arrValues
-         *
-         * @since  Jul 22, 2015   by Christopher K. Allen
-         */
-        public JVector(double[] arrValues) {
-            int         intSize   = arrValues.length;
-//            double[]    arrVector = arrValues.clone();
-//          this.matVectImpl = new Jama.Matrix(arrVector, intSize);
-            
-            this.intSize     = intSize;
-            this.matVectImpl = new Jama.Matrix(arrValues, intSize);
-        }
-        
-        /**
-         * Sets the vector element at the given index to the given value. The index
-         * origin is 0.
-         * 
-         * @param i         index of targeted vector element
-         * @param dblVal    new value for vector element
-         *
-         * @throws ArrayIndexOutOfBoundsException   the index
-         * 
-         * @author Christopher K. Allen
-         * @since  Oct 9, 2013
-         */
-        public void setElem(int i, double dblVal) throws ArrayIndexOutOfBoundsException {
-            this.matVectImpl.set(i, 0, dblVal);
-        }
-        
-        
-        
-        /*
-         * Object Operations
-         */
-        
-        /**
-         * Returns a deep copy of this object.
-         * 
-         * @see java.lang.Object#clone()
-         *
-         * @since  Jul 22, 2015   by Christopher K. Allen
-         */
-        @Override
-        public JVector  clone() {
-            return new JVector(this);
-        }
-        
-        /*
-         * Vector Attributes
-         */
-        
-        /**
-         * Returns the length of the vector.
-         * 
-         * @return  vector size (i.e., how many elements)
-         *
-         * @author Christopher K. Allen
-         * @since  Oct 9, 2013
-         */
-        public int  getSize() {
-            return this.intSize;
-        }
-        
-        /**
-         * Return the vector element at the given index position.
-         * 
-         * @param i     index into the vector (starting at 0)
-         * 
-         * @return      vector element at given index
-         * 
-         * @throws ArrayIndexOutOfBoundsException   the index is larger than the vector
-         *
-         * @author Christopher K. Allen
-         * @since  Oct 9, 2013
-         */
-        public double   getElem(int i) throws ArrayIndexOutOfBoundsException {
-            return this.matVectImpl.get(i, 0);
-        }
-        
-        /**
-         * Creates and returns a Java array containing the element values
-         * of this vector.  The returned value is a duplicate of the
-         * internal structure, thus any manipulation will leave this vector
-         * unchanged.
-         * 
-         * @return  a Java array representation of this vector
-         *
-         * @author Christopher K. Allen
-         * @since  Oct 16, 2013
-         */
-        public double[] getArrayCopy() {
-//            double[]    arrVec = new double[ this.getSize() ];
-//            
-//            for (int i=0; i<this.getSize(); i++)
-//                arrVec[i] = getElem(i);
-//            
-//            return arrVec;
-
-//            double[][] arrInt = this.matVectImpl.getArrayCopy();
-//            return arrInt[0];
-
-            double[]    arrVec = this.matVectImpl.getColumnPackedCopy();
-
-            return arrVec;
-        }
-     
-        
-        /*
-         * Vector Operations
-         */
-        
-        /** 
-         * Element by element negation.  A new object is returned and the
-         * current one is unmodified.
-         * 
-         * @return     antipodal vector of the current object
-         * 
-         * @author Christopher K. Allen
-         * @since  Oct 10, 2013
-         */
-        public JVector negate() {
-//            JVector     vecNeg = new JVector(this.getSize());
-//            
-//            for (int i=0; i<this.getSize(); i++)
-//                vecNeg.setElem(i,  -this.getElem(i));
-            
-            Jama.Matrix jmaNeg = this.matVectImpl.times(-1.0);
-            JVector     vecNeg = new JVector(jmaNeg);
-            
-            return vecNeg;
-        }
-        
-        /**
-         * Computes and returns the sum of this vector and the argument. This is
-         * a non-destructive operation.
-         * 
-         * @param vecAdd    the addend, to be added algebraically to this vector
-         * 
-         * @return          the vector sum of this vector and the argument
-         * 
-         * @throws IllegalArgumentException the argument must have the same size as this vector
-         *
-         * @author Christopher K. Allen
-         * @since  Oct 9, 2013
-         */
-        public JVector  plus(JVector vecAdd) throws IllegalArgumentException {
-            
-            // Check for appropriate size
-            if (vecAdd.getSize() != this.getSize()) 
-                throw new IllegalArgumentException("argument vector must be same size");
-            
-            // Create the new vector, pack it, and return it
-//            JVector vecSum = new JVector(this.getSize());
-//            
-//            for (int i = 0; i < this.getSize(); i++) {
-//                double      dblSum = this.getElem(i) + vecAdd.getElem(i);
-//                
-//                vecSum.setElem(i, dblSum);;
-//            }
-            Jama.Matrix jmaSum = this.matVectImpl.plus( vecAdd.matVectImpl );
-            JVector     vecSum = new JVector(jmaSum);
-            
-            return vecSum;
-        }
-        
-        /**
-         * Computes and returns the difference of this vector and the given
-         * vector.  The argument (subtrahend) is subtracted from this vector
-         * (minuend) so that the returned value is
-         * <br/>
-         * <br/>
-         * &nbsp; &nbsp; <b>v</b> = <b>v</b><sub>1</sub> - <b>v</b><sub>2</sub>
-         * <br/>
-         * <br/>
-         * where <b>v</b> is the returned value, <b>v</b><sub>1</sub> is this
-         * vector, and <b>v</b><sub>2</sub> is the argument vector. 
-         * 
-         * @param vecSub    the subtrahend
-         * 
-         * @return          difference between this vector and the argument
-         * 
-         * @throws IllegalArgumentException the argument must have the same size as this vector
-         *
-         * @author Christopher K. Allen
-         * @since  Oct 9, 2013
-         */
-        public JVector minus(JVector vecSub) throws IllegalArgumentException {
-
-            // Check for appropriate size
-            if (vecSub.getSize() != this.getSize()) 
-                throw new IllegalArgumentException("argument vector must be same size");
-
-            // Create the new vector, pack it, and return it
-//            JVector vecDif = new JVector(this.getSize());
-//
-//            for (int i = 0; i < this.getSize(); i++) {
-//                double      dblSum = this.getElem(i) - vecSub.getElem(i);
-//
-//                vecDif.setElem(i, dblSum);;
-//            }
-            
-            Jama.Matrix jmaDif = this.matVectImpl.minus( vecSub.matVectImpl );
-            JVector     vecDif = new JVector( jmaDif );
-
-            return vecDif;
-        }
-        
-        /**
-         * Computes and returns the scalar product of this vector with the
-         * argument.
-         * 
-         * @param       s   scalar multiplier
-         * 
-         * @return          new vector equal to this vector scaled by the argument
-         *
-         * @author Christopher K. Allen
-         * @since  Oct 9, 2013
-         */
-        public JVector times(double s) {
-
-            // Create the new vector, compute the sum, and return it
-//            JVector vecSum = new JVector(this.getSize());
-//
-//            for (int i = 0; i < this.getSize(); i++) {
-//                double      dblSum = s*this.getElem(i);
-//
-//                vecSum.setElem(i, dblSum);
-//            }
-            
-            Jama.Matrix jmaProd = this.matVectImpl.times( s );
-            JVector     vecProd = new JVector(jmaProd);
-
-            return vecProd;
-        }
-        
-        
-        /*
-         * Support Methods
-         */
-        
-        /**
-         * Encapsulating constructor for <code>JVector</code>.  A new <code>JVector</code>
-         * object is create which is supported by the given implementation image.
-         *
-         * @param jmaImage  implementation object which this class encapsulates 
-         *
-         * @since  Jul 17, 2015   by Christopher K. Allen
-         */
-        private JVector(Jama.Matrix jmaImage) {
-            this.intSize = jmaImage.getRowDimension();
-            this.matVectImpl = jmaImage;
-        }
-
-    }
-    
-    
-//    /*
-//     * Global Methods
-//     */
-//    
-//    /** 
-//     * Generate a vector with uniformly distributed random elements
-//     * 
-//     *  @param  nSize   size of created vector
-//     */
-//    public static Vector random(int nSize) {
-//        return (Vector)Matrix.random(nSize, 1);
-//    };
-//
-
-    
-    
-    /*
      *  Local Attributes
      */
 
     /** internal matrix implementation */
-    private JVector           vecImpl;
+    private DenseMatrix64F vecImpl;
 
-
-
-    /*
-     * Initialization
-     */
-    
-//    /** Constructs a column vector of zeros 
-//     *  @param  nSize   vector size
-//     */
-//    public Vector(int nSize) { 
-//        super(nSize, 1);  
-//    };
-//    
-    
-//    /** Constructs a constant column vector
-//     *  @param  nSize   vector size
-//     *  @param  dblVal  constant value
-//     */
-//    public Vector(int nSize, double dblVal) { 
-//        super(nSize, 1, dblVal); 
-//    };
-//    
-//    
-//    /** Constructs a Vector specified by the double array
-//     *  @param  arrVals     element values for vector
-//     */
-//    public Vector(double[] arrVals) {
-//        super(arrVals.length, 1);
-//        
-//        for (int i=0; i<arrVals.length; i++)
-//            super.set(i, 0, arrVals[i]);
-//    };
-//    
-//    /** 
-//     *  Copy Constructor
-//     *  Constructs a new Vector initialized to the argument.
-//     *
-//     *  @param  vecInit     initial value
-//     */
-//    public Vector(Vector vecInit)   {
-//        this(vecInit.getSize());
-//        for (int i=0; i<vecInit.getSize(); i++)
-//            this.set( i, vecInit.get(i) );
-//    };
-    
-//    /** 
-//     *  Constructs a new Vector from a Matrix object.  Vector is initialized
-//     *  to the first column of the matrix.  This constructor is meant to take
-//     *  a column vector in Matrix form to the standard vector format.
-//     *
-//     *  @param  mat     initial values 
-//     */
-//    public Vector(Matrix mat)   {
-//        super(mat.getRowDimension(), 1);
-//        
-//        for (int i=0; i<mat.getRowDimension(); i++)
-//            this.setElem(i, mat.get(i, 0));
-//    };
-    
-    
     /*
      * Assignment
      */
@@ -511,7 +78,6 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      * @since  Oct 4, 2013
      */
     public void setVector(double[] arrVector) throws IllegalArgumentException {
-        
         // Check the dimensions of the argument double array
         if (this.getSize() != arrVector.length  )
             throw new IllegalArgumentException(
@@ -545,13 +111,12 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      * @since  Oct 4, 2013
      */
     public void setVector(V vecParent) {
-        JVector     impParent = ((BaseVector<V>)vecParent).getVector();
-                
+        DenseMatrix64F impParent = vecParent.getVector();
         this.assignVector(impParent);
     }
 
     /**
-     *  Parsing assignment - set the <code>PhaseMatrix</code> value
+     *  Parsing assignment - set the vector value
      *  according to a token string of element values.  
      *
      *  The token string argument is assumed to be one-dimensional and packed by
@@ -564,12 +129,10 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      * 
      *  @param  strValues   token vector of SIZE<sup>2</sup> numeric values
      *
-     *  @exception  IllegalArgumentException    wrong number of token strings
      *  @exception  NumberFormatException       bad number format, unparseable
      */
     public void setVector(String strValues)
-        throws NumberFormatException, IllegalArgumentException
-    {
+        throws NumberFormatException {
 
         // Error check the number of token strings
         StringTokenizer     tokArgs = new StringTokenizer(strValues, " ,()[]{}");
@@ -596,21 +159,8 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      *  @exception  ArrayIndexOutOfBoundsException  iIndex is larger than the vector
      */
     public void setElem(int intIndex, double dblVal) throws ArrayIndexOutOfBoundsException {
-        this.getVector().setElem(intIndex, dblVal);
+        this.vecImpl.set(intIndex, 0, dblVal);
     };
-    
-//    /** 
-//     * Set individual element of a vector to given value.  The index is assumed
-//     * to be an enumeration exposing the <code>IIndex</code> interface.
-//     * 
-//     *  @param  iIndex  index of element
-//     *  @param  dblVal  new value of element
-//     *
-//     *  @exception  ArrayIndexOutOfBoundsException  iIndex is larger than the vector
-//     */
-//    public void setElem(BaseVector.IIndex iIndex, double dblVal) throws ArrayIndexOutOfBoundsException {
-//        this.getVector().setElem(iIndex.val(), dblVal);
-//    };
     
     /** 
      * Set individual element of a vector to given value.  The index is assumed
@@ -624,7 +174,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      *  @exception  ArrayIndexOutOfBoundsException  iIndex is larger than the vector
      */
     public void setElem(IIndex iIndex, double dblVal) throws ArrayIndexOutOfBoundsException {
-        this.getVector().setElem(iIndex.val(), dblVal);
+        this.setElem(iIndex.val(), dblVal);
     };
     
    
@@ -639,7 +189,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      *  @return     vector length
      */
     public int getSize()    {
-        return this.getVector().getSize();
+        return this.vecImpl.numRows;
     };
     
     /** 
@@ -652,38 +202,9 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      *  @exception  ArrayIndexOutOfBoundsException  iIndex is larger than vector size
      */
     public double getElem(int iIndex) throws ArrayIndexOutOfBoundsException {
-        return this.vecImpl.getElem(iIndex);
+        return this.vecImpl.get(iIndex, 0);
     };
     
-//    /**
-//     * <p>
-//     * Returns the vector component at the position indicated by the
-//     * given index sources.  
-//     * </p>
-//     * <p>
-//     * <h4>NOTES</h4>
-//     * &middot; It is expected that the
-//     * object exposing the <code>IIndex</code> interface is an enumeration
-//     * class restricting the number of possible index values.
-//     * <br>
-//     * &middot; Consequently we do not declare a thrown exception assuming
-//     * that that enumeration class eliminates the possibility of an out of
-//     * bounds error.
-//     * </p>
-//     *  
-//     * @param i        source of the row index
-//     * @param indCol        source of the column index
-//     * 
-//     * @return          value of the matrix element at the given index
-//     *
-//     * @author Christopher K. Allen
-//     * @since  Sep 30, 2013
-//     */
-//    public double getElem(IIndex i) {
-//        double  dblVal = this.vecImpl.getElem(i.val());
-//
-//        return dblVal;
-//    }
 
     /** 
      * <p>
@@ -714,20 +235,6 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
         return this.getElem( iIndex.val() );
     };
     
-//     * Get individual element of a vector at given index. The index is assumed
-//     * to be an enumeration exposing the <code>IIndex</code> interface.
-//     * 
-//     *  @param  iIndex  index of element(likely an enumeration)
-//     *  
-//     *  @return         value of element
-//     *  
-//     *  @exception  ArrayIndexOutOfBoundsException  iIndex is larger than vector size
-//     */
-//    public double get(IIndex iIndex) {
-//        return this.getVector().getElem(iIndex);
-//    };
-    
-
     /**
      * Returns a copy of the internal Java array containing
      * the vector elements.  The array dimensions are given by
@@ -742,7 +249,9 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      * @since  Sep 25, 2013
      */
     public double[] getArrayCopy() {
-        return this.vecImpl.getArrayCopy();
+    	double[] copy = new double[this.getSize()];
+    	System.arraycopy(this.vecImpl.data, 0, copy, 0, this.getSize());
+        return copy;
     }
 
     
@@ -821,8 +330,8 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      *  @return     a cloned copy of this vector
      */
     public V copyVector() {
-        V  vecClone = this.newInstance();
-        ((BaseVector<V>)vecClone).assignVector( this.getVector() );
+        V  vecClone = this.newInstance(this.getSize());
+        ((BaseVector<V>)vecClone).assignVector( this.vecImpl );
             
         return vecClone;
     };
@@ -835,8 +344,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      * @since  Oct 3, 2013
      */
     public void assignZero() {
-        for (int i=0; i<this.getSize(); i++)
-                this.setElem(i, 0.0);
+    	CommonOps.fill(this.vecImpl, 0.0);
     }
     
     /**
@@ -847,8 +355,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      * @since  Oct 3, 2013
      */
     public void assignUnity() {
-        for (int i=0; i<this.getSize(); i++)
-            this.setElem(i, 1.0);
+    	CommonOps.fill(this.vecImpl, 1.0);
     }
     
     /**
@@ -871,12 +378,11 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      * 
      * @param vecSub    The vector to receive the projection of this vector (determines size)
      * 
-     * @throws IllegalArgumentException Thrown if the given vector is larger than this one.
      *
      * @author Christopher K. Allen
      * @since  Oct 18, 2013
      */
-    public <U extends BaseVector<U>> void projectOnto(U vecSub) throws IllegalArgumentException {
+    public <U extends BaseVector<U>> void projectOnto(U vecSub) {
         
         // Check size of sub-space vector
         if (vecSub.getSize() > this.getSize())
@@ -910,12 +416,11 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      * 
      * @param vecSup    The vector to receive the embedding of this vector 
      * 
-     * @throws IllegalArgumentException Thrown if the given vector is smaller than this one.
      *
      * @author Christopher K. Allen
      * @since  Oct 18, 2013
      */
-    public <U extends BaseVector<U>> void embedIn(U vecSup) throws IllegalArgumentException {
+    public <U extends BaseVector<U>> void embedIn(U vecSup) {
         
         // Check the size of the super-space vector
         if ( vecSup.getSize() < this.getSize() ) 
@@ -943,12 +448,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
     public boolean isEquivalentTo(V vecTest) {
         if ( !this.getClass().equals(vecTest.getClass()) )
             return false;
-
-        for (int i=0; i<this.getSize(); i++)
-            if (this.getElem(i) != vecTest.getElem(i))
-                return false;
-
-        return true;
+        return MatrixFeatures.isEquals(vecTest.getVector(), this.vecImpl, 1e-6);
     }
 
 
@@ -966,11 +466,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      * @since  Oct 10, 2013
      */
     public V negate() {
-        JVector impNeg = this.getVector().negate();
-        
-        V vecNeg = this.newInstance(impNeg);
-        
-        return vecNeg;
+        return this.times(-1.);
     }
     
     /**
@@ -980,9 +476,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      * @since  Oct 10, 2013
      */
     public void negateEquals() {
-        V   vecNeg = this.negate();
-        
-        this.setVector(vecNeg);
+    	CommonOps.changeSign(this.vecImpl);
     }
     
     /**
@@ -993,10 +487,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      *
      */
     public void plusEquals(V vecAdd) {
-        JVector impAdd = ((BaseVector<V>)vecAdd).getVector();
-        JVector impSum = this.getVector().plus( impAdd );
-        
-        this.assignVector(impSum);
+    	CommonOps.addEquals(this.vecImpl, vecAdd.getVector());
     };
     
     /**
@@ -1006,15 +497,12 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      *  
      *  @return            sum of this vector and given vector, 
      *
-     *  @exception  IllegalArgumentException    argument is not same dimension as this
      */
     public V plus(V vecAdd){
-        JVector     impAdd = ((BaseVector<V>)vecAdd).getVector();
-        JVector     impSum = this.getVector().plus( impAdd );
+    	V result = newInstance(this.getSize());
+        CommonOps.add(this.vecImpl, vecAdd.getVector(), result.getVector());
 
-        V vecSum = this.newInstance( impSum );
-
-        return vecSum;
+        return result;
     };
     
     /**
@@ -1025,10 +513,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      *
      */
     public void minusEquals(V vecSub) {
-        JVector impSub = ((BaseVector<V>)vecSub).getVector();
-        JVector impDif = this.getVector().minus( impSub );
-        
-        this.assignVector(impDif);
+    	CommonOps.subtractEquals(this.vecImpl, vecSub.getVector());
     };
     
     /**
@@ -1038,15 +523,12 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      *  
      *  @return            difference of this vector and the given vector, 
      *
-     *  @exception  IllegalArgumentException    argument is not same dimension as this
      */
-    public V minus(V vecSub){
-        JVector     impSub = ((BaseVector<V>)vecSub).getVector();
-        JVector     impDif = this.getVector().minus( impSub );
+    public V minus(V vecSub) {
+    	V result = newInstance(this.getSize());
+        CommonOps.subtract(this.vecImpl, vecSub.getVector(), result.getVector());
 
-        V vecDif = this.newInstance( impDif );
-
-        return vecDif;
+        return result;
     }
     
     /** 
@@ -1057,11 +539,10 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      *  @return     result of scalar multiplication
      */
     public V times(double s)   {
-        JVector impProd = this.getVector().times(s);
-        
-        V       vecProd = this.newInstance(impProd);
-        
-        return vecProd;
+    	V result = newInstance(this.getSize());
+        CommonOps.scale(s, this.vecImpl, result.getVector());
+
+        return result;
     }
     
 
@@ -1071,9 +552,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      *  @param  s   scalar
      */
     public void timesEquals(double s)   {
-        JVector     impProd = this.getVector().times(s);
-        
-        this.assignVector(impProd);
+    	CommonOps.scale(s, this.vecImpl);
     };
     
 
@@ -1086,37 +565,11 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      *  @param  v     second vector
      *
      *  @return         inner product of this vector and argument
-     *
-     *  @exception  IllegalArgumentException    dimensions must agree
      */
-    public double   innerProd(V v)   throws IllegalArgumentException {
-        double      dblSum; // running sum
-        
-        if (this.getSize() != v.getSize())
-            throw new IllegalArgumentException("Vector#innerProd() - unequal dimensions.");
-        
-        dblSum = 0.0;
-        for (int i=0; i<this.getSize(); i++) 
-            dblSum += this.getElem(i)*v.getElem(i);
-        
-        return dblSum;
+    public double   innerProd(V v) {
+        return CommonOps.dot(this.vecImpl, v.getVector());
     }
     
-//    /**
-//     *  Vector outer product - computes the tensor product of two vector objects.
-//     *
-//     *  Returns the value this*vec' where the prime indicates transposition
-//     *
-//     *  @param  vec     right argument
-//     *
-//     *  @return         outer product 
-//     *  
-//     *  @exception  IllegalArgumentException    vector dimension must agree
-//     */
-//    public <M extends SquareMatrix> outerProd(V vec)   throws IllegalArgumentException {
-//        return  super.times( vec.transpose() );
-//    }
-//    
     /** 
      *  Vector left multiplication, or covariant operation of matrix
      *  on this vector (post-multiply vector by matrix).
@@ -1125,16 +578,15 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      *
      *  @return         result of vector-matrix product
      *
-     *  @exception  IllegalArgumentException    dimensions must agree
      */
-    public <M extends SquareMatrix<M>> V leftMultiply(M mat) throws IllegalArgumentException   {
+    public <M extends SquareMatrix<M>> V leftMultiply(M mat) {
         
         // Check sizes
         if (this.getSize() != mat.getSize())
             throw new IllegalArgumentException("matrix and vector must be of compatible dimensions");
         
         // Perform covariant multiplication
-        V   vecProd = this.newInstance();
+        V result = newInstance(this.getSize());
         for (int j=0; j<this.getSize(); j++) {
             
             double  dblSum = 0.0;
@@ -1143,10 +595,10 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
                 dblSum += mat.getElem(i, j)*this.getElem(i);
             }
             
-            vecProd.setElem(j, dblSum);
+            result.getVector().set(j, dblSum);
         }
         
-        return vecProd;
+        return result;
     };
     
     /** 
@@ -1157,15 +609,14 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      *
      *  @return         result of vector-matrix product
      *
-     *  @exception  IllegalArgumentException    dimensions must agree
      */
-    public <M extends SquareMatrix<M>> V rightMultiply(M mat) throws IllegalArgumentException   {
+    public <M extends SquareMatrix<M>> V rightMultiply(M mat) {
         // Check sizes
         if (this.getSize() != mat.getSize())
             throw new IllegalArgumentException("matrix and vector must be of compatible dimensions");
         
         // Perform contra-variant multiplication    
-        V   vecProd = this.newInstance();
+        V result = newInstance(this.getSize());
         for (int i=0; i<this.getSize(); i++) {
             
             double  dblSum = 0.0;
@@ -1174,19 +625,11 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
                 dblSum += mat.getElem(i, j)*this.getElem(i);
             }
             
-            vecProd.setElem(i, dblSum);
+            result.getVector().set(i, dblSum);
         }
         
-        return vecProd;
+        return result;
     };
-    
-//    public <M extends SquareMatrix<M>> V linearSoln(M matL) throws IllegalArgumentException {
-//        
-//        // Check sizes
-//        if ( matL.getSize() != this.getSize() ) 
-//            throw new IllegalArgumentException(vecObs.getClass().getName() + " vector must have compatible size");
-//        
-//        this.getMatrix().solve()
     
     
     /*
@@ -1251,7 +694,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      */    
 
     /**
-     * Save the value of this <code>PhaseVector</code> to disk.
+     * Save the value of this vector to disk.
      * 
      * @param daptArchive   interface to data sink 
      * 
@@ -1262,7 +705,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
     }
 
     /**
-     * Restore the value of the this <code>PhaseVector</code> from the
+     * Restore the value of the this vector from the
      * contents of a data archive.
      * 
      * @param daptArchive   interface to data source
@@ -1337,36 +780,6 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      * Child Class Support
      */
     
-//    /**
-//     * <p>
-//     * Returns the vector component at the position indicated by the
-//     * given index sources.  
-//     * </p>
-//     * <p>
-//     * <h4>NOTES</h4>
-//     * &middot; It is expected that the
-//     * object exposing the <code>IIndex</code> interface is an enumeration
-//     * class restricting the number of possible index values.
-//     * <br>
-//     * &middot; Consequently we do not declare a thrown exception assuming
-//     * that that enumeration class eliminates the possibility of an out of
-//     * bounds error.
-//     * </p>
-//     *  
-//     * @param i        source of the row index
-//     * @param indCol        source of the column index
-//     * 
-//     * @return          value of the matrix element at the given row and column
-//     *
-//     * @author Christopher K. Allen
-//     * @since  Sep 30, 2013
-//     */
-//    protected double getElem(IIndex i) {
-//        double  dblVal = this.vecImpl.getElem(i.val());
-//
-//        return dblVal;
-//    }
-    
     /** 
      * Creates a new, uninitialized instance of a vector with the given
      * size. The vector contains all zeros.
@@ -1376,7 +789,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      * @throws UnsupportedOperationException  base class has not defined a public, zero-argument constructor
      */
     protected BaseVector(int intSize) {
-    	this.vecImpl = new JVector(intSize);
+    	this.vecImpl = new DenseMatrix64F(intSize, 1);
     }
 
     /**
@@ -1392,10 +805,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      * @since  Sep 25, 2013
      */
     protected BaseVector(V vecParent) throws UnsupportedOperationException {
-        this(vecParent.getSize());
-        
-        BaseVector<V> vecBase = (BaseVector<V>)vecParent;
-        this.assignVector(vecBase.getVector()); 
+        this.assignVector(vecParent.getVector());
     }
     
     /**
@@ -1425,12 +835,10 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      *  @param  intSize     the matrix size of this object
      *  @param  strTokens   token vector of getSize() numeric values
      *
-     *  @exception  IllegalArgumentException    wrong number of token strings
      *  @exception  NumberFormatException       bad number format, unparseable
      */
     protected BaseVector(int intSize, String strTokens)    
-        throws IllegalArgumentException, NumberFormatException
-    {
+        throws NumberFormatException {
         this(intSize);
         
         // Error check the number of token strings
@@ -1483,7 +891,6 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      */
     protected BaseVector(int intSize, DataAdaptor daSource) {
         this(intSize);
-        
         this.load(daSource);
     }
 
@@ -1495,11 +902,11 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
     /**
      *  Return the internal matrix representation.
      *
-     *  @return     the Jama matrix object
+     *  @return     the internal implementation matrix object
      */
-    private JVector getVector()   { 
-        return vecImpl; 
-    };
+    protected DenseMatrix64F getVector()   { 
+        return this.vecImpl; 
+    }
     
     /**
      * Sets the internal matrix implementation to that given in the argument. This
@@ -1512,16 +919,12 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      * @author Christopher K. Allen
      * @since  Oct 1, 2013
      */
-    private void assignVector(JVector vecValue) {
-//        for (int i=0; i<this.getSize(); i++) {
-//            double dblVal = vecValue.getElem(i);
-//
-//            this.vecImpl.setElem(i, dblVal);
-//        }
-        
-        this.vecImpl = vecValue.clone();
+    private void assignVector(DenseMatrix64F vecValue) {
+    	if (vecValue.numCols > 1) {
+    		throw new IllegalArgumentException("Provided object has more than one column.");
+    	}
+    	this.vecImpl = vecValue.copy();
     }
-
 
     /**
      * Creates a new, uninitialized instance of this vector type.
@@ -1530,7 +933,8 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      * @author Christopher K. Allen
      * @since  Oct 1, 2013
      */
-    protected abstract V newInstance();
+    protected abstract V newInstance(int size);
+
     
     /**
      * Creates a new instance of this vector type with the given Java
@@ -1554,14 +958,10 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      * @author Christopher K. Allen
      * @since  Oct 1, 2013
      */
-    private V newInstance(JVector vecInit) {
-        V   vecNewInst = this.newInstance();
-        
+    protected V newInstance(DenseMatrix64F vecInit) {
+        V vecNewInst = this.newInstance(vecInit.numRows);
         ((BaseVector<V>)vecNewInst).assignVector(vecInit);
-        
         return vecNewInst;
     }
 
-
-            
 }

@@ -67,8 +67,8 @@ public class TestTrajectoryPersistence {
 
     
     /** Accelerator sequence used for testing */
-    public static final String     STR_ACCL_SEQ_ID = "HEBT2";
-//    public static final String     STR_ACCL_SEQ_ID = "SCLMed";
+//    public static final String     STR_ACCL_SEQ_ID = "HEBT2";
+    public static final String     STR_ACCL_SEQ_ID = "SCLMed";
     
     
     

@@ -6,71 +6,32 @@
  */
 package xal.tools.math;
 
+import org.ejml.data.DenseMatrix64F;
+import org.ejml.ops.CommonOps;
+import org.ejml.ops.MatrixFeatures;
+
 /**
  * <p>
  * Class <code>SquareMatrix</code> is the abstract base class for square matrix
  * objects supported in the XAL tools packages.
  * </p>
  * <p>
- * Currently the internal matrix operations are supported by the <tt>Jama</tt>
- * matrix package.  However, the <tt>Jama</tt> matrix package has been deemed a 
- * "proof of principle" for the Java language and scientific computing and 
- * is, thus, no longer supported.  The objective of this base class is to hide
+ * <p>
+ * The objective of this base class is to hide
  * the internal implementation of matrix operations from the child classes and
- * all developers using the matrix packages.  If it is determined that the <tt>Jama</tt>
- * matrix package is to be removed from XAL, the modification will be substantially
- * simplified in the current architecture.
+ * all developers using the matrix packages.
+ * </p>
+ * <p>
+ * Currently the internal matrix operations are supported by the <tt>EJML</tt>
+ * matrix package.
  * </p> 
  *
+ *
  * @author Christopher K. Allen
+ * @author Blaz Kranjc
  * @since  Sep 25, 2013
  */
 public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix<M> {
-
-
-    
-    /*
-     *  Local Attributes
-     */
-
-    /** size of the the square matrix */
-    private final int   intSize;
-    
-
-
-    /*
-     *  Assignment
-     */
-
-    /**
-     * Set the element specified by the given position indices to the
-     * given new value.
-     * 
-     * @param   iRow    matrix row location
-     * @param   iCol    matrix column index
-     * 
-     * @param   dblVal  matrix element at given row and column will be set to this value
-     */
-    public void setElem(IIndex iRow, IIndex iCol, double dblVal) {
-        this.getMatrix().set(iRow.val(), iCol.val(), dblVal);
-    }
-
-    /**
-     * Assign this matrix to be the identity matrix.  The
-     * identity matrix is the square matrix with 1's on the
-     * diagonal and 0's everywhere else.
-     *
-     * @author Christopher K. Allen
-     * @since  Oct 3, 2013
-     */
-    public void assignIdentity() {
-        this.assignZero();
-        
-        for (int i=0; i<this.getSize(); i++)
-            this.setElem(i, i, 1.0);
-    }
-    
-
 
     /*
      *  Matrix Attributes
@@ -86,13 +47,9 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
      * @since  Sep 25, 2013
      */
     public int  getSize() {
-        return this.intSize;
+        return this.getMatrix().numCols;
     }
 
-
-    
-    
-    
     /*
      * Matrix Properties
      */
@@ -103,83 +60,23 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
      *  @return true if matrix is symmetric 
      */
     public boolean isSymmetric()   {
-    
-//        System.out.println("SquareMatrix#isSymmetric() : class " + this.getClass().getName());
-//        System.out.println(this);
-//        System.out.println();
-        
-        for (int i=0; i<this.getSize(); i++)
-            for (int j=i; j<this.getSize(); j++) {
-                if (!ElementaryFunction.approxEq( getElem(i,j), getElem(j,i) ) )
-                    return false;
-            }
-        return true;
+        return MatrixFeatures.isSymmetric(this.getMatrix(), 1e-6);
     }
-
-    /**
-     * Checks if the given matrix is algebraically equivalent to this
-     * matrix.  That is, it is equal in size and element values.
-     * 
-     * @param matTest   matrix under equivalency test
-     * 
-     * @return          <code>true</code> if the argument is equivalent to this matrix,
-     *                  <code>false</code> if otherwise
-     *
-     * @author Christopher K. Allen
-     * @since  Oct 1, 2013
-     */
-    public boolean isEquivalentTo(BaseMatrix<M> matTest) {
-        if ( !this.getClass().equals(matTest.getClass()) )
-            return false;
-
-        for (int i=0; i<this.getSize(); i++)
-            for (int j=0; j<this.getSize(); j++)
-                if (this.getElem(i, j) != matTest.getElem(i, j))
-                    return false;
-
-        return true;
-    }
-
 
     /*
      *  Matrix Operations
      */
-
-    /**
-     *  Non-destructive transpose of this matrix.
-     * 
-     *  @return     transposed copy of this matrix or <code>null</code> if error
-     */
-    public M transpose()  {
-        Jama.Matrix impTrans = this.getMatrix().transpose();
-        M           matTrans = this.newInstance();
-        matTrans.assignMatrix(impTrans);
-        
-        return matTrans;
-    }
-
+    
     /**
      *  Matrix determinant function.
      *
      *  @return     the determinant of this square matrix
      */
-    public double det()     { 
-        return this.getMatrix().det(); 
+    public double det() { 
+    	return CommonOps.det(this.getMatrix());
     };
 
-    /**
-     *  Non-destructive inverse of this matrix.
-     *
-     *  @return     the algebraic inverse of this matrix or <code>null</code> if error
-     */
-    public M inverse()    {
-        Jama.Matrix impInv = this.getMatrix().inverse();
-        M           matInv = this.newInstance();
-        matInv.assignMatrix(impInv);
-        
-        return matInv;
-    }
-    
+
     /**
      * <p>
      * Solves the linear matrix-vector system without destroying the given
@@ -198,59 +95,26 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
      * &nbsp; &nbsp; <b>x</b> = <b>A</b><sup>-1</sup><b>y</b> ,
      * <br>
      * <br>
-     * that is, the value of vector <b>x</b>.  
-     * <p>
-     * </p>
-     * The vector <b>y</b> is left
-     * unchanged.  However, this is somewhat expensive in that the solution
-     * vector must be created through reflection and exceptions may occur.
-     * For a safer implementation, but where the solution is returned within the
-     * existing data vector <b>y</b> see <code>{@link #solveInPlace(BaseVector)}</code>.
+     * that is, the value of vector <b>x</b>. The vector <b>y</b> is left
+     * unchanged.
      * </p>
      * <p>
-     * Note that the inverse matrix
-     * <b>A</b><sup>-1</sup> is never computed, the system is solved in 
-     * less than <i>N</i><sup>2</sup> time.  However, if this system is to be
-     * solved repeated for the same matrix <b>A</b> it may be preferable to 
-     * invert this matrix and solve the multiple system with matrix multiplication.
+     * Note that the inverse matrix <b>A</b><sup>-1</sup> is never computed.
+     * If this system is to be solved repeated for the same matrix 
+     * <b>A</b> it may be preferable to invert this matrix and solve the multiple
+     * system with matrix multiplication.
      * </p>
      * 
      * @param vecObs        the data vector
      * 
      * @return              vector which, when multiplied by this matrix, will equal the data vector
-     * 
-     * @throws IllegalArgumentException     the argument has the wrong size
-     *
-     * @author Christopher K. Allen
-     * @since  Oct 11, 2013
      */
-    public <V extends BaseVector<V>> V solve(final V vecObs) throws IllegalArgumentException {
+    public <V extends BaseVector<V>> V solve(final V vecObs) {
         
-        // Check sizes
-        if ( vecObs.getSize() != this.getSize() ) 
-            throw new IllegalArgumentException(vecObs.getClass().getName() + " vector must have compatible size");
+        V x = vecObs.newInstance(this.getSize());
+        CommonOps.solve(this.getMatrix(), vecObs.getVector(), x.getVector());
         
-        // Get the implementation matrix.
-        Jama.Matrix impL = this.getMatrix();
-        
-        // Create a Jama matrix for the observation vector 
-        Jama.Matrix impObs = new Jama.Matrix(this.getSize(), 1 ,0.0);
-        for (int i=0; i<this.getSize(); i++) 
-            impObs.set(i,0, vecObs.getElem(i));
-        
-        // Solve the matrix-vector system in the Jama package
-        Jama.Matrix impState = impL.solve(impObs);
-        
-        V   vecSoln = vecObs.newInstance();
-        
-        for (int i=0; i<this.getSize(); i++) {
-            double dblVal = impState.get(i,  0);
-            
-            vecSoln.setElem(i,  dblVal);
-        }
-        
-        return vecSoln;
- 
+        return x;
     }
 
     /**
@@ -277,171 +141,45 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
      * The value of <b>x</b> is returned within the argument vector.  Thus,
      * the argument cannot be immutable.
      * <p>
-     * Note that the inverse matrix
-     * <b>A</b><sup>-1</sup> is never computed, the system is solved in 
-     * less than <i>N</i><sup>2</sup> time.  However, if this system is to be
-     * solved repeated for the same matrix <b>A</b> it may be preferable to 
-     * invert this matrix and solve the multiple system with matrix multiplication.
+     * Note that the inverse matrix <b>A</b><sup>-1</sup> is never computed.
+     * If this system is to be solved repeated for the same matrix 
+     * <b>A</b> it may be preferable to invert this matrix and solve the multiple
+     * system with matrix multiplication.
      * </p>
      * 
      * @param vecObs        the data vector on call, the solution vector upon return
      * 
-     * @throws IllegalArgumentException     the argument has the wrong size
      *
      * @author Christopher K. Allen
      * @since  Oct 11, 2013
      */
-    public <V extends BaseVector<V>> void solveInPlace(V vecObs) throws IllegalArgumentException {
-        
-        // Check sizes
-        if ( vecObs.getSize() != this.getSize() ) 
-            throw new IllegalArgumentException(vecObs.getClass().getName() + " vector must have compatible size");
-        
-        // Get the implementation matrix.
-        Jama.Matrix impL = this.getMatrix();
-        
-        // Create a Jama matrix for the observation vector 
-        Jama.Matrix impObs = new Jama.Matrix(this.getSize(), 1 ,0.0);
-        for (int i=0; i<this.getSize(); i++) 
-            impObs.set(i,0, vecObs.getElem(i));
-        
-        // Solve the matrix-vector system in the Jama package
-        Jama.Matrix impState = impL.solve(impObs);
-        
-        for (int i=0; i<this.getSize(); i++) {
-            double dblVal = impState.get(i,  0);
-            
-            vecObs.setElem(i,  dblVal);
-        }
+    public <V extends BaseVector<V>> void solveInPlace(V vecObs) {
+    	V result = this.solve(vecObs);
+        vecObs.setVector(result);
     }
-
-    //    /**
-    //     *  Perform an eigenvalue decomposition of this matrix.
-    //     *  If the matrix is symmetric it can be decomposed as
-    //     * 
-    //     *      A = R*D*R'
-    //     * 
-    //     *  where A is this matrix, R is an (special) orthogonal matrix
-    //     *  in SO(3), and D is the diagonal matrix of eigenvales of A.
-    //     * 
-    //     * @return  eigen-system decomposition object for R2x2 matrix
-    //     */
-    //    public R2x2EigenDecomposition   eigenDecomposition()    {
-    //        return new R2x2EigenDecomposition( this.getMatrix().eig() );
-    //    }
-    //
-
-
 
     /*
      *  Algebraic Operations
      */
+    
+    /**
+     * Computes trace of the matrix.
+     * @return Trace of the matrix.
+     */
+    public double trace() {
+        return CommonOps.trace(this.getMatrix());
+    }
 
-    /**
-     *  Non-destructive scalar multiplication.  This matrix is unaffected.
-     *
-     *  @param  s   multiplier
-     *
-     *  @return     new matrix equal to the element-wise product of <i>s</i> and this matrix,
-     *                      or <code>null</code> if an error occurred
-     */
-    public M    times(double s) {
-        Jama.Matrix impPrd = this.getMatrix().times(s);
-        M           matAns = this.newInstance(impPrd);
-        
-        return matAns;
-    }
     
     /**
-     *  In-place scalar multiplication.  Each element of this matrix is replaced
-     *  by its product with the argument.
+     * In-place matrix element by element multiplication.
+     * @deprecated Misleading name, this is not real matrix multiplication.
      *
-     *  @param  s   multiplier
+     * @param  matMult Matrix providing the factors.
      */
-    public void timesEquals(double s) {
-        this.getMatrix().timesEquals(s);
-    }
-    
-    /**
-     * <p>
-     * Non-destructive matrix-vector multiplication.  The returned value is the
-     * usual product of the given vector pre-multiplied by this matrix.  Specifically,
-     * denote by <b>A</b> this matrix and by <b>x</b> the argument vector, then
-     * the components {<i>y<sub>i</sub></i>} of the returned vector <b>y</b> are given by
-     * <br>
-     * <br>
-     * &nbsp; &nbsp; <i>y</i><sub><i>i</i></sub> = &Sigma;<sub><i>j</i></sub> <i>A<sub>ij</sub>x<sub>j</sbu></i>
-     * <br>
-     * <br>
-     * </p>
-     * <p>
-     * The returned vector must be created using Java reflection, so this operation
-     * is somewhat more risky and expensive than and in place multiplication.
-     * </p>
-     *  
-     * @param vecFac    the vector factor
-     * 
-     * @return          the matrix-vector product of this matrix with the argument
-     * 
-     * @throws IllegalArgumentException the argument vector must be the same size
-     * 
-     * @author Christopher K. Allen
-     * @since  Oct 11, 2013
-     */
-    public <V extends BaseVector<V>> V times(V vecFac) throws IllegalArgumentException {
-        // Check sizes
-        if ( vecFac.getSize() != this.getSize() ) 
-            throw new IllegalArgumentException(vecFac.getClass().getName() + " vector must have compatible size");
-    
-//        V   vecSoln = vecFac.newInstance();
-        double[]    arrVec = new double[vecFac.getSize()];
-        
-        for (int i=0; i<this.getSize(); i++) {
-            double dblSum = 0.0;
-
-            for (int j=0; j<this.getSize(); j++) {
-                double dblFac = this.getElem(i, j)*vecFac.getElem(j);
-             
-                dblSum += dblFac;
-            }
-            
-            arrVec[i] = dblSum;
-//            vecSoln.setElem(i,  dblSum);
-        }
-        
-        V vecSoln   = vecFac.newInstance(arrVec);
-        
-        return vecSoln;
-    }
-    
-    /**
-     *  Non-destructive matrix multiplication.  A new matrix is returned with the
-     *  product while both multiplier and multiplicand are unchanged.  
-     *
-     *  @param  matRight    multiplicand - right operand of matrix multiplication operator
-     *
-     *  @return             new matrix which is the matrix product of this matrix and the argument,
-     *                      or <code>null</code> if an error occurred
-     */
-    public M    times(M matRight) {
-        BaseMatrix<M>   matBase = (BaseMatrix<M>)matRight;
-        Jama.Matrix     impMult = matBase.getMatrix();
-        Jama.Matrix     impProd = this.getMatrix().times(impMult);
-        M               matAns  = this.newInstance(impProd);
-
-        return matAns;
-    }
-    
-    /**
-     *  In-place matrix multiplication.  The final value of this matrix is assigned
-     *  to be the matrix product of the pre-method-call value time the given matrix.
-     *
-     *  @param  matMult    multiplicand - right operand of matrix multiplication operator
-     */
+    @Deprecated
     public void timesEquals(BaseMatrix<M>   matMult) {
-        BaseMatrix<M> matBase = matMult;
-        
-        this.getMatrix().arrayTimesEquals( matBase.getMatrix() );
+       CommonOps.elementMult(this.getMatrix(), matMult.getMatrix());
     }
     
     
@@ -466,13 +204,21 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
      *  @return             matPhi*this*matPhi^T, or <code>null</code> if an error occurred
      */
     public M    conjugateTrans(M matPhi) {
-        Jama.Matrix impPhi  = ((BaseMatrix<M>)matPhi).getMatrix();
-        Jama.Matrix impPhiT = impPhi.transpose();
-        Jama.Matrix impAns  = impPhi.times( this.getMatrix().times( impPhiT) );
+        M ans  = newInstance(getSize(), getSize());
+        for (int i = 0; i < getSize(); i++) {
+        	for (int j = 0; j < getSize(); j++) {
+        		double result = 0;
+        		for (int alpha = 0; alpha < getSize(); alpha++) {
+        			for (int beta = 0; beta < getSize(); beta++) {
+        				result += matPhi.getElem(i, alpha) * this.getElem(alpha, beta)
+        						* matPhi.getElem(j, beta);
+        			}
+        		}
+        		ans.setElem(i, j, result);
+        	}
+        }
         
-        M   matAns = this.newInstance(impAns);
-        
-        return matAns;
+        return ans;
     };
     
     /**
@@ -496,15 +242,18 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
      *  @return             matPhi*this*matPhi<sup>-1</sup>
      */
     public M conjugateInv(M matPhi) {  
-        Jama.Matrix impPhi = ((BaseMatrix<M>)matPhi).getMatrix();
-        Jama.Matrix impInv = impPhi.inverse();
-        Jama.Matrix impAns = impPhi.times( this.getMatrix().times( impInv) );
+        DenseMatrix64F impPhi  = matPhi.getMatrix();
+        DenseMatrix64F impPhiI = impPhi.copy();
+        CommonOps.invert(impPhiI);
+
+        DenseMatrix64F impTemp  = new DenseMatrix64F(getSize(), getSize());
+        CommonOps.mult(this.getMatrix(), impPhiI, impTemp);
+
+        M ans  = newInstance(getSize(), getSize());
+        CommonOps.mult(impPhi, impTemp, ans.getMatrix());
         
-        M   matAns = this.newInstance(impAns);
-        
-        return matAns;
+        return ans;
     };
-    
     
 
     /*
@@ -525,8 +274,6 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
      */
     protected SquareMatrix(final int intSize) throws UnsupportedOperationException {
         super(intSize, intSize);
-        
-        this.intSize = intSize;
     }
 
     /**
@@ -543,8 +290,6 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
      */
     protected SquareMatrix(M matParent) throws UnsupportedOperationException {
         super(matParent);
-        
-        this.intSize = matParent.getSize();
     }
     
     /**
@@ -557,15 +302,11 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
      *  @param  intSize     the matrix size of this object
      *  @param  strTokens   token vector of getSize()^2 numeric values
      *
-     *  @exception  IllegalArgumentException    wrong number of token strings
      *  @exception  NumberFormatException       bad number format, unparseable
      */
     protected SquareMatrix(int intSize, String strTokens)    
-        throws IllegalArgumentException, NumberFormatException
-    {
+        throws NumberFormatException {
         super(intSize, intSize, strTokens);
-        
-        this.intSize = intSize;
     }
     
     /**
@@ -591,39 +332,17 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
      */
     protected SquareMatrix(double[][] arrVals) throws ArrayIndexOutOfBoundsException {
         super(arrVals);
-
         if (arrVals.length != arrVals[0].length)
             throw new ArrayIndexOutOfBoundsException("The given array is not square " + arrVals);
-        
-        this.intSize = arrVals.length;
     }
 
-
-
-    
-//    /**
-//     *  <p>
-//     *  Constructor for initializing this matrix from a suitable Jama.Matrix. This
-//     *  constructor should be called from a corresponding child class constructor.  
-//     *  </p>
-//     *  </p>
-//     *  <p>
-//     *  <h4>NOTE</h4>
-//     *  The argument should be a new object not owned by another object, because
-//     *  the internal matrix representation is assigned to the target argument.
-//     *  </p>
-//     *
-//     *  @param  clsType    the class type of this object
-//     *  @param  cntSize    size of the Jama.Matrix
-//     *  @param  matInit     an appropriately sized Jama.Matrix object
-//     */
-//    private BaseMatrix(Class<M> clsType, int cntSize, Jama.Matrix matInit)  {
-//        this.clsType  = clsType;
-//        this.szMatrix = cntSize;
-//        this.matBase  = matInit;
-//    }
-
-
-
-
+    /**
+     * @see BaseMatrix#BaseMatrix(Matrix)
+     */
+    protected SquareMatrix(DenseMatrix64F mat) {
+        super(mat);
+        if (mat.getNumCols() != mat.getNumRows()) {
+        	throw new IllegalArgumentException("Provided matrix is not square!");
+        }
+    }
 }

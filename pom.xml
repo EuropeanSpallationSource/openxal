@@ -10,16 +10,16 @@
 
     <groupId>org.xal</groupId>
     <artifactId>openxal</artifactId>
-    <version>1.0.8-SNAPSHOT</version>
+    <version>1.0.9-SNAPSHOT</version>
 
     <packaging>pom</packaging>
 
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>gov.nist.math.jama</groupId>
-                <artifactId>jama</artifactId>
-                <version>1.0.2-openxal</version>
+                <groupId>org.ejml</groupId>
+                <artifactId>all</artifactId>
+                <version>0.28</version>
             </dependency>
             <dependency>
                 <groupId>net.sf.jsci</groupId>

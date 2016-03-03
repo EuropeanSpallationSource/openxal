@@ -19,6 +19,20 @@
         </schema>
         <record name="default"/>
     </table>
+    <table name="EnvTrackerAdapt">
+        <schema>
+            <attribute isPrimaryKey="true" name="name" type="java.lang.String" />
+            <attribute isPrimaryKey="false" name="errortol" type="java.lang.Double" defaultValue="1.0E-5"/>
+            <attribute isPrimaryKey="false" name="initstep" type="java.lang.Double" defaultValue="0.01"/>
+            <attribute isPrimaryKey="false" name="maxstep" type="java.lang.Double" defaultValue="0.0"/>
+            <attribute isPrimaryKey="false" name="norm" type="java.lang.Integer" defaultValue="0"/>
+            <attribute isPrimaryKey="false" name="order" type="java.lang.Integer" defaultValue="2"/>
+            <attribute isPrimaryKey="false" name="slack" type="java.lang.Double" defaultValue="0.05"/>
+            <attribute isPrimaryKey="false" name="maxiter" type="java.lang.Integer" defaultValue="50"/>
+            <attribute isPrimaryKey="false" name="maxstepdriftpmq" type="java.lang.Double" defaultValue="0.0"/>
+        </schema>
+        <record name="default" />
+    </table>
     <table name="species" recordClass="xal.tools.data.GenericRecord">
         <schema>
             <attribute isPrimaryKey="true" name="name" type="java.lang.String"/>

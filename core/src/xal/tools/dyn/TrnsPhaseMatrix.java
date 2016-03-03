@@ -10,11 +10,9 @@ package xal.tools.dyn;
 import java.util.EnumSet;
 
 import xal.tools.beam.PhaseMatrix;
-import xal.tools.beam.PhaseVector;
 import xal.tools.math.IIndex;
 import xal.tools.math.SquareMatrix;
 import xal.tools.math.r2.R2x2;
-import xal.tools.math.r6.R6x6;
 
 /**
  * <p>  
@@ -330,17 +328,6 @@ public class TrnsPhaseMatrix extends SquareMatrix<TrnsPhaseMatrix> {
     }
 
     
-    
-    
-//    /*
-//     *  Local Attributes
-//     */
-//    
-//    /** internal matrix storage */
-//    private Jama.Matrix     m_matPhase;
-//    
-//    
-    
     /*
      * Object Overrides
      */
@@ -413,25 +400,8 @@ public class TrnsPhaseMatrix extends SquareMatrix<TrnsPhaseMatrix> {
 	 * @since  Jun 17, 2014
 	 */
 	@Override
-	protected TrnsPhaseMatrix newInstance() {
+	protected TrnsPhaseMatrix newInstance(int row, int cnt) {
 		return new TrnsPhaseMatrix();
 	}
-    
-
-
-    /*
-     *  Algebraic Operations
-     */
-    
-
-    /*
-     *  Assignment
-     */
-    
-
-    /*
-     *  Internal Support
-     */
-    
     
 }

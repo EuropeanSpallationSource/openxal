@@ -12,6 +12,8 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import xal.tools.math.GenericMatrix;
+
 /**
  * Class <code></code>.
  *
@@ -53,26 +55,26 @@ public class TestJamaMatrix {
         arrMat[2] = new double[] {5,6};
         arrMat[3] = new double[] {7,8};
         
-        Jama.Matrix matTest = new Jama.Matrix(arrMat);
+        GenericMatrix matTest = new GenericMatrix(arrMat);
 //        System.out.println("matTest = "); 
 //        matTest.print(matTest.getRowDimension(), matTest.getColumnDimension());
         
         double[][] arrTest = matTest.getArrayCopy();
-        double[]   vecCol  = matTest.getColumnPackedCopy();
-        double[]   vecRow  = matTest.getRowPackedCopy();
-        int        szRow   = matTest.getRowDimension();
-        int        szCol   = matTest.getColumnDimension();
+        //double[]   vecCol  = matTest.getColumnPackedCopy();
+        //double[]   vecRow  = matTest.getRowPackedCopy();
+        int        szRow   = matTest.getRowCnt();
+        int        szCol   = matTest.getColCnt();
         
         if (szRow != arrMat.length)
             fail("number of rows is not 4");
         if (szCol != arrMat[0].length)
             fail("number of columns is not 2");
         
-        Jama.Matrix matCtrl = new Jama.Matrix(arrTest);
+        GenericMatrix matCtrl = new GenericMatrix(arrTest);
 //        System.out.println("matCtrl = "); 
 //        matCtrl.print(matCtrl.getRowDimension(), matCtrl.getColumnDimension());
         
-        Jama.Matrix matRes = matCtrl.minus(matTest);
+        GenericMatrix matRes = matCtrl.minus(matTest);
         double      dblErr = matRes.normInf();
         
         if (dblErr != 0.0)

@@ -276,7 +276,7 @@ public class RealNumericIndexer<T> implements Iterable<T> {
 			else if ( location >= getMaxLocation() ) {
 				_records.add( newRecord );
 			}
-			else if ( index > 0 && index < NUM_RECORDS ) {
+			else if ( index >= 0 && index < NUM_RECORDS ) {
 				_records.add( index, newRecord );
 			}
 			else {

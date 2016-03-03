@@ -158,17 +158,6 @@ public class R3x3JacobiDecomposition {
         return arrEigvals;
     }
     
-//    /**
-//     * Get the eigenvalues as a vector in R3.
-//     * 
-//     * @return  vector of eigenvalues (lambda1, lambda2, lambda3) 
-//     */
-//    public R3   getEigenvalues()    {
-//        R3      vecVals = new R3(this.getRealEigenvalues());
-//
-//        return vecVals;
-//    }
-//    
     /**
      *  Get the matrix R of eigenvectors for the decomposition.  Note
      *  that this matrix is the diagonalizing matrix for the target matrix A. 
@@ -195,10 +184,6 @@ public class R3x3JacobiDecomposition {
         return this.matDiag;    
     }
     
-
-
-
-
     
     /*
      * Internal Support
@@ -418,15 +403,6 @@ class JacobiIterate {
      * @return          value of the coupling coefficient for given <code>pos</code>
      */
     private double compCoupling(POS pos)   {
-//        double  dblOffDiag = pos.getValue(matTarget);
-//        double  dblValue_2 = dblOffDiag*dblOffDiag;
-//        
-//        if (dblValue_2 < R3x3JacobiDecomposition.ERROR_TOLERANCE)
-//            return 0.0;
-//
-//        double  dblDiagRow = pos.getRowDiag(matTarget);
-//        double  dblDiagCol = pos.getColDiag(matTarget);
-//        return Math.abs( dblValue_2/(dblDiagRow*dblDiagCol) );
         
         double  dblVal = pos.getValue(matTarget);
         double  dblMag = Math.abs(dblVal);
