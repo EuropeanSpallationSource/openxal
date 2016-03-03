@@ -40,7 +40,10 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
-import Jama.Matrix;
+
+import org.ejml.data.DenseMatrix64F;
+import org.ejml.ops.CommonOps;
+import org.ejml.ops.MatrixFeatures;
 
 import xal.model.ModelException;
 import xal.tools.beam.CovarianceMatrix;
@@ -1129,8 +1132,8 @@ public class MatchingFace extends JPanel{
             
             ,{lstDerivatives[17],lstDerivatives[18],lstDerivatives[19],lstDerivatives[20]},{lstDerivatives[21],lstDerivatives[22],lstDerivatives[23],lstDerivatives[24]}};
         
-        Matrix A = new Matrix(avals);
-        A.print(30,15);
+        DenseMatrix64F A = new DenseMatrix64F(avals);
+        A.print();
     }
     
     public double Derivative(double h, double sigma_initial, double sigma_after, double field) {
