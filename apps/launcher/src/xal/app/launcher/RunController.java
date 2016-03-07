@@ -13,11 +13,8 @@ import xal.extension.widgets.swing.KeyValueFilteredTableModel;
 
 import java.awt.Point;
 import java.awt.event.*;
-import java.io.File;
 import java.util.*;
 import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.table.*;
 
 
 /** Controller for synchronizing the application view to the model */
