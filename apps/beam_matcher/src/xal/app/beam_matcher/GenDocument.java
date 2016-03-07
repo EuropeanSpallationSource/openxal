@@ -11,14 +11,12 @@ package xal.app.beam_matcher;
 
 import java.util.*;
 import javax.swing.text.*;
-import java.util.HashMap;
 
 import xal.extension.application.smf.*;
 import xal.smf.*;
 import xal.smf.data.*;
 import xal.extension.application.*;
 import xal.model.*;
-import xal.model.alg.*;
 import xal.model.probe.EnvelopeProbe;
 import xal.sim.scenario.ProbeFactory;
 import xal.sim.scenario.*;
@@ -36,29 +34,28 @@ import xal.tools.data.*;
 public class GenDocument extends AcceleratorDocument{
     private static final String STR_ID = ("HEBT1");
     private Accelerator     accl;
-    private Scenario		mWSD;
     private AcceleratorSeqCombo   seq;
     private ArrayList<AcceleratorSeq> seqlist = new ArrayList<AcceleratorSeq>();
     Scenario model;
-    
-    
+
+
     /**
      * The document for the text pane in the main window.
      */
     protected PlainDocument textDocument;
-    
+
     protected Lattice lattice = null;
-    
+
     //public HashMap allagentsmap = new HashMap();
-    
-    
+
+
     //Unused
     //public HashMap masterDataMap = new HashMap();
     //public HashMap resultMap = new HashMap();
-    
+
     /** the name of the xml file containing the accelerator */
     protected String theProbeFile;
-    
+
     /** Create a new empty document */
     public GenDocument() {
         this(null);
@@ -67,50 +64,50 @@ public class GenDocument extends AcceleratorDocument{
         this.seqlist.add(accl.getSequence("SCLHigh"));
         this.seqlist.add(accl.getSequence("HEBT1"));
         this.seq = new AcceleratorSeqCombo("HEBTCombo", seqlist);
-        
+
         //EnvTrackerAdapt etracker = new EnvTrackerAdapt();
-        
+
         IAlgorithm etracker = null;
-        
+
         try {
-            
+
             etracker = AlgorithmFactory.createEnvTrackerAdapt( seq );
-            
+
         } catch ( InstantiationException exception ) {
             System.err.println( "Instantiation exception creating tracker." );
             exception.printStackTrace();
         }
-        
+
         EnvelopeProbe probe = ProbeFactory.getEnvelopeProbe(STR_ID, seq, etracker);
-        
-        
-        
-        
+
+
+
+
         try {
             model = Scenario.newScenarioFor(seq);
             model.setProbe(probe);
-            
+
             model.setSynchronizationMode(Scenario.SYNC_MODE_DESIGN);
         } catch (ModelException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        
+
     }
-    
+
     private static GenDocument onlyOnce = null;
-    
+
     public static GenDocument getInstance() {
         if(GenDocument.onlyOnce == null) {
             onlyOnce = new GenDocument();
-            
+
             return onlyOnce;
-            
+
         }else {
             return onlyOnce;
         }
     }
-    
+
     /**
      * Create a new document loaded from the URL file
      * @param url The URL of the file to load into the new document.
@@ -118,8 +115,8 @@ public class GenDocument extends AcceleratorDocument{
     public  GenDocument(java.net.URL url) {
         accl = XMLDataManager.loadDefaultAccelerator();
         //		accl = getAccelerator();
-        
-        
+
+
         setSource(url);
         if ( url != null ) {
             try {
@@ -128,15 +125,15 @@ public class GenDocument extends AcceleratorDocument{
                 XmlDataAdaptor.adaptorForUrl(url, false);
                 update(documentAdaptor.childAdaptor("GenDocument"));
                 setHasChanges(false);
-                
-                
+
+
                 //				this.accl = XMLDataManager.loadDefaultAccelerator();
                 //
                 //				if (this.accl == null)
                 //					throw new RuntimeException("The default accelerator did not load");
                 //
-                
-                
+
+
             }
             catch(Exception exception) {
                 exception.printStackTrace();
@@ -147,7 +144,7 @@ public class GenDocument extends AcceleratorDocument{
         }
         if ( url == null )  return;
     }
-    
+
     /**
      * Make a main window by instantiating the my custom window.  Set the text
      * pane to use the textDocument variable as its document.
@@ -155,23 +152,23 @@ public class GenDocument extends AcceleratorDocument{
     public void makeMainWindow() {
         mainWindow = new GenWindow(this);
     }
-    
-    /**
-     * Convenience method for getting the main window cast to the proper
-     * subclass of XalWindow.  This allows me to avoid casting the window
-     * every time I reference it.
-     * @return The main window cast to its dynamic runtime class
-     */
-    private GenWindow myWindow() {
-        return (GenWindow)mainWindow;
-    }
-    
+
+//    /**
+//     * Convenience method for getting the main window cast to the proper
+//     * subclass of XalWindow.  This allows me to avoid casting the window
+//     * every time I reference it.
+//     * @return The main window cast to its dynamic runtime class
+//     */
+//    private GenWindow myWindow() {
+//        return (GenWindow)mainWindow;
+//    }
+
     /**
      * Customize any special button commands.
      */
     public void customizeCommands(Commander commander) {
     }
-    
+
     /**
      * Save the document to the specified URL.
      * @url The URL to which the document should be saved.
@@ -201,7 +198,7 @@ public class GenDocument extends AcceleratorDocument{
      * GenDocument class.
      * @return Accelerator accl
      */
-    
+
     public Accelerator getAccelerator() {
         return accl;
     }
@@ -213,8 +210,8 @@ public class GenDocument extends AcceleratorDocument{
     public Scenario getModel() {
         return model;
     }
-    
-    
+
+
     /**
      * dataLabel() provides the name used to identify the class in an
      * external data source.
@@ -223,7 +220,7 @@ public class GenDocument extends AcceleratorDocument{
     public String dataLabel() {
         return "GenDocument";
     }
-    
+
     /**
      * Instructs the receiver to update its data based on the given adaptor.
      * @param adaptor The data adaptor corresponding to this object's data
@@ -231,7 +228,7 @@ public class GenDocument extends AcceleratorDocument{
      */
     public void update(DataAdaptor adaptor) {
     }
-    
+
     /**
      * When called this method indicates that a setting has changed in
      * the source.
@@ -240,7 +237,7 @@ public class GenDocument extends AcceleratorDocument{
     public void settingChanged(Object source) {
         setHasChanges(true);
     }
-    
+
     /**
      * Instructs the receiver to write its data to the adaptor for external
      * storage.
@@ -249,7 +246,7 @@ public class GenDocument extends AcceleratorDocument{
      */
     public void write(DataAdaptor adaptor) {
     }
-    
+
     //Begin declarations and methods specific to the application
     /*public DataTable masterdatatable;
      public DataTable resultsdatatable;
@@ -257,7 +254,7 @@ public class GenDocument extends AcceleratorDocument{
      public Integer currentpvloggerid;
      */
     public void init(){
-        
+
         ArrayList<DataAttribute> attributes = new ArrayList<DataAttribute>();
         //attributes.add(new DataAttribute("file", String.class, true) );
         attributes.add(new DataAttribute("file", String.class, true));
@@ -265,6 +262,6 @@ public class GenDocument extends AcceleratorDocument{
         //	resultsdatatable = new DataTable("ResultsTable", attributes);
         //	masterpvloggermap = new HashMap();
     }
-    
-    
+
+
 }

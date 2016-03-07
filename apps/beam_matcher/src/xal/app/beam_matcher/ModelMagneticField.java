@@ -23,22 +23,22 @@ import xal.smf.proxy.ElectromagnetPropertyAccessor;
  * @since July 1, 2011
  */
 public class ModelMagneticField {
-    
-    //@SuppressWarnings("unused")
-    private final static String STR_ID = "HEBT1";
-    //@SuppressWarnings("unused")
+
+    @SuppressWarnings("unused")
+	private final static String STR_ID = "HEBT1";
+    @SuppressWarnings("unused")
     private final static double multiplier = 1.05;
-    
-    //@SuppressWarnings("unused")
+
+    @SuppressWarnings("unused")
     private  Accelerator    accl;
-    //@SuppressWarnings("unused")
+    @SuppressWarnings("unused")
     private  AcceleratorSeq seq;
     private  Scenario		model;
-    
+
     private double q, dblFldNom, dblFldNew;
-    
-    
-    
+
+
+
     /**
      * Default Constructor that can be used to retrieve
      * magnetic field values from the model
@@ -51,7 +51,7 @@ public class ModelMagneticField {
         accl = main.getAccelerator();
         model = main.getModel();
     }
-    
+
     /**
      * Get the model magnetic field values
      *
@@ -61,11 +61,11 @@ public class ModelMagneticField {
      * @throws ConnectionException		cannot connect to the model
      */
     public void ModelBFields() throws ModelException, SynchronizationException, GetException, ConnectionException {
-        
+
         // Unused Method
-        
+
     }
-    
+
     /**
      * <p>
      * Set model magnetic field values
@@ -107,27 +107,27 @@ public class ModelMagneticField {
      * @throws ModelException   unable to re-run online model after field value modification
      */
     public void changeQuadValue(AcceleratorNode smfQuad, double dblPct) throws ModelException {
- 
+
         double dblFactor = dblPct*.01 + 1;
-     
-        
+
+
         //		AcceleratorHardware	acclHw = new AcceleratorHardware();
         //		List<AcceleratorNode> lstNodes = acclHw.getAllQuadrupoles(STR_ID);
         IdealMagQuad	modQuad = new IdealMagQuad();
-        
+
         dblFldNom = modQuad.getMagField();
         dblFldNew = dblFldNom*dblFactor;
-        
+
         model.setModelInput(smfQuad, ElectromagnetPropertyAccessor.PROPERTY_FIELD, dblFldNew);
-        
-        
+
+
         System.out.println(" ");
         System.out.println("Quad: " + smfQuad + " " + " changes by " + dblPct + "%");
     }
-    
+
     public double getStepSize() {
         q = dblFldNew - dblFldNom;
         return q;
     }
-    
+
 }
