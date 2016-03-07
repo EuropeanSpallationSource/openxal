@@ -8,13 +8,11 @@
 
 package xal.app.launcher;
 
-import xal.tools.StringJoiner;
 import xal.tools.data.*;
 
 import java.io.*;
 import java.net.URL;
 import java.util.*;
-import java.util.regex.Pattern;
 
 
 /** Watches specified folders for new files of particular types */

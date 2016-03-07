@@ -8,13 +8,11 @@
 
 package xal.app.launcher;
 
-import xal.extension.application.*;
 import xal.extension.bricks.WindowReference;
 import xal.extension.widgets.swing.KeyValueTableModel;
 import xal.tools.data.KeyValueRecordListener;
 
 import javax.swing.*;
-import javax.swing.event.*;
 import javax.swing.table.*;
 import java.awt.event.*;
 import java.util.*;
