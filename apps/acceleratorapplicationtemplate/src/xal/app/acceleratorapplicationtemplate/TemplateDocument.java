@@ -12,20 +12,15 @@ package xal.app.acceleratorapplicationtemplate;
 
 import xal.tools.data.DataAdaptor;
 import xal.tools.xml.XmlDataAdaptor;
-import xal.model.probe.EnvelopeProbe;
-import xal.model.xml.ParsingException;
-import xal.model.xml.ProbeXmlParser;
 import xal.smf.AcceleratorSeq;
 import xal.smf.AcceleratorSeqCombo;
 import xal.extension.application.smf.*;
 import xal.smf.data.XMLDataManager;
 
-import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.net.URL;
 
 import javax.swing.JOptionPane;
 
