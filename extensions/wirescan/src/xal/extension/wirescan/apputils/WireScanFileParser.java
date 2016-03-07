@@ -6,7 +6,6 @@
 package xal.extension.wirescan.apputils;
 
 import java.util.Vector;
-import xal.extension.widgets.plot.BasicGraphData;
 import java.io.*;
 
 
@@ -21,7 +20,6 @@ public class WireScanFileParser {
 	static public Vector<WireScanData> parseFile(File file) {
 		
 		Vector<WireScanData> resV = new Vector<WireScanData>();
-		int count_data = 0;
 		Boolean raw = false;
 		int pvLogId = -1;
 		WireScanData wsD = new WireScanData();	

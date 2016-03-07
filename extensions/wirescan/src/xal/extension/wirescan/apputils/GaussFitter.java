@@ -14,7 +14,6 @@ import xal.extension.solver.ProblemFactory;
 import xal.extension.solver.Solver;
 import xal.extension.solver.Problem;
 import xal.extension.solver.algorithm.SimplexSearchAlgorithm;
-import xal.extension.solver.hint.Hint;
 import xal.extension.solver.hint.InitialDelta;
 
 /*

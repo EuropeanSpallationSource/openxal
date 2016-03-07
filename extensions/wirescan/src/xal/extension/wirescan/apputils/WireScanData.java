@@ -43,10 +43,7 @@ public class WireScanData{
 	private double sigmaRmsY = 0.;
 	
 	private double centerRmsX = 0.;
-	private double centerRmsY = 0.;	
-
-	private double sigmaRmsErrX = 0.;
-	private double sigmaRmsErrY = 0.;
+	private double centerRmsY = 0.;
 	
 	//the log(wf) logarithms of the raw waveform
 	private BasicGraphData log_wfX = new BasicGraphData();

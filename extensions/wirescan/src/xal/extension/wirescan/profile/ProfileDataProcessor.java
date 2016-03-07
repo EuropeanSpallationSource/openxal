@@ -626,17 +626,11 @@ public class ProfileDataProcessor {
      */
     private void    linearInterpolate(double[] arrFunc) throws DataProcessingException  {
         
-        int     cntBadData = 0;     // number of bad data points found
-        
         for (int index=0; index<arrFunc.length; index++)    {
             
             // If its good data ignore it
             if (arrFunc[index] != Double.NaN)   
                 continue;
-        
-            // Found a bad data points
-            cntBadData++;
-            
             
             // If there are two contiguous points give up
             if (arrFunc[index+1] == Double.NaN)

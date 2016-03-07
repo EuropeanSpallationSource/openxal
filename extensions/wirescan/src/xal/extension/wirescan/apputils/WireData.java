@@ -6,10 +6,6 @@
 
 package xal.extension.wirescan.apputils;
 
-import java.io.*;
-import java.util.*;
-import java.text.*;
-
 /**
  *
  * @author  Paul Chu
