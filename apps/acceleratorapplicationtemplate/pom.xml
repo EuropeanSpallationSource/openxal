@@ -9,7 +9,6 @@
     </parent>
 
     <artifactId>openxal.apps.acceleratorapplicationtemplate</artifactId>
-    <version>1.0.9-SNAPSHOT</version>
 
     <build>
         <sourceDirectory>src</sourceDirectory>
