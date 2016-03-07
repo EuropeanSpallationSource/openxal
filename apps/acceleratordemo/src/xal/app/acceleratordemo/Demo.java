@@ -9,7 +9,6 @@
 
 package xal.app.acceleratordemo;
 
-import javax.swing.*;
 import java.util.logging.*;
 
 import xal.extension.application.*;
@@ -112,7 +111,7 @@ public class Demo extends ApplicationAdaptor {
             System.err.println( exception.getMessage() );
             Logger.getLogger("global").log( Level.SEVERE, "Error launching the application." , exception );
             exception.printStackTrace();
-            JOptionPane.showMessageDialog(null, exception.getMessage(), exception.getClass().getName(), JOptionPane.WARNING_MESSAGE);
+            Application.displayApplicationError("Launch Exception", "Launch Exception", exception);
         }
     }
 }
