@@ -91,7 +91,6 @@ public class RulesController {
 
 		final JButton deleteRuleCommandButton = (JButton)windowReference.getView( "DeleteRuleCommandButton" );
 		deleteRuleCommandButton.addActionListener( new ActionListener() {
-			private static final long serialVersionUID = 1L;
 
 			public void actionPerformed( final ActionEvent event ) {
 				final int[] selectedRows = RULE_COMMAND_TABLE.getSelectedRows();
@@ -108,7 +107,6 @@ public class RulesController {
 
 		final JButton addRuleCommandButton = (JButton)windowReference.getView( "AddRuleCommandButton" );
 		addRuleCommandButton.addActionListener( new ActionListener() {
-			private static final long serialVersionUID = 1L;
 
 			public void actionPerformed( final ActionEvent event ) {
 				final int selectedRow = RULE_COMMAND_TABLE.getSelectedRow();

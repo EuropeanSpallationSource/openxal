@@ -164,16 +164,16 @@ public class LaunchModel implements DataListener {
 	}
 	
 	
-	/** get the first rule that matches the specified application */
-	private Rule getRule( final App application ) {
-		final List<Rule> rules = new ArrayList<Rule>( RULES );
-		for ( final Rule rule : rules ) {
-			if ( rule.matches( application ) ) {
-				return rule;
-			}
-		}
-		return null;
-	}
+//	/** get the first rule that matches the specified application */
+//	private Rule getRule( final App application ) {
+//		final List<Rule> rules = new ArrayList<Rule>( RULES );
+//		for ( final Rule rule : rules ) {
+//			if ( rule.matches( application ) ) {
+//				return rule;
+//			}
+//		}
+//		return null;
+//	}
 	
 	
 	/** launch the specified application using the first matching rule */
