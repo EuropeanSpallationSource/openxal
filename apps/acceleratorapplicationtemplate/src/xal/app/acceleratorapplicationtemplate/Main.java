@@ -78,31 +78,16 @@ public class Main extends ApplicationAdaptor {
     }
 
 
-    /**
-     * Specifies whether I want to send standard output and error to the console.
-     * I don't need to override the superclass adaptor to return true (the default), but
-     * it is sometimes convenient to disable the console while debugging.
-     * @return Name of my application.
-     */
-    public boolean usesConsole() {
-        String usesConsoleProperty = System.getProperty("usesConsole");
-        if ( usesConsoleProperty != null ) {
-            return Boolean.valueOf(usesConsoleProperty).booleanValue();
-        }
-        else {
-            return true;
-        }
-    }
-
-
     // --------- Application events --------------------------------------------
 
     /**
      * Capture the application launched event and print it.  This is an optional
      * hook that can be used to do something useful at the end of the application launch.
+     *
+     * We have a default behaviour so you may remove this implementation.
      */
     public void applicationFinishedLaunching() {
-        System.out.println("Application has finished launching!");
+        super.applicationFinishedLaunching();
     }
 
 
