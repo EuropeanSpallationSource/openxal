@@ -112,6 +112,7 @@ public class Demo extends ApplicationAdaptor {
             Logger.getLogger("global").log( Level.SEVERE, "Error launching the application." , exception );
             exception.printStackTrace();
             Application.displayApplicationError("Launch Exception", "Launch Exception", exception);
+            System.exit(-1);
         }
     }
 }
