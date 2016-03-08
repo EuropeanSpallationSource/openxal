@@ -21,7 +21,7 @@ import java.net.URL;
  * @author  somebody
  */
 class TemplateDocument extends XalDocument {
-	/** Create a new empty document */
+    /** Create a new empty document */
     public TemplateDocument() {
         this(null);
     }
