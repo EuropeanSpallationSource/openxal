@@ -78,21 +78,6 @@ public class MainScan2D extends ApplicationAdaptor {
         ((ScanDocument2D)document).editPreferences();
     }
     
-    
-    /**
-     * Specifies whether the one dimensional scan will send 
-     * standard output and error to the console.
-     * @return Name of my application.
-     */
-    public boolean usesConsole() {
-        String usesConsoleProperty = System.getProperty("usesConsole");
-        if ( usesConsoleProperty != null ) {
-            return Boolean.valueOf(usesConsoleProperty).booleanValue();
-        }
-        else {
-            return true;
-        }
-    }
 
     /** The main method of the application. */
     static public void main(String[] args) {
