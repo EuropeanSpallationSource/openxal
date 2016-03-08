@@ -116,7 +116,7 @@ public class Main extends ApplicationAdaptor {
     /** The main method of the application. */
     static public void main(String[] args) {
         try {
-            System.out.println("Starting application...");
+            System.out.println("Launching application...");
             Logger.getLogger("global").log( Level.INFO, "Launching the application..." );
             AcceleratorApplication.launch( new Main() );
         }
