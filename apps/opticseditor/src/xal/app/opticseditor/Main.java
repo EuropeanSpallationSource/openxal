@@ -86,12 +86,6 @@ public class Main extends ApplicationAdaptor {
     
     // --------- Application events --------------------------------------------
     
-    /** Capture the application launched event and print it. */
-    public void applicationFinishedLaunching() {
-        System.out.println( "Optics Editor has finished launching!" );
-    }
-    
-    
     /** Constructor */
     public Main() {
     }
