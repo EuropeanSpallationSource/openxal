@@ -83,15 +83,6 @@ public class Main extends ApplicationAdaptor {
     
     // --------- Application events --------------------------------------------
     
-    /** 
-     * Capture the application launched event and print it.  This is an optional
-     * hook that can be used to do something useful at the end of the application launch.
-     */
-    public void applicationFinishedLaunching() {
-        System.out.println("Launcher running...");
-    }
-    
-    
     /**
      * Constructor
      */
