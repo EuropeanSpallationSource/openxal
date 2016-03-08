@@ -97,22 +97,6 @@ public class InjDumpWizardMain extends ApplicationAdaptor {
 
 
 	/**
-	 *  Specifies whether the InjDumpWizard application will send standard output
-	 *  and error to the console.
-	 *
-	 *@return    true or false.
-	 */
-	public boolean usesConsole() {
-		String usesConsoleProperty = System.getProperty("usesConsole");
-		if(usesConsoleProperty != null) {
-			return Boolean.valueOf(usesConsoleProperty).booleanValue();
-		} else {
-			return true;
-		}
-	}
-
-
-	/**
 	 *  The main method of the application.
 	 *@param  args  The command line arguments
 	 */
