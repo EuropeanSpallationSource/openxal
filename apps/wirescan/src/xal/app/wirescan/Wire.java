@@ -59,26 +59,6 @@ public class Wire extends ApplicationAdaptor {
 		return "Wirescanner Application";
 	}
 
-	/**
-	 * Specifies whether I want to send standard output and error to the console.
-	 * 
-	 * @return true or false.
-	 */
-	public boolean usesConsole() {
-		String usesConsoleProperty = System.getProperty("usesConsole");
-		if ( usesConsoleProperty != null ) {
-			return Boolean.valueOf(usesConsoleProperty).booleanValue();
-		}
-		else {
-			return true;
-		}
-	}
-
-	/** Capture the application launched event and print it */
-	public void applicationFinishedLaunching() {
-		System.out.println("Application finished launching...");
-	}
-
 	/** The main method of the application. */
 	static public void main(String[] args) {
 		try {
