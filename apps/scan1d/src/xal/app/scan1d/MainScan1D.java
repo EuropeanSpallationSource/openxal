@@ -89,22 +89,6 @@ public class MainScan1D extends ApplicationAdaptor {
 
 
 	/**
-	 *  Specifies whether the one dimensional scan will send standard output and
-	 *  error to the console.
-	 *
-	 *@return    Name of my application.
-	 */
-	public boolean usesConsole() {
-		String usesConsoleProperty = System.getProperty("usesConsole");
-		if (usesConsoleProperty != null) {
-			return Boolean.valueOf(usesConsoleProperty).booleanValue();
-		} else {
-			return true;
-		}
-	}
-
-
-	/**
 	 *  The main method of the application.
 	 *
 	 *@param  args  The command line arguments
