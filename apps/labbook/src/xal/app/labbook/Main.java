@@ -72,12 +72,6 @@ public class Main extends ApplicationAdaptor {
     
     // --------- Application events --------------------------------------------
     
-    /** Capture the application launched event and print it. */
-    public void applicationFinishedLaunching() {
-        System.out.println( "Lab Book has finished launching!" );
-    }
-    
-    
     /** Constructor */
     public Main() {
     }
