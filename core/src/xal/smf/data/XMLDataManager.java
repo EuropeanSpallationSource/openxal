@@ -228,7 +228,7 @@ public class XMLDataManager {
 	 * @param path the new file path to the default accelerator data source
 	 */
     static public void setDefaultPath(String path) {
-        Preferences prefs = Preferences.userNodeForPackage( XMLDataManager.class );
+        Preferences prefs = xal.tools.apputils.Preferences.userNodeForPackage( XMLDataManager.class );
         prefs.put(MAIN_PATH_PREF_KEY, path);
     }
     
