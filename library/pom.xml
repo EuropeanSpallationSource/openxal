@@ -74,6 +74,7 @@
                     <resource><directory>../apps/machinerecorder/target</directory><includes><include>openxal.apps.machinerecorder-${project.version}.jar</include></includes></resource>
                     <resource><directory>../apps/machinesimulator/target</directory><includes><include>openxal.apps.machinesimulator-${project.version}.jar</include></includes></resource>
                     <resource><directory>../apps/magnetcycling/target</directory><includes><include>openxal.apps.magnetcycling-${project.version}.jar</include></includes></resource>
+                    <resource><directory>../apps/modelmanager/target</directory><includes><include>openxal.apps.modelmanager-${project.version}.jar</include></includes></resource>
                     <resource><directory>../apps/mtv/target</directory><includes><include>openxal.apps.mtv-${project.version}.jar</include></includes></resource>
                     <resource><directory>../apps/opticseditor/target</directory><includes><include>openxal.apps.opticseditor-${project.version}.jar</include></includes></resource>
                     <resource><directory>../apps/opticsswitcher/target</directory><includes><include>openxal.apps.opticsswitcher-${project.version}.jar</include></includes></resource>
