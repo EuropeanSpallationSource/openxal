@@ -10,23 +10,30 @@
   <artifactId>openxal.apps.modelmanager</artifactId>
 
   <build>
-    <plugins>
-        <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-jar-plugin</artifactId>
-            <version>2.4</version>
-            <configuration>
-                <archive>
-                    <manifest>
-                        <mainClass>edu.stanford.lcls.modelmanager.ModelManagerMain</mainClass>
-                    </manifest>
-                    <manifestEntries>
-                        <Class-Path>openxal.library-${project.version}.jar openxal.extensions.zplot-${project.version}.jar jfreechart-1.0.19.jar jcommon-1.0.23.jar</Class-Path>
-                    </manifestEntries>
-                </archive>
-            </configuration>
-        </plugin>
-    </plugins>
+        <sourceDirectory>src</sourceDirectory>
+        <resources>
+            <resource>
+                <directory>resources</directory>
+                <targetPath>xal/app/modelmanager/resources</targetPath>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>edu.stanford.lcls.modelmanager.ModelManagerMain</mainClass>
+                        </manifest>
+                        <manifestEntries>
+                            <Class-Path>openxal.library-${project.version}.jar openxal.extensions.zplot-${project.version}.jar jfreechart-1.0.19.jar jcommon-1.0.23.jar</Class-Path>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
   </build>
   <dependencies>
     <dependency>
