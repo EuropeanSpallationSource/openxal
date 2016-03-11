@@ -31,7 +31,7 @@ public class DemoDocument extends AcceleratorDocument implements DataListener {
     final protected PlainDocument TEXT_DOCUMENT;
 
     /** So that we do not have to cast every time.. */
-    public DemoWindow mainWindow;
+    public DemoWindow demoWindow;
 
     /** Create a new empty document */
     public DemoDocument() {
@@ -57,8 +57,9 @@ public class DemoDocument extends AcceleratorDocument implements DataListener {
 
     /** Make and configure the main window. */
     public void makeMainWindow() {
-        mainWindow = new DemoWindow(this);
-        mainWindow.getTextView().setDocument( TEXT_DOCUMENT);
+        demoWindow = new DemoWindow(this);
+        super.mainWindow = demoWindow;
+        demoWindow.getTextView().setDocument( TEXT_DOCUMENT);
         updateDisplay();
    }
 
@@ -75,7 +76,7 @@ public class DemoDocument extends AcceleratorDocument implements DataListener {
             setHasChanges( false );
         }
         catch( XmlDataAdaptor.WriteException exception ) {
-        	catchXmlDataAdaptorException(exception);
+            catchXmlDataAdaptorException(exception);
         }
         catch( Exception exception ) {
             exception.printStackTrace();
@@ -161,7 +162,7 @@ public class DemoDocument extends AcceleratorDocument implements DataListener {
             displayAccelerator();
         }
         else if ( mainWindow != null ) {
-        	mainWindow.getTextView().setText( "No accelerator has been selected." );
+            demoWindow.getTextView().setText( "No accelerator has been selected." );
         }
     }
 
@@ -175,7 +176,7 @@ public class DemoDocument extends AcceleratorDocument implements DataListener {
                 description.append( '\t' + sequence.getId() + LINE_SEPARATOR );
             }
 
-            mainWindow.getTextView().setText( description.toString() );
+            demoWindow.getTextView().setText( description.toString() );
 
             final String message = "Accelerator changed to: \"" + accelerator.getId() + "\" with path: \"" + acceleratorFilePath + "\"";
             System.out.println( message );
@@ -193,7 +194,7 @@ public class DemoDocument extends AcceleratorDocument implements DataListener {
                 description.append( '\t' + node.getId() + '\t' + selectedSequence.getPosition(node) + LINE_SEPARATOR );
             }
 
-            mainWindow.getTextView().setText( description.toString() );
+            demoWindow.getTextView().setText( description.toString() );
         }
     }
 }
