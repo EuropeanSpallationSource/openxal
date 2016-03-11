@@ -9,7 +9,6 @@
     </parent>
 
     <artifactId>openxal.apps</artifactId>
-    <version>1.0.9-SNAPSHOT</version>
 
     <packaging>pom</packaging>
 
@@ -38,6 +37,7 @@
         <module>machinerecorder</module>
         <module>machinesimulator</module>
         <module>magnetcycling</module>
+        <module>modelmanager</module>
         <module>mtv</module>
         <module>opticseditor</module>
         <module>opticsswitcher</module>
