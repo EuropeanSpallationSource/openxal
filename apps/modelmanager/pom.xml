@@ -1,0 +1,55 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  
+  <parent>
+	<groupId>org.xal</groupId>
+	<artifactId>openxal.apps</artifactId>
+	<version>1.0.9-SNAPSHOT</version>
+  </parent>
+	
+  <artifactId>openxal.apps.modelmanager</artifactId> 
+  <version>1.0.9-SNAPSHOT</version>
+  
+  <build>
+	<plugins>
+		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-jar-plugin</artifactId>
+			<version>2.4</version>
+			<configuration>
+				<archive>
+					<manifest>
+						<mainClass>edu.stanford.lcls.modelmanager.ModelManagerMain</mainClass>
+					</manifest>
+					<manifestEntries>
+						<Class-Path>openxal.library-${project.version}.jar openxal.extensions.zplot-${project.version}.jar jfreechart-1.0.19.jar jcommon-1.0.23.jar</Class-Path>
+					</manifestEntries>
+				</archive>
+			</configuration>
+		</plugin>
+	</plugins>
+  </build>
+  <dependencies>
+	<dependency>
+		<groupId>org.xal</groupId>
+		<artifactId>openxal.extensions.zplot</artifactId>
+	</dependency>
+	<dependency>
+		<groupId>se.lu.esss.ics.jels</groupId>
+		<artifactId>jels</artifactId>
+	</dependency>
+	<dependency>
+		<groupId>se.lu.esss.ics.linaclego</groupId>
+		<artifactId>openxal.extensions.linaclego</artifactId>
+	</dependency>
+	<dependency>
+		<groupId>org.xal</groupId>
+		<artifactId>openxal.extensions.tracewin</artifactId>
+	</dependency>
+	<dependency>
+		<groupId>postgresql</groupId>
+		<artifactId>postgresql</artifactId>
+		<scope>runtime</scope>
+	</dependency>
+  </dependencies>
+</project>

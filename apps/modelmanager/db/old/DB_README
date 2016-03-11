@@ -1,0 +1,92 @@
+README for XAL GUI database support
+
+Greg White, 25-Mar-2015.
+
+=====================================================================================
+
+model_upload_pkg
+----------------
+at the time of writing, model_upload_pkg is an Oracle PL/SQL package of stored procedures
+for managing the Oracle DB updates of the XAL GUI at SLAC. This summary indicates the
+function of each procedure as presently used at SLAC, and suggests action for port to ESS.
+
+1. init_logging   
+
+               Suggest either adapt or delete for ESS. Not sure ESS has central logging system yet.
+
+	       Initializes writes to a central logging system.
+
+2. writeit     Suggest either adapt or delete for ESS
+
+               Writes to SLAC central logging system.
+	       
+3. check_ok_to_proceed
+
+               Suggest not implement.
+	       
+               Determines whether a model upload or model golding would conflict with another
+	       and therefore whether it should go ahead now, be delayed and retried, or be aborted.
+               ESS does not have the Quality Assurance db referenced by this procedure, so
+
+	       I would removed references to it, and if
+	       conflicts become an issue, invent your own mechanism to avoid
+	       conflict.
+		 
+4. check_runid_to_proceed
+
+               Suggest not implement.
+	       
+               Determines whether an instruction to gold a given runid should proceed, given
+	       that another app instance may be golding at the same time.
+
+               As check_ok_to_proceed, I would remove
+	       references to this and then write your own when the need arises.
+
+5. refresh_mview_device_names
+
+               Suggest not implement.
+	       
+               Updates a so called "materialized view" of the most recently
+               uploaded run data. Materialized views are supposed to be a fast
+	       way to get the data of an otherwise slow sql statement. I would
+	       first see how long it takes to get all the optics data of a run
+	       through a basic sql statement given a runid.
+
+6. aida_xalserv_names_update and aida_symbols_names_update
+
+	       Suggest not implement.
+
+	       Updates the database of all names of all data at SLAC. AIDA is a system used at
+	       SLAC which can access all data from anywhere at slac by name (device names,
+	       PV names, model elements archived data, RDB data etc). It keeps a central
+	       directory service updated. Each data source updates its names in the central
+	       name system.
+
+
+7. adjust_seq_per_max_table_id
+                              
+               Suggest not implement.
+
+               At SLAC we used to have two instances of the production
+	       databases, one inside the production network, and one outside for
+	       analysis and office work. Since then commits were not atomic this
+	       procedure would check ids were consistent between 2 db (since one
+	       person may be updating one db but not yet the other). We ditched
+	       that model last year and now just use one.
+
+8. model_upload
+
+               Implement at ESS
+
+	       Manages the insertion of the data of one model "run" into the database.
+
+	       Since we have removed column LCLS_ELEMENTS_ELEMENT_ID from ELEMENT_MODELS table,
+	       remove the corresponding code.
+
+9. gold_this_model
+
+	       Implement at ESS
+
+	       Writes into the GOLD table to update which model run (of design or extant type)
+	       is now gold.
+
