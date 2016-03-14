@@ -79,27 +79,7 @@ public class Main extends ApplicationAdaptor {
     }
     
     
-    
-    /**
-     * Specifies whether I want to send standard output and error to the console
-     */
-    public boolean usesConsole() {
-        String usesConsoleProperty = System.getProperty("usesConsole");
-        if ( usesConsoleProperty != null ) {
-            return Boolean.valueOf(usesConsoleProperty).booleanValue();
-        }
-        else {
-            return true;
-        }
-    }
-    
     // --------- Application events --------------------------------------------
-    
-    /** Capture the application launched event and print it */
-    public void applicationFinishedLaunching() {
-        System.out.println("Score application has finished launching!");
-    }
-    
     
     /**
      * Constructor

@@ -164,8 +164,4 @@ public class Main extends ApplicationAdaptor {
         return new String[] {"va", "xml"};
     }
 
-    
-    public boolean usesConsole() {
-		return true;
-    }    
 }

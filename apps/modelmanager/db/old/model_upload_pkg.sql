@@ -1,0 +1,4422 @@
+--------------------------------------------------------
+--  File created - Wednesday-March-25-2015   
+--------------------------------------------------------
+--------------------------------------------------------
+--  DDL for Package Body MODEL_UPLOAD_PKG
+--------------------------------------------------------
+
+  CREATE OR REPLACE PACKAGE BODY "MACHINE_MODEL"."MODEL_UPLOAD_PKG" 
+AS
+
+  -- GLOBAL TO PACKAGE BODY
+  G_OK_TO_PRINT                       BOOLEAN := FALSE;
+  
+  GC_INSTANCE         CONSTANT        VARCHAR2(30) := SYS_CONTEXT('USERENV', 'DB_NAME');
+  
+  GC_SEND_ADDR        CONSTANT        VARCHAR2(500) := 'egrunhau@slac.stanford.edu;poonam@slac.stanford.edu;controls-software-reports@slac.stanford.edu';
+  
+  GC_FROM_ADDR        CONSTANT        VARCHAR2(500) := 'model_processing_support';
+
+  --------------
+  
+  -- PRIVATE TO PACKAGE BODY
+  PROCEDURE INIT_LOGGING (P_LOG_FILE IN VARCHAR2, P_PROC IN VARCHAR2)
+  AS
+
+    /* POINTS TO LINUX DIRECTORY /nfs/slac/g/cd/log/oracle */
+    C_DIR                    CONSTANT   VARCHAR2(30)  := 'CONTROL_LOGS';
+    C_BUFFER                 CONSTANT   NUMBER        := 1024;
+    C_MODE                   CONSTANT   VARCHAR2(1)   := 'W';
+    C_PROC                   CONSTANT   VARCHAR2(100) := 'MODEL_UPLOAD_PKG.INIT_LOGGING';
+
+  BEGIN
+
+    -- INITIALIZE LOGGING.
+    BEGIN
+    WRITE_LOG.INITIALIZE(IPATH => C_DIR, IFILE => P_LOG_FILE, IBUFFER => C_BUFFER, IMODE => C_MODE);
+    G_OK_TO_PRINT := TRUE;
+
+    EXCEPTION
+      WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('ERROR ('||C_PROC||'): LOGGING COULD NOT BE INITIALIZED FOR '||P_PROC||' =>'||SQLERRM);
+    END;
+    
+    RETURN;
+
+  END INIT_LOGGING;
+
+  --------------
+  
+  -- PRIVATE TO PACKAGE BODY
+  /*
+  PARAMETERS:  P_TEXT        = TEXT TO BE WRITTEN TO LOG FILE AND/OR DISPLAYED TO CONSOLE.
+               P_SEPLINE_POS = POSSIBLE VALUES: NULL (DEFAULT) = DO NOT PRINT ANY SEPARATOR LINES.
+                                                "B"            = PRINT BOTH START AND END SEPARATOR LINES.
+                                                "S"            = PRINT ONLY THE START SEPARATOR LINE.
+                                                "E"            = PRINT ONLY THE END SEPARATOR LINE.
+  */
+  PROCEDURE WRITEIT (P_TEXT IN VARCHAR2, P_SEPLINE_POS IN VARCHAR2 DEFAULT NULL)
+  AS
+  
+    V_TEXT                 VARCHAR2(32767) := SUBSTR(TRIM(P_TEXT),1,32767);
+    V_SEPLINE_POS          VARCHAR2(1)     := SUBSTR(UPPER(TRIM(P_SEPLINE_POS)),1,1);
+
+  BEGIN
+
+    IF (G_OK_TO_PRINT) THEN
+      WRITE_LOG.WRITE(' ');
+      IF ( V_SEPLINE_POS IN ('S','B') ) THEN
+        WRITE_LOG.WRITE('====================================================================');
+      END IF;
+      WRITE_LOG.WRITE(V_TEXT);
+      IF ( V_SEPLINE_POS IN ('E','B') ) THEN
+        WRITE_LOG.WRITE('====================================================================');
+      END IF;
+      WRITE_LOG.WRITE(' ');
+    END IF;
+    
+    ------------
+
+    DBMS_OUTPUT.PUT_LINE(' ');
+    IF ( V_SEPLINE_POS IN ('S','B') ) THEN
+      DBMS_OUTPUT.PUT_LINE('====================================================================');
+    END IF;
+    DBMS_OUTPUT.PUT_LINE(V_TEXT);
+    IF ( V_SEPLINE_POS IN ('E','B') ) THEN
+      DBMS_OUTPUT.PUT_LINE('====================================================================');
+    END IF;
+    DBMS_OUTPUT.PUT_LINE(' ');
+    
+    RETURN;
+
+  END WRITEIT;
+
+  --------------
+
+/*
+  -- PRIVATE TO PACKAGE BODY
+  PROCEDURE ADD_TO_DATA_VALIDATION_TAB (P_PROCESS_NM     IN VARCHAR2,
+                                        P_STAGE          IN VARCHAR2,
+                                        P_STATUS         IN VARCHAR2,
+                                        P_MSG            IN VARCHAR2,
+                                        P_PROCESS_GRP_NO IN NUMBER,
+                                        P_ERRMSG         IN OUT VARCHAR2)
+  AS
+
+      V_PROCESS_NM   VARCHAR2(120);
+      V_STAGE        VARCHAR2(120);
+      V_STATUS       VARCHAR2(30);
+      V_MSG          VARCHAR2(4000);
+    
+      C_PROC        CONSTANT   VARCHAR2(100) := 'NOTIFY_PKG.ADD_TO_DATA_VALIDATION_TAB';
+
+  BEGIN
+
+      V_PROCESS_NM := SUBSTR(TRIM(P_PROCESS_NM),1,120);
+      V_STAGE      := SUBSTR(TRIM(P_STAGE),1,120);
+      V_STATUS     := SUBSTR(TRIM(P_STATUS),1,30);
+      V_MSG        := SUBSTR(TRIM(P_MSG),1,4000);
+
+      P_ERRMSG     := NULL;
+
+      --------
+
+      BEGIN
+      INSERT INTO DATA_VALIDATION_TAB (INST,
+                                       SCHEMA_NM,
+                                       PROCESS_NM,
+                                       STAGE,
+                                       STATUS_CHK,
+                                       MSG,
+                                       CREATED_BY,
+                                       PROCESS_GRP_NO)
+                               VALUES (GC_INSTANCE,
+                                       USER,
+                                       V_PROCESS_NM,
+                                       V_STAGE,
+                                       V_STATUS,
+                                       V_MSG,
+                                       USER,
+                                       P_PROCESS_GRP_NO);
+
+      EXCEPTION
+        WHEN OTHERS THEN
+          P_ERRMSG := SUBSTR('INSERT ERROR ('||C_PROC||')=>'||SQLERRM,1,1000);
+      END;
+
+
+      RETURN;
+
+
+  EXCEPTION
+    WHEN OTHERS THEN
+      P_ERRMSG := SUBSTR('OTHERS ERROR ('||C_PROC||') [PROCESS_GRP_NO='||NVL(TO_CHAR(P_PROCESS_GRP_NO),'NULL')||']: '||SQLERRM,1,1000);
+      RETURN;
+
+  END ADD_TO_DATA_VALIDATION_TAB;
+*/
+
+  --------------
+
+  -- PRIVATE TO PACKAGE BODY
+  PROCEDURE CHECK_OK_TO_PROCEED (P_ERRMSG IN OUT VARCHAR2)
+  AS
+
+  /*
+  PURPOSE: THIS PROCEDURE DETERMINES WHETHER OR NOT THIS CURRENTLY LAUNCHED MODEL_UPLOAD OR
+           MODEL_GOLDING PROCESS SHOULD CONTINUE.
+           
+           IT DOES THIS BY QUERYING THE TABLE CONTROLS_GLOBAL.DATA_VALIDATION_AUDIT ON MCCQA
+           VIA A SYNONYM CONTAINING AN EMBEDDED DBLINK.  THE TABLE IS QUERIED EVERY 3 SECONDS
+           OVER A 3 MINUTE INTERVAL.  EACH QUERY CHECKS IF ANY PREVIOUSLY LAUNCHED MODEL_UPLOAD
+           PROCESS IS STILL RUNNING.  NOTE THAT THERE IS NO NEED TO CHECK IF A PREVIOUSLY
+           LAUNCHED MODEL_GOLDING PROCESS IS STILL RUNNING.
+           
+           AMONG THE MOST RECENT ENTRIES IN THIS TABLE, IF THERE IS FOUND A ROW WHERE COLUMN
+           STAGE CONTAINS "START_MODEL_UPLOAD", THIS MEANS A PREVIOUSLY LAUNCHED MODEL_UPLOAD
+           PROCESS IS STILL WORKING.  IN THIS EVENT, THIS CURRENTLY LAUNCHED MODEL_UPLOAD OR
+           MODEL_GOLDING PROCESS WAITS FOR 3 SECONDS BEFORE RE-CHECKING THIS TABLE.  THIS
+           CONTINUES FOR UP TO 3 MINUTES.
+           
+           AFTER 3 MINUTES, IF A ROW HAVING "STAGE" COLUMN CONTAINING "START_MODEL_UPLOAD"
+           AMONG THE MOST RECENT ENTRIES IS STILL FOUND, THEN THIS CAUSES THE CALLING PROCEDURE
+           TO ABORT ALL PROCESSING; OTHERWISE, A 'PROCEED" SIGNAL IS GENERATED.  IN THE EVENT OF
+           AN UN-EXPECTED ERROR, THIS ALSO CAUSES ALL PROCESSING TO ABORT.
+
+  -- SAMPLE USAGE:
+  DECLARE
+    V_ERRMSG            VARCHAR2(1000);
+  BEGIN
+    CHECK_OK_TO_PROCEED(V_ERRMSG);
+    DBMS_OUTPUT.PUT_LINE('ERRMSG='||NVL(V_ERRMSG,'NULL'));
+  END;
+  */
+
+    V_RESULT                   VARCHAR2(20);
+
+    C_PROC        CONSTANT    VARCHAR2(100) := 'MODEL_UPLOAD_PKG.CHECK_OK_TO_PROCEED';
+    C_PROCESS_NM   CONSTANT    VARCHAR2(120) := 'MODEL_UPLOAD';
+    C_STAGE        CONSTANT    VARCHAR2(120) := 'START_MODEL_UPLOAD';
+    C_NUM_TRIES     CONSTANT    PLS_INTEGER   := 60;
+    C_3_SECS        CONSTANT    PLS_INTEGER   := 3;
+    C_MINUTE        CONSTANT    PLS_INTEGER   := 60;
+    C_RN_LIMIT       CONSTANT    PLS_INTEGER   := 1;
+    C_SLEEP_CNT      CONSTANT    PLS_INTEGER := 50000000;  -- APPROXIMATES A 3-SECOND INTERVAL.
+
+  BEGIN
+
+    P_ERRMSG := NULL;
+    V_RESULT := NULL;
+
+    FOR J IN 1 .. C_NUM_TRIES LOOP
+
+      SELECT
+      CASE WHEN (Y.CNT = 0)  THEN 'PROCEED'
+           ELSE 'WAIT'
+      END
+      INTO V_RESULT
+      FROM
+      (
+      SELECT COUNT(*) AS CNT
+      FROM
+      (
+      SELECT UPPER(A.INST)       AS INST,
+             UPPER(A.PROCESS_NM) AS PROCESS_NM,
+             UPPER(A.STAGE)      AS STAGE,
+             ROW_NUMBER () OVER (PARTITION BY UPPER(A.INST),
+                                             UPPER(A.SCHEMA_NM),
+                                             UPPER (A.PROCESS_NM)
+                                ORDER BY TOD DESC
+                               ) AS RN
+        FROM DATA_VALIDATION_AUDIT A
+      ) X
+      WHERE X.RN        = C_RN_LIMIT
+        AND X.INST       = GC_INSTANCE
+        AND X.PROCESS_NM = C_PROCESS_NM
+        AND INSTR(X.STAGE,C_STAGE,1,1) > 0
+      ) Y;
+
+      EXIT WHEN V_RESULT = 'PROCEED';
+
+      -- SLEEP FOR 3 SECONDS
+      DBMS_LOCK.SLEEP(C_3_SECS);
+
+    END LOOP;
+
+    ----------
+
+    IF ( V_RESULT IS NULL ) THEN
+      P_ERRMSG := SUBSTR('ERROR ('||C_PROC||'): LOOP LOGIC WAS NOT INVOKED ON '||GC_INSTANCE,1,1000);
+    ELSIF ( V_RESULT = 'WAIT' ) THEN
+      P_ERRMSG := SUBSTR('ERROR ('||C_PROC||'): AFTER '||TO_CHAR((C_NUM_TRIES * C_3_SECS)/C_MINUTE)||' MINUTES, '||C_PROCESS_NM||' HAS NOT COMPLETED ON '||GC_INSTANCE,1,1000);
+    ELSIF ( V_RESULT = 'PROCEED' ) THEN
+      NULL;
+    END IF;
+  
+    RETURN;
+
+
+  EXCEPTION
+    WHEN OTHERS THEN
+      P_ERRMSG := SUBSTR('ERROR ('||C_PROC||') ON '||GC_INSTANCE||'=>'||SQLERRM, 1, 1000);
+      RETURN;
+
+  END CHECK_OK_TO_PROCEED;
+
+  --------------
+
+  -- PRIVATE TO PACKAGE BODY
+  PROCEDURE CHECK_RUNID_TO_PROCEED (P_RUNS_ID IN INTEGER, P_ERRMSG IN OUT VARCHAR2)
+  AS
+
+  /*
+  PURPOSE: THIS PROCEDURE DETERMINES WHETHER OR NOT THIS CURRENTLY LAUNCHED MODEL_GOLDING PROCESS SHOULD CONTINUE.
+           
+           IT DOES THIS BY QUERYING THE RUNS TABLE IN MACHINE_MODEL ON THIS CURRENT INSTANCE, LOOKING FOR THE
+           PASSED-IN RUNS_ID OVER A 3 MINUTE INTERVAL.
+           
+           
+           AFTER 3 MINUTES, IF A ROW CONTAINING THE PASSED-IN RUNS_ID IS NOT FOUND IN THE RUNS TABLE,
+           THEN THIS CAUSES THE CALLING PROCEDURE TO ABORT ALL PROCESSING; OTHERWISE, A 'PROCEED" SIGNAL
+           IS GENERATED.  IN THE EVENT OF AN UN-EXPECTED ERROR, THIS ALSO CAUSES ALL PROCESSING TO ABORT.
+
+  -- SAMPLE USAGE:
+  DECLARE
+    V_RUNS_ID           INTEGER := 42312;
+    V_ERRMSG            VARCHAR2(1000);
+  BEGIN
+    CHECK_RUNID_TO_PROCEED(V_RUNS_ID, V_ERRMSG);
+    DBMS_OUTPUT.PUT_LINE('ERRMSG='||NVL(V_ERRMSG,'NULL'));
+  END;
+  */
+
+    V_RESULT                   VARCHAR2(20);
+
+    C_PROC        CONSTANT    VARCHAR2(100) := 'MODEL_UPLOAD_PKG.CHECK_RUNID_TO_PROCEED';
+    C_PROCESS_NM   CONSTANT    VARCHAR2(120) := 'MODEL_GOLDING FOR RUNID='||TO_CHAR(P_RUNS_ID);
+    C_NUM_TRIES     CONSTANT    PLS_INTEGER   := 60;
+    C_3_SECS        CONSTANT    PLS_INTEGER   := 3;
+    C_MINUTE        CONSTANT    PLS_INTEGER   := 60;
+    C_SLEEP_CNT      CONSTANT    PLS_INTEGER := 50000000;  -- APPROXIMATES A 3-SECOND INTERVAL.
+
+  BEGIN
+
+    P_ERRMSG := NULL;
+    V_RESULT := NULL;
+
+    FOR J IN 1 .. C_NUM_TRIES LOOP
+
+      SELECT
+      CASE WHEN (Y.CNT > 0)  THEN 'PROCEED'
+           ELSE 'WAIT'
+      END
+      INTO V_RESULT
+      FROM
+      (
+      SELECT COUNT(*) AS CNT
+        FROM RUNS
+       WHERE ID = P_RUNS_ID
+      ) Y;
+
+      EXIT WHEN V_RESULT = 'PROCEED';
+      
+      -- SLEEP FOR 3 SECONDS
+      DBMS_LOCK.SLEEP(C_3_SECS);
+
+    END LOOP;
+
+    ----------
+
+    IF ( V_RESULT IS NULL ) THEN
+      P_ERRMSG := SUBSTR('ERROR ('||C_PROC||'): LOOP LOGIC WAS NOT INVOKED ON '||GC_INSTANCE,1,1000);
+    ELSIF ( V_RESULT = 'WAIT' ) THEN
+      P_ERRMSG := SUBSTR('ERROR ('||C_PROC||'): AFTER '||TO_CHAR((C_NUM_TRIES * C_3_SECS)/C_MINUTE)||' MINUTES, '||C_PROCESS_NM||' HAS NOT COMPLETED ON '||GC_INSTANCE,1,1000);
+    ELSIF ( V_RESULT = 'PROCEED' ) THEN
+      NULL;
+    END IF;
+  
+    RETURN;
+
+
+  EXCEPTION
+    WHEN OTHERS THEN
+      P_ERRMSG := SUBSTR('ERROR ('||C_PROC||') ON '||GC_INSTANCE||'=>'||SQLERRM, 1, 1000);
+      RETURN;
+
+  END CHECK_RUNID_TO_PROCEED;
+
+  --------------
+
+  -- PRIVATE TO PACKAGE BODY
+  PROCEDURE REFRESH_MVIEW_DEVICE_NAMES (P_STATUS IN OUT VARCHAR2,
+                                   P_ERRMSG IN OUT VARCHAR2)
+  AS
+
+      V_CNT                    PLS_INTEGER;
+
+      C_PROC        CONSTANT   VARCHAR2(100) := 'MODEL_UPLOAD_PKG.REFRESH_MVIEW_DEVICE_NAMES';
+      C_ARG         CONSTANT   VARCHAR2(20)  := '- NO EPICS CA NAME -';
+
+  BEGIN
+
+      P_STATUS     := NULL;
+      P_ERRMSG     := NULL;
+
+      --------
+
+      -- DETERMINE IF A REFRESH IS NEEDED.
+      -- HERE I ACCESS THE MVIEW LCLS_INFRASTRUCTURE.V_LCLS_ELEMENTS_REPORT.
+      SELECT COUNT(X.DEVICE_NAME)
+        INTO V_CNT
+      FROM
+      (SELECT DEVICE_NAME
+         FROM
+         (
+         SELECT DISTINCT EPICS_CHANNEL_ACCESS_NAME AS DEVICE_NAME
+           FROM LCLS_INFRASTRUCTURE.V_LCLS_ELEMENTS_REPORT L,
+                MACHINE_MODEL.ELEMENT_MODELS M
+          WHERE M.LCLS_ELEMENTS_ELEMENT_ID = L.ELEMENT_ID
+         )
+        WHERE DEVICE_NAME != C_ARG
+      ) X
+      WHERE NOT EXISTS
+      (
+       SELECT NULL
+         FROM MACHINE_MODEL.V_MODELLED_DEVICE_NAMES M
+        WHERE M.DEVICE_NAME = X.DEVICE_NAME
+      );
+
+/*
+      SELECT COUNT(X.DEVICE_NAME)
+        INTO V_CNT
+      FROM
+      (SELECT DEVICE_NAME
+         FROM
+         (
+         SELECT DISTINCT
+                CASE
+                   WHEN (L.PRIMARY IS NOT NULL AND L.UNIT IS NOT NULL)
+                   THEN
+                      CASE
+                         WHEN ( (L.IOC_LOC IS NOT NULL)
+                               AND (L.IOC_LOC = NVL (L.SLC_MICRO_NAME, 'NULL')))
+                         THEN
+                            L.SLC_MICRO_NAME || ':' || L.PRIMARY || ':' || L.UNIT
+                         WHEN ( (L.IOC_LOC IS NOT NULL)
+                               AND (L.IOC_LOC != NVL (L.SLC_MICRO_NAME, 'NULL')))
+                         THEN
+                            L.PRIMARY || ':' || L.IOC_LOC || ':' || L.UNIT
+                         WHEN (L.SLC_MICRO_NAME IS NOT NULL)
+                         THEN
+                            L.SLC_MICRO_NAME || ':' || L.PRIMARY || ':' || L.UNIT
+                         ELSE
+                            '- NO EPICS CA NAME -'
+                      END
+                   ELSE
+                      '- NO EPICS CA NAME -'
+                END AS DEVICE_NAME
+           FROM LCLS_ELEMENTS@MCCOTOSLACPROD_LCLS.SLAC.STANFORD.EDU L,
+                MACHINE_MODEL.ELEMENT_MODELS M
+          WHERE M.LCLS_ELEMENTS_ELEMENT_ID = L.ELEMENT_ID
+         )
+        WHERE DEVICE_NAME != C_ARG
+      ) X
+      WHERE NOT EXISTS
+      (
+       SELECT NULL
+         FROM MACHINE_MODEL.V_MODELLED_DEVICE_NAMES M
+        WHERE M.DEVICE_NAME = X.DEVICE_NAME
+      );
+*/
+
+      --------
+
+      IF ( V_CNT > 0 ) THEN
+        DBMS_MVIEW.REFRESH('V_MODELLED_DEVICE_NAMES','C');
+        P_STATUS := 'MVIEW REFRESH OF V_MODELLED_DEVICE_NAMES SUCCESSFULLY COMPLETED';
+      ELSE
+        P_STATUS := 'MVIEW REFRESH OF V_MODELLED_DEVICE_NAMES NOT NEEDED';
+      END IF;
+
+      RETURN;
+
+
+  EXCEPTION
+    WHEN OTHERS THEN
+      P_ERRMSG := SUBSTR('OTHERS ERROR ('||C_PROC||')=>'||SQLERRM,1,1000);
+      RETURN;
+
+  END REFRESH_MVIEW_DEVICE_NAMES;
+
+  --------------
+
+  -- PRIVATE TO PACKAGE BODY
+  PROCEDURE AIDA_XALSERV_NAMES_UPDATE (P_SCHEMA                   IN     VARCHAR2,
+                                       P_XALMODEL_CONTRIBUTOR_SET IN     VARCHAR2 DEFAULT '202',
+                                       P_XALMODEL_SERVICE_ID      IN     VARCHAR2 DEFAULT '202',
+                                       P_COMMIT                   IN     VARCHAR2 DEFAULT 'N',
+                                       P_STATUS                   IN OUT VARCHAR2,
+                                       P_ERRMSG                   IN OUT VARCHAR2)
+  AS
+
+  V_SCHEMA                     VARCHAR2(30);
+  V_XALMODEL_CONTRIBUTOR_SET   VARCHAR2(2000);
+  V_XALMODEL_SERVICE_ID        VARCHAR2(2000);
+  V_COMMIT                     VARCHAR2(1);
+  V_CNT                        PLS_INTEGER;
+  V_STMT                       VARCHAR2(2000);
+  V_ROW_CNT                    VARCHAR2(20);
+  
+ 
+  V_START_DAYTIME              VARCHAR2(100);
+  V_START                      NUMBER;
+  V_END                        NUMBER;
+  V_DIFF                       NUMBER;
+  V_DIFF_CALC                  VARCHAR2(100);
+
+  C_PROC          CONSTANT     VARCHAR2(100)      := 'MODEL_UPLOAD_PKG.AIDA_XALSERV_NAMES_UPDATE';
+  C_FILEPTR       CONSTANT     UTL_FILE.FILE_TYPE := CASE WHEN (G_OK_TO_PRINT) THEN WRITE_LOG.FileId ELSE NULL END;
+
+  PROC_ERROR                   EXCEPTION;
+
+  BEGIN
+
+  P_STATUS := NULL;
+  P_ERRMSG := NULL;
+
+  -- BEGIN SANITY CHECK
+  V_SCHEMA := SUBSTR(UPPER(TRIM(P_SCHEMA)),1,30);
+
+  IF ( V_SCHEMA IS NOT NULL ) THEN
+    IF ( V_SCHEMA NOT IN ('AIDA') ) THEN
+      P_ERRMSG := SUBSTR('ERROR ('||C_PROC||'): INVALID SCHEMA V_SCHEMA='||V_SCHEMA, 1, 1000);
+      RAISE PROC_ERROR;
+    END IF;
+  ELSE
+    P_ERRMSG := SUBSTR('ERROR ('||C_PROC||'): NULL SCHEMA.', 1, 1000);
+    RAISE PROC_ERROR;
+  END IF;
+
+  ---------
+
+  V_XALMODEL_CONTRIBUTOR_SET := SUBSTR(UPPER(TRIM(P_XALMODEL_CONTRIBUTOR_SET)),1,2000);
+
+  IF ( V_XALMODEL_CONTRIBUTOR_SET IS NULL ) THEN
+    V_XALMODEL_CONTRIBUTOR_SET := '202';
+  END IF;
+
+  ---------
+
+  V_XALMODEL_SERVICE_ID := SUBSTR(UPPER(TRIM(P_XALMODEL_SERVICE_ID)),1,2000);
+
+  IF ( V_XALMODEL_SERVICE_ID IS NULL ) THEN
+    V_XALMODEL_SERVICE_ID := '202';
+  END IF;
+
+  ---------
+
+  SELECT DECODE(SUBSTR(UPPER(TRIM(P_COMMIT)),1,1),NULL,'N','N','N','P','P','Y','Y','N')
+    INTO V_COMMIT
+    FROM DUAL;
+  -- END SANITY CHECK
+
+  --------------------
+  
+  -- DETERMINE IF RUNNING THIS PROCEDURE IS NECESSARY
+  SELECT COUNT(*)
+    INTO V_CNT
+    FROM MACHINE_MODEL.V_MODELLED_DEVICE_NAMES M
+  WHERE NOT EXISTS
+  (
+  SELECT NULL
+    FROM AIDA.AIDA_NAMES A,
+         AIDA.AIDA_DIRECTORY D,
+         AIDA.AIDA_SERVICES S
+   WHERE D.NAME_ID = A.ID
+     AND D.SERVICE_ID = S.ID
+     AND S.ID = TO_NUMBER(V_XALMODEL_CONTRIBUTOR_SET)
+     AND A.ATTRIBUTE IN ('twiss', 'R')
+     AND A.INSTANCE = M.DEVICE_NAME
+  );
+  
+  IF ( V_CNT = 0 ) THEN
+    P_STATUS := 'AIDA_XALSERV_NAMES_UPDATE NOT NEEDED';
+    RETURN;
+  END IF;
+
+  --------------------
+
+  -- GET STARTING TIME
+  V_START := DBMS_UTILITY.GET_TIME;
+
+  SELECT TO_CHAR(SYSDATE, 'DD-MON-YYYY HH24:MI:SS')
+    INTO V_START_DAYTIME
+    FROM DUAL;
+
+
+  -- BEGIN PROCESSING
+
+  DBMS_OUTPUT.PUT_LINE('=========================================');
+  DBMS_OUTPUT.PUT_LINE('PROCEDURE '||C_PROC||' EXECUTED STARTING AT '||V_START_DAYTIME||' WITH PARAMETERS:');
+  DBMS_OUTPUT.PUT_LINE('  P_SCHEMA                   = '||V_SCHEMA||'@'||GC_INSTANCE);
+  DBMS_OUTPUT.PUT_LINE('  P_XALMODEL_CONTRIBUTOR_SET = '||V_XALMODEL_CONTRIBUTOR_SET);
+  DBMS_OUTPUT.PUT_LINE('  P_XALMODEL_SERVICE_ID      = '||V_XALMODEL_SERVICE_ID);
+  DBMS_OUTPUT.PUT_LINE('  P_COMMIT                   = '||V_COMMIT);
+  DBMS_OUTPUT.PUT_LINE('=========================================');
+  DBMS_OUTPUT.PUT_LINE(' ');
+
+  IF ( G_OK_TO_PRINT ) THEN
+    UTL_FILE.PUT_LINE(C_FILEPTR, ' ', TRUE);
+    UTL_FILE.PUT_LINE(C_FILEPTR, '#########################################', TRUE);
+    UTL_FILE.PUT_LINE(C_FILEPTR, ' ', TRUE);
+    UTL_FILE.PUT_LINE(C_FILEPTR, '=========================================', TRUE);
+    UTL_FILE.PUT_LINE(C_FILEPTR, 'PROCEDURE '||C_PROC||' EXECUTED STARTING AT '||V_START_DAYTIME||' WITH PARAMETERS:', TRUE);
+    UTL_FILE.PUT_LINE(C_FILEPTR, '  P_SCHEMA                   = '||V_SCHEMA||'@'||GC_INSTANCE, TRUE);
+    UTL_FILE.PUT_LINE(C_FILEPTR, '  P_XALMODEL_CONTRIBUTOR_SET = '||V_XALMODEL_CONTRIBUTOR_SET, TRUE);
+    UTL_FILE.PUT_LINE(C_FILEPTR, '  P_XALMODEL_SERVICE_ID      = '||V_XALMODEL_SERVICE_ID, TRUE);
+    UTL_FILE.PUT_LINE(C_FILEPTR, '  P_COMMIT                   = '||V_COMMIT, TRUE);
+    UTL_FILE.PUT_LINE(C_FILEPTR, '=========================================', TRUE);
+  END IF;
+
+
+  IF ( V_SCHEMA = 'AIDA' ) THEN
+
+    /* ==========
+    AS A PRECAUTION, SET ANY EXISTING 'N'EW ROWS TO 'S'TEADY. THIS IS
+    IMPORTANT BECAUSE, AT THE END OF THIS PROCEDURE, WE'LL ADD EACH ROW
+    MARKED 'N'EW TO AIDA_DIRECTORY AS BELONGING TO THIS SERVICE. SO WE
+    MUST NOT HAVE ANY LEFT OVER FROM OTHER CONTRIBUTORS.  
+    ========== */
+  
+    BEGIN
+    UPDATE AIDA.AIDA_NAMES A
+       SET A.STATE = 'S'
+     WHERE A.STATE = 'N';
+    
+    V_ROW_CNT := TO_CHAR(SQL%ROWCOUNT);
+
+    EXCEPTION
+      WHEN OTHERS THEN
+        P_ERRMSG := SUBSTR('ERROR ('||C_PROC||'): UPDATE AIDA.AIDA_NAMES NEW TO STEADY=>'||SQLERRM, 1, 1000);
+        IF ( G_OK_TO_PRINT ) THEN
+          UTL_FILE.PUT_LINE(C_FILEPTR, P_ERRMSG, TRUE);
+        END IF;
+        RAISE PROC_ERROR;
+    END;
+  
+    V_DIFF := DBMS_UTILITY.GET_TIME - V_START;
+    V_DIFF_CALC := '[After '||TO_CHAR(ROUND((V_DIFF/100)*1000,2))||' msecs]: ';
+  
+    DBMS_OUTPUT.PUT_LINE(V_DIFF_CALC||'SET EXISTING "N"EW ROWS IN AIDA.AIDA_NAMES TO "S"TEADY: '||V_ROW_CNT||' ROWS UPDATED IN AIDA.AIDA_NAMES.');
+    
+    IF ( G_OK_TO_PRINT ) THEN
+      UTL_FILE.PUT_LINE(C_FILEPTR, V_DIFF_CALC||'SET EXISTING "N"EW ROWS IN AIDA.AIDA_NAMES TO "S"TEADY: '||V_ROW_CNT||' ROWS UPDATED IN AIDA.AIDA_NAMES.', TRUE);
+    END IF;
+
+    --------------------
+
+    -- (1) ADDING NEWLY CONTRIBUTED NAMES
+
+    /* ==========
+    USING THE VIEW OF EPICS PV DEVICE NAMES OF ALL MODELLED DEVICES,
+    ADD EACH ONE AS AN INSTANCE, WITH ATTRIBUTE "twiss", UNLESS SUCH
+    A ROW ALREADY EXISTED. THEN ADD EACH ONE AS AN INSTANCE, WITH ATTRIBUTE "R",
+    UNLESS SUCH A ROW ALREADY EXISTED.
+ 
+    INSERT ALL NAMES WE HAVE NOW (WHICH WILL CREATE DUPLICATES FOR MOST, IF NOT ALL), 
+    THEN DELETE THE ONES AIDA_DIRECTORY ALREADY KNEW ABOUT FROM PREVIOUS RUNS, 
+    LEAVING ONLY THE REALLY NEW ONES WE HAVEN'T SEEN BEFORE.
+    ========== */
+  
+    -- FOR ATTRIBUTE "twiss"
+    -- ADDED REFERENCE TO AIDA_SERVICES (8-NOV-2010)
+    BEGIN
+
+    INSERT INTO AIDA.AIDA_NAMES (STATE,
+                                 INSTANCE,
+                                 ATTRIBUTE
+                                )
+                SELECT 'N',
+                       M.DEVICE_NAME,
+                       'twiss'
+                  FROM MACHINE_MODEL.V_MODELLED_DEVICE_NAMES M
+                 WHERE NOT EXISTS
+                 (
+                  SELECT NULL
+                    FROM AIDA.AIDA_NAMES A,
+                         AIDA.AIDA_DIRECTORY D,
+                         AIDA.AIDA_SERVICES S
+                   WHERE D.NAME_ID = A.ID
+                     AND D.SERVICE_ID = S.ID
+                     AND S.ID = TO_NUMBER(V_XALMODEL_CONTRIBUTOR_SET)
+                     AND A.ATTRIBUTE = 'twiss'
+                     AND A.INSTANCE = M.DEVICE_NAME
+                 );
+
+    /*
+    INSERT INTO AIDA.AIDA_NAMES (STATE,
+                                 INSTANCE,
+                                 ATTRIBUTE
+                                )
+                SELECT 'N',
+                       DEVICE_NAME,
+                       'twiss'
+                  FROM MACHINE_MODEL.V_MODELLED_DEVICE_NAMES
+                MINUS
+                SELECT 'N',
+                       A.INSTANCE,
+                       'twiss'
+                  FROM AIDA.AIDA_NAMES A,
+                       AIDA.AIDA_DIRECTORY D 
+                 WHERE D.NAME_ID = A.ID
+                   AND A.ATTRIBUTE = 'twiss';
+    */
+
+    V_ROW_CNT := TO_CHAR(SQL%ROWCOUNT);
+
+    EXCEPTION
+      WHEN OTHERS THEN
+        P_ERRMSG := SUBSTR('ERROR ('||C_PROC||'): (1) FOR "twiss", INSERT INTO AIDA.AIDA_NAMES NEWLY CONTRIBUTED NAMES=>'||SQLERRM, 1, 1000);
+        IF ( G_OK_TO_PRINT ) THEN
+          UTL_FILE.PUT_LINE(C_FILEPTR, P_ERRMSG, TRUE);
+        END IF;
+        RAISE PROC_ERROR;
+    END;
+
+    V_DIFF := DBMS_UTILITY.GET_TIME - V_START;
+    V_DIFF_CALC := '[After '||TO_CHAR(ROUND((V_DIFF/100)*1000,2))||' msecs]: ';
+  
+    DBMS_OUTPUT.PUT_LINE(V_DIFF_CALC||'(1) ADDING NEWLY CONTRIBUTED NAMES: FOR "twiss": '||V_ROW_CNT||' ROWS INSERTED IN AIDA.AIDA_NAMES.');
+    
+    IF ( G_OK_TO_PRINT ) THEN
+      UTL_FILE.PUT_LINE(C_FILEPTR, V_DIFF_CALC||'(1) ADDING NEWLY CONTRIBUTED NAMES: FOR "twiss": '||V_ROW_CNT||' ROWS INSERTED IN AIDA.AIDA_NAMES.', TRUE);
+    END IF;
+
+    ----------
+
+    /*
+    UPDATE AIDA_DIRECTORY SUCH THAT ANY ROWS REMAINING IN AIDA_NAMES (AFTER THE PREVIOUS INSERT OPERATION IMMEDIATELY ABOVE) HAVING ATTRIBUTE = 'twiss'
+    AND THAT ARE ASSOCIATED WITH SERVICE_ID = 63 AND HAVE AN INSTANCE NAME MATCHING A DEVICE_NAME IN MVIEW V_MODELLED_DEVICE_NAMES SHOULD, INSTEAD,
+    BE ASSOCIATED WITH SERVICE_ID = 202.
+    */
+
+    V_CNT := 0;
+    
+    FOR J IN (SELECT N.INSTANCE,
+                     N.ATTRIBUTE
+                FROM AIDA.AIDA_NAMES N,
+                     AIDA.AIDA_DIRECTORY D,
+                     MACHINE_MODEL.V_MODELLED_DEVICE_NAMES V
+               WHERE N.ID = D.NAME_ID
+                 AND N.INSTANCE = V.DEVICE_NAME
+                 AND D.SERVICE_ID = 63
+                 AND N.ATTRIBUTE = 'twiss')
+    LOOP
+      BEGIN
+      UPDATE AIDA.AIDA_DIRECTORY R
+         SET R.SERVICE_ID = TO_NUMBER(V_XALMODEL_CONTRIBUTOR_SET)
+       WHERE R.NAME_ID IN (SELECT X.ID
+                            FROM AIDA.AIDA_NAMES X,
+                                 AIDA.AIDA_DIRECTORY Y
+                           WHERE X.ID = Y.NAME_ID
+                             AND X.ATTRIBUTE = J.ATTRIBUTE
+                             AND X.INSTANCE  = J.INSTANCE);
+                             
+      V_CNT := V_CNT + SQL%ROWCOUNT;
+
+
+      EXCEPTION
+        WHEN OTHERS THEN
+          P_ERRMSG := SUBSTR('ERROR ('||C_PROC||'): (1) FOR "twiss", UPDATE AIDA.AIDA_DIRECTORY AFTER NEWLY CONTRIBUTED NAMES ADDED TO AIDA.AIDA_NAMES=>'||SQLERRM, 1, 1000);
+          IF ( G_OK_TO_PRINT ) THEN
+            UTL_FILE.PUT_LINE(C_FILEPTR, P_ERRMSG, TRUE);
+          END IF;
+          RAISE PROC_ERROR;
+      END;
+    END LOOP;
+
+
+    V_ROW_CNT := TO_CHAR(V_CNT);
+    
+    V_DIFF := DBMS_UTILITY.GET_TIME - V_START;
+    V_DIFF_CALC := '[After '||TO_CHAR(ROUND((V_DIFF/100)*1000,2))||' msecs]: ';
+  
+    DBMS_OUTPUT.PUT_LINE(V_DIFF_CALC||'(1) UPDATING NEWLY CONTRIBUTED NAMES: FOR "twiss": '||V_ROW_CNT||' ROWS UPDATED IN AIDA.AIDA_DIRECTORY.');
+    
+    IF ( G_OK_TO_PRINT ) THEN
+      UTL_FILE.PUT_LINE(C_FILEPTR, V_DIFF_CALC||'(1) UPDATING NEWLY CONTRIBUTED NAMES: FOR "twiss": '||V_ROW_CNT||' ROWS UPDATED IN AIDA.AIDA_DIRECTORY.', TRUE);
+    END IF;
+
+    ----------
+
+    -- FOR ATTRIBUTE "R"
+    -- ADDED REFERENCE TO AIDA_SERVICES (8-NOV-2010)
+    BEGIN
+
+    INSERT INTO AIDA.AIDA_NAMES (STATE,
+                                 INSTANCE,
+                                 ATTRIBUTE
+                                )
+                SELECT 'N',
+                       M.DEVICE_NAME,
+                       'R'
+                  FROM MACHINE_MODEL.V_MODELLED_DEVICE_NAMES M
+                 WHERE NOT EXISTS
+                 (
+                  SELECT NULL
+                    FROM AIDA.AIDA_NAMES A,
+                         AIDA.AIDA_DIRECTORY D,
+                         AIDA.AIDA_SERVICES S
+                   WHERE D.NAME_ID = A.ID
+                     AND D.SERVICE_ID = S.ID
+                     AND S.ID = TO_NUMBER(V_XALMODEL_CONTRIBUTOR_SET)
+                     AND A.ATTRIBUTE = 'R'
+                     AND A.INSTANCE = M.DEVICE_NAME
+                 );
+
+    /*
+    INSERT INTO AIDA.AIDA_NAMES (STATE,
+                                 INSTANCE,
+                                 ATTRIBUTE
+                                )
+                SELECT 'N',
+                       DEVICE_NAME,
+                       'R'
+                  FROM MACHINE_MODEL.V_MODELLED_DEVICE_NAMES
+                MINUS
+                SELECT 'N',
+                       A.INSTANCE,
+                       'R'
+                  FROM AIDA.AIDA_NAMES A,
+                       AIDA.AIDA_DIRECTORY D 
+                 WHERE D.NAME_ID = A.ID
+                   AND A.ATTRIBUTE = 'R';
+    */
+
+    V_ROW_CNT := TO_CHAR(SQL%ROWCOUNT);
+
+    EXCEPTION
+      WHEN OTHERS THEN
+        P_ERRMSG := SUBSTR('ERROR ('||C_PROC||'): (1) FOR "R", INSERT INTO AIDA.AIDA_NAMES NEWLY CONTRIBUTED NAMES=>'||SQLERRM, 1, 1000);
+        IF ( G_OK_TO_PRINT ) THEN
+          UTL_FILE.PUT_LINE(C_FILEPTR, P_ERRMSG, TRUE);
+        END IF;
+        RAISE PROC_ERROR;
+    END;
+
+    V_DIFF := DBMS_UTILITY.GET_TIME - V_START;
+    V_DIFF_CALC := '[After '||TO_CHAR(ROUND((V_DIFF/100)*1000,2))||' msecs]: ';
+  
+    DBMS_OUTPUT.PUT_LINE(V_DIFF_CALC||'(1) ADDING NEWLY CONTRIBUTED NAMES: FOR "R": '||V_ROW_CNT||' ROWS INSERTED IN AIDA.AIDA_NAMES.');
+    
+    IF ( G_OK_TO_PRINT ) THEN
+      UTL_FILE.PUT_LINE(C_FILEPTR, V_DIFF_CALC||'(1) ADDING NEWLY CONTRIBUTED NAMES: FOR "R": '||V_ROW_CNT||' ROWS INSERTED IN AIDA.AIDA_NAMES.', TRUE);
+    END IF;
+
+    ----------
+
+    /*
+    UPDATE AIDA_DIRECTORY SUCH THAT ANY ROWS REMAINING IN AIDA_NAMES (AFTER THE PREVIOUS INSERT OPERATION IMMEDIATELY ABOVE) HAVING ATTRIBUTE = 'R'
+    AND THAT ARE ASSOCIATED WITH SERVICE_ID = 63 AND HAVE AN INSTANCE NAME MATCHING A DEVICE_NAME IN MVIEW V_MODELLED_DEVICE_NAMES SHOULD, INSTEAD,
+    BE ASSOCIATED WITH SERVICE_ID = 202.
+    */
+
+    V_CNT := 0;
+    
+    FOR J IN (SELECT N.INSTANCE,
+                     N.ATTRIBUTE
+                FROM AIDA.AIDA_NAMES N,
+                     AIDA.AIDA_DIRECTORY D,
+                     MACHINE_MODEL.V_MODELLED_DEVICE_NAMES V
+               WHERE N.ID = D.NAME_ID
+                 AND N.INSTANCE = V.DEVICE_NAME
+                 AND D.SERVICE_ID = 63
+                 AND N.ATTRIBUTE = 'R')
+    LOOP
+      BEGIN
+      UPDATE AIDA.AIDA_DIRECTORY R
+         SET R.SERVICE_ID = TO_NUMBER(V_XALMODEL_CONTRIBUTOR_SET)
+       WHERE R.NAME_ID IN (SELECT X.ID
+                            FROM AIDA.AIDA_NAMES X,
+                                 AIDA.AIDA_DIRECTORY Y
+                           WHERE X.ID = Y.NAME_ID
+                             AND X.ATTRIBUTE = J.ATTRIBUTE
+                             AND X.INSTANCE  = J.INSTANCE);
+                             
+      V_CNT := V_CNT + SQL%ROWCOUNT;
+
+
+      EXCEPTION
+        WHEN OTHERS THEN
+          P_ERRMSG := SUBSTR('ERROR ('||C_PROC||'): (1) FOR "R", UPDATE AIDA.AIDA_DIRECTORY AFTER NEWLY CONTRIBUTED NAMES ADDED TO AIDA.AIDA_NAMES=>'||SQLERRM, 1, 1000);
+          IF ( G_OK_TO_PRINT ) THEN
+            UTL_FILE.PUT_LINE(C_FILEPTR, P_ERRMSG, TRUE);
+          END IF;
+          RAISE PROC_ERROR;
+      END;
+    END LOOP;
+
+
+    V_ROW_CNT := TO_CHAR(V_CNT);
+    
+    V_DIFF := DBMS_UTILITY.GET_TIME - V_START;
+    V_DIFF_CALC := '[After '||TO_CHAR(ROUND((V_DIFF/100)*1000,2))||' msecs]: ';
+  
+    DBMS_OUTPUT.PUT_LINE(V_DIFF_CALC||'(1) UPDATING NEWLY CONTRIBUTED NAMES: FOR "R": '||V_ROW_CNT||' ROWS UPDATED IN AIDA.AIDA_DIRECTORY.');
+    
+    IF ( G_OK_TO_PRINT ) THEN
+      UTL_FILE.PUT_LINE(C_FILEPTR, V_DIFF_CALC||'(1) UPDATING NEWLY CONTRIBUTED NAMES: FOR "R": '||V_ROW_CNT||' ROWS UPDATED IN AIDA.AIDA_DIRECTORY.', TRUE);
+    END IF;
+
+    ---------------------
+  
+    -- UPDATING DIRECTORY
+
+    /* =======
+    FOR EACH AIDA_NAMES.STATE = "N"eW ROW IN AIDA_NAMES, CREATE A NEW
+    ROW IN AIDA_DIRECTORY TO ASSOCIATE THE NEW NAME (BY ITS AIDA_NAMES.ID)
+    WITH THE SERVICE_ID OF THE SERVICE WHICH IS RESPONSIBLE FOR IT.
+   
+    CLEANUP BY SETTING ALL 'N' TO 'S'. NOTE, WHEN WE EXIT, THERE MUST NOT BE ANY 'N' ROWS.  
+    ======= */
+
+    BEGIN
+    INSERT INTO AIDA.AIDA_DIRECTORY (NAME_ID,
+                                         SERVICE_ID
+                                        ) 
+                SELECT A.ID,
+                       TO_NUMBER(V_XALMODEL_SERVICE_ID)
+                  FROM AIDA.AIDA_NAMES A 
+                 WHERE A.STATE = 'N';
+
+    V_ROW_CNT := TO_CHAR(SQL%ROWCOUNT);
+
+    EXCEPTION
+      WHEN OTHERS THEN
+        P_ERRMSG := SUBSTR('ERROR ('||C_PROC||'): (1) UPDATING DIRECTORY: INSERT INTO AIDA.AIDA_DIRECTORY=>'||SQLERRM, 1, 1000);
+        IF ( G_OK_TO_PRINT ) THEN
+          UTL_FILE.PUT_LINE(C_FILEPTR, P_ERRMSG, TRUE);
+        END IF;
+        RAISE PROC_ERROR;
+    END;
+
+    V_DIFF := DBMS_UTILITY.GET_TIME - V_START;
+    V_DIFF_CALC := '[After '||TO_CHAR(ROUND((V_DIFF/100)*1000,2))||' msecs]: ';
+  
+    DBMS_OUTPUT.PUT_LINE(V_DIFF_CALC||'(1) UPDATING DIRECTORY: '||V_ROW_CNT||' ROWS INSERTED IN AIDA.AIDA_DIRECTORY.');
+    
+    IF ( G_OK_TO_PRINT ) THEN
+      UTL_FILE.PUT_LINE(C_FILEPTR, V_DIFF_CALC||'(1) UPDATING DIRECTORY: '||V_ROW_CNT||' ROWS INSERTED IN AIDA.AIDA_DIRECTORY.', TRUE);
+    END IF;
+
+    ----------
+
+    BEGIN
+    UPDATE AIDA.AIDA_NAMES A
+       SET A.STATE = 'S'
+     WHERE A.STATE = 'N';
+
+    V_ROW_CNT := TO_CHAR(SQL%ROWCOUNT);
+
+    EXCEPTION
+      WHEN OTHERS THEN
+        P_ERRMSG := SUBSTR('ERROR ('||C_PROC||'): (1) UPDATING DIRECTORY: UPDATE AIDA.AIDA_NAMES=>'||SQLERRM, 1, 1000);
+        IF ( G_OK_TO_PRINT ) THEN
+          UTL_FILE.PUT_LINE(C_FILEPTR, P_ERRMSG, TRUE);
+        END IF;
+        RAISE PROC_ERROR;
+    END;
+
+    V_DIFF := DBMS_UTILITY.GET_TIME - V_START;
+    V_DIFF_CALC := '[After '||TO_CHAR(ROUND((V_DIFF/100)*1000,2))||' msecs]: ';
+  
+    DBMS_OUTPUT.PUT_LINE(V_DIFF_CALC||'(1) UPDATING DIRECTORY: UPDATE AIDA.AIDA_NAMES: '||V_ROW_CNT||' ROWS UPDATED IN AIDA.AIDA_NAMES.');
+    
+    IF ( G_OK_TO_PRINT ) THEN
+      UTL_FILE.PUT_LINE(C_FILEPTR, V_DIFF_CALC||'(1) UPDATING DIRECTORY: UPDATE AIDA.AIDA_NAMES: '||V_ROW_CNT||' ROWS UPDATED IN AIDA.AIDA_NAMES.', TRUE);
+    END IF;
+
+    -----------------------------
+  
+    -- (2) MARK NAMES NO LONGER CONTRIBUTED.
+
+    /* ==========
+    THIS SETS THE "STATE" TO "M"ARKED FOR DELETE, OF EACH ROW OF
+    AIDA_NAMES WHOSE STATE IS PRESENTLY "S"TEADY, BUT FOR WHICH THERE IS
+    NOW NO MODELLED EPICS DEVICE NAME. THIS SETS THE ROWS FOR ALL THE 
+    ATTRIBUTES OF ALL THOSE INSTANCES.
+    ========== */
+
+    V_STMT := NULL;
+  
+    V_STMT := 'UPDATE AIDA.AIDA_NAMES A
+                  SET A.STATE = ''M''
+                WHERE A.STATE = ''S''
+                  AND A.ID IN (SELECT S.ID
+                                 FROM AIDA.AIDA_NAMES S,
+                                      AIDA.AIDA_DIRECTORY D
+                                WHERE S.ID = D.NAME_ID
+                                  AND D.SERVICE_ID IN ('||V_XALMODEL_CONTRIBUTOR_SET||')
+                              )
+                  AND NOT EXISTS (SELECT *
+                                    FROM MACHINE_MODEL.V_MODELLED_DEVICE_NAMES V
+                                   WHERE A.INSTANCE = V.DEVICE_NAME
+                                 )';
+
+    BEGIN
+    V_ROW_CNT := NULL;
+    EXECUTE IMMEDIATE V_STMT;
+    V_ROW_CNT := TO_CHAR(SQL%ROWCOUNT);
+    EXCEPTION
+      WHEN OTHERS THEN
+        P_ERRMSG := SUBSTR('ERROR ('||C_PROC||'): (2) MARK NAMES NO LONGER CONTRIBUTED=>'||SQLERRM, 1, 1000);
+        IF ( G_OK_TO_PRINT ) THEN
+          UTL_FILE.PUT_LINE(C_FILEPTR, P_ERRMSG, TRUE);
+        END IF;
+        RAISE PROC_ERROR;
+    END;
+
+    V_DIFF := DBMS_UTILITY.GET_TIME - V_START;
+    V_DIFF_CALC := '[After '||TO_CHAR(ROUND((V_DIFF/100)*1000,2))||' msecs]: ';
+  
+    DBMS_OUTPUT.PUT_LINE(V_DIFF_CALC||'(2) MARK NAMES NO LONGER CONTRIBUTED: '||V_ROW_CNT||' ROWS UPDATED IN AIDA.AIDA_NAMES.');
+    
+    IF ( G_OK_TO_PRINT ) THEN
+      UTL_FILE.PUT_LINE(C_FILEPTR, V_DIFF_CALC||'(2) MARK NAMES NO LONGER CONTRIBUTED: '||V_ROW_CNT||' ROWS UPDATED IN AIDA.AIDA_NAMES.', TRUE);
+    END IF;
+
+    -----------------------------
+
+    -- (3) UN-MARK THE NAMES (TO 'S') WHICH ARE NOW AGAIN CONTRIBUTED, WHERE, BEFORE THIS RUN, THEY WERE MARKED FOR DELETE.
+
+    /* =========
+    THIS SETS THE "STATE" TO "S"TEADY FOR EACH ELEMENT OF AIDA_NAMES WHOSE STATE
+    IS PRESENTLY "D"ELETE, WHICH IS (NOW AGAIN) PRESENT IN THE CONTRIBUTOR'S
+    TABLE (THAT IS, HAS SAME CONTRIBUTOR, AND DOES APPEAR IN THE CONTRIBUTOR).
+    ========= */
+
+    V_STMT := NULL;
+  
+    V_STMT := 'UPDATE AIDA.AIDA_NAMES A
+                  SET A.STATE = ''S''
+                WHERE A.STATE = ''D''
+                  AND A.ID IN (SELECT S.ID
+                                 FROM AIDA.AIDA_NAMES S,
+                                      AIDA.AIDA_DIRECTORY D
+                                WHERE S.ID = D.NAME_ID
+                                  AND D.SERVICE_ID IN ('||V_XALMODEL_CONTRIBUTOR_SET||')
+                              )
+                  AND EXISTS (SELECT *
+                                FROM MACHINE_MODEL.V_MODELLED_DEVICE_NAMES V
+                               WHERE A.INSTANCE = V.DEVICE_NAME
+                             )';
+
+    BEGIN
+    V_ROW_CNT := NULL;
+    EXECUTE IMMEDIATE V_STMT;
+    V_ROW_CNT := TO_CHAR(SQL%ROWCOUNT);
+    EXCEPTION
+      WHEN OTHERS THEN
+        P_ERRMSG := SUBSTR('ERROR ('||C_PROC||'): (3) UN-MARK NAMES (SET THEM TO "S") BECAUSE THESE ARE AGAIN CONTRIBUTED=>'||SQLERRM, 1, 1000);
+        IF ( G_OK_TO_PRINT ) THEN
+          UTL_FILE.PUT_LINE(C_FILEPTR, P_ERRMSG, TRUE);
+        END IF;
+        RAISE PROC_ERROR;
+    END;
+
+    V_DIFF := DBMS_UTILITY.GET_TIME - V_START;
+    V_DIFF_CALC := '[After '||TO_CHAR(ROUND((V_DIFF/100)*1000,2))||' msecs]: ';
+  
+    DBMS_OUTPUT.PUT_LINE(V_DIFF_CALC||'(3) UN-MARK NAMES (SET THEM TO "S") BECAUSE THESE ARE AGAIN CONTRIBUTED: '||V_ROW_CNT||' ROWS UPDATED IN AIDA.AIDA_NAMES.');
+    
+    IF ( G_OK_TO_PRINT ) THEN
+      UTL_FILE.PUT_LINE(C_FILEPTR, V_DIFF_CALC||'(3) UN-MARK NAMES (SET THEM TO "S") BECAUSE THESE ARE AGAIN CONTRIBUTED: '||V_ROW_CNT||' ROWS UPDATED IN AIDA.AIDA_NAMES.', TRUE);
+    END IF;
+
+    -----------------------------
+
+    -- (4) REMOVE THOSE NOW NOT CONTRIBUTED TWICE IN A ROW.
+
+    /* =========
+     I) REMOVE 'D'ELETED FROM AIDA_NAMES.  THIS ACTION WOULD NORMALLY VIOLATE THE FK CONSTRAINT ON AIDA_DIRECTORY.
+        HOWEVER, THIS VIOLATION DOES *NOT* OCCUR BECAUSE THE FK CONSTRAINTS ON AIDA_DIRECTORY ARE "DEFERRED WITH
+        DEFAULT OF INITIALLY DEFERRED" VIA THE STATEMENTS:
+
+        ALTER TABLE AIDA_DIRECTORY DROP CONSTRAINT FK_AIDA_DIRECTORY_AIDA_NAMES;
+
+        ALTER TABLE AIDA_DIRECTORY ADD CONSTRAINT FK_AIDA_DIRECTORY_AIDA_NAMES FOREIGN KEY (NAME_ID) REFERENCES AIDA_NAMES (ID) DEFERRABLE INITIALLY DEFERRED;
+
+     II) REMOVE ALL FROM AIDA_DIRECTORY WHICH NOW DON'T HAVE AN ENTRY IN AIDA_NAMES.
+     III) SET THOSE ROWS IN AIDA_NAMES THAT ARE 'M'ARKED FOR DELETE TO 'D'ELETE STATE.
+    ========= */
+
+    -- (I)
+  
+    V_STMT := NULL;
+  
+    V_STMT := 'DELETE FROM AIDA.AIDA_NAMES A
+                WHERE A.STATE = ''D''
+                  AND A.ID IN (SELECT S.ID
+                                 FROM AIDA.AIDA_NAMES S,
+                                      AIDA.AIDA_DIRECTORY D
+                                WHERE S.ID = D.NAME_ID
+                                  AND D.SERVICE_ID IN ('||V_XALMODEL_CONTRIBUTOR_SET||')
+                              )';
+
+    BEGIN
+    V_ROW_CNT := NULL;
+    EXECUTE IMMEDIATE V_STMT;
+    V_ROW_CNT := TO_CHAR(SQL%ROWCOUNT);
+    EXCEPTION
+      WHEN OTHERS THEN
+        P_ERRMSG := SUBSTR('ERROR ('||C_PROC||'): (4I) DELETE FROM AIDA.AIDA_NAMES=>'||SQLERRM, 1, 1000);
+        IF ( G_OK_TO_PRINT ) THEN
+          UTL_FILE.PUT_LINE(C_FILEPTR, P_ERRMSG, TRUE);
+        END IF;
+        RAISE PROC_ERROR;
+    END;
+
+    V_DIFF := DBMS_UTILITY.GET_TIME - V_START;
+    V_DIFF_CALC := '[After '||TO_CHAR(ROUND((V_DIFF/100)*1000,2))||' msecs]: ';
+  
+    DBMS_OUTPUT.PUT_LINE(V_DIFF_CALC||'(4I) DELETE '||V_ROW_CNT||' ROWS FROM AIDA.AIDA_NAMES.');
+    
+    IF ( G_OK_TO_PRINT ) THEN
+      UTL_FILE.PUT_LINE(C_FILEPTR, V_DIFF_CALC||'(4I) DELETE '||V_ROW_CNT||' ROWS FROM AIDA.AIDA_NAMES.', TRUE);
+    END IF;
+
+    -----------------------------
+
+    -- (II)
+  
+    BEGIN
+    DELETE FROM AIDA.AIDA_DIRECTORY D
+     WHERE D.NAME_ID IN (SELECT R.NAME_ID
+                           FROM AIDA.AIDA_DIRECTORY R
+                         MINUS
+                         SELECT A.ID
+                           FROM AIDA.AIDA_NAMES A
+                        ); 
+
+    V_ROW_CNT := TO_CHAR(SQL%ROWCOUNT);
+
+    EXCEPTION
+      WHEN OTHERS THEN
+        P_ERRMSG := SUBSTR('ERROR ('||C_PROC||'): (4II) DELETE FROM AIDA.AIDA_DIRECTORY=>'||SQLERRM, 1, 1000);
+        IF ( G_OK_TO_PRINT ) THEN
+          UTL_FILE.PUT_LINE(C_FILEPTR, P_ERRMSG, TRUE);
+        END IF;
+        RAISE PROC_ERROR;
+    END;
+
+    V_DIFF := DBMS_UTILITY.GET_TIME - V_START;
+    V_DIFF_CALC := '[After '||TO_CHAR(ROUND((V_DIFF/100)*1000,2))||' msecs]: ';
+  
+    DBMS_OUTPUT.PUT_LINE(V_DIFF_CALC||'(4II) DELETE FROM AIDA.AIDA_DIRECTORY: '||V_ROW_CNT||' ROWS DELETED FROM AIDA.AIDA_DIRECTORY.');
+    
+    IF ( G_OK_TO_PRINT ) THEN
+      UTL_FILE.PUT_LINE(C_FILEPTR, V_DIFF_CALC||'(4II) DELETE FROM AIDA.AIDA_DIRECTORY: '||V_ROW_CNT||' ROWS DELETED FROM AIDA.AIDA_DIRECTORY.', TRUE);
+    END IF;
+
+    -----------------------------
+
+    -- (III)
+  
+    BEGIN
+    UPDATE AIDA.AIDA_NAMES 
+       SET STATE = 'D'
+     WHERE STATE = 'M'; 
+
+    V_ROW_CNT := TO_CHAR(SQL%ROWCOUNT);
+
+    EXCEPTION
+      WHEN OTHERS THEN
+        P_ERRMSG := SUBSTR('ERROR ('||C_PROC||'): (4III) UPDATE AIDA.AIDA_NAMES=>'||SQLERRM, 1, 1000);
+        IF ( G_OK_TO_PRINT ) THEN
+          UTL_FILE.PUT_LINE(C_FILEPTR, P_ERRMSG, TRUE);
+        END IF;
+        RAISE PROC_ERROR;
+    END;
+
+    V_DIFF := DBMS_UTILITY.GET_TIME - V_START;
+    V_DIFF_CALC := '[After '||TO_CHAR(ROUND((V_DIFF/100)*1000,2))||' msecs]: ';
+  
+    DBMS_OUTPUT.PUT_LINE(V_DIFF_CALC||'(4III) UPDATE AIDA.AIDA_NAMES: '||V_ROW_CNT||' ROWS UPDATED IN AIDA.AIDA_NAMES.');
+    
+    IF ( G_OK_TO_PRINT ) THEN
+      UTL_FILE.PUT_LINE(C_FILEPTR, V_DIFF_CALC||'(4III) UPDATE AIDA.AIDA_NAMES: '||V_ROW_CNT||' ROWS UPDATED IN AIDA.AIDA_NAMES.', TRUE);
+    END IF;
+
+  END IF;  -- IF ( V_SCHEMA = 'AIDA' ) THEN
+
+  -- END PROCESSING
+
+  -----------------------------
+
+  IF ( V_COMMIT = 'N' ) THEN
+    ROLLBACK;
+    DBMS_OUTPUT.PUT_LINE('ROLLBACK DONE');
+    IF ( G_OK_TO_PRINT ) THEN
+      UTL_FILE.PUT_LINE(C_FILEPTR, 'ROLLBACK DONE', TRUE);
+    END IF;
+  ELSIF ( V_COMMIT = 'P' ) THEN
+    DBMS_OUTPUT.PUT_LINE('COMMIT PENDING');
+    IF ( G_OK_TO_PRINT ) THEN
+      UTL_FILE.PUT_LINE(C_FILEPTR, 'COMMIT PENDING', TRUE);
+    END IF;
+  ELSIF ( V_COMMIT = 'Y' ) THEN
+    COMMIT;
+    DBMS_OUTPUT.PUT_LINE('COMMIT DONE');
+    IF ( G_OK_TO_PRINT ) THEN
+      UTL_FILE.PUT_LINE(C_FILEPTR, 'COMMIT DONE', TRUE);
+    END IF;
+  END IF;
+
+
+  V_END := DBMS_UTILITY.GET_TIME;
+  V_DIFF := V_END - V_START;
+  V_DIFF_CALC := '[PROCESSING COMPLETED IN '||TO_CHAR(ROUND((V_DIFF/100)*1000,2))||' msecs]: ';
+
+  DBMS_OUTPUT.PUT_LINE(V_DIFF_CALC);
+
+  IF ( G_OK_TO_PRINT ) THEN
+    UTL_FILE.PUT_LINE(C_FILEPTR, V_DIFF_CALC, TRUE);
+  END IF;
+
+  P_STATUS := 'AIDA_XALSERV_NAMES_UPDATE SUCCESSFULLY COMPLETED';
+
+  RETURN;
+
+
+  EXCEPTION
+    WHEN PROC_ERROR THEN
+      RETURN;
+
+    WHEN OTHERS THEN
+      P_ERRMSG := SUBSTR('OTHERS ERROR ('||C_PROC||')=>'||SQLERRM, 1, 1000);
+      RETURN;
+
+  END AIDA_XALSERV_NAMES_UPDATE;
+
+  --------------
+
+  -- PRIVATE TO PACKAGE BODY
+  PROCEDURE AIDA_SYMBOLS_NAMES_UPDATE (P_SCHEMA                  IN     VARCHAR2,
+                                       P_SYMBOLS_CONTRIBUTOR_SET IN     VARCHAR2 DEFAULT '5',
+                                       P_RDB_SERVICE_ID          IN     VARCHAR2 DEFAULT '5',
+                                       P_COMMIT                  IN     VARCHAR2 DEFAULT 'N',
+                                       P_STATUS                  IN OUT VARCHAR2,
+                                       P_ERRMSG                  IN OUT VARCHAR2)
+  AS
+
+  V_SCHEMA                     VARCHAR2(30);
+  V_SYMBOLS_CONTRIBUTOR_SET    VARCHAR2(2000);
+  V_RDB_SERVICE_ID             VARCHAR2(2000);
+
+  SQ                           VARCHAR2(1)  := CHR(39);
+  DQ                           VARCHAR2(2)  := SQ||SQ;
+  AMP                          VARCHAR2(1)  := '&';
+  V_INSTANCE                   VARCHAR2(20) := AMP||'instance';
+
+  V_COMMIT                     VARCHAR2(1);
+  V_CNT                        PLS_INTEGER;
+  V_STMT                       VARCHAR2(2000);
+  V_ROW_CNT                    VARCHAR2(20);
+
+  V_START_DAYTIME              VARCHAR2(100);
+  V_START                      NUMBER;
+  V_END                        NUMBER;
+  V_DIFF                       NUMBER;
+  V_DIFF_CALC                  VARCHAR2(100);
+
+  C_PROC          CONSTANT     VARCHAR2(100)      := 'MODEL_UPLOAD_PKG.AIDA_SYMBOLS_NAMES_UPDATE';
+  C_FILEPTR       CONSTANT     UTL_FILE.FILE_TYPE := CASE WHEN (G_OK_TO_PRINT) THEN WRITE_LOG.FileId ELSE NULL END;
+
+  PROC_ERROR                   EXCEPTION;
+
+  BEGIN
+
+  P_STATUS := NULL;
+  P_ERRMSG := NULL;
+
+  -- BEGIN SANITY CHECK
+  V_SCHEMA := SUBSTR(UPPER(TRIM(P_SCHEMA)),1,30);
+  
+  IF ( V_SCHEMA IS NOT NULL ) THEN
+    IF ( V_SCHEMA NOT IN ('AIDA') ) THEN
+      P_ERRMSG := SUBSTR('ERROR ('||C_PROC||'): INVALID SCHEMA V_SCHEMA='||V_SCHEMA, 1, 1000);
+      RAISE PROC_ERROR;
+    END IF;
+  ELSE
+    P_ERRMSG := SUBSTR('ERROR ('||C_PROC||'): NULL SCHEMA.', 1, 1000);
+    RAISE PROC_ERROR;
+  END IF;
+
+  ---------
+
+  V_SYMBOLS_CONTRIBUTOR_SET := SUBSTR(UPPER(TRIM(P_SYMBOLS_CONTRIBUTOR_SET)),1,2000);
+  
+  IF ( V_SYMBOLS_CONTRIBUTOR_SET IS NULL ) THEN
+    V_SYMBOLS_CONTRIBUTOR_SET := '5';
+  END IF;
+
+  ---------
+
+  V_RDB_SERVICE_ID := SUBSTR(UPPER(TRIM(P_RDB_SERVICE_ID)),1,2000);
+  
+  IF ( V_RDB_SERVICE_ID IS NULL ) THEN
+    V_RDB_SERVICE_ID := '5';
+  END IF;
+
+  ---------
+  
+  SELECT DECODE(SUBSTR(UPPER(TRIM(P_COMMIT)),1,1),NULL,'N','N','N','P','P','Y','Y','N')
+    INTO V_COMMIT
+    FROM DUAL;
+  -- END SANITY CHECK
+
+  --------------------
+
+  -- DETERMINE IF RUNNING THIS PROCEDURE IS NECESSARY
+  SELECT COUNT(*)
+    INTO V_CNT
+    FROM MACHINE_MODEL.V_MODELLED_DEVICE_NAMES M
+  WHERE NOT EXISTS
+  (
+  SELECT NULL
+    FROM AIDA.AIDA_NAMES A,
+         AIDA.AIDA_DIRECTORY D,
+         AIDA.AIDA_SERVICES S
+   WHERE D.NAME_ID = A.ID
+     AND D.SERVICE_ID = S.ID
+     AND S.ID = TO_NUMBER(V_SYMBOLS_CONTRIBUTOR_SET)
+     AND A.ATTRIBUTE IN ('element.effective_length', 'element.Z', 'element.S')
+     AND A.INSTANCE = M.DEVICE_NAME
+  );
+
+  IF ( V_CNT = 0 ) THEN
+    P_STATUS := 'AIDA_SYMBOLS_NAMES_UPDATE NOT NEEDED';
+    RETURN;
+  END IF;
+
+  --------------------
+  
+  -- GET STARTING TIME
+  V_START := DBMS_UTILITY.GET_TIME;
+  
+  SELECT TO_CHAR(SYSDATE, 'DD-MON-YYYY HH24:MI:SS')
+    INTO V_START_DAYTIME
+    FROM DUAL;
+
+  -- BEGIN PROCESSING
+
+  DBMS_OUTPUT.PUT_LINE('=========================================');
+  DBMS_OUTPUT.PUT_LINE('PROCEDURE '||C_PROC||' EXECUTED STARTING AT '||V_START_DAYTIME||' WITH PARAMETERS:');
+  DBMS_OUTPUT.PUT_LINE('  P_SCHEMA                   = '||V_SCHEMA||'@'||GC_INSTANCE);
+  DBMS_OUTPUT.PUT_LINE('  P_SYMBOLS_CONTRIBUTOR_SET  = '||V_SYMBOLS_CONTRIBUTOR_SET);
+  DBMS_OUTPUT.PUT_LINE('  P_RDB_SERVICE_ID           = '||V_RDB_SERVICE_ID);
+  DBMS_OUTPUT.PUT_LINE('  P_COMMIT                   = '||V_COMMIT);
+  DBMS_OUTPUT.PUT_LINE('=========================================');
+  DBMS_OUTPUT.PUT_LINE(' ');
+
+  IF ( G_OK_TO_PRINT ) THEN
+    UTL_FILE.PUT_LINE(C_FILEPTR, ' ', TRUE);
+    UTL_FILE.PUT_LINE(C_FILEPTR, '#########################################', TRUE);
+    UTL_FILE.PUT_LINE(C_FILEPTR, ' ', TRUE);
+    UTL_FILE.PUT_LINE(C_FILEPTR, '=========================================', TRUE);
+    UTL_FILE.PUT_LINE(C_FILEPTR, 'PROCEDURE '||C_PROC||' EXECUTED STARTING AT '||V_START_DAYTIME||' WITH PARAMETERS:', TRUE);
+    UTL_FILE.PUT_LINE(C_FILEPTR, '  P_SCHEMA                   = '||V_SCHEMA||'@'||GC_INSTANCE, TRUE);
+    UTL_FILE.PUT_LINE(C_FILEPTR, '  P_SYMBOLS_CONTRIBUTOR_SET  = '||V_SYMBOLS_CONTRIBUTOR_SET, TRUE);
+    UTL_FILE.PUT_LINE(C_FILEPTR, '  P_RDB_SERVICE_ID           = '||V_RDB_SERVICE_ID, TRUE);
+    UTL_FILE.PUT_LINE(C_FILEPTR, '  P_COMMIT                   = '||V_COMMIT, TRUE);
+    UTL_FILE.PUT_LINE(C_FILEPTR, '=========================================', TRUE);
+  END IF;
+
+
+  IF ( V_SCHEMA = 'AIDA' ) THEN
+
+    /* ==========
+    AS A PRECAUTION, SET ANY EXISTING 'N'EW ROWS TO 'S'TEADY. THIS IS
+    IMPORTANT BECAUSE, AT THE END OF THIS PROCEDURE, WE'LL ADD EACH ROW
+    MARKED 'N'EW TO AIDA_DIRECTORY AS BELONGING TO THIS SERVICE. SO WE
+    MUST NOT HAVE ANY LEFT OVER FROM OTHER CONTRIBUTORS.  
+    ========== */
+  
+    BEGIN
+    UPDATE AIDA.AIDA_NAMES A
+       SET A.STATE = 'S'
+     WHERE A.STATE = 'N';
+
+    V_ROW_CNT := TO_CHAR(SQL%ROWCOUNT);
+
+    EXCEPTION
+      WHEN OTHERS THEN
+        P_ERRMSG := SUBSTR('ERROR ('||C_PROC||'): UPDATE AIDA.AIDA_NAMES NEW TO STEADY=>'||SQLERRM, 1, 1000);
+        IF ( G_OK_TO_PRINT ) THEN
+          UTL_FILE.PUT_LINE(C_FILEPTR, P_ERRMSG, TRUE);
+        END IF;
+        RAISE PROC_ERROR;
+    END;
+  
+    V_DIFF := DBMS_UTILITY.GET_TIME - V_START;
+    V_DIFF_CALC := '[After '||TO_CHAR(ROUND((V_DIFF/100)*1000,2))||' msecs]: ';
+  
+    DBMS_OUTPUT.PUT_LINE(V_DIFF_CALC||'SET EXISTING "N"EW ROWS IN AIDA.AIDA_NAMES TO "S"TEADY: '||V_ROW_CNT||' ROWS UPDATED IN AIDA.AIDA_NAMES.');
+    
+    IF ( G_OK_TO_PRINT ) THEN
+      UTL_FILE.PUT_LINE(C_FILEPTR, V_DIFF_CALC||'SET EXISTING "N"EW ROWS IN AIDA.AIDA_NAMES TO "S"TEADY: '||V_ROW_CNT||' ROWS UPDATED IN AIDA.AIDA_NAMES.', TRUE);
+    END IF;
+
+    --------------------
+
+    -- (1) ADDING NEWLY CONTRIBUTED NAMES
+
+    /* ==========
+    USING THE VIEW OF EPICS PV DEVICE NAMES OF ALL MODELLED DEVICES,
+    ADD EACH ONE AS AN INSTANCE, WITH ATTRIBUTE "twiss", UNLESS SUCH
+    A ROW ALREADY EXISTED. THEN ADD EACH ONE AS AN INSTANCE, WITH ATTRIBUTE "R",
+    UNLESS SUCH A ROW ALREADY EXISTED.
+ 
+    INSERT ALL NAMES WE HAVE NOW (WHICH WILL CREATE DUPLICATES FOR MOST, IF NOT ALL), 
+    THEN DELETE THE ONES AIDA_DIRECTORY ALREADY KNEW ABOUT FROM PREVIOUS RUNS, 
+    LEAVING ONLY THE REALLY NEW ONES WE HAVEN'T SEEN BEFORE.
+    ========== */
+  
+    -- ADD EFFECTIVE_LENGTH
+
+    V_STMT := 'INSERT INTO AIDA.AIDA_NAMES (STATE,
+                                                INSTANCE,
+                                                ATTRIBUTE,
+                                                TRANSFORM)'||
+              ' SELECT '||SQ||'N'||SQ||','||
+                       'EPICS_CHANNEL_ACCESS_NAME,'|| 
+                       SQ||'element.effective_length'||SQ||','||
+                       SQ||'/select effective_length from lcls_infrastructure.v_lcls_elements_report where epics_channel_access_name = '||DQ||V_INSTANCE||DQ||SQ||
+                ' FROM LCLS_INFRASTRUCTURE.V_LCLS_ELEMENTS_REPORT'||
+               ' WHERE EPICS_CHANNEL_ACCESS_NAME IS NOT NULL'||
+              ' MINUS '||
+              ' SELECT '||SQ||'N'||SQ||','||
+                       'A.INSTANCE,'|| 
+                       SQ||'element.effective_length'||SQ||','||
+                       SQ||'/select effective_length from lcls_infrastructure.v_lcls_elements_report where epics_channel_access_name = '||DQ||V_INSTANCE||DQ||SQ||
+                ' FROM AIDA.AIDA_NAMES A, AIDA.AIDA_DIRECTORY D'|| 
+               ' WHERE D.SERVICE_ID IN ('||SQ||V_SYMBOLS_CONTRIBUTOR_SET||SQ||
+                 ') AND D.NAME_ID = A.ID'||
+                 ' AND A.ATTRIBUTE = '||SQ||'element.effective_length'||SQ;
+
+    BEGIN
+    V_ROW_CNT := NULL;
+    EXECUTE IMMEDIATE V_STMT;
+    V_ROW_CNT := TO_CHAR(SQL%ROWCOUNT);
+    EXCEPTION
+      WHEN OTHERS THEN
+        P_ERRMSG := SUBSTR('ERROR ('||C_PROC||'): (1) ADD EFFECTIVE LENGTH=>'||SQLERRM, 1, 1000);
+        IF ( G_OK_TO_PRINT ) THEN
+          UTL_FILE.PUT_LINE(C_FILEPTR, P_ERRMSG, TRUE);
+        END IF;
+        RAISE PROC_ERROR;
+    END;
+
+    V_DIFF := DBMS_UTILITY.GET_TIME - V_START;
+    V_DIFF_CALC := '[After '||TO_CHAR(ROUND((V_DIFF/100)*1000,2))||' msecs]: ';
+  
+    DBMS_OUTPUT.PUT_LINE(V_DIFF_CALC||'(1) ADD EFFECTIVE LENGTH: '||V_ROW_CNT||' ROWS INSERTED IN AIDA.AIDA_NAMES.');
+    
+    IF ( G_OK_TO_PRINT ) THEN
+      UTL_FILE.PUT_LINE(C_FILEPTR, V_DIFF_CALC||'(1) ADD EFFECTIVE LENGTH: '||V_ROW_CNT||' ROWS INSERTED IN AIDA.AIDA_NAMES.', TRUE);
+    END IF;
+
+    ----------
+
+    -- ADD LINACZ
+
+    V_STMT := 'INSERT INTO AIDA.AIDA_NAMES (STATE,
+                                                INSTANCE,
+                                                ATTRIBUTE,
+                                                TRANSFORM)'||
+              ' SELECT '||SQ||'N'||SQ||','||
+                       'EPICS_CHANNEL_ACCESS_NAME,'|| 
+                       SQ||'element.Z'||SQ||','||
+                       SQ||'/select linacz_m from lcls_infrastructure.v_lcls_elements_report where epics_channel_access_name = '||DQ||V_INSTANCE||DQ||SQ||
+                ' FROM LCLS_INFRASTRUCTURE.V_LCLS_ELEMENTS_REPORT'||
+               ' WHERE EPICS_CHANNEL_ACCESS_NAME IS NOT NULL'||
+              ' MINUS '||
+              ' SELECT '||SQ||'N'||SQ||','||
+                       'A.INSTANCE,'|| 
+                       SQ||'element.Z'||SQ||','||
+                       SQ||'/select linacz_m from lcls_infrastructure.v_lcls_elements_report where epics_channel_access_name = '||DQ||V_INSTANCE||DQ||SQ||
+                ' FROM AIDA.AIDA_NAMES A, AIDA.AIDA_DIRECTORY D'|| 
+               ' WHERE D.SERVICE_ID IN ('||SQ||V_SYMBOLS_CONTRIBUTOR_SET||SQ||
+                 ') AND D.NAME_ID = A.ID'||
+                 ' AND A.ATTRIBUTE = '||SQ||'element.Z'||SQ;
+
+    BEGIN
+    V_ROW_CNT := NULL;
+    EXECUTE IMMEDIATE V_STMT;
+    V_ROW_CNT := TO_CHAR(SQL%ROWCOUNT);
+    EXCEPTION
+      WHEN OTHERS THEN
+        P_ERRMSG := SUBSTR('ERROR ('||C_PROC||'): (1) ADD LINACZ=>'||SQLERRM, 1, 1000);
+        IF ( G_OK_TO_PRINT ) THEN
+          UTL_FILE.PUT_LINE(C_FILEPTR, P_ERRMSG, TRUE);
+        END IF;
+        RAISE PROC_ERROR;
+    END;
+
+    V_DIFF := DBMS_UTILITY.GET_TIME - V_START;
+    V_DIFF_CALC := '[After '||TO_CHAR(ROUND((V_DIFF/100)*1000,2))||' msecs]: ';
+  
+    DBMS_OUTPUT.PUT_LINE(V_DIFF_CALC||'(1) ADD LINACZ: '||V_ROW_CNT||' ROWS INSERTED IN AIDA.AIDA_NAMES.');
+    
+    IF ( G_OK_TO_PRINT ) THEN
+      UTL_FILE.PUT_LINE(C_FILEPTR, V_DIFF_CALC||'(1) ADD LINACZ: '||V_ROW_CNT||' ROWS INSERTED IN AIDA.AIDA_NAMES.', TRUE);
+    END IF;
+
+    ----------
+
+    -- ADD S FOR DISPLAY
+
+    V_STMT := 'INSERT INTO AIDA.AIDA_NAMES (STATE,
+                                                INSTANCE,
+                                                ATTRIBUTE,
+                                                TRANSFORM)'||
+              ' SELECT '||SQ||'N'||SQ||','||
+                       'EPICS_CHANNEL_ACCESS_NAME,'|| 
+                       SQ||'element.S'||SQ||','||
+                       SQ||'/select s_display from lcls_infrastructure.v_lcls_elements_report where epics_channel_access_name = '||DQ||V_INSTANCE||DQ||SQ||
+                ' FROM LCLS_INFRASTRUCTURE.V_LCLS_ELEMENTS_REPORT'||
+               ' WHERE EPICS_CHANNEL_ACCESS_NAME IS NOT NULL'||
+              ' MINUS '||
+              ' SELECT '||SQ||'N'||SQ||','||
+                       'A.INSTANCE,'|| 
+                       SQ||'element.S'||SQ||','||
+                       SQ||'/select s_display from lcls_infrastructure.v_lcls_elements_report where epics_channel_access_name = '||DQ||V_INSTANCE||DQ||SQ||
+                ' FROM AIDA.AIDA_NAMES A, AIDA.AIDA_DIRECTORY D'|| 
+               ' WHERE D.SERVICE_ID IN ('||SQ||V_SYMBOLS_CONTRIBUTOR_SET||SQ||
+                 ') AND D.NAME_ID = A.ID'||
+                 ' AND A.ATTRIBUTE = '||SQ||'element.S'||SQ;
+
+    BEGIN
+    V_ROW_CNT := NULL;
+    EXECUTE IMMEDIATE V_STMT;
+    V_ROW_CNT := TO_CHAR(SQL%ROWCOUNT);
+    EXCEPTION
+      WHEN OTHERS THEN
+        P_ERRMSG := SUBSTR('ERROR ('||C_PROC||'): (1) ADD S_DISPLAY=>'||SQLERRM, 1, 1000);
+        IF ( G_OK_TO_PRINT ) THEN
+          UTL_FILE.PUT_LINE(C_FILEPTR, P_ERRMSG, TRUE);
+        END IF;
+        RAISE PROC_ERROR;
+    END;
+
+    V_DIFF := DBMS_UTILITY.GET_TIME - V_START;
+    V_DIFF_CALC := '[After '||TO_CHAR(ROUND((V_DIFF/100)*1000,2))||' msecs]: ';
+  
+    DBMS_OUTPUT.PUT_LINE(V_DIFF_CALC||'(1) ADD S_DISPLAY: '||V_ROW_CNT||' ROWS INSERTED IN AIDA.AIDA_NAMES.');
+    
+    IF ( G_OK_TO_PRINT ) THEN
+      UTL_FILE.PUT_LINE(C_FILEPTR, V_DIFF_CALC||'(1) ADD S_DISPLAY: '||V_ROW_CNT||' ROWS INSERTED IN AIDA.AIDA_NAMES.', TRUE);
+    END IF;
+
+    ---------------------
+  
+    -- UPDATING DIRECTORY
+
+    /* =======
+    FOR EACH AIDA_NAMES.STATE = "N"eW ROW IN AIDA_NAMES, CREATE A NEW
+    ROW IN AIDA_DIRECTORY TO ASSOCIATE THE NEW NAME (BY ITS AIDA_NAMES.ID)
+    WITH THE SERVICE_ID OF THE SERVICE WHICH IS RESPONSIBLE FOR IT.
+   
+    CLEANUP BY SETTING ALL 'N' TO 'S'. NOTE, WHEN WE EXIT, THERE MUST NOT BE ANY 'N' ROWS.  
+    ======= */
+
+    BEGIN
+    INSERT INTO AIDA.AIDA_DIRECTORY (NAME_ID,
+                                         SERVICE_ID
+                                        ) 
+                SELECT A.ID,
+                       TO_NUMBER(V_RDB_SERVICE_ID)
+                 FROM AIDA.AIDA_NAMES A 
+                WHERE A.STATE = 'N';
+
+    V_ROW_CNT := TO_CHAR(SQL%ROWCOUNT);
+
+    EXCEPTION
+      WHEN OTHERS THEN
+        P_ERRMSG := SUBSTR('ERROR ('||C_PROC||'): (1) UPDATING DIRECTORY: INSERT INTO AIDA.AIDA_DIRECTORY=>'||SQLERRM, 1, 1000);
+        IF ( G_OK_TO_PRINT ) THEN
+          UTL_FILE.PUT_LINE(C_FILEPTR, P_ERRMSG, TRUE);
+        END IF;
+        RAISE PROC_ERROR;
+    END;
+
+    V_DIFF := DBMS_UTILITY.GET_TIME - V_START;
+    V_DIFF_CALC := '[After '||TO_CHAR(ROUND((V_DIFF/100)*1000,2))||' msecs]: ';
+  
+    DBMS_OUTPUT.PUT_LINE(V_DIFF_CALC||'(1) UPDATING DIRECTORY: '||V_ROW_CNT||' ROWS INSERTED IN AIDA.AIDA_DIRECTORY.');
+    
+    IF ( G_OK_TO_PRINT ) THEN
+      UTL_FILE.PUT_LINE(C_FILEPTR, V_DIFF_CALC||'(1) UPDATING DIRECTORY: '||V_ROW_CNT||' ROWS INSERTED IN AIDA.AIDA_DIRECTORY.', TRUE);
+    END IF;
+
+    ----------
+
+    BEGIN
+    UPDATE AIDA.AIDA_NAMES A
+       SET A.STATE = 'S'
+     WHERE A.STATE = 'N';
+
+    V_ROW_CNT := TO_CHAR(SQL%ROWCOUNT);
+
+    EXCEPTION
+      WHEN OTHERS THEN
+        P_ERRMSG := SUBSTR('ERROR ('||C_PROC||'): (1) UPDATING DIRECTORY: UPDATE AIDA.AIDA_NAMES=>'||SQLERRM, 1, 1000);
+        IF ( G_OK_TO_PRINT ) THEN
+          UTL_FILE.PUT_LINE(C_FILEPTR, P_ERRMSG, TRUE);
+        END IF;
+        RAISE PROC_ERROR;
+    END;
+
+    V_DIFF := DBMS_UTILITY.GET_TIME - V_START;
+    V_DIFF_CALC := '[After '||TO_CHAR(ROUND((V_DIFF/100)*1000,2))||' msecs]: ';
+  
+    DBMS_OUTPUT.PUT_LINE(V_DIFF_CALC||'(1) UPDATING DIRECTORY: UPDATE AIDA.AIDA_NAMES: '||V_ROW_CNT||' ROWS UPDATED IN AIDA.AIDA_NAMES.');
+    
+    IF ( G_OK_TO_PRINT ) THEN
+      UTL_FILE.PUT_LINE(C_FILEPTR, V_DIFF_CALC||'(1) UPDATING DIRECTORY: UPDATE AIDA.AIDA_NAMES: '||V_ROW_CNT||' ROWS UPDATED IN AIDA.AIDA_NAMES.', TRUE);
+    END IF;
+
+    -----------------------------
+
+    -- (2) MARK NAMES NO LONGER CONTRIBUTED.
+
+    /* ==========
+    THIS SETS THE "STATE" TO "M"ARKED FOR DELETE, OF EACH ROW OF
+    AIDA_NAMES WHOSE STATE IS PRESENTLY "S"TEADY, BUT FOR WHICH THERE IS
+    NOW NO MODELLED EPICS DEVICE NAME. THIS SETS THE ROWS FOR ALL THE 
+    ATTRIBUTES OF ALL THOSE INSTANCES.
+    ========== */
+
+    -- EFFECTIVE_LENGTH
+    V_STMT := NULL;
+  
+    V_STMT := 'UPDATE AIDA.AIDA_NAMES A
+                 SET A.STATE = ''M''
+               WHERE A.STATE = ''S''
+                 AND A.ID IN (SELECT S.ID
+                                FROM AIDA.AIDA_NAMES S,
+                                     AIDA.AIDA_DIRECTORY D
+                               WHERE S.ID = D.NAME_ID
+                                 AND S.ATTRIBUTE = ''element.effective_length''
+                                 AND D.SERVICE_ID IN ('||V_SYMBOLS_CONTRIBUTOR_SET||')
+                             )
+                 AND NOT EXISTS (SELECT *
+                                   FROM LCLS_INFRASTRUCTURE.V_LCLS_ELEMENTS_REPORT V
+                                  WHERE A.INSTANCE = V.EPICS_CHANNEL_ACCESS_NAME
+                                )';
+
+    BEGIN
+    V_ROW_CNT := NULL;
+    EXECUTE IMMEDIATE V_STMT;
+    V_ROW_CNT := TO_CHAR(SQL%ROWCOUNT);
+    EXCEPTION
+      WHEN OTHERS THEN
+        P_ERRMSG := SUBSTR('ERROR ('||C_PROC||'): (2) [EFFECTIVE_LENGTH] MARK NAMES NO LONGER CONTRIBUTED=>'||SQLERRM, 1, 1000);
+        IF ( G_OK_TO_PRINT ) THEN
+          UTL_FILE.PUT_LINE(C_FILEPTR, P_ERRMSG, TRUE);
+        END IF;
+        RAISE PROC_ERROR;
+    END;
+
+    V_DIFF := DBMS_UTILITY.GET_TIME - V_START;
+    V_DIFF_CALC := '[After '||TO_CHAR(ROUND((V_DIFF/100)*1000,2))||' msecs]: ';
+  
+    DBMS_OUTPUT.PUT_LINE(V_DIFF_CALC||'(2) [EFFECTIVE_LENGTH] MARK NAMES NO LONGER CONTRIBUTED: '||V_ROW_CNT||' ROWS UPDATED IN AIDA.AIDA_NAMES.');
+    
+    IF ( G_OK_TO_PRINT ) THEN
+      UTL_FILE.PUT_LINE(C_FILEPTR, V_DIFF_CALC||'(2) [EFFECTIVE_LENGTH] MARK NAMES NO LONGER CONTRIBUTED: '||V_ROW_CNT||' ROWS UPDATED IN AIDA.AIDA_NAMES.', TRUE);
+    END IF;
+
+    --------
+
+    -- LINACZ
+    V_STMT := NULL;
+  
+    V_STMT := 'UPDATE AIDA.AIDA_NAMES A
+                  SET A.STATE = ''M''
+                WHERE A.STATE = ''S''
+                  AND A.ID IN (SELECT S.ID
+                                 FROM AIDA.AIDA_NAMES S,
+                                      AIDA.AIDA_DIRECTORY D
+                                WHERE S.ID = D.NAME_ID
+                                  AND S.ATTRIBUTE = ''element.Z''
+                                  AND D.SERVICE_ID IN ('||V_SYMBOLS_CONTRIBUTOR_SET||')
+                              )
+                  AND NOT EXISTS (SELECT *
+                                    FROM LCLS_INFRASTRUCTURE.V_LCLS_ELEMENTS_REPORT V
+                                   WHERE A.INSTANCE = V.EPICS_CHANNEL_ACCESS_NAME
+                                 )';
+
+    BEGIN
+    V_ROW_CNT := NULL;
+    EXECUTE IMMEDIATE V_STMT;
+    V_ROW_CNT := TO_CHAR(SQL%ROWCOUNT);
+    EXCEPTION
+      WHEN OTHERS THEN
+        P_ERRMSG := SUBSTR('ERROR ('||C_PROC||'): (2) [LINACZ] MARK NAMES NO LONGER CONTRIBUTED=>'||SQLERRM, 1, 1000);
+        IF ( G_OK_TO_PRINT ) THEN
+          UTL_FILE.PUT_LINE(C_FILEPTR, P_ERRMSG, TRUE);
+        END IF;
+        RAISE PROC_ERROR;
+    END;
+
+    V_DIFF := DBMS_UTILITY.GET_TIME - V_START;
+    V_DIFF_CALC := '[After '||TO_CHAR(ROUND((V_DIFF/100)*1000,2))||' msecs]: ';
+  
+    DBMS_OUTPUT.PUT_LINE(V_DIFF_CALC||'(2) [LINACZ] MARK NAMES NO LONGER CONTRIBUTED: '||V_ROW_CNT||' ROWS UPDATED IN AIDA.AIDA_NAMES.');
+    
+    IF ( G_OK_TO_PRINT ) THEN
+      UTL_FILE.PUT_LINE(C_FILEPTR, V_DIFF_CALC||'(2) [LINACZ] MARK NAMES NO LONGER CONTRIBUTED: '||V_ROW_CNT||' ROWS UPDATED IN AIDA.AIDA_NAMES.', TRUE);
+    END IF;
+
+    --------
+
+    -- S_DISPLAY
+    V_STMT := NULL;
+  
+    V_STMT := 'UPDATE AIDA.AIDA_NAMES A
+                  SET A.STATE = ''M''
+                WHERE A.STATE = ''S''
+                  AND A.ID IN (SELECT S.ID
+                                 FROM AIDA.AIDA_NAMES S,
+                                      AIDA.AIDA_DIRECTORY D
+                                WHERE S.ID = D.NAME_ID
+                                  AND S.ATTRIBUTE = ''element.S''
+                                  AND D.SERVICE_ID IN ('||V_SYMBOLS_CONTRIBUTOR_SET||')
+                              )
+                  AND NOT EXISTS (SELECT *
+                                    FROM LCLS_INFRASTRUCTURE.V_LCLS_ELEMENTS_REPORT V
+                                   WHERE A.INSTANCE = V.EPICS_CHANNEL_ACCESS_NAME
+                                 )';
+
+    BEGIN
+    V_ROW_CNT := NULL;
+    EXECUTE IMMEDIATE V_STMT;
+    V_ROW_CNT := TO_CHAR(SQL%ROWCOUNT);
+    EXCEPTION
+      WHEN OTHERS THEN
+        P_ERRMSG := SUBSTR('ERROR ('||C_PROC||'): (2) [S_DISPLAY] MARK NAMES NO LONGER CONTRIBUTED=>'||SQLERRM, 1, 1000);
+        IF ( G_OK_TO_PRINT ) THEN
+          UTL_FILE.PUT_LINE(C_FILEPTR, P_ERRMSG, TRUE);
+        END IF;
+        RAISE PROC_ERROR;
+    END;
+
+    V_DIFF := DBMS_UTILITY.GET_TIME - V_START;
+    V_DIFF_CALC := '[After '||TO_CHAR(ROUND((V_DIFF/100)*1000,2))||' msecs]: ';
+  
+    DBMS_OUTPUT.PUT_LINE(V_DIFF_CALC||'(2) [S_DISPLAY] MARK NAMES NO LONGER CONTRIBUTED: '||V_ROW_CNT||' ROWS UPDATED IN AIDA.AIDA_NAMES.');
+    
+    IF ( G_OK_TO_PRINT ) THEN
+      UTL_FILE.PUT_LINE(C_FILEPTR, V_DIFF_CALC||'(2) [S_DISPLAY] MARK NAMES NO LONGER CONTRIBUTED: '||V_ROW_CNT||' ROWS UPDATED IN AIDA.AIDA_NAMES.', TRUE);
+    END IF;
+
+    -----------------------------
+
+    -- (3) UN-MARK THE NAMES (TO 'S') WHICH ARE NOW AGAIN CONTRIBUTED, WHERE, BEFORE THIS RUN, THEY WERE MARKED FOR DELETE.
+
+    /* =========
+    THIS SETS THE "STATE" TO "S"TEADY FOR EACH ELEMENT OF AIDA_NAMES WHOSE STATE
+    IS PRESENTLY "D"ELETE, WHICH IS (NOW AGAIN) PRESENT IN THE CONTRIBUTOR'S
+    TABLE (THAT IS, HAS SAME CONTRIBUTOR, AND DOES APPEAR IN THE CONTRIBUTOR).
+    ========= */
+
+    -- EFFECTIVE_LENGTH
+    V_STMT := NULL;
+  
+    V_STMT := 'UPDATE AIDA.AIDA_NAMES A
+                  SET A.STATE = ''S''
+                WHERE A.STATE = ''D''
+                  AND A.ID IN (SELECT S.ID
+                                 FROM AIDA.AIDA_NAMES S,
+                                      AIDA.AIDA_DIRECTORY D
+                                WHERE S.ID = D.NAME_ID
+                                  AND S.ATTRIBUTE = ''element.effective_length''
+                                  AND D.SERVICE_ID IN ('||V_SYMBOLS_CONTRIBUTOR_SET||')
+                              )
+                  AND A.INSTANCE IN (SELECT V.EPICS_CHANNEL_ACCESS_NAME
+                                       FROM LCLS_INFRASTRUCTURE.V_LCLS_ELEMENTS_REPORT V
+                                    )';
+
+                  /*  ELIE COMMENTED: CAUSES ERROR ORA-03114 NOT CONNECTED TO ORACLE.  CODE REPLACED BY ABOVE "IN" CLAUSE.
+                  AND EXISTS (SELECT *
+                                FROM LCLS_INFRASTRUCTURE.V_LCLS_ELEMENTS_REPORT V
+                               WHERE A.INSTANCE = V.EPICS_CHANNEL_ACCESS_NAME
+                             )';
+                  */
+
+    BEGIN
+    V_ROW_CNT := NULL;
+    EXECUTE IMMEDIATE V_STMT;
+    V_ROW_CNT := TO_CHAR(SQL%ROWCOUNT);
+    EXCEPTION
+      WHEN OTHERS THEN
+        P_ERRMSG := SUBSTR('ERROR ('||C_PROC||'): (3) [EFFECTIVE_LENGTH] UN-MARK NAMES NOW AGAIN CONTRIBUTED=>'||SQLERRM, 1, 1000);
+        IF ( G_OK_TO_PRINT ) THEN
+          UTL_FILE.PUT_LINE(C_FILEPTR, P_ERRMSG, TRUE);
+        END IF;
+        RAISE PROC_ERROR;
+    END;
+
+    V_DIFF := DBMS_UTILITY.GET_TIME - V_START;
+    V_DIFF_CALC := '[After '||TO_CHAR(ROUND((V_DIFF/100)*1000,2))||' msecs]: ';
+  
+    DBMS_OUTPUT.PUT_LINE(V_DIFF_CALC||'(3) [EFFECTIVE_LENGTH] UN-MARK NAMES NOW AGAIN CONTRIBUTED: '||V_ROW_CNT||' ROWS UPDATED IN AIDA.AIDA_NAMES.');
+    
+    IF ( G_OK_TO_PRINT ) THEN
+      UTL_FILE.PUT_LINE(C_FILEPTR, V_DIFF_CALC||'(3) [EFFECTIVE_LENGTH] UN-MARK NAMES NOW AGAIN CONTRIBUTED: '||V_ROW_CNT||' ROWS UPDATED IN AIDA.AIDA_NAMES.', TRUE);
+    END IF;
+
+    --------
+
+    -- LINACZ
+    V_STMT := NULL;
+  
+    V_STMT := 'UPDATE AIDA.AIDA_NAMES A
+                  SET A.STATE = ''S''
+                WHERE A.STATE = ''D''
+                  AND A.ID IN (SELECT S.ID
+                                 FROM AIDA.AIDA_NAMES S,
+                                      AIDA.AIDA_DIRECTORY D
+                                WHERE S.ID = D.NAME_ID
+                                  AND S.ATTRIBUTE = ''element.Z''
+                                  AND D.SERVICE_ID IN ('||V_SYMBOLS_CONTRIBUTOR_SET||')
+                              )
+                  AND A.INSTANCE IN (SELECT V.EPICS_CHANNEL_ACCESS_NAME
+                                       FROM LCLS_INFRASTRUCTURE.V_LCLS_ELEMENTS_REPORT V
+                                    )';
+
+                  /*  ELIE COMMENTED: CAUSES ERROR ORA-03114 NOT CONNECTED TO ORACLE.  CODE REPLACED BY ABOVE "IN" CLAUSE.
+                  AND EXISTS (SELECT *
+                                FROM LCLS_INFRASTRUCTURE.V_LCLS_ELEMENTS_REPORT V
+                               WHERE A.INSTANCE = V.EPICS_CHANNEL_ACCESS_NAME
+                             )';
+                  */
+
+    BEGIN
+    V_ROW_CNT := NULL;
+    EXECUTE IMMEDIATE V_STMT;
+    V_ROW_CNT := TO_CHAR(SQL%ROWCOUNT);
+    EXCEPTION
+      WHEN OTHERS THEN
+        P_ERRMSG := SUBSTR('ERROR ('||C_PROC||'): (3) [LINACZ] UN-MARK NAMES NOW AGAIN CONTRIBUTED=>'||SQLERRM, 1, 1000);
+        IF ( G_OK_TO_PRINT ) THEN
+          UTL_FILE.PUT_LINE(C_FILEPTR, P_ERRMSG, TRUE);
+        END IF;
+        RAISE PROC_ERROR;
+    END;
+
+    V_DIFF := DBMS_UTILITY.GET_TIME - V_START;
+    V_DIFF_CALC := '[After '||TO_CHAR(ROUND((V_DIFF/100)*1000,2))||' msecs]: ';
+  
+    DBMS_OUTPUT.PUT_LINE(V_DIFF_CALC||'(3) [LINACZ] UN-MARK NAMES NOW AGAIN CONTRIBUTED: '||V_ROW_CNT||' ROWS UPDATED IN AIDA.AIDA_NAMES.');
+    
+    IF ( G_OK_TO_PRINT ) THEN
+      UTL_FILE.PUT_LINE(C_FILEPTR, V_DIFF_CALC||'(3) [LINACZ] UN-MARK NAMES NOW AGAIN CONTRIBUTED: '||V_ROW_CNT||' ROWS UPDATED IN AIDA.AIDA_NAMES.', TRUE);
+    END IF;
+
+    --------
+
+    -- S_DISPLAY
+    V_STMT := NULL;
+  
+    V_STMT := 'UPDATE AIDA.AIDA_NAMES A
+                  SET A.STATE = ''S''
+                WHERE A.STATE = ''D''
+                  AND A.ID IN (SELECT S.ID
+                                 FROM AIDA.AIDA_NAMES S,
+                                      AIDA.AIDA_DIRECTORY D
+                                WHERE S.ID = D.NAME_ID
+                                  AND S.ATTRIBUTE = ''element.S''
+                                  AND D.SERVICE_ID IN ('||V_SYMBOLS_CONTRIBUTOR_SET||')
+                              )
+                  AND A.INSTANCE IN (SELECT V.EPICS_CHANNEL_ACCESS_NAME
+                                       FROM LCLS_INFRASTRUCTURE.V_LCLS_ELEMENTS_REPORT V
+                                    )';
+
+                  /*  ELIE COMMENTED: CAUSES ERROR ORA-03114 NOT CONNECTED TO ORACLE.  CODE REPLACED BY ABOVE "IN" CLAUSE.
+                  AND EXISTS (SELECT *
+                                FROM LCLS_INFRASTRUCTURE.V_LCLS_ELEMENTS_REPORT V
+                               WHERE A.INSTANCE = V.EPICS_CHANNEL_ACCESS_NAME
+                             )';
+                  */
+
+    BEGIN
+    V_ROW_CNT := NULL;
+    EXECUTE IMMEDIATE V_STMT;
+    V_ROW_CNT := TO_CHAR(SQL%ROWCOUNT);
+    EXCEPTION
+      WHEN OTHERS THEN
+        P_ERRMSG := SUBSTR('ERROR ('||C_PROC||'): (3) [S_DISPLAY] UN-MARK NAMES NOW AGAIN CONTRIBUTED=>'||SQLERRM, 1, 1000);
+        IF ( G_OK_TO_PRINT ) THEN
+          UTL_FILE.PUT_LINE(C_FILEPTR, P_ERRMSG, TRUE);
+        END IF;
+        RAISE PROC_ERROR;
+    END;
+
+    V_DIFF := DBMS_UTILITY.GET_TIME - V_START;
+    V_DIFF_CALC := '[After '||TO_CHAR(ROUND((V_DIFF/100)*1000,2))||' msecs]: ';
+  
+    DBMS_OUTPUT.PUT_LINE(V_DIFF_CALC||'(3) [S_DISPLAY] UN-MARK NAMES NOW AGAIN CONTRIBUTED: '||V_ROW_CNT||' ROWS UPDATED IN AIDA.AIDA_NAMES.');
+    
+    IF ( G_OK_TO_PRINT ) THEN
+      UTL_FILE.PUT_LINE(C_FILEPTR, V_DIFF_CALC||'(3) [S_DISPLAY] UN-MARK NAMES NOW AGAIN CONTRIBUTED: '||V_ROW_CNT||' ROWS UPDATED IN AIDA.AIDA_NAMES.', TRUE);
+    END IF;
+
+    -----------------------------
+
+    -- (4) REMOVE THOSE NOW NOT CONTRIBUTED TWICE IN A ROW.
+
+    /* =========
+     I) REMOVE 'D'ELETED FROM AIDA_NAMES.  THIS ACTION WOULD NORMALLY VIOLATE THE FK CONSTRAINT ON AIDA_DIRECTORY.
+        HOWEVER, THIS VIOLATION DOES *NOT* OCCUR BECAUSE THE FK CONSTRAINTS ON AIDA_DIRECTORY ARE "DEFERRED WITH
+        DEFAULT OF INITIALLY DEFERRED" VIA THE STATEMENTS:
+
+        ALTER TABLE AIDA_DIRECTORY DROP CONSTRAINT FK_AIDA_DIRECTORY_AIDA_NAMES;
+
+        ALTER TABLE AIDA_DIRECTORY ADD CONSTRAINT FK_AIDA_DIRECTORY_AIDA_NAMES FOREIGN KEY (NAME_ID) REFERENCES AIDA_NAMES (ID) DEFERRABLE INITIALLY DEFERRED;
+
+     II) REMOVE ALL FROM AIDA_DIRECTORY WHICH NOW DON'T HAVE AN ENTRY IN AIDA_NAMES.
+     III) SET THOSE ROWS IN AIDA_NAMES THAT ARE 'M'ARKED FOR DELETE TO 'D'ELETE STATE.
+    ========= */
+
+    -- (I)
+  
+    V_STMT := NULL;
+  
+    V_STMT := 'DELETE FROM AIDA.AIDA_NAMES A
+                WHERE A.STATE = ''D''
+                  AND A.ID IN (SELECT S.ID
+                                 FROM AIDA.AIDA_NAMES S,
+                                      AIDA.AIDA_DIRECTORY D
+                                WHERE S.ID = D.NAME_ID
+                                  AND D.SERVICE_ID IN ('||V_SYMBOLS_CONTRIBUTOR_SET||')
+                              )';
+
+    BEGIN
+    V_ROW_CNT := NULL;
+    EXECUTE IMMEDIATE V_STMT;
+    V_ROW_CNT := TO_CHAR(SQL%ROWCOUNT);
+    EXCEPTION
+      WHEN OTHERS THEN
+        P_ERRMSG := SUBSTR('ERROR ('||C_PROC||'): (4I) DELETE FROM AIDA.AIDA_NAMES=>'||SQLERRM, 1, 1000);
+        IF ( G_OK_TO_PRINT ) THEN
+          UTL_FILE.PUT_LINE(C_FILEPTR, P_ERRMSG, TRUE);
+        END IF;
+        RAISE PROC_ERROR;
+    END;
+
+    V_DIFF := DBMS_UTILITY.GET_TIME - V_START;
+    V_DIFF_CALC := '[After '||TO_CHAR(ROUND((V_DIFF/100)*1000,2))||' msecs]: ';
+  
+    DBMS_OUTPUT.PUT_LINE(V_DIFF_CALC||'(4I) DELETED '||V_ROW_CNT||' ROWS FROM AIDA.AIDA_NAMES.');
+    
+    IF ( G_OK_TO_PRINT ) THEN
+      UTL_FILE.PUT_LINE(C_FILEPTR, V_DIFF_CALC||'(4I) DELETED '||V_ROW_CNT||' ROWS FROM AIDA.AIDA_NAMES.', TRUE);
+    END IF;
+
+    -----------------------------
+
+    -- (II)
+  
+    BEGIN
+    DELETE FROM AIDA.AIDA_DIRECTORY D
+     WHERE D.NAME_ID IN (SELECT R.NAME_ID
+                           FROM AIDA.AIDA_DIRECTORY R
+                         MINUS
+                         SELECT A.ID
+                           FROM AIDA.AIDA_NAMES A
+                        ); 
+
+    V_ROW_CNT := TO_CHAR(SQL%ROWCOUNT);
+
+    EXCEPTION
+      WHEN OTHERS THEN
+        P_ERRMSG := SUBSTR('ERROR ('||C_PROC||'): (4II) DELETE FROM AIDA.AIDA_DIRECTORY=>'||SQLERRM, 1, 1000);
+        IF ( G_OK_TO_PRINT ) THEN
+          UTL_FILE.PUT_LINE(C_FILEPTR, P_ERRMSG, TRUE);
+        END IF;
+        RAISE PROC_ERROR;
+    END;
+
+    V_DIFF := DBMS_UTILITY.GET_TIME - V_START;
+    V_DIFF_CALC := '[After '||TO_CHAR(ROUND((V_DIFF/100)*1000,2))||' msecs]: ';
+  
+    DBMS_OUTPUT.PUT_LINE(V_DIFF_CALC||'(4II) DELETE FROM AIDA.AIDA_DIRECTORY: '||V_ROW_CNT||' ROWS DELETED FROM AIDA.AIDA_DIRECTORY.');
+    
+    IF ( G_OK_TO_PRINT ) THEN
+      UTL_FILE.PUT_LINE(C_FILEPTR, V_DIFF_CALC||'(4II) DELETE FROM AIDA.AIDA_DIRECTORY: '||V_ROW_CNT||' ROWS DELETED FROM AIDA.AIDA_DIRECTORY.', TRUE);
+    END IF;
+
+    -----------------------------
+
+    -- (III)
+  
+    BEGIN
+    UPDATE AIDA.AIDA_NAMES 
+       SET STATE = 'D'
+     WHERE STATE = 'M';
+
+    V_ROW_CNT := TO_CHAR(SQL%ROWCOUNT);
+
+    EXCEPTION
+      WHEN OTHERS THEN
+        P_ERRMSG := SUBSTR('ERROR ('||C_PROC||'): (4III) UPDATE AIDA.AIDA_NAMES=>'||SQLERRM, 1, 1000);
+        IF ( G_OK_TO_PRINT ) THEN
+          UTL_FILE.PUT_LINE(C_FILEPTR, P_ERRMSG, TRUE);
+        END IF;
+        RAISE PROC_ERROR;
+    END;
+
+    V_DIFF := DBMS_UTILITY.GET_TIME - V_START;
+    V_DIFF_CALC := '[After '||TO_CHAR(ROUND((V_DIFF/100)*1000,2))||' msecs]: ';
+  
+    DBMS_OUTPUT.PUT_LINE(V_DIFF_CALC||'(4III) UPDATE AIDA.AIDA_NAMES: '||V_ROW_CNT||' ROWS UPDATED IN AIDA.AIDA_NAMES.');
+    
+    IF ( G_OK_TO_PRINT ) THEN
+      UTL_FILE.PUT_LINE(C_FILEPTR, V_DIFF_CALC||'(4III) UPDATE AIDA.AIDA_NAMES: '||V_ROW_CNT||' ROWS UPDATED IN AIDA.AIDA_NAMES.', TRUE);
+    END IF;
+
+  END IF;  -- IF ( V_SCHEMA = 'AIDA' ) THEN
+
+  -- END PROCESSING
+
+  -----------------------------
+
+  IF ( V_COMMIT = 'N' ) THEN
+    ROLLBACK;
+    DBMS_OUTPUT.PUT_LINE('ROLLBACK DONE');
+    IF ( G_OK_TO_PRINT ) THEN
+      UTL_FILE.PUT_LINE(C_FILEPTR, 'ROLLBACK DONE', TRUE);
+    END IF;
+  ELSIF ( V_COMMIT = 'P' ) THEN
+    DBMS_OUTPUT.PUT_LINE('COMMIT PENDING');
+    IF ( G_OK_TO_PRINT ) THEN
+      UTL_FILE.PUT_LINE(C_FILEPTR, 'COMMIT PENDING', TRUE);
+    END IF;
+  ELSIF ( V_COMMIT = 'Y' ) THEN
+    COMMIT;
+    DBMS_OUTPUT.PUT_LINE('COMMIT DONE');
+    IF ( G_OK_TO_PRINT ) THEN
+      UTL_FILE.PUT_LINE(C_FILEPTR, 'COMMIT DONE', TRUE);
+    END IF;
+  END IF;
+
+
+  V_END := DBMS_UTILITY.GET_TIME;
+  V_DIFF := V_END - V_START;
+  V_DIFF_CALC := '[PROCESSING COMPLETED IN '||TO_CHAR(ROUND((V_DIFF/100)*1000,2))||' msecs]: ';
+
+  DBMS_OUTPUT.PUT_LINE(V_DIFF_CALC);
+
+  IF ( G_OK_TO_PRINT ) THEN
+    UTL_FILE.PUT_LINE(C_FILEPTR, V_DIFF_CALC, TRUE);
+  END IF;
+
+  P_STATUS := 'AIDA_SYMBOLS_NAMES_UPDATE SUCCESSFULLY COMPLETED';
+
+  RETURN;
+
+
+  EXCEPTION
+    WHEN PROC_ERROR THEN
+      RETURN;
+
+    WHEN OTHERS THEN
+      P_ERRMSG := SUBSTR('ERROR ('||C_PROC||')=>'||SQLERRM, 1, 1000);
+      RETURN;
+
+  END AIDA_SYMBOLS_NAMES_UPDATE;
+
+  --------------
+
+  -- PRIVATE TO PACKAGE BODY
+  PROCEDURE ADJUST_SEQ_PER_MAX_TABLE_ID (P_STATUS     IN OUT VARCHAR2,
+                                         P_ERRMSG     IN OUT VARCHAR2,
+                                         P_DEBUG_FLAG IN     VARCHAR2 DEFAULT 'N')
+  AS
+
+    V_DEBUG_FLAG     VARCHAR2(1);
+    V_STMT           VARCHAR2(1000);
+    V_MAXMID         PLS_INTEGER;
+    V_SEQLN          PLS_INTEGER;
+    V_NUM            PLS_INTEGER;
+    V_NUM_SEQ        PLS_INTEGER;
+    V_TEMP           PLS_INTEGER;
+
+    TYPE TBLTAB_TYP IS TABLE OF VARCHAR2(30) INDEX BY PLS_INTEGER;
+    TYPE DBLINKTAB_TYP IS TABLE OF VARCHAR2(100) INDEX BY VARCHAR2(20);
+  
+    TBLTAB      TBLTAB_TYP;
+    DBLINKTAB   DBLINKTAB_TYP;
+  
+    C_PROC      CONSTANT   VARCHAR2(100) := 'MODEL_UPLOAD_PKG.ADJUST_SEQ_PER_MAX_TABLE_ID';
+    C_SQ        CONSTANT   VARCHAR2(1)   := CHR(39);
+
+  BEGIN
+
+    P_STATUS := NULL;
+    P_ERRMSG := NULL;
+
+    --------
+
+    -- CHECK DEBUG FLAG
+    SELECT DECODE(SUBSTR(UPPER(TRIM(P_DEBUG_FLAG)),1,1),NULL,'N','Y','Y','N','N','N')
+      INTO V_DEBUG_FLAG
+      FROM DUAL;
+
+    --------
+
+    -- INITIALIZE ARRAYS
+    TBLTAB(1) := 'RUNS';
+    
+    /*
+    TBLTAB(2) := 'MODEL_DEVICES';
+    TBLTAB(3) := 'ELEMENT_MODELS';
+    TBLTAB(4) := 'GOLD';
+    TBLTAB(5) := 'DEVICE_TYPES';
+    TBLTAB(6) := 'HARDWARE_SETTINGS';
+    TBLTAB(7) := 'INITIAL_CONDITIONS';
+    TBLTAB(8) := 'XML_DOCS';
+    */
+
+    -- DBLINKTAB('MCCQA')    := '@MCCOTOMCCQA_MACHINE_MODEL.SLAC.STANFORD.EDU';
+    -- DBLINKTAB('SLACDEV')  := '@MCCOTOSLACDEV_MACHINE_MODEL.SLAC.STANFORD.EDU';
+    DBLINKTAB('SLACPROD') := '@MCCOTOSLACPROD_MACHINE_MODEL.SLAC.STANFORD.EDU';
+
+    --------
+
+    IF ( V_DEBUG_FLAG = 'Y' ) THEN
+      FOR J IN 1 .. TBLTAB.COUNT LOOP
+        DBMS_OUTPUT.PUT_LINE(TBLTAB(J));
+      END LOOP;
+
+      -- DBMS_OUTPUT.PUT_LINE(DBLINKTAB('MCCQA'));
+      -- DBMS_OUTPUT.PUT_LINE(DBLINKTAB('SLACDEV'));
+      DBMS_OUTPUT.PUT_LINE(DBLINKTAB('SLACPROD'));
+    END IF;
+
+    --------
+
+    V_STMT := NULL;
+    
+    V_NUM_SEQ := 0;
+
+/*
+UNION
+SELECT MAX(ID) MID FROM '||TBLTAB(J)||DBLINKTAB('MCCQA')||'
+*/
+
+    FOR J IN 1 .. TBLTAB.COUNT LOOP
+
+      V_STMT := SUBSTR('SELECT MAX(MID) MID
+                        FROM
+                        (SELECT MAX(ID) MID FROM '||TBLTAB(J)||'
+                         UNION
+                         SELECT MAX(ID) MID FROM '||TBLTAB(J)||DBLINKTAB('SLACPROD')||'
+                        ) X', 1, 1000
+                      );
+
+      EXECUTE IMMEDIATE V_STMT INTO V_MAXMID;
+
+      --------
+
+      V_STMT := 'SELECT LAST_NUMBER FROM USER_SEQUENCES WHERE SEQUENCE_NAME = '||C_SQ||TBLTAB(J)||'_SEQ'||C_SQ;
+
+      EXECUTE IMMEDIATE V_STMT INTO V_SEQLN;
+
+      IF ( V_DEBUG_FLAG = 'Y' ) THEN
+        DBMS_OUTPUT.PUT_LINE(TBLTAB(J)||': MAXMID='||V_MAXMID||'; CURR SEQLN='||V_SEQLN);
+      END IF;
+
+      --------
+
+      IF ( V_SEQLN > V_MAXMID ) THEN
+
+        IF ( V_DEBUG_FLAG = 'Y' ) THEN
+          DBMS_OUTPUT.PUT_LINE(TBLTAB(J)||': MAXMID='||V_MAXMID||'; CURR SEQLN='||V_SEQLN||' => SEQUENCE MODIFICATION UN-NECESSARY.');
+        END IF;
+
+        NULL;
+
+      ELSE
+
+        V_NUM_SEQ := V_NUM_SEQ + 1;
+
+        V_STMT := 'SELECT '||TBLTAB(J)||'_SEQ.NEXTVAL FROM DUAL';
+
+        V_NUM := V_MAXMID - V_SEQLN + 1;
+
+        FOR K IN 1 .. V_NUM LOOP
+          EXECUTE IMMEDIATE V_STMT INTO V_TEMP;
+          IF ( V_DEBUG_FLAG = 'Y' ) THEN
+            DBMS_OUTPUT.PUT_LINE('IN SEQUENCE MODIFICATION LOOP: '||TBLTAB(J)||': MAXMID='||V_MAXMID||'; CURR SEQLN='||V_SEQLN||'; NEW SEQLN='||V_TEMP);
+          END IF;
+        END LOOP;
+
+      END IF;
+
+    END LOOP;  -- FOR J IN 1 .. TBLTAB.COUNT LOOP
+    
+    P_STATUS := TO_CHAR(V_NUM_SEQ)||' SEQUENCES MODIFIED';
+
+    RETURN;
+
+
+  EXCEPTION
+    WHEN OTHERS THEN
+      P_ERRMSG := SUBSTR('ERROR ('||C_PROC||')=>'||SQLERRM, 1, 1000);
+      RETURN;
+
+  END ADJUST_SEQ_PER_MAX_TABLE_ID;
+
+  --------------
+
+  PROCEDURE UPLOAD_MODEL (P_RUNS_ARRAY           IN  RUNS_ARRAY_TYP,
+                          P_MODEL_DEVICES_ARRAY  IN  MODEL_DEVICES_ARRAY_TYP,
+                          P_ELEMENT_MODELS_ARRAY IN  ELEMENT_MODELS_ARRAY_TYP,
+                          P_RUNS_ID              OUT NUMBER,
+                          P_ERRMSG               OUT VARCHAR2)
+  AS
+
+    V_DEBUG                            BOOLEAN := FALSE;
+
+    V_RUNS_ID                           NUMBER;
+    V_SECS                             NUMBER;
+    V_START_TOTAL                      NUMBER;
+    V_START                            NUMBER;
+    V_DIFF                             NUMBER;
+    V_DIFF_CALC                        VARCHAR2(100);
+    
+    V_CNT                            PLS_INTEGER;
+    V_TAB_IDX_ROW_NUM                  PLS_INTEGER;
+    V_MOD_VAL_FIELD_NUM                 PLS_INTEGER;
+    V_DT                               VARCHAR2(100);
+    
+    V_PROCESS_GRP_NO                   NUMBER;
+    V_NUM_ROWS                         NUMBER;
+    V_NUM_ERRORS                       PLS_INTEGER;
+    V_NUM_ERRORS_PROCESSED             PLS_INTEGER;
+    V_ERRS_REMAIN_MSG                  VARCHAR2(100);
+
+    V_DVT_ERRMSG                       VARCHAR2(1000);
+    V_MAIL_ERRMSG                       VARCHAR2(1000);
+    V_BG_ERRMSG                         VARCHAR2(1000);
+    V_MSG                               VARCHAR2(200);
+    V_STAGE                            VARCHAR2(120);
+    V_LOG_FILE                         VARCHAR2(200);
+    V_STATUS                           VARCHAR2(100);
+
+    V_STMT                             VARCHAR2(1000);
+    V_JOB_NAME                         VARCHAR2(30);
+    V_BG_COMMENT                       VARCHAR2(60);
+    
+    ------------
+
+    TYPE MODEL_DEVICES_TYP  IS TABLE OF MODEL_DEVICES%ROWTYPE INDEX BY PLS_INTEGER;
+    TYPE ELEMENT_MODELS_TYP IS TABLE OF ELEMENT_MODELS%ROWTYPE INDEX BY PLS_INTEGER;
+
+    -- FOLLOWING TWO OBJECTS USED TO STORE PASSED-IN DATA.    
+    V_MODEL_DEVICES_TAB                MODEL_DEVICES_TYP;
+    V_ELEMENT_MODELS_TAB               ELEMENT_MODELS_TYP;
+    
+    -- STORES WHICH PASSED-IN ARRAY(S) CONTAIN IN-APPROPRIATE DATA.
+    V_ARRAYS_IN_ERROR                  VARCHAR2(100);
+    
+    ------------
+    
+    -- THESE TWO INDICATE WHETHER OR NOT THE PASSED-IN ARRAYS CONTAIN AN IN-APPROPRIATE DATA VALUE.
+    V_MD_ERR_CNT                       PLS_INTEGER;
+    V_EM_ERR_CNT                       PLS_INTEGER;
+    
+    TYPE V_MDCHKREC_TYP IS RECORD (ROW_NUM        PLS_INTEGER,
+                                 FIELD_NUM        PLS_INTEGER,
+                                 FIELD_NAME       VARCHAR2(30),
+                                 FIELD_VAL        VARCHAR2(60),
+                                 IS_NOT_NULL       VARCHAR2(1),
+                                 IS_NUMBER        VARCHAR2(1),
+                                 IS_ERROR         VARCHAR2(1)
+                                );
+
+    TYPE V_MDCHKREC_TAB_TYP IS TABLE OF V_MDCHKREC_TYP INDEX BY PLS_INTEGER;
+
+    -- USE TO STORE RESULTS OF VALIDATION CHECKING FOR PASSED-IN MODEL_DEVICES DATA.
+    V_MDCHKREC_TAB  V_MDCHKREC_TAB_TYP;
+    
+    ------------
+    
+    TYPE V_EMCHKREC_TYP IS RECORD (ROW_NUM        PLS_INTEGER,
+                                 FIELD_NUM        PLS_INTEGER,
+                                 FIELD_NAME       VARCHAR2(30),
+                                 FIELD_VAL        VARCHAR2(60),
+                                 IS_NOT_NULL       VARCHAR2(1),
+                                 IS_NUMBER        VARCHAR2(1),
+                                 IS_ERROR         VARCHAR2(1)
+                                );
+
+    TYPE V_EMCHKREC_TAB_TYP IS TABLE OF V_EMCHKREC_TYP INDEX BY PLS_INTEGER;
+
+    -- USE TO STORE RESULTS OF VALIDATION CHECKING FOR PASSED-IN ELEMENT_MODELS DATA.
+    V_EMCHKREC_TAB  V_EMCHKREC_TAB_TYP;
+
+    ------------
+    
+    TYPE V_MDFIELDNAMES_TYP  IS TABLE OF VARCHAR2(30) INDEX BY PLS_INTEGER;
+    TYPE V_EMFIELDNAMES_TYP  IS TABLE OF VARCHAR2(30) INDEX BY PLS_INTEGER;
+    
+    -- FOLLOWING TWO OBJECTS USED TO STORE PERTINENT FIELD NAMES OF PASSED-IN ARRAYS
+    V_MDFIELDNAMES_TAB         V_MDFIELDNAMES_TYP;
+    V_EMFIELDNAMES_TAB         V_EMFIELDNAMES_TYP;
+    
+    ------------
+
+    C_PROC                           CONSTANT   VARCHAR2(100) := 'MODEL_UPLOAD_PKG.UPLOAD_MODEL';
+    C_PROCESS_NM                     CONSTANT   VARCHAR2(120) := 'MODEL_UPLOAD';
+    C_FAIL_STAT                      CONSTANT   VARCHAR2(30)  := 'FAILED';
+    C_SUCC_STAT                      CONSTANT   VARCHAR2(30)  := 'SUCCESS';
+    C_PIPE                          CONSTANT    VARCHAR2(1)  := '|';
+    C_CRLF                           CONSTANT   VARCHAR2(2)   := CHR(10);
+    C_TAB                            CONSTANT   VARCHAR2(2)   := CHR(9);
+    C_RUNS_MAX_FIELDS                CONSTANT   PLS_INTEGER   := 11;
+    C_MODEL_DEVICES_MAX_FIELDS       CONSTANT   PLS_INTEGER   := 4;
+    C_ELEMENT_MODELS_MAX_FIELDS      CONSTANT   PLS_INTEGER   := 55;
+
+    PROC_ERROR                       EXCEPTION;
+
+    DML_ERRORS                       EXCEPTION;
+    PRAGMA EXCEPTION_INIT(DML_ERRORS, -24381);
+
+
+  BEGIN
+
+    V_RUNS_ID := NULL;
+    P_ERRMSG  := NULL;
+    
+    V_MODEL_DEVICES_TAB.DELETE;
+    V_ELEMENT_MODELS_TAB.DELETE;
+    V_MDCHKREC_TAB.DELETE;
+    V_EMCHKREC_TAB.DELETE;
+    V_MDFIELDNAMES_TAB.DELETE;
+    V_EMFIELDNAMES_TAB.DELETE;
+    
+    -- INITIALIZE MODEL_DEVICES FIELD NAME ARRAY
+    V_MDFIELDNAMES_TAB(1)  := 'LCLS_ELEMENTS_ELEMENT_ID';
+    V_MDFIELDNAMES_TAB(2)  := 'DEVICE_TYPES_ID';
+    V_MDFIELDNAMES_TAB(3)  := 'DEVICE_PROPERTY';
+    V_MDFIELDNAMES_TAB(4)  := 'DEVICE_VALUE';
+    
+    -- INITIALIZE ELEMENT_MODELS FIELD NAME ARRAY
+    V_EMFIELDNAMES_TAB(1) := 'LCLS_ELEMENTS_ELEMENT_ID';
+    V_EMFIELDNAMES_TAB(2) := 'ELEMENT_NAME';
+    V_EMFIELDNAMES_TAB(3) := 'INDEX_SLICE_CHK';
+    V_EMFIELDNAMES_TAB(4) := 'ZPOS';
+    V_EMFIELDNAMES_TAB(5) := 'EK';
+    V_EMFIELDNAMES_TAB(6) := 'ALPHA_X';
+    V_EMFIELDNAMES_TAB(7) := 'ALPHA_Y';
+    V_EMFIELDNAMES_TAB(8) := 'BETA_X';
+    V_EMFIELDNAMES_TAB(9) := 'BETA_Y';
+    V_EMFIELDNAMES_TAB(10) := 'PSI_X';
+    V_EMFIELDNAMES_TAB(11) := 'PSI_Y';
+    V_EMFIELDNAMES_TAB(12) := 'ETA_X';
+    V_EMFIELDNAMES_TAB(13) := 'ETA_Y';
+    V_EMFIELDNAMES_TAB(14) := 'ETAP_X';
+    V_EMFIELDNAMES_TAB(15) := 'ETAP_Y';
+    V_EMFIELDNAMES_TAB(16) := 'R11';
+    V_EMFIELDNAMES_TAB(17) := 'R12';
+    V_EMFIELDNAMES_TAB(18) := 'R13';
+    V_EMFIELDNAMES_TAB(19) := 'R14';
+    V_EMFIELDNAMES_TAB(20) := 'R15';
+    V_EMFIELDNAMES_TAB(21) := 'R16';
+    V_EMFIELDNAMES_TAB(22) := 'R21';
+    V_EMFIELDNAMES_TAB(23) := 'R22';
+    V_EMFIELDNAMES_TAB(24) := 'R23';
+    V_EMFIELDNAMES_TAB(25) := 'R24';
+    V_EMFIELDNAMES_TAB(26) := 'R25';
+    V_EMFIELDNAMES_TAB(27) := 'R26';
+    V_EMFIELDNAMES_TAB(28) := 'R31';
+    V_EMFIELDNAMES_TAB(29) := 'R32';
+    V_EMFIELDNAMES_TAB(30) := 'R33';
+    V_EMFIELDNAMES_TAB(31) := 'R34';
+    V_EMFIELDNAMES_TAB(32) := 'R35';
+    V_EMFIELDNAMES_TAB(33) := 'R36';
+    V_EMFIELDNAMES_TAB(34) := 'R41';
+    V_EMFIELDNAMES_TAB(35) := 'R42';
+    V_EMFIELDNAMES_TAB(36) := 'R43';
+    V_EMFIELDNAMES_TAB(37) := 'R44';
+    V_EMFIELDNAMES_TAB(38) := 'R45';
+    V_EMFIELDNAMES_TAB(39) := 'R46';
+    V_EMFIELDNAMES_TAB(40) := 'R51';
+    V_EMFIELDNAMES_TAB(41) := 'R52';
+    V_EMFIELDNAMES_TAB(42) := 'R53';
+    V_EMFIELDNAMES_TAB(43) := 'R54';
+    V_EMFIELDNAMES_TAB(44) := 'R55';
+    V_EMFIELDNAMES_TAB(45) := 'R56';
+    V_EMFIELDNAMES_TAB(46) := 'R61';
+    V_EMFIELDNAMES_TAB(47) := 'R62';
+    V_EMFIELDNAMES_TAB(48) := 'R63';
+    V_EMFIELDNAMES_TAB(49) := 'R64';
+    V_EMFIELDNAMES_TAB(50) := 'R65';
+    V_EMFIELDNAMES_TAB(51) := 'R66';
+    V_EMFIELDNAMES_TAB(52) := 'LEFF';
+    V_EMFIELDNAMES_TAB(53) := 'SLEFF';
+    V_EMFIELDNAMES_TAB(54) := 'ORDINAL';
+    V_EMFIELDNAMES_TAB(55) := 'SUML';
+    
+    ----------
+
+    V_START_TOTAL := DBMS_UTILITY.GET_TIME;
+
+    ----------
+
+    -- RETRIEVE A NEW PROCESS_GRP_NO
+    V_PROCESS_GRP_NO := NULL;
+
+    BEGIN
+    SELECT DATA_VALIDATION_TAB_PGN_SEQ.NEXTVAL
+      INTO V_PROCESS_GRP_NO
+      FROM DUAL;
+
+    EXCEPTION
+      WHEN OTHERS THEN
+        P_ERRMSG := SUBSTR('PROCESS_GRP_NO SEQUENCE ERROR ('||C_PROC||')=>'||SQLERRM,1,1000);
+        RAISE PROC_ERROR;
+    END;
+
+    ----------
+
+    V_LOG_FILE := SUBSTR('upload_model_pgn'||TO_CHAR(V_PROCESS_GRP_NO)||'_'||LOWER(GC_INSTANCE)||'_'||LOWER(USER)||'_'||TO_CHAR(CURRENT_TIMESTAMP,'dd-mon-yyyy-hh_mi_ss_ff')||'.log',1,200);
+
+    ----------
+
+    -- INITIALIZE LOGGING.
+    MODEL_UPLOAD_PKG.INIT_LOGGING(V_LOG_FILE, C_PROC);
+
+    ----------
+
+    V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+    MODEL_UPLOAD_PKG.WRITEIT('<><><> UPLOAD MODEL [PROCESS_GRP_NO='||TO_CHAR(V_PROCESS_GRP_NO)||'] PROCESSING BEGINS AT '||V_DT||': LOGGED ON AS '||USER||'@'||GC_INSTANCE);
+    
+    ----------
+    
+    -- RECORD START OF SCRIPT IN VALIDATION TABLE.
+    V_STAGE := SUBSTR('BEGIN_MODEL_UPLOAD_INTO_'||USER||'@'||GC_INSTANCE, 1, 120);
+
+    NOTIFY_PKG.ADD_TO_DATA_VALIDATION_TAB(C_PROCESS_NM,
+                                                V_STAGE,
+                                                NULL,
+                                                'BEGIN MODEL UPLOAD',
+                                                V_PROCESS_GRP_NO,
+                                                V_DVT_ERRMSG);
+
+    IF ( V_DVT_ERRMSG IS NOT NULL ) THEN
+      MODEL_UPLOAD_PKG.WRITEIT('###> [RECORD START OF SCRIPT] ERROR: INSERT INTO TABLE DATA_VALIDATION_TAB FAILED=>'||V_DVT_ERRMSG, 'B');
+    END IF;
+
+    -- ###############################################
+    
+    -- BEGIN STEP 1: CHECK TO PROCEED WITH UPLOAD_MODEL
+    V_STAGE := 'STEP 1: CHECK TO PROCEED WITH UPLOAD_MODEL';
+    
+    V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+    MODEL_UPLOAD_PKG.WRITEIT('*=> [STEP 1] BEGIN CHECK TO PROCEED WITH UPLOAD_MODEL AT '||V_DT, 'S');
+
+    V_START := DBMS_UTILITY.GET_TIME;
+    
+    V_STATUS := NULL;
+    
+    MODEL_UPLOAD_PKG.CHECK_OK_TO_PROCEED(P_ERRMSG);
+
+    IF ( P_ERRMSG IS NOT NULL ) THEN
+      RAISE PROC_ERROR;
+    END IF;
+    
+    V_STATUS := 'PROCEED';
+
+    ------
+
+    NOTIFY_PKG.ADD_TO_DATA_VALIDATION_TAB(C_PROCESS_NM,
+                                                V_STAGE,
+                                                C_SUCC_STAT,
+                                                'PROCEED WITH UPLOAD_MODEL: '||V_STATUS,
+                                                V_PROCESS_GRP_NO,
+                                                V_DVT_ERRMSG);
+
+    IF ( V_DVT_ERRMSG IS NOT NULL ) THEN
+      MODEL_UPLOAD_PKG.WRITEIT('###> [STEP 1 PROCEED WITH UPLOAD_MODEL] ERROR: INSERT INTO TABLE DATA_VALIDATION_TAB FAILED=>'||V_DVT_ERRMSG, 'B');
+    END IF;
+
+    ------
+
+    V_DIFF      := DBMS_UTILITY.GET_TIME - V_START;
+    V_DIFF_CALC := TO_CHAR(ROUND((V_DIFF / 100), 2)) || ' secs.';
+    
+    V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+    MODEL_UPLOAD_PKG.WRITEIT('*=> [STEP 1] CHECK TO PROCEED WITH UPLOAD_MODEL COMPLETED ['||V_STATUS||'] AT '||V_DT||' ['||V_DIFF_CALC||']', 'E');
+    -- END STEP 1: CHECK TO PROCEED WITH UPLOAD_MODEL
+
+    -- ###############################################
+
+    -- BEGIN STEP 2: CHECK PASSED-IN ARRAYS CONTAIN CORRECT NUMBER OF FIELDS
+    V_STAGE := 'STEP 2: CHECK ARRAYS FOR CORRECT NUMBER OF FIELDS';
+
+    V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+    MODEL_UPLOAD_PKG.WRITEIT('[STEP 2] BEGIN CHECK ARRAYS FOR CORRECT NUMBER OF FIELDS AT '||V_DT, 'S');
+
+    V_START := DBMS_UTILITY.GET_TIME;
+
+    IF ( P_RUNS_ARRAY.COUNT > 0 ) THEN
+
+      IF ( P_RUNS_ARRAY.COUNT = C_RUNS_MAX_FIELDS ) THEN
+        MODEL_UPLOAD_PKG.WRITEIT('*=> [STEP 2A] PASSED-IN RUNS ARRAY CONTAINS TOTAL '||TO_CHAR(P_RUNS_ARRAY.COUNT)||' FIELDS AS A SINGLE ROW.');
+      ELSE
+        P_ERRMSG := SUBSTR('ERROR ('||C_PROC||'): [STEP 2A] PASSED-IN RUNS ARRAY CONTAINS TOTAL '||TO_CHAR(P_RUNS_ARRAY.COUNT)||
+                           ' FIELDS.  IT SHOULD CONTAIN EXACTLY ONE ROW CONSISTING OF '||TO_CHAR(C_RUNS_MAX_FIELDS)||' FIELDS.', 1, 1000);
+      END IF;
+
+    ELSE
+
+      P_ERRMSG := SUBSTR('ERROR ('||C_PROC||'): [STEP 2A] PASSED-IN RUNS ARRAY IS EMPTY.', 1, 1000);
+
+    END IF;
+    
+    ------
+
+    IF ( P_MODEL_DEVICES_ARRAY.COUNT > 0 ) THEN
+    
+      V_NUM_ROWS := P_MODEL_DEVICES_ARRAY.COUNT/C_MODEL_DEVICES_MAX_FIELDS;
+
+      IF ( MOD(P_MODEL_DEVICES_ARRAY.COUNT,C_MODEL_DEVICES_MAX_FIELDS) = 0 ) THEN
+        MODEL_UPLOAD_PKG.WRITEIT('*=> [STEP 2B] PASSED-IN MODEL_DEVICES ARRAY CONTAINS TOTAL '||TO_CHAR(P_MODEL_DEVICES_ARRAY.COUNT)||' FIELDS, '||
+                                 'DISTRIBUTED AMONG '||TO_CHAR(V_NUM_ROWS)||' ROWS, EACH CONSISTING OF '||TO_CHAR(C_MODEL_DEVICES_MAX_FIELDS)||' FIELDS.');
+      ELSE
+        IF ( P_ERRMSG IS NULL ) THEN
+          P_ERRMSG := SUBSTR('ERROR ('||C_PROC||'): [STEP 2B] PASSED-IN MODEL_DEVICES ARRAY CONTAINS TOTAL '||TO_CHAR(P_MODEL_DEVICES_ARRAY.COUNT)||
+                             ' FIELDS.  IT *SHOULD* CONTAIN "N" ROWS, EACH CONSISTING OF '||TO_CHAR(C_MODEL_DEVICES_MAX_FIELDS)||' FIELDS.', 1, 1000);
+        ELSE
+          P_ERRMSG := SUBSTR(P_ERRMSG||' | [STEP 2B] PASSED-IN MODEL_DEVICES ARRAY CONTAINS TOTAL '||TO_CHAR(P_MODEL_DEVICES_ARRAY.COUNT)||
+                             ' FIELDS.  IT *SHOULD* CONTAIN "N" ROWS, EACH CONSISTING OF '||TO_CHAR(C_MODEL_DEVICES_MAX_FIELDS)||' FIELDS.', 1, 1000);
+        END IF;
+      END IF;
+
+    ELSE
+
+      IF ( P_ERRMSG IS NULL ) THEN
+        P_ERRMSG := SUBSTR('ERROR ('||C_PROC||'): [STEP 2B] PASSED-IN MODEL_DEVICES ARRAY IS EMPTY.', 1, 1000);
+      ELSE
+        P_ERRMSG := SUBSTR(P_ERRMSG||' | [STEP 2B] PASSED-IN MODEL_DEVICES ARRAY IS EMPTY.', 1, 1000);
+      END IF;
+
+    END IF;
+    
+    ------
+
+    IF ( P_ELEMENT_MODELS_ARRAY.COUNT > 0 ) THEN
+    
+      V_NUM_ROWS := P_ELEMENT_MODELS_ARRAY.COUNT/C_ELEMENT_MODELS_MAX_FIELDS;
+
+      IF ( MOD(P_ELEMENT_MODELS_ARRAY.COUNT,C_ELEMENT_MODELS_MAX_FIELDS) = 0 ) THEN
+        MODEL_UPLOAD_PKG.WRITEIT('*=> [STEP 2C] PASSED-IN ELEMENT_MODELS ARRAY CONTAINS TOTAL '||TO_CHAR(P_ELEMENT_MODELS_ARRAY.COUNT)||' FIELDS, '||
+                'DISTRIBUTED AMONG '||TO_CHAR(V_NUM_ROWS)||' ROWS, EACH CONSISTING OF '||TO_CHAR(C_ELEMENT_MODELS_MAX_FIELDS)||' FIELDS.');
+      ELSE
+        IF ( P_ERRMSG IS NULL ) THEN
+          P_ERRMSG := SUBSTR('ERROR ('||C_PROC||'): [STEP 2C] PASSED-IN ELEMENT_MODELS ARRAY CONTAINS TOTAL '||TO_CHAR(P_ELEMENT_MODELS_ARRAY.COUNT)||
+                             ' FIELDS.  IT *SHOULD* CONTAIN "N" ROWS, EACH CONSISTING OF '||TO_CHAR(C_ELEMENT_MODELS_MAX_FIELDS)||' FIELDS.', 1, 1000);
+        ELSE
+          P_ERRMSG := SUBSTR(P_ERRMSG||' | [STEP 2C] PASSED-IN ELEMENT_MODELS ARRAY CONTAINS TOTAL '||TO_CHAR(P_ELEMENT_MODELS_ARRAY.COUNT)||
+                             ' FIELDS.  IT *SHOULD* CONTAIN "N" ROWS, EACH CONSISTING OF '||TO_CHAR(C_ELEMENT_MODELS_MAX_FIELDS)||' FIELDS.', 1, 1000);
+        END IF;
+      END IF;
+
+    ELSE
+
+      IF ( P_ERRMSG IS NULL ) THEN
+        P_ERRMSG := SUBSTR('ERROR ('||C_PROC||'): [STEP 2C] PASSED-IN ELEMENT_MODELS ARRAY IS EMPTY.', 1, 1000);
+      ELSE
+        P_ERRMSG := SUBSTR(P_ERRMSG||' | [STEP 2C] PASSED-IN ELEMENT_MODELS ARRAY IS EMPTY.', 1, 1000);
+      END IF;
+
+    END IF;
+    
+    ------
+    
+    IF ( P_ERRMSG IS NULL ) THEN
+
+      NOTIFY_PKG.ADD_TO_DATA_VALIDATION_TAB(C_PROCESS_NM,
+                                                  V_STAGE,
+                                                  C_SUCC_STAT,
+                                                  'NUM FIELDS IN ARRAYS OK',
+                                                  V_PROCESS_GRP_NO,
+                                                  V_DVT_ERRMSG);
+
+      IF ( V_DVT_ERRMSG IS NOT NULL ) THEN
+        MODEL_UPLOAD_PKG.WRITEIT('###> [STEP 2 CHECK ARRAYS FOR CORRECT NUMBER OF FIELDS] ERROR: INSERT INTO TABLE DATA_VALIDATION_TAB FAILED=>'||V_DVT_ERRMSG, 'B');
+      END IF;
+      
+      ------
+
+      V_DIFF      := DBMS_UTILITY.GET_TIME - V_START;
+      V_DIFF_CALC := TO_CHAR(ROUND((V_DIFF / 100), 2)) || ' secs.';
+
+      V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+      MODEL_UPLOAD_PKG.WRITEIT('*=> [STEP 2] CHECK ARRAYS FOR CORRECT NUMBER OF FIELDS COMPLETED AT '||V_DT||' ['||V_DIFF_CALC||']', 'E');
+
+    ELSE
+
+      RAISE PROC_ERROR;
+
+    END IF;
+    -- END STEP 2: CHECK PASSED-IN ARRAYS CONTAIN CORRECT NUMBER OF FIELDS
+
+    -- ###############################################
+
+    -- BEGIN STEP 3: VALIDATE MODEL_DEVICES DATA
+    V_STAGE := 'STEP 3: VALIDATE MODEL_DEVICES DATA';
+
+    V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+    MODEL_UPLOAD_PKG.WRITEIT('[STEP 3] BEGIN VALIDATE MODEL_DEVICES DATA AT '||V_DT, 'S');
+
+    V_START := DBMS_UTILITY.GET_TIME;
+
+    V_TAB_IDX_ROW_NUM := 0;
+
+    FOR ARRAY_IDX IN 1 .. P_MODEL_DEVICES_ARRAY.COUNT LOOP
+
+      BEGIN
+      V_MOD_VAL_FIELD_NUM := MOD(ARRAY_IDX,C_MODEL_DEVICES_MAX_FIELDS);
+      
+      IF ( V_MOD_VAL_FIELD_NUM = 0 ) THEN
+        V_MOD_VAL_FIELD_NUM := C_MODEL_DEVICES_MAX_FIELDS;
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 1 ) THEN
+        V_TAB_IDX_ROW_NUM := V_TAB_IDX_ROW_NUM + 1;
+      END IF;
+        
+      V_MDCHKREC_TAB(ARRAY_IDX).ROW_NUM   := V_TAB_IDX_ROW_NUM;
+      V_MDCHKREC_TAB(ARRAY_IDX).FIELD_NUM   := V_MOD_VAL_FIELD_NUM;
+      V_MDCHKREC_TAB(ARRAY_IDX).FIELD_NAME  := V_MDFIELDNAMES_TAB(V_MOD_VAL_FIELD_NUM);
+      V_MDCHKREC_TAB(ARRAY_IDX).FIELD_VAL   := P_MODEL_DEVICES_ARRAY(ARRAY_IDX);
+      V_MDCHKREC_TAB(ARRAY_IDX).IS_NOT_NULL := CASE WHEN (TRIM(P_MODEL_DEVICES_ARRAY(ARRAY_IDX)) IS NOT NULL) THEN 'Y' ELSE 'N' END;
+      V_MDCHKREC_TAB(ARRAY_IDX).IS_NUMBER  := CASE WHEN (PROC_FUNC_PACK.IS_NUMBER(NVL(TRIM(P_MODEL_DEVICES_ARRAY(ARRAY_IDX)),'NULL'))) THEN 'Y' ELSE 'N' END;
+
+      EXCEPTION
+        WHEN OTHERS THEN
+          V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+          P_ERRMSG := SUBSTR('ERROR ('||C_PROC||') ('||V_DT||'): [STEP 3] VALIDATE MODEL_DEVICES DATA: P_MODEL_DEVICES_ARRAY('||
+                             TO_CHAR(ARRAY_IDX)||')='||P_MODEL_DEVICES_ARRAY(ARRAY_IDX)||
+                             '; V_MOD_VAL_FIELD_NUM='||TO_CHAR(V_MOD_VAL_FIELD_NUM)||'=>'||SQLERRM, 1, 1000);
+          RAISE PROC_ERROR;
+      END;
+
+    END LOOP;  -- FOR ARRAY_IDX IN 1 .. P_MODEL_DEVICES_ARRAY.COUNT LOOP
+
+    ------
+
+    NOTIFY_PKG.ADD_TO_DATA_VALIDATION_TAB(C_PROCESS_NM,
+                                                V_STAGE,
+                                                C_SUCC_STAT,
+                                                'VALIDATE MODEL_DEVICES DATA OK',
+                                                V_PROCESS_GRP_NO,
+                                                V_DVT_ERRMSG);
+
+    IF ( V_DVT_ERRMSG IS NOT NULL ) THEN
+      MODEL_UPLOAD_PKG.WRITEIT('###> [STEP 3 VALIDATE MODEL_DEVICES DATA] ERROR: INSERT INTO TABLE DATA_VALIDATION_TAB FAILED=>'||V_DVT_ERRMSG, 'B');
+    END IF;
+
+    ------
+
+    V_DIFF      := DBMS_UTILITY.GET_TIME - V_START;
+    V_DIFF_CALC := TO_CHAR(ROUND((V_DIFF / 100), 2)) || ' secs.';
+    
+    V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+    MODEL_UPLOAD_PKG.WRITEIT('*=> [STEP 3] VALIDATE MODEL_DEVICES DATA ['||TO_CHAR(V_TAB_IDX_ROW_NUM)||' ROWS VALIDATED] COMPLETED AT '||V_DT||' ['||V_DIFF_CALC||']', 'E');
+    -- END STEP 3: VALIDATE MODEL_DEVICES DATA
+
+    -- ###############################################
+
+    -- BEGIN STEP 4: VALIDATE ELEMENT_MODELS DATA
+    V_STAGE := 'STEP 4: VALIDATE ELEMENT_MODELS DATA';
+
+    V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+    MODEL_UPLOAD_PKG.WRITEIT('[STEP 4] BEGIN VALIDATE ELEMENT_MODELS DATA AT '||V_DT, 'S');
+
+    V_START := DBMS_UTILITY.GET_TIME;
+
+    V_TAB_IDX_ROW_NUM := 0;
+
+    FOR ARRAY_IDX IN 1 .. P_ELEMENT_MODELS_ARRAY.COUNT LOOP
+
+      BEGIN
+      V_MOD_VAL_FIELD_NUM := MOD(ARRAY_IDX,C_ELEMENT_MODELS_MAX_FIELDS);
+      
+      IF ( V_MOD_VAL_FIELD_NUM = 0 ) THEN
+        V_MOD_VAL_FIELD_NUM := C_ELEMENT_MODELS_MAX_FIELDS;
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 1 ) THEN
+        V_TAB_IDX_ROW_NUM := V_TAB_IDX_ROW_NUM + 1;
+      END IF;
+
+      V_EMCHKREC_TAB(ARRAY_IDX).ROW_NUM   := V_TAB_IDX_ROW_NUM;
+      V_EMCHKREC_TAB(ARRAY_IDX).FIELD_NUM   := V_MOD_VAL_FIELD_NUM;
+      V_EMCHKREC_TAB(ARRAY_IDX).FIELD_NAME  := V_EMFIELDNAMES_TAB(V_MOD_VAL_FIELD_NUM);
+      V_EMCHKREC_TAB(ARRAY_IDX).FIELD_VAL   := P_ELEMENT_MODELS_ARRAY(ARRAY_IDX);
+      V_EMCHKREC_TAB(ARRAY_IDX).IS_NOT_NULL := CASE WHEN (TRIM(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX)) IS NOT NULL) THEN 'Y' ELSE 'N' END;
+      V_EMCHKREC_TAB(ARRAY_IDX).IS_NUMBER  := CASE WHEN (PROC_FUNC_PACK.IS_NUMBER(NVL(TRIM(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX)),'NULL'))) THEN 'Y' ELSE 'N' END;
+
+      EXCEPTION
+        WHEN OTHERS THEN
+          V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+          P_ERRMSG := SUBSTR('ERROR ('||C_PROC||') ('||V_DT||'): [STEP 4] VALIDATE ELEMENT_MODELS DATA: P_ELEMENT_MODELS_ARRAY('||
+                             TO_CHAR(ARRAY_IDX)||')='||P_ELEMENT_MODELS_ARRAY(ARRAY_IDX)||
+                             '; V_MOD_VAL_FIELD_NUM='||TO_CHAR(V_MOD_VAL_FIELD_NUM)||'=>'||SQLERRM, 1, 1000);
+          RAISE PROC_ERROR;
+      END;
+
+    END LOOP;  -- FOR ARRAY_IDX IN 1 .. P_ELEMENT_MODELS_ARRAY.COUNT LOOP
+
+    ------
+
+    NOTIFY_PKG.ADD_TO_DATA_VALIDATION_TAB(C_PROCESS_NM,
+                                                V_STAGE,
+                                                C_SUCC_STAT,
+                                                'VALIDATE ELEMENT_MODELS DATA OK',
+                                                V_PROCESS_GRP_NO,
+                                                V_DVT_ERRMSG);
+
+    IF ( V_DVT_ERRMSG IS NOT NULL ) THEN
+      MODEL_UPLOAD_PKG.WRITEIT('###> [STEP 4 VALIDATE ELEMENT_MODELS DATA] ERROR: INSERT INTO TABLE DATA_VALIDATION_TAB FAILED=>'||V_DVT_ERRMSG, 'B');
+    END IF;
+
+    ------
+
+    V_DIFF      := DBMS_UTILITY.GET_TIME - V_START;
+    V_DIFF_CALC := TO_CHAR(ROUND((V_DIFF / 100), 2)) || ' secs.';
+    
+    V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+    MODEL_UPLOAD_PKG.WRITEIT('*=> [STEP 4] VALIDATE ELEMENT_MODELS DATA ['||TO_CHAR(V_TAB_IDX_ROW_NUM)||' ROWS VALIDATED] COMPLETED AT '||V_DT||' ['||V_DIFF_CALC||']', 'E');
+    -- END STEP 4: VALIDATE ELEMENT_MODELS DATA
+
+    -- ###############################################
+
+    -- BEGIN STEP 5: CHECK DATA VALIDATION ARRAYS
+    V_STAGE := 'STEP 5: CHECK DATA VALIDATION ARRAYS';
+
+    V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+    MODEL_UPLOAD_PKG.WRITEIT('[STEP 5] BEGIN CHECK DATA VALIDATION ARRAYS AT '||V_DT, 'S');
+
+    V_START := DBMS_UTILITY.GET_TIME;
+
+    -------------
+
+    -- PARSE THROUGH MODEL_DEVICES ARRAY V_MDCHKREC_TAB, CHECKING FOR IN-APPROPRIATE NULL AND CHARACTER FIELDS.
+    V_MD_ERR_CNT := 0;
+
+    FOR J IN 1 .. V_MDCHKREC_TAB.COUNT LOOP
+
+      IF ( ((V_MDCHKREC_TAB(J).FIELD_NAME = 'DEVICE_PROPERTY') AND (V_MDCHKREC_TAB(J).IS_NUMBER  = 'Y'))  OR
+           ((V_MDCHKREC_TAB(J).FIELD_NAME NOT IN ('DEVICE_PROPERTY','LCLS_ELEMENTS_ELEMENT_ID')) AND (V_MDCHKREC_TAB(J).IS_NUMBER  = 'N')) OR
+           ((V_MDCHKREC_TAB(J).FIELD_NAME = 'LCLS_ELEMENTS_ELEMENT_ID') AND (V_MDCHKREC_TAB(J).IS_NOT_NULL = 'Y') AND (V_MDCHKREC_TAB(J).IS_NUMBER  = 'N')) OR
+           ((V_MDCHKREC_TAB(J).FIELD_NAME != 'LCLS_ELEMENTS_ELEMENT_ID') AND (V_MDCHKREC_TAB(J).IS_NOT_NULL = 'N'))
+         )
+      THEN
+        V_MDCHKREC_TAB(J).IS_ERROR := 'Y';
+        V_MD_ERR_CNT := V_MD_ERR_CNT + 1;
+      ELSE
+        V_MDCHKREC_TAB(J).IS_ERROR := 'N';
+      END IF;
+
+    END LOOP;
+    
+    -------------
+
+    -- PARSE THROUGH ELEMENT_MODELS ARRAY V_EMCHKREC_TAB, CHECKING FOR IN-APPROPRIATE NULL AND CHARACTER FIELDS.
+    V_EM_ERR_CNT := 0;
+
+    FOR J IN 1 .. V_EMCHKREC_TAB.COUNT LOOP
+
+      IF ( ((V_EMCHKREC_TAB(J).FIELD_NAME = 'ELEMENT_NAME') AND (V_EMCHKREC_TAB(J).IS_NUMBER  = 'Y'))  OR
+           ((V_EMCHKREC_TAB(J).FIELD_NAME NOT IN ('ELEMENT_NAME','LCLS_ELEMENTS_ELEMENT_ID')) AND (V_EMCHKREC_TAB(J).IS_NUMBER  = 'N')) OR
+           ((V_EMCHKREC_TAB(J).FIELD_NAME = 'LCLS_ELEMENTS_ELEMENT_ID') AND (V_EMCHKREC_TAB(J).IS_NOT_NULL = 'Y') AND (V_EMCHKREC_TAB(J).IS_NUMBER  = 'N')) OR
+           ((V_EMCHKREC_TAB(J).FIELD_NAME != 'LCLS_ELEMENTS_ELEMENT_ID') AND (V_EMCHKREC_TAB(J).IS_NOT_NULL = 'N'))
+         )
+      THEN
+        V_EMCHKREC_TAB(J).IS_ERROR := 'Y';
+        V_EM_ERR_CNT := V_EM_ERR_CNT + 1;
+      ELSE
+        V_EMCHKREC_TAB(J).IS_ERROR := 'N';
+      END IF;
+
+    END LOOP;
+
+    -------------
+    
+    IF ( V_MD_ERR_CNT + V_EM_ERR_CNT = 0 ) THEN
+
+      NOTIFY_PKG.ADD_TO_DATA_VALIDATION_TAB(C_PROCESS_NM,
+                                             V_STAGE,
+                                             C_SUCC_STAT,
+                                             'CHECK DATA VALIDATION ARRAYS OK',
+                                             V_PROCESS_GRP_NO,
+                                             V_DVT_ERRMSG);
+
+      IF ( V_DVT_ERRMSG IS NOT NULL ) THEN
+        MODEL_UPLOAD_PKG.WRITEIT('###> [STEP 5 CHECK DATA VALIDATION ARRAYS] ERROR: INSERT INTO TABLE DATA_VALIDATION_TAB FAILED=>'||V_DVT_ERRMSG, 'B');
+      END IF;
+
+    ELSE
+    
+      V_ARRAYS_IN_ERROR := NULL;
+
+      IF ( (V_MD_ERR_CNT > 0) AND (V_EM_ERR_CNT = 0) ) THEN
+        V_ARRAYS_IN_ERROR := 'MODEL_DEVICES';
+      ELSIF ( (V_MD_ERR_CNT = 0) AND (V_EM_ERR_CNT > 0) ) THEN
+        V_ARRAYS_IN_ERROR := 'ELEMENT_MODELS';
+      ELSE
+        V_ARRAYS_IN_ERROR := 'MODEL_DEVICES AND ELEMENT_MODELS';
+      END IF;
+
+      -- IN-APPROPRIATE VALUES WERE FOUND AMONGST ONE OR MORE OF THE DATA ARRAYS.  WRITE OUT THE DATA ARRAYS AND ABORT ALL PROCESSING.
+      MODEL_UPLOAD_PKG.WRITEIT('*** IN-APPROPRIATE VALUES WERE FOUND IN '||V_ARRAYS_IN_ERROR||' ***', 'B');
+
+      IF ( V_MD_ERR_CNT > 0 ) THEN
+
+        MODEL_UPLOAD_PKG.WRITEIT(C_CRLF||'== BEGIN ERRORS FOUND IN MODEL_DEVICES DATA ==');
+        MODEL_UPLOAD_PKG.WRITEIT('ROWNUM'||C_TAB||C_TAB||'FIELDNUM'||C_TAB||C_TAB||'FIELDNAME'||C_TAB||C_TAB||C_TAB||'FIELDVAL'||C_TAB||C_TAB||C_TAB||'IS_NOT_NULL'||C_TAB||C_TAB||'IS_NUMBER');
+
+        FOR J IN 1 .. V_MDCHKREC_TAB.COUNT LOOP
+          IF ( V_MDCHKREC_TAB(J).IS_ERROR = 'Y' ) THEN
+            MODEL_UPLOAD_PKG.WRITEIT(TO_CHAR(V_MDCHKREC_TAB(J).ROW_NUM)||C_TAB||C_TAB||
+                                   TO_CHAR(V_MDCHKREC_TAB(J).FIELD_NUM)||C_TAB||C_TAB||
+                                   V_MDCHKREC_TAB(J).FIELD_NAME||C_TAB||C_TAB||C_TAB||
+                                   C_PIPE||V_MDCHKREC_TAB(J).FIELD_VAL||C_PIPE||C_TAB||C_TAB||C_TAB||
+                                   V_MDCHKREC_TAB(J).IS_NOT_NULL||C_TAB||C_TAB||
+                                   V_MDCHKREC_TAB(J).IS_NUMBER
+                                  );
+          END IF;
+        END LOOP;
+      
+        MODEL_UPLOAD_PKG.WRITEIT('== END ERRORS FOUND IN MODEL_DEVICES DATA ==');
+
+      END IF;  -- IF ( V_MD_ERR_CNT > 0 ) THEN
+
+      --------
+
+      IF ( (V_MD_ERR_CNT > 0) AND (V_EM_ERR_CNT > 0) ) THEN
+        MODEL_UPLOAD_PKG.WRITEIT(C_CRLF||'<><><><><><><><><><><><><><><>');
+      END IF;
+      
+      --------
+
+      IF ( V_EM_ERR_CNT > 0 ) THEN
+
+        MODEL_UPLOAD_PKG.WRITEIT(C_CRLF||'== BEGIN ERRORS FOUND IN ELEMENT_MODELS DATA ==');
+        MODEL_UPLOAD_PKG.WRITEIT('ROWNUM'||C_TAB||C_TAB||'FIELDNUM'||C_TAB||C_TAB||'FIELDNAME'||C_TAB||C_TAB||C_TAB||'FIELDVAL'||C_TAB||C_TAB||C_TAB||'IS_NOT_NULL'||C_TAB||C_TAB||'IS_NUMBER');
+      
+        FOR J IN 1 .. V_EMCHKREC_TAB.COUNT LOOP
+          IF ( V_EMCHKREC_TAB(J).IS_ERROR = 'Y' ) THEN
+            MODEL_UPLOAD_PKG.WRITEIT(TO_CHAR(V_EMCHKREC_TAB(J).ROW_NUM)||C_TAB||C_TAB||
+                                   TO_CHAR(V_EMCHKREC_TAB(J).FIELD_NUM)||C_TAB||C_TAB||
+                                   V_EMCHKREC_TAB(J).FIELD_NAME||C_TAB||C_TAB||C_TAB||
+                                   C_PIPE||V_EMCHKREC_TAB(J).FIELD_VAL||C_PIPE||C_TAB||C_TAB||C_TAB||
+                                   V_EMCHKREC_TAB(J).IS_NOT_NULL||C_TAB||C_TAB||
+                                   V_EMCHKREC_TAB(J).IS_NUMBER
+                                  );
+          END IF;
+        END LOOP;
+      
+        MODEL_UPLOAD_PKG.WRITEIT('== END ERRORS FOUND IN ELEMENT_MODELS DATA ==');
+
+      END IF;  -- IF ( V_EM_ERR_CNT > 0 ) THEN
+      
+      --------
+
+      V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+      P_ERRMSG := SUBSTR('ERROR ('||C_PROC||') ('||V_DT||'): [STEP 5] CHECK DATA VALIDATION ARRAYS: IN-APPROPRIATE VALUES WERE FOUND IN '||V_ARRAYS_IN_ERROR||': ABORT PROCESSING', 1, 1000);
+      RAISE PROC_ERROR;
+    
+    END IF;  -- IF ( V_MD_ERR_CNT + V_EM_ERR_CNT = 0 ) THEN
+
+    -------------
+
+    V_DIFF      := DBMS_UTILITY.GET_TIME - V_START;
+    V_DIFF_CALC := TO_CHAR(ROUND((V_DIFF / 100), 2)) || ' secs.';
+    
+    V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+    MODEL_UPLOAD_PKG.WRITEIT('*=> [STEP 5] CHECK DATA VALIDATION ARRAYS COMPLETED AT '||V_DT||' ['||V_DIFF_CALC||']', 'E');
+    -- END STEP 5: CHECK DATA VALIDATION ARRAYS
+
+    -- ###############################################
+
+    -- BEGIN STEP 6: INSERT INTO DEVICE_TYPES ANY NEW KEYWORDS FROM LCLS_INFRASTRUCTURE.LCLS_ELEMENTS.
+    V_STAGE := 'STEP 6: REFRESH KEYWORDS';
+
+    V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+    MODEL_UPLOAD_PKG.WRITEIT('*=> [STEP 6] BEGIN REFRESH KEYWORDS AT '||V_DT, 'S');
+
+    V_START := DBMS_UTILITY.GET_TIME;
+    
+    BEGIN
+    MERGE INTO DEVICE_TYPES a
+      USING (SELECT DISTINCT KEYWORD FROM LCLS_INFRASTRUCTURE.LCLS_ELEMENTS WHERE KEYWORD IS NOT NULL) b
+         ON (a.DEVICE_TYPE = b.KEYWORD)
+      WHEN NOT MATCHED THEN
+        INSERT (DEVICE_TYPE)
+        VALUES (b.KEYWORD);
+
+    V_CNT := SQL%ROWCOUNT;
+
+    EXCEPTION
+      WHEN OTHERS THEN
+        V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+        P_ERRMSG := SUBSTR('ERROR ('||C_PROC||') ('||V_DT||'): [STEP 6] REFRESH KEYWORDS=>'||SQLERRM, 1, 1000);
+        RAISE PROC_ERROR;
+    END;
+
+    ------
+
+    NOTIFY_PKG.ADD_TO_DATA_VALIDATION_TAB(C_PROCESS_NM,
+                                                V_STAGE,
+                                                C_SUCC_STAT,
+                                                'REFRESH KEYWORDS OK',
+                                                V_PROCESS_GRP_NO,
+                                                V_DVT_ERRMSG);
+
+    IF ( V_DVT_ERRMSG IS NOT NULL ) THEN
+      MODEL_UPLOAD_PKG.WRITEIT('###> [STEP 6 REFRESH KEYWORDS] ERROR: INSERT INTO TABLE DATA_VALIDATION_TAB FAILED: '||V_DVT_ERRMSG, 'B');
+    END IF;
+
+    ------
+
+    V_DIFF      := DBMS_UTILITY.GET_TIME - V_START;
+    V_DIFF_CALC := TO_CHAR(ROUND((V_DIFF / 100), 2)) || ' secs.';
+
+    V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+    MODEL_UPLOAD_PKG.WRITEIT('*=> [STEP 6] REFRESH KEYWORDS ['||TO_CHAR(V_CNT)||' KEYWORDS ADDED] COMPLETED AT '||V_DT||' ['||V_DIFF_CALC||']', 'E');
+    -- END STEP 6: INSERT INTO DEVICE_TYPES ANY NEW KEYWORDS FROM LCLS_INFRASTRUCTURE.LCLS_ELEMENTS.
+
+    -- ###############################################
+
+/*
+ELIE (4-JAN-2011): COMMENTED OUT TO PREVENT THIS PACKAGE FROM ABORTING IF AN ERROR OCCURS WHILE ATTEMPTING TO ACCESS THE SEQUENCE IN MACHINE_MODEL@SLACPROD VIA A DBLINK.
+IT IS ASSUMMED THAT NO CHANGES MAY BE MADE TO MACHINE MODEL CONFIGURATION DATA ON SLACPROD NOR ON MCCQA BY ANY PERSON NOR BY ANY OTHER PROCESS.  INSTEAD, THE ONLY WAY
+BY WHICH THIS DATA ON SLACPROD AND MCCQA IS CHANGED IS VIA THE DATA SYNCHRONIZATION THAT IS INITIATED BY THIS PACKAGE (SEE "STEP 12: LAUNCH BACKGROUND PROCESSES" BELOW).
+
+    -- BEGIN STEP 7: CHECK SEQUENCES
+    V_STAGE := 'STEP 7: CHECK SEQUENCES';
+    
+    V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+    MODEL_UPLOAD_PKG.WRITEIT('*=> [STEP 7] BEGIN CHECK SEQUENCES AT '||V_DT, 'S');
+
+    V_START := DBMS_UTILITY.GET_TIME;
+    
+    V_STATUS := NULL;
+    
+    MODEL_UPLOAD_PKG.ADJUST_SEQ_PER_MAX_TABLE_ID (V_STATUS, P_ERRMSG);
+    
+    IF ( P_ERRMSG IS NOT NULL ) THEN
+      RAISE PROC_ERROR;
+    END IF;
+    
+    ------
+
+    NOTIFY_PKG.ADD_TO_DATA_VALIDATION_TAB(C_PROCESS_NM,
+                                                V_STAGE,
+                                                C_SUCC_STAT,
+                                                'CHECK SEQUENCES OK: '||V_STATUS,
+                                                V_PROCESS_GRP_NO,
+                                                V_DVT_ERRMSG);
+
+    IF ( V_DVT_ERRMSG IS NOT NULL ) THEN
+      MODEL_UPLOAD_PKG.WRITEIT('###> [STEP 7 CHECK SEQUENCES] ERROR: INSERT INTO TABLE DATA_VALIDATION_TAB FAILED=>'||V_DVT_ERRMSG, 'B');
+    END IF;
+
+    ------
+
+    V_DIFF      := DBMS_UTILITY.GET_TIME - V_START;
+    V_DIFF_CALC := TO_CHAR(ROUND((V_DIFF / 100), 2)) || ' secs.';
+    
+    V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+    MODEL_UPLOAD_PKG.WRITEIT('*=> [STEP 7] CHECK SEQUENCES COMPLETED ['||V_STATUS||'] AT '||V_DT||' ['||V_DIFF_CALC||']', 'E');
+    -- END STEP 7: CHECK SEQUENCES
+*/
+
+    -- ###############################################
+
+    -- BEGIN STEP 7: RUNS TABLE INSERT
+    -- RETURN A NEW RUNS_ID.
+    V_STAGE := 'STEP 7: RUNS TABLE INSERT';
+    
+    V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+    MODEL_UPLOAD_PKG.WRITEIT('*=> [STEP 7] BEGIN RUNS TABLE INSERT AT '||V_DT, 'S');
+
+    V_START := DBMS_UTILITY.GET_TIME;
+
+    BEGIN
+    INSERT INTO RUNS (HARDWARE_SETTINGS_ID,
+                      XML_DOCS_ID,
+                      CREATED_BY,
+                      DATE_CREATED,
+                      RUN_SOURCE_CHK,
+                      RUN_ELEMENT_FILENAME,
+                      RUN_ELEMENT_DATE,
+                      RUN_DEVICE_FILENAME,
+                      RUN_DEVICE_DATE,
+                      COMMENTS,
+                      MODEL_MODES_ID)
+              VALUES (TO_NUMBER(P_RUNS_ARRAY(1)),
+                      TO_NUMBER(P_RUNS_ARRAY(2)),
+                      SUBSTR(P_RUNS_ARRAY(3),1,30),
+                      P_RUNS_ARRAY(4),
+                      SUBSTR(P_RUNS_ARRAY(5),1,60),
+                      SUBSTR(P_RUNS_ARRAY(6),1,60),
+                      P_RUNS_ARRAY(7),
+                      SUBSTR(P_RUNS_ARRAY(8),1,60),
+                      P_RUNS_ARRAY(9),
+                      SUBSTR(P_RUNS_ARRAY(10),1,200),
+                      TO_NUMBER(P_RUNS_ARRAY(11)))
+              RETURNING ID INTO V_RUNS_ID;
+
+    V_CNT := SQL%ROWCOUNT;
+
+    EXCEPTION
+      WHEN OTHERS THEN
+        V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+        P_ERRMSG := SUBSTR('ERROR ('||C_PROC||') ('||V_DT||'): [STEP 7] RUNS TABLE INSERT=>'||SQLERRM, 1, 1000);
+        RAISE PROC_ERROR;
+    END;
+
+    ------
+
+    NOTIFY_PKG.ADD_TO_DATA_VALIDATION_TAB(C_PROCESS_NM,
+                                                V_STAGE,
+                                                C_SUCC_STAT,
+                                                'RUNS TABLE INSERT OK',
+                                                V_PROCESS_GRP_NO,
+                                                V_DVT_ERRMSG);
+
+    IF ( V_DVT_ERRMSG IS NOT NULL ) THEN
+      MODEL_UPLOAD_PKG.WRITEIT('###> [STEP 7 RUNS TABLE INSERT] ERROR: INSERT INTO TABLE DATA_VALIDATION_TAB FAILED=>'||V_DVT_ERRMSG, 'B');
+    END IF;
+
+    ------
+
+    V_DIFF      := DBMS_UTILITY.GET_TIME - V_START;
+    V_DIFF_CALC := TO_CHAR(ROUND((V_DIFF / 100), 2)) || ' secs.';
+    
+    V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+    MODEL_UPLOAD_PKG.WRITEIT('*=> [STEP 7] RUNS TABLE INSERT [NEW RUN_ID='||TO_CHAR(V_RUNS_ID)||'; '||TO_CHAR(V_CNT)||' ROWS ADDED] COMPLETED AT '||V_DT||' ['||V_DIFF_CALC||']', 'E');
+    -- END STEP 7: RUNS TABLE INSERT
+
+    -- ###############################################
+
+    -- BEGIN STEP 8: MODEL_DEVICES DATA MAPPING
+    V_STAGE := 'STEP 8: MODEL_DEVICES DATA MAPPING';
+
+    V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+    MODEL_UPLOAD_PKG.WRITEIT('[STEP 8] BEGIN MODEL_DEVICES DATA MAPPING AT '||V_DT, 'S');
+
+    V_START := DBMS_UTILITY.GET_TIME;
+
+    V_TAB_IDX_ROW_NUM := 0;
+
+    FOR ARRAY_IDX IN 1 .. P_MODEL_DEVICES_ARRAY.COUNT LOOP
+
+      BEGIN
+      V_MOD_VAL_FIELD_NUM := MOD(ARRAY_IDX,C_MODEL_DEVICES_MAX_FIELDS);
+
+      IF ( V_MOD_VAL_FIELD_NUM = 1 ) THEN
+        V_TAB_IDX_ROW_NUM := V_TAB_IDX_ROW_NUM + 1;
+        V_MODEL_DEVICES_TAB(V_TAB_IDX_ROW_NUM).ID                       := NULL;
+        V_MODEL_DEVICES_TAB(V_TAB_IDX_ROW_NUM).RUNS_ID                  := V_RUNS_ID;
+        V_MODEL_DEVICES_TAB(V_TAB_IDX_ROW_NUM).CREATED_BY               := NULL;
+        V_MODEL_DEVICES_TAB(V_TAB_IDX_ROW_NUM).DATE_CREATED             := NULL;
+        V_MODEL_DEVICES_TAB(V_TAB_IDX_ROW_NUM).UPDATED_BY               := NULL;
+        V_MODEL_DEVICES_TAB(V_TAB_IDX_ROW_NUM).DATE_UPDATED             := NULL;
+        V_MODEL_DEVICES_TAB(V_TAB_IDX_ROW_NUM).LCLS_ELEMENTS_ELEMENT_ID := TO_NUMBER(P_MODEL_DEVICES_ARRAY(ARRAY_IDX));
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 2 ) THEN
+        V_MODEL_DEVICES_TAB(V_TAB_IDX_ROW_NUM).DEVICE_TYPES_ID          := TO_NUMBER(P_MODEL_DEVICES_ARRAY(ARRAY_IDX));
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 3 ) THEN
+        V_MODEL_DEVICES_TAB(V_TAB_IDX_ROW_NUM).DEVICE_PROPERTY          := SUBSTR(P_MODEL_DEVICES_ARRAY(ARRAY_IDX),1,30);
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 0 ) THEN
+        V_MODEL_DEVICES_TAB(V_TAB_IDX_ROW_NUM).DEVICE_VALUE             := TO_NUMBER(P_MODEL_DEVICES_ARRAY(ARRAY_IDX));
+      END IF;  -- IF ( V_MOD_VAL_FIELD_NUM = 1 ) THEN
+
+      EXCEPTION
+        WHEN OTHERS THEN
+          V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+          P_ERRMSG := SUBSTR('ERROR ('||C_PROC||') ('||V_DT||'): [STEP 8] MODEL_DEVICES DATA MAPPING: P_MODEL_DEVICES_ARRAY('||
+                             TO_CHAR(ARRAY_IDX)||')='||P_MODEL_DEVICES_ARRAY(ARRAY_IDX)||
+                             '; V_MOD_VAL_FIELD_NUM='||TO_CHAR(V_MOD_VAL_FIELD_NUM)||'=>'||SQLERRM, 1, 1000);
+          RAISE PROC_ERROR;
+      END;
+
+    END LOOP;  -- FOR ARRAY_IDX IN 1 .. P_MODEL_DEVICES_ARRAY.COUNT LOOP
+
+    ------
+
+    IF ( V_MOD_VAL_FIELD_NUM != 0 ) THEN
+      V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+      P_ERRMSG := SUBSTR('ERROR ('||C_PROC||') ('||V_DT||'): [STEP 8] MODEL_DEVICES DATA MAPPING: DID NOT PARSE ALL ARRAY ITEMS: P_MODEL_DEVICES_ARRAY.COUNT='||
+                         TO_CHAR(P_MODEL_DEVICES_ARRAY.COUNT)||'; UPON EXISTING LOOP, V_MOD_VAL_FIELD_NUM='||TO_CHAR(V_MOD_VAL_FIELD_NUM), 1, 1000);
+      RAISE PROC_ERROR;
+    END IF;
+
+    ------
+
+    IF ( V_MODEL_DEVICES_TAB.COUNT = 0 ) THEN
+      V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+      P_ERRMSG := SUBSTR('ERROR ('||C_PROC||') ('||V_DT||'): [STEP 8] MODEL_DEVICES DATA MAPPING: V_MODEL_DEVICES_TAB IS EMPTY.', 1, 1000);
+      RAISE PROC_ERROR;
+    END IF;
+
+    ------
+
+    NOTIFY_PKG.ADD_TO_DATA_VALIDATION_TAB(C_PROCESS_NM,
+                                                V_STAGE,
+                                                C_SUCC_STAT,
+                                                'MODEL_DEVICES DATA MAPPING OK',
+                                                V_PROCESS_GRP_NO,
+                                                V_DVT_ERRMSG);
+
+    IF ( V_DVT_ERRMSG IS NOT NULL ) THEN
+      MODEL_UPLOAD_PKG.WRITEIT('###> [STEP 8 MODEL_DEVICES DATA MAPPING] ERROR: INSERT INTO TABLE DATA_VALIDATION_TAB FAILED=>'||V_DVT_ERRMSG, 'B');
+    END IF;
+
+    ------
+
+    IF ( V_DEBUG ) THEN
+
+      MODEL_UPLOAD_PKG.WRITEIT('$$$ BEGIN DEBUG: STEP 8 MODEL_DEVICES MAPPING', 'S');
+
+      MODEL_UPLOAD_PKG.WRITEIT('ID'||CHR(9)||
+                               'RUNS_ID'||CHR(9)||
+                               'LCLS_ELEMENTS_ELEMENT_ID'||CHR(9)||
+                               'DEVICE_TYPES_ID'||CHR(9)||
+                               'CREATED_BY'||CHR(9)||
+                               'DATE_CREATED'||CHR(9)||
+                               'UPDATED_BY'||CHR(9)||
+                               'DATE_UPDATED'||CHR(9)||
+                               'DEVICE_PROPERTY'||CHR(9)||
+                               'DEVICE_VALUE'
+                              );
+
+      FOR D IN 1 .. V_MODEL_DEVICES_TAB.COUNT LOOP
+        MODEL_UPLOAD_PKG.WRITEIT(NVL(TO_CHAR(V_MODEL_DEVICES_TAB(D).ID),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_MODEL_DEVICES_TAB(D).RUNS_ID),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_MODEL_DEVICES_TAB(D).LCLS_ELEMENTS_ELEMENT_ID),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_MODEL_DEVICES_TAB(D).DEVICE_TYPES_ID),'NULL')||CHR(9)||
+                                 NVL(V_MODEL_DEVICES_TAB(D).CREATED_BY,'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_MODEL_DEVICES_TAB(D).DATE_CREATED),'NULL')||CHR(9)||
+                                 NVL(V_MODEL_DEVICES_TAB(D).UPDATED_BY,'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_MODEL_DEVICES_TAB(D).DATE_UPDATED),'NULL')||CHR(9)||
+                                 NVL(V_MODEL_DEVICES_TAB(D).DEVICE_PROPERTY,'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_MODEL_DEVICES_TAB(D).DEVICE_VALUE),'NULL')
+                                );
+      END LOOP;
+
+      MODEL_UPLOAD_PKG.WRITEIT('$$$ END DEBUG: STEP 8 MODEL_DEVICES MAPPING', 'E');
+
+    END IF;  -- IF ( V_DEBUG ) THEN
+
+    ------
+
+    V_DIFF      := DBMS_UTILITY.GET_TIME - V_START;
+    V_DIFF_CALC := TO_CHAR(ROUND((V_DIFF / 100), 2)) || ' secs.';
+    
+    V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+    MODEL_UPLOAD_PKG.WRITEIT('*=> [STEP 8] MODEL_DEVICES DATA MAPPING [TOTAL '||TO_CHAR(V_MODEL_DEVICES_TAB.COUNT)||' ROWS] COMPLETED AT '||V_DT||' ['||V_DIFF_CALC||']', 'E');
+    -- END STEP 8: MODEL_DEVICES DATA MAPPING
+
+    -- ###############################################
+
+    -- BEGIN STEP 9: ELEMENT_MODELS DATA MAPPING
+    V_STAGE := 'STEP 9: ELEMENT_MODELS DATA MAPPING';
+
+    V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+    MODEL_UPLOAD_PKG.WRITEIT('*=> [STEP 9] BEGIN ELEMENT_MODELS DATA MAPPING AT '||V_DT, 'S');
+
+    V_START := DBMS_UTILITY.GET_TIME;
+
+    V_TAB_IDX_ROW_NUM := 0;
+
+    FOR ARRAY_IDX IN 1 .. P_ELEMENT_MODELS_ARRAY.COUNT LOOP
+
+      BEGIN
+      V_MOD_VAL_FIELD_NUM := MOD(ARRAY_IDX,C_ELEMENT_MODELS_MAX_FIELDS);
+
+      IF ( V_MOD_VAL_FIELD_NUM = 1 ) THEN
+        V_TAB_IDX_ROW_NUM := V_TAB_IDX_ROW_NUM + 1;
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).ID                       := NULL;
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).RUNS_ID                  := V_RUNS_ID;
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).CREATED_BY               := NULL;
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).DATE_CREATED             := NULL;
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).UPDATED_BY               := NULL;
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).DATE_UPDATED             := NULL;
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).LCLS_ELEMENTS_ELEMENT_ID := TO_NUMBER(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX));
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 2 ) THEN
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).ELEMENT_NAME             := SUBSTR(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX),1,60);
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 3 ) THEN
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).INDEX_SLICE_CHK          := TO_NUMBER(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX));
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 4 ) THEN
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).ZPOS                     := TO_NUMBER(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX));
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 5 ) THEN
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).EK                       := TO_NUMBER(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX));
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 6 ) THEN
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).ALPHA_X                  := TO_NUMBER(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX));
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 7 ) THEN
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).ALPHA_Y                  := TO_NUMBER(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX));
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 8 ) THEN
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).BETA_X                   := TO_NUMBER(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX));
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 9 ) THEN
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).BETA_Y                   := TO_NUMBER(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX));
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 10 ) THEN
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).PSI_X                    := TO_NUMBER(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX));
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 11 ) THEN
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).PSI_Y                    := TO_NUMBER(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX));
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 12 ) THEN
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).ETA_X                    := TO_NUMBER(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX));
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 13 ) THEN
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).ETA_Y                    := TO_NUMBER(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX));
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 14 ) THEN
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).ETAP_X                   := TO_NUMBER(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX));
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 15 ) THEN
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).ETAP_Y                   := TO_NUMBER(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX));
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 16 ) THEN
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).R11                      := TO_NUMBER(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX));
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 17 ) THEN
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).R12                      := TO_NUMBER(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX));
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 18 ) THEN
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).R13                      := TO_NUMBER(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX));
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 19 ) THEN
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).R14                      := TO_NUMBER(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX));
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 20 ) THEN
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).R15                      := TO_NUMBER(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX));
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 21 ) THEN
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).R16                      := TO_NUMBER(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX));
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 22 ) THEN
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).R21                      := TO_NUMBER(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX));
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 23 ) THEN
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).R22                      := TO_NUMBER(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX));
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 24 ) THEN
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).R23                      := TO_NUMBER(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX));
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 25 ) THEN
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).R24                      := TO_NUMBER(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX));
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 26 ) THEN
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).R25                      := TO_NUMBER(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX));
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 27 ) THEN
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).R26                      := TO_NUMBER(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX));
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 28 ) THEN
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).R31                      := TO_NUMBER(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX));
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 29 ) THEN
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).R32                      := TO_NUMBER(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX));
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 30 ) THEN
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).R33                      := TO_NUMBER(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX));
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 31 ) THEN
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).R34                      := TO_NUMBER(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX));
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 32 ) THEN
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).R35                      := TO_NUMBER(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX));
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 33 ) THEN
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).R36                      := TO_NUMBER(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX));
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 34 ) THEN
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).R41                      := TO_NUMBER(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX));
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 35 ) THEN
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).R42                      := TO_NUMBER(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX));
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 36 ) THEN
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).R43                      := TO_NUMBER(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX));
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 37 ) THEN
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).R44                      := TO_NUMBER(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX));
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 38 ) THEN
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).R45                      := TO_NUMBER(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX));
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 39 ) THEN
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).R46                      := TO_NUMBER(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX));
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 40 ) THEN
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).R51                      := TO_NUMBER(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX));
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 41 ) THEN
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).R52                      := TO_NUMBER(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX));
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 42 ) THEN
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).R53                      := TO_NUMBER(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX));
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 43 ) THEN
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).R54                      := TO_NUMBER(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX));
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 44 ) THEN
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).R55                      := TO_NUMBER(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX));
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 45 ) THEN
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).R56                      := TO_NUMBER(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX));
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 46 ) THEN
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).R61                      := TO_NUMBER(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX));
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 47 ) THEN
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).R62                      := TO_NUMBER(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX));
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 48 ) THEN
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).R63                      := TO_NUMBER(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX));
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 49 ) THEN
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).R64                      := TO_NUMBER(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX));
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 50 ) THEN
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).R65                      := TO_NUMBER(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX));
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 51 ) THEN
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).R66                      := TO_NUMBER(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX));
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 52 ) THEN
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).LEFF                     := TO_NUMBER(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX));
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 53 ) THEN
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).SLEFF                    := TO_NUMBER(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX));
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 54 ) THEN
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).ORDINAL                  := TO_NUMBER(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX));
+      ELSIF ( V_MOD_VAL_FIELD_NUM = 0 ) THEN
+        V_ELEMENT_MODELS_TAB(V_TAB_IDX_ROW_NUM).SUML                     := TO_NUMBER(P_ELEMENT_MODELS_ARRAY(ARRAY_IDX));
+      END IF;  -- IF ( V_MOD_VAL_FIELD_NUM = 1 ) THEN
+
+      EXCEPTION
+        WHEN OTHERS THEN
+          V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+          P_ERRMSG := SUBSTR('ERROR ('||C_PROC||') ('||V_DT||'): [STEP 9] ELEMENT_MODELS DATA MAPPING: P_ELEMENT_MODELS_ARRAY('||
+                             TO_CHAR(ARRAY_IDX)||')='||P_ELEMENT_MODELS_ARRAY(ARRAY_IDX)||
+                             '; V_MOD_VAL_FIELD_NUM='||TO_CHAR(V_MOD_VAL_FIELD_NUM)||' =>'||SQLERRM, 1, 1000);
+          RAISE PROC_ERROR;
+      END;
+
+    END LOOP;  -- FOR ARRAY_IDX IN 1 .. P_ELEMENT_MODELS_ARRAY.COUNT LOOP
+
+    IF ( V_MOD_VAL_FIELD_NUM != 0 ) THEN
+      V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+      P_ERRMSG := SUBSTR('ERROR ('||C_PROC||') ('||V_DT||'): [STEP 19] ELEMENT_MODELS DATA MAPPING: DID NOT PARSE ALL ARRAY ITEMS: P_ELEMENT_MODELS_ARRAY.COUNT='||
+                         TO_CHAR(P_ELEMENT_MODELS_ARRAY.COUNT)||'; UPON EXISTING LOOP, V_MOD_VAL_FIELD_NUM='||TO_CHAR(V_MOD_VAL_FIELD_NUM), 1, 1000);
+      RAISE PROC_ERROR;
+    END IF;
+
+    ------
+
+    IF ( V_ELEMENT_MODELS_TAB.COUNT = 0 ) THEN
+      V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+      P_ERRMSG := SUBSTR('ERROR ('||C_PROC||') ('||V_DT||'): [STEP 9] ELEMENT_MODELS DATA MAPPING: V_ELEMENT_MODELS_TAB IS EMPTY.', 1, 1000);
+      RAISE PROC_ERROR;
+    END IF;
+
+    ------
+
+    NOTIFY_PKG.ADD_TO_DATA_VALIDATION_TAB(C_PROCESS_NM,
+                                                V_STAGE,
+                                                C_SUCC_STAT,
+                                                'ELEMENT_MODELS DATA MAPPING OK',
+                                                V_PROCESS_GRP_NO,
+                                                V_DVT_ERRMSG);
+
+    IF ( V_DVT_ERRMSG IS NOT NULL ) THEN
+      MODEL_UPLOAD_PKG.WRITEIT('###> [STEP 9 ELEMENT_MODELS DATA MAPPING] ERROR: INSERT INTO TABLE DATA_VALIDATION_TAB FAILED=>'||V_DVT_ERRMSG, 'B');
+    END IF;
+
+    ------
+
+    IF ( V_DEBUG ) THEN
+
+      MODEL_UPLOAD_PKG.WRITEIT('$$$ BEGIN DEBUG: STEP 9 ELEMENT_MODELS MAPPING', 'S');
+
+      MODEL_UPLOAD_PKG.WRITEIT(  'ID'||CHR(9)||
+                                 'RUNS_ID'||CHR(9)||
+                                 'LCLS_ELEMENTS_ELEMENT_ID'||CHR(9)||
+                                 'CREATED_BY'||CHR(9)||
+                                 'DATE_CREATED'||CHR(9)||
+                                 'UPDATED_BY'||CHR(9)||
+                                 'DATE_UPDATED'||CHR(9)||
+                                 'ELEMENT_NAME'||CHR(9)||
+                                 'INDEX_SLICE_CHK'||CHR(9)||
+                                 'ZPOS'||CHR(9)||
+                                 'EK'||CHR(9)||
+                                 'ALPHA_X'||CHR(9)||
+                                 'ALPHA_Y'||CHR(9)||
+                                 'BETA_X'||CHR(9)||
+                                 'BETA_Y'||CHR(9)||
+                                 'PSI_X'||CHR(9)||
+                                 'PSI_Y'||CHR(9)||
+                                 'ETA_X'||CHR(9)||
+                                 'ETA_Y'||CHR(9)||
+                                 'ETAP_X'||CHR(9)||
+                                 'ETAP_Y'||CHR(9)||
+                                 'R11'||CHR(9)||
+                                 'R12'||CHR(9)||
+                                 'R13'||CHR(9)||
+                                 'R14'||CHR(9)||
+                                 'R15'||CHR(9)||
+                                 'R16'||CHR(9)||
+                                 'R21'||CHR(9)||
+                                 'R22'||CHR(9)||
+                                 'R23'||CHR(9)||
+                                 'R24'||CHR(9)||
+                                 'R25'||CHR(9)||
+                                 'R26'||CHR(9)||
+                                 'R31'||CHR(9)||
+                                 'R32'||CHR(9)||
+                                 'R33'||CHR(9)||
+                                 'R34'||CHR(9)||
+                                 'R35'||CHR(9)||
+                                 'R36'||CHR(9)||
+                                 'R41'||CHR(9)||
+                                 'R42'||CHR(9)||
+                                 'R43'||CHR(9)||
+                                 'R44'||CHR(9)||
+                                 'R45'||CHR(9)||
+                                 'R46'||CHR(9)||
+                                 'R51'||CHR(9)||
+                                 'R52'||CHR(9)||
+                                 'R53'||CHR(9)||
+                                 'R54'||CHR(9)||
+                                 'R55'||CHR(9)||
+                                 'R56'||CHR(9)||
+                                 'R61'||CHR(9)||
+                                 'R62'||CHR(9)||
+                                 'R63'||CHR(9)||
+                                 'R64'||CHR(9)||
+                                 'R65'||CHR(9)||
+                                 'R66'||CHR(9)||
+                                 'LEFF'||CHR(9)||
+                                 'SLEFF'||CHR(9)||
+                                 'ORDINAL'||CHR(9)||
+                                 'SUML'
+                              );
+
+      FOR D IN 1 .. V_ELEMENT_MODELS_TAB.COUNT LOOP
+        MODEL_UPLOAD_PKG.WRITEIT(NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).ID),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).RUNS_ID),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).LCLS_ELEMENTS_ELEMENT_ID),'NULL')||CHR(9)||
+                                 NVL(V_ELEMENT_MODELS_TAB(D).CREATED_BY,'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).DATE_CREATED),'NULL')||CHR(9)||
+                                 NVL(V_ELEMENT_MODELS_TAB(D).UPDATED_BY,'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).DATE_UPDATED),'NULL')||CHR(9)||
+                                 NVL(V_ELEMENT_MODELS_TAB(D).ELEMENT_NAME,'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).INDEX_SLICE_CHK),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).ZPOS),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).EK),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).ALPHA_X),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).ALPHA_Y),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).BETA_X),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).BETA_Y),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).PSI_X),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).PSI_Y),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).ETA_X),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).ETA_Y),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).ETAP_X),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).ETAP_Y),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).R11),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).R12),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).R13),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).R14),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).R15),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).R16),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).R21),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).R22),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).R23),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).R24),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).R25),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).R26),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).R31),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).R32),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).R33),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).R34),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).R35),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).R36),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).R41),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).R42),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).R43),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).R44),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).R45),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).R46),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).R51),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).R52),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).R53),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).R54),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).R55),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).R56),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).R61),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).R62),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).R63),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).R64),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).R65),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).R66),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).LEFF),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).SLEFF),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).ORDINAL),'NULL')||CHR(9)||
+                                 NVL(TO_CHAR(V_ELEMENT_MODELS_TAB(D).SUML),'NULL')
+                                );
+      END LOOP;
+
+      MODEL_UPLOAD_PKG.WRITEIT('$$$ END DEBUG: STEP 9 ELEMENT_MODELS MAPPING', 'E');
+
+    END IF;  -- IF ( V_DEBUG ) THEN
+
+    ------
+
+    V_DIFF      := DBMS_UTILITY.GET_TIME - V_START;
+    V_DIFF_CALC := TO_CHAR(ROUND((V_DIFF / 100), 2)) || ' secs.';
+    
+    V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+    MODEL_UPLOAD_PKG.WRITEIT('*=> [STEP 9] ELEMENT_MODELS DATA MAPPING [TOTAL '||TO_CHAR(V_ELEMENT_MODELS_TAB.COUNT)||' ROWS] COMPLETED AT '||V_DT||' ['||V_DIFF_CALC||']', 'E');
+    -- END STEP 9: ELEMENT_MODELS DATA MAPPING
+
+    -- ###############################################
+
+    -- BEGIN STEP 10: MODEL_DEVICES TABLE INSERT
+    V_STAGE := 'STEP 10: MODEL_DEVICES TABLE INSERT';
+    
+    V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+    MODEL_UPLOAD_PKG.WRITEIT('*=> [STEP 10] BEGIN MODEL_DEVICES TABLE INSERT AT '||V_DT, 'S');
+
+    V_START := DBMS_UTILITY.GET_TIME;
+
+    BEGIN
+    FORALL Q IN 1 .. V_MODEL_DEVICES_TAB.COUNT SAVE EXCEPTIONS
+      INSERT INTO MODEL_DEVICES VALUES V_MODEL_DEVICES_TAB(Q);
+
+    V_CNT := SQL%ROWCOUNT;
+
+    -- If any errors occurred during the FORALL SAVE EXCEPTIONS, a single exception is raised when the statement completes.
+    EXCEPTION
+      WHEN DML_ERRORS THEN -- Now we figure out what failed and why.
+        V_NUM_ERRORS := SQL%BULK_EXCEPTIONS.COUNT;
+        V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+        P_ERRMSG := SUBSTR('ERROR ('||C_PROC||') ('||V_DT||'): [STEP 10] MODEL_DEVICES TABLE INSERT HAD '||TO_CHAR(V_NUM_ERRORS)||' ERRORS:', 1, 1000);
+
+        V_NUM_ERRORS_PROCESSED := 0;
+
+        FOR J IN 1..V_NUM_ERRORS LOOP
+          EXIT WHEN (1000 - LENGTH(P_ERRMSG)) < 100;
+          V_NUM_ERRORS_PROCESSED := V_NUM_ERRORS_PROCESSED + 1;
+          P_ERRMSG := SUBSTR(C_CRLF||P_ERRMSG||'ERROR '||TO_CHAR(J)||': [DURING ITERATION #'||TO_CHAR(SQL%BULK_EXCEPTIONS(J).ERROR_INDEX)||']=>'||SQLERRM(-SQL%BULK_EXCEPTIONS(J).ERROR_CODE), 1, 1000);
+        END LOOP;
+        
+        IF ( V_NUM_ERRORS_PROCESSED < V_NUM_ERRORS ) THEN
+          V_ERRS_REMAIN_MSG := SUBSTR(C_CRLF||C_CRLF||'... '||TO_CHAR(V_NUM_ERRORS - V_NUM_ERRORS_PROCESSED)||' REMAINING.', 1, 100);
+          IF ( LENGTH(P_ERRMSG) + LENGTH(V_ERRS_REMAIN_MSG) <= 1000 ) THEN
+            P_ERRMSG := SUBSTR(P_ERRMSG||V_ERRS_REMAIN_MSG, 1, 1000);
+          END IF;
+        END IF;
+        
+        RAISE PROC_ERROR;
+    END;
+
+    ------
+
+    NOTIFY_PKG.ADD_TO_DATA_VALIDATION_TAB(C_PROCESS_NM,
+                                                V_STAGE,
+                                                C_SUCC_STAT,
+                                                'MODEL_DEVICES TABLE INSERT OK',
+                                                V_PROCESS_GRP_NO,
+                                                V_DVT_ERRMSG);
+
+    IF ( V_DVT_ERRMSG IS NOT NULL ) THEN
+      MODEL_UPLOAD_PKG.WRITEIT('###> [STEP 10 MODEL_DEVICES TABLE INSERT] ERROR: INSERT INTO TABLE DATA_VALIDATION_TAB FAILED=>'||V_DVT_ERRMSG, 'B');
+    END IF;
+
+    ------
+
+    V_DIFF      := DBMS_UTILITY.GET_TIME - V_START;
+    V_DIFF_CALC := TO_CHAR(ROUND((V_DIFF / 100), 2)) || ' secs.';
+    
+    V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+    MODEL_UPLOAD_PKG.WRITEIT('*=> [STEP 10] MODEL_DEVICES TABLE INSERT [FOR RUN_ID='||TO_CHAR(V_RUNS_ID)||'; '||TO_CHAR(V_CNT)||' ROWS ADDED] COMPLETED AT '||V_DT||' ['||V_DIFF_CALC||']', 'E');
+    -- END STEP 10: MODEL_DEVICES TABLE INSERT
+
+    -- ###############################################
+
+    -- BEGIN STEP 11: ELEMENT_MODELS TABLE INSERT
+    V_STAGE := 'STEP 11: ELEMENT_MODELS TABLE INSERT';
+    
+    V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+    MODEL_UPLOAD_PKG.WRITEIT('*=> [STEP 11] BEGIN ELEMENT_MODELS TABLE INSERT AT '||V_DT, 'S');
+
+    V_START := DBMS_UTILITY.GET_TIME;
+
+    BEGIN
+    FORALL Q IN 1 .. V_ELEMENT_MODELS_TAB.COUNT SAVE EXCEPTIONS
+      INSERT INTO ELEMENT_MODELS VALUES V_ELEMENT_MODELS_TAB(Q);
+
+    V_CNT := SQL%ROWCOUNT;
+
+    -- If any errors occurred during the FORALL SAVE EXCEPTIONS, a single exception is raised when the statement completes.
+    EXCEPTION
+      WHEN DML_ERRORS THEN -- Now we figure out what failed and why.
+        V_NUM_ERRORS := SQL%BULK_EXCEPTIONS.COUNT;
+        V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+        P_ERRMSG := SUBSTR('ERROR ('||C_PROC||') ('||V_DT||'): [STEP 11] ELEMENT_MODELS TABLE INSERT HAD '||TO_CHAR(V_NUM_ERRORS)||' ERRORS:', 1, 1000);
+
+        V_NUM_ERRORS_PROCESSED := 0;
+
+        FOR J IN 1..V_NUM_ERRORS LOOP
+          EXIT WHEN (1000 - LENGTH(P_ERRMSG)) < 100;
+          V_NUM_ERRORS_PROCESSED := V_NUM_ERRORS_PROCESSED + 1;
+          P_ERRMSG := SUBSTR(C_CRLF||P_ERRMSG||'ERROR '||TO_CHAR(J)||': [DURING ITERATION #'||TO_CHAR(SQL%BULK_EXCEPTIONS(J).ERROR_INDEX)||']=>'||SQLERRM(-SQL%BULK_EXCEPTIONS(J).ERROR_CODE), 1, 1000);
+        END LOOP;
+        
+        IF ( V_NUM_ERRORS_PROCESSED < V_NUM_ERRORS ) THEN
+          V_ERRS_REMAIN_MSG := SUBSTR(C_CRLF||C_CRLF||'... '||TO_CHAR(V_NUM_ERRORS - V_NUM_ERRORS_PROCESSED)||' REMAINING.', 1, 100);
+          IF ( LENGTH(P_ERRMSG) + LENGTH(V_ERRS_REMAIN_MSG) <= 1000 ) THEN
+            P_ERRMSG := SUBSTR(P_ERRMSG||V_ERRS_REMAIN_MSG, 1, 1000);
+          END IF;
+        END IF;
+        
+        RAISE PROC_ERROR;
+    END;
+
+    ------
+
+    NOTIFY_PKG.ADD_TO_DATA_VALIDATION_TAB(C_PROCESS_NM,
+                                                V_STAGE,
+                                                C_SUCC_STAT,
+                                                'ELEMENT_MODELS TABLE INSERT OK',
+                                                V_PROCESS_GRP_NO,
+                                                V_DVT_ERRMSG);
+
+    IF ( V_DVT_ERRMSG IS NOT NULL ) THEN
+      MODEL_UPLOAD_PKG.WRITEIT('###> [STEP 11 ELEMENT_MODELS TABLE INSERT] ERROR: INSERT INTO TABLE DATA_VALIDATION_TAB FAILED: '||V_DVT_ERRMSG, 'B');
+    END IF;
+
+    ------
+
+    V_DIFF      := DBMS_UTILITY.GET_TIME - V_START;
+    V_DIFF_CALC := TO_CHAR(ROUND((V_DIFF / 100), 2)) || ' secs.';
+    
+    V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+    MODEL_UPLOAD_PKG.WRITEIT('*=> [STEP 11] ELEMENT_MODELS TABLE INSERT [FOR RUN_ID='||TO_CHAR(V_RUNS_ID)||'; '||TO_CHAR(V_CNT)||' ROWS ADDED] COMPLETED AT '||V_DT||' ['||V_DIFF_CALC||']', 'E');
+    -- END STEP 11: ELEMENT_MODELS TABLE INSERT
+
+    -- ###############################################
+/*
+    -- BEGIN STEP 13: REFRESH MVIEW
+    V_STAGE := 'STEP 13: REFRESH MVIEW';
+    
+    V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+    MODEL_UPLOAD_PKG.WRITEIT('*=> [STEP 13] BEGIN REFRESH MVIEW AT '||V_DT, 'S');
+
+    V_START := DBMS_UTILITY.GET_TIME;
+    
+    V_STATUS := NULL;
+    
+    MODEL_UPLOAD_PKG.REFRESH_MVIEW_DEVICE_NAMES (V_STATUS, P_ERRMSG);
+    
+    IF ( P_ERRMSG IS NOT NULL ) THEN
+      RAISE PROC_ERROR;
+    END IF;
+    
+    ------
+
+    NOTIFY_PKG.ADD_TO_DATA_VALIDATION_TAB(C_PROCESS_NM,
+                                                V_STAGE,
+                                                C_SUCC_STAT,
+                                                'REFRESH MVIEW OK: '||V_STATUS,
+                                                V_PROCESS_GRP_NO,
+                                                V_DVT_ERRMSG);
+
+    IF ( V_DVT_ERRMSG IS NOT NULL ) THEN
+      MODEL_UPLOAD_PKG.WRITEIT('###> [STEP 13 REFRESH MVIEW] ERROR: INSERT INTO TABLE DATA_VALIDATION_TAB FAILED=>'||V_DVT_ERRMSG, 'B');
+    END IF;
+
+    ------
+
+    V_DIFF      := DBMS_UTILITY.GET_TIME - V_START;
+    V_DIFF_CALC := TO_CHAR(ROUND((V_DIFF / 100), 2)) || ' secs.';
+    
+    V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+    MODEL_UPLOAD_PKG.WRITEIT('*=> [STEP 13] REFRESH MVIEW COMPLETED ['||V_STATUS||'] AT '||V_DT||' ['||V_DIFF_CALC||']', 'E');
+    -- END STEP 13: REFRESH MVIEW
+
+    -- ###############################################
+
+    -- BEGIN STEP 14: AIDA_XALSERV_NAMES_UPDATE
+    V_STAGE := 'STEP 14: AIDA_XALSERV_NAMES_UPDATE';
+    
+    V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+    MODEL_UPLOAD_PKG.WRITEIT('*=> [STEP 14] BEGIN AIDA_XALSERV_NAMES_UPDATE AT '||V_DT, 'S');
+
+    V_START := DBMS_UTILITY.GET_TIME;
+    
+    V_STATUS := NULL;
+    
+    MODEL_UPLOAD_PKG.AIDA_XALSERV_NAMES_UPDATE ('AIDA',
+                                                '202',
+                                                '202',
+                                                'P',
+                                                V_STATUS,
+                                                P_ERRMSG);
+    
+    IF ( P_ERRMSG IS NOT NULL ) THEN
+      RAISE PROC_ERROR;
+    END IF;
+    
+    ------
+
+    NOTIFY_PKG.ADD_TO_DATA_VALIDATION_TAB(C_PROCESS_NM,
+                                                V_STAGE,
+                                                C_SUCC_STAT,
+                                                'AIDA_XALSERV_NAMES_UPDATE OK: '||V_STATUS,
+                                                V_PROCESS_GRP_NO,
+                                                V_DVT_ERRMSG);
+
+    IF ( V_DVT_ERRMSG IS NOT NULL ) THEN
+      MODEL_UPLOAD_PKG.WRITEIT('###> [STEP 14 AIDA_XALSERV_NAMES_UPDATE] ERROR: INSERT INTO TABLE DATA_VALIDATION_TAB FAILED=>'||V_DVT_ERRMSG, 'B');
+    END IF;
+
+    ------
+
+    V_DIFF      := DBMS_UTILITY.GET_TIME - V_START;
+    V_DIFF_CALC := TO_CHAR(ROUND((V_DIFF / 100), 2)) || ' secs.';
+    
+    V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+    MODEL_UPLOAD_PKG.WRITEIT('*=> [STEP 14] AIDA_XALSERV_NAMES_UPDATE COMPLETED ['||V_STATUS||'] AT '||V_DT||' ['||V_DIFF_CALC||']', 'E');
+    -- END STEP 14: AIDA_XALSERV_NAMES_UPDATE
+
+    -- ###############################################
+
+    -- BEGIN STEP 15: AIDA_SYMBOLS_NAMES_UPDATE
+    V_STAGE := 'STEP 15: AIDA_SYMBOLS_NAMES_UPDATE';
+    
+    V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+    MODEL_UPLOAD_PKG.WRITEIT('*=> [STEP 15] BEGIN AIDA_SYMBOLS_NAMES_UPDATE AT '||V_DT, 'S');
+
+    V_START := DBMS_UTILITY.GET_TIME;
+    
+    V_STATUS := NULL;
+    
+    MODEL_UPLOAD_PKG.AIDA_SYMBOLS_NAMES_UPDATE ('AIDA',
+                                                '5',
+                                                '5',
+                                                'P',
+                                                V_STATUS,
+                                                P_ERRMSG);
+    
+    IF ( P_ERRMSG IS NOT NULL ) THEN
+      RAISE PROC_ERROR;
+    END IF;
+    
+    ------
+
+    NOTIFY_PKG.ADD_TO_DATA_VALIDATION_TAB(C_PROCESS_NM,
+                                                V_STAGE,
+                                                C_SUCC_STAT,
+                                                'AIDA_SYMBOLS_NAMES_UPDATE OK: '||V_STATUS,
+                                                V_PROCESS_GRP_NO,
+                                                V_DVT_ERRMSG);
+
+    IF ( V_DVT_ERRMSG IS NOT NULL ) THEN
+      MODEL_UPLOAD_PKG.WRITEIT('###> [STEP 15 AIDA_SYMBOLS_NAMES_UPDATE] ERROR: INSERT INTO TABLE DATA_VALIDATION_TAB FAILED=>'||V_DVT_ERRMSG, 'B');
+    END IF;
+
+    ------
+
+    V_DIFF      := DBMS_UTILITY.GET_TIME - V_START;
+    V_DIFF_CALC := TO_CHAR(ROUND((V_DIFF / 100), 2)) || ' secs.';
+    
+    V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+    MODEL_UPLOAD_PKG.WRITEIT('*=> [STEP 15] AIDA_SYMBOLS_NAMES_UPDATE COMPLETED ['||V_STATUS||'] AT '||V_DT||' ['||V_DIFF_CALC||']', 'E');
+    -- END STEP 15: AIDA_SYMBOLS_NAMES_UPDATE
+*/
+    -- ###############################################
+
+    COMMIT;
+
+    -- ###############################################
+
+    -- BEGIN STEP 12: LAUNCH BACKGROUND PROCESSES
+    V_STAGE := 'STEP 12: LAUNCH BACKGROUND PROCESSES';
+    
+    V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+    MODEL_UPLOAD_PKG.WRITEIT('[STEP 12] LAUNCH BACKGROUND PROCESSES AT '||V_DT, 'S');
+
+    V_START := DBMS_UTILITY.GET_TIME;
+
+    V_BG_ERRMSG := NULL;
+    V_STMT     := SUBSTR('BEGIN MODEL_UPLOAD_PKG.UPLOAD_MODEL_FROM_PROD('||TO_CHAR(V_PROCESS_GRP_NO)||','||TO_CHAR(V_RUNS_ID)||'); END;', 1, 1000);
+    V_JOB_NAME := SUBSTR('UPLMOD_PGN'||TO_CHAR(V_PROCESS_GRP_NO)||'_RID'||TO_CHAR(V_RUNS_ID), 1, 30);
+    V_BG_COMMENT := SUBSTR('UPLOAD MODEL FOR PGN='||TO_CHAR(V_PROCESS_GRP_NO)||' AND RUNID='||TO_CHAR(V_RUNS_ID), 1, 60);
+    
+    ---------
+/*
+    -- LAUNCH BACKGROUND PROCESS ON MCCQA
+    BEGIN
+    DBMS_SCHEDULER.CREATE_JOB@MCCOTOMCCQA_MACHINE_MODEL.SLAC.STANFORD.EDU
+                                (JOB_NAME   => V_JOB_NAME,
+                                 JOB_TYPE   => 'PLSQL_BLOCK',
+                                 JOB_ACTION => V_STMT,
+                                 START_DATE => SYSTIMESTAMP,
+                                 ENABLED    => TRUE,
+                                 AUTO_DROP  => TRUE,
+                                 COMMENTS   => V_BG_COMMENT);
+
+    MODEL_UPLOAD_PKG.WRITEIT('*=> [STEP 12A] MCCQA BACKGROUND PROCESS SUCCESSFULLY LAUNCHED.');
+
+    EXCEPTION
+      WHEN OTHERS THEN
+        V_BG_ERRMSG := SUBSTR('ERROR ('||C_PROC||'): [STEP 12A] MCCQA BG PROCESS=>'||SQLERRM, 1, 1000);
+    END;
+*/
+    ----------
+
+    -- LAUNCH BACKGROUND PROCESS ON SLACPROD
+    BEGIN
+    DBMS_SCHEDULER.CREATE_JOB@MCCOTOSLACPROD_MACHINE_MODEL.SLAC.STANFORD.EDU
+                                (JOB_NAME   => V_JOB_NAME,
+                                 JOB_TYPE   => 'PLSQL_BLOCK',
+                                 JOB_ACTION => V_STMT,
+                                 START_DATE => SYSTIMESTAMP,
+                                 ENABLED    => TRUE,
+                                 AUTO_DROP  => TRUE,
+                                 COMMENTS   => V_BG_COMMENT);
+
+    MODEL_UPLOAD_PKG.WRITEIT('*=> [STEP 12] SLACPROD BACKGROUND PROCESS SUCCESSFULLY LAUNCHED.');
+
+    EXCEPTION
+      WHEN OTHERS THEN
+        IF ( V_BG_ERRMSG IS NULL ) THEN
+          V_BG_ERRMSG := SUBSTR('ERROR ('||C_PROC||'): [STEP 12] SLACPROD BG PROCESS=>'||SQLERRM, 1, 1000);
+        ELSE
+          V_BG_ERRMSG := SUBSTR(V_BG_ERRMSG||' | [STEP 12] SLACPROD BG PROCESS=>'||SQLERRM, 1, 1000);
+        END IF;
+    END;
+    
+    ----------
+
+    IF ( V_BG_ERRMSG IS NULL ) THEN
+
+      NOTIFY_PKG.ADD_TO_DATA_VALIDATION_TAB(C_PROCESS_NM,
+                                                  V_STAGE,
+                                                  C_SUCC_STAT,
+                                                  'BG PROCESSES LAUNCHED OK',
+                                                  V_PROCESS_GRP_NO,
+                                                  V_DVT_ERRMSG);
+
+      IF ( V_DVT_ERRMSG IS NOT NULL ) THEN
+        MODEL_UPLOAD_PKG.WRITEIT('###> [STEP 12 LAUNCH BACKGROUND PROCESSES] ERROR: INSERT INTO TABLE DATA_VALIDATION_TAB FAILED=>'||V_DVT_ERRMSG, 'B');
+      END IF;
+      
+      ------
+
+      V_DIFF      := DBMS_UTILITY.GET_TIME - V_START;
+      V_DIFF_CALC := TO_CHAR(ROUND((V_DIFF / 100), 2)) || ' secs.';
+
+      V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+      MODEL_UPLOAD_PKG.WRITEIT('[STEP 12] LAUNCH BACKGROUND PROCESSES COMPLETED AT '||V_DT||' ['||V_DIFF_CALC||']', 'E');
+
+    ELSE
+
+      NOTIFY_PKG.ADD_TO_DATA_VALIDATION_TAB(C_PROCESS_NM,
+                                                  V_STAGE,
+                                                  C_FAIL_STAT,
+                                                  P_ERRMSG,
+                                                  V_PROCESS_GRP_NO,
+                                                  V_DVT_ERRMSG);
+
+      IF ( V_DVT_ERRMSG IS NOT NULL ) THEN
+        MODEL_UPLOAD_PKG.WRITEIT('###> [STEP 12 LAUNCH BACKGROUND PROCESSES] ERROR: INSERT INTO TABLE DATA_VALIDATION_TAB FAILED=>'||V_DVT_ERRMSG, 'B');
+      END IF;
+
+      --------
+
+      NOTIFY_PKG.ORA_SENDMAIL(P_SEND_ADDR => GC_SEND_ADDR,
+                 P_FROM_ADDR => GC_FROM_ADDR,
+                 P_MSG      => V_BG_ERRMSG,
+                 P_SUBJECT   => 'UPLOAD MODEL BG PROCESSES ERROR ['||USER||'@'||GC_INSTANCE||'; PGN='||TO_CHAR(V_PROCESS_GRP_NO)||'; RUNID='||TO_CHAR(V_RUNS_ID)||']',
+                 P_ERRMSG   => V_MAIL_ERRMSG);
+
+      IF ( V_MAIL_ERRMSG IS NOT NULL ) THEN
+        MODEL_UPLOAD_PKG.WRITEIT('###> [SEND MAIL ERROR]: DURING LAUNCHING BG PROCESSES=>'||V_MAIL_ERRMSG, 'B');
+      END IF;
+
+    END IF;
+    -- END STEP 12: LAUNCH BACKGROUND PROCESSES
+
+    -- ###############################################
+
+    -- RECORD END OF SCRIPT IN VALIDATION TABLE.
+    V_STAGE := SUBSTR('END_MODEL_UPLOAD_INTO_'||USER||'@'||GC_INSTANCE, 1, 120);
+
+    NOTIFY_PKG.ADD_TO_DATA_VALIDATION_TAB(C_PROCESS_NM,
+                                                V_STAGE,
+                                                C_SUCC_STAT,
+                                                'END MODEL UPLOAD: ALL DATA COMMITTED',
+                                                V_PROCESS_GRP_NO,
+                                                V_DVT_ERRMSG);
+
+    IF ( V_DVT_ERRMSG IS NOT NULL ) THEN
+      MODEL_UPLOAD_PKG.WRITEIT('###> [RECORD END OF SCRIPT] ERROR: INSERT INTO TABLE DATA_VALIDATION_TAB FAILED=>'||V_DVT_ERRMSG, 'B');
+    END IF;
+
+    ------
+
+    V_DIFF      := DBMS_UTILITY.GET_TIME - V_START_TOTAL;
+    V_DIFF_CALC := TO_CHAR(ROUND((V_DIFF / 100), 2)) || ' secs.';
+
+    V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+    V_MSG := SUBSTR('UPLOAD MODEL [PROCESS_GRP_NO='||TO_CHAR(V_PROCESS_GRP_NO)||'|RUNID='||TO_CHAR(V_RUNS_ID)||'] PROCESSING COMMITTED AND COMPLETED AT '||V_DT||': LOGGED ON AS '||USER||'@'||GC_INSTANCE||' ['||V_DIFF_CALC||']',1,200);
+    MODEL_UPLOAD_PKG.WRITEIT('<><><> '||V_MSG);
+
+    ----------
+
+    IF ( V_DEBUG ) THEN
+
+      NOTIFY_PKG.ORA_SENDMAIL(P_SEND_ADDR => GC_SEND_ADDR,
+                 P_FROM_ADDR => GC_FROM_ADDR,
+                 P_MSG      => V_MSG,
+                 P_SUBJECT   => 'MODEL UPLOAD COMPLETION ['||USER||'@'||GC_INSTANCE||'; PGN='||TO_CHAR(V_PROCESS_GRP_NO)||'; RUNID='||TO_CHAR(V_RUNS_ID)||']',
+                 P_ERRMSG   => V_MAIL_ERRMSG);
+
+      IF ( V_MAIL_ERRMSG IS NOT NULL ) THEN
+        MODEL_UPLOAD_PKG.WRITEIT('###> [SEND MAIL ERROR]: DURING SUCCESSFUL COMPLETION OF ALL PROCESSING=>'||V_MAIL_ERRMSG, 'B');
+      END IF;
+
+    END IF;
+
+    ----------
+
+    IF (G_OK_TO_PRINT) THEN
+      WRITE_LOG.TERMINATE;
+    END IF;
+    
+    P_RUNS_ID := V_RUNS_ID;
+
+    RETURN;
+
+
+  EXCEPTION
+    WHEN PROC_ERROR THEN
+      ROLLBACK;
+
+      NOTIFY_PKG.ADD_TO_DATA_VALIDATION_TAB(C_PROCESS_NM,
+                                                  V_STAGE,
+                                                  C_FAIL_STAT,
+                                                  P_ERRMSG,
+                                                  V_PROCESS_GRP_NO,
+                                                  V_DVT_ERRMSG);
+
+      IF ( V_DVT_ERRMSG IS NOT NULL ) THEN
+        MODEL_UPLOAD_PKG.WRITEIT('###> [END PKG PROC_ERROR EXCEPTION] ERROR: INSERT INTO TABLE DATA_VALIDATION_TAB FAILED=>'||V_DVT_ERRMSG, 'B');
+      END IF;
+
+      MODEL_UPLOAD_PKG.WRITEIT('###> '||P_ERRMSG, 'B');
+
+      NOTIFY_PKG.ORA_SENDMAIL(P_SEND_ADDR => GC_SEND_ADDR,
+                 P_FROM_ADDR => GC_FROM_ADDR,
+                 P_MSG      => P_ERRMSG,
+                 P_SUBJECT   => 'MODEL UPLOAD ERROR ['||USER||'@'||GC_INSTANCE||'; PGN='||TO_CHAR(V_PROCESS_GRP_NO)||'; RUNID='||TO_CHAR(V_RUNS_ID)||']',
+                 P_ERRMSG   => V_MAIL_ERRMSG);
+
+      IF ( V_MAIL_ERRMSG IS NOT NULL ) THEN
+        MODEL_UPLOAD_PKG.WRITEIT('###> [SEND MAIL ERROR]: DURING PROC_ERROR EXCEPTION HANDLER=>'||V_MAIL_ERRMSG, 'B');
+      END IF;
+
+      IF (G_OK_TO_PRINT) THEN
+        WRITE_LOG.TERMINATE;
+      END IF;
+
+      P_RUNS_ID := 0;
+      
+      RETURN;
+
+      -- RAISE_APPLICATION_ERROR(-20010, P_ERRMSG);
+
+    WHEN OTHERS THEN
+      V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+      P_ERRMSG := SUBSTR('END PKG OTHERS EXCEPTION ('||C_PROC||') ('||V_DT||')=>'||SQLERRM,1,1000);
+      
+      ROLLBACK;
+
+      NOTIFY_PKG.ADD_TO_DATA_VALIDATION_TAB(C_PROCESS_NM,
+                                                  V_STAGE,
+                                                  C_FAIL_STAT,
+                                                  P_ERRMSG,
+                                                  V_PROCESS_GRP_NO,
+                                                  V_DVT_ERRMSG);
+
+      IF ( V_DVT_ERRMSG IS NOT NULL ) THEN
+        MODEL_UPLOAD_PKG.WRITEIT('###> [END PKG OTHERS EXCEPTION] ERROR: INSERT INTO TABLE DATA_VALIDATION_TAB FAILED=>'||V_DVT_ERRMSG, 'B');
+      END IF;
+
+      MODEL_UPLOAD_PKG.WRITEIT('###> '||P_ERRMSG, 'B');
+
+      NOTIFY_PKG.ORA_SENDMAIL(P_SEND_ADDR => GC_SEND_ADDR,
+                 P_FROM_ADDR => GC_FROM_ADDR,
+                 P_MSG      => P_ERRMSG,
+                 P_SUBJECT   => 'MODEL UPLOAD ERROR ['||USER||'@'||GC_INSTANCE||'; PGN='||TO_CHAR(V_PROCESS_GRP_NO)||'; RUNID='||TO_CHAR(V_RUNS_ID)||']',
+                 P_ERRMSG   => V_MAIL_ERRMSG);
+
+      IF ( V_MAIL_ERRMSG IS NOT NULL ) THEN
+        MODEL_UPLOAD_PKG.WRITEIT('###> [SEND MAIL ERROR]: DURING OTHERS ERROR EXCEPTION HANDLER=>'||V_MAIL_ERRMSG, 'B');
+      END IF;
+
+      IF (G_OK_TO_PRINT) THEN
+        WRITE_LOG.TERMINATE;
+      END IF;
+
+      P_RUNS_ID := 0;
+      
+      RETURN;
+
+      -- RAISE_APPLICATION_ERROR(-20020, P_ERRMSG);
+
+  END UPLOAD_MODEL;
+
+  --------------
+
+  PROCEDURE GOLD_THIS_MODEL (P_RUNS_ID  IN VARCHAR2,
+                          P_COMMENTS IN VARCHAR2,
+                          P_ERRMSG   OUT VARCHAR2)
+  AS
+
+    V_DEBUG                            BOOLEAN := FALSE;
+
+    V_SECS                             NUMBER;
+    V_START_TOTAL                      NUMBER;
+    V_START                            NUMBER;
+    V_DIFF                             NUMBER;
+    V_DIFF_CALC                        VARCHAR2(100);
+    
+    V_CNT                              PLS_INTEGER;
+    V_DT                               VARCHAR2(100);
+    
+    V_PROCESS_GRP_NO                   NUMBER;
+    V_NUM_ROWS                         NUMBER;
+    V_NUM_ERRORS                       PLS_INTEGER;
+    V_NUM_ERRORS_PROCESSED             PLS_INTEGER;
+    V_ERRS_REMAIN_MSG                  VARCHAR2(100);
+    
+    V_DVT_ERRMSG                       VARCHAR2(1000);
+    V_MAIL_ERRMSG                       VARCHAR2(1000);
+    V_BG_ERRMSG                         VARCHAR2(1000);
+    V_MSG                               VARCHAR2(200);
+    V_STAGE                            VARCHAR2(120);
+    V_LOG_FILE                         VARCHAR2(200);
+    V_STATUS                           VARCHAR2(100);
+
+    V_STMT                             VARCHAR2(1000);
+    V_JOB_NAME                         VARCHAR2(30);
+    V_BG_COMMENT                       VARCHAR2(60);
+    
+    V_RUNS_ID                           INTEGER;
+    V_COMMENTS                          VARCHAR2(200);
+    V_GOLD_ID                           INTEGER;
+
+    C_PROC                           CONSTANT   VARCHAR2(100) := 'MODEL_UPLOAD_PKG.GOLD_THIS_MODEL';
+    C_PROCESS_NM                     CONSTANT   VARCHAR2(120) := 'MODEL_GOLDING';
+    C_FAIL_STAT                      CONSTANT   VARCHAR2(30)  := 'FAILED';
+    C_SUCC_STAT                      CONSTANT   VARCHAR2(30)  := 'SUCCESS';
+    C_CRLF                           CONSTANT   VARCHAR2(2)   := CHR(10);
+
+    PROC_ERROR                       EXCEPTION;
+
+    DML_ERRORS                       EXCEPTION;
+    PRAGMA exception_init(DML_ERRORS, -24381);
+
+
+  BEGIN
+
+    V_START_TOTAL := DBMS_UTILITY.GET_TIME;
+
+    ----------
+    
+    -- BEGIN PARAMETER SANITY CHECK
+    P_ERRMSG  := NULL;
+    
+    V_COMMENTS := SUBSTR(TRIM(P_COMMENTS),1,200);
+
+    IF ( TRIM(P_RUNS_ID) IS NULL ) THEN
+      P_ERRMSG := SUBSTR('ERROR ('||C_PROC||') PASSED-IN P_RUNS_ID IS NULL.',1,1000);
+      RAISE PROC_ERROR;
+    END IF; 
+
+    BEGIN
+    SELECT TO_NUMBER(TRIM(P_RUNS_ID))
+      INTO V_RUNS_ID
+      FROM DUAL;
+
+    EXCEPTION
+      WHEN OTHERS THEN
+        P_ERRMSG := SUBSTR('ERROR ('||C_PROC||') DURING NUMBER CONVERSION FOR PASSED-IN P_RUNS_ID='||P_RUNS_ID||'=>'||SQLERRM,1,1000);
+        RAISE PROC_ERROR;
+    END;
+    -- END PARAMETER SANITY CHECK
+    
+    ----------
+
+    -- RETRIEVE A NEW PROCESS_GRP_NO
+    V_PROCESS_GRP_NO := NULL;
+
+    BEGIN
+    SELECT DATA_VALIDATION_TAB_PGN_SEQ.NEXTVAL
+      INTO V_PROCESS_GRP_NO
+      FROM DUAL;
+
+    EXCEPTION
+      WHEN OTHERS THEN
+        P_ERRMSG := SUBSTR('PROCESS_GRP_NO SEQUENCE ERROR ('||C_PROC||')=>'||SQLERRM,1,1000);
+        RAISE PROC_ERROR;
+    END;
+
+    ----------
+
+    V_LOG_FILE := SUBSTR('gold_this_model_pgn'||TO_CHAR(V_PROCESS_GRP_NO)||'_runid'||TO_CHAR(V_RUNS_ID)||'_'||LOWER(GC_INSTANCE)||'_'||LOWER(USER)||'_'||TO_CHAR(CURRENT_TIMESTAMP,'dd-mon-yyyy-hh_mi_ss_ff')||'.log',1,200);
+
+    ----------
+
+    -- INITIALIZE LOGGING.
+    MODEL_UPLOAD_PKG.INIT_LOGGING(V_LOG_FILE, C_PROC);
+
+    ----------
+
+    V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+    MODEL_UPLOAD_PKG.WRITEIT('<><><> GOLD THIS MODEL [PROCESS_GRP_NO='||TO_CHAR(V_PROCESS_GRP_NO)||'|RUNID='||TO_CHAR(V_RUNS_ID)||'] PROCESSING BEGINS AT '||V_DT||': LOGGED ON AS '||USER||'@'||GC_INSTANCE);
+    
+    ----------
+
+    -- RECORD START OF SCRIPT IN VALIDATION TABLE.
+    V_STAGE := SUBSTR('BEGIN_MODEL_GOLDING_FOR_RUNID_'||TO_CHAR(V_RUNS_ID)||'_INTO_'||USER||'@'||GC_INSTANCE, 1, 120);
+
+    NOTIFY_PKG.ADD_TO_DATA_VALIDATION_TAB(C_PROCESS_NM,
+                                                V_STAGE,
+                                                NULL,
+                                                'BEGIN MODEL GOLDING FOR RUNID='||TO_CHAR(V_RUNS_ID),
+                                                V_PROCESS_GRP_NO,
+                                                V_DVT_ERRMSG);
+
+    IF ( V_DVT_ERRMSG IS NOT NULL ) THEN
+      MODEL_UPLOAD_PKG.WRITEIT('###> [RECORD START OF SCRIPT] ERROR: INSERT INTO TABLE DATA_VALIDATION_TAB FAILED=>'||V_DVT_ERRMSG, 'B');
+    END IF;
+
+    -- ###############################################
+
+    -- BEGIN STEP 1: CHECK TO PROCEED WITH MODEL_GOLDING
+    V_STAGE := 'STEP 1: CHECK TO PROCEED WITH MODEL_GOLDING';
+    
+    V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+    MODEL_UPLOAD_PKG.WRITEIT('*=> [STEP 1] BEGIN CHECK TO PROCEED WITH MODEL_GOLDING AT '||V_DT, 'S');
+
+    V_START := DBMS_UTILITY.GET_TIME;
+    
+    V_STATUS := NULL;
+    
+    -- MODEL_UPLOAD_PKG.CHECK_OK_TO_PROCEED(P_ERRMSG);
+    MODEL_UPLOAD_PKG.CHECK_RUNID_TO_PROCEED(P_RUNS_ID, P_ERRMSG);
+
+    IF ( P_ERRMSG IS NOT NULL ) THEN
+      RAISE PROC_ERROR;
+    END IF;
+    
+    V_STATUS := 'PROCEED';
+
+    ------
+
+    NOTIFY_PKG.ADD_TO_DATA_VALIDATION_TAB(C_PROCESS_NM,
+                                                V_STAGE,
+                                                C_SUCC_STAT,
+                                                'PROCEED WITH MODEL_GOLDING: '||V_STATUS,
+                                                V_PROCESS_GRP_NO,
+                                                V_DVT_ERRMSG);
+
+    IF ( V_DVT_ERRMSG IS NOT NULL ) THEN
+      MODEL_UPLOAD_PKG.WRITEIT('###> [STEP 1 PROCEED WITH MODEL_GOLDING] ERROR: INSERT INTO TABLE DATA_VALIDATION_TAB FAILED=>'||V_DVT_ERRMSG, 'B');
+    END IF;
+
+    ------
+
+    V_DIFF      := DBMS_UTILITY.GET_TIME - V_START;
+    V_DIFF_CALC := TO_CHAR(ROUND((V_DIFF / 100), 2)) || ' secs.';
+    
+    V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+    MODEL_UPLOAD_PKG.WRITEIT('*=> [STEP 1] CHECK TO PROCEED WITH MODEL_GOLDING COMPLETED ['||V_STATUS||'] AT '||V_DT||' ['||V_DIFF_CALC||']', 'E');
+    -- END STEP 1: CHECK TO PROCEED WITH MODEL_GOLDING
+
+    -- ###############################################
+
+    -- BEGIN STEP 2: GOLD TABLE INSERT
+    V_STAGE := 'STEP 2: GOLD TABLE INSERT';
+    
+    V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+    MODEL_UPLOAD_PKG.WRITEIT('*=> [STEP 2] BEGIN GOLD TABLE INSERT FOR RUNID='||TO_CHAR(V_RUNS_ID)||' AT '||V_DT, 'S');
+
+    V_START := DBMS_UTILITY.GET_TIME;
+
+    BEGIN
+    INSERT INTO GOLD (RUNS_ID,
+                      COMMENTS) 
+              VALUES (V_RUNS_ID,
+                      V_COMMENTS)
+              RETURNING ID INTO V_GOLD_ID;
+
+    V_CNT := SQL%ROWCOUNT;
+
+    EXCEPTION
+      WHEN OTHERS THEN
+        V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+        P_ERRMSG := SUBSTR('ERROR ('||C_PROC||') ('||V_DT||'): [STEP 2] GOLD TABLE INSERT=>'||SQLERRM, 1, 1000);
+        RAISE PROC_ERROR;
+    END;
+
+    ------
+
+    NOTIFY_PKG.ADD_TO_DATA_VALIDATION_TAB(C_PROCESS_NM,
+                                                V_STAGE,
+                                                C_SUCC_STAT,
+                                                'GOLD TABLE INSERT FOR RUNID='||TO_CHAR(V_RUNS_ID)||' OK',
+                                                V_PROCESS_GRP_NO,
+                                                V_DVT_ERRMSG);
+
+    IF ( V_DVT_ERRMSG IS NOT NULL ) THEN
+      MODEL_UPLOAD_PKG.WRITEIT('###> [STEP 2 GOLD TABLE INSERT] ERROR: INSERT INTO TABLE DATA_VALIDATION_TAB FAILED=>'||V_DVT_ERRMSG, 'B');
+    END IF;
+
+    ------
+
+    V_DIFF      := DBMS_UTILITY.GET_TIME - V_START;
+    V_DIFF_CALC := TO_CHAR(ROUND((V_DIFF / 100), 2)) || ' secs.';
+    
+    V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+    MODEL_UPLOAD_PKG.WRITEIT('*=> [STEP 2] GOLD TABLE INSERT FOR RUNID='||TO_CHAR(V_RUNS_ID)||' ['||TO_CHAR(V_CNT)||' ROWS ADDED] COMPLETED AT '||V_DT||' ['||V_DIFF_CALC||']', 'E');
+    -- END STEP 2: GOLD TABLE INSERT
+
+    -- ###############################################
+
+    COMMIT;
+
+    -- ###############################################
+
+    -- BEGIN STEP 3: LAUNCH BACKGROUND PROCESSES
+    V_STAGE := 'STEP 3: LAUNCH BACKGROUND PROCESSES';
+    
+    V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+    MODEL_UPLOAD_PKG.WRITEIT('[STEP 3] LAUNCH BACKGROUND PROCESSES AT '||V_DT, 'S');
+
+    V_START := DBMS_UTILITY.GET_TIME;
+
+    V_BG_ERRMSG := NULL;
+    V_STMT     := SUBSTR('BEGIN MODEL_UPLOAD_PKG.GOLD_THIS_MODEL_FROM_PROD('||TO_CHAR(V_PROCESS_GRP_NO)||','||TO_CHAR(V_GOLD_ID)||','||TO_CHAR(V_RUNS_ID)||'); END;', 1, 1000);
+    V_JOB_NAME := SUBSTR('MODGOLD_PGN'||TO_CHAR(V_PROCESS_GRP_NO)||'_RID'||TO_CHAR(V_RUNS_ID), 1, 30);
+    V_BG_COMMENT  := SUBSTR('MODEL GOLDING FOR PGN='||TO_CHAR(V_PROCESS_GRP_NO)||' AND RUNID='||TO_CHAR(V_RUNS_ID), 1, 60);
+    
+    ---------
+/*
+    -- LAUNCH BACKGROUND PROCESS ON MCCQA
+    BEGIN
+    DBMS_SCHEDULER.CREATE_JOB@MCCOTOMCCQA_MACHINE_MODEL.SLAC.STANFORD.EDU
+                                (JOB_NAME   => V_JOB_NAME,
+                                 JOB_TYPE   => 'PLSQL_BLOCK',
+                                 JOB_ACTION => V_STMT,
+                                 START_DATE => SYSTIMESTAMP,
+                                 ENABLED    => TRUE,
+                                 AUTO_DROP  => TRUE,
+                                 COMMENTS   => V_BG_COMMENT);
+
+    MODEL_UPLOAD_PKG.WRITEIT('*=> [STEP 3A] MCCQA BACKGROUND PROCESS SUCCESSFULLY LAUNCHED.');
+
+    EXCEPTION
+      WHEN OTHERS THEN
+        V_BG_ERRMSG := SUBSTR('ERROR ('||C_PROC||'): [STEP 3A] MCCQA BG PROCESS=>'||SQLERRM, 1, 1000);
+    END;
+*/
+    ----------
+
+    -- LAUNCH BACKGROUND PROCESS ON SLACPROD
+    BEGIN
+    DBMS_SCHEDULER.CREATE_JOB@MCCOTOSLACPROD_MACHINE_MODEL.SLAC.STANFORD.EDU
+                                (JOB_NAME   => V_JOB_NAME,
+                                 JOB_TYPE   => 'PLSQL_BLOCK',
+                                 JOB_ACTION => V_STMT,
+                                 START_DATE => SYSTIMESTAMP,
+                                 ENABLED    => TRUE,
+                                 AUTO_DROP  => TRUE,
+                                 COMMENTS   => V_BG_COMMENT);
+
+    MODEL_UPLOAD_PKG.WRITEIT('*=> [STEP 3] SLACPROD BACKGROUND PROCESS SUCCESSFULLY LAUNCHED.');
+
+    EXCEPTION
+      WHEN OTHERS THEN
+        IF ( V_BG_ERRMSG IS NULL ) THEN
+          V_BG_ERRMSG := SUBSTR('ERROR ('||C_PROC||'): [STEP 3] SLACPROD BG PROCESS=>'||SQLERRM, 1, 1000);
+        ELSE
+          V_BG_ERRMSG := SUBSTR(V_BG_ERRMSG||' | [STEP 3] SLACPROD BG PROCESS=>'||SQLERRM, 1, 1000);
+        END IF;
+    END;
+    
+    ----------
+
+    IF ( V_BG_ERRMSG IS NULL ) THEN
+
+      NOTIFY_PKG.ADD_TO_DATA_VALIDATION_TAB(C_PROCESS_NM,
+                                                  V_STAGE,
+                                                  C_SUCC_STAT,
+                                                  'BG PROCESSES LAUNCHED OK',
+                                                  V_PROCESS_GRP_NO,
+                                                  V_DVT_ERRMSG);
+
+      IF ( V_DVT_ERRMSG IS NOT NULL ) THEN
+        MODEL_UPLOAD_PKG.WRITEIT('###> [STEP 3 LAUNCH BACKGROUND PROCESSES] ERROR: INSERT INTO TABLE DATA_VALIDATION_TAB FAILED=>'||V_DVT_ERRMSG, 'B');
+      END IF;
+      
+      ------
+
+      V_DIFF      := DBMS_UTILITY.GET_TIME - V_START;
+      V_DIFF_CALC := TO_CHAR(ROUND((V_DIFF / 100), 2)) || ' secs.';
+
+      V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+      MODEL_UPLOAD_PKG.WRITEIT('[STEP 3] LAUNCH BACKGROUND PROCESSES COMPLETED AT '||V_DT||' ['||V_DIFF_CALC||']', 'E');
+
+    ELSE
+
+      NOTIFY_PKG.ADD_TO_DATA_VALIDATION_TAB(C_PROCESS_NM,
+                                                  V_STAGE,
+                                                  C_FAIL_STAT,
+                                                  V_BG_ERRMSG,
+                                                  V_PROCESS_GRP_NO,
+                                                  V_DVT_ERRMSG);
+
+      IF ( V_DVT_ERRMSG IS NOT NULL ) THEN
+        MODEL_UPLOAD_PKG.WRITEIT('###> [STEP 3 LAUNCH BACKGROUND PROCESSES] ERROR: INSERT INTO TABLE DATA_VALIDATION_TAB FAILED=>'||V_DVT_ERRMSG, 'B');
+      END IF;
+
+      --------
+
+      NOTIFY_PKG.ORA_SENDMAIL(P_SEND_ADDR => GC_SEND_ADDR,
+                 P_FROM_ADDR => GC_FROM_ADDR,
+                 P_MSG      => V_BG_ERRMSG,
+                 P_SUBJECT   => 'MODEL GOLDING BG PROCESSES ERROR ['||USER||'@'||GC_INSTANCE||'; PGN='||TO_CHAR(V_PROCESS_GRP_NO)||'; RUNID='||TO_CHAR(P_RUNS_ID)||']',
+                 P_ERRMSG   => V_MAIL_ERRMSG);
+
+      IF ( V_MAIL_ERRMSG IS NOT NULL ) THEN
+        MODEL_UPLOAD_PKG.WRITEIT('###> [SEND MAIL ERROR]: DURING LAUNCHING BG PROCESSES=>'||V_MAIL_ERRMSG, 'B');
+      END IF;
+
+    END IF;
+    -- END STEP 3: LAUNCH BACKGROUND PROCESSES
+
+    -- ###############################################
+
+    -- RECORD END OF SCRIPT IN VALIDATION TABLE.
+    V_STAGE := SUBSTR('END_MODEL_GOLDING_FOR_RUNID_'||TO_CHAR(V_RUNS_ID)||'_INTO_'||USER||'@'||GC_INSTANCE, 1, 120);
+
+    NOTIFY_PKG.ADD_TO_DATA_VALIDATION_TAB(C_PROCESS_NM,
+                                                V_STAGE,
+                                                C_SUCC_STAT,
+                                                'END MODEL GOLDING FOR RUNID='||TO_CHAR(V_RUNS_ID),
+                                                V_PROCESS_GRP_NO,
+                                                V_DVT_ERRMSG);
+
+    IF ( V_DVT_ERRMSG IS NOT NULL ) THEN
+      MODEL_UPLOAD_PKG.WRITEIT('###> [RECORD END OF SCRIPT] ERROR: INSERT INTO TABLE DATA_VALIDATION_TAB FAILED=>'||V_DVT_ERRMSG, 'B');
+    END IF;
+
+    ------
+
+    V_DIFF      := DBMS_UTILITY.GET_TIME - V_START_TOTAL;
+    V_DIFF_CALC := TO_CHAR(ROUND((V_DIFF / 100), 2)) || ' secs.';
+
+    V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+    V_MSG := SUBSTR('GOLD THIS MODEL [PROCESS_GRP_NO='||TO_CHAR(V_PROCESS_GRP_NO)||'|RUNID='||TO_CHAR(V_RUNS_ID)||'] PROCESSING COMMITTED AND COMPLETED AT '||V_DT||': LOGGED ON AS '||USER||'@'||GC_INSTANCE||' ['||V_DIFF_CALC||']',1,200);
+    MODEL_UPLOAD_PKG.WRITEIT('<><><> '||V_MSG);
+
+    ----------
+    
+    IF ( V_DEBUG ) THEN
+
+      NOTIFY_PKG.ORA_SENDMAIL(P_SEND_ADDR => GC_SEND_ADDR,
+                 P_FROM_ADDR => GC_FROM_ADDR,
+                 P_MSG      => V_MSG,
+                 P_SUBJECT   => 'MODEL GOLDING COMPLETION ['||USER||'@'||GC_INSTANCE||'; PGN='||TO_CHAR(V_PROCESS_GRP_NO)||'; RUNID='||TO_CHAR(P_RUNS_ID)||']',
+                 P_ERRMSG   => V_MAIL_ERRMSG);
+
+      IF ( V_MAIL_ERRMSG IS NOT NULL ) THEN
+        MODEL_UPLOAD_PKG.WRITEIT('###> [SEND MAIL ERROR]: DURING SUCCESSFUL COMPLETION OF ALL PROCESSING=>'||V_MAIL_ERRMSG, 'B');
+      END IF;
+
+    END IF;
+
+    ----------
+
+    IF (G_OK_TO_PRINT) THEN
+      WRITE_LOG.TERMINATE;
+    END IF;
+   
+    RETURN;
+
+
+  EXCEPTION
+    WHEN PROC_ERROR THEN
+      ROLLBACK;
+
+      NOTIFY_PKG.ADD_TO_DATA_VALIDATION_TAB(C_PROCESS_NM,
+                                                  V_STAGE,
+                                                  C_FAIL_STAT,
+                                                  P_ERRMSG,
+                                                  V_PROCESS_GRP_NO,
+                                                  V_DVT_ERRMSG);
+
+      IF ( V_DVT_ERRMSG IS NOT NULL ) THEN
+        MODEL_UPLOAD_PKG.WRITEIT('###> [END PKG PROC_ERROR EXCEPTION] ERROR: INSERT INTO TABLE DATA_VALIDATION_TAB FAILED=>'||V_DVT_ERRMSG, 'B');
+      END IF;
+
+      MODEL_UPLOAD_PKG.WRITEIT('###> '||P_ERRMSG, 'B');
+
+      NOTIFY_PKG.ORA_SENDMAIL(P_SEND_ADDR => GC_SEND_ADDR,
+                 P_FROM_ADDR => GC_FROM_ADDR,
+                 P_MSG      => P_ERRMSG,
+                 P_SUBJECT   => 'MODEL GOLDING ERROR ['||USER||'@'||GC_INSTANCE||'; PGN='||TO_CHAR(V_PROCESS_GRP_NO)||'; RUNID='||TO_CHAR(P_RUNS_ID)||']',
+                 P_ERRMSG   => V_MAIL_ERRMSG);
+
+      IF ( V_MAIL_ERRMSG IS NOT NULL ) THEN
+        MODEL_UPLOAD_PKG.WRITEIT('###> [SEND MAIL ERROR]: DURING PROC_ERROR EXCEPTION HANDLER=>'||V_MAIL_ERRMSG, 'B');
+      END IF;
+
+      IF (G_OK_TO_PRINT) THEN
+        WRITE_LOG.TERMINATE;
+      END IF;
+
+      RETURN;
+
+      -- RAISE_APPLICATION_ERROR(-20010, P_ERRMSG);
+
+    WHEN OTHERS THEN
+      V_DT := TO_CHAR(SYSDATE,'DD-MON-YYYY HH:MI:SS PM');
+      P_ERRMSG := SUBSTR('END PKG OTHERS EXCEPTION ('||C_PROC||') ('||V_DT||')=>'||SQLERRM,1,1000);
+      
+      ROLLBACK;
+
+      NOTIFY_PKG.ADD_TO_DATA_VALIDATION_TAB(C_PROCESS_NM,
+                                                  V_STAGE,
+                                                  C_FAIL_STAT,
+                                                  P_ERRMSG,
+                                                  V_PROCESS_GRP_NO,
+                                                  V_DVT_ERRMSG);
+
+      IF ( V_DVT_ERRMSG IS NOT NULL ) THEN
+        MODEL_UPLOAD_PKG.WRITEIT('###> [END PKG OTHERS EXCEPTION] ERROR: INSERT INTO TABLE DATA_VALIDATION_TAB FAILED=>'||V_DVT_ERRMSG, 'B');
+      END IF;
+
+      MODEL_UPLOAD_PKG.WRITEIT('###> '||P_ERRMSG, 'B');
+
+      NOTIFY_PKG.ORA_SENDMAIL(P_SEND_ADDR => GC_SEND_ADDR,
+                 P_FROM_ADDR => GC_FROM_ADDR,
+                 P_MSG      => P_ERRMSG,
+                 P_SUBJECT   => 'MODEL GOLDING ERROR ['||USER||'@'||GC_INSTANCE||'; PGN='||TO_CHAR(V_PROCESS_GRP_NO)||'; RUNID='||TO_CHAR(P_RUNS_ID)||']',
+                 P_ERRMSG   => V_MAIL_ERRMSG);
+
+      IF ( V_MAIL_ERRMSG IS NOT NULL ) THEN
+        MODEL_UPLOAD_PKG.WRITEIT('###> [SEND MAIL ERROR]: DURING OTHERS ERROR EXCEPTION HANDLER=>'||V_MAIL_ERRMSG, 'B');
+      END IF;
+
+      IF (G_OK_TO_PRINT) THEN
+        WRITE_LOG.TERMINATE;
+      END IF;
+
+      RETURN;
+
+      -- RAISE_APPLICATION_ERROR(-20020, P_ERRMSG);
+
+  END GOLD_THIS_MODEL;
+
+  --------------
+
+BEGIN
+
+  NULL;
+
+END MODEL_UPLOAD_PKG;
+
+/

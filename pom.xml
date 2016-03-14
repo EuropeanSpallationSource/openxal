@@ -121,12 +121,22 @@
             </dependency>
             <dependency>
                 <groupId>org.xal</groupId>
+                <artifactId>openxal.extensions.logbook</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.xal</groupId>
                 <artifactId>openxal.extensions.orbit</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.xal</groupId>
                 <artifactId>openxal.extensions.scan</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.xal</groupId>
+                <artifactId>openxal.extensions.wirescan</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

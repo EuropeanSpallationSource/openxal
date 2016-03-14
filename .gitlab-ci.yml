@@ -6,7 +6,7 @@ test:
         - ant test
     only:
         - master
-        - site.sns.master
+        - /^site.sns.*$/
 test.maven:
     script:
         - yum install maven -y
@@ -16,5 +16,5 @@ test.maven:
         - cd ../
         - mvn package
     only:
-        - site.ess.master
+        - /^site.ess.*$/
 

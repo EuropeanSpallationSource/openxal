@@ -62,10 +62,6 @@ public class Main extends ApplicationAdaptor {
         return "mtv";
     }
 
-
-    public boolean usesConsole() {
-        return false;
-    }
     
     //  -------- specific to mpspostmort application ---------
 
@@ -81,10 +77,6 @@ public class Main extends ApplicationAdaptor {
     
     
     // --------- Application events --------------------------------------------
-    
-    public void applicationFinishedLaunching() { 
-	System.out.println("mtv finished launching...");
-    }
     
      /** The main method of the application. */
     static public void main(String[] args) {
