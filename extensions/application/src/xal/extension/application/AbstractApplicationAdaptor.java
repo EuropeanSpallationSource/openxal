@@ -146,10 +146,10 @@ abstract public class AbstractApplicationAdaptor implements ApplicationListener 
     /** Get the node for this application's preferences */
     final public Preferences getUserPreferencesNode() {
         if ( this.getClass().getName().startsWith("xal.app.") ) {   // standard Java based Open XAL application
-            return Preferences.userNodeForPackage( this.getClass() );
+            return xal.tools.apputils.Preferences.userNodeForPackage( this.getClass() );
         } else {        // class is not from XAL so probably a script (e.g. jruby)
             final String scriptID = applicationName().toLowerCase().replaceAll(" ", "_").replaceAll("\\/", "-");
-            return Preferences.userNodeForPackage( AbstractApplicationAdaptor.class ).node("/xal/script/"+scriptID);
+            return xal.tools.apputils.Preferences.userNodeForPackage( AbstractApplicationAdaptor.class ).node("/xal/script/"+scriptID);
         }
     }
 
