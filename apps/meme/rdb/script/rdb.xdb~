@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<rpc>
+	<query>
+		<name>twiss:extant</name>
+		<sqlStatement>
+			<![CDATA[
+			select * from "MACHINE_MODEL"."ELEMENT_MODELS" e, "MACHINE_MODEL"."V_GOLD_REPORT" g 
+ 			WHERE g."GOLD_STATUS_NO_CSS"='PRESENT' AND g."RUN_SOURCE_CHK"='EXTANT' and
+			   g."RUN_ID" = e."RUNS_ID" order by (e."ZPOS");
+			]]>
+ 	        </sqlStatement>	  
+	</query>
+	<query>
+		<name>twiss:design</name>
+		<sqlStatement>
+			<![CDATA[
+			select * from "MACHINE_MODEL"."ELEMENT_MODELS" e, "MACHINE_MODEL"."V_GOLD_REPORT" g 
+ 			WHERE g."GOLD_STATUS_NO_CSS"='PRESENT' AND g."RUN_SOURCE_CHK"='DESIGN' and
+			   g."RUN_ID" = e."RUNS_ID" order by (e."ZPOS");
+			]]>
+ 	        </sqlStatement>	  
+	</query>
+	<query>
+		<name>r:extant</name>
+		<sqlStatement>
+			<![CDATA[
+			select * from "MACHINE_MODEL"."ELEMENT_MODELS" e, "MACHINE_MODEL"."V_GOLD_REPORT" g 
+ 			WHERE g."GOLD_STATUS_NO_CSS"='PRESENT' AND g."RUN_SOURCE_CHK"='EXTANT' and
+			   g."RUN_ID" = e."RUNS_ID" order by (e."ZPOS");
+			]]>
+ 	        </sqlStatement>	  
+	</query>
+	<query>
+		<name>r:design</name>
+		<sqlStatement>
+			<![CDATA[
+			select * from "MACHINE_MODEL"."ELEMENT_MODELS" e, "MACHINE_MODEL"."V_GOLD_REPORT" g 
+ 			WHERE g."GOLD_STATUS_NO_CSS"='PRESENT' AND g."RUN_SOURCE_CHK"='DESIGN' and
+			   g."RUN_ID" = e."RUNS_ID" order by (e."ZPOS");
+			]]>
+ 	        </sqlStatement>	  
+	</query>
+</rpc>
