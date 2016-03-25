@@ -39,6 +39,8 @@ public class ESSFieldMap extends RfGap {
     public ESSFieldMap(String strId, ChannelFactory channelFactory) {
 		super(strId, channelFactory);
 		setFieldMapBucket(new ESSFieldMapBucket());
+		// remove RFGap bucket
+		m_mapAttrs.remove(getRfGap().getType());
 	}
     
 	@Override
