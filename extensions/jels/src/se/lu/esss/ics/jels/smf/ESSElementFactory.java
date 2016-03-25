@@ -160,19 +160,20 @@ public final class ESSElementFactory {
 	 * @param position Position of the field map.
 	 * @return ESSFieldMap object.
 	 */
-	public static ESSFieldMap createESSFieldMap(String name, double length, double frequency, double xelmax,
+	public static ESSRfCavity createESSFieldMap(String name, double length, double frequency, double xelmax,
 			double rfphase, String fieldFile, FieldProfile fieldProfile, ApertureBucket aper, double position) {
-		ESSFieldMap fm = new ESSFieldMap(name);
+		ESSFieldMap fm = new ESSFieldMap(name+":FM");
 		fm.setLength(length);
-		fm.setPosition(position);
-		fm.setFrequency(frequency);
-		fm.setXelmax(xelmax);
-		fm.setPhase(rfphase);
+		fm.setPosition(length/2.);
 		fm.setFieldMapFile(fieldFile);
 		fm.setFieldProfile(fieldProfile);
 		fm.setAper(aper);
 
-		return fm;
+		double amplitude =  (fieldProfile.getE0L(frequency)/fieldProfile.getLength()) * xelmax * 1e-6;
+
+		ESSRfCavity cavity = createESSRfCavity(name, length, new AcceleratorNode[] { fm }, rfphase, amplitude, frequency, position - length/2.);
+		cavity.getRfField().setAmpFactor(xelmax);
+		return cavity;
 	}
 	
 	/**

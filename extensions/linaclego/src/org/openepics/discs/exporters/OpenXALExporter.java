@@ -370,7 +370,7 @@ public class OpenXALExporter implements BLEVisitor {
 		FieldProfile fp = fieldMap.getFieldProfile();
 		final se.lu.esss.ics.jels.smf.impl.FieldProfile fp2 = new se.lu.esss.ics.jels.smf.impl.FieldProfile(fp.getLength()*1e-3, fp.getField());
 		fieldProfiles.put(fieldMap.getFieldmapFile(),  fp2);
-		ESSFieldMap fm = ESSElementFactory.createESSFieldMap(fieldMap.getEssId(), L, fieldMap.getFrequency(),
+		AcceleratorNode fm = ESSElementFactory.createESSFieldMap(fieldMap.getEssId(), L, fieldMap.getFrequency(),
 				fieldMap.getElectricFieldFactor(), fieldMap.getRFPhase(), fieldMap.getFieldmapFile(), fp2, aper, sectionPosition + L/2);
 		add(fm);
 	}
