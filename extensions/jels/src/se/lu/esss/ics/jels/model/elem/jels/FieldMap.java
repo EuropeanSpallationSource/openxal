@@ -1,6 +1,7 @@
 package se.lu.esss.ics.jels.model.elem.jels;
 
 import se.lu.esss.ics.jels.smf.impl.ESSFieldMap;
+import se.lu.esss.ics.jels.smf.impl.ESSRfCavity;
 import se.lu.esss.ics.jels.smf.impl.FieldProfile;
 import xal.model.IElement;
 import xal.model.IProbe;
@@ -61,7 +62,7 @@ public class FieldMap extends ThickElement implements IRfGap, IRfCavityCell {
 			
 			phipos = fm.getPhasePosition();
 			//WORKAROUND difference between ESS and SNS lattice
-			inverted = fm.getParent() instanceof RfCavity && fp.isFirstInverted(); 
+			inverted = !(fm.getParent() instanceof ESSRfCavity) && fp.isFirstInverted(); 
 		} else {
 			try {				
 				firstSliceFieldmap = (FieldMap)latticeElement.getFirstSlice().createModelingElement();

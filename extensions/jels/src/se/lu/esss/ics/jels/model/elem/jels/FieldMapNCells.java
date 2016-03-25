@@ -1,6 +1,7 @@
 package se.lu.esss.ics.jels.model.elem.jels;
 
 import se.lu.esss.ics.jels.smf.impl.ESSFieldMap;
+import se.lu.esss.ics.jels.smf.impl.ESSRfCavity;
 import se.lu.esss.ics.jels.smf.impl.FieldProfile;
 import se.lu.esss.ics.jels.tools.math.TTFIntegrator;
 import xal.model.IElement;
@@ -63,7 +64,7 @@ public class FieldMapNCells extends ThickElement implements IRfGap, IRfCavityCel
 		    
 		    if (fm.getParent() instanceof RfCavity) {
 		    	//WORKAROUND difference between ESS and SNS lattice
-		    	inverted = fp.isFirstInverted();
+		        inverted = !(fm.getParent() instanceof ESSRfCavity) && fp.isFirstInverted();
 		    	frequency = ((RfCavity)fm.getParent()).getCavFreq()*1e6;
 		    } else {
 		    	frequency = fm.getFrequency()*1e6;
