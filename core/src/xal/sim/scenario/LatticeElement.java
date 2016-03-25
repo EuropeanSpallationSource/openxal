@@ -421,11 +421,11 @@ public class LatticeElement implements Comparable<LatticeElement> {
 		if (elemSplitPos.dblElemCntrPos == dblElemEntrPos || elemSplitPos.dblElemCntrPos == dblElemExitPos) return null;
 		LatticeElement secondPart = new LatticeElement(smfNode, elemSplitPos.dblElemCntrPos, dblElemExitPos, clsModElemType, indNodeOrigPos);
 		dblElemExitPos = elemSplitPos.dblElemCntrPos;
-		
+
 		secondPart.firstSlice = firstSlice;
 		secondPart.nextSlice = nextSlice;
 		nextSlice = secondPart;
-		
+
 		return secondPart;
 	}
 
