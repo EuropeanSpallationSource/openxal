@@ -167,12 +167,14 @@ public final class ESSElementFactory {
 		fm.setPosition(length/2.);
 		fm.setFieldMapFile(fieldFile);
 		fm.setFieldProfile(fieldProfile);
+		fm.setXelmax(xelmax);
 		fm.setAper(aper);
+		fm.setFrequency(frequency);
+		fm.setPhase(rfphase);
 
-		double amplitude =  (fieldProfile.getE0L(frequency)/fieldProfile.getLength()) * xelmax * 1e-6;
+		double amplitude =  (fieldProfile.getE0L(frequency)/fieldProfile.getLength()) * 1e-6;
 
 		ESSRfCavity cavity = createESSRfCavity(name, length, new AcceleratorNode[] { fm }, rfphase, amplitude, frequency, position - length/2.);
-		cavity.getRfField().setAmpFactor(xelmax);
 		return cavity;
 	}
 	
