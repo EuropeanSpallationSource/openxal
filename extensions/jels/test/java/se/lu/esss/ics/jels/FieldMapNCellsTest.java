@@ -34,6 +34,7 @@ public class FieldMapNCellsTest {
 			});
 		
 			double dataOXFM[][] = GeneralTest.run(probe, acc);
+			//GeneralTest.saveResults("resultfm"+i, dataOXFM);
 			probe.reset();
 			
 			acc.getAccelerator().setElementMapping(new JElsElementMapping() {
@@ -45,6 +46,7 @@ public class FieldMapNCellsTest {
 				}
 			});	
 			double dataOXNC[][] = GeneralTest.run(probe, acc);
+			//GeneralTest.saveResults("resultnc"+i, dataOXNC);
 			probe.reset();
 			
 			System.out.printf("%s\t", probe.getComment());

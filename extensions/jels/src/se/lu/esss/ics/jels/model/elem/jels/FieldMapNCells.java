@@ -64,7 +64,7 @@ public class FieldMapNCells extends ThickElement implements IRfGap, IRfCavityCel
 		    
 		    if (fm.getParent() instanceof RfCavity) {
 		    	//WORKAROUND difference between ESS and SNS lattice
-		        inverted = !(fm.getParent() instanceof ESSRfCavity) && fp.isFirstInverted();
+		        inverted = fm.getParent().getClass().equals(RfCavity.class) && fp.isFirstInverted();
 		    	frequency = ((RfCavity)fm.getParent()).getCavFreq()*1e6;
 		    } else {
 		    	frequency = fm.getFrequency()*1e6;
