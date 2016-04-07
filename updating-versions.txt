@@ -1,4 +1,4 @@
--= 1.STEP List Non-Packaging pom.xml-s =-
+-= 1.STEP List pom.xml-s =-
 
 Update files to new version by executing: 
 
@@ -6,23 +6,6 @@ Update files to new version by executing:
 
 Note: To List the pom.xml-s execute this command: ag -l --ignore '*/packaging/*' --ignore 'packaging*' '1\.0\.1\-SNAPSHOT' .  | sort
 
-
-
--= 2.STEP List Packaging pom.xml-s =-
-
- 1. Replace string '<openxal.version>1.0.1-SNAPSHOT</openxal.version>' in the packaging/pom.xml with newer version
- 2. Update files to new version by executing: 
-    mvn versions:set -DnewVersion=1.2
-
-Note: To List the pom.xml-s execute this command:  ag -l -G  packaging '1\.0\.0\-SNAPSHOT' . | grep 'pom\.xml' | sort
-
--= 3.STEP List Packaging scripts =-
-
-Replace version string in packaging/ess-data/src/main/scripts/openxal-environment.sh.
-
-ag -l -G  packaging '1\.0\.0\-SNAPSHOT' . | grep '\.sh' | sort
-
-
--= 4. STEP Check for possible forgotten renames =-
+-= 2. STEP Check for possible forgotten renames =-
 
 ag '1\.0\.0\-SNAPSHOT' . 
