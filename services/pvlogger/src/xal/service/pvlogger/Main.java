@@ -10,9 +10,6 @@
 
 package xal.service.pvlogger;
 
-import xal.extension.service.ServiceDirectory;
-
-
 /**
  * Main
  *
