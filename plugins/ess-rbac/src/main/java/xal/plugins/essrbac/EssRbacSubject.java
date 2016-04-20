@@ -103,8 +103,4 @@ public class EssRbacSubject implements RBACSubject {
         }
     }
 
-    public Token getToken() {
-        return token;
-    }
-
 }
