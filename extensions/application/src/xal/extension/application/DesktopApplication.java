@@ -9,24 +9,19 @@
 
 package xal.extension.application;
 
-import java.awt.Point;
-import java.awt.Window;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.filechooser.FileFilter;
-import java.awt.Toolkit;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.net.URL;
 
-import java.util.*;
-import java.util.logging.*;
-import java.net.*;
-import java.io.*;
-import java.util.prefs.Preferences;
+import javax.swing.JDesktopPane;
+import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
+import javax.swing.JMenuBar;
+import javax.swing.SwingUtilities;
+import javax.swing.WindowConstants;
 
 import xal.Info;
-import xal.tools.StringJoiner;
-import xal.tools.apputils.files.*;
-import xal.tools.messaging.MessageCenter;
-import xal.extension.service.*;
 
 
 /** Application subclass for JDesktopPane based applications. */

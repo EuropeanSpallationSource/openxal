@@ -9,14 +9,10 @@
 
 package xal.extension.application;
 
-import java.net.*;
-import java.awt.print.*;
-import java.awt.Dimension;
-//import java.awt.Graphics;
-//import java.awt.Graphics2D;
-import javax.swing.JOptionPane;
-import javax.swing.event.*;
+import javax.swing.Action;
 import javax.swing.JMenuBar;
+import javax.swing.event.InternalFrameAdapter;
+import javax.swing.event.InternalFrameEvent;
 
 
 /**
