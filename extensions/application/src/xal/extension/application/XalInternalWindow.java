@@ -9,19 +9,20 @@
 
 package xal.extension.application;
 
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.text.*;
 import java.awt.BorderLayout;
-import java.awt.event.*;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.beans.PropertyVetoException;
-import java.util.*;
-import java.util.logging.*;
-import java.io.*;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import xal.tools.messaging.MessageCenter;
+import javax.swing.JInternalFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JToolBar;
+import javax.swing.SwingUtilities;
+import javax.swing.WindowConstants;
+
 import xal.tools.apputils.ImageCaptureManager;
 
 
@@ -96,11 +97,7 @@ abstract public class XalInternalWindow extends JInternalFrame implements XalDoc
         customizeCommands( commander );
         _document.customizeCommands( commander );
 		
-		final JMenuBar menuBar = commander.getMenubar();
-        
-		if ( menuBar != null ) {
-			setJMenuBar( commander.getMenubar() );			
-		}
+        setJMenuBar( commander.getMenubar() );			
 		
         if ( usesToolbar() )  { 
             _toolBar = commander.getToolbar();

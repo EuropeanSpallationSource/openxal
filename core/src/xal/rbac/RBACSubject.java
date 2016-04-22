@@ -11,6 +11,7 @@ import java.util.Map;
  *  It also provides a mechanism for autologout of the user. 
  *
  * @author <a href="mailto:ivo.list@cosylab.com">Ivo List</a>
+ * @author <a href="mailto:blaz.kranjc@cosylab.com">BlazKranjc</a>
  */
 public interface RBACSubject {
     /**
@@ -87,4 +88,11 @@ public interface RBACSubject {
      * Update the last action time to now to prevent auto logout.
      */
     void updateLastAction();
+    
+    /**
+     * Get info of logged in RBAC user.
+     * 
+     * @return info of logged in user or null if the user is not logged in.
+     */
+    RBACUserInfo getUserInfo();
 }

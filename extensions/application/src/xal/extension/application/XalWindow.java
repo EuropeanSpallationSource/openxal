@@ -6,21 +6,25 @@
 
 package xal.extension.application;
 
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.text.*;
 import java.awt.BorderLayout;
-import java.awt.event.*;
-import java.awt.Point;
 import java.awt.Toolkit;
-import java.awt.Window;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.logging.*;
-import java.io.*;
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JToolBar;
+import javax.swing.SwingUtilities;
+import javax.swing.WindowConstants;
 
 import xal.Info;
-import xal.tools.messaging.MessageCenter;
 import xal.tools.apputils.ImageCaptureManager;
 
 
@@ -84,7 +88,7 @@ public abstract class XalWindow extends JFrame implements XalDocumentView, XalDo
         Commander commander = makeCommander();
         customizeCommands( commander );
         document.customizeCommands( commander );
-        
+
         setJMenuBar( commander.getMenubar() );
         if ( usesToolbar() )  { 
             _toolBar = commander.getToolbar();

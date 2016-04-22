@@ -11,9 +11,10 @@ import xal.rbac.AutoLogoutCallback;
 import xal.rbac.ExclusiveAccess;
 import xal.rbac.RBACException;
 import xal.rbac.RBACSubject;
+import xal.rbac.RBACUserInfo;
 
 /**
- * Implementation of {@link RBACSubject}. Basically just a wrapper to {@link SecurityFacade} for getting permissions,
+ * Implementation of {@link RBACSubject}. A wrapper to {@link SecurityFacade} for getting permissions,
  * and log out.
  * 
  * @version 0.2 28 Jul 2015
@@ -23,13 +24,12 @@ public class EssRbacSubject implements RBACSubject {
 
     private Token token;
 
-    
     /**
      * Constructor
      * 
      * @param token of the authenticated user.
      */
-    public EssRbacSubject(Token token) {
+    EssRbacSubject(Token token) {
         this.token = token;
     }
 
@@ -102,9 +102,13 @@ public class EssRbacSubject implements RBACSubject {
             e.printStackTrace();
         }
     }
-
-    public Token getToken() {
-        return token;
+    
+    @Override
+    public RBACUserInfo getUserInfo() {
+    	if (token == null) {
+    		return null;
+    	}
+   		return new RBACUserInfo(token.getUsername(), token.getFirstName(), token.getLastName());
     }
 
 }
