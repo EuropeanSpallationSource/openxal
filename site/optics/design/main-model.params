@@ -33,6 +33,12 @@
         </schema>
         <record name="default" />
     </table>
+    <table name="ParticleTracker">
+        <schema>
+            <attribute isPrimaryKey="true"  name="name" type="java.lang.String" />
+        </schema>
+        <record name="default" />
+    </table>
     <table name="species" recordClass="xal.tools.data.GenericRecord">
         <schema>
             <attribute isPrimaryKey="true" name="name" type="java.lang.String"/>
