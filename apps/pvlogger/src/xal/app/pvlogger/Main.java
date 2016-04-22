@@ -10,9 +10,10 @@
 
 package xal.app.pvlogger;
 
-import xal.extension.application.*;
-import xal.extension.application.smf.*;
-import xal.service.pvlogger.*;
+import xal.extension.application.Application;
+import xal.extension.application.ApplicationAdaptor;
+import xal.extension.application.XalDocument;
+import xal.extension.application.smf.AcceleratorApplication;
 
 
 /**

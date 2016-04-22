@@ -21,6 +21,7 @@ GRANT ALL ON TABLE pvlog.mach_snapshot_type TO pvlog;
 CREATE TABLE pvlog.mach_snapshot_type_sgnl (
     snapshot_type_nm text NOT NULL REFERENCES pvlog.mach_snapshot_type(snapshot_type_nm),
     sgnl_id text NOT NULL,
+    sgnl_active text DEFAULT 'Y',
     PRIMARY KEY (snapshot_type_nm, sgnl_id)
 );
 GRANT ALL ON TABLE pvlog.mach_snapshot_type_sgnl TO pvlog;
