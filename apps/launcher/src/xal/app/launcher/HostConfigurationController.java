@@ -8,13 +8,11 @@
 
 package xal.app.launcher;
 
-import xal.extension.application.*;
 import xal.extension.bricks.WindowReference;
 import xal.extension.widgets.swing.KeyValueTableModel;
 import xal.tools.data.KeyValueRecordListener;
 
 import javax.swing.*;
-import javax.swing.event.*;
 import javax.swing.table.*;
 import java.awt.event.*;
 import java.util.*;
@@ -51,13 +49,13 @@ public class HostConfigurationController {
 		MODEL = model;
 		
 		HOST_SETTINGS_TABLE_MODEL = new HostSettingsTableModel( model );
-		final JTable hostTable = (JTable)windowReference.getView( "HostTable" );
+		final JTable hostTable = (JTable)WINDOW_REFERENCE.getView( "HostTable" );
 		hostTable.setModel( HOST_SETTINGS_TABLE_MODEL );
 		hostTable.getColumnModel().getColumn( HostSettingsTableModel.ENABLE_COLUMN ).setMaxWidth( 75 );
 
 		HOST_CONFIGURATION = model.getLauncher().getHostConfiguration();
 
-		HOST_COMMAND_TABLE = (JTable)windowReference.getView( "HostCommandTable" );
+		HOST_COMMAND_TABLE = (JTable)WINDOW_REFERENCE.getView( "HostCommandTable" );
 
 		HOST_COMMAND_TABLE_MODEL = new KeyValueTableModel<>( _hostCommands, "value" );
 		HOST_COMMAND_TABLE_MODEL.setColumnName( "value", "Command" );
@@ -69,9 +67,8 @@ public class HostConfigurationController {
 		});
 		HOST_COMMAND_TABLE.setModel( HOST_COMMAND_TABLE_MODEL );
 
-		final JButton deleteHostCommandButton = (JButton)windowReference.getView( "DeleteHostCommandButton" );
+		final JButton deleteHostCommandButton = (JButton)WINDOW_REFERENCE.getView( "DeleteHostCommandButton" );
 		deleteHostCommandButton.addActionListener( new ActionListener() {
-			private static final long serialVersionUID = 1L;
 
 			public void actionPerformed( final ActionEvent event ) {
 				final int[] selectedRows = HOST_COMMAND_TABLE.getSelectedRows();
@@ -86,9 +83,8 @@ public class HostConfigurationController {
 			}
 		});
 
-		final JButton addHostCommandButton = (JButton)windowReference.getView( "AddHostCommandButton" );
+		final JButton addHostCommandButton = (JButton)WINDOW_REFERENCE.getView( "AddHostCommandButton" );
 		addHostCommandButton.addActionListener( new ActionListener() {
-			private static final long serialVersionUID = 1L;
 
 			public void actionPerformed( final ActionEvent event ) {
 				final int selectedRow = HOST_COMMAND_TABLE.getSelectedRow();
