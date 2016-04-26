@@ -181,28 +181,29 @@ public class Commander {
 		Util.mergeResourceBundle( _controlMap, resourceURL );
     }
     
-    
     /**
      * Make and return a new menubar based on the menu definition file.
+     * 
      * @return The new menubar
      */
     public JMenuBar getMenubar() {
         final JMenuBar menuBar = new JMenuBar();
-        
-		final String menubarStr = _controlMap.get( "menubar" );
-		if ( menubarStr == null || menubarStr.isEmpty() )  return null;		// check if a menubar definition was found
-		
-        final String[] menuKeys = Util.getTokens( menubarStr );
-        
-        appendMenubarMenusWithKeys( menuBar, menuKeys );
-        
+
+        final String menubarStr = _controlMap.get("menubar");
+        if (menubarStr == null || menubarStr.isEmpty())
+            return null; // check if a menubar definition was found
+
+        final String[] menuKeys = Util.getTokens(menubarStr);
+
+        appendMenubarMenusWithKeys(menuBar, menuKeys);
+
         // Add RBAC menu to the menubar if RBAC is used
         RBACSubject subject = Application.getApp().getRbacSubject();
         if (subject != null) {
-        	menuBar.add(Box.createHorizontalGlue()); // Flush right
-        	menuBar.add(new RBACMenu(subject.getUserInfo()));
+            menuBar.add(Box.createHorizontalGlue()); // Flush right
+            menuBar.add(new RBACMenu());
         }
-        
+
         return menuBar;
     }
     

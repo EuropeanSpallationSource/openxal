@@ -1018,44 +1018,92 @@ abstract public class Application {
     
     /** Handle the "Quit" action by quitting the application. */
     public void quit() {
-		boolean warnUnsavedChanges = false;
-		final List<XalAbstractDocument> documents = getDocuments();
-		for ( final XalAbstractDocument document : documents ) {
-			warnUnsavedChanges |= ( document.warnUserOfUnsavedChangesWhenClosing() && document.hasChanges() );
-		}
-		
-		if ( warnUnsavedChanges ) {
-			try {
-				int status = JOptionPane.showConfirmDialog( getActiveWindow(), "Some documents have unsaved changes.  Continue Quitting?", "Unsaved Changes", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE );
-				if ( status == JOptionPane.NO_OPTION ) {
-					return;
-				}
-			}
-			catch( java.awt.HeadlessException exception ) {
-				Logger.getLogger("global").log( Level.SEVERE, "Exception while quitting the application.", exception );
-				System.err.println( exception );
-				exception.printStackTrace();
-			}
-		}
-        if (rbacSubject != null) {
-			final int option = JOptionPane.showConfirmDialog(getActiveWindow(), 
-					"Would you like to logout?",  "Logout", JOptionPane.YES_NO_OPTION);
-			if (option == JOptionPane.YES_OPTION) {
-				try {
-					rbacSubject.logout();
-				} catch (RBACException e) {
-					JOptionPane.showMessageDialog(getActiveWindow(), e.getMessage(), "Error while trying to logout", JOptionPane.ERROR_MESSAGE);
-				}
-				rbacSubject = null;
-			}
+        boolean warnUnsavedChanges = false;
+        final List<XalAbstractDocument> documents = getDocuments();
+        for (final XalAbstractDocument document : documents) {
+            warnUnsavedChanges |= (document.warnUserOfUnsavedChangesWhenClosing() && document.hasChanges());
         }
-        if (_noticeProxy != null) _noticeProxy.applicationWillQuit();
+
+        if (warnUnsavedChanges) {
+            try {
+                int status = JOptionPane.showConfirmDialog(getActiveWindow(),
+                        "Some documents have unsaved changes.  Continue Quitting?", "Unsaved Changes",
+                        JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+                if (status == JOptionPane.NO_OPTION) {
+                    return;
+                }
+            } catch (java.awt.HeadlessException exception) {
+                Logger.getLogger("global").log(Level.SEVERE, "Exception while quitting the application.", exception);
+                System.err.println(exception);
+                exception.printStackTrace();
+            }
+        }
+
+        rbacLogout();
+
+        if (_noticeProxy != null)
+            _noticeProxy.applicationWillQuit();
 
         System.exit(0);
     }
-    
-    
-    
+
+    /**
+     * Prompts a logout dialog for the RBAC user to logout and logs out the user
+     * if <code>YES_OPTION</code> was selected. Otherwise it does nothing.
+     * 
+     * @return true if user was logged out or if user is not logged in, false
+     *         otherwise
+     */
+    private boolean rbacLogout() {
+        if (rbacSubject != null) {
+            final int option = JOptionPane.showConfirmDialog(getActiveWindow(), "Would you like to logout?", "Logout",
+                    JOptionPane.YES_NO_OPTION);
+            if (option == JOptionPane.YES_OPTION) {
+                try {
+                    rbacSubject.logout();
+                } catch (RBACException e) {
+                    JOptionPane.showMessageDialog(getActiveWindow(), e.getMessage(), "Error while trying to logout",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+                rbacSubject = null;
+                return true;
+            }
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Changes the user
+     */
+    public void changeRBACUser() {
+        boolean isLogout = rbacLogout();
+        if (!isLogout)
+            return; // The user did not logout
+        while (true) {
+            if (authenticateWithRBAC()) {
+                if (authorizeWithRBAC("Run")) {
+                    break;
+                } else {
+                    final int option = JOptionPane.showConfirmDialog(getActiveWindow(),
+                            "No authorisation. Would you like to login with another user?", "No authorisation",
+                            JOptionPane.OK_CANCEL_OPTION);
+                    if (option == JOptionPane.OK_OPTION) {
+                        try {
+                            rbacSubject.logout();
+                        } catch (RBACException e) {
+                            JOptionPane.showMessageDialog(getActiveWindow(), e.getMessage(),
+                                    "Error while trying to logout", JOptionPane.ERROR_MESSAGE);
+                        }
+                        rbacSubject = null;
+                    } else {
+                        quit();
+                    }
+                }
+            }
+        }
+    }
+
     // --------- Window menu actions -------------------------------------------
 
     
