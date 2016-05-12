@@ -69,7 +69,7 @@ public class KnobControl extends Box implements KnobListener {
 		WHEEL_EVENT_HANDLER = new WheelEventHandler();
 		KNOB_WHEEL = createKnobWheel();
 		
-		READY_INDICATOR = new JButton( "" );
+		READY_INDICATOR = new JButton();
 		READY_INDICATOR.addActionListener( new ActionListener() {
 			public void actionPerformed( final ActionEvent event ) {
 				final String inactiveExcuse = knob.getInactiveExcuse();
@@ -123,7 +123,6 @@ public class KnobControl extends Box implements KnobListener {
 			public void run() {
 				if ( !KNOB.hasElements() ) {
 					READY_INDICATOR.setText( "No Channels" );
-					READY_INDICATOR.setForeground( Color.ORANGE );
 					READY_INDICATOR.setEnabled( false );
 					KNOB_WHEEL.setEnabled( false );
 				}
@@ -133,7 +132,6 @@ public class KnobControl extends Box implements KnobListener {
 					READY_INDICATOR.setEnabled( false );
 					KNOB_WHEEL.setToolTipText( null );
 					KNOB_WHEEL.setEnabled( true );
-					READY_INDICATOR.setForeground( Color.GREEN );
 				}
 				else {
 					READY_INDICATOR.setText( "Show Problems..." );
@@ -267,9 +265,12 @@ public class KnobControl extends Box implements KnobListener {
 	static final String generateWheelFormat( final double lowerLimit, final double upperLimit ) {
 		final double scale = Math.max( Math.abs( lowerLimit ), Math.abs( upperLimit ) );
 		final int diffDigits = (int)Math.ceil( Math.log10( Math.abs( upperLimit - lowerLimit ) ) );
-		final int digitsToLeft = (int)Math.ceil( Math.log10( scale ) );
-		final int SIGNIFICANT_DIGITS = 5 + Math.abs( digitsToLeft - diffDigits );
-				
+		final int integerPartDigits = (int)Math.ceil( Math.log10( scale ) );
+		final int SIGNIFICANT_DIGITS = 5 + Math.abs( integerPartDigits - diffDigits );
+		
+		// at least one integer-part digit is required
+		final int digitsToLeft = integerPartDigits < 0 ? 1 : integerPartDigits;
+
 		final StringBuffer buffer = new StringBuffer( "+" );
 		
 		int digitCount = 0;
