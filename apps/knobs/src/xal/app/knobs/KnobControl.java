@@ -265,12 +265,9 @@ public class KnobControl extends Box implements KnobListener {
 	static final String generateWheelFormat( final double lowerLimit, final double upperLimit ) {
 		final double scale = Math.max( Math.abs( lowerLimit ), Math.abs( upperLimit ) );
 		final int diffDigits = (int)Math.ceil( Math.log10( Math.abs( upperLimit - lowerLimit ) ) );
-		final int integerPartDigits = (int)Math.ceil( Math.log10( scale ) );
-		final int SIGNIFICANT_DIGITS = 5 + Math.abs( integerPartDigits - diffDigits );
+		final int digitsToLeft = (int)Math.ceil( Math.log10( scale ) );
+		final int SIGNIFICANT_DIGITS = 5 + Math.abs( digitsToLeft - diffDigits );
 		
-		// at least one integer-part digit is required
-		final int digitsToLeft = integerPartDigits < 0 ? 1 : integerPartDigits;
-
 		final StringBuffer buffer = new StringBuffer( "+" );
 		
 		int digitCount = 0;
@@ -281,7 +278,7 @@ public class KnobControl extends Box implements KnobListener {
 		
 		buffer.append( "." );
 		
-		final int zerosToRight = Math.max( 0, - digitsToLeft );
+		final int zerosToRight = Math.max( 0, -digitsToLeft );
 		for ( int digit = 0 ; digit < zerosToRight; digit++ ) {
 			++digitCount;
 			if ( digitCount < 8 ) {		// handle wheelswitch bug
