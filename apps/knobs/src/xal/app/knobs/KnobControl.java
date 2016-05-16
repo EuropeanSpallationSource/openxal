@@ -301,7 +301,7 @@ public class KnobControl extends Box implements KnobListener {
 		// Limit the display value to MAX_DIGITS digits (ones digit is already included)
 		final int nIntegralDigitsLimited = nIntegralDigits > MAX_DIGITS-1 ? MAX_DIGITS-1 : nIntegralDigits;
 
-		for ( int digit = 0 ; digit < nIntegralDigitsLimited ; digit++ ) {
+		for ( int digit = 0 ; digit < nIntegralDigitsLimited - 1 ; digit++ ) {
 			buffer.append( "#" );
 		}
 		
