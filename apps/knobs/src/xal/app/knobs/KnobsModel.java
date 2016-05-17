@@ -90,7 +90,7 @@ public class KnobsModel implements DataListener {
 			final KnobGroup group = new KnobGroup( groupAdaptor.stringValue( "label" ) );
 			addGroup( group );
 			
-			for (final DataAdaptor knobRefAdaptorIter : mainAdaptor.childAdaptors()) {
+			for (final DataAdaptor knobRefAdaptorIter : groupAdaptor.childAdaptors()) {
 				final long knobID = knobRefAdaptorIter.longValue( "knobID" );
 				final Knob knob = _mainGroup.getKnobWithID( knobID );
 				group.addKnob( knob );
