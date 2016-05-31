@@ -28,7 +28,7 @@ public class NodeChannelRef {
 	
 	// static initializer
 	static {
-		PARSE_PATTERN = Pattern.compile( "(\\w|:)+\\[(\\w)+\\]" );
+		PARSE_PATTERN = Pattern.compile( "(\\w|:|-)+\\[(\\w)+\\]" );
 	}
 	
 	
