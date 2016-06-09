@@ -1,18 +1,10 @@
 # You can use a Docker image from Docker Hub or your own container
 # registry for your build environment.
-image: europeanspallationsource/centos7.1-base7-epel7
+image: europeanspallationsource/nblocal
 
 pipelines:
     branches:
         site.ess.*:
             - step:
                 script:
-                    - echo "Testing OpenXAL on ESS branch using Oracle JDK $JDK_VERSION-$JDK_BUILD_VERSION"
-                    - yum install maven git -y
-                    - curl -LO "http://download.oracle.com/otn-pub/java/jdk/8u91-b14/jdk-8u91-linux-x64.rpm" -H "Cookie: oraclelicense=accept-securebackup-cookie"
-                    - rpm -i jdk-8u91-linux-x64.rpm
-                    - git clone https://bitbucket.org/europeanspallationsource/ess-java-config.git
-                    - cd ess-java-config
-                    - mvn install
-                    - cd ../
                     - mvn package
