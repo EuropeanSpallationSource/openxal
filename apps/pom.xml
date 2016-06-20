@@ -117,7 +117,7 @@
         </dependency>
         <dependency>
             <groupId>org.xal</groupId>
-            <artifactId>openxal.plugins.jca</artifactId>
+            <artifactId>openxal.plugins.pvaccess</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
