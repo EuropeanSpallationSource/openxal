@@ -1,15 +1,13 @@
 package xal.plugin.pvaccess.server;
 
-import org.epics.pvdata.copy.PVCopy;
-import org.epics.pvdata.copy.PVCopyFactory;
+import org.epics.pvdata.copy.CreateRequest;
 import org.epics.pvdata.factory.FieldFactory;
 import org.epics.pvdata.factory.PVDataFactory;
 import org.epics.pvdata.factory.StandardFieldFactory;
-import org.epics.pvdata.pv.FieldBuilder;
+import org.epics.pvdata.monitor.MonitorRequester;
 import org.epics.pvdata.pv.FieldCreate;
 import org.epics.pvdata.pv.PVDataCreate;
 import org.epics.pvdata.pv.PVDoubleArray;
-import org.epics.pvdata.pv.PVScalar;
 import org.epics.pvdata.pv.PVString;
 import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.ScalarType;
@@ -17,11 +15,9 @@ import org.epics.pvdata.pv.StandardField;
 import org.epics.pvdata.pv.Structure;
 import org.epics.pvdatabase.PVDatabase;
 import org.epics.pvdatabase.PVDatabaseFactory;
-import org.epics.pvdatabase.PVListener;
 import org.epics.pvdatabase.PVRecord;
-import org.epics.pvdatabase.PVRecordField;
-import org.epics.pvdatabase.PVRecordStructure;
 import org.epics.pvdatabase.pva.ContextLocal;
+import org.epics.pvdatabase.pva.MonitorFactory;
 
 import xal.ca.Channel;
 import xal.ca.ChannelRecord;
@@ -39,6 +35,7 @@ import xal.ca.PutListener;
 import xal.plugin.pvaccess.EventSinkAdapter;
 import xal.plugin.pvaccess.PvAccessChannelRecord;
 import xal.plugin.pvaccess.PvAccessDataAdapter;
+import xal.plugin.pvaccess.PvAccessMonitorRequesterImpl;
 import xal.ca.IServerChannel;
 
 /**
@@ -273,22 +270,7 @@ class PvAccessServerChannel extends Channel implements IServerChannel {
     @Override
     public Monitor addMonitorValTime(final IEventSinkValTime listener, final int intMaskFire) throws ConnectionException,
             MonitorException {
-        
-        PVListener pvListener = new PVListenerImpl(EventSinkAdapter.getAdapter(listener, VALUE_FIELD_NAME));
-        PVCopy pvCopy = PVCopyFactory.create(getPvStructure(), getPvStructure(), "field");
-        record.addListener(pvListener, pvCopy);
-        return new Monitor(this , intMaskFire) {
-            
-            @Override
-            public void clear() {
-                record.removeListener(pvListener, pvCopy);
-            }
-            
-            @Override
-            protected void begin() throws MonitorException {
-                // Do nothing
-            }
-        };
+        return addMonitor(EventSinkAdapter.getAdapter(listener, VALUE_FIELD_NAME), intMaskFire);
     }
 
     @Override
@@ -304,13 +286,10 @@ class PvAccessServerChannel extends Channel implements IServerChannel {
     }
     
     private Monitor addMonitor(final EventSinkAdapter listener, int intMaskFire) throws ConnectionException {
-        PVListener pvListener = new PVListenerImpl(listener);
-        
-        PVStructure monitoringStructure = RecordFactory.createMaskedPvStructure(this.size, intMaskFire);
-
-        PVCopy pvCopy = PVCopyFactory.create(getPvStructure(), monitoringStructure, "field"); // TODO test this
-        record.addListener(pvListener, pvCopy);
-        return new MonitorImpl(intMaskFire, pvListener, pvCopy);
+        Monitor monitor = new PvAccessMonitorRequesterImpl(listener, this, intMaskFire, VALUE_FIELD_NAME);
+        PVStructure structure = CreateRequest.create().createRequest("field()");
+        MonitorFactory.create(record, (MonitorRequester) monitor, structure);
+        return monitor;
     }
 
     @Override
@@ -394,7 +373,6 @@ class PvAccessServerChannel extends Channel implements IServerChannel {
         }
     }
     
-    @Deprecated
     @Override
     public void setLowerAlarmLimit(Number lowerAlarmLimit) {
         getPvStructure().getStructureField(ALARM_LIMIT_FIELD_NAME).getDoubleField("lowAlarmLimit").
@@ -481,21 +459,6 @@ class PvAccessServerChannel extends Channel implements IServerChannel {
             return pvDataCreate.createPVStructure(top);
         }
 
-        static PVStructure createMaskedPvStructure(int size, int mask) {
-            FieldBuilder builder = fieldCreate.createFieldBuilder();
-            if ((mask&Monitor.VALUE) > 0) {
-                if (size == 1) {
-                    builder.add("value", ScalarType.pvDouble);
-                } else if (size > 1) {
-                    builder.addArray("value", ScalarType.pvDouble);
-                }
-            }
-            if ((mask&Monitor.ALARM) > 0) {
-                builder.add("alarm", standardField.alarm());
-            }
-            return pvDataCreate.createPVStructure(builder.createStructure());
-        }
-
         private static PVStructure createPvStructure(int size) {
             return size == 1 ? createScalarPvStructure() : createArrayPvStructure(size);
         }
@@ -508,61 +471,6 @@ class PvAccessServerChannel extends Channel implements IServerChannel {
 
     }
     
-    private class PVListenerImpl implements PVListener {
-        
-        private EventSinkAdapter listener;
-        
-        public PVListenerImpl(EventSinkAdapter listener) {
-            this.listener = listener;
-        }
-        
-        @Override
-        public void unlisten(PVRecord pvRecord) {
-            // Do nothing
-        }
-            
-        @Override
-        public void endGroupPut(PVRecord pvRecord) {
-            // Do nothing
-        }
-            
-        @Override
-        public void dataPut(PVRecordStructure requested, PVRecordField pvRecordField) {
-            // Do nothing
-        }
-            
-        @Override
-        public void dataPut(PVRecordField pvRecordField) {
-            listener.eventValue(getPvStructure(), PvAccessServerChannel.this);
-        }
-            
-        @Override
-        public void beginGroupPut(PVRecord pvRecord) {
-            // Do nothing
-        }
-    }
-
-    private class MonitorImpl extends Monitor {
-        
-        private final PVListener listener;
-        private final PVCopy copy;
-        
-        private MonitorImpl(int mask, PVListener listener, PVCopy copy) throws ConnectionException {
-            super(PvAccessServerChannel.this, mask);
-            this.listener = listener;
-            this.copy = copy; 
-        }
-
-        @Override
-        public void clear() {
-        }
-
-        @Override
-        protected void begin() throws MonitorException {
-            PvAccessServerChannel.this.record.removeListener(listener, copy);
-        }
-    }
-
     /**
      * Singleton class that holds the context and destroys it on garbage collection.
      * TODO try to find a better design for this.

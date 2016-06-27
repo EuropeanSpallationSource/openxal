@@ -10,6 +10,7 @@ import org.epics.pvdata.pv.Status;
 import org.epics.pvdata.pv.Structure;
 import org.epics.pvdata.misc.BitSet;
 
+import xal.ca.Channel;
 import xal.ca.ConnectionException;
 import xal.ca.Monitor;
 import xal.ca.MonitorException;
@@ -19,15 +20,17 @@ import xal.ca.MonitorException;
  * 
  * @author <a href="mailto:blaz.kranjc@cosylab.com">Blaz Kranjc</a>
  */
-class MonitorRequesterImpl extends Monitor implements MonitorRequester {
+public class PvAccessMonitorRequesterImpl extends Monitor implements MonitorRequester {
     
-    private EventSinkAdapter listener;
+    private final String defaultField;
+    private final EventSinkAdapter listener;
     private org.epics.pvdata.monitor.Monitor monitor;
     private boolean isFirst;
     
-    MonitorRequesterImpl(EventSinkAdapter listener, PvAccessChannel channel, int maskEvent) throws ConnectionException {
+    public PvAccessMonitorRequesterImpl(EventSinkAdapter listener, Channel channel, int maskEvent, String defaultField) throws ConnectionException {
        super(channel, maskEvent);
        this.listener = listener;
+       this.defaultField = defaultField;
        isFirst = true;
     }
 
@@ -70,7 +73,7 @@ class MonitorRequesterImpl extends Monitor implements MonitorRequester {
             boolean isValueChanged = false;
             boolean isAlarmChanged = false;
 
-            PVField valueField = pvs.getSubField(((PvAccessChannel)m_xalChan).getDefaultField());
+            PVField valueField = pvs.getSubField(defaultField);
             if (valueField != null) {
                 isValueChanged = changed.get(valueField.getFieldOffset());
             }

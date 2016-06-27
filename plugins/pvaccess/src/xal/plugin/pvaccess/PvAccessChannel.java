@@ -646,7 +646,7 @@ class PvAccessChannel extends Channel {
     }
     
     private Monitor addMonitor(EventSinkAdapter listener, int intMaskFire) throws ConnectionException {
-        MonitorRequester monitorRequester = new MonitorRequesterImpl(listener, this, intMaskFire);
+        MonitorRequester monitorRequester = new PvAccessMonitorRequesterImpl(listener, this, intMaskFire, defaultField);
 
         channel.createMonitor(monitorRequester, pvRequest);
         return (Monitor) monitorRequester;
