@@ -147,26 +147,13 @@ class PvAccessChannel extends Channel {
         }
         return false;
     };
-
+    
     /**
      * {@inheritDoc}
      */
     @Override
     public void requestConnection() {
-        if ( m_strId == null || isConnected()) { 
-            return;
-        }
-
-        reset();
-
-        synchronized (connectionLock) {
-            connectionLatch = new CountDownLatch(1);
-        
-            org.epics.pvaccess.client.Channel pvaChannel = ChannelProviderRegistryFactory.getChannelProviderRegistry().
-                    createProvider(org.epics.pvaccess.ClientFactory.PROVIDER_NAME).createChannel(m_strId,
-                            new PvAccessChannel.ChannelRequesterImpl(), ChannelProvider.PRIORITY_DEFAULT);
-            channel = pvaChannel;
-        }
+        connectAndWait();
     }
 
 
@@ -176,11 +163,6 @@ class PvAccessChannel extends Channel {
     private void handleConnection(org.epics.pvaccess.client.Channel connectedChannel) {
         synchronized (connectionLock) {
             connectionLatch.countDown();
-
-            connectionFlag = true;
-            if (connectionProxy != null) {
-                connectionProxy.connectionMade(PvAccessChannel.this);
-            }
         }
     }
     
@@ -215,14 +197,33 @@ class PvAccessChannel extends Channel {
      */
     @Override
     public boolean connectAndWait(double timeout) {
-        requestConnection();
+        if ( m_strId == null || isConnected()) { 
+            return false;
+        }
+
+        reset();
+
+        synchronized (connectionLock) {
+            connectionLatch = new CountDownLatch(1);
+        
+            org.epics.pvaccess.client.Channel pvaChannel = ChannelProviderRegistryFactory.getChannelProviderRegistry().
+                    createProvider(org.epics.pvaccess.ClientFactory.PROVIDER_NAME).createChannel(m_strId,
+                            new PvAccessChannel.ChannelRequesterImpl(), ChannelProvider.PRIORITY_DEFAULT);
+            channel = pvaChannel;
+        }
+
         try {
             if (connectionLatch.await((long) timeout, TimeUnit.SECONDS)) {
+                connectionFlag = true;
+                if (connectionProxy != null) {
+                    connectionProxy.connectionMade(PvAccessChannel.this);
+                }
                 return true;
             }
         } catch (InterruptedException e) {
             // This should not happen, but if it does the connection was not established
         }
+
         return false;
     }
 
