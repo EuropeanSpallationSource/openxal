@@ -1,7 +1,5 @@
 package xal.plugin.pvaccess;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -73,12 +71,6 @@ class PvAccessChannel extends Channel {
     // Latch used to notify the connection to the channel
     private volatile CountDownLatch connectionLatch;
     
-    // Number of protocols used (pva and ca)
-    private static final int PROTOCOL_N = 2;
-
-    // Set that keeps track of created but unused channels
-    private final Set<org.epics.pvaccess.client.Channel> createdChannels = new HashSet<>(PROTOCOL_N);
-
     // Lock for connection related stuff
     private final Object connectionLock = new Object();
 
@@ -173,15 +165,10 @@ class PvAccessChannel extends Channel {
 
             connectionLatch = new CountDownLatch(1);
         
-            org.epics.pvaccess.client.Channel caChannel = ChannelProviderRegistryFactory.getChannelProviderRegistry().
-                    createProvider(org.epics.ca.ClientFactory.PROVIDER_NAME).createChannel(m_strId,
-                            new PvAccessChannel.ChannelRequesterImpl(), ChannelProvider.PRIORITY_DEFAULT);
-            createdChannels.add(caChannel);
-
             org.epics.pvaccess.client.Channel pvaChannel = ChannelProviderRegistryFactory.getChannelProviderRegistry().
                     createProvider(org.epics.pvaccess.ClientFactory.PROVIDER_NAME).createChannel(m_strId,
                             new PvAccessChannel.ChannelRequesterImpl(), ChannelProvider.PRIORITY_DEFAULT);
-            createdChannels.add(pvaChannel);
+            channel = pvaChannel;
         }
     }
 
@@ -191,47 +178,16 @@ class PvAccessChannel extends Channel {
      */
     private void handleConnection(org.epics.pvaccess.client.Channel connectedChannel) {
         synchronized (connectionLock) {
-            if (connectionFlag) {
-                // If a channel was already connected from any other protocol do nothing.
-                return;
-            }
-
-            this.channel = connectedChannel;
-            cleanCreatedChannels(connectedChannel);
-
             connectionLatch.countDown();
 
             isConnecting = false;
             connectionFlag = true;
-
             if (connectionProxy != null) {
                 connectionProxy.connectionMade(PvAccessChannel.this);
             }
         }
     }
     
-    /**
-     * Clean all created channels.
-     */
-    private void cleanCreatedChannels() {
-        cleanCreatedChannels(null);
-    }
-
-    /**
-     * Clean all created channels except for the one passed as parameter.
-     * @param connectedChannel Channel that was connected and should not be cleaned
-     */
-    private void cleanCreatedChannels(org.epics.pvaccess.client.Channel connectedChannel) {
-        if (connectedChannel != null) {
-            // We do not want to clean the connected channel
-            createdChannels.remove(connectedChannel);
-        }
-        for (org.epics.pvaccess.client.Channel c : createdChannels) {
-            c.destroy();
-        }
-        createdChannels.remove(createdChannels);
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -291,8 +247,6 @@ class PvAccessChannel extends Channel {
                 isConnecting = false;
                 connectionFlag = false;
             }
-
-            cleanCreatedChannels();
 
             if (channel != null) {
                 channel.destroy();
@@ -906,7 +860,6 @@ class PvAccessChannel extends Channel {
 
         private ProvidersManager () {
             org.epics.pvaccess.ClientFactory.start();
-            org.epics.ca.ClientFactory.start();
         }
 
         static ProvidersManager getInstance() {
@@ -916,7 +869,6 @@ class PvAccessChannel extends Channel {
         @Override
         protected void finalize() throws Throwable {
             org.epics.pvaccess.ClientFactory.stop();
-            org.epics.ca.ClientFactory.stop();
             super.finalize();
         }
 
