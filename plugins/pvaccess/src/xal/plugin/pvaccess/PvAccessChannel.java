@@ -84,8 +84,6 @@ class PvAccessChannel extends Channel {
         LOGGER.setLevel(Level.WARNING);
     }
 
-    private boolean isConnecting = false;
-    
     // Keep a reference to the context manager instance to ensure that it does not get
     // garbage collected while a channel still exists (TODO bad design)
     @SuppressWarnings("unused") 
@@ -162,8 +160,6 @@ class PvAccessChannel extends Channel {
         reset();
 
         synchronized (connectionLock) {
-            isConnecting = true;
-
             connectionLatch = new CountDownLatch(1);
         
             org.epics.pvaccess.client.Channel pvaChannel = ChannelProviderRegistryFactory.getChannelProviderRegistry().
@@ -181,7 +177,6 @@ class PvAccessChannel extends Channel {
         synchronized (connectionLock) {
             connectionLatch.countDown();
 
-            isConnecting = false;
             connectionFlag = true;
             if (connectionProxy != null) {
                 connectionProxy.connectionMade(PvAccessChannel.this);
@@ -244,10 +239,7 @@ class PvAccessChannel extends Channel {
      */
     private void reset() {
         synchronized (connectionLock) {
-            if (connectionFlag || isConnecting) {
-                isConnecting = false;
-                connectionFlag = false;
-            }
+            connectionFlag = false;
 
             if (channel != null) {
                 channel.destroy();
@@ -682,8 +674,7 @@ class PvAccessChannel extends Channel {
          */
         @Override
         public void channelCreated(Status status, org.epics.pvaccess.client.Channel connectedChannel) {
-            PvAccessChannel.LOGGER.info("Channel '" + connectedChannel.getChannelName() + "["+
-                    connectedChannel.getProvider().getProviderName() +"]' created with status: " + status + ".");
+            PvAccessChannel.LOGGER.info("Channel '" + connectedChannel.getChannelName() + " created with status: " + status + ".");
         }
 
         /**
@@ -693,8 +684,7 @@ class PvAccessChannel extends Channel {
          */
         @Override
         public void channelStateChange(org.epics.pvaccess.client.Channel connectedChannel, ConnectionState newState) {
-            PvAccessChannel.LOGGER.info("State of channel " + connectedChannel.getChannelName() + "[" +
-                    connectedChannel.getProvider().getProviderName() + "] changed to " + newState.toString() + ".");
+            PvAccessChannel.LOGGER.info("State of channel " + connectedChannel.getChannelName() + "." + defaultField + " changed to " + newState.toString() + ".");
 
             if (newState == ConnectionState.CONNECTED) {
                 PvAccessChannel.this.handleConnection(connectedChannel);

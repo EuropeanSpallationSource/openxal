@@ -28,10 +28,10 @@ public class PvAccessMonitorRequesterImpl extends Monitor implements MonitorRequ
     private boolean isFirst;
     
     public PvAccessMonitorRequesterImpl(EventSinkAdapter listener, Channel channel, int maskEvent, String defaultField) throws ConnectionException {
-       super(channel, maskEvent);
-       this.listener = listener;
-       this.defaultField = defaultField;
-       isFirst = true;
+        super(channel, maskEvent);
+        this.listener = listener;
+        this.defaultField = defaultField;
+        isFirst = true;
     }
 
     /**
