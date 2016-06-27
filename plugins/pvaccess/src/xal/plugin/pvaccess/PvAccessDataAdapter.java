@@ -346,4 +346,84 @@ public class PvAccessDataAdapter implements TimeAdaptor {
             return Double.NaN;
         }
     }
+
+    /**
+     * @return Upper alarm limit
+     */
+    public Number getUpperAlarmLimit() {
+        PVStructure alarmLimitStructure = structure.getStructureField(PvAccessChannel.ALARM_LIMIT_FIELD_NAME);
+        Convert convert = ConvertFactory.getConvert();
+        if (alarmLimitStructure == null) {
+            return Double.NaN;
+        }
+        PVField lowerLimField = alarmLimitStructure.getSubField("highAlarmLimit");
+        if (lowerLimField == null) {
+            return Double.NaN;
+        }
+        try {
+            return convert.toDouble((PVScalar) lowerLimField);
+        } catch (ClassCastException e) {
+            return Double.NaN;
+        }
+    }
+
+    /**
+     * @return Lower alarm limit
+     */
+    public Number getLowerAlarmLimit() {
+        PVStructure alarmLimitStructure = structure.getStructureField(PvAccessChannel.ALARM_LIMIT_FIELD_NAME);
+        Convert convert = ConvertFactory.getConvert();
+        if (alarmLimitStructure == null) {
+            return Double.NaN;
+        }
+        PVField lowerLimField = alarmLimitStructure.getSubField("lowAlarmLimit");
+        if (lowerLimField == null) {
+            return Double.NaN;
+        }
+        try {
+            return convert.toDouble((PVScalar) lowerLimField);
+        } catch (ClassCastException e) {
+            return Double.NaN;
+        }
+    }
+
+    /**
+     * @return Upper warning limit
+     */
+    public Number getUpperWarningLimit() {
+        PVStructure alarmLimitStructure = structure.getStructureField(PvAccessChannel.ALARM_LIMIT_FIELD_NAME);
+        Convert convert = ConvertFactory.getConvert();
+        if (alarmLimitStructure == null) {
+            return Double.NaN;
+        }
+        PVField lowerLimField = alarmLimitStructure.getSubField("highWarningLimit");
+        if (lowerLimField == null) {
+            return Double.NaN;
+        }
+        try {
+            return convert.toDouble((PVScalar) lowerLimField);
+        } catch (ClassCastException e) {
+            return Double.NaN;
+        }
+    }
+
+    /**
+     * @return Lower warning limit
+     */
+    public Number getLowerWarningLimit() {
+        PVStructure alarmLimitStructure = structure.getStructureField(PvAccessChannel.ALARM_LIMIT_FIELD_NAME);
+        Convert convert = ConvertFactory.getConvert();
+        if (alarmLimitStructure == null) {
+            return Double.NaN;
+        }
+        PVField lowerLimField = alarmLimitStructure.getSubField("lowWarningLimit");
+        if (lowerLimField == null) {
+            return Double.NaN;
+        }
+        try {
+            return convert.toDouble((PVScalar) lowerLimField);
+        } catch (ClassCastException e) {
+            return Double.NaN;
+        }
+    }
 }

@@ -5,9 +5,11 @@ import org.epics.pvdata.copy.PVCopyFactory;
 import org.epics.pvdata.factory.FieldFactory;
 import org.epics.pvdata.factory.PVDataFactory;
 import org.epics.pvdata.factory.StandardFieldFactory;
+import org.epics.pvdata.pv.FieldBuilder;
 import org.epics.pvdata.pv.FieldCreate;
 import org.epics.pvdata.pv.PVDataCreate;
 import org.epics.pvdata.pv.PVDoubleArray;
+import org.epics.pvdata.pv.PVScalar;
 import org.epics.pvdata.pv.PVString;
 import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.ScalarType;
@@ -58,6 +60,7 @@ class PvAccessServerChannel extends Channel implements IServerChannel {
    static final String VALUE_FIELD_NAME = "value";
    static final String DISPLAY_FIELD_NAME = "display";
    static final String CONTROL_FIELD_NAME = "control";
+   static final String ALARM_LIMIT_FIELD_NAME = "valueAlarm";
 
    private final int size;
 
@@ -189,28 +192,24 @@ class PvAccessServerChannel extends Channel implements IServerChannel {
         return new PvAccessDataAdapter(getPvStructure()).getLowerDisplayLimit();
     }
 
-    @Deprecated
     @Override
     public Number rawUpperAlarmLimit() throws ConnectionException, GetException {
-        return 0;
+        return new PvAccessDataAdapter(getPvStructure()).getUpperAlarmLimit();
     }
 
-    @Deprecated
     @Override
     public Number rawLowerAlarmLimit() throws ConnectionException, GetException {
-        return 0;
+        return new PvAccessDataAdapter(getPvStructure()).getLowerAlarmLimit();
     }
 
-    @Deprecated
     @Override
     public Number rawUpperWarningLimit() throws ConnectionException, GetException {
-        return 0;
+        return new PvAccessDataAdapter(getPvStructure()).getUpperWarningLimit();
     }
 
-    @Deprecated
     @Override
     public Number rawLowerWarningLimit() throws ConnectionException, GetException {
-        return 0;
+        return new PvAccessDataAdapter(getPvStructure()).getLowerAlarmLimit();
     }
 
     @Override
@@ -295,45 +294,23 @@ class PvAccessServerChannel extends Channel implements IServerChannel {
     @Override
     public Monitor addMonitorValStatus(final IEventSinkValStatus listener, int intMaskFire) throws ConnectionException,
             MonitorException {
-
-        PVListener pvListener = new PVListenerImpl(EventSinkAdapter.getAdapter(listener, VALUE_FIELD_NAME));
-        
-        PVCopy pvCopy = PVCopyFactory.create(getPvStructure(), getPvStructure(), "field"); // TODO mask
-        record.addListener(pvListener, pvCopy);
-        return new Monitor(this , intMaskFire) {
-            
-            @Override
-            public void clear() {
-                record.removeListener(pvListener, pvCopy);
-            }
-            
-            @Override
-            protected void begin() throws MonitorException {
-                // Do nothing
-            }
-        };
+        return addMonitor(EventSinkAdapter.getAdapter(listener, VALUE_FIELD_NAME), intMaskFire);
     }
 
     @Override
     public Monitor addMonitorValue(final IEventSinkValue listener, int intMaskFire) throws ConnectionException,
             MonitorException {
-
-        PVListener pvListener = new PVListenerImpl(EventSinkAdapter.getAdapter(listener, VALUE_FIELD_NAME));
+        return addMonitor(EventSinkAdapter.getAdapter(listener, VALUE_FIELD_NAME), intMaskFire);
+    }
+    
+    private Monitor addMonitor(final EventSinkAdapter listener, int intMaskFire) throws ConnectionException {
+        PVListener pvListener = new PVListenerImpl(listener);
         
-        PVCopy pvCopy = PVCopyFactory.create(getPvStructure(), getPvStructure(), "field"); // TODO mask
+        PVStructure monitoringStructure = RecordFactory.createMaskedPvStructure(this.size, intMaskFire);
+
+        PVCopy pvCopy = PVCopyFactory.create(getPvStructure(), monitoringStructure, "field"); // TODO test this
         record.addListener(pvListener, pvCopy);
-        return new Monitor(this , intMaskFire) {
-            
-            @Override
-            public void clear() {
-                record.removeListener(pvListener, pvCopy);
-            }
-            
-            @Override
-            protected void begin() throws MonitorException {
-                // Do nothing
-            }
-        };
+        return new MonitorImpl(intMaskFire, pvListener, pvCopy);
     }
 
     @Override
@@ -420,29 +397,32 @@ class PvAccessServerChannel extends Channel implements IServerChannel {
     @Deprecated
     @Override
     public void setLowerAlarmLimit(Number lowerAlarmLimit) {
-        // Unsupported
+        getPvStructure().getStructureField(ALARM_LIMIT_FIELD_NAME).getDoubleField("lowAlarmLimit").
+                put((double) lowerAlarmLimit);
     }
 
     @Override
     public void setLowerCtrlLimit(Number lowerCtrlLimit) {
-        getPvStructure().getStructureField(CONTROL_FIELD_NAME).getDoubleField("limitLow").put((double) lowerCtrlLimit);
+        getPvStructure().getStructureField(CONTROL_FIELD_NAME).getDoubleField("limitLow").
+                put((double) lowerCtrlLimit);
     }
 
     @Override
     public void setLowerDispLimit(Number lowerDispLimit) {
-        getPvStructure().getStructureField(DISPLAY_FIELD_NAME).getDoubleField("limitLow").put((double) lowerDispLimit);
+        getPvStructure().getStructureField(DISPLAY_FIELD_NAME).getDoubleField("limitLow").
+                put((double) lowerDispLimit);
     }
 
-    @Deprecated
     @Override
     public void setLowerWarningLimit(Number lowerWarningLimit) {
-        // Unsupported
+        getPvStructure().getStructureField(ALARM_LIMIT_FIELD_NAME).getDoubleField("lowWarningLimit").
+                put((double) lowerWarningLimit);
     }
 
-    @Deprecated
     @Override
     public void setUpperAlarmLimit(Number upperAlarmLimit) {
-        // Unsupported
+        getPvStructure().getStructureField(ALARM_LIMIT_FIELD_NAME).getDoubleField("highAlarmLimit").
+                put((double) upperAlarmLimit);
     }
 
     @Override
@@ -455,10 +435,10 @@ class PvAccessServerChannel extends Channel implements IServerChannel {
         getPvStructure().getStructureField(DISPLAY_FIELD_NAME).getDoubleField("limitHigh").put((double) upperDispLimit);
     }
 
-    @Deprecated
     @Override
     public void setUpperWarningLimit(Number upperWarningLimit) {
-        // Unsupported
+        getPvStructure().getStructureField(ALARM_LIMIT_FIELD_NAME).getDoubleField("highWarningLimit").
+                put((double) upperWarningLimit);
     }    
     
     @Deprecated
@@ -499,6 +479,21 @@ class PvAccessServerChannel extends Channel implements IServerChannel {
                     add("valueAlarm", standardField.doubleAlarm()).
                     createStructure();
             return pvDataCreate.createPVStructure(top);
+        }
+
+        static PVStructure createMaskedPvStructure(int size, int mask) {
+            FieldBuilder builder = fieldCreate.createFieldBuilder();
+            if ((mask&Monitor.VALUE) > 0) {
+                if (size == 1) {
+                    builder.add("value", ScalarType.pvDouble);
+                } else if (size > 1) {
+                    builder.addArray("value", ScalarType.pvDouble);
+                }
+            }
+            if ((mask&Monitor.ALARM) > 0) {
+                builder.add("alarm", standardField.alarm());
+            }
+            return pvDataCreate.createPVStructure(builder.createStructure());
         }
 
         private static PVStructure createPvStructure(int size) {
@@ -544,6 +539,27 @@ class PvAccessServerChannel extends Channel implements IServerChannel {
         @Override
         public void beginGroupPut(PVRecord pvRecord) {
             // Do nothing
+        }
+    }
+
+    private class MonitorImpl extends Monitor {
+        
+        private final PVListener listener;
+        private final PVCopy copy;
+        
+        private MonitorImpl(int mask, PVListener listener, PVCopy copy) throws ConnectionException {
+            super(PvAccessServerChannel.this, mask);
+            this.listener = listener;
+            this.copy = copy; 
+        }
+
+        @Override
+        public void clear() {
+        }
+
+        @Override
+        protected void begin() throws MonitorException {
+            PvAccessServerChannel.this.record.removeListener(listener, copy);
         }
     }
 

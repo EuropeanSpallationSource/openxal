@@ -69,5 +69,21 @@ public class PvAccessChannelRecord extends ChannelTimeRecord {
     Number getLowerControlLimit() {
         return adaptor.getLowerControlLimit();
     }
+
+    public Number getUpperAlarmLimit() {
+        return adaptor.getUpperAlarmLimit();
+    }
+
+    public Number getLowerAlarmLimit() {
+        return adaptor.getLowerAlarmLimit();
+    }
+
+    public Number getUpperWarningLimit() {
+        return adaptor.getUpperWarningLimit();
+    }
+
+    public Number getLowerWarningLimit() {
+        return adaptor.getLowerWarningLimit();
+    }
     
 }

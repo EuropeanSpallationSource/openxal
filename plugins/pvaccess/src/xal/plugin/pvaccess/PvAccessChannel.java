@@ -61,6 +61,7 @@ class PvAccessChannel extends Channel {
     // Names of the standard fields
     static final String VALUE_FIELD_NAME = "value";
     static final String ALARM_FIELD_NAME = "alarm";
+    static final String ALARM_LIMIT_FIELD_NAME = "valueAlarm";
     static final String TIMESTAMP_FIELD_NAME = "timeStamp";
     static final String DISPLAY_FIELD_NAME = "display";
     static final String CONTROL_FIELD_NAME = "control";
@@ -367,10 +368,9 @@ class PvAccessChannel extends Channel {
     /**
      * PvAccess default structure does not provide info on alarm limits.
      */
-    @Deprecated
     @Override
     public Number rawUpperAlarmLimit() throws ConnectionException, GetException {
-        return 0;
+        return getChannelRecord().getUpperAlarmLimit();
     }
 
     /**
@@ -379,16 +379,15 @@ class PvAccessChannel extends Channel {
     @Deprecated
     @Override
     public Number rawLowerAlarmLimit() throws ConnectionException, GetException {
-        return 0;
+        return getChannelRecord().getLowerAlarmLimit();
     }
 
     /**
      * PvAccess default structure does not provide info on warning limits.
      */
-    @Deprecated
     @Override
     public Number rawUpperWarningLimit() throws ConnectionException, GetException {
-        return 0;
+        return getChannelRecord().getUpperWarningLimit();
     }
 
     /**
@@ -397,7 +396,7 @@ class PvAccessChannel extends Channel {
     @Deprecated
     @Override
     public Number rawLowerWarningLimit() throws ConnectionException, GetException {
-        return 0;
+        return getChannelRecord().getLowerWarningLimit();
     }
 
     /**
