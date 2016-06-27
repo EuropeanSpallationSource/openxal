@@ -36,12 +36,13 @@ import xal.ca.PutException;
 import xal.ca.PutListener;
 import xal.plugin.pvaccess.EventSinkAdapter;
 import xal.plugin.pvaccess.PvAccessChannelRecord;
-import xal.plugin.pvaccess.PvAccessDataAdaptor;
+import xal.plugin.pvaccess.PvAccessDataAdapter;
 import xal.ca.IServerChannel;
 
 /**
  * Server side channel implementation that uses pva protocol.
  * 
+ * Unlike client channel implementation this implementation does not support "PV.FLD" notation for PV names.
  * @author <a href="mailto:blaz.kranjc@cosylab.com">Blaz Kranjc</a>
  */
 class PvAccessServerChannel extends Channel implements IServerChannel {
@@ -55,21 +56,18 @@ class PvAccessServerChannel extends Channel implements IServerChannel {
    
    // Names of the standard fields
    static final String VALUE_FIELD_NAME = "value";
-   static final String ALARM_FIELD_NAME = "alarm";
-   static final String TIMESTAMP_FIELD_NAME = "timeStamp";
    static final String DISPLAY_FIELD_NAME = "display";
    static final String CONTROL_FIELD_NAME = "control";
 
    private final int size;
 
    // Keep a reference to the context manager instance to ensure that it does not get
-   // garbage collected while a channel still exists (TODO design flaw)
+   // garbage collected while a channel still exists (TODO bad design)
    @SuppressWarnings("unused") 
-   private final ContextManager contextManager;
+   private final ContextManager contextManager = ContextManager.getInstance();
 
    PvAccessServerChannel( final String signalName ) {
        super(signalName);
-       contextManager = ContextManager.getInstance();
 
        if ( signalName.length() > 0 ) {
            size = signalName.matches(".*(TBT|A)") ? DEFAULT_ARRAY_SIZE : 1;
@@ -105,7 +103,7 @@ class PvAccessServerChannel extends Channel implements IServerChannel {
 
    @Override
    public Class<?> elementType() throws ConnectionException {
-       return new PvAccessDataAdaptor(getPvStructure()).getValueType();
+       return new PvAccessDataAdapter(getPvStructure()).getValueType();
    }
 
     @Override
@@ -129,7 +127,7 @@ class PvAccessServerChannel extends Channel implements IServerChannel {
 
     @Override
     public String getUnits() {
-        return new PvAccessDataAdaptor(getPvStructure()).getUnits();
+        return new PvAccessDataAdapter(getPvStructure()).getUnits();
     }
     
     @Override
@@ -138,30 +136,40 @@ class PvAccessServerChannel extends Channel implements IServerChannel {
         unitField.put(units);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Deprecated
     @Override
     public String[] getOperationLimitPVs() {
-        // TODO
-        return new String[0];
+        return constructLimitPVs( "LOPR", "HOPR" );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Deprecated
     @Override
     public String[] getWarningLimitPVs() {
-        // TODO
-        return new String[0];
+        return constructLimitPVs( "LOW", "HIGH" );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Deprecated
     @Override
     public String[] getAlarmLimitPVs() {
-        // TODO
-        return new String[0];
+        return constructLimitPVs( "LOLO", "HIHI" );
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Deprecated
     @Override
     public String[] getDriveLimitPVs() {
-        // TODO
-        return new String[0];
+        return constructLimitPVs( "DRVL", "DRVH" );
     }
 
     private String[] constructLimitPVs(final String lowerSuffix, final String upperSuffix) {
@@ -173,12 +181,12 @@ class PvAccessServerChannel extends Channel implements IServerChannel {
 
     @Override
     public Number rawUpperDisplayLimit() throws ConnectionException, GetException {
-        return new PvAccessDataAdaptor(getPvStructure()).getUpperDisplayLimit();
+        return new PvAccessDataAdapter(getPvStructure() ).getUpperDisplayLimit();
     }
 
     @Override
     public Number rawLowerDisplayLimit() throws ConnectionException, GetException {
-        return new PvAccessDataAdaptor(getPvStructure()).getLowerDisplayLimit();
+        return new PvAccessDataAdapter(getPvStructure()).getLowerDisplayLimit();
     }
 
     @Deprecated
@@ -207,12 +215,12 @@ class PvAccessServerChannel extends Channel implements IServerChannel {
 
     @Override
     public Number rawUpperControlLimit() throws ConnectionException, GetException {
-        return new PvAccessDataAdaptor(getPvStructure()).getUpperControlLimit();
+        return new PvAccessDataAdapter(getPvStructure()).getUpperControlLimit();
     }
 
     @Override
     public Number rawLowerControlLimit() throws ConnectionException, GetException {
-        return new PvAccessDataAdaptor(getPvStructure()).getLowerControlLimit();
+        return new PvAccessDataAdapter(getPvStructure()).getLowerControlLimit();
     }
 
     @Override
@@ -242,7 +250,7 @@ class PvAccessServerChannel extends Channel implements IServerChannel {
 
     @Override
     public ChannelTimeRecord getRawTimeRecord() {
-        return new PvAccessChannelRecord(new PvAccessDataAdaptor(getPvStructure()));
+        return new PvAccessChannelRecord(new PvAccessDataAdapter(getPvStructure()));
     }
 
     @Override
@@ -267,8 +275,8 @@ class PvAccessServerChannel extends Channel implements IServerChannel {
     public Monitor addMonitorValTime(final IEventSinkValTime listener, final int intMaskFire) throws ConnectionException,
             MonitorException {
         
-        PVListener pvListener = new PVListenerImpl(EventSinkAdapter.getAdapter(listener));
-        PVCopy pvCopy = PVCopyFactory.create(getPvStructure(), getPvStructure(), "field"); // TODO mask
+        PVListener pvListener = new PVListenerImpl(EventSinkAdapter.getAdapter(listener, VALUE_FIELD_NAME));
+        PVCopy pvCopy = PVCopyFactory.create(getPvStructure(), getPvStructure(), "field");
         record.addListener(pvListener, pvCopy);
         return new Monitor(this , intMaskFire) {
             
@@ -288,7 +296,7 @@ class PvAccessServerChannel extends Channel implements IServerChannel {
     public Monitor addMonitorValStatus(final IEventSinkValStatus listener, int intMaskFire) throws ConnectionException,
             MonitorException {
 
-        PVListener pvListener = new PVListenerImpl(EventSinkAdapter.getAdapter(listener));
+        PVListener pvListener = new PVListenerImpl(EventSinkAdapter.getAdapter(listener, VALUE_FIELD_NAME));
         
         PVCopy pvCopy = PVCopyFactory.create(getPvStructure(), getPvStructure(), "field"); // TODO mask
         record.addListener(pvListener, pvCopy);
@@ -310,7 +318,7 @@ class PvAccessServerChannel extends Channel implements IServerChannel {
     public Monitor addMonitorValue(final IEventSinkValue listener, int intMaskFire) throws ConnectionException,
             MonitorException {
 
-        PVListener pvListener = new PVListenerImpl(EventSinkAdapter.getAdapter(listener));
+        PVListener pvListener = new PVListenerImpl(EventSinkAdapter.getAdapter(listener, VALUE_FIELD_NAME));
         
         PVCopy pvCopy = PVCopyFactory.create(getPvStructure(), getPvStructure(), "field"); // TODO mask
         record.addListener(pvListener, pvCopy);
@@ -474,6 +482,7 @@ class PvAccessServerChannel extends Channel implements IServerChannel {
                     add("timeStamp", standardField.timeStamp()).
                     add("display", standardField.display()).
                     add("control", standardField.control()).
+                    add("valueAlarm", standardField.doubleAlarm()).
                     createStructure();
             PVStructure pvStructure = pvDataCreate.createPVStructure(top);
             pvStructure.getScalarArrayField("value", ScalarType.pvDouble).setCapacity(size);
@@ -487,6 +496,7 @@ class PvAccessServerChannel extends Channel implements IServerChannel {
                     add("timeStamp", standardField.timeStamp()).
                     add("display", standardField.display()).
                     add("control", standardField.control()).
+                    add("valueAlarm", standardField.doubleAlarm()).
                     createStructure();
             return pvDataCreate.createPVStructure(top);
         }

@@ -16,16 +16,19 @@ import xal.ca.IEventSinkValue;
  */
 public abstract class EventSinkAdapter {
     
-    // This class should not be instanced //
-    private EventSinkAdapter() { }
+    private final String defaultField;
+
+    private EventSinkAdapter(String defaultField) {
+        this.defaultField = defaultField;
+    }
 
     /**
      * Create an adapter for IEventSinkValue listener.
      * @param listener Object that listens to events
      * @return Adapter for listener
      */
-    public static EventSinkAdapter getAdapter(IEventSinkValue listener) {
-        return new EventSinkAdapterValue(listener);
+    public static EventSinkAdapter getAdapter(IEventSinkValue listener, String defaultFieldName) {
+        return new EventSinkAdapterValue(listener, defaultFieldName);
     }
 
     /**
@@ -33,8 +36,8 @@ public abstract class EventSinkAdapter {
      * @param listener Object that listens to events
      * @return Adapter for listener
      */
-    public static EventSinkAdapter getAdapter(IEventSinkValStatus listener) {
-        return new EventSinkAdapterStatus(listener);
+    public static EventSinkAdapter getAdapter(IEventSinkValStatus listener, String defaultFieldName) {
+        return new EventSinkAdapterStatus(listener, defaultFieldName);
     }
 
     /**
@@ -42,8 +45,8 @@ public abstract class EventSinkAdapter {
      * @param listener Object that listens to events
      * @return Adapter for listener
      */
-    public static EventSinkAdapter getAdapter(IEventSinkValTime listener) {
-        return new EventSinkAdapterTime(listener);
+    public static EventSinkAdapter getAdapter(IEventSinkValTime listener, String defaultFieldName) {
+        return new EventSinkAdapterTime(listener, defaultFieldName);
     }
     
     /**
@@ -52,7 +55,7 @@ public abstract class EventSinkAdapter {
      * @return A PvAccessChannelRecord containing the data
      */
     PvAccessChannelRecord getRecord(PVStructure pvStructure) {
-        return new PvAccessChannelRecord(new PvAccessDataAdaptor(pvStructure));
+        return new PvAccessChannelRecord(new PvAccessDataAdapter(pvStructure, defaultField));
     }
 
     /**
@@ -66,7 +69,8 @@ public abstract class EventSinkAdapter {
         
         private IEventSinkValue listener;
         
-        private EventSinkAdapterValue(IEventSinkValue listener) {
+        private EventSinkAdapterValue(IEventSinkValue listener, String defaultFieldName) {
+            super(defaultFieldName);
             this.listener = listener;
         }
 
@@ -81,7 +85,8 @@ public abstract class EventSinkAdapter {
         
         private IEventSinkValStatus listener;
         
-        private EventSinkAdapterStatus(IEventSinkValStatus listener) {
+        private EventSinkAdapterStatus(IEventSinkValStatus listener, String defaultFieldName) {
+            super(defaultFieldName);
             this.listener = listener;
         }
 
@@ -96,7 +101,8 @@ public abstract class EventSinkAdapter {
         
         private IEventSinkValTime listener;
         
-        private EventSinkAdapterTime(IEventSinkValTime listener) {
+        private EventSinkAdapterTime(IEventSinkValTime listener, String defaultFieldName) {
+            super(defaultFieldName);
             this.listener = listener;
         }
 

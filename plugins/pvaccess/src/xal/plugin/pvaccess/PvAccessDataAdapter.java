@@ -13,16 +13,27 @@ import xal.tools.ArrayValue;
  * Adaptor for data received from the channel.
  * @author <a href="mailto:blaz.kranjc@cosylab.com">Blaz Kranjc</a>
  */
-public class PvAccessDataAdaptor implements TimeAdaptor {
+public class PvAccessDataAdapter implements TimeAdaptor {
     
     private final PVStructure structure;
+    private final String defaultField;
     	    
     /**
      * Constructor 
      * @param pvStructure Data received from the channel
      */
-    public PvAccessDataAdaptor(PVStructure pvStructure) {
+    public PvAccessDataAdapter(PVStructure pvStructure) {
+        this(pvStructure, PvAccessChannel.VALUE_FIELD_NAME);
+    }
+
+    /**
+     * Constructor 
+     * @param pvStructure Data received from the channel
+     * @param defaultField Default field to return as value field
+     */
+    public PvAccessDataAdapter(PVStructure pvStructure, String defaultField) {
         this.structure = pvStructure;
+        this.defaultField = defaultField;
     }
     
     /**
@@ -36,7 +47,6 @@ public class PvAccessDataAdaptor implements TimeAdaptor {
             if (secondsPv != null)
                 return new BigDecimal(secondsPv.get());
         }
-        // TODO
         return BigDecimal.ZERO;
     }
 
@@ -51,7 +61,6 @@ public class PvAccessDataAdaptor implements TimeAdaptor {
             if (statusPv != null)
                 return statusPv.get();
         }
-        // TODO
         return 0;
     }
 
@@ -66,7 +75,6 @@ public class PvAccessDataAdaptor implements TimeAdaptor {
             if (statusPv != null)
                 return statusPv.get();
         }
-        // TODO
         return 0;
     }
     
@@ -75,12 +83,12 @@ public class PvAccessDataAdaptor implements TimeAdaptor {
      */
     @Override
     public ArrayValue getStore() {
-        PVField valueField = structure.getSubField(PvAccessChannel.VALUE_FIELD_NAME);
+        PVField valueField = structure.getSubField(defaultField);
         if (valueField != null) {
             return ArrayValue.arrayValueFromArray(getValueArray(valueField));
         }
-        // TODO
-        return null;
+        // If value is not found return an empty ArrayValue
+        return ArrayValue.arrayValueFromArray(new Object[]{});
     }
     
     private Object getValueArray(PVField valueField) {
@@ -91,7 +99,6 @@ public class PvAccessDataAdaptor implements TimeAdaptor {
         case scalarArray:
             return getScalarArrayValueArray((PVScalarArray) valueField);
         default:
-            // TODO
             break; 
         }
         return null;
@@ -122,7 +129,6 @@ public class PvAccessDataAdaptor implements TimeAdaptor {
         case pvString:
             return new String[]{convert.toString(valueField)};
         default:
-            // TODO
             break;
         }
         return null;
@@ -172,7 +178,6 @@ public class PvAccessDataAdaptor implements TimeAdaptor {
             arr = Arrays.copyOf(dataArr.data, length);
             break;
         default:
-            // TODO
             break;
         }
         return arr;
@@ -185,7 +190,6 @@ public class PvAccessDataAdaptor implements TimeAdaptor {
     public int getElementCount() {
         PVField valueField = structure.getSubField(PvAccessChannel.VALUE_FIELD_NAME);
         if (valueField == null) {
-            // TODO
             return 0;
         }
 
@@ -196,7 +200,6 @@ public class PvAccessDataAdaptor implements TimeAdaptor {
         case scalarArray:
             return ((PVScalarArray) valueField).getLength();
         default:
-            // TODO
             return 0;
         }
     }
@@ -216,7 +219,6 @@ public class PvAccessDataAdaptor implements TimeAdaptor {
             scalarType = ((PVScalarArray) valueField).getScalarArray().getElementType();
             break;
         default:
-            // TODO
             return null;
         }
         return getJavaPrimitiveType(scalarType);
@@ -245,7 +247,6 @@ public class PvAccessDataAdaptor implements TimeAdaptor {
         case pvString:
             return String.class;
         default:
-            // TODO
             break;
         }
         return null;
@@ -257,12 +258,10 @@ public class PvAccessDataAdaptor implements TimeAdaptor {
     public String getUnits() {
         PVStructure displayStructure = structure.getStructureField(PvAccessChannel.DISPLAY_FIELD_NAME);
         if (displayStructure == null) {
-            // TODO
             return "";
         }
         PVString unitField = displayStructure.getStringField("units");
         if (unitField == null) {
-            // TODO
             return "";
         }
         return unitField.get();
@@ -275,19 +274,16 @@ public class PvAccessDataAdaptor implements TimeAdaptor {
         PVStructure displayStructure = structure.getStructureField(PvAccessChannel.DISPLAY_FIELD_NAME);
         Convert convert = ConvertFactory.getConvert();
         if (displayStructure == null) {
-            // TODO
-            return 0;
+            return Double.NaN;
         }
         PVField upperLimField = displayStructure.getSubField("limitHigh");
         if (upperLimField == null) {
-            // TODO
-            return 0;
+            return Double.NaN;
         }
         try {
             return convert.toDouble((PVScalar) upperLimField);
         } catch (ClassCastException e) {
-            // TODO
-            return 0;
+            return Double.NaN;
         }
     }
 
@@ -298,19 +294,16 @@ public class PvAccessDataAdaptor implements TimeAdaptor {
         PVStructure displayStructure = structure.getStructureField(PvAccessChannel.DISPLAY_FIELD_NAME);
         Convert convert = ConvertFactory.getConvert();
         if (displayStructure == null) {
-            // TODO
-            return 0;
+            return Double.NaN;
         }
         PVField lowerLimField = displayStructure.getSubField("limitLow");
         if (lowerLimField == null) {
-            // TODO
-            return 0;
+            return Double.NaN;
         }
         try {
             return convert.toDouble((PVScalar) lowerLimField);
         } catch (ClassCastException e) {
-            // TODO
-            return 0;
+            return Double.NaN;
         }
     }
 
@@ -321,19 +314,16 @@ public class PvAccessDataAdaptor implements TimeAdaptor {
         PVStructure controlStructure = structure.getStructureField(PvAccessChannel.CONTROL_FIELD_NAME);
         Convert convert = ConvertFactory.getConvert();
         if (controlStructure == null) {
-            // TODO
-            return 0;
+            return Double.NaN;
         }
         PVField upperLimField = controlStructure.getSubField("limitHigh");
         if (upperLimField == null) {
-            // TODO
-            return 0;
+            return Double.NaN;
         }
         try {
             return convert.toDouble((PVScalar) upperLimField);
         } catch (ClassCastException e) {
-            // TODO
-            return 0;
+            return Double.NaN;
         }
     }
 
@@ -344,19 +334,16 @@ public class PvAccessDataAdaptor implements TimeAdaptor {
         PVStructure controlStructure = structure.getStructureField(PvAccessChannel.CONTROL_FIELD_NAME);
         Convert convert = ConvertFactory.getConvert();
         if (controlStructure == null) {
-            // TODO
-            return 0;
+            return Double.NaN;
         }
         PVField lowerLimField = controlStructure.getSubField("limitLow");
         if (lowerLimField == null) {
-            // TODO
-            return 0;
+            return Double.NaN;
         }
         try {
             return convert.toDouble((PVScalar) lowerLimField);
         } catch (ClassCastException e) {
-            // TODO
-            return 0;
+            return Double.NaN;
         }
     }
 }

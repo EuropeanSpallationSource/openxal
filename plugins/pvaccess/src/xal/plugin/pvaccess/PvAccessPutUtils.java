@@ -2,6 +2,8 @@ package xal.plugin.pvaccess;
 
 import org.epics.pvdata.pv.*;
 
+import xal.ca.PutException;
+
 /**
  * Utility class to ease the put of different data types to channels.
  * 
@@ -105,10 +107,15 @@ enum PvAccessPutUtils {
      * @param field PVField object to which the put is done
      * @param o Object to write to the field
      * @param type Name of the type of the object
+     * @throws PutException 
      */
-    static void put(PVField field, Object o, String type) {
+    static void put(PVField field, Object o, String type) throws PutException {
         PvAccessPutUtils t = getPvPutObject(type);
-        t.putImpl(field, o);
+        if (t != null) {
+            t.putImpl(field, o);
+        } else {
+            throw new PutException("Put of type " + type + " is not supported!");
+        }
     }
 
     /**

@@ -4,12 +4,12 @@ import org.epics.pvaccess.util.logging.LoggingUtils;
 import org.epics.pvdata.monitor.MonitorElement;
 import org.epics.pvdata.monitor.MonitorRequester;
 import org.epics.pvdata.pv.MessageType;
+import org.epics.pvdata.pv.PVField;
 import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.Status;
 import org.epics.pvdata.pv.Structure;
 import org.epics.pvdata.misc.BitSet;
 
-import xal.ca.Channel;
 import xal.ca.ConnectionException;
 import xal.ca.Monitor;
 import xal.ca.MonitorException;
@@ -25,7 +25,7 @@ class MonitorRequesterImpl extends Monitor implements MonitorRequester {
     private org.epics.pvdata.monitor.Monitor monitor;
     private boolean isFirst;
     
-    MonitorRequesterImpl(EventSinkAdapter listener, Channel channel, int maskEvent) throws ConnectionException {
+    MonitorRequesterImpl(EventSinkAdapter listener, PvAccessChannel channel, int maskEvent) throws ConnectionException {
        super(channel, maskEvent);
        this.listener = listener;
        isFirst = true;
@@ -65,12 +65,19 @@ class MonitorRequesterImpl extends Monitor implements MonitorRequester {
         while ((element = connectedMonitor.poll()) != null) {
             PVStructure pvs = element.getPVStructure();
 
-            int valueFieldOffset = pvs.getSubField(PvAccessChannel.VALUE_FIELD_NAME).getFieldOffset();
-            int alarmFieldOffset = pvs.getSubField(PvAccessChannel.ALARM_FIELD_NAME).getFieldOffset();
-
             BitSet changed = element.getChangedBitSet();
-            boolean isValueChanged = changed.get(valueFieldOffset);
-            boolean isAlarmChanged = changed.get(alarmFieldOffset);
+
+            boolean isValueChanged = false;
+            boolean isAlarmChanged = false;
+
+            PVField valueField = pvs.getSubField(((PvAccessChannel)m_xalChan).getDefaultField());
+            if (valueField != null) {
+                isValueChanged = changed.get(valueField.getFieldOffset());
+            }
+            PVField alarmField = pvs.getSubField(PvAccessChannel.ALARM_FIELD_NAME);
+            if (alarmField != null) {
+                isAlarmChanged = changed.get(alarmField.getFieldOffset());
+            }
             
             if (isFirst ||
                     ((m_intMaskEvent&VALUE) > 0 && isValueChanged) ||

@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.epics.pvaccess.client.Channel.ConnectionState;
@@ -48,13 +48,17 @@ import xal.ca.PutListener;
  * one that is connected. This means that <b>if a pva channel and ca channel with same name
  * exist on the network the behavior of this class is non-deterministic</b>.
  * 
+ * To keep compatibility with jca plugin, where the PV.FLD is a valid notation, the channel name
+ * is parsed and everything after the first dot is used as a field (eg. \<pv\>.HIHI or 
+ * \<pv\>.valueAlarm.highAlarmLimit). Only alarm fields are supported as they are the only ones used in apps.
+ * 
  * @author <a href="mailto:blaz.kranjc@cosylab.com">Blaz Kranjc</a>
  */
 class PvAccessChannel extends Channel {
     
     // Default timeout parameters
-    static final double DEFAULT_IO_TIMEOUT = 5.0;
-    static final double DEFAULT_EVENT_TIMEOUT = 0.1;
+    private static final double DEFAULT_IO_TIMEOUT = 5.0;
+    private static final double DEFAULT_EVENT_TIMEOUT = 0.1;
     
     // Names of the standard fields
     static final String VALUE_FIELD_NAME = "value";
@@ -63,14 +67,11 @@ class PvAccessChannel extends Channel {
     static final String DISPLAY_FIELD_NAME = "display";
     static final String CONTROL_FIELD_NAME = "control";
     
-    // Always get the whole pvStructure from the server
-    private static final PVStructure pvRequest = CreateRequest.create().createRequest(null);
-
     // Channel implementation that is used by this class
-    private org.epics.pvaccess.client.Channel channel;
+    private volatile org.epics.pvaccess.client.Channel channel;
     
     // Latch used to notify the connection to the channel
-    private CountDownLatch connectionLatch;
+    private volatile CountDownLatch connectionLatch;
     
     // Number of protocols used (pva and ca)
     private static final int PROTOCOL_N = 2;
@@ -81,26 +82,68 @@ class PvAccessChannel extends Channel {
     // Lock for connection related stuff
     private final Object connectionLock = new Object();
 
+    private final String defaultField;
+    private final PVStructure pvRequest;
+
     private static final Logger LOGGER = Logger.getLogger(PvAccessChannel.class.getName());
+    
+    static {
+        LOGGER.setLevel(Level.WARNING);
+    }
 
     private boolean isConnecting = false;
     
+    // Keep a reference to the context manager instance to ensure that it does not get
+    // garbage collected while a channel still exists (TODO bad design)
+    @SuppressWarnings("unused") 
+    private final ProvidersManager manager = ProvidersManager.getInstance();
+    
     /**
      * Constructor.
+     * 
      * @param signalName Name of the PV
      */
     PvAccessChannel(String signalName) {
-        super(signalName);
+        super(parseChannelName(signalName));
+
+        defaultField = parseDefaultFieldFromName(signalName);
+        
+        String requestString = defaultField.equals(VALUE_FIELD_NAME) ? "" : defaultField;
+        pvRequest = CreateRequest.create().createRequest("field("+requestString+")");
+
         m_dblTmIO = DEFAULT_IO_TIMEOUT;
         m_dblTmEvt = DEFAULT_EVENT_TIMEOUT;
         connectionFlag = false;
     }
     
+    private static String parseChannelName(String signalName) {
+        int indexOfDot = signalName.indexOf(".");
+        if (indexOfDot >= 0) {
+            return signalName.substring(0, indexOfDot);
+        }
+        return signalName;
+    }
+
+    private static String parseDefaultFieldFromName(String signalName) {
+        int indexOfDot = signalName.indexOf(".");
+        if (indexOfDot >= 0) {
+            return FieldNameConverter.getFieldName(signalName.substring(indexOfDot + 1));
+        }
+        return VALUE_FIELD_NAME;
+    }
+
     /**
      * @return Logger object of PvAccessChannel.
      */
     static Logger getLogger() {
         return LOGGER;
+    }
+    
+    /**
+     * @return defaultField value
+     */
+    String getDefaultField() {
+        return defaultField;
     }
     
     /**
@@ -127,15 +170,16 @@ class PvAccessChannel extends Channel {
 
         synchronized (connectionLock) {
             isConnecting = true;
-            ChannelProvidersProvider.countUp();
 
             connectionLatch = new CountDownLatch(1);
         
-            org.epics.pvaccess.client.Channel caChannel = ChannelProvidersProvider.getCaProvider().createChannel(m_strId,
+            org.epics.pvaccess.client.Channel caChannel = ChannelProviderRegistryFactory.getChannelProviderRegistry().
+                    createProvider(org.epics.ca.ClientFactory.PROVIDER_NAME).createChannel(m_strId,
                             new PvAccessChannel.ChannelRequesterImpl(), ChannelProvider.PRIORITY_DEFAULT);
             createdChannels.add(caChannel);
 
-            org.epics.pvaccess.client.Channel pvaChannel = ChannelProvidersProvider.getPvaProvider().createChannel(m_strId,
+            org.epics.pvaccess.client.Channel pvaChannel = ChannelProviderRegistryFactory.getChannelProviderRegistry().
+                    createProvider(org.epics.pvaccess.ClientFactory.PROVIDER_NAME).createChannel(m_strId,
                             new PvAccessChannel.ChannelRequesterImpl(), ChannelProvider.PRIORITY_DEFAULT);
             createdChannels.add(pvaChannel);
         }
@@ -246,7 +290,6 @@ class PvAccessChannel extends Channel {
             if (connectionFlag || isConnecting) {
                 isConnecting = false;
                 connectionFlag = false;
-                ChannelProvidersProvider.countDown();
             }
 
             cleanCreatedChannels();
@@ -258,16 +301,6 @@ class PvAccessChannel extends Channel {
         }
     }
 
-    /* As there is no method that is always called when the channel is no longer needed
-     * {@link #finalize} is used to keep track of channel instances. */
-    @Override
-    protected void finalize() throws Throwable {
-        if (connectionFlag) {
-            ChannelProvidersProvider.countDown();
-        }
-        super.finalize();
-    }
-    
     /**
      * {@inheritDoc}
      */
@@ -321,37 +354,33 @@ class PvAccessChannel extends Channel {
     /**
      * {@inheritDoc}
      */
-    @Deprecated
     @Override
     public String[] getOperationLimitPVs() {
-        return constructLimitPVs( "LOPR", "HOPR" ); // TODO Check the pva protocol
+        return constructLimitPVs( "LOPR", "HOPR" );
     }
 
     /**
      * {@inheritDoc}
      */
-    @Deprecated
     @Override
     public String[] getWarningLimitPVs() {
-        return constructLimitPVs( "LOW", "HIGH" ); // TODO Check the pva protocol
+        return constructLimitPVs( "LOW", "HIGH" );
     }
 
     /**
      * {@inheritDoc}
      */
-    @Deprecated
     @Override
     public String[] getAlarmLimitPVs() {
-        return constructLimitPVs( "LOLO", "HIHI" ); // TODO Check the pva protocol
+        return constructLimitPVs( "LOLO", "HIHI" );
     }
 
     /**
      * {@inheritDoc}
      */
-    @Deprecated
     @Override
     public String[] getDriveLimitPVs() {
-        return constructLimitPVs( "DRVL", "DRVH" ); // TODO Check the pva protocol
+        return constructLimitPVs( "DRVL", "DRVH" );
     }
 
     /** 
@@ -519,7 +548,8 @@ class PvAccessChannel extends Channel {
             throws ConnectionException, GetException {
         checkConnection(attemptConnection);
 
-        ChannelGetRequester requester = new PvAccessChannel.ChannelGetRequesterImpl(EventSinkAdapter.getAdapter(listener));
+        ChannelGetRequester requester = new PvAccessChannel.ChannelGetRequesterImpl(
+                EventSinkAdapter.getAdapter(listener, getDefaultField()));
         channel.createChannelGet(requester, pvRequest);
     }
 
@@ -531,7 +561,8 @@ class PvAccessChannel extends Channel {
             throws ConnectionException, GetException {
         checkConnection(attemptConnection);
 
-        ChannelGetRequester requester = new PvAccessChannel.ChannelGetRequesterImpl(EventSinkAdapter.getAdapter(listener));
+        ChannelGetRequester requester = new PvAccessChannel.ChannelGetRequesterImpl(
+                EventSinkAdapter.getAdapter(listener, getDefaultField()));
         channel.createChannelGet(requester, pvRequest);
     }
 
@@ -640,7 +671,7 @@ class PvAccessChannel extends Channel {
     @Override
     public Monitor addMonitorValTime(IEventSinkValTime listener, int intMaskFire)
             throws ConnectionException, MonitorException {
-        return addMonitor(EventSinkAdapter.getAdapter(listener), intMaskFire);
+        return addMonitor(EventSinkAdapter.getAdapter(listener, getDefaultField()), intMaskFire);
     }
 
     /**
@@ -649,7 +680,7 @@ class PvAccessChannel extends Channel {
     @Override
     public Monitor addMonitorValStatus(IEventSinkValStatus listener, int intMaskFire)
             throws ConnectionException, MonitorException {
-        return addMonitor(EventSinkAdapter.getAdapter(listener), intMaskFire);
+        return addMonitor(EventSinkAdapter.getAdapter(listener, getDefaultField()), intMaskFire);
     }
 
     /**
@@ -658,7 +689,7 @@ class PvAccessChannel extends Channel {
     @Override
     public Monitor addMonitorValue(IEventSinkValue listener, int intMaskFire)
             throws ConnectionException, MonitorException {
-        return addMonitor(EventSinkAdapter.getAdapter(listener), intMaskFire);
+        return addMonitor(EventSinkAdapter.getAdapter(listener, getDefaultField()), intMaskFire);
     }
     
     private Monitor addMonitor(EventSinkAdapter listener, int intMaskFire) throws ConnectionException {
@@ -754,8 +785,7 @@ class PvAccessChannel extends Channel {
          */
         @Override
         public void channelGetConnect(Status status, ChannelGet channelGet, Structure structure) {
-            if (status.isSuccess())
-            {
+            if (status.isSuccess()) {
                 channelGet.lastRequest();
                 channelGet.get();
             }
@@ -768,8 +798,7 @@ class PvAccessChannel extends Channel {
          */
         @Override
         public void getDone(Status status, ChannelGet channelGet, PVStructure pvStructure, BitSet changedBitSet) {
-            if (status.isSuccess())
-            {
+            if (status.isSuccess()) {
                 listener.eventValue(pvStructure, PvAccessChannel.this);
             } 
             else 
@@ -822,13 +851,18 @@ class PvAccessChannel extends Channel {
         public void channelPutConnect(Status status, ChannelPut channelPut, Structure structure) {
             channelPut.lastRequest();
 
-            if (status.isSuccess())
-            {
+            if (status.isSuccess()) {
                 PVStructure pvStructure = PVDataFactory.getPVDataCreate().createPVStructure(structure);
                 BitSet bitSet = new BitSet(pvStructure.getNumberFields());
 
-                PVField val = pvStructure.getSubField(VALUE_FIELD_NAME);
-                PvAccessPutUtils.put(val, value, pvType);
+                PVField val = pvStructure.getSubField(PvAccessChannel.this.getDefaultField());
+                try {
+                    PvAccessPutUtils.put(val, value, pvType);
+                } catch (PutException e) {
+                    PvAccessChannel.LOGGER.warning("Error on put to the " + PvAccessChannel.this.channelName() +
+                            ": " + e.getMessage());
+                    
+                }
                 bitSet.set(val.getFieldOffset());
                 channelPut.put(pvStructure, bitSet);
             } else {
@@ -861,68 +895,29 @@ class PvAccessChannel extends Channel {
     }
 
     /**
-     * Class used for instance counting and PvAccess ChannelProvider initialization.
+     * Singleton class that holds the providers and destroys it on garbage collection.
+     * TODO try to find a better design for this.
      */
-    private final static class ChannelProvidersProvider {
-    
-        private static AtomicInteger count = new AtomicInteger(0);
-        
-        /* Should not be instanced */
-        private ChannelProvidersProvider() {}
+    private static class ProvidersManager {
 
-        /**
-         * Decrease the number of instances and stop the channel providers if no instances are left.
-         */
-        static void countDown() {
-            int currentCount = count.decrementAndGet();
-            assert currentCount < 0;
-            if (currentCount == 0) {
-                stopProviders();
-            }
+        private static class LazyHolder {
+            private static final ProvidersManager INSTANCE = new ProvidersManager();
         }
 
-        /**
-         * Increase the number of instances and start the channel providers if needed.
-         */
-        static void countUp() {
-            int pastCount = count.getAndIncrement();
-            if (pastCount == 0) {
-                startProviders();
-            }
-        }
-
-        /**
-         * Start the channel providers.
-         */
-        private static synchronized void startProviders() {
+        private ProvidersManager () {
             org.epics.pvaccess.ClientFactory.start();
             org.epics.ca.ClientFactory.start();
         }
 
-        /**
-         * Stop the channel providers.
-         */
-        private static synchronized void stopProviders() {
+        static ProvidersManager getInstance() {
+            return LazyHolder.INSTANCE;
+        }
+        
+        @Override
+        protected void finalize() throws Throwable {
             org.epics.pvaccess.ClientFactory.stop();
             org.epics.ca.ClientFactory.stop();
-        }
-
-        /**
-         * Get CA channel provider.
-         * @return CA channel provider
-         */
-        static ChannelProvider getCaProvider() {
-            return ChannelProviderRegistryFactory.getChannelProviderRegistry()
-                    .getProvider(org.epics.ca.ClientFactory.PROVIDER_NAME);
-        }
-
-        /**
-         * Get pva channel provider.
-         * @return pva channel provider
-         */
-        static ChannelProvider getPvaProvider() {
-            return ChannelProviderRegistryFactory.getChannelProviderRegistry()
-                    .getProvider(org.epics.pvaccess.ClientFactory.PROVIDER_NAME);
+            super.finalize();
         }
 
     }

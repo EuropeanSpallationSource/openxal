@@ -10,13 +10,13 @@ import xal.ca.ChannelTimeRecord;
  */
 public class PvAccessChannelRecord extends ChannelTimeRecord {
     
-    private final PvAccessDataAdaptor adaptor;
+    private final PvAccessDataAdapter adaptor;
 
     /**
      * Constructor.
      * @param adaptor Data adaptor received from the channel.
      */
-    public PvAccessChannelRecord(PvAccessDataAdaptor adaptor) {
+    public PvAccessChannelRecord(PvAccessDataAdapter adaptor) {
         super(adaptor);
         this.adaptor = adaptor;
     }
