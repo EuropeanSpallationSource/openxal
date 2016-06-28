@@ -19,13 +19,14 @@ import java.util.regex.*;
  * that hides a direct reference to Rendezvous.
  *
  * @author  tap
+ * @author <a href="mailto:blaz.kranjc@cosylab.com">Blaz Kranjc</a>
  */
 public class ServiceRef {
     /** standard local suffix for the service type */
-    static final String LOCAL_TYPE_SUFFIX = "_tcp.local.";
+    private static final String LOCAL_TYPE_SUFFIX = "_tcp.local.";
     
 	/** Pattern matching the protocol and DNS part of the type */
-	static final private Pattern TYPE_PATTERN;
+	private static final Pattern TYPE_PATTERN = Pattern.compile("(\\w++)\\._tcp\\.local\\.");
 	
 	/** Property identifying the local service handler */
 	static final String SERVICE_KEY = "remote_service_handler";
@@ -33,12 +34,6 @@ public class ServiceRef {
 	/** Redezvous service info */
 	private ServiceInfo _serviceInfo;
 		
-	
-	static {
-		TYPE_PATTERN = Pattern.compile("(\\w++)\\._tcp\\.local\\.");
-	}
-
-	
 	/**
 	 * Create a new service reference to wrap the specified service info.
 	 */
@@ -51,7 +46,7 @@ public class ServiceRef {
 	 * Get the name of the service.
 	 * @return The name of the service provided.
 	 */
-	public String getServiceName() {
+	String getServiceName() {
 		return _serviceInfo.getPropertyString( SERVICE_KEY );
 	}
 	
@@ -65,24 +60,6 @@ public class ServiceRef {
 	}
 	
 	
-	/**
-	 * Get the type of service provided.
-	 * @return The type of service provided.
-	 */
-	public String getType() {
-		return getBaseType( _serviceInfo.getType() );
-	}
-	
-	
-	/**
-	 * Get the fully qualified type
-	 * @return the fully qualified type
-	 */
-	public String getFullType() {
-		return _serviceInfo.getType();
-	}
-    
-    
     /** get the service address given the service info */
     private static String getHostAddress( final ServiceInfo info ) {
         final String[] hostAddresses = info.getHostAddresses();
@@ -95,19 +72,9 @@ public class ServiceRef {
 	 * Get the address of the remote service.
 	 * @return the address of the remote service
 	 */
-	public String getHostAddress() {
+	String getHostAddress() {
         return getHostAddress( _serviceInfo );
 	}
-	
-	
-	/**
-	 * Get the port for connecting to the remote service.
-	 * @return the port for connecting to the remote service
-	 */
-	public int getPort() {
-		return _serviceInfo.getPort();
-	}
-	
 	
 	/**
 	 * Get the Rendezvous service info which is wrapped by this instance.
@@ -139,7 +106,7 @@ public class ServiceRef {
 	 * @param fullType The full rendezvous type (e.g. "greeting._tcp._local.")
 	 * @return Just the simple base type (e.g. "greeting")
 	 */
-	static protected String getBaseType( final String fullType ) {
+	static String getBaseType( final String fullType ) {
 		Matcher matcher = TYPE_PATTERN.matcher(fullType);
 		matcher.matches();
 		return matcher.group(1);
@@ -147,24 +114,11 @@ public class ServiceRef {
 		
 	
 	/**
-	 * Internally used to strip the type information from the name to get just the base name.
-	 * @param fullName  The full rendezvous name (e.g. "Mary.greeting._tcp._local.")
-	 * @param fullType  The full rendezvous type (e.g. "greeting._tcp._local.")
-	 * @return The simple base name (e.g. "Mary")
-	 */
-	static protected String getBaseName(final String fullName, final String fullType) {
-		int typeIndex = fullName.lastIndexOf(fullType);
-		
-		return fullName.substring(0, typeIndex-1);
-	}
-	
-	
-	/**
 	 * Internally used to construct the full bonjour type from the simple base type.
 	 * @param baseType The simple base type (e.g. "greeting")
 	 * @return The full rendezvous type (e.g. "greeting._tcp.local.")
 	 */
-	static protected String getFullType( final String baseType ) {
+	static String getFullType( final String baseType ) {
 		return "_" + baseType.toLowerCase() + "." + LOCAL_TYPE_SUFFIX;
 	}
 }
