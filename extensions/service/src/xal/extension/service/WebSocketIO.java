@@ -19,10 +19,6 @@ import javax.xml.bind.DatatypeConverter;
 
 /** Utility for processing messages passed through sockets on top of the WebSocket protocol */
 class WebSocketIO {
-	/** key with which to encode the web socket header key for completing the handshake */
-	static final private String HANDSHAKE_ENCODE_KEY = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
-
-
 
 	/** Send the handshake (from the client) generating a random security value and process the response. Returns true upon success. */
 	static boolean performHandshake( final Socket socket ) throws java.net.SocketException, java.io.IOException, SocketPrematurelyClosedException {
@@ -210,15 +206,11 @@ class WebSocketIO {
 		final StreamByteReader byteReader = new StreamByteReader( readStream, BUFFER_SIZE );
 
 		try {
-			final byte head1 = byteReader.nextByte();
+			byteReader.nextByte(); // Skip first byte
 			final byte head2 = byteReader.nextByte();
 
-			final boolean fin = ( head1 & 0b10000000 ) == 0b10000000;
-			final byte opcode = (byte)( head1 & 0b00001111 );
 			final boolean masked = ( head2 & 0b10000000 ) == 0b10000000;
 			final byte lengthCode = (byte)( head2 & 0b01111111 );
-
-			//System.out.println( "fin: " + fin + ", opcode: " + opcode + ", masked: " + masked + ", length code: " + lengthCode );
 
 			int dataLength = 0;
 			switch ( lengthCode ) {
@@ -330,13 +322,13 @@ class MaskPayloadReader {
 
 
 	/** Constructor */
-	public MaskPayloadReader( final byte[] mask ) {
+	MaskPayloadReader( final byte[] mask ) {
 		MASK = mask;
 	}
 
 
 	/** read the specified character and mask it */
-	public byte readCharCode( final byte[] inputBuffer, final int index ) {
+	byte readCharCode( final byte[] inputBuffer, final int index ) {
 		return (byte)( MASK[index%4] ^ inputBuffer[index] );
 	}
 }
@@ -359,7 +351,7 @@ class StreamByteReader {
 
 
 	/** Constructor */
-	public StreamByteReader( final InputStream inputStream, final int bufferSize ) {
+	StreamByteReader( final InputStream inputStream, final int bufferSize ) {
 		SOURCE_STREAM = inputStream;
 		BUFFER_SIZE = bufferSize;
 
@@ -369,7 +361,7 @@ class StreamByteReader {
 
 
 	/** read the next byte waiting for data from the stream if necessary */
-	public byte nextByte() throws java.io.IOException, StreamPrematurelyClosedException {
+	byte nextByte() throws java.io.IOException, StreamPrematurelyClosedException {
 		final int position = _position;
 		if ( position >= _byteStack.length ) {
 			popNextBytes();
@@ -392,6 +384,7 @@ class StreamByteReader {
 			final int readCount = reader.read( streamBuffer, 0, BUFFER_SIZE );
 
 			if ( readCount == -1 ) {     // the session has been closed
+			    reader.close();
 				throw new StreamPrematurelyClosedException( "The stream has closed while reading the remote response..." );
 			}
 			else if  ( readCount > 0 ) {
@@ -409,7 +402,7 @@ class StreamByteReader {
 
 
 	/** read and return the next specified count of bytes */
-	public byte[] nextBytes( final int count ) throws java.io.IOException, StreamPrematurelyClosedException {
+	byte[] nextBytes( final int count ) throws java.io.IOException, StreamPrematurelyClosedException {
 		final byte[] result = new byte[count];
 		nextBytes( result );
 		return result;
@@ -417,13 +410,13 @@ class StreamByteReader {
 
 
 	/** read the next bytes into the specified destination */
-	public void nextBytes( final byte[] destination ) throws java.io.IOException, StreamPrematurelyClosedException {
+	void nextBytes( final byte[] destination ) throws java.io.IOException, StreamPrematurelyClosedException {
 		nextBytes( destination, 0, destination.length );
 	}
 
 
 	/** read the next bytes into the specified destination */
-	public void nextBytes( final byte[] destination, final int offset, final int count ) throws java.io.IOException, StreamPrematurelyClosedException {
+	void nextBytes( final byte[] destination, final int offset, final int count ) throws java.io.IOException, StreamPrematurelyClosedException {
 		int position = offset;
 		for ( int index = 0 ; index < count ; index++ ) {
 			destination[position++] = nextByte();

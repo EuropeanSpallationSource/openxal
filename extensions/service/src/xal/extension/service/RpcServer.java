@@ -16,15 +16,13 @@ import java.io.*;
 import java.lang.reflect.*;
 import java.net.*;
 import java.util.*;
-import java.util.logging.*;
 
 
 /**
  * RpcServer implements a server which handles remote requests against registered handlers.
  * @author  tap
  */
-//public class RpcServer extends WebServer {
-public class RpcServer {
+class RpcServer {
     /** delimeter for encoding remote messages */
     final static private String REMOTE_MESSAGE_DELIMITER = "#";
     
@@ -42,14 +40,12 @@ public class RpcServer {
     
     
     /** Constructor */
-    public RpcServer( final Coder messageCoder ) throws java.io.IOException {
+    RpcServer( final Coder messageCoder ) throws java.io.IOException {
         MESSAGE_CODER = messageCoder;
         
         REMOTE_REQUEST_HANDLERS = new Hashtable<String,RemoteRequestHandler<?>>();
         SERVER_SOCKET = new ServerSocket( 0 );
         REMOTE_SOCKETS = new HashSet<Socket>();
-
-//		System.out.println( "Listening on: " + getHost() + ":" + getPort() );
     }
     
     
@@ -57,30 +53,13 @@ public class RpcServer {
      * Get the port used by the web server.
 	 * @return The port used by the web server.
      */
-    public int getPort() {
+    int getPort() {
         return SERVER_SOCKET.getLocalPort();
     }
     
     
-    /**
-     * Get the host address used for the web server.
-	 * @return The host address used for the web server.
-     */
-    public String getHost() {
-        try {
-            return InetAddress.getLocalHost().getHostName();
-        }
-        catch(UnknownHostException exception) {
-			final String message = "Error getting the host name of the RPC Server.";
-			Logger.getLogger( "global" ).log( Level.SEVERE, message, exception );
-            System.err.println( exception );
-            return null;
-        }
-    }
-    
-    
     /** start the server, listen for remote requests and dispatch them to the appropriate handlers */
-    public void start() {
+    void start() {
         new Thread( new Runnable() {
             public void run() {
                 try {
@@ -105,7 +84,7 @@ public class RpcServer {
     
     
     /** shutdown the server */
-    public void shutdown() throws IOException {
+    void shutdown() throws IOException {
 		// stop establishing new remote sockets
         SERVER_SOCKET.close();
 
@@ -139,15 +118,9 @@ public class RpcServer {
     
 
 	/** add a handler to associate with the specified service and provider */
-    public <ProtocolType> void addHandler( final String serviceName, final Class<ProtocolType> protocol, final ProtocolType provider ) {
-        final RemoteRequestHandler<ProtocolType> handler = new RemoteRequestHandler<ProtocolType>( serviceName, protocol, provider );
+    <ProtocolType> void addHandler( final String serviceName, final Class<ProtocolType> protocol, final ProtocolType provider ) {
+        final RemoteRequestHandler<ProtocolType> handler = new RemoteRequestHandler<ProtocolType>( protocol, provider );
         REMOTE_REQUEST_HANDLERS.put( serviceName, handler );
-    }
-
-
-	/** remove the registered handler */
-	public void removeHandler( final String serviceName ) {
-		REMOTE_REQUEST_HANDLERS.remove( serviceName );
     }
 
 
@@ -242,9 +215,6 @@ class RemoteRequestHandler<ProtocolType> {
     /** primitive type wrappers keyed by type */
     final static private Map<Class<?>,Class<?>> PRIMITIVE_TYPE_WRAPPERS;
 
-    /** identifier of the service */
-    final private String SERVICE_NAME;
-    
     /** protocol of available methods */
     final private Class<ProtocolType> PROTOCOL;
     
@@ -262,8 +232,7 @@ class RemoteRequestHandler<ProtocolType> {
     
     
     /** Constructor */
-    public RemoteRequestHandler( final String serviceName, final Class<ProtocolType> protocol, final ProtocolType provider ) {
-        SERVICE_NAME = serviceName;
+    RemoteRequestHandler( final Class<ProtocolType> protocol, final ProtocolType provider ) {
         PROTOCOL = protocol;
         PROVIDER = provider;
         METHOD_CACHE = new Hashtable<String,Method>();
@@ -288,7 +257,7 @@ class RemoteRequestHandler<ProtocolType> {
     
     
     /** Evaluate the request */
-    public EvaluationResult evaluateRequest( final String methodName, final Object[] methodParams ) {
+    EvaluationResult evaluateRequest( final String methodName, final Object[] methodParams ) {
         final Class<?>[] methodParamTypes = new Class<?>[ methodParams.length ];
         for ( int index = 0 ; index < methodParams.length ; index++ ) {
             final Object param = methodParams[index];
@@ -343,7 +312,6 @@ class RemoteRequestHandler<ProtocolType> {
         catch ( NoSuchMethodException exception ) {
             try {
                 final Method[] methods = PROTOCOL.getMethods();
-                final List<Method> methodCandidates = new ArrayList<Method>();
                 int bestScore = 0;
                 Method bestMethod = null;
                 for ( final Method method : methods ) {
@@ -400,11 +368,11 @@ class RemoteRequestHandler<ProtocolType> {
             else if ( methodParamType.equals( parameterType ) ) {
                 score += 2;     // bonus for exact match
             }
-            else if ( parameterType.isAssignableFrom( methodParamType ) ) {
-                score += 1;     // types are consistent
-            }
             else if ( parameterType == null ) {
                 // null matches an object type so compatible, but no credit
+            }
+            else if ( parameterType.isAssignableFrom( methodParamType ) ) {
+                score += 1;     // types are consistent
             }
             else {
                 return 0;   // no match for this parameter
@@ -430,13 +398,13 @@ class EvaluationResult {
     
     
     /** Constructor */
-    public EvaluationResult( final Object value, final boolean isOneWay ) {
+    EvaluationResult( final Object value, final boolean isOneWay ) {
         this( value, isOneWay, null );
     }
     
     
     /** Constructor */
-    public EvaluationResult( final Object value, final boolean isOneWay, final Throwable exception ) {
+    EvaluationResult( final Object value, final boolean isOneWay, final Throwable exception ) {
         VALUE = value;
         IS_ONE_WAY = isOneWay;
         EXCEPTION = exception;
@@ -444,22 +412,17 @@ class EvaluationResult {
     
     
     /** determine whether the call is one way */
-    public boolean isOneWay() {
+    boolean isOneWay() {
         return IS_ONE_WAY;
     }
     
     /** get the value */
-    public Object getValue() {
+    Object getValue() {
         return VALUE;
     }
     
-    /** get the exception */
-    public Throwable getException() {
-        return EXCEPTION;
-    }
-    
     /** wrap the raw exception as runtime exception */
-    public RuntimeException getRuntimeExceptionWrapper() {
+    RuntimeException getRuntimeExceptionWrapper() {
         if ( EXCEPTION != null ) {
             final RuntimeException wrapper = new RuntimeException( EXCEPTION );
             wrapper.setStackTrace( EXCEPTION.getStackTrace() );
@@ -477,7 +440,7 @@ class RemoteClientDroppedException extends RuntimeException {
     /** serialization ID */
     private static final long serialVersionUID = 1L;
 
-	public RemoteClientDroppedException( final String message ) {
+	RemoteClientDroppedException( final String message ) {
 		super( message );
 	}
 }

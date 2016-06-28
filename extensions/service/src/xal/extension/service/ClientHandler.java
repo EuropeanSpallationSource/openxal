@@ -16,7 +16,6 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.logging.*;
 import java.lang.reflect.*;
 import java.lang.reflect.Proxy;
 
@@ -59,7 +58,7 @@ class ClientHandler<ProxyType> implements InvocationHandler {
 	 * @param newProtocol  The interface the service provides.
      * @param messageCoder coder for encoding and decoding messages for remote transport
 	 */
-    public ClientHandler( final String host, final int port, final String name, final Class<ProxyType> newProtocol, final Coder messageCoder ) {
+    ClientHandler( final String host, final int port, final String name, final Class<ProxyType> newProtocol, final Coder messageCoder ) {
         REMOTE_HOST = host;
         REMOTE_PORT = port;
         SERVICE_NAME = name;
@@ -81,19 +80,10 @@ class ClientHandler<ProxyType> implements InvocationHandler {
 
 
     /**
-     * Get the interface managed by this handler.
-     * @return The interface managed by this handler.
-     */
-    public Class<?> getProtocol() {
-        return SERVICE_PROTOCOL;
-    }
-
-
-    /**
      * Get the name of the remote service.
      * @return The name of the remote service.
      */
-    public String getServiceName() {
+    String getServiceName() {
         return SERVICE_NAME;
     }
 
@@ -102,7 +92,7 @@ class ClientHandler<ProxyType> implements InvocationHandler {
      * Get the host name of the remote service.
      * @return The host name of the remote service.
      */
-    public String getHost() {
+    String getHost() {
         return REMOTE_HOST;
     }
 
@@ -111,7 +101,7 @@ class ClientHandler<ProxyType> implements InvocationHandler {
      * Get the port of the remote service.
      * @return The port of the remote service.
      */
-    public int getPort() {
+    int getPort() {
         return REMOTE_PORT;
     }
 
@@ -120,7 +110,7 @@ class ClientHandler<ProxyType> implements InvocationHandler {
      * Get the proxy that will forward requests to the remote service.
      * @return The proxy that will forward requests to the remote service.
      */
-    public ProxyType getProxy() {
+    ProxyType getProxy() {
         return PROXY;
     }
 
@@ -139,7 +129,7 @@ class ClientHandler<ProxyType> implements InvocationHandler {
 
 
     /** dispose of resources */
-    public void dispose() {
+    void dispose() {
 		final List<SerialRemoteMessageProcessor> processors = new ArrayList<SerialRemoteMessageProcessor>();
 
 		synchronized( MESSAGE_PROCESSORS ) {
@@ -154,6 +144,7 @@ class ClientHandler<ProxyType> implements InvocationHandler {
 
 
     /** dispose of resources upon collection */
+    @Override
     protected void finalize() throws Throwable {
         dispose();
 		super.finalize();
@@ -194,8 +185,8 @@ class ClientHandler<ProxyType> implements InvocationHandler {
      * @return The result of the method invokation.
 	 * @throws xal.extension.service.RemoteMessageException if an exception occurs while invoking this remote message.
      */
-    @SuppressWarnings( "unchecked" )    // must cast generic response object to Map
-	public Object invoke( final Object proxy, final Method method, final Object[] args ) throws RemoteMessageException, RemoteServiceDroppedException {
+	@Override
+    public Object invoke( final Object proxy, final Method method, final Object[] args ) throws RemoteMessageException, RemoteServiceDroppedException {
 		try {
 			SERVICE_PROTOCOL.getMethod( method.getName(), method.getParameterTypes() );		// test whether the remote service implements the method
 			return performRemoteServiceCall( method, args );
@@ -324,25 +315,25 @@ class PendingResult {
 
 
     /** set the result's value */
-    public void setValue( final Object value ) {
+    void setValue( final Object value ) {
         _value = value;
     }
 
 
     /** get the result's value */
-    public Object getValue() {
+    Object getValue() {
         return _value;
     }
 
 
     /** set the error message */
-    public void setRemoteException( final RuntimeException exception ) {
+    void setRemoteException( final RuntimeException exception ) {
         _remoteException = exception;
     }
 
 
     /** get the error message */
-    public RuntimeException getRemoteException() {
+    RuntimeException getRemoteException() {
         return _remoteException;
     }
 }
@@ -364,7 +355,7 @@ class SerialRemoteMessageProcessor {
 	 * @param port  The port through which the service is provided.
      * @param messageCoder coder for encoding and decoding messages for remote transport
 	 */
-    public SerialRemoteMessageProcessor( final String host, final int port, final Coder messageCoder ) {
+    SerialRemoteMessageProcessor( final String host, final int port, final Coder messageCoder ) {
         MESSAGE_CODER = messageCoder;
 
         REMOTE_SOCKET = makeRemoteSocket( host, port );
@@ -398,13 +389,13 @@ class SerialRemoteMessageProcessor {
 
 
 	/** determine whether the socket is closed */
-	public boolean isClosed() {
+	boolean isClosed() {
 		return REMOTE_SOCKET.isClosed();
 	}
 
 
     /** dispose of resources */
-    public void dispose() {
+    void dispose() {
         if ( !REMOTE_SOCKET.isClosed() ) {
             try {
                 REMOTE_SOCKET.close();
@@ -417,6 +408,7 @@ class SerialRemoteMessageProcessor {
 
 
     /** dispose of resources upon collection */
+    @Override
     protected void finalize() throws Throwable {
 		try {
 			dispose();
@@ -463,7 +455,7 @@ class SerialRemoteMessageProcessor {
 
 
     /** Submit the remote request */
-    public PendingResult submitRemoteRequest( final String jsonRequest, final boolean hasResponse ) {
+    PendingResult submitRemoteRequest( final String jsonRequest, final boolean hasResponse ) {
 		try {
 			WebSocketIO.sendMessage( REMOTE_SOCKET, jsonRequest );
 

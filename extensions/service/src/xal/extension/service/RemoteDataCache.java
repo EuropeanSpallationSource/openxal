@@ -21,7 +21,7 @@ public class RemoteDataCache<DataType> {
 	private final Callable<DataType> REMOTE_OPERATION;
 
 	/** latest data that has been cached */
-	protected volatile RemoteData<DataType> _cachedData;
+	private volatile RemoteData<DataType> _cachedData;
 
 	/** indicates whether the remote service is connected */
 	private volatile boolean _isConnected;
@@ -40,7 +40,7 @@ public class RemoteDataCache<DataType> {
 
 
 	/** Primary Constructor */
-	public RemoteDataCache( final Callable<DataType> remoteOperation, final UpdateListener updateHandler ) {
+	private RemoteDataCache( final Callable<DataType> remoteOperation, final UpdateListener updateHandler ) {
 		REMOTE_OPERATION = remoteOperation;
 		
 		_updateListener = updateHandler;
@@ -57,25 +57,12 @@ public class RemoteDataCache<DataType> {
 	}
 
 
-	/** get the update handler */
-	public UpdateListener getUpdateListener() {
-		return _updateListener;
-	}
-
-
 	/** Refresh the cache with a fresh call to the remote unless a fetch is already pending */
 	public void refresh() {
 		// fetch new data only if a fetch is not currently in progress
 		if ( !_isFetchPending ) {
 			fetchData();
 		}
-	}
-
-
-	/** Get the timestamp of the last fetch */
-	public Date getTimestamp() {
-		final RemoteData<DataType> cachedData = _cachedData;
-		return cachedData != null ? cachedData.getTimestamp() : null;
 	}
 
 
@@ -141,31 +128,25 @@ class RemoteData<DataType> {
 
 
 	/** Primary Constructor */
-	public RemoteData( final DataType value, final Date timestamp ) {
+	private RemoteData( final DataType value, final Date timestamp ) {
 		VALUE = value;
 		FETCH_TIMESTAMP = timestamp;
 	}
 
 
 	/** Constructor */
-	public RemoteData( final DataType value ) {
+	RemoteData( final DataType value ) {
 		this( value, new Date() );
 	}
 
 
 	/** get the value */
-	public DataType getValue() {
+	DataType getValue() {
 		return VALUE;
 	}
 
-
-	/** get the timestamp */
-	public Date getTimestamp() {
-		return FETCH_TIMESTAMP;
-	}
-
-
 	/** get string representation */
+	@Override
 	public String toString() {
 		return "Cached value: " + VALUE + ", timestamp: " + FETCH_TIMESTAMP;
 	}
