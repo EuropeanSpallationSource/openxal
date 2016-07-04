@@ -18,17 +18,43 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.epics.pvdatabase.PVDatabaseFactory;
+import org.epics.pvdatabase.PVRecord;
+import org.epics.pvdatabase.pva.ContextLocal;
+import org.epics.pvdata.factory.FieldFactory;
+import org.epics.pvdata.factory.PVDataFactory;
+import org.epics.pvdata.pv.FieldCreate;
+import org.epics.pvdata.pv.PVDataCreate;
+import org.epics.pvdata.pv.PVStructure;
+import org.epics.pvdata.pv.ScalarType;
+import org.epics.pvdata.pv.Structure;
+import org.epics.pvdatabase.PVDatabase;
+
 /**
  * ServiceDirectory is a local point of access for registering and looking up services on a network.
- * It wraps the standard Bonjour mechanism to provide a simple way to register and lookup services
- * by using a Java interface as a service name.  XML-RPC is the communication protocol used for messaging.
- * Both Bonjour and XML-RPC are accepted protocols implemented in multiple languages.
+ * It uses pvAccess protocol to register and lookup services. pvAccess Record is created for each
+ * service and clients are then connected to the JSON is the communication protocol used for messaging.
  * @author  tap
  * @author <a href="mailto:blaz.kranjc@cosylab.com">Blaz Kranjc</a>
  */
 final public class ServiceDirectory {
 	/** The default directory */
 	static final private ServiceDirectory DEFAULT_DIRECTORY = new ServiceDirectory();
+
+	/** Context used by pvDatabase and the master database */
+	private static final PVDatabase MASTER_DATABASE = PVDatabaseFactory.getMaster();
+	private static final ContextLocal CONTEXT = new ContextLocal();
+	
+	/** Constants for field names in pvStructure */
+	static final String PORT_FIELD_NAME = "port";
+	static final String HOST_ADDRESS_FIELD_NAME = "hostAddress";
+	static final String SERVICE_NAME_FIELD_NAME = "serviceName";
+
+	
+	static {
+	    CONTEXT.start(false);
+	    ServiceChannelProvider.initialize();
+	}
 	
     /** coder for encoding and ecoding messages for remote transport */
     final private Coder MESSAGE_CODER;
@@ -40,24 +66,13 @@ final public class ServiceDirectory {
 	private ServiceDirectory() throws ServiceException {
         MESSAGE_CODER = JSONCoder.getInstance();
 		
-		try {
-		    // TODO create context and database
-		    
-		    
-			// shutdown the service directory when quitting the process
-			Runtime.getRuntime().addShutdownHook( new Thread() {
-				public void run() {
-					System.out.println( "Shutting down services for this process..." );
-					ServiceDirectory.this.dispose();
-				}
-			});
-		}
-		catch( Exception exception ) {
-			final String message = "JmDNS initialization failed.  Services are disabled.";
-			Logger.getLogger("global").log( Level.SEVERE, message, exception );
-			System.err.println( message);
-			exception.printStackTrace();
-		}
+		// shutdown the service directory when quitting the process
+		Runtime.getRuntime().addShutdownHook( new Thread() {
+		    public void run() {
+		        System.out.println( "Shutting down services for this process..." );
+		        ServiceDirectory.this.dispose();
+		    }
+		});
 	}
 	
 	
@@ -72,8 +87,16 @@ final public class ServiceDirectory {
 	
 	/** Shutdown the pvAccess context and database and the RPC server and dispose of all resources. */
 	public void dispose() {
+	    
+	    if (MASTER_DATABASE != null) {
+	        MASTER_DATABASE.destroy();
+	    }
 
-		// Stop context and database TODO
+	    if (CONTEXT != null) {
+	        CONTEXT.destroy();
+	    }
+	    
+	    ServiceChannelProvider.destroy();
 
 		if ( _rpcServer != null ) {
             try {
@@ -93,7 +116,8 @@ final public class ServiceDirectory {
      * @param provider The provider which handles the service requests.
 	 * @return a new service reference for successful registration and null otherwise.
      */
-    public <ProtocolType> ServiceRef registerService( final Class<ProtocolType> protocol, final String name, final ProtocolType provider ) throws ServiceException {
+    public <ProtocolType> ServiceRef registerService( final Class<ProtocolType> protocol, final String name,
+            final ProtocolType provider ) throws ServiceException {
 		return registerService( protocol, name, provider, new HashMap<String,Object>() );
     }
 	
@@ -106,8 +130,8 @@ final public class ServiceDirectory {
 	 * @param properties Properties.
 	 * @return a new service reference for successful registration and null otherwise.
      */
-    private <ProtocolType> ServiceRef registerService( final Class<ProtocolType> protocol, final String serviceName, final ProtocolType provider, final Map<String,Object> properties ) {
-        
+    private <ProtocolType> ServiceRef registerService( final Class<ProtocolType> protocol, final String serviceName,
+            final ProtocolType provider, final Map<String,Object> properties ) {
 		try {
             if ( _rpcServer == null ) {
                 _rpcServer = new RpcServer( MESSAGE_CODER );
@@ -115,20 +139,25 @@ final public class ServiceDirectory {
             }
               
 			int port = _rpcServer.getPort();
+			String ipAddress = _rpcServer.getHostAddress();
 			
 			// add the service to the RPC Server
 			_rpcServer.addHandler( serviceName, protocol, provider );
 			
-			// advertise the service to the world TODO
+			String protocolName = protocol.getName();
+			
+			PVRecord serviceRecord = createPvRecord(protocolName, port, serviceName, ipAddress);
+			MASTER_DATABASE.addRecord(serviceRecord);
 
-			return new ServiceRef(serviceName, "", port); // TODO where do I get IP?!
+			return new ServiceRef(serviceName, ipAddress, port);
 		}
 		catch( Exception exception ) {
 			throw new ServiceException( exception, "Exception while attempting to register a service..." );
 		}
     }
 	
-	/**
+
+    /**
 	 * Get a proxy to the service with the given service reference and protocol. 
 	 * @param protocol  The protocol implemented by the service.
 	 * @param serviceRef The service reference.
@@ -157,7 +186,7 @@ final public class ServiceDirectory {
 	 */
 	private void addServiceListener( final String type, final ServiceListener listener ) throws ServiceException {
 		try {
-		    // TODO Add listener functions
+		    ServiceChannelProvider.createChannel(type, listener);
 		}
 		catch(Exception exception) {
 			Logger.getLogger("global").log( Level.SEVERE, "Error attempting to add a service listener of service type: " + type, exception );
@@ -175,4 +204,28 @@ final public class ServiceDirectory {
 		return protocol.getName();
 	}
 	
+
+	/** 
+	 * Creates a record that exposes information on the service.
+	 * @param protocolName Name of the protocol that service uses
+	 * @param port Port that service uses
+	 */
+	private PVRecord createPvRecord(String protocolName, int port, String serviceName, String hostAddress) {
+	    FieldCreate fieldCreate = FieldFactory.getFieldCreate();
+	    Structure structure = fieldCreate.createFieldBuilder().
+	            add(PORT_FIELD_NAME, ScalarType.pvInt).
+	            add(SERVICE_NAME_FIELD_NAME, ScalarType.pvString).
+	            add(HOST_ADDRESS_FIELD_NAME, ScalarType.pvString).
+	            createStructure();
+	    PVDataCreate dataCreate = PVDataFactory.getPVDataCreate();
+	    PVStructure pvStructure = dataCreate.createPVStructure(structure);
+
+	    // Populate with data
+	    pvStructure.getStringField(SERVICE_NAME_FIELD_NAME).put(serviceName);
+	    pvStructure.getStringField(HOST_ADDRESS_FIELD_NAME).put(hostAddress);
+	    pvStructure.getIntField(PORT_FIELD_NAME).put(port);
+	    
+	    return new PVRecord(protocolName, pvStructure);
+    }
+
 }

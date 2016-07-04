@@ -11,8 +11,7 @@
 package xal.extension.service;
 
 /**
- * ServiceRef wraps the native Rendezvous ServiceInfo and provides a reference to the service
- * that hides a direct reference to Rendezvous.
+ * ServiceRef is a data container, which contains all data required for connection to the service.
  *
  * @author  tap
  * @author <a href="mailto:blaz.kranjc@cosylab.com">Blaz Kranjc</a>

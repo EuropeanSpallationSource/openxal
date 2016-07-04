@@ -16,8 +16,16 @@
     </build>
     <dependencies>
         <dependency>
-            <groupId>javax.jmdns</groupId>
-            <artifactId>jmdns</artifactId>
+            <groupId>org.epics</groupId>
+            <artifactId>pvAccessJava</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.epics</groupId>
+            <artifactId>pvDataJava</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.epics</groupId>
+            <artifactId>pvDatabaseJava</artifactId>
         </dependency>
     </dependencies>
 </project>

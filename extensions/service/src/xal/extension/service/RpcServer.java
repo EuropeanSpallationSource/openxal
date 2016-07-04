@@ -57,6 +57,14 @@ class RpcServer {
         return SERVER_SOCKET.getLocalPort();
     }
     
+
+    /**
+	 * @return IP of the web server.
+     */
+    String getHostAddress() {
+        return SERVER_SOCKET.getInetAddress().getHostAddress();
+    }
+    
     
     /** start the server, listen for remote requests and dispatch them to the appropriate handlers */
     void start() {
