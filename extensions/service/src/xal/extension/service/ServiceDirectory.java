@@ -11,6 +11,7 @@
 package xal.extension.service;
 
 import xal.tools.coding.json.JSONCoder;
+import xal.pvaccess.ContextManager;
 import xal.tools.coding.*;
 
 import java.io.IOException;
@@ -20,7 +21,6 @@ import java.util.logging.Logger;
 
 import org.epics.pvdatabase.PVDatabaseFactory;
 import org.epics.pvdatabase.PVRecord;
-import org.epics.pvdatabase.pva.ContextLocal;
 import org.epics.pvdata.factory.FieldFactory;
 import org.epics.pvdata.factory.PVDataFactory;
 import org.epics.pvdata.pv.FieldCreate;
@@ -43,7 +43,12 @@ final public class ServiceDirectory {
 
 	/** Context used by pvDatabase and the master database */
 	private static final PVDatabase MASTER_DATABASE = PVDatabaseFactory.getMaster();
-	private static final ContextLocal CONTEXT = new ContextLocal();
+
+	// ContextManager is used to ensure that only one instance of context is running at the time.
+	// As not actual functionality of context is used, there is no actual need for the object except
+	// for keeping the reference, so that it is not garbage collected (TODO design flaw)
+	@SuppressWarnings("unused")
+    private final ContextManager CONTEXT = ContextManager.getInstance();
 	
 	/** Constants for field names in pvStructure */
 	static final String PORT_FIELD_NAME = "port";
@@ -52,7 +57,6 @@ final public class ServiceDirectory {
 
 	
 	static {
-	    CONTEXT.start(false);
 	    ServiceChannelProvider.initialize();
 	}
 	
@@ -88,16 +92,9 @@ final public class ServiceDirectory {
 	/** Shutdown the pvAccess context and database and the RPC server and dispose of all resources. */
 	public void dispose() {
 	    
-	    if (MASTER_DATABASE != null) {
-	        MASTER_DATABASE.destroy();
-	    }
-
-	    if (CONTEXT != null) {
-	        CONTEXT.destroy();
-	    }
+	    // Context, database and channel provider must not be destroyed/cleaned as they might be used somewhere else.
+	    // TODO Find a way to clean these objects.
 	    
-	    ServiceChannelProvider.destroy();
-
 		if ( _rpcServer != null ) {
             try {
                 _rpcServer.shutdown();
@@ -137,7 +134,7 @@ final public class ServiceDirectory {
                 _rpcServer = new RpcServer( MESSAGE_CODER );
                 _rpcServer.start();
             }
-              
+
 			int port = _rpcServer.getPort();
 			String ipAddress = _rpcServer.getHostAddress();
 			
@@ -145,7 +142,7 @@ final public class ServiceDirectory {
 			_rpcServer.addHandler( serviceName, protocol, provider );
 			
 			String protocolName = protocol.getName();
-			
+
 			PVRecord serviceRecord = createPvRecord(protocolName, port, serviceName, ipAddress);
 			MASTER_DATABASE.addRecord(serviceRecord);
 
@@ -189,7 +186,8 @@ final public class ServiceDirectory {
 		    ServiceChannelProvider.createChannel(type, listener);
 		}
 		catch(Exception exception) {
-			Logger.getLogger("global").log( Level.SEVERE, "Error attempting to add a service listener of service type: " + type, exception );
+			Logger.getLogger("global").log( Level.SEVERE, "Error attempting to add a service listener of service type: "
+			        + type, exception );
 			throw new ServiceException(exception, "Exception while trying to add a service listener...");
 		}
 	}
