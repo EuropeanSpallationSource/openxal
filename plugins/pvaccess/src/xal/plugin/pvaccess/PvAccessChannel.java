@@ -868,7 +868,8 @@ class PvAccessChannel extends Channel {
         
         @Override
         protected void finalize() throws Throwable {
-            org.epics.pvaccess.ClientFactory.stop();
+            // Client factory should not be stopped here as it might be used somewhere else
+            // TODO find a nice way for a cleanup
             super.finalize();
         }
 
