@@ -52,7 +52,6 @@ final public class ServiceDirectory {
 	
 	/** Constants for field names in pvStructure */
 	static final String PORT_FIELD_NAME = "port";
-	static final String HOST_ADDRESS_FIELD_NAME = "hostAddress";
 	static final String SERVICE_NAME_FIELD_NAME = "serviceName";
 
 	
@@ -72,6 +71,7 @@ final public class ServiceDirectory {
 		
 		// shutdown the service directory when quitting the process
 		Runtime.getRuntime().addShutdownHook( new Thread() {
+		    @Override
 		    public void run() {
 		        System.out.println( "Shutting down services for this process..." );
 		        ServiceDirectory.this.dispose();
@@ -213,14 +213,12 @@ final public class ServiceDirectory {
 	    Structure structure = fieldCreate.createFieldBuilder().
 	            add(PORT_FIELD_NAME, ScalarType.pvInt).
 	            add(SERVICE_NAME_FIELD_NAME, ScalarType.pvString).
-	            add(HOST_ADDRESS_FIELD_NAME, ScalarType.pvString).
 	            createStructure();
 	    PVDataCreate dataCreate = PVDataFactory.getPVDataCreate();
 	    PVStructure pvStructure = dataCreate.createPVStructure(structure);
 
 	    // Populate with data
 	    pvStructure.getStringField(SERVICE_NAME_FIELD_NAME).put(serviceName);
-	    pvStructure.getStringField(HOST_ADDRESS_FIELD_NAME).put(hostAddress);
 	    pvStructure.getIntField(PORT_FIELD_NAME).put(port);
 	    
 	    return new PVRecord(protocolName, pvStructure);

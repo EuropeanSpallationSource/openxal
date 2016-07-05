@@ -2,6 +2,8 @@ package xal.extension.service;
 
 
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.epics.pvaccess.client.Channel;
 import org.epics.pvaccess.client.Channel.ConnectionState;
@@ -80,9 +82,10 @@ class ServiceChannelProvider {
             if (status.isSuccess()) {
                 channelGet.lastRequest();
                 channelGet.get();
+            } else {
+                LOGGER.warning("Error while connecting to channel " + channelGet.getChannel().getChannelName()
+                        + " for get operation.");
             }
-            else
-                LOGGER.warning("Error while connecting to channel " + channelGet.getChannel().getChannelName() + " for get operation.");
         }
 
         @Override
@@ -90,16 +93,38 @@ class ServiceChannelProvider {
             if (status.isSuccess()) {
 
                 serviceName = pvStructure.getStringField(ServiceDirectory.SERVICE_NAME_FIELD_NAME).get();
+
                 int port = pvStructure.getIntField(ServiceDirectory.PORT_FIELD_NAME).get();
-                String hostAddress = pvStructure.getStringField(ServiceDirectory.HOST_ADDRESS_FIELD_NAME).get();
+
+                String hostAddress = parseIpAddress(channelGet.getChannel().getRemoteAddress());
+                if (hostAddress.isEmpty()) {
+                    // PVAccess might return address that is different from ip:port.
+                    // The current implementation cannot deal with this.
+                    LOGGER.warning("Could not get host address for service " + serviceName + ".");
+                    return;
+                }
 
                 ServiceRef ref = new ServiceRef(serviceName, hostAddress, port);
-                
                 listener.serviceAdded(ServiceDirectory.defaultDirectory(), ref);
+                
             } else 
                 LOGGER.warning("Error while getting the value from " + channelGet.getChannel().getChannelName() + ".");
         }
 
+        /**
+         * Returns IP from string in format"/IP:PORT".
+         * @param remoteAddress Address received from the PVAccess
+         * @return IP address on which the PV is exposed
+         */
+        private static String parseIpAddress(String remoteAddress) {
+            Pattern pattern = Pattern.compile("^/((?:[0-9]{1,3}\\.){3}[0-9]{1,3}):[0-9]+$");
+            Matcher matcher = pattern.matcher(remoteAddress);
+            if (matcher.matches()) {
+                return matcher.group(1);
+            }
+            return "";
+        }
+        
     }
-
+    
 }
