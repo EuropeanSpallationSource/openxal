@@ -443,7 +443,9 @@ class PvAccessServerChannel extends Channel implements IServerChannel {
                     add("valueAlarm", standardField.doubleAlarm()).
                     createStructure();
             PVStructure pvStructure = pvDataCreate.createPVStructure(top);
-            pvStructure.getScalarArrayField("value", ScalarType.pvDouble).setCapacity(size);
+            PVDoubleArray valueField = (PVDoubleArray)pvStructure.getScalarArrayField("value", ScalarType.pvDouble);
+            valueField.setCapacity(size);
+            valueField.put(0, size, new double[size], 0);
             return pvStructure;
         }
 
