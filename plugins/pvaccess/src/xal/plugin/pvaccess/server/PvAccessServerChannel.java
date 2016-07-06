@@ -49,7 +49,7 @@ class PvAccessServerChannel extends Channel implements IServerChannel {
     /** size for array PVs */
    public static final int DEFAULT_ARRAY_SIZE = 1024;
 
-   private static final PVDatabase master = PVDatabaseFactory.getMaster();
+   private static final PVDatabase MASTER_DATABASE = PVDatabaseFactory.getMaster();
    
    private final PVRecord record;
    
@@ -73,7 +73,7 @@ class PvAccessServerChannel extends Channel implements IServerChannel {
            size = signalName.matches(".*(TBT|A)") ? DEFAULT_ARRAY_SIZE : 1;
            record = RecordFactory.createRecord(signalName, size);
            connectionFlag = true;
-           master.addRecord(record);
+           MASTER_DATABASE.addRecord(record);
        } else { 
            throw new IllegalArgumentException("Cannot create a channel with an empty name");
        }
@@ -481,10 +481,10 @@ class PvAccessServerChannel extends Channel implements IServerChannel {
             private static final ContextManager INSTANCE = new ContextManager();
         }
 
-        private static final ContextLocal context = new ContextLocal();
+        private static final ContextLocal CONTEXT = new ContextLocal();
 
         private ContextManager () {
-            context.start(false);
+            CONTEXT.start(false);
         }
 
         static ContextManager getInstance() {
@@ -493,7 +493,7 @@ class PvAccessServerChannel extends Channel implements IServerChannel {
         
         @Override
         protected void finalize() throws Throwable {
-            context.destroy();
+            CONTEXT.destroy();
             super.finalize();
         }
 

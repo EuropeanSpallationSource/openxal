@@ -27,13 +27,5 @@
             <groupId>org.epics</groupId>
             <artifactId>pvDatabaseJava</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.epics</groupId>
-            <artifactId>caj</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.epics</groupId>
-            <artifactId>jca</artifactId>
-        </dependency>
     </dependencies>
 </project>

@@ -67,7 +67,7 @@ class PvAccessChannel extends Channel {
     static final String CONTROL_FIELD_NAME = "control";
     
     // Channel implementation that is used by this class
-    private volatile org.epics.pvaccess.client.Channel channel;
+    private org.epics.pvaccess.client.Channel channel;
     
     // Latch used to notify the connection to the channel
     private volatile CountDownLatch connectionLatch;
@@ -153,7 +153,14 @@ class PvAccessChannel extends Channel {
      */
     @Override
     public void requestConnection() {
-        connectAndWait();
+        // XXX: This creates a lot of threads but with queuing this might wait for timeout
+        Thread t = new Thread( new Runnable () {
+            @Override
+            public void run() {
+                connectAndWait();
+            }
+        });
+        t.start();
     }
 
 
@@ -206,10 +213,9 @@ class PvAccessChannel extends Channel {
         synchronized (connectionLock) {
             connectionLatch = new CountDownLatch(1);
         
-            org.epics.pvaccess.client.Channel pvaChannel = ChannelProviderRegistryFactory.getChannelProviderRegistry().
+            channel = ChannelProviderRegistryFactory.getChannelProviderRegistry().
                     createProvider(org.epics.pvaccess.ClientFactory.PROVIDER_NAME).createChannel(m_strId,
                             new PvAccessChannel.ChannelRequesterImpl(), ChannelProvider.PRIORITY_DEFAULT);
-            channel = pvaChannel;
         }
 
         try {
@@ -734,7 +740,7 @@ class PvAccessChannel extends Channel {
                 channelGet.get();
             }
             else
-                PvAccessChannel.LOGGER.warning("Error while connecting channel " + PvAccessChannel.this.channelName() + " for get operation.");
+                PvAccessChannel.LOGGER.warning("Error while connecting channel " + channelGet.getChannel().getChannelName() + " for get operation.");
         }
 
         /**
@@ -746,7 +752,7 @@ class PvAccessChannel extends Channel {
                 listener.eventValue(pvStructure, PvAccessChannel.this);
             } 
             else 
-                PvAccessChannel.LOGGER.warning("Error while getting the value from " + PvAccessChannel.this.channelName() + ".");
+                PvAccessChannel.LOGGER.warning("Error while getting the value from " + channelGet.getChannel().getChannelName() + ".");
         }
         
     }
@@ -803,14 +809,14 @@ class PvAccessChannel extends Channel {
                 try {
                     PvAccessPutUtils.put(val, value, pvType);
                 } catch (PutException e) {
-                    PvAccessChannel.LOGGER.warning("Error on put to the " + PvAccessChannel.this.channelName() +
+                    PvAccessChannel.LOGGER.warning("Error on put to the " + channelPut.getChannel().getChannelName() +
                             ": " + e.getMessage());
                     
                 }
                 bitSet.set(val.getFieldOffset());
                 channelPut.put(pvStructure, bitSet);
             } else {
-                PvAccessChannel.LOGGER.warning("Error while connecting channel " + PvAccessChannel.this.channelName() +
+                PvAccessChannel.LOGGER.warning("Error while connecting channel " + channelPut.getChannel().getChannelName() +
                         " for put operation.");
             }
             
@@ -832,7 +838,7 @@ class PvAccessChannel extends Channel {
             if (status.isSuccess()) {
                 listener.putCompleted(PvAccessChannel.this);
             } else {
-                PvAccessChannel.LOGGER.warning("Error while puting a value to channel " + PvAccessChannel.this.channelName() + ".");
+                PvAccessChannel.LOGGER.warning("Error while puting a value to channel " + channelPut.getChannel().getChannelName() + ".");
             }
         }
         
