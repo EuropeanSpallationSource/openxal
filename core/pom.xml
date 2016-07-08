@@ -40,5 +40,9 @@
             <groupId>net.sf.jsci</groupId>
             <artifactId>jsci</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.epics</groupId>
+            <artifactId>pvDatabaseJava</artifactId>
+        </dependency>
     </dependencies>
 </project>

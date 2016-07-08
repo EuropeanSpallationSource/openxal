@@ -16,7 +16,6 @@ import org.epics.pvdata.pv.Structure;
 import org.epics.pvdatabase.PVDatabase;
 import org.epics.pvdatabase.PVDatabaseFactory;
 import org.epics.pvdatabase.PVRecord;
-import org.epics.pvdatabase.pva.ContextLocal;
 import org.epics.pvdatabase.pva.MonitorFactory;
 
 import xal.ca.Channel;
@@ -36,6 +35,7 @@ import xal.plugin.pvaccess.EventSinkAdapter;
 import xal.plugin.pvaccess.PvAccessChannelRecord;
 import xal.plugin.pvaccess.PvAccessDataAdapter;
 import xal.plugin.pvaccess.PvAccessMonitorRequesterImpl;
+import xal.pvaccess.ContextManager;
 import xal.ca.IServerChannel;
 
 /**
@@ -469,34 +469,6 @@ class PvAccessServerChannel extends Channel implements IServerChannel {
         static PVRecord createRecord(String signalName, int size) {
             PVStructure pvStructure = createPvStructure(size);
             return new PVRecord(signalName, pvStructure);
-        }
-
-    }
-    
-    /**
-     * Singleton class that holds the context and destroys it on garbage collection.
-     * TODO try to find a better design for this.
-     */
-    private static class ContextManager {
-
-        private static class LazyContextHolder {
-            private static final ContextManager INSTANCE = new ContextManager();
-        }
-
-        private static final ContextLocal CONTEXT = new ContextLocal();
-
-        private ContextManager () {
-            CONTEXT.start(false);
-        }
-
-        static ContextManager getInstance() {
-            return LazyContextHolder.INSTANCE;
-        }
-        
-        @Override
-        protected void finalize() throws Throwable {
-            CONTEXT.destroy();
-            super.finalize();
         }
 
     }

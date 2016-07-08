@@ -204,8 +204,12 @@ class PvAccessChannel extends Channel {
      */
     @Override
     public boolean connectAndWait(double timeout) {
-        if ( m_strId == null || isConnected()) { 
+        if ( m_strId == null ) { 
             return false;
+        }
+        
+        if (isConnected()) {
+            return true;
         }
 
         reset();
