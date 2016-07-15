@@ -21,6 +21,3 @@ Branch | Build Result
 Open XAL Master | [![Open XAL Master Build Test](https://travis-ci.org/openxal/openxal.svg)](https://travis-ci.org/openxal/openxal)
 ESS Master | [![ESS Build Test](https://gitlab01.esss.lu.se/ess-csr/openxal/badges/site.ess.master/build.svg)](https://gitlab01.esss.lu.se/ess-csr/openxal/builds)
 
-
-
-
