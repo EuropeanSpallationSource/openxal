@@ -62,7 +62,7 @@ class PvAccessServerChannel extends Channel implements IServerChannel {
    private final int size;
 
    // Keep a reference to the context manager instance to ensure that it does not get
-   // garbage collected while a channel still exists (TODO bad design)
+   // garbage collected while a channel still exists
    @SuppressWarnings("unused") 
    private final ContextManager contextManager = ContextManager.getInstance();
 
@@ -474,8 +474,7 @@ class PvAccessServerChannel extends Channel implements IServerChannel {
     }
     
     /**
-     * Singleton class that holds the context and destroys it on garbage collection.
-     * TODO try to find a better design for this.
+     * Singleton class that holds the context and destroys it on shutdown.
      */
     private static class ContextManager {
 
@@ -487,16 +486,20 @@ class PvAccessServerChannel extends Channel implements IServerChannel {
 
         private ContextManager () {
             CONTEXT.start(false);
+
+            // Create shutdown hook to close the resource
+            Thread t = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    CONTEXT.destroy();
+                }
+            });
+            t.setDaemon(false);
+            Runtime.getRuntime().addShutdownHook(t);
         }
 
         static ContextManager getInstance() {
             return LazyContextHolder.INSTANCE;
-        }
-        
-        @Override
-        protected void finalize() throws Throwable {
-            CONTEXT.destroy();
-            super.finalize();
         }
 
     }

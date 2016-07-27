@@ -85,7 +85,7 @@ class PvAccessChannel extends Channel {
     }
 
     // Keep a reference to the context manager instance to ensure that it does not get
-    // garbage collected while a channel still exists (TODO bad design)
+    // garbage collected while a channel still exists
     @SuppressWarnings("unused") 
     private final ProvidersManager manager = ProvidersManager.getInstance();
     
@@ -153,7 +153,7 @@ class PvAccessChannel extends Channel {
      */
     @Override
     public void requestConnection() {
-        // XXX: This creates a lot of threads but with queuing this might wait for timeout
+        // XXX: This creates a lot of threads but with queuing this might wait for timeouts
         Thread t = new Thread( new Runnable () {
             @Override
             public void run() {
@@ -845,8 +845,7 @@ class PvAccessChannel extends Channel {
     }
 
     /**
-     * Singleton class that holds the providers and destroys it on garbage collection.
-     * TODO try to find a better design for this.
+     * Singleton class that holds the providers and destroys it on shutdown.
      */
     private static class ProvidersManager {
 
@@ -856,18 +855,21 @@ class PvAccessChannel extends Channel {
 
         private ProvidersManager () {
             org.epics.pvaccess.ClientFactory.start();
+            
+            // Create shutdown hook to close the resource
+            Thread t = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    org.epics.pvaccess.ClientFactory.stop();
+                }
+            });
+            t.setDaemon(false);
+            Runtime.getRuntime().addShutdownHook(t);
         }
 
         static ProvidersManager getInstance() {
             return LazyHolder.INSTANCE;
         }
-        
-        @Override
-        protected void finalize() throws Throwable {
-            org.epics.pvaccess.ClientFactory.stop();
-            super.finalize();
-        }
-
     }
 
 }
