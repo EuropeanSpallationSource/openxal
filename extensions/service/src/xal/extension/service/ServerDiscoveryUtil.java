@@ -1,4 +1,4 @@
-package xal.extension.service.util;
+package xal.extension.service;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -19,6 +19,7 @@ import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -34,6 +35,7 @@ import org.epics.pvaccess.util.configuration.ConfigurationProvider;
 import org.epics.pvaccess.util.InetAddressUtil;
 import org.epics.pvaccess.util.configuration.Configuration;
 import org.epics.pvaccess.util.configuration.impl.ConfigurationFactory;
+import org.epics.pvaccess.util.logging.LoggingUtils;
 import org.epics.pvdata.copy.CreateRequest;
 import org.epics.pvdata.factory.ConvertFactory;
 import org.epics.pvdata.factory.FieldFactory;
@@ -48,14 +50,27 @@ import org.epics.pvdata.pv.ScalarType;
 import org.epics.pvdata.pv.Status;
 import org.epics.pvdata.pv.Structure;
 
-public class ChannelDiscovery {
+/**
+ * Utility class that contains static methods to discover all reachable pva channels,
+ * in case of service extension it is used to list all services.
+ * 
+ * @author <a href="mailto:blaz.kranjc@cosylab.com">Blaz Kranjc</a>
+ */
+public class ServerDiscoveryUtil {
 
-    private static final Logger LOGGER = Logger.getLogger(ChannelDiscovery.class.getName());
-    private static final long DEFAULT_TIMEOUT = 200; // timeout in milliseconds
+    private static final Logger LOGGER = Logger.getLogger(ServerDiscoveryUtil.class.getName());
+
+    /** timeout in milliseconds */
+    private static final long DEFAULT_TIMEOUT = 100;
+
+    static {
+        LOGGER.setLevel(Level.WARNING);
+        ServiceChannelProvider.initialize();
+    }
     
     /* This class should not be instanced */
-    private ChannelDiscovery() {};
-    
+    private ServerDiscoveryUtil() {};
+
     private static boolean send(DatagramChannel channel, 
             InetSocketAddress[] sendAddresses, ByteBuffer buffer) 
     {
@@ -73,7 +88,7 @@ public class ChannelDiscovery {
             }
             catch (NoRouteToHostException nrthe)
             {
-                System.err.println("No route to host exception caught when sending to: " + sendAddresses[i] + ".");
+                LOGGER.warning("No route to host exception caught when sending to: " + sendAddresses[i] + ".");
                 continue;
             }
             catch (Throwable ex) 
@@ -224,17 +239,27 @@ public class ChannelDiscovery {
             
             receiveBuffer.flip();
             processSearchResponse((InetSocketAddress)responseFrom, receiveBuffer, serverSet);
+
         }
-        
         return serverSet;
     }
 
+    /**
+     * Searches for pva channels and filters their names with the provided function.
+     * @param f Filter function to be applied to server names
+     * @return all reachable pva channels for which filter function returns true
+     */
     public static Collection<String> getChannels(Function<String, Boolean> f) {
         return getChannels(DEFAULT_TIMEOUT, f);
     }
 
-    public static Collection<String> getChannels(long timeout, Function<String, Boolean> f) {
-
+    /**
+     * Searches for pva channels and filters their names with the provided function.
+     * @param timeout Maximum time to wait for server replies.
+     * @param f Filter function to be applied to server names
+     * @return all reachable pva channels for which filter function returns true
+     */
+    static Collection<String> getChannels(long timeout, Function<String, Boolean> f) {
         Set<Server> servers;
 
         try {
@@ -247,7 +272,10 @@ public class ChannelDiscovery {
         CountDownLatch serversLatch = new CountDownLatch(servers.size());
         Collection<String> channels = Collections.synchronizedCollection(new HashSet<>());
 
-        servers.forEach(srv -> srv.getChannels(serversLatch, channels, f));
+        final ChannelProvider channelProvider = ChannelProviderRegistryFactory.getChannelProviderRegistry().
+                    createProvider(org.epics.pvaccess.ClientFactory.PROVIDER_NAME);
+
+        servers.forEach(srv -> srv.getChannels(serversLatch, channels, channelProvider, f));
 
         try {
             if (serversLatch.await(timeout, TimeUnit.MILLISECONDS)) {
@@ -259,11 +287,16 @@ public class ChannelDiscovery {
         } catch (InterruptedException e) {
             LOGGER.warning("Channel discovery interrupted with: \n" + e.getMessage());
         }
-        
+
+        channelProvider.destroy();
         return channels;
     }
 
+    /**
+     * Class that contains the information on the server and provides channel scanning functionality.
+     */
     private static class Server {
+        /** Host of the server: \<IP\>:\<PORT\>*/
         private final String authority;
         
         public Server(InetSocketAddress addr) {
@@ -294,11 +327,9 @@ public class ChannelDiscovery {
             return pvs;
         }
         
-        public void getChannels(CountDownLatch serversLatch, Collection<String> channels, Function<String, Boolean> f) {
+        public void getChannels(CountDownLatch serversLatch, Collection<String> channels, ChannelProvider channelProvider,
+                Function<String, Boolean> f) {
 
-            ChannelProvider channelProvider = ChannelProviderRegistryFactory.getChannelProviderRegistry().
-                    createProvider(org.epics.pvaccess.ClientFactory.PROVIDER_NAME);
-            
             ChannelRequesterImpl requester = new ChannelRequesterImpl();
             Channel c = channelProvider.createChannel("server", requester, ChannelProvider.PRIORITY_DEFAULT, authority);
 
@@ -313,6 +344,7 @@ public class ChannelDiscovery {
                 }
             }
         }
+        
     }
     
     private static class ChannelRPCRequesterImpl implements ChannelRPCRequester {
@@ -335,6 +367,7 @@ public class ChannelDiscovery {
 
         @Override
         public void message(String message, MessageType messageType) {
+            LOGGER.log(LoggingUtils.toLevel(messageType), message);
         }
 
         @Override
@@ -353,10 +386,13 @@ public class ChannelDiscovery {
             
             channels.addAll(Arrays.stream(recievedChannels).filter(x -> filterFunction.apply(x)).collect(Collectors.toSet()));
             rpcLatch.countDown();
-            
-            channelRPC.getChannel().destroy();
         }
         
+        /**
+         * Waits for channel connection and returns true if channel is connected before timeout and false otherwise.
+         * @param timeout Time to wait for connection in milliseconds.
+         * @return true if channel is connected before timeout
+         */
         public boolean isConnected(long timeout) {
             try {
                 if (connectionLatch.await(timeout, TimeUnit.MILLISECONDS)) {
@@ -380,10 +416,12 @@ public class ChannelDiscovery {
 
         @Override
         public void message(String message, MessageType messageType) {
+            LOGGER.log(LoggingUtils.toLevel(messageType), message);
         }
 
         @Override
         public void channelCreated(Status status, Channel channel) {
+            /* Nothing to do */
         }
 
         @Override
@@ -393,6 +431,11 @@ public class ChannelDiscovery {
             }
         }
         
+        /**
+         * Waits for RPC connection and returns true if RPC is connected before timeout and false otherwise.
+         * @param timeout Time to wait for connection in milliseconds.
+         * @return true if channel is connected before timeout
+         */
         public boolean isConnected(long timeout) {
             try {
                 if (latch.await(timeout, TimeUnit.MILLISECONDS)) {
@@ -404,10 +447,6 @@ public class ChannelDiscovery {
             return false;
         }
         
-    }
-    
-    public static void main(String[] args) throws IOException {
-        System.out.println(getChannels(x -> true));
     }
     
 }

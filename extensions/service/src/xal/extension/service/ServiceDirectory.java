@@ -138,13 +138,19 @@ final public class ServiceDirectory {
 			int port = _rpcServer.getPort();
 			String ipAddress = _rpcServer.getHostAddress();
 			
+			// Generate UUID to be used by this service
+			UUID serviceUUID = UUID.randomUUID();
+			
+			// Make sure that the service name is unique by adding UUID
+			String uniqueServiceName = serviceName + " " + serviceUUID; 
+			
 			// add the service to the RPC Server
-			_rpcServer.addHandler( serviceName, protocol, provider );
+			_rpcServer.addHandler( uniqueServiceName , protocol, provider );
 			
 			// Create protocol name from protocol and UUID to make it unique
-			String protocolName = protocol.getName() + UUID.randomUUID();
+			String uniqueProtocolName = protocol.getName() + serviceUUID;
 
-			PVRecord serviceRecord = createPvRecord(protocolName, port, serviceName, ipAddress);
+			PVRecord serviceRecord = createPvRecord(uniqueProtocolName, port, uniqueServiceName, ipAddress);
 			MASTER_DATABASE.addRecord(serviceRecord);
 
 			return new ServiceRef(serviceName, ipAddress, port);
@@ -184,7 +190,7 @@ final public class ServiceDirectory {
 	 */
 	private void addServiceListener( final String type, final ServiceListener listener ) throws ServiceException {
 		try {
-		    ServiceChannelProvider.createChannels(type, listener);
+		    new ServiceDiscoveryService(type, listener);
 		}
 		catch(Exception exception) {
 			Logger.getLogger("global").log( Level.SEVERE, "Error attempting to add a service listener of service type: "

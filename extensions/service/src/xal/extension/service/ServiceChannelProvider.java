@@ -1,6 +1,5 @@
 package xal.extension.service;
 
-import java.util.Collection;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -20,8 +19,11 @@ import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.Status;
 import org.epics.pvdata.pv.Structure;
 
-import xal.extension.service.util.ChannelDiscovery;
-
+/**
+ * Class that provides pva channels to connect to services.
+ * 
+ * @author <a href="mailto:blaz.kranjc@cosylab.com">Blaz Kranjc</a>
+ */
 class ServiceChannelProvider {
 
     static void initialize() {
@@ -32,17 +34,18 @@ class ServiceChannelProvider {
         org.epics.pvaccess.ClientFactory.stop();
     }
 
+    /**
+     * Crates a pva channel to connect to the service.
+     * @param protocolType Name of the protocol of the service
+     * @param listener Listener that listens to the service connections and events
+     * @return created pva channel
+     */
     static Channel createChannel(String protocolType, ServiceListener listener) {
         return ChannelProviderRegistryFactory.getChannelProviderRegistry().
-                createProvider(org.epics.pvaccess.ClientFactory.PROVIDER_NAME).
+                getProvider(org.epics.pvaccess.ClientFactory.PROVIDER_NAME).
                 createChannel(protocolType, new ChannelRequesterImpl(protocolType, listener), ChannelProvider.PRIORITY_DEFAULT);
     }
     
-    static void createChannels(String protocolType, ServiceListener listener) {
-        Collection<String> channels = ChannelDiscovery.getChannels(x -> x.startsWith(protocolType));
-        channels.forEach(x -> createChannel(x, listener));
-    }
-
     private static class ChannelRequesterImpl implements ChannelRequester, ChannelGetRequester {
         private static final Logger LOGGER = Logger.getLogger(ChannelRequesterImpl.class.getName());
         private static final PVStructure PV_REQUEST = CreateRequest.create().createRequest("field()");

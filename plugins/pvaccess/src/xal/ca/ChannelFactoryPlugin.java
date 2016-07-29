@@ -20,7 +20,6 @@ public class ChannelFactoryPlugin {
 
     /**
      * Instantiate a new ServerChannelFactory
-     * 
      * @return a new serverChannel factory
      */
     static public ChannelFactory getServerChannelFactoryInstance() {
