@@ -1,6 +1,6 @@
 package xal.extension.service;
 
-
+import java.util.Collection;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -20,6 +20,8 @@ import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.Status;
 import org.epics.pvdata.pv.Structure;
 
+import xal.extension.service.util.ChannelDiscovery;
+
 class ServiceChannelProvider {
 
     static void initialize() {
@@ -34,6 +36,11 @@ class ServiceChannelProvider {
         return ChannelProviderRegistryFactory.getChannelProviderRegistry().
                 createProvider(org.epics.pvaccess.ClientFactory.PROVIDER_NAME).
                 createChannel(protocolType, new ChannelRequesterImpl(protocolType, listener), ChannelProvider.PRIORITY_DEFAULT);
+    }
+    
+    static void createChannels(String protocolType, ServiceListener listener) {
+        Collection<String> channels = ChannelDiscovery.getChannels(x -> x.startsWith(protocolType));
+        channels.forEach(x -> createChannel(x, listener));
     }
 
     private static class ChannelRequesterImpl implements ChannelRequester, ChannelGetRequester {

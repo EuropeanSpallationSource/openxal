@@ -141,7 +141,8 @@ final public class ServiceDirectory {
 			// add the service to the RPC Server
 			_rpcServer.addHandler( serviceName, protocol, provider );
 			
-			String protocolName = protocol.getName();
+			// Create protocol name from protocol and UUID to make it unique
+			String protocolName = protocol.getName() + UUID.randomUUID();
 
 			PVRecord serviceRecord = createPvRecord(protocolName, port, serviceName, ipAddress);
 			MASTER_DATABASE.addRecord(serviceRecord);
@@ -183,7 +184,7 @@ final public class ServiceDirectory {
 	 */
 	private void addServiceListener( final String type, final ServiceListener listener ) throws ServiceException {
 		try {
-		    ServiceChannelProvider.createChannel(type, listener);
+		    ServiceChannelProvider.createChannels(type, listener);
 		}
 		catch(Exception exception) {
 			Logger.getLogger("global").log( Level.SEVERE, "Error attempting to add a service listener of service type: "
