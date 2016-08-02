@@ -74,7 +74,7 @@ final public class ServiceDirectory {
 		    @Override
 		    public void run() {
 		        System.out.println( "Shutting down services for this process..." );
-		        ServiceDirectory.this.dispose();
+		        ServiceDirectory.this.destroy();
 		    }
 		});
 	}
@@ -91,10 +91,6 @@ final public class ServiceDirectory {
 	
 	/** Shutdown the pvAccess context and database and the RPC server and dispose of all resources. */
 	public void dispose() {
-	    
-	    // Context, database and channel provider must not be destroyed/cleaned as they might be used somewhere else.
-	    // TODO Find a way to clean these objects.
-	    
 		if ( _rpcServer != null ) {
             try {
                 _rpcServer.shutdown();
@@ -104,6 +100,15 @@ final public class ServiceDirectory {
                 throw new RuntimeException( "Exception closing the server socket.", exception );
             }
 		}
+	}
+	
+	/**
+	 * Cleans up all the opened resources.
+	 * This also cleans the pvaccess resources that might be used somewhere else.
+	 */
+	private void destroy() {
+	    dispose();
+	    ServiceChannelProvider.destroy();
 	}
 	
     /**

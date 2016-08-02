@@ -201,7 +201,7 @@ public class ServerDiscoveryUtil {
         sendBuffer.put(PVAConstants.PVA_VERSION);
         sendBuffer.put((byte)0x80); // big endian
         sendBuffer.put((byte)0x03); // search
-        sendBuffer.putInt(4+1+3+16+2+1+2);      // payload size
+        sendBuffer.putInt(4+1+3+16+2+1+2); // payload size
         
         sendBuffer.putInt(0);       // sequenceId
         sendBuffer.put((byte)0x01); // reply required & broadcast
