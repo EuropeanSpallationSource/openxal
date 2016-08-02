@@ -82,12 +82,9 @@ class PvAccessChannel extends Channel {
     
     static {
         LOGGER.setLevel(Level.WARNING);
+        org.epics.pvaccess.ClientFactory.start();
     }
 
-    // Keep a reference to the context manager instance to ensure that it does not get
-    // garbage collected while a channel still exists (TODO bad design)
-    @SuppressWarnings("unused") 
-    private final ProvidersManager manager = ProvidersManager.getInstance();
     
     /**
      * Constructor.
@@ -846,33 +843,6 @@ class PvAccessChannel extends Channel {
             }
         }
         
-    }
-
-    /**
-     * Singleton class that holds the providers and destroys it on garbage collection.
-     * TODO try to find a better design for this.
-     */
-    private static class ProvidersManager {
-
-        private static class LazyHolder {
-            private static final ProvidersManager INSTANCE = new ProvidersManager();
-        }
-
-        private ProvidersManager () {
-            org.epics.pvaccess.ClientFactory.start();
-        }
-
-        static ProvidersManager getInstance() {
-            return LazyHolder.INSTANCE;
-        }
-        
-        @Override
-        protected void finalize() throws Throwable {
-            // Client factory should not be stopped here as it might be used somewhere else
-            // TODO find a nice way for a cleanup
-            super.finalize();
-        }
-
     }
 
 }

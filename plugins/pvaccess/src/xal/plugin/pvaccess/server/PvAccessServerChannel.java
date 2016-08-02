@@ -61,8 +61,7 @@ class PvAccessServerChannel extends Channel implements IServerChannel {
 
    private final int size;
 
-   // Keep a reference to the context manager instance to ensure that it does not get
-   // garbage collected while a channel still exists (TODO bad design)
+   // Keep an instance to the ContextManager to ensure that it is not garbage collected.
    @SuppressWarnings("unused") 
    private final ContextManager contextManager = ContextManager.getInstance();
 
