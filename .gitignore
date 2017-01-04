@@ -13,3 +13,8 @@ bin/
 log/
 target/
 dependency-reduced-pom.xml
+
+# Vim
+.*.swp
+.*.un~
+
