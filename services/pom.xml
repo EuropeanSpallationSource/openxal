@@ -13,6 +13,7 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>meme</module>
         <module>pvlogger</module>
         <module>worker</module>
     </modules>

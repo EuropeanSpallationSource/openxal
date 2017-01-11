@@ -96,6 +96,8 @@
                     <resource><directory>../apps/virtualaccelerator/target</directory><includes><include>openxal.apps.virtualaccelerator-${project.version}.jar</include></includes></resource>
                     <resource><directory>../apps/wirescan/target</directory><includes><include>openxal.apps.wirescan-${project.version}.jar</include></includes></resource>
                     <resource><directory>../apps/xyzcorrelator/target</directory><includes><include>openxal.apps.xyzcorrelator-${project.version}.jar</include></includes></resource>
+                    <resource><directory>../services/meme/rdb/target</directory><includes><include>openxal.services.meme.rdb-${project.version}.jar</include></includes></resource>
+                    <resource><directory>../services/meme/optics/target</directory><includes><include>openxal.services.meme.optics-${project.version}.jar</include></includes></resource>
                     </resources>
                 </configuration>
                 </execution>
