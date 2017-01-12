@@ -105,11 +105,6 @@
             </dependency>
             <dependency>
                 <groupId>org.xal</groupId>
-                <artifactId>openxal.plugins.dummy-rbac</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.xal</groupId>
                 <artifactId>openxal.extensions.worker</artifactId>
                 <version>${project.version}</version>
             </dependency>
