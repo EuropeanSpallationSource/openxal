@@ -30,7 +30,6 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -153,7 +152,6 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 
     private DecimalField df10, df20, df30, df40, df50, df60, df70;
 
-    private JCheckBox offsetSwitch;
     private DecimalField df11, df21, df31, df41, df51;
     
 
@@ -364,7 +362,6 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
         noiseLevelPanel.setLayout(new GridLayout(7, 1));
         noiseLevelPanel.add(new JLabel("Noise Level for Device Type:"));
 
-        JLabel percent = new JLabel("%");
         NumberFormat numberFormat;
         numberFormat = NumberFormat.getNumberInstance();
         numberFormat.setMaximumFractionDigits(3);
@@ -375,7 +372,7 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
         df10 = new DecimalField( 0., 5, numberFormat );
         noiseLevel1.add(label1);
         noiseLevel1.add(df10);
-        noiseLevel1.add(percent);
+        noiseLevel1.add(new JLabel("%"));
         noiseLevelPanel.add(noiseLevel1);
 
         JPanel noiseLevel2 = new JPanel();
@@ -384,7 +381,7 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
         df20 = new DecimalField( 0., 5, numberFormat );
         noiseLevel2.add(label2);
         noiseLevel2.add(df20);
-        noiseLevel2.add(percent);
+        noiseLevel2.add(new JLabel("%"));
         noiseLevelPanel.add(noiseLevel2);
 
         JPanel noiseLevel3 = new JPanel();
@@ -392,7 +389,7 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
         df30 = new DecimalField( 0., 5, numberFormat );
         noiseLevel3.add(new JLabel("Dipole Corr.: "));
         noiseLevel3.add(df30);
-        noiseLevel3.add(percent);
+        noiseLevel3.add(new JLabel("%"));
         noiseLevelPanel.add(noiseLevel3);
 
         JPanel noiseLevel5 = new JPanel();
@@ -400,7 +397,7 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
         df50 = new DecimalField( 0., 5, numberFormat );
         noiseLevel5.add(new JLabel("Solenoid: "));
         noiseLevel5.add(df50);
-        noiseLevel5.add(percent);
+        noiseLevel5.add(new JLabel("%"));
         noiseLevelPanel.add(noiseLevel5);
 
         JPanel noiseLevel4 = new JPanel();
@@ -408,16 +405,13 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
         df40 = new DecimalField( 0., 5, numberFormat );
         noiseLevel4.add(new JLabel("BPM: "));
         noiseLevel4.add(df40);
-        noiseLevel4.add(percent);
+        noiseLevel4.add(new JLabel("%"));
         noiseLevelPanel.add(noiseLevel4);
 
         // for offsets
         offsetPanel.setLayout(new GridLayout(7, 1));
         offsetPanel.add(new JLabel("Offset for Device Type:"));
         
-        offsetSwitch = new JCheckBox("Randomly distributed", false);
-        offsetPanel.add(offsetSwitch);
-
         JPanel offset1 = new JPanel();
         offset1.setLayout(new GridLayout(1, 2));
         df11 = new DecimalField( 0., 5, numberFormat );
@@ -1326,10 +1320,9 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
     @Override
     public void putCompleted( final Channel chan ) {}
 
-    /** Returns a distributed or absolute offset, based on the settings */
+    /** Returns a distributed offset, uniformly distributed within +/- value given */
     private double getOffset(double offsetValue) {
-        if (offsetSwitch.isSelected()) return offsetValue * (Math.random() - 0.5) * 2;
-        else return offsetValue;
+        return offsetValue * (Math.random() - 0.5) * 2;
     }
 
     /** create the map between the "readback" and "set" PVs */
