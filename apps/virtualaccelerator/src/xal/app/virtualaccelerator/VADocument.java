@@ -150,9 +150,9 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 
     private JDialog setNoise = new JDialog();
 
-    private DecimalField df10, df20, df30, df40, df50, df60, df70;
+    private DecimalField df_quadNoise, df_bendNoise, df_dipCorrNoise, df_bpmNoise, df_solNoise, df_rfAmpNoise, df_rfPhaseNoise;
 
-    private DecimalField df11, df21, df31, df41, df51;
+    private DecimalField df_quadStatErr, df_bendStatErr, df_dipCorrStatErr, df_bpmStatErr, df_solStatErr, df_rfAmpStatErr, df_rfPhaseStatErr;
     
 
     private double quadNoise = 0.0;
@@ -359,103 +359,135 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
         JPanel staticErrorPanel = new JPanel();
 
         // for noise %
-        noiseLevelPanel.setLayout(new GridLayout(7, 1));
+        noiseLevelPanel.setLayout(new GridLayout(8, 1));
         noiseLevelPanel.add(new JLabel("Noise Level for Device Type:"));
 
         NumberFormat numberFormat;
         numberFormat = NumberFormat.getNumberInstance();
         numberFormat.setMaximumFractionDigits(3);
 
-        JPanel noiseLevel1 = new JPanel();
-        noiseLevel1.setLayout(new GridLayout(1, 3));
+        JPanel quadNoisePanel = new JPanel();
+        quadNoisePanel.setLayout(new GridLayout(1, 3));
         JLabel label1 = new JLabel("Quad: ");
-        df10 = new DecimalField( 0., 5, numberFormat );
-        noiseLevel1.add(label1);
-        noiseLevel1.add(df10);
-        noiseLevel1.add(new JLabel("%"));
-        noiseLevelPanel.add(noiseLevel1);
+        df_quadNoise = new DecimalField( 0., 5, numberFormat );
+        quadNoisePanel.add(label1);
+        quadNoisePanel.add(df_quadNoise);
+        quadNoisePanel.add(new JLabel("%"));
+        noiseLevelPanel.add(quadNoisePanel);
 
-        JPanel noiseLevel2 = new JPanel();
-        noiseLevel2.setLayout(new GridLayout(1, 3));
+        JPanel bendNoisePanel = new JPanel();
+        bendNoisePanel.setLayout(new GridLayout(1, 3));
         JLabel label2 = new JLabel("Bending Dipole: ");
-        df20 = new DecimalField( 0., 5, numberFormat );
-        noiseLevel2.add(label2);
-        noiseLevel2.add(df20);
-        noiseLevel2.add(new JLabel("%"));
-        noiseLevelPanel.add(noiseLevel2);
+        df_bendNoise = new DecimalField( 0., 5, numberFormat );
+        bendNoisePanel.add(label2);
+        bendNoisePanel.add(df_bendNoise);
+        bendNoisePanel.add(new JLabel("%"));
+        noiseLevelPanel.add(bendNoisePanel);
 
-        JPanel noiseLevel3 = new JPanel();
-        noiseLevel3.setLayout(new GridLayout(1, 3));
-        df30 = new DecimalField( 0., 5, numberFormat );
-        noiseLevel3.add(new JLabel("Dipole Corr.: "));
-        noiseLevel3.add(df30);
-        noiseLevel3.add(new JLabel("%"));
-        noiseLevelPanel.add(noiseLevel3);
+        JPanel dipCorrNoisePanel = new JPanel();
+        dipCorrNoisePanel.setLayout(new GridLayout(1, 3));
+        df_dipCorrNoise = new DecimalField( 0., 5, numberFormat );
+        dipCorrNoisePanel.add(new JLabel("Dipole Corr.: "));
+        dipCorrNoisePanel.add(df_dipCorrNoise);
+        dipCorrNoisePanel.add(new JLabel("%"));
+        noiseLevelPanel.add(dipCorrNoisePanel);
 
-        JPanel noiseLevel5 = new JPanel();
-        noiseLevel5.setLayout(new GridLayout(1, 3));
-        df50 = new DecimalField( 0., 5, numberFormat );
-        noiseLevel5.add(new JLabel("Solenoid: "));
-        noiseLevel5.add(df50);
-        noiseLevel5.add(new JLabel("%"));
-        noiseLevelPanel.add(noiseLevel5);
+        JPanel solNoisePanel = new JPanel();
+        solNoisePanel.setLayout(new GridLayout(1, 3));
+        df_solNoise = new DecimalField( 0., 5, numberFormat );
+        solNoisePanel.add(new JLabel("Solenoid: "));
+        solNoisePanel.add(df_solNoise);
+        solNoisePanel.add(new JLabel("%"));
+        noiseLevelPanel.add(solNoisePanel);
 
-        JPanel noiseLevel4 = new JPanel();
-        noiseLevel4.setLayout(new GridLayout(1, 3));
-        df40 = new DecimalField( 0., 5, numberFormat );
-        noiseLevel4.add(new JLabel("BPM: "));
-        noiseLevel4.add(df40);
-        noiseLevel4.add(new JLabel("%"));
-        noiseLevelPanel.add(noiseLevel4);
+        JPanel bpmNoisePanel = new JPanel();
+        bpmNoisePanel.setLayout(new GridLayout(1, 3));
+        df_bpmNoise = new DecimalField( 0., 5, numberFormat );
+        bpmNoisePanel.add(new JLabel("BPM: "));
+        bpmNoisePanel.add(df_bpmNoise);
+        bpmNoisePanel.add(new JLabel("%"));
+        noiseLevelPanel.add(bpmNoisePanel);
+
+        JPanel rfAmpNoisePanel = new JPanel();
+        rfAmpNoisePanel.setLayout(new GridLayout(1, 3));
+        df_rfAmpNoise = new DecimalField( 0., 5, numberFormat );
+        rfAmpNoisePanel.add(new JLabel("RF amp: "));
+        rfAmpNoisePanel.add(df_rfAmpNoise);
+        rfAmpNoisePanel.add(new JLabel("%"));
+        noiseLevelPanel.add(rfAmpNoisePanel);
+
+        JPanel rfPhaseNoisePanel = new JPanel();
+        rfPhaseNoisePanel.setLayout(new GridLayout(1, 3));
+        df_rfPhaseNoise = new DecimalField( 0., 5, numberFormat );
+        rfPhaseNoisePanel.add(new JLabel("RF phase: "));
+        rfPhaseNoisePanel.add(df_rfPhaseNoise);
+        rfPhaseNoisePanel.add(new JLabel("%"));
+        noiseLevelPanel.add(rfPhaseNoisePanel);
 
         // for static errors
-        staticErrorPanel.setLayout(new GridLayout(7, 1));
+        staticErrorPanel.setLayout(new GridLayout(8, 1));
         staticErrorPanel.add(new JLabel("Static error for Device Type:"));
         
-        JPanel staticError1 = new JPanel();
-        staticError1.setLayout(new GridLayout(1, 2));
-        df11 = new DecimalField( 0., 5, numberFormat );
-        staticError1.add(new JLabel("Quad: "));
-        staticError1.add(df11);
-        staticError1.add(new JLabel(" T/m "));
-        staticErrorPanel.add(staticError1);
+        JPanel quadStatErrPanel = new JPanel();
+        quadStatErrPanel.setLayout(new GridLayout(1, 2));
+        df_quadStatErr = new DecimalField( 0., 5, numberFormat );
+        quadStatErrPanel.add(new JLabel("Quad: "));
+        quadStatErrPanel.add(df_quadStatErr);
+        quadStatErrPanel.add(new JLabel(" T/m "));
+        staticErrorPanel.add(quadStatErrPanel);
 
-        JPanel staticError2 = new JPanel();
-        staticError2.setLayout(new GridLayout(1, 2));
-        df21 = new DecimalField( 0., 5, numberFormat );
-        staticError2.add(new JLabel("Bending Dipole: "));
-        staticError2.add(df21);
-        staticError2.add(new JLabel(" T "));
-        staticErrorPanel.add(staticError2);
+        JPanel bendStatErrPanel = new JPanel();
+        bendStatErrPanel.setLayout(new GridLayout(1, 2));
+        df_bendStatErr = new DecimalField( 0., 5, numberFormat );
+        bendStatErrPanel.add(new JLabel("Bending Dipole: "));
+        bendStatErrPanel.add(df_bendStatErr);
+        bendStatErrPanel.add(new JLabel(" T "));
+        staticErrorPanel.add(bendStatErrPanel);
 
-        JPanel staticError3 = new JPanel();
-        staticError3.setLayout(new GridLayout(1, 2));
-        df31 = new DecimalField( 0., 5, numberFormat );
-        staticError3.add(new JLabel("Dipole Corr.: "));
-        staticError3.add(df31);
-        staticError3.add(new JLabel(" T "));
-        staticErrorPanel.add(staticError3);
+        JPanel dipCorrStatErrPanel = new JPanel();
+        dipCorrStatErrPanel.setLayout(new GridLayout(1, 2));
+        df_dipCorrStatErr = new DecimalField( 0., 5, numberFormat );
+        dipCorrStatErrPanel.add(new JLabel("Dipole Corr.: "));
+        dipCorrStatErrPanel.add(df_dipCorrStatErr);
+        dipCorrStatErrPanel.add(new JLabel(" T "));
+        staticErrorPanel.add(dipCorrStatErrPanel);
 
-        JPanel staticError5 = new JPanel();
-        staticError5.setLayout(new GridLayout(1, 2));
-        df51 = new DecimalField( 0., 5, numberFormat );
-        staticError5.add(new JLabel("Solenoid: "));
-        staticError5.add(df51);
-        staticError5.add(new JLabel(" T "));
-        staticErrorPanel.add(staticError5);
+        JPanel solStatErrPanel = new JPanel();
+        solStatErrPanel.setLayout(new GridLayout(1, 2));
+        df_solStatErr = new DecimalField( 0., 5, numberFormat );
+        solStatErrPanel.add(new JLabel("Solenoid: "));
+        solStatErrPanel.add(df_solStatErr);
+        solStatErrPanel.add(new JLabel(" T "));
+        staticErrorPanel.add(solStatErrPanel);
 
-        JPanel staticError4 = new JPanel();
-        staticError4.setLayout(new GridLayout(1, 2));
-        df41 = new DecimalField( 0., 5, numberFormat );
-        staticError4.add(new JLabel("BPM: "));
-        staticError4.add(df41);
-        staticError4.add(new JLabel(" mm "));
-        staticErrorPanel.add(staticError4);
+        JPanel bpmStatErrPanel = new JPanel();
+        bpmStatErrPanel.setLayout(new GridLayout(1, 2));
+        df_bpmStatErr = new DecimalField( 0., 5, numberFormat );
+        bpmStatErrPanel.add(new JLabel("BPM: "));
+        bpmStatErrPanel.add(df_bpmStatErr);
+        bpmStatErrPanel.add(new JLabel(" mm "));
+        staticErrorPanel.add(bpmStatErrPanel);
+
+        JPanel rfAmpStatErrPanel = new JPanel();
+        rfAmpStatErrPanel.setLayout(new GridLayout(1, 2));
+        df_rfAmpStatErr = new DecimalField( 0., 5, numberFormat );
+        rfAmpStatErrPanel.add(new JLabel("RF amp: "));
+        rfAmpStatErrPanel.add(df_rfAmpStatErr);
+        rfAmpStatErrPanel.add(new JLabel(" kV "));
+        staticErrorPanel.add(rfAmpStatErrPanel);
+
+        JPanel rfPhaseStatErrPanel = new JPanel();
+        rfPhaseStatErrPanel.setLayout(new GridLayout(1, 2));
+        df_rfPhaseStatErr = new DecimalField( 0., 5, numberFormat );
+        rfPhaseStatErrPanel.add(new JLabel("RF phase: "));
+        rfPhaseStatErrPanel.add(df_rfPhaseStatErr);
+        rfPhaseStatErrPanel.add(new JLabel(" deg "));
+        staticErrorPanel.add(rfPhaseStatErrPanel);
 
         // put everything together
-        setNoise.setBounds(300, 300, 300, 600);
-        setNoise.setTitle("Set Noise Level...");
-        settingPanel.setLayout(new BoxLayout(settingPanel, BoxLayout.Y_AXIS));
+        setNoise.setBounds(300, 300, 900, 600);
+        setNoise.setTitle("Define errors...");
+        settingPanel.setLayout(new BoxLayout(settingPanel, BoxLayout.X_AXIS));
         settingPanel.add(noiseLevelPanel);
         settingPanel.add(staticErrorPanel);
         setNoise.getContentPane().setLayout(new BorderLayout());
@@ -505,6 +537,8 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
             daNoise.setValue("corrector", correctorNoise);
             daNoise.setValue("bpm", bpmNoise);
             daNoise.setValue("sol", solNoise);
+            daNoise.setValue("rfAmp", rfAmpNoise);
+            daNoise.setValue("rfPhase", rfPhaseNoise);
 
             DataAdaptor daStaticError = daLevel1.createChild("staticErrors");
             daStaticError.setValue("quad", quadStaticError);
@@ -512,6 +546,8 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
             daStaticError.setValue("corrector", correctorStaticError);
             daStaticError.setValue("bpm", bpmStaticError);
             daStaticError.setValue("sol", solStaticError);
+            daStaticError.setValue("rfAmp", rfAmpStaticError);
+            daStaticError.setValue("rfPhase", rfPhaseStaticError);
         }
 
         daLevel1.setValue( "modelSyncPeriod", _modelSyncPeriod );
@@ -738,16 +774,20 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
             static final long serialVersionUID = 0;
             @Override
             public void actionPerformed(ActionEvent event) {
-                df10.setValue(quadNoise);
-                df20.setValue(dipoleNoise);
-                df30.setValue(correctorNoise);
-                df40.setValue(bpmNoise);
-                df50.setValue(solNoise);
-                df11.setValue(quadStaticError);
-                df21.setValue(dipoleStaticError);
-                df31.setValue(correctorStaticError);
-                df41.setValue(bpmStaticError);
-                df51.setValue(solStaticError);
+                df_quadNoise.setValue(quadNoise);
+                df_bendNoise.setValue(dipoleNoise);
+                df_dipCorrNoise.setValue(correctorNoise);
+                df_bpmNoise.setValue(bpmNoise);
+                df_solNoise.setValue(solNoise);
+                df_rfAmpNoise.setValue(rfAmpNoise);
+                df_rfPhaseNoise.setValue(rfPhaseNoise);
+                df_quadStatErr.setValue(quadStaticError);
+                df_bendStatErr.setValue(dipoleStaticError);
+                df_dipCorrStatErr.setValue(correctorStaticError);
+                df_bpmStatErr.setValue(bpmStaticError);
+                df_solStatErr.setValue(solStaticError);
+                df_rfAmpStatErr.setValue(rfAmpStaticError);
+                df_rfPhaseStatErr.setValue(rfPhaseStaticError);
                 setNoise.setVisible(true);
             }
         };
@@ -807,6 +847,8 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
                 correctorNoise = daNoise.doubleValue("corrector");
                 bpmNoise = daNoise.doubleValue("bpm");
                 solNoise = daNoise.doubleValue("sol");
+                rfAmpNoise = daNoise.doubleValue("rfAmp");
+                rfPhaseNoise = daNoise.doubleValue("rfPhase");
             }
 
             DataAdaptor daStaticError = da1.childAdaptor("staticErrors");
@@ -816,6 +858,8 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
                 correctorStaticError = daStaticError.doubleValue("corrector");
                 bpmStaticError = daStaticError.doubleValue("bpm");
                 solStaticError = daStaticError.doubleValue("sol");
+                rfAmpStaticError = daStaticError.doubleValue("rfAmp");
+                rfPhaseStaticError = daStaticError.doubleValue("rfPhase");
             }
 
             temp = da2a.childAdaptors("seq");
@@ -1375,7 +1419,7 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
                         READBACK_SET_RECORDS.add( new ReadbackSetRecord( rfCav, ampReadChannel, ampSetChannel ) );
                     }
                     ch_noiseMap.put( ampReadChannel, rfAmpNoise );
-                    ch_staticErrorMap.put( ampReadChannel, rfAmpStaticError );
+                    ch_staticErrorMap.put( ampReadChannel, getStaticError(rfAmpStaticError) );
                 }
 
                 final Channel phaseSetChannel = rfCav.findChannel( RfCavity.CAV_PHASE_SET_HANDLE );
@@ -1385,7 +1429,7 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
                         READBACK_SET_RECORDS.add( new ReadbackSetRecord( rfCav, phaseReadChannel, phaseSetChannel ) );
                     }
                     ch_noiseMap.put( phaseReadChannel, rfPhaseNoise );
-                    ch_staticErrorMap.put( phaseReadChannel, rfPhaseStaticError );
+                    ch_staticErrorMap.put( phaseReadChannel, getStaticError(rfPhaseStaticError) );
                 }
             }
 
@@ -1508,17 +1552,21 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
     @Override
     public void actionPerformed(ActionEvent ev) {
         if (ev.getActionCommand().equals("noiseSet")) {
-            quadNoise = df10.getDoubleValue();
-            dipoleNoise = df20.getDoubleValue();
-            correctorNoise = df30.getDoubleValue();
-            bpmNoise = df40.getDoubleValue();
-            solNoise = df50.getDoubleValue();
+            quadNoise = df_quadNoise.getDoubleValue();
+            dipoleNoise = df_bendNoise.getDoubleValue();
+            correctorNoise = df_dipCorrNoise.getDoubleValue();
+            bpmNoise = df_bpmNoise.getDoubleValue();
+            solNoise = df_solNoise.getDoubleValue();
+            rfAmpNoise = df_rfAmpNoise.getDoubleValue();
+            rfPhaseNoise = df_rfPhaseNoise.getDoubleValue();
 
-            quadStaticError = df11.getDoubleValue();
-            dipoleStaticError = df21.getDoubleValue();
-            correctorStaticError = df31.getDoubleValue();
-            bpmStaticError = df41.getDoubleValue();
-            solStaticError = df51.getDoubleValue();
+            quadStaticError = df_quadStatErr.getDoubleValue();
+            dipoleStaticError = df_bendStatErr.getDoubleValue();
+            correctorStaticError = df_dipCorrStatErr.getDoubleValue();
+            bpmStaticError = df_bpmStatErr.getDoubleValue();
+            solStaticError = df_solStatErr.getDoubleValue();
+            rfAmpStaticError = df_rfAmpStatErr.getDoubleValue();
+            rfPhaseStaticError = df_rfPhaseStatErr.getDoubleValue();
             setHasChanges(true);
 
             /**add below*/
