@@ -107,11 +107,11 @@ import xal.tools.xml.XmlDataAdaptor;
  * <h4>CKA NOTES:</h4>
  * - In method <code>{@link #createDefaultProbe()}</code> a <code>TransferMapProbe</code>
  * is created in the case of a ring.  The method <code>TransferMapState#setPhaseCoordinates</code>
- * is called to create an initial offset.  This does nothing because transfer map probes
+ * is called to create an initial static erorr.  This does nothing because transfer map probes
  * do not have phase coordinates any longer, the method is deprecated.
  * <br/>
  * <br/>
- * - The offset for the above call is hard coded.  As are many features in this class.
+ * - The static noise for the above call is hard coded.  As are many features in this class.
  * </p>
  *
  * VADocument is a custom AcceleratorDocument for virtual accelerator application.
@@ -169,19 +169,19 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 
     private double rfPhaseNoise = 0.0;
 
-    private double quadOffset = 0.0;
+    private double quadStaticError = 0.0;
 
-    private double dipoleOffset = 0.0;
+    private double dipoleStaticError = 0.0;
 
-    private double correctorOffset = 0.0;
+    private double correctorStaticError = 0.0;
 
-    private double solOffset = 0.0;
+    private double solStaticError = 0.0;
 
-    private double bpmOffset = 0.0;
+    private double bpmStaticError = 0.0;
 
-    private double rfAmpOffset = 0.0;
+    private double rfAmpStaticError = 0.0;
 
-    private double rfPhaseOffset = 0.0;
+    private double rfPhaseStaticError = 0.0;
 
     private JButton done = new JButton("OK");
 
@@ -213,7 +213,7 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 
     private LinkedHashMap<Channel, Double> ch_noiseMap;
 
-    private LinkedHashMap<Channel, Double> ch_offsetMap;
+    private LinkedHashMap<Channel, Double> ch_staticErrorMap;
 
     private VAServer _vaServer;
 
@@ -356,7 +356,7 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
     private void makeNoiseDialog() {
         JPanel settingPanel = new JPanel();
         JPanel noiseLevelPanel = new JPanel();
-        JPanel offsetPanel = new JPanel();
+        JPanel staticErrorPanel = new JPanel();
 
         // for noise %
         noiseLevelPanel.setLayout(new GridLayout(7, 1));
@@ -408,53 +408,56 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
         noiseLevel4.add(new JLabel("%"));
         noiseLevelPanel.add(noiseLevel4);
 
-        // for offsets
-        offsetPanel.setLayout(new GridLayout(7, 1));
-        offsetPanel.add(new JLabel("Offset for Device Type:"));
+        // for static errors
+        staticErrorPanel.setLayout(new GridLayout(7, 1));
+        staticErrorPanel.add(new JLabel("Static error for Device Type:"));
         
-        JPanel offset1 = new JPanel();
-        offset1.setLayout(new GridLayout(1, 2));
+        JPanel staticError1 = new JPanel();
+        staticError1.setLayout(new GridLayout(1, 2));
         df11 = new DecimalField( 0., 5, numberFormat );
-        offset1.add(new JLabel("Quad: "));
-        offset1.add(df11);
-        offset1.add(new JLabel(" T/m "));
-        offsetPanel.add(offset1);
+        staticError1.add(new JLabel("Quad: "));
+        staticError1.add(df11);
+        staticError1.add(new JLabel(" T/m "));
+        staticErrorPanel.add(staticError1);
 
-        JPanel offset2 = new JPanel();
-        offset2.setLayout(new GridLayout(1, 2));
+        JPanel staticError2 = new JPanel();
+        staticError2.setLayout(new GridLayout(1, 2));
         df21 = new DecimalField( 0., 5, numberFormat );
-        offset2.add(new JLabel("Bending Dipole: "));
-        offset2.add(df21);
-        offsetPanel.add(offset2);
+        staticError2.add(new JLabel("Bending Dipole: "));
+        staticError2.add(df21);
+        staticError2.add(new JLabel(" T "));
+        staticErrorPanel.add(staticError2);
 
-        JPanel offset3 = new JPanel();
-        offset3.setLayout(new GridLayout(1, 2));
+        JPanel staticError3 = new JPanel();
+        staticError3.setLayout(new GridLayout(1, 2));
         df31 = new DecimalField( 0., 5, numberFormat );
-        offset3.add(new JLabel("Dipole Corr.: "));
-        offset3.add(df31);
-        offset3.add(new JLabel(" T "));
-        offsetPanel.add(offset3);
+        staticError3.add(new JLabel("Dipole Corr.: "));
+        staticError3.add(df31);
+        staticError3.add(new JLabel(" T "));
+        staticErrorPanel.add(staticError3);
 
-        JPanel offset5 = new JPanel();
-        offset5.setLayout(new GridLayout(1, 2));
+        JPanel staticError5 = new JPanel();
+        staticError5.setLayout(new GridLayout(1, 2));
         df51 = new DecimalField( 0., 5, numberFormat );
-        offset5.add(new JLabel("Solenoid: "));
-        offset5.add(df51);
-        offsetPanel.add(offset5);
+        staticError5.add(new JLabel("Solenoid: "));
+        staticError5.add(df51);
+        staticError5.add(new JLabel(" T "));
+        staticErrorPanel.add(staticError5);
 
-        JPanel offset4 = new JPanel();
-        offset4.setLayout(new GridLayout(1, 2));
+        JPanel staticError4 = new JPanel();
+        staticError4.setLayout(new GridLayout(1, 2));
         df41 = new DecimalField( 0., 5, numberFormat );
-        offset4.add(new JLabel("BPM: "));
-        offset4.add(df41);
-        offsetPanel.add(offset4);
+        staticError4.add(new JLabel("BPM: "));
+        staticError4.add(df41);
+        staticError4.add(new JLabel(" mm "));
+        staticErrorPanel.add(staticError4);
 
         // put everything together
         setNoise.setBounds(300, 300, 300, 600);
         setNoise.setTitle("Set Noise Level...");
         settingPanel.setLayout(new BoxLayout(settingPanel, BoxLayout.Y_AXIS));
         settingPanel.add(noiseLevelPanel);
-        settingPanel.add(offsetPanel);
+        settingPanel.add(staticErrorPanel);
         setNoise.getContentPane().setLayout(new BorderLayout());
         setNoise.getContentPane().add(settingPanel, BorderLayout.CENTER);
         setNoise.getContentPane().add(done, BorderLayout.SOUTH);
@@ -503,12 +506,12 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
             daNoise.setValue("bpm", bpmNoise);
             daNoise.setValue("sol", solNoise);
 
-            DataAdaptor daOffset = daLevel1.createChild("offsets");
-            daOffset.setValue("quad", quadOffset);
-            daOffset.setValue("dipole", dipoleOffset);
-            daOffset.setValue("corrector", correctorOffset);
-            daOffset.setValue("bpm", bpmOffset);
-            daOffset.setValue("sol", solOffset);
+            DataAdaptor daStaticError = daLevel1.createChild("staticErrors");
+            daStaticError.setValue("quad", quadStaticError);
+            daStaticError.setValue("dipole", dipoleStaticError);
+            daStaticError.setValue("corrector", correctorStaticError);
+            daStaticError.setValue("bpm", bpmStaticError);
+            daStaticError.setValue("sol", solStaticError);
         }
 
         daLevel1.setValue( "modelSyncPeriod", _modelSyncPeriod );
@@ -740,11 +743,11 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
                 df30.setValue(correctorNoise);
                 df40.setValue(bpmNoise);
                 df50.setValue(solNoise);
-                df11.setValue(quadOffset);
-                df21.setValue(dipoleOffset);
-                df31.setValue(correctorOffset);
-                df41.setValue(bpmOffset);
-                df51.setValue(solOffset);
+                df11.setValue(quadStaticError);
+                df21.setValue(dipoleStaticError);
+                df31.setValue(correctorStaticError);
+                df41.setValue(bpmStaticError);
+                df51.setValue(solStaticError);
                 setNoise.setVisible(true);
             }
         };
@@ -806,13 +809,13 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
                 solNoise = daNoise.doubleValue("sol");
             }
 
-            DataAdaptor daOffset = da1.childAdaptor("offsets");
-            if (daOffset != null) {
-                quadOffset = daOffset.doubleValue("quad");
-                dipoleOffset = daOffset.doubleValue("dipole");
-                correctorOffset = daOffset.doubleValue("corrector");
-                bpmOffset = daOffset.doubleValue("bpm");
-                solOffset = daOffset.doubleValue("sol");
+            DataAdaptor daStaticError = da1.childAdaptor("staticErrors");
+            if (daStaticError != null) {
+                quadStaticError = daStaticError.doubleValue("quad");
+                dipoleStaticError = daStaticError.doubleValue("dipole");
+                correctorStaticError = daStaticError.doubleValue("corrector");
+                bpmStaticError = daStaticError.doubleValue("bpm");
+                solStaticError = daStaticError.doubleValue("sol");
             }
 
             temp = da2a.childAdaptors("seq");
@@ -857,32 +860,32 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
                 if ( bookChannel != null ) {
                     if ( bookChannel.isConnected() ) {
                         final double bookField = bookChannel.getValDbl();
-                        final double warningOffset = 0.05 * Math.abs( bookField );
-                        final double alarmOffset = 0.1 * Math.abs( bookField );
+                        final double warningStaticError = 0.05 * Math.abs( bookField );
+                        final double alarmStaticError = 0.1 * Math.abs( bookField );
 
                         final String[] warningPVs = fieldChannel.getWarningLimitPVs();
 
                         final Channel lowerWarningChannel = CHANNEL_SERVER_FACTORY.getChannel( warningPVs[0], fieldChannel.getValueTransform() );
                         //                        System.out.println( "Lower Limit PV: " + lowerWarningChannel.channelName() );
                         if ( lowerWarningChannel.connectAndWait() ) {
-                            lowerWarningChannel.putValCallback( bookField - warningOffset, this );
+                            lowerWarningChannel.putValCallback( bookField - warningStaticError, this );
                         }
 
                         final Channel upperWarningChannel = CHANNEL_SERVER_FACTORY.getChannel( warningPVs[1], fieldChannel.getValueTransform() );
                         if ( upperWarningChannel.connectAndWait() ) {
-                            upperWarningChannel.putValCallback( bookField + warningOffset, this );
+                            upperWarningChannel.putValCallback( bookField + warningStaticError, this );
                         }
 
                         final String[] alarmPVs = fieldChannel.getAlarmLimitPVs();
 
                         final Channel lowerAlarmChannel = CHANNEL_SERVER_FACTORY.getChannel( alarmPVs[0], fieldChannel.getValueTransform() );
                         if ( lowerAlarmChannel.connectAndWait() ) {
-                            lowerAlarmChannel.putValCallback( bookField - alarmOffset, this );
+                            lowerAlarmChannel.putValCallback( bookField - alarmStaticError, this );
                         }
 
                         final Channel upperAlarmChannel = CHANNEL_SERVER_FACTORY.getChannel( alarmPVs[1], fieldChannel.getValueTransform() );
                         if ( upperAlarmChannel.connectAndWait() ) {
-                            upperAlarmChannel.putValCallback( bookField + alarmOffset, this );
+                            upperAlarmChannel.putValCallback( bookField + alarmStaticError, this );
                         }
                     }
                 }
@@ -928,7 +931,7 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
         // get the "set" PV value, add noise, and then put to the corresponding readback PV.
         for ( final ReadbackSetRecord record : READBACK_SET_RECORDS ) {
             try {
-                record.updateReadback( ch_noiseMap, ch_offsetMap, this );
+                record.updateReadback( ch_noiseMap, ch_staticErrorMap, this );
             }
             catch (Exception e) {
                 System.err.println( e.getMessage() );
@@ -967,7 +970,7 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 
                 if ( qPVMap.containsKey( readbackPV ) ) {
                     final double basisValue = qPVMap.get( readbackPV ).doubleValue();
-                    record.updateReadback( basisValue, ch_noiseMap, ch_offsetMap, this );
+                    record.updateReadback( basisValue, ch_noiseMap, ch_staticErrorMap, this );
                 }
             }
             catch ( Exception e ) {
@@ -1173,10 +1176,10 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
                 // For SNS Ring BPM system, we only measure the signal with respect to the center of the beam pipe.
 
                 // TO-DO: the turn by turn arrays should really be generated from betatron motion rather than random data about the nominal
-                final double[] xTBT = NoiseGenerator.noisyArrayForNominal( coordinates.getx() * 1000.0, DEFAULT_BPM_WAVEFORM_SIZE, DEFAULT_BPM_WAVEFORM_DATA_SIZE, bpmNoise, bpmOffset );
+                final double[] xTBT = NoiseGenerator.noisyArrayForNominal( coordinates.getx() * 1000.0, DEFAULT_BPM_WAVEFORM_SIZE, DEFAULT_BPM_WAVEFORM_DATA_SIZE, bpmNoise, bpmStaticError );
                 final double xAvg = NoiseGenerator.getAverage( xTBT, DEFAULT_BPM_WAVEFORM_DATA_SIZE );
 
-                final double[] yTBT = NoiseGenerator.noisyArrayForNominal( coordinates.gety() * 1000.0, DEFAULT_BPM_WAVEFORM_SIZE, DEFAULT_BPM_WAVEFORM_DATA_SIZE, bpmNoise, bpmOffset );
+                final double[] yTBT = NoiseGenerator.noisyArrayForNominal( coordinates.gety() * 1000.0, DEFAULT_BPM_WAVEFORM_SIZE, DEFAULT_BPM_WAVEFORM_DATA_SIZE, bpmNoise, bpmStaticError );
                 final double yAvg = NoiseGenerator.getAverage( yTBT, DEFAULT_BPM_WAVEFORM_DATA_SIZE );
 
                 bpmXAvgChannel.putValCallback( xAvg, this );
@@ -1189,7 +1192,7 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
                 tempBPMx.add(xAvg);
                 tempBPMy.add(yAvg);
 
-                // hardwired BPM amplitude noise and offset to 5% and 0.1mm (randomly) respectively
+                // hardwired BPM amplitude noise and static error to 5% and 0.1mm (randomly) respectively
                 bpmAmpAvgChannel.putVal( NoiseGenerator.setValForPV( 20., 5., 0.1 ) );
                 // calculate the BPM phase (for linac only)
                 if ( !( currentProbe instanceof TransferMapProbe ) && !( bpm instanceof RingBPM ) ) {
@@ -1288,11 +1291,11 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
                 System.err.println("Now updating " + bpm.getId());
 
                 if ( bpmXMap.containsKey( bpmX.getId() ) ) {
-                    bpmX.putVal( NoiseGenerator.setValForPV( bpmXMap.get( bpmX.getId() ).doubleValue(), bpmNoise, getOffset(bpmOffset) ) );
+                    bpmX.putVal( NoiseGenerator.setValForPV( bpmXMap.get( bpmX.getId() ).doubleValue(), bpmNoise, getStaticError(bpmStaticError) ) );
                 }
 
                 if ( bpmYMap.containsKey( bpmY.getId() ) ) {
-                    bpmY.putVal( NoiseGenerator.setValForPV( bpmYMap.get( bpmY.getId() ).doubleValue(), bpmNoise, getOffset(bpmOffset) ) );
+                    bpmY.putVal( NoiseGenerator.setValForPV( bpmYMap.get( bpmY.getId() ).doubleValue(), bpmNoise, getStaticError(bpmStaticError) ) );
                 }
 
                 // BPM amplitude
@@ -1320,9 +1323,9 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
     @Override
     public void putCompleted( final Channel chan ) {}
 
-    /** Returns a distributed offset, uniformly distributed within +/- value given */
-    private double getOffset(double offsetValue) {
-        return offsetValue * (Math.random() - 0.5) * 2;
+    /** Returns a distributed static error, uniformly distributed within +/- value given */
+    private double getStaticError(double staticErrorSigma) {
+        return staticErrorSigma * (Math.random() - 0.5) * 2;
     }
 
     /** create the map between the "readback" and "set" PVs */
@@ -1330,7 +1333,7 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
         READBACK_SET_RECORDS.clear();
 
         ch_noiseMap = new LinkedHashMap<Channel, Double>();
-        ch_offsetMap = new LinkedHashMap<Channel, Double>();
+        ch_staticErrorMap = new LinkedHashMap<Channel, Double>();
 
         if ( selectedSequence != null ) {
             // for magnet PVs
@@ -1341,25 +1344,25 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
                 if ( em.isKindOf( TrimmedQuadrupole.s_strType ) ) {
                     READBACK_SET_RECORDS.add( new ReadbackSetRecord( em, em.getChannel( MagnetTrimSupply.FIELD_RB_HANDLE ), em.getChannel( MagnetTrimSupply.FIELD_SET_HANDLE ) ) );
                     ch_noiseMap.put( em.getChannel( MagnetTrimSupply.FIELD_RB_HANDLE ), 0.0 );
-                    ch_offsetMap.put( em.getChannel( MagnetTrimSupply.FIELD_RB_HANDLE ), 0.0 );
+                    ch_staticErrorMap.put( em.getChannel( MagnetTrimSupply.FIELD_RB_HANDLE ), 0.0 );
                 }
 
                 // set up the map between the magnet readback PV and its noise level
                 if ( em.isKindOf( Quadrupole.s_strType ) ) {
                     ch_noiseMap.put( em.getChannel( Electromagnet.FIELD_RB_HANDLE), quadNoise );
-                    ch_offsetMap.put( em.getChannel( Electromagnet.FIELD_RB_HANDLE), getOffset(quadOffset) );
+                    ch_staticErrorMap.put( em.getChannel( Electromagnet.FIELD_RB_HANDLE), getStaticError(quadStaticError) );
                 }
                 else if ( em.isKindOf( Bend.s_strType ) ) {
                     ch_noiseMap.put( em.getChannel(Electromagnet.FIELD_RB_HANDLE), dipoleNoise );
-                    ch_offsetMap.put( em.getChannel(Electromagnet.FIELD_RB_HANDLE), getOffset(dipoleOffset) );
+                    ch_staticErrorMap.put( em.getChannel(Electromagnet.FIELD_RB_HANDLE), getStaticError(dipoleStaticError) );
                 }
                 else if ( em.isKindOf( HDipoleCorr.s_strType ) || em.isKindOf( VDipoleCorr.s_strType ) ) {
                     ch_noiseMap.put( em.getChannel( Electromagnet.FIELD_RB_HANDLE ), correctorNoise );
-                    ch_offsetMap.put( em.getChannel( Electromagnet.FIELD_RB_HANDLE ), getOffset(correctorOffset) );
+                    ch_staticErrorMap.put( em.getChannel( Electromagnet.FIELD_RB_HANDLE ), getStaticError(correctorStaticError) );
                 }
                 else if ( em.isKindOf( Solenoid.s_strType ) ) {
                     ch_noiseMap.put( em.getChannel( Electromagnet.FIELD_RB_HANDLE ), solNoise );
-                    ch_offsetMap.put( em.getChannel( Electromagnet.FIELD_RB_HANDLE ), getOffset(solOffset) );
+                    ch_staticErrorMap.put( em.getChannel( Electromagnet.FIELD_RB_HANDLE ), getStaticError(solStaticError) );
                 }
             }
 
@@ -1372,7 +1375,7 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
                         READBACK_SET_RECORDS.add( new ReadbackSetRecord( rfCav, ampReadChannel, ampSetChannel ) );
                     }
                     ch_noiseMap.put( ampReadChannel, rfAmpNoise );
-                    ch_offsetMap.put( ampReadChannel, rfAmpOffset );
+                    ch_staticErrorMap.put( ampReadChannel, rfAmpStaticError );
                 }
 
                 final Channel phaseSetChannel = rfCav.findChannel( RfCavity.CAV_PHASE_SET_HANDLE );
@@ -1382,7 +1385,7 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
                         READBACK_SET_RECORDS.add( new ReadbackSetRecord( rfCav, phaseReadChannel, phaseSetChannel ) );
                     }
                     ch_noiseMap.put( phaseReadChannel, rfPhaseNoise );
-                    ch_offsetMap.put( phaseReadChannel, rfPhaseOffset );
+                    ch_staticErrorMap.put( phaseReadChannel, rfPhaseStaticError );
                 }
             }
 
@@ -1511,11 +1514,11 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
             bpmNoise = df40.getDoubleValue();
             solNoise = df50.getDoubleValue();
 
-            quadOffset = df11.getDoubleValue();
-            dipoleOffset = df21.getDoubleValue();
-            correctorOffset = df31.getDoubleValue();
-            bpmOffset = df41.getDoubleValue();
-            solOffset = df51.getDoubleValue();
+            quadStaticError = df11.getDoubleValue();
+            dipoleStaticError = df21.getDoubleValue();
+            correctorStaticError = df31.getDoubleValue();
+            bpmStaticError = df41.getDoubleValue();
+            solStaticError = df51.getDoubleValue();
             setHasChanges(true);
 
             /**add below*/

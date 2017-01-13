@@ -81,12 +81,12 @@ public class ReadbackSetRecord {
     }
 
 
-    /** update the readback from the setpoint, noise and offset */
-    public void updateReadback( final double basisValue, final Map<Channel, Double> noiseMap, final Map<Channel, Double> offsetMap, final PutListener listener ) throws Exception {
+    /** update the readback from the setpoint, noise and static error */
+    public void updateReadback( final double basisValue, final Map<Channel, Double> noiseMap, final Map<Channel, Double> staticErrorMap, final PutListener listener ) throws Exception {
         if ( READ_CHANNEL != null && SET_CHANNEL != null ) {
             final Double noise = noiseMap.get( READ_CHANNEL );
-            final Double offset = offsetMap.get( READ_CHANNEL );
-            final double readBack = noise != null && offset != null ? NoiseGenerator.setValForPV( basisValue, noise, offset ) : basisValue;
+            final Double staticError = staticErrorMap.get( READ_CHANNEL );
+            final double readBack = noise != null && staticError != null ? NoiseGenerator.setValForPV( basisValue, noise, staticError ) : basisValue;
             _lastSetpoint = basisValue;
             _lastReadback = readBack;
             READ_CHANNEL.putValCallback( readBack, listener );
@@ -94,11 +94,11 @@ public class ReadbackSetRecord {
     }
 
 
-    /** update the readback from the setpoint, noise and offset */
-    public void updateReadback( final Map<Channel, Double> noiseMap, final Map<Channel, Double> offsetMap, final PutListener listener ) throws Exception {
+    /** update the readback from the setpoint, noise and static error */
+    public void updateReadback( final Map<Channel, Double> noiseMap, final Map<Channel, Double> staticErrorMap, final PutListener listener ) throws Exception {
         if ( READ_CHANNEL != null && SET_CHANNEL != null ) {
             final double setPoint = SET_CHANNEL.getValDbl();
-            updateReadback( setPoint, noiseMap, offsetMap, listener );
+            updateReadback( setPoint, noiseMap, staticErrorMap, listener );
         }
     }
 }
