@@ -13,7 +13,7 @@
     <version>1.0.10-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>ESS JElS</name>
+    <name>openxal.extensions.jels</name>
     <url>http://europeanspallationsource.se/</url>
 
     <build>

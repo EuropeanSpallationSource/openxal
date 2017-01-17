@@ -239,10 +239,9 @@ abstract public class AbstractApplicationAdaptor implements ApplicationListener 
     /**
      * Subclasses may override this method to provide custom handling upon completion of the application having launched.
      *
-     * The default implementation prints a simple info to stdout and logger
+     * The default implementation prints a simple info to logger
      **/
     public void applicationFinishedLaunching() {
-        System.out.println("Application " + applicationName() + " has finished launching...");
         Logger.getLogger("global").log( Level.INFO, "Application" + applicationName() + " finished launching." );
     }
 

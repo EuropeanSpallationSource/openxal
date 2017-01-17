@@ -1,4 +1,4 @@
-package xal.plugins.dummyrbac;
+package xal.plugins.essrbac;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,14 +12,14 @@ import xal.rbac.RBACUserInfo;
 
 /**
  * Dummy Rbac Subject implements {@link RBACSubject} returning true for all permissions.
- * 
+ *
  * @version 0.1 28 Jul 2015
- * @author Blaž Kranjc <blaz.kranjc@cosylab.com>
+ * @author Blaz Kranjc <blaz.kranjc@cosylab.com>
  */
 public class DummyRbacSubject implements RBACSubject {
-	
-	private final static String DUMMY_USERNAME = "dummy_user";
-	
+
+    private final static String DUMMY_USERNAME = "dummy_user";
+
     DummyRbacSubject() {
     }
 
@@ -59,10 +59,10 @@ public class DummyRbacSubject implements RBACSubject {
     public void updateLastAction() {
         return;
     }
-    
+
     @Override
     public RBACUserInfo getUserInfo() {
-		return new RBACUserInfo(DUMMY_USERNAME, null, null);
+        return new RBACUserInfo(DUMMY_USERNAME, null, null);
     }
 
 }
