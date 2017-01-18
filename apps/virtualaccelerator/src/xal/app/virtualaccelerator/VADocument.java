@@ -1372,6 +1372,24 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
         return staticErrorSigma * (Math.random() - 0.5) * 2;
     }
 
+    private double getNoiseForElement(AcceleratorNode element) {
+       if ( element.isKindOf( Quadrupole.s_strType ) ) return quadNoise;
+       if ( element.isKindOf( Bend.s_strType ) ) return dipoleNoise;
+       if ( element.isKindOf( HDipoleCorr.s_strType ) ) return correctorNoise;
+       if ( element.isKindOf( VDipoleCorr.s_strType ) ) return correctorNoise;
+       if ( element.isKindOf( Solenoid.s_strType ) ) return solNoise;
+       return 0.0;
+    }
+    private double getStaticErrorForElement(AcceleratorNode element) {
+       double staticError=0.0;
+       if ( element.isKindOf( Quadrupole.s_strType ) )  staticError=quadStaticError;
+       if ( element.isKindOf( Bend.s_strType ) )        staticError=dipoleStaticError;
+       if ( element.isKindOf( HDipoleCorr.s_strType ) ) staticError=correctorStaticError;
+       if ( element.isKindOf( VDipoleCorr.s_strType ) ) staticError=correctorStaticError;
+       if ( element.isKindOf( Solenoid.s_strType ) )    staticError=solStaticError;
+       return getStaticError(staticError);
+    }
+
     /** create the map between the "readback" and "set" PVs */
     private void configureReadbacks() {
         READBACK_SET_RECORDS.clear();
@@ -1383,34 +1401,18 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
             // for magnet PVs
             for ( final Electromagnet em : mags ) {
                 READBACK_SET_RECORDS.add( new ReadbackSetRecord( em, em.getChannel( Electromagnet.FIELD_RB_HANDLE ), em.getChannel( MagnetMainSupply.FIELD_SET_HANDLE ) ) );
-
                 // handle the trimmed magnets
                 if ( em.isKindOf( TrimmedQuadrupole.s_strType ) ) {
                     READBACK_SET_RECORDS.add( new ReadbackSetRecord( em, em.getChannel( MagnetTrimSupply.FIELD_RB_HANDLE ), em.getChannel( MagnetTrimSupply.FIELD_SET_HANDLE ) ) );
                     ch_noiseMap.put( em.getChannel( MagnetTrimSupply.FIELD_RB_HANDLE ), 0.0 );
                     ch_staticErrorMap.put( em.getChannel( MagnetTrimSupply.FIELD_RB_HANDLE ), 0.0 );
                 }
-
                 // set up the map between the magnet readback PV and its noise level
-                if ( em.isKindOf( Quadrupole.s_strType ) ) {
-                    ch_noiseMap.put( em.getChannel( Electromagnet.FIELD_RB_HANDLE), quadNoise );
-                    ch_staticErrorMap.put( em.getChannel( Electromagnet.FIELD_RB_HANDLE), getStaticError(quadStaticError) );
-                }
-                else if ( em.isKindOf( Bend.s_strType ) ) {
-                    ch_noiseMap.put( em.getChannel(Electromagnet.FIELD_RB_HANDLE), dipoleNoise );
-                    ch_staticErrorMap.put( em.getChannel(Electromagnet.FIELD_RB_HANDLE), getStaticError(dipoleStaticError) );
-                }
-                else if ( em.isKindOf( HDipoleCorr.s_strType ) || em.isKindOf( VDipoleCorr.s_strType ) ) {
-                    ch_noiseMap.put( em.getChannel( Electromagnet.FIELD_RB_HANDLE ), correctorNoise );
-                    ch_staticErrorMap.put( em.getChannel( Electromagnet.FIELD_RB_HANDLE ), getStaticError(correctorStaticError) );
-                }
-                else if ( em.isKindOf( Solenoid.s_strType ) ) {
-                    ch_noiseMap.put( em.getChannel( Electromagnet.FIELD_RB_HANDLE ), solNoise );
-                    ch_staticErrorMap.put( em.getChannel( Electromagnet.FIELD_RB_HANDLE ), getStaticError(solStaticError) );
-                }
+                ch_noiseMap.put( em.getChannel( Electromagnet.FIELD_RB_HANDLE), getNoiseForElement(em) );
+                ch_staticErrorMap.put( em.getChannel( Electromagnet.FIELD_RB_HANDLE), getStaticErrorForElement(em) );
             }
 
-            // for rf PVs
+            // for RF PVs
             for ( final RfCavity rfCav : rfCavities ) {
                 final Channel ampSetChannel = rfCav.findChannel( RfCavity.CAV_AMP_SET_HANDLE );
                 final Channel ampReadChannel = rfCav.findChannel( RfCavity.CAV_AMP_AVG_HANDLE );
