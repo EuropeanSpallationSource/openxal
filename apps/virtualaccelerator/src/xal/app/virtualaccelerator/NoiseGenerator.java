@@ -30,8 +30,15 @@ public class NoiseGenerator {
      * @param offset offset from the nominal value
      * @return readback PV value with noise added
      */
+    public static double setValForPV(double pvVal, double noiseLevel, double offset, boolean relative) {
+        if (relative)
+            return pvVal * (1 + noiseLevel * (Math.random()-0.5)*2./100.) + offset;
+        else
+            return pvVal  + noiseLevel * (Math.random()-0.5)*2./100. + offset;
+    }
+
     public static double setValForPV(double pvVal, double noiseLevel, double offset) {
-        return pvVal* (1 + noiseLevel * (Math.random()-0.5)*2./100.) + offset;
+        return setValForPV(pvVal,noiseLevel,offset,true);
     }
     
     
