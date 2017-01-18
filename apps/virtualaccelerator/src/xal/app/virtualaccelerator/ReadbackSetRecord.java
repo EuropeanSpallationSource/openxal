@@ -86,7 +86,12 @@ public class ReadbackSetRecord {
         if ( READ_CHANNEL != null && SET_CHANNEL != null ) {
             final Double noise = noiseMap.get( READ_CHANNEL );
             final Double staticError = staticErrorMap.get( READ_CHANNEL );
-            final double readBack = noise != null && staticError != null ? NoiseGenerator.setValForPV( basisValue, noise, staticError ) : basisValue;
+            final double readBack;
+            if ( noise != null && staticError != null ) {
+                readBack =  NoiseGenerator.setValForPV( basisValue, noise, staticError );
+            } else {
+                readBack =  basisValue;
+            }
             _lastSetpoint = basisValue;
             _lastReadback = readBack;
             READ_CHANNEL.putValCallback( readBack, listener );
