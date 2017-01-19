@@ -372,7 +372,7 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
         df_quadNoise = new DecimalField( 0., 5, numberFormat );
         quadNoisePanel.add(label1);
         quadNoisePanel.add(df_quadNoise);
-        quadNoisePanel.add(new JLabel("%"));
+        quadNoisePanel.add(new JLabel(" % "));
         noiseLevelPanel.add(quadNoisePanel);
 
         JPanel bendNoisePanel = new JPanel();
@@ -381,7 +381,7 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
         df_bendNoise = new DecimalField( 0., 5, numberFormat );
         bendNoisePanel.add(label2);
         bendNoisePanel.add(df_bendNoise);
-        bendNoisePanel.add(new JLabel("%"));
+        bendNoisePanel.add(new JLabel(" % "));
         noiseLevelPanel.add(bendNoisePanel);
 
         JPanel dipCorrNoisePanel = new JPanel();
@@ -389,7 +389,7 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
         df_dipCorrNoise = new DecimalField( 0., 5, numberFormat );
         dipCorrNoisePanel.add(new JLabel("Dipole Corr.: "));
         dipCorrNoisePanel.add(df_dipCorrNoise);
-        dipCorrNoisePanel.add(new JLabel("%"));
+        dipCorrNoisePanel.add(new JLabel(" % "));
         noiseLevelPanel.add(dipCorrNoisePanel);
 
         JPanel solNoisePanel = new JPanel();
@@ -397,23 +397,15 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
         df_solNoise = new DecimalField( 0., 5, numberFormat );
         solNoisePanel.add(new JLabel("Solenoid: "));
         solNoisePanel.add(df_solNoise);
-        solNoisePanel.add(new JLabel("%"));
+        solNoisePanel.add(new JLabel(" % "));
         noiseLevelPanel.add(solNoisePanel);
-
-        JPanel bpmNoisePanel = new JPanel();
-        bpmNoisePanel.setLayout(new GridLayout(1, 3));
-        df_bpmNoise = new DecimalField( 0., 5, numberFormat );
-        bpmNoisePanel.add(new JLabel("BPM: "));
-        bpmNoisePanel.add(df_bpmNoise);
-        bpmNoisePanel.add(new JLabel("%"));
-        noiseLevelPanel.add(bpmNoisePanel);
 
         JPanel rfAmpNoisePanel = new JPanel();
         rfAmpNoisePanel.setLayout(new GridLayout(1, 3));
         df_rfAmpNoise = new DecimalField( 0., 5, numberFormat );
         rfAmpNoisePanel.add(new JLabel("RF amp: "));
         rfAmpNoisePanel.add(df_rfAmpNoise);
-        rfAmpNoisePanel.add(new JLabel("%"));
+        rfAmpNoisePanel.add(new JLabel(" % "));
         noiseLevelPanel.add(rfAmpNoisePanel);
 
         JPanel rfPhaseNoisePanel = new JPanel();
@@ -421,8 +413,16 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
         df_rfPhaseNoise = new DecimalField( 0., 5, numberFormat );
         rfPhaseNoisePanel.add(new JLabel("RF phase: "));
         rfPhaseNoisePanel.add(df_rfPhaseNoise);
-        rfPhaseNoisePanel.add(new JLabel("%"));
+        rfPhaseNoisePanel.add(new JLabel(" % "));
         noiseLevelPanel.add(rfPhaseNoisePanel);
+
+        JPanel bpmNoisePanel = new JPanel();
+        bpmNoisePanel.setLayout(new GridLayout(1, 3));
+        df_bpmNoise = new DecimalField( 0., 5, numberFormat );
+        bpmNoisePanel.add(new JLabel("BPM: "));
+        bpmNoisePanel.add(df_bpmNoise);
+        bpmNoisePanel.add(new JLabel("mm"));
+        noiseLevelPanel.add(bpmNoisePanel);
 
         // for static errors
         staticErrorPanel.setLayout(new GridLayout(8, 1));
@@ -460,14 +460,6 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
         solStatErrPanel.add(new JLabel(" T "));
         staticErrorPanel.add(solStatErrPanel);
 
-        JPanel bpmStatErrPanel = new JPanel();
-        bpmStatErrPanel.setLayout(new GridLayout(1, 2));
-        df_bpmStatErr = new DecimalField( 0., 5, numberFormat );
-        bpmStatErrPanel.add(new JLabel("BPM: "));
-        bpmStatErrPanel.add(df_bpmStatErr);
-        bpmStatErrPanel.add(new JLabel(" mm "));
-        staticErrorPanel.add(bpmStatErrPanel);
-
         JPanel rfAmpStatErrPanel = new JPanel();
         rfAmpStatErrPanel.setLayout(new GridLayout(1, 2));
         df_rfAmpStatErr = new DecimalField( 0., 5, numberFormat );
@@ -483,6 +475,14 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
         rfPhaseStatErrPanel.add(df_rfPhaseStatErr);
         rfPhaseStatErrPanel.add(new JLabel(" deg "));
         staticErrorPanel.add(rfPhaseStatErrPanel);
+
+        JPanel bpmStatErrPanel = new JPanel();
+        bpmStatErrPanel.setLayout(new GridLayout(1, 2));
+        df_bpmStatErr = new DecimalField( 0., 5, numberFormat );
+        bpmStatErrPanel.add(new JLabel("BPM: "));
+        bpmStatErrPanel.add(df_bpmStatErr);
+        bpmStatErrPanel.add(new JLabel(" mm "));
+        staticErrorPanel.add(bpmStatErrPanel);
 
         // put everything together
         setNoise.setBounds(300, 300, 900, 600);
@@ -1237,7 +1237,7 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
                 tempBPMy.add(yAvg);
 
                 // hardwired BPM amplitude noise and static error to 5% and 0.1mm (randomly) respectively
-                bpmAmpAvgChannel.putVal( NoiseGenerator.setValForPV( 20., 5., 0.1 ) );
+                bpmAmpAvgChannel.putVal( NoiseGenerator.setValForPV( 20., 5., 0.1, false) );
                 // calculate the BPM phase (for linac only)
                 if ( !( currentProbe instanceof TransferMapProbe ) && !( bpm instanceof RingBPM ) ) {
                     final Channel bpmPhaseAvgChannel = bpm.getChannel( BPM.PHASE_AVG_HANDLE );
@@ -1335,16 +1335,16 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
                 System.err.println("Now updating " + bpm.getId());
 
                 if ( bpmXMap.containsKey( bpmX.getId() ) ) {
-                    bpmX.putVal( NoiseGenerator.setValForPV( bpmXMap.get( bpmX.getId() ).doubleValue(), bpmNoise, getStaticError(bpmStaticError) ) );
+                    bpmX.putVal( NoiseGenerator.setValForPV( bpmXMap.get( bpmX.getId() ).doubleValue(), bpmNoise, getStaticError(bpmStaticError), false ) );
                 }
 
                 if ( bpmYMap.containsKey( bpmY.getId() ) ) {
-                    bpmY.putVal( NoiseGenerator.setValForPV( bpmYMap.get( bpmY.getId() ).doubleValue(), bpmNoise, getStaticError(bpmStaticError) ) );
+                    bpmY.putVal( NoiseGenerator.setValForPV( bpmYMap.get( bpmY.getId() ).doubleValue(), bpmNoise, getStaticError(bpmStaticError), false ) );
                 }
 
                 // BPM amplitude
                 if (bpmAmpMap.containsKey(bpmAmp.getId()))
-                    bpmAmp.putVal( NoiseGenerator.setValForPV( bpmAmpMap.get( bpmAmp.getId() ).doubleValue(), 5., 0.1) );
+                    bpmAmp.putVal( NoiseGenerator.setValForPV( bpmAmpMap.get( bpmAmp.getId() ).doubleValue(), 5., 0.1, false) );
                 // BPM phase (for linac only)
                 if ( !( currentProbe instanceof TransferMapProbe ) ) {
                     Channel bpmPhase = bpm.getChannel( BPM.PHASE_AVG_HANDLE );

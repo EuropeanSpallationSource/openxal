@@ -88,7 +88,8 @@ public class ReadbackSetRecord {
             final Double staticError = staticErrorMap.get( READ_CHANNEL );
             final double readBack;
             if ( noise != null && staticError != null ) {
-                readBack =  NoiseGenerator.setValForPV( basisValue, noise, staticError );
+                System.out.println(READ_CHANNEL);
+                readBack =  NoiseGenerator.setValForPV( basisValue, noise, staticError, true);
             } else {
                 readBack =  basisValue;
             }
