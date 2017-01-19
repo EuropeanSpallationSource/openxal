@@ -261,6 +261,14 @@ abstract public class AcceleratorDocument extends XalDocument {
 
 
     /**
+     * Is the sequence selected a ring?
+     */
+    public boolean isSelectedSequenceRing() {
+        return selectedSequence instanceof xal.smf.Ring;
+    }
+
+
+    /**
      * Hook for handling the accelerator change event.  Subclasses should override
      * this method to provide custom handling.  The default handler does nothing.
      */
