@@ -154,6 +154,8 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 
     private DecimalField df_quadStatErr, df_bendStatErr, df_dipCorrStatErr, df_bpmStatErr, df_solStatErr, df_rfAmpStatErr, df_rfPhaseStatErr;
     
+    private DecimalField df_quadStatHorMisalign, df_bpmStatHorMisalign, df_solStatHorMisalign, df_rfCavStatHorMisalign;
+    private DecimalField df_quadStatVerMisalign, df_bpmStatVerMisalign, df_solStatVerMisalign, df_rfCavStatVerMisalign;
 
     private double quadNoise = 0.0;
 
@@ -182,6 +184,12 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
     private double rfAmpStaticError = 0.0;
 
     private double rfPhaseStaticError = 0.0;
+
+    private double quadStatHorMisalign = 0.0;
+    private double quadStatVerMisalign = 0.0;
+
+    private double bpmStatHorMisalign = 0.0;
+    private double bpmStatVerMisalign = 0.0;
 
     private JButton done = new JButton("OK");
 
@@ -357,10 +365,12 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
         JPanel settingPanel = new JPanel();
         JPanel noiseLevelPanel = new JPanel();
         JPanel staticErrorPanel = new JPanel();
+        JPanel staticHorMisalignPanel = new JPanel();
+        JPanel staticVerMisalignPanel = new JPanel();
 
         // for noise %
         noiseLevelPanel.setLayout(new GridLayout(8, 1));
-        noiseLevelPanel.add(new JLabel("Noise Level for Device Type:"));
+        noiseLevelPanel.add(new JLabel("Noise Level"));
 
         NumberFormat numberFormat;
         numberFormat = NumberFormat.getNumberInstance();
@@ -372,7 +382,7 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
         df_quadNoise = new DecimalField( 0., 5, numberFormat );
         quadNoisePanel.add(label1);
         quadNoisePanel.add(df_quadNoise);
-        quadNoisePanel.add(new JLabel(" % "));
+        quadNoisePanel.add(new JLabel(" %"));
         noiseLevelPanel.add(quadNoisePanel);
 
         JPanel bendNoisePanel = new JPanel();
@@ -381,7 +391,7 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
         df_bendNoise = new DecimalField( 0., 5, numberFormat );
         bendNoisePanel.add(label2);
         bendNoisePanel.add(df_bendNoise);
-        bendNoisePanel.add(new JLabel(" % "));
+        bendNoisePanel.add(new JLabel(" %"));
         noiseLevelPanel.add(bendNoisePanel);
 
         JPanel dipCorrNoisePanel = new JPanel();
@@ -389,7 +399,7 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
         df_dipCorrNoise = new DecimalField( 0., 5, numberFormat );
         dipCorrNoisePanel.add(new JLabel("Dipole Corr.: "));
         dipCorrNoisePanel.add(df_dipCorrNoise);
-        dipCorrNoisePanel.add(new JLabel(" % "));
+        dipCorrNoisePanel.add(new JLabel(" %"));
         noiseLevelPanel.add(dipCorrNoisePanel);
 
         JPanel solNoisePanel = new JPanel();
@@ -397,7 +407,7 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
         df_solNoise = new DecimalField( 0., 5, numberFormat );
         solNoisePanel.add(new JLabel("Solenoid: "));
         solNoisePanel.add(df_solNoise);
-        solNoisePanel.add(new JLabel(" % "));
+        solNoisePanel.add(new JLabel(" %"));
         noiseLevelPanel.add(solNoisePanel);
 
         JPanel rfAmpNoisePanel = new JPanel();
@@ -405,7 +415,7 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
         df_rfAmpNoise = new DecimalField( 0., 5, numberFormat );
         rfAmpNoisePanel.add(new JLabel("RF amp: "));
         rfAmpNoisePanel.add(df_rfAmpNoise);
-        rfAmpNoisePanel.add(new JLabel(" % "));
+        rfAmpNoisePanel.add(new JLabel(" %"));
         noiseLevelPanel.add(rfAmpNoisePanel);
 
         JPanel rfPhaseNoisePanel = new JPanel();
@@ -413,7 +423,7 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
         df_rfPhaseNoise = new DecimalField( 0., 5, numberFormat );
         rfPhaseNoisePanel.add(new JLabel("RF phase: "));
         rfPhaseNoisePanel.add(df_rfPhaseNoise);
-        rfPhaseNoisePanel.add(new JLabel(" % "));
+        rfPhaseNoisePanel.add(new JLabel(" %"));
         noiseLevelPanel.add(rfPhaseNoisePanel);
 
         JPanel bpmNoisePanel = new JPanel();
@@ -421,19 +431,19 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
         df_bpmNoise = new DecimalField( 0., 5, numberFormat );
         bpmNoisePanel.add(new JLabel("BPM: "));
         bpmNoisePanel.add(df_bpmNoise);
-        bpmNoisePanel.add(new JLabel("mm"));
+        bpmNoisePanel.add(new JLabel(" mm"));
         noiseLevelPanel.add(bpmNoisePanel);
 
         // for static errors
         staticErrorPanel.setLayout(new GridLayout(8, 1));
-        staticErrorPanel.add(new JLabel("Static error for Device Type:"));
+        staticErrorPanel.add(new JLabel("Static error"));
         
         JPanel quadStatErrPanel = new JPanel();
         quadStatErrPanel.setLayout(new GridLayout(1, 2));
         df_quadStatErr = new DecimalField( 0., 5, numberFormat );
         quadStatErrPanel.add(new JLabel("Quad: "));
         quadStatErrPanel.add(df_quadStatErr);
-        quadStatErrPanel.add(new JLabel(" T/m "));
+        quadStatErrPanel.add(new JLabel(" T/m"));
         staticErrorPanel.add(quadStatErrPanel);
 
         JPanel bendStatErrPanel = new JPanel();
@@ -441,7 +451,7 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
         df_bendStatErr = new DecimalField( 0., 5, numberFormat );
         bendStatErrPanel.add(new JLabel("Bending Dipole: "));
         bendStatErrPanel.add(df_bendStatErr);
-        bendStatErrPanel.add(new JLabel(" T "));
+        bendStatErrPanel.add(new JLabel(" T"));
         staticErrorPanel.add(bendStatErrPanel);
 
         JPanel dipCorrStatErrPanel = new JPanel();
@@ -449,7 +459,7 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
         df_dipCorrStatErr = new DecimalField( 0., 5, numberFormat );
         dipCorrStatErrPanel.add(new JLabel("Dipole Corr.: "));
         dipCorrStatErrPanel.add(df_dipCorrStatErr);
-        dipCorrStatErrPanel.add(new JLabel(" T "));
+        dipCorrStatErrPanel.add(new JLabel(" T"));
         staticErrorPanel.add(dipCorrStatErrPanel);
 
         JPanel solStatErrPanel = new JPanel();
@@ -457,7 +467,7 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
         df_solStatErr = new DecimalField( 0., 5, numberFormat );
         solStatErrPanel.add(new JLabel("Solenoid: "));
         solStatErrPanel.add(df_solStatErr);
-        solStatErrPanel.add(new JLabel(" T "));
+        solStatErrPanel.add(new JLabel(" T"));
         staticErrorPanel.add(solStatErrPanel);
 
         JPanel rfAmpStatErrPanel = new JPanel();
@@ -465,7 +475,7 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
         df_rfAmpStatErr = new DecimalField( 0., 5, numberFormat );
         rfAmpStatErrPanel.add(new JLabel("RF amp: "));
         rfAmpStatErrPanel.add(df_rfAmpStatErr);
-        rfAmpStatErrPanel.add(new JLabel(" kV "));
+        rfAmpStatErrPanel.add(new JLabel(" kV"));
         staticErrorPanel.add(rfAmpStatErrPanel);
 
         JPanel rfPhaseStatErrPanel = new JPanel();
@@ -473,7 +483,7 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
         df_rfPhaseStatErr = new DecimalField( 0., 5, numberFormat );
         rfPhaseStatErrPanel.add(new JLabel("RF phase: "));
         rfPhaseStatErrPanel.add(df_rfPhaseStatErr);
-        rfPhaseStatErrPanel.add(new JLabel(" deg "));
+        rfPhaseStatErrPanel.add(new JLabel(" deg"));
         staticErrorPanel.add(rfPhaseStatErrPanel);
 
         JPanel bpmStatErrPanel = new JPanel();
@@ -481,8 +491,48 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
         df_bpmStatErr = new DecimalField( 0., 5, numberFormat );
         bpmStatErrPanel.add(new JLabel("BPM: "));
         bpmStatErrPanel.add(df_bpmStatErr);
-        bpmStatErrPanel.add(new JLabel(" mm "));
+        bpmStatErrPanel.add(new JLabel(" mm"));
         staticErrorPanel.add(bpmStatErrPanel);
+
+        // for horizontal misalignments (static)
+        staticHorMisalignPanel.setLayout(new GridLayout(8, 1));
+        staticHorMisalignPanel.add(new JLabel("Horizontal misalignments"));
+
+        JPanel quadStatHorMisalignPanel = new JPanel();
+        quadStatHorMisalignPanel.setLayout(new GridLayout(1, 2));
+        df_quadStatHorMisalign = new DecimalField( 0., 5, numberFormat );
+        quadStatHorMisalignPanel.add(new JLabel("Quad: "));
+        quadStatHorMisalignPanel.add(df_quadStatHorMisalign);
+        quadStatHorMisalignPanel.add(new JLabel(" mm"));
+        staticHorMisalignPanel.add(quadStatHorMisalignPanel);
+
+        JPanel bpmStatHorMisalignPanel = new JPanel();
+        bpmStatHorMisalignPanel.setLayout(new GridLayout(1, 2));
+        df_bpmStatHorMisalign = new DecimalField( 0., 5, numberFormat );
+        bpmStatHorMisalignPanel.add(new JLabel("bpm: "));
+        bpmStatHorMisalignPanel.add(df_bpmStatHorMisalign);
+        bpmStatHorMisalignPanel.add(new JLabel(" mm"));
+        staticHorMisalignPanel.add(bpmStatHorMisalignPanel);
+
+        // for vertical misalignments (static)
+        staticVerMisalignPanel.setLayout(new GridLayout(8, 1));
+        staticVerMisalignPanel.add(new JLabel("Vertical misalignments"));
+
+        JPanel quadStatVerMisalignPanel = new JPanel();
+        quadStatVerMisalignPanel.setLayout(new GridLayout(1, 2));
+        df_quadStatVerMisalign = new DecimalField( 0., 5, numberFormat );
+        quadStatVerMisalignPanel.add(new JLabel("Quad: "));
+        quadStatVerMisalignPanel.add(df_quadStatVerMisalign);
+        quadStatVerMisalignPanel.add(new JLabel(" mm"));
+        staticVerMisalignPanel.add(quadStatVerMisalignPanel);
+
+        JPanel bpmStatVerMisalignPanel = new JPanel();
+        bpmStatVerMisalignPanel.setLayout(new GridLayout(1, 2));
+        df_bpmStatVerMisalign = new DecimalField( 0., 5, numberFormat );
+        bpmStatVerMisalignPanel.add(new JLabel("bpm: "));
+        bpmStatVerMisalignPanel.add(df_bpmStatVerMisalign);
+        bpmStatVerMisalignPanel.add(new JLabel(" mm"));
+        staticVerMisalignPanel.add(bpmStatVerMisalignPanel);
 
         // put everything together
         setNoise.setBounds(300, 300, 900, 600);
@@ -490,6 +540,8 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
         settingPanel.setLayout(new BoxLayout(settingPanel, BoxLayout.X_AXIS));
         settingPanel.add(noiseLevelPanel);
         settingPanel.add(staticErrorPanel);
+        settingPanel.add(staticHorMisalignPanel);
+        settingPanel.add(staticVerMisalignPanel);
         setNoise.getContentPane().setLayout(new BorderLayout());
         setNoise.getContentPane().add(settingPanel, BorderLayout.CENTER);
         setNoise.getContentPane().add(done, BorderLayout.SOUTH);
@@ -548,6 +600,14 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
             daStaticError.setValue("sol", solStaticError);
             daStaticError.setValue("rfAmp", rfAmpStaticError);
             daStaticError.setValue("rfPhase", rfPhaseStaticError);
+
+            DataAdaptor daStaticHorMisalign = daLevel1.createChild("horizontalMisalignments");
+            daStaticHorMisalign.setValue("quad", quadStatHorMisalign);
+            daStaticHorMisalign.setValue("bpm", bpmStatHorMisalign);
+
+            DataAdaptor daStaticVerMisalign = daLevel1.createChild("verticalMisalignments");
+            daStaticVerMisalign.setValue("quad", quadStatVerMisalign);
+            daStaticVerMisalign.setValue("bpm", bpmStatVerMisalign);
         }
 
         daLevel1.setValue( "modelSyncPeriod", _modelSyncPeriod );
@@ -774,6 +834,7 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
             static final long serialVersionUID = 0;
             @Override
             public void actionPerformed(ActionEvent event) {
+
                 df_quadNoise.setValue(quadNoise);
                 df_bendNoise.setValue(dipoleNoise);
                 df_dipCorrNoise.setValue(correctorNoise);
@@ -781,6 +842,7 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
                 df_solNoise.setValue(solNoise);
                 df_rfAmpNoise.setValue(rfAmpNoise);
                 df_rfPhaseNoise.setValue(rfPhaseNoise);
+
                 df_quadStatErr.setValue(quadStaticError);
                 df_bendStatErr.setValue(dipoleStaticError);
                 df_dipCorrStatErr.setValue(correctorStaticError);
@@ -788,6 +850,12 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
                 df_solStatErr.setValue(solStaticError);
                 df_rfAmpStatErr.setValue(rfAmpStaticError);
                 df_rfPhaseStatErr.setValue(rfPhaseStaticError);
+
+                df_quadStatHorMisalign.setValue(quadStatHorMisalign);
+                df_quadStatVerMisalign.setValue(quadStatVerMisalign);
+
+                df_bpmStatHorMisalign.setValue(bpmStatHorMisalign);
+                df_bpmStatVerMisalign.setValue(bpmStatVerMisalign);
                 setNoise.setVisible(true);
             }
         };
@@ -860,6 +928,18 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
                 solStaticError = daStaticError.doubleValue("sol");
                 rfAmpStaticError = daStaticError.doubleValue("rfAmp");
                 rfPhaseStaticError = daStaticError.doubleValue("rfPhase");
+            }
+
+            DataAdaptor daStaticHorMisalign = da1.childAdaptor("horizontalMisalignments");
+            if (daStaticHorMisalign != null) {
+                quadStatHorMisalign = daStaticHorMisalign.doubleValue("quad");
+                bpmStatHorMisalign = daStaticHorMisalign.doubleValue("bpm");
+            }
+
+            DataAdaptor daStaticVerMisalign = da1.childAdaptor("verticalMisalignments");
+            if (daStaticVerMisalign != null) {
+                quadStatVerMisalign = daStaticVerMisalign.doubleValue("quad");
+                bpmStatVerMisalign = daStaticVerMisalign.doubleValue("bpm");
             }
 
             temp = da2a.childAdaptors("seq");
@@ -1212,18 +1292,18 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
                 //       so we should be able to compute a "fixed orbit" in any context
                 //
                 // CKA Nov 25, 2013
-//              if ( probeState instanceof ICoordinateState ) {
-//                  final PhaseVector coordinates = ((ICoordinateState)probeState).getFixedOrbit();
+                //              if ( probeState instanceof ICoordinateState ) {
+                //                  final PhaseVector coordinates = ((ICoordinateState)probeState).getFixedOrbit();
                 final PhaseVector coordinates = cmpCalcEngine.computeFixedOrbit(probeState);
-//                final PhaseVector coordinates = cmpCalcEngine.computeCoordinatePosition(probeState);
+                //                final PhaseVector coordinates = cmpCalcEngine.computeCoordinatePosition(probeState);
 
                 // For SNS Ring BPM system, we only measure the signal with respect to the center of the beam pipe.
 
                 // TO-DO: the turn by turn arrays should really be generated from betatron motion rather than random data about the nominal
-                final double[] xTBT = NoiseGenerator.noisyArrayForNominal( coordinates.getx() * 1000.0, DEFAULT_BPM_WAVEFORM_SIZE, DEFAULT_BPM_WAVEFORM_DATA_SIZE, bpmNoise, bpmStaticError );
+                final double[] xTBT = NoiseGenerator.noisyArrayForNominal( coordinates.getx() * 1000.0 - bpm.getXOffset(), DEFAULT_BPM_WAVEFORM_SIZE, DEFAULT_BPM_WAVEFORM_DATA_SIZE, bpmNoise, bpmStaticError );
                 final double xAvg = NoiseGenerator.getAverage( xTBT, DEFAULT_BPM_WAVEFORM_DATA_SIZE );
 
-                final double[] yTBT = NoiseGenerator.noisyArrayForNominal( coordinates.gety() * 1000.0, DEFAULT_BPM_WAVEFORM_SIZE, DEFAULT_BPM_WAVEFORM_DATA_SIZE, bpmNoise, bpmStaticError );
+                final double[] yTBT = NoiseGenerator.noisyArrayForNominal( coordinates.gety() * 1000.0 - bpm.getYOffset(), DEFAULT_BPM_WAVEFORM_SIZE, DEFAULT_BPM_WAVEFORM_DATA_SIZE, bpmNoise, bpmStaticError );
                 final double yAvg = NoiseGenerator.getAverage( yTBT, DEFAULT_BPM_WAVEFORM_DATA_SIZE );
 
                 bpmXAvgChannel.putValCallback( xAvg, this );
@@ -1388,6 +1468,20 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
        if ( element.isKindOf( VDipoleCorr.s_strType ) ) staticError=correctorStaticError;
        if ( element.isKindOf( Solenoid.s_strType ) )    staticError=solStaticError;
        return getStaticError(staticError);
+    }
+    // Used to set horizontal misalignments in misalignElements()
+    private double getStaticHorizontalMisalignmentForElement(AcceleratorNode element) {
+        double horizontalMisalignment=0.0;
+       if ( element.isKindOf( Quadrupole.s_strType ) )  horizontalMisalignment = quadStatHorMisalign;
+       if ( element.isKindOf( BPM.s_strType ) )  horizontalMisalignment = bpmStatHorMisalign;
+        return getStaticError(horizontalMisalignment);
+    }
+    // Used to set vertical misalignments in misalignElements()
+    private double getStaticVerticalMisalignmentForElement(AcceleratorNode element) {
+        double verticalMisalignment=0.0;
+       if ( element.isKindOf( Quadrupole.s_strType ) )  verticalMisalignment = quadStatVerMisalign;
+       if ( element.isKindOf( BPM.s_strType ) )  verticalMisalignment = bpmStatVerMisalign;
+        return getStaticError(verticalMisalignment);
     }
 
     /** create the map between the "readback" and "set" PVs */
@@ -1569,11 +1663,27 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
             solStaticError = df_solStatErr.getDoubleValue();
             rfAmpStaticError = df_rfAmpStatErr.getDoubleValue();
             rfPhaseStaticError = df_rfPhaseStatErr.getDoubleValue();
+
             setHasChanges(true);
 
             /**add below*/
             configureReadbacks();
+            misalignElements();
             setNoise.setVisible(false);
+        }
+    }
+
+    private void misalignElements() {
+
+        quadStatHorMisalign = df_quadStatHorMisalign.getDoubleValue();
+        quadStatVerMisalign = df_quadStatVerMisalign.getDoubleValue();
+
+        bpmStatHorMisalign = df_bpmStatHorMisalign.getDoubleValue();
+        bpmStatVerMisalign = df_bpmStatVerMisalign.getDoubleValue();
+
+        for ( final AcceleratorNode node : getSelectedSequence().getAllNodes() ) {
+            node.setXOffset(getStaticHorizontalMisalignmentForElement(node));
+            node.setYOffset(getStaticVerticalMisalignmentForElement(node));
         }
     }
 
