@@ -223,6 +223,9 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 
     private LinkedHashMap<Channel, Double> ch_staticErrorMap;
 
+    private LinkedHashMap<BPM, Double> bpm_staticErrorMapX;
+    private LinkedHashMap<BPM, Double> bpm_staticErrorMapY;
+
     private VAServer _vaServer;
 
     protected Commander commander;
@@ -1300,10 +1303,10 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
                 // For SNS Ring BPM system, we only measure the signal with respect to the center of the beam pipe.
 
                 // TO-DO: the turn by turn arrays should really be generated from betatron motion rather than random data about the nominal
-                final double[] xTBT = NoiseGenerator.noisyArrayForNominal( coordinates.getx() * 1000.0 - bpm.getXOffset(), DEFAULT_BPM_WAVEFORM_SIZE, DEFAULT_BPM_WAVEFORM_DATA_SIZE, bpmNoise, bpmStaticError );
+                final double[] xTBT = NoiseGenerator.noisyArrayForNominal( coordinates.getx() * 1000.0 - bpm.getXOffset(), DEFAULT_BPM_WAVEFORM_SIZE, DEFAULT_BPM_WAVEFORM_DATA_SIZE, bpmNoise, bpm_staticErrorMapX.get(bpm) );
                 final double xAvg = NoiseGenerator.getAverage( xTBT, DEFAULT_BPM_WAVEFORM_DATA_SIZE );
 
-                final double[] yTBT = NoiseGenerator.noisyArrayForNominal( coordinates.gety() * 1000.0 - bpm.getYOffset(), DEFAULT_BPM_WAVEFORM_SIZE, DEFAULT_BPM_WAVEFORM_DATA_SIZE, bpmNoise, bpmStaticError );
+                final double[] yTBT = NoiseGenerator.noisyArrayForNominal( coordinates.gety() * 1000.0 - bpm.getYOffset(), DEFAULT_BPM_WAVEFORM_SIZE, DEFAULT_BPM_WAVEFORM_DATA_SIZE, bpmNoise, bpm_staticErrorMapY.get(bpm) );
                 final double yAvg = NoiseGenerator.getAverage( yTBT, DEFAULT_BPM_WAVEFORM_DATA_SIZE );
 
                 bpmXAvgChannel.putValCallback( xAvg, this );
@@ -1415,11 +1418,11 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
                 System.err.println("Now updating " + bpm.getId());
 
                 if ( bpmXMap.containsKey( bpmX.getId() ) ) {
-                    bpmX.putVal( NoiseGenerator.setValForPV( bpmXMap.get( bpmX.getId() ).doubleValue(), bpmNoise, getStaticError(bpmStaticError), false ) );
+                    bpmX.putVal( NoiseGenerator.setValForPV( bpmXMap.get( bpmX.getId() ).doubleValue(), bpmNoise, bpm_staticErrorMapX.get(bpm), false ) );
                 }
 
                 if ( bpmYMap.containsKey( bpmY.getId() ) ) {
-                    bpmY.putVal( NoiseGenerator.setValForPV( bpmYMap.get( bpmY.getId() ).doubleValue(), bpmNoise, getStaticError(bpmStaticError), false ) );
+                    bpmY.putVal( NoiseGenerator.setValForPV( bpmYMap.get( bpmY.getId() ).doubleValue(), bpmNoise, bpm_staticErrorMapY.get(bpm), false ) );
                 }
 
                 // BPM amplitude
@@ -1490,6 +1493,8 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 
         ch_noiseMap = new LinkedHashMap<Channel, Double>();
         ch_staticErrorMap = new LinkedHashMap<Channel, Double>();
+        bpm_staticErrorMapX = new LinkedHashMap<BPM, Double>();
+        bpm_staticErrorMapY = new LinkedHashMap<BPM, Double>();
 
         if ( selectedSequence != null ) {
             // for magnet PVs
@@ -1527,6 +1532,12 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
                     ch_noiseMap.put( phaseReadChannel, rfPhaseNoise );
                     ch_staticErrorMap.put( phaseReadChannel, getStaticError(rfPhaseStaticError) );
                 }
+            }
+
+            // for BPMs
+            for ( final BPM bpm : bpms ) {
+                bpm_staticErrorMapX.put(bpm,getStaticError(bpmStaticError));
+                bpm_staticErrorMapY.put(bpm,getStaticError(bpmStaticError));
             }
 
             Collections.sort( READBACK_SET_RECORDS, new ReadbackSetRecordPositionComparator( selectedSequence ) );
