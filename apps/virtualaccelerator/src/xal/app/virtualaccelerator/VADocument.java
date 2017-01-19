@@ -1614,6 +1614,9 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
             // should create a new map for "set" <-> "readback" PV mapping
             configureReadbacks();
 
+            // misalign the selected sequence
+            misalignElements();
+
             // for on-line model
             try {
                 modelScenario = Scenario.newScenarioFor( getSelectedSequence() );
@@ -1667,8 +1670,10 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
             setHasChanges(true);
 
             /**add below*/
-            configureReadbacks();
-            misalignElements();
+            if (selectedSequence != null) {
+                configureReadbacks();
+                misalignElements();
+            }
             setNoise.setVisible(false);
         }
     }
