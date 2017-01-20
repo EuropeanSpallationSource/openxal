@@ -1626,19 +1626,8 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
             // should create a new map for "set" <-> "readback" PV mapping
             configureReadbacks();
 
-            // misalign the selected sequence
+            // misalign the selected sequence (also sets new modelScenario and probe)
             misalignElements();
-
-            // for on-line model
-            try {
-                modelScenario = Scenario.newScenarioFor( getSelectedSequence() );
-            }
-            catch ( ModelException exception ) {
-                System.err.println( exception.getMessage() );
-            }
-
-            // setting up the default probe
-            createDefaultProbe();
 
             setHasChanges(true);
         }
@@ -1699,9 +1688,21 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
         bpmStatVerMisalign = df_bpmStatVerMisalign.getDoubleValue();
 
         for ( final AcceleratorNode node : getSelectedSequence().getAllNodes() ) {
-            node.setXOffset(getStaticHorizontalMisalignmentForElement(node));
-            node.setYOffset(getStaticVerticalMisalignmentForElement(node));
+            // note that node offsets are in metres
+            node.setXOffset(getStaticHorizontalMisalignmentForElement(node)*0.001);
+            node.setYOffset(getStaticVerticalMisalignmentForElement(node)*0.001);
         }
+
+        // for on-line model
+        try {
+            modelScenario = Scenario.newScenarioFor( getSelectedSequence() );
+        }
+        catch ( ModelException exception ) {
+            System.err.println( exception.getMessage() );
+        }
+
+        // setting up the default probe
+        createDefaultProbe();
     }
 
 
