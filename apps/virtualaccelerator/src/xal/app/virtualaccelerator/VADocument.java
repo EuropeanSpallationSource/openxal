@@ -1287,50 +1287,51 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
             final Channel bpmYTBTChannel = bpm.getChannel( BPM.Y_TBT_HANDLE );  // TODO: CKA - NEVER USED
             final Channel bpmAmpAvgChannel = bpm.getChannel( BPM.AMP_AVG_HANDLE );
 
-            try {
-                ProbeState<?> probeState = modelScenario.getTrajectory().stateForElement( bpm.getId() );
-                //System.out.println("Now updating " + bpm.getId());
 
-                // CKA - Transfer map probes and Envelope probes both exposed ICoordinateState
-                //       so we should be able to compute a "fixed orbit" in any context
-                //
-                // CKA Nov 25, 2013
-                //              if ( probeState instanceof ICoordinateState ) {
-                //                  final PhaseVector coordinates = ((ICoordinateState)probeState).getFixedOrbit();
-                final PhaseVector coordinates = cmpCalcEngine.computeFixedOrbit(probeState);
-                //                final PhaseVector coordinates = cmpCalcEngine.computeCoordinatePosition(probeState);
+                try {
+                    ProbeState<?> probeState = modelScenario.getTrajectory().stateForElement( bpm.getId() );
 
-                // For SNS Ring BPM system, we only measure the signal with respect to the center of the beam pipe.
+                    // CKA - Transfer map probes and Envelope probes both exposed ICoordinateState
+                    //       so we should be able to compute a "fixed orbit" in any context
+                    final PhaseVector coordinates = cmpCalcEngine.computeFixedOrbit(probeState);
+                    // For SNS Ring BPM system, we only measure the signal with respect to the center of the beam pipe.
 
-                // TO-DO: the turn by turn arrays should really be generated from betatron motion rather than random data about the nominal
-                final double[] xTBT = NoiseGenerator.noisyArrayForNominal( coordinates.getx() * 1000.0 - bpm.getXOffset(), DEFAULT_BPM_WAVEFORM_SIZE, DEFAULT_BPM_WAVEFORM_DATA_SIZE, bpmNoise, bpm_staticErrorMapX.get(bpm) );
-                final double xAvg = NoiseGenerator.getAverage( xTBT, DEFAULT_BPM_WAVEFORM_DATA_SIZE );
+                    final double xAvg;
+                    final double yAvg;
 
-                final double[] yTBT = NoiseGenerator.noisyArrayForNominal( coordinates.gety() * 1000.0 - bpm.getYOffset(), DEFAULT_BPM_WAVEFORM_SIZE, DEFAULT_BPM_WAVEFORM_DATA_SIZE, bpmNoise, bpm_staticErrorMapY.get(bpm) );
-                final double yAvg = NoiseGenerator.getAverage( yTBT, DEFAULT_BPM_WAVEFORM_DATA_SIZE );
+                    if (isSelectedSequenceRing()) {
+                        // TO-DO: the turn by turn arrays should really be generated from betatron motion rather than random data about the nominal
+                        final double[] xTBT = NoiseGenerator.noisyArrayForNominal( coordinates.getx() * 1000.0 - bpm.getXOffset(), DEFAULT_BPM_WAVEFORM_SIZE, DEFAULT_BPM_WAVEFORM_DATA_SIZE, bpmNoise, bpm_staticErrorMapX.get(bpm) );
+                        xAvg = NoiseGenerator.getAverage( xTBT, DEFAULT_BPM_WAVEFORM_DATA_SIZE );
 
-                bpmXAvgChannel.putValCallback( xAvg, this );
-                //                    bpmXTBTChannel.putValCallback( xTBT, this );  // don't post to channel access until the turn by turn data is generated correctly
-                bpmYAvgChannel.putValCallback( yAvg, this );
-                //                    bpmYTBTChannel.putValCallback( yTBT, this );  // don't post to channel access until the turn by turn data is generated correctly
+                        final double[] yTBT = NoiseGenerator.noisyArrayForNominal( coordinates.gety() * 1000.0 - bpm.getYOffset(), DEFAULT_BPM_WAVEFORM_SIZE, DEFAULT_BPM_WAVEFORM_DATA_SIZE, bpmNoise, bpm_staticErrorMapY.get(bpm) );
+                        yAvg = NoiseGenerator.getAverage( yTBT, DEFAULT_BPM_WAVEFORM_DATA_SIZE );
 
-                final double position = getSelectedSequence().getPosition(bpm);
-                tempBPMp.add(position);
-                tempBPMx.add(xAvg);
-                tempBPMy.add(yAvg);
+                    } else {
+                        xAvg = NoiseGenerator.setValForPV(  coordinates.getx() * 1000.0 - bpm.getXOffset(), bpmNoise, bpm_staticErrorMapX.get(bpm), false);
+                        yAvg = NoiseGenerator.setValForPV(  coordinates.gety() * 1000.0 - bpm.getYOffset(), bpmNoise, bpm_staticErrorMapY.get(bpm), false);
+                    }
+                    bpmXAvgChannel.putValCallback( xAvg, this );
+                    //                    bpmXTBTChannel.putValCallback( xTBT, this );  // don't post to channel access until the turn by turn data is generated correctly
+                    bpmYAvgChannel.putValCallback( yAvg, this );
+                    //                    bpmYTBTChannel.putValCallback( yTBT, this );  // don't post to channel access until the turn by turn data is generated correctly
 
-                // hardwired BPM amplitude noise and static error to 5% and 0.1mm (randomly) respectively
-                bpmAmpAvgChannel.putVal( NoiseGenerator.setValForPV( 20., 5., 0.1, false) );
-                // calculate the BPM phase (for linac only)
-                if ( !( currentProbe instanceof TransferMapProbe ) && !( bpm instanceof RingBPM ) ) {
-                    final Channel bpmPhaseAvgChannel = bpm.getChannel( BPM.PHASE_AVG_HANDLE );
-                    bpmPhaseAvgChannel.putValCallback( probeState.getTime() * 360. * ( ( (BPMBucket)bpm.getBucket("bpm") ).getFrequency() * 1.e6 ) % 360.0, this );
+                    tempBPMp.add(getSelectedSequence().getPosition(bpm));
+                    tempBPMx.add(xAvg);
+                    tempBPMy.add(yAvg);
+
+                    // hardwired BPM amplitude noise and static error to 5% and 0.1mm (randomly) respectively
+                    bpmAmpAvgChannel.putVal( NoiseGenerator.setValForPV( 20., 5., 0.1, true) );
+                    if ( ! isSelectedSequenceRing() ) {
+                        // calculate the BPM phase (for linac only)
+                        final Channel bpmPhaseAvgChannel = bpm.getChannel( BPM.PHASE_AVG_HANDLE );
+                        bpmPhaseAvgChannel.putValCallback( probeState.getTime() * 360. * ( ( (BPMBucket)bpm.getBucket("bpm") ).getFrequency() * 1.e6 ) % 360.0, this );
+                    }
+                } catch (ConnectionException e) {
+                    System.err.println( e.getMessage() );
+                } catch (PutException e) {
+                    System.err.println( e.getMessage() );
                 }
-            } catch (ConnectionException e) {
-                System.err.println( e.getMessage() );
-            } catch (PutException e) {
-                System.err.println( e.getMessage() );
-            }
         }
 
         /**the array of bpm data*/
