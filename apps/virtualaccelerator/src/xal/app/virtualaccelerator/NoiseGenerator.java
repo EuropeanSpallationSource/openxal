@@ -35,7 +35,7 @@ public class NoiseGenerator {
         if (relative)
             return pvVal * (1 + noiseLevel * (Math.random()-0.5)*2./100.) + offset;
         else
-            return pvVal  + noiseLevel * (Math.random()-0.5)*2./100. + offset;
+            return pvVal  + noiseLevel * (Math.random()-0.5)*2. + offset;
     }
     
     /**
