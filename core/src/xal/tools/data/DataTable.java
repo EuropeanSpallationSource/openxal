@@ -360,6 +360,10 @@ public class DataTable {
 		}
 	}
 	
+
+	Schema getSchema() {
+		return _schema;
+	}
 	
     
     /*************************************************************************
@@ -372,7 +376,7 @@ public class DataTable {
         
 		/** Constructor */
         public KeyTable() {
-            VALUE_TABLE = new HashMap<String,ValueHash>();
+            VALUE_TABLE = new LinkedHashMap<String,ValueHash>();
             
 			for ( final String key : _schema.primaryKeys() ) {
 				final ValueHash valueHash = new ValueHash( key );
@@ -537,7 +541,7 @@ public class DataTable {
      * holds all values associated with the primary key.  The value acts as the key in the map and the set of all records sharing that value is the 
      * value in the map.  Each ValueHash contains exactly one reference to each record in the table.
      */
-    final private class ValueHash {
+    final private static class ValueHash {
 		/** The primary key for which to maintain a hash of values. */
         final private String PRIMARY_KEY;
 		
@@ -551,7 +555,7 @@ public class DataTable {
 		 */
         public ValueHash( final String primaryKey ) {
             this.PRIMARY_KEY = primaryKey;
-            RECORD_SET_TABLE = new HashMap<Object,Set<GenericRecord>>();
+            RECORD_SET_TABLE = new LinkedHashMap<Object,Set<GenericRecord>>();
         }
 		
 		
@@ -566,7 +570,7 @@ public class DataTable {
         
 		/** Get all records in this value hash */
         final public Collection<GenericRecord> records() {
-            final Collection<GenericRecord> unionRecordSet = new HashSet<GenericRecord>();
+            final Collection<GenericRecord> unionRecordSet = new LinkedHashSet<GenericRecord>();
             final Collection<Set<GenericRecord>> recordSets = RECORD_SET_TABLE.values();
             
 			for ( final Set<GenericRecord> recordSet : recordSets ) {
@@ -590,7 +594,7 @@ public class DataTable {
             Set<GenericRecord> recordSet = RECORD_SET_TABLE.get( value );
             
             if ( recordSet == null ) {
-                recordSet = new HashSet<GenericRecord>();
+                recordSet = new LinkedHashSet<GenericRecord>();
                 RECORD_SET_TABLE.put( value, recordSet );
             }
             recordSet.add( record );
@@ -657,7 +661,7 @@ public class DataTable {
      * inconsistency.  Most likely this happens when a record with the same
      * primary key(s) already exist in the table.
      */
-    public class AddRecordException extends RuntimeException {
+    public static class AddRecordException extends RuntimeException {
         /** serialization ID */
         private static final long serialVersionUID = 1L;
         
@@ -700,8 +704,8 @@ public class DataTable {
         
 		/** Primary constructor */
         public Schema( final Collection<DataAttribute> attributes ) throws MissingPrimaryKeyException {
-            ATTRIBUTE_TABLE = new HashMap<String,DataAttribute>();
-            PRIMARY_KEYS = new HashSet<String>();
+            ATTRIBUTE_TABLE = new LinkedHashMap<String,DataAttribute>();
+            PRIMARY_KEYS = new LinkedHashSet<String>();
             addAttributes( attributes );
         }
         

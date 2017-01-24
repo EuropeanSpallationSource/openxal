@@ -21,7 +21,6 @@ import xal.model.elem.IdealRfGap;
 import xal.model.elem.ThinElement;
 import xal.model.probe.EnvelopeProbe;
 import xal.model.probe.traj.EnvelopeProbeState;
-import xal.model.probe.traj.ProbeState;
 import xal.tools.beam.CovarianceMatrix;
 import xal.tools.beam.PhaseMap;
 import xal.tools.beam.PhaseMatrix;
@@ -313,7 +312,7 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
      * The current step size is reset to this value anytime the
      * <code>initialize()</code> method is called.
      * 
-     * @param dblStepSize   initial step size in <m>meters</m>
+     * @param dblStepSize   initial step size in <b>meters</b>
      * 
      * @see EnvTrackerAdapt#setInitStepSize(double)
      * @see EnvTrackerAdapt#initialize()
@@ -329,7 +328,7 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
      * as the algorithm progresses according to the adaptation
      * rule.
      * 
-     * @param dblStepSize   initial step size in <m>meters</m>
+     * @param dblStepSize   initial step size in <b>meters</b>
      */
     public void setStepSize( final double dblStepSize ) {
         m_dblStepSize = dblStepSize;
@@ -654,7 +653,7 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
             if (hp < h)   {                 // we stepped too far - roll back and try again
                 this.rollbackProbe(probe, stateRef);
 
-            } else {                        // our step size meets accuracy critereon - advance probe
+            } else {                        // our step size meets accuracy criterion - advance probe
                 stateRef = probe.createProbeState();
                 s       += h;
             }
@@ -735,7 +734,7 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
      * Load the parameters of the algorithm from a data source exposing the
      * <code>IArchive</code> interface.
      * The superclass <code>load</code> method is called first, then the properties
-     * particular to <code>EnvTrackerAdapt<code> are loaded.
+     * particular to <code>EnvTrackerAdapt</code> are loaded.
      * 
      * @see xal.tools.data.IArchive#load(xal.tools.data.DataAdaptor)
      */
@@ -770,7 +769,7 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
     /**
      * Save the settings particular to this subclass of <code>Tracker</code>.
      * The superclass <code>save</code> method is called first, then the properties
-     * particular to <code>EnvTrackerAdapt<code> are saved.
+     * particular to <code>EnvTrackerAdapt</code> are saved.
      * 
      * @param   daptArchive     data sink exposing <code>IArchive</code> interface
      * 
@@ -806,7 +805,6 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
      *
      *  @param  ifcElem     interface to the beam element
      *  @param  probe    interface to the probe
-     *  @param  dblLen      length of element subsection to advance through
      *
      *  @exception ModelException     bad element transfer matrix/corrupt probe state
      */
@@ -1307,14 +1305,15 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
         // jdg - bail if no space charge is needed:
         if (probe.bunchCharge() == 0.) return this.compElemTransMatrix(h, probe, elem);
 
-        //        PhaseMatrix matPhiSc = this.compScheffTransMatrixWhenAligned(h, probe);
-        PhaseMatrix matPhiSc = super.compScheffMatrix(h, probe, elem);
-
-        // We're going to try something different and ensure symplecticity
-        
-        // If we are only first-order accurate get the full transfer matrices for the two effects,
-        //  multiply them, and return the combined matrix
         if (this.getAccuracyOrder() == ACCUR_ORDER1) {
+	        //        PhaseMatrix matPhiSc = this.compScheffTransMatrixWhenAligned(h, probe);
+	        PhaseMatrix matPhiSc = super.compScheffMatrix(h, probe, elem);
+	
+	        // We're going to try something different and ensure symplecticity
+	        
+	        // If we are only first-order accurate get the full transfer matrices for the two effects,
+	        //  multiply them, and return the combined matrix
+        
             PhaseMatrix matPhiE = this.compElemTransMatrix(h, probe, elem);
             PhaseMatrix matPhi  = matPhiE.times(matPhiSc);
             
@@ -1322,14 +1321,40 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
         }
 
         // Get the transfer matrices for the two individual effects and 
-        //  combine them to second-order accuracy (via Campbell-Baker-Hausdorff)
-        PhaseMatrix matPhiE = this.compElemTransMatrix(h/2.0, probe, elem);
+        //  combine them to second-order accuracy (via Campbell-Baker-Hausdorff)        
+        // Store the current probe state (for rollback)
+        EnvelopeProbeState state0 = probe.cloneCurrentProbeState();
+    	
 
-        // Build the composite transfer matrix up to second order
-        PhaseMatrix     matPhi = matPhiSc.times( matPhiE );
-        PhaseMatrix     matCom = matPhiE.times( matPhi );
 
-        return matCom;
+        // Get half-step transfer matrix at current probe location
+        PhaseMatrix       matPhi0  = this.compElemTransMatrix(h/2.0, probe, elem);
+        
+        // Get the RMS envelopes at probe location
+        CovarianceMatrix covTau0  = probe.getCovariance();    // covariance matrix at entrance
+        
+        
+        // Advance probe a half step for position depend transfer maps
+        double            pos     = probe.getPosition() + h/2.0;
+        PhaseMatrix       matTau1 = covTau0.conjugateTrans(matPhi0);
+        CovarianceMatrix covTau1 = new CovarianceMatrix(matTau1);
+
+        probe.setPosition(pos);
+        probe.setCovariance(covTau1);
+        
+        
+        // space charge transfer matrix
+        PhaseMatrix matPhiSc = this.compScheffMatrix(h, probe, elem);   
+        
+        
+        // Compute half-step transfer matrix at new probe location        
+        PhaseMatrix matPhi1  = this.compElemTransMatrix(h/2.0, probe, elem);
+                
+        // Restore original probe state
+        probe.applyState(state0);
+                
+        // Compute the full transfer matrix for the distance dblLen
+        return matPhi1.times( matPhiSc.times(matPhi0) );        
     }
 
 //    /**
@@ -1444,9 +1469,9 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
 //     * &middot; This method was converted from using the deprecated 
 //     * <code>EllipsoidalCharge</code> class to the newer <code>BeamEllipsoid</code>
 //     * class.  CKA: Aug, 2011.
-//     * <br/>
+//     * <br>
 //     * &middot; Since then this method has not yet been tested and debugged!
-//     * <br/>
+//     * <br>
 //     * The functionality has now been incorporated into <code>EnvelopeTrackerBase.CompScheffTransMatri()</code>
 //     * </p>
 //     *

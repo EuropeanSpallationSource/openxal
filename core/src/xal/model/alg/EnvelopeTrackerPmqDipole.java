@@ -13,7 +13,6 @@ import xal.model.IElement;
 import xal.model.IProbe;
 import xal.model.ModelException;
 import xal.model.elem.IdealDrift;
-import xal.model.elem.IdealMagSectorDipole;
 import xal.model.elem.IdealMagSectorDipole2;
 import xal.model.elem.IdealPermMagQuad;
 import xal.model.probe.EnvelopeProbe;
@@ -122,14 +121,13 @@ public class EnvelopeTrackerPmqDipole extends EnvelopeTracker {
         	return;
         }
   
-        if (elem instanceof IdealPermMagQuad || elem instanceof IdealMagSectorDipole2
-        		|| elem instanceof IdealMagSectorDipole)   {
+        if (elem instanceof IdealPermMagQuad || elem instanceof IdealMagSectorDipole2)   {
             nSteps = (int)Math.max(Math.ceil(propLen / getStepSize()), 1);
             
         } else if (elem instanceof IdealDrift) {
             nSteps = (int)Math.max(Math.ceil(propLen / getStepSize()), 1);
             
-        }else if(this.getSpaceChargeFlag()) {
+        }else if(this.getUseSpacecharge()) {
             nSteps = (int) Math.max(Math.ceil(propLen / getStepSize()), 1);
         
         } else { 

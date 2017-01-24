@@ -34,8 +34,8 @@ import xal.sim.scenario.Scenario;
 import xal.smf.Accelerator;
 import xal.smf.AcceleratorNode;
 import xal.smf.AcceleratorSeq;
-import xal.smf.data.XMLDataManager;
 import xal.smf.impl.Quadrupole;
+
 import xal.test.ResourceManager;
 
 /**
@@ -116,7 +116,8 @@ public class TestSynchronizationManager {
     public static void setUpBeforeClass() throws Exception {
         
         try {
-            ACCEL_TEST   = XMLDataManager.acceleratorWithUrlSpec(STRL_URL_ACCEL);
+//            ACCEL_TEST   = XMLDataManager.acceleratorWithUrlSpec(STRL_URL_ACCEL);
+            ACCEL_TEST   = ResourceManager.getTestAccelerator();
             SEQ_TEST     = ACCEL_TEST.findSequence(STR_SEQ_ID);
             MODEL_TEST   = Scenario.newScenarioFor(SEQ_TEST);
             
@@ -201,7 +202,7 @@ public class TestSynchronizationManager {
         Trajectory<EnvelopeProbeState>   trjData = MODEL_TEST.getTrajectory();
         
         this.saveSimData(trjData);
-        this.printSimData(trjData);
+//        this.printSimData(trjData);
     }
     
     /**
@@ -227,15 +228,15 @@ public class TestSynchronizationManager {
             double                dblFldOld   = smfQuad1.getDesignField();
             double                dblFldNew   = dblFldOld*1.1;
             
-            System.out.println("Changing " + smfQuad1.getId() + " design field from " + dblFldOld + " to " + dblFldNew);
+//            System.out.println("Changing " + smfQuad1.getId() + " design field from " + dblFldOld + " to " + dblFldNew);
             
             Map<String, Double> mapPrpToValOld = MODEL_TEST.propertiesForNode(smfQuad1);
-            System.out.println("Old property map for " + smfQuad1.getId() + ": " + mapPrpToValOld.toString());
+//            System.out.println("Old property map for " + smfQuad1.getId() + ": " + mapPrpToValOld.toString());
             
             smfQuad1.setDfltField(dblFldNew);
             MODEL_TEST.resync();
             Map<String, Double> mapPrpToValNew = MODEL_TEST.propertiesForNode(smfQuad1);
-            System.out.println("New property map for " + smfQuad1.getId() + ": " + mapPrpToValNew.toString());
+//            System.out.println("New property map for " + smfQuad1.getId() + ": " + mapPrpToValNew.toString());
             
             PROBE_ENV_TEST.reset();
             MODEL_TEST.run();
@@ -279,7 +280,7 @@ public class TestSynchronizationManager {
         // Write out header line
         String  strSimType = MODEL_TEST.getProbe().getClass().getName();
         WTR_OUTPUT.println("DATA FOR SIMULATION WITH " + strSimType);
-        WTR_OUTPUT.println("  RF Gap Phases " + MODEL_TEST.getProbe().getAlgorithm().useRfGapPhaseCalculation() );
+        WTR_OUTPUT.println("  RF Gap Phases " + MODEL_TEST.getProbe().getAlgorithm().getRfGapPhaseCalculation() );
         
         // Write out the simulation data
 //        Trajectory<?> trjData = MODEL_TEST.getTrajectory();
@@ -303,7 +304,7 @@ public class TestSynchronizationManager {
 
         // Print out the kinetic energy profile to stdout
         System.out.println("DATA FOR SIMULATION WITH " + MODEL_TEST.getProbe().getClass().getName());
-        System.out.println("  RF Gap Phases " + MODEL_TEST.getProbe().getAlgorithm().useRfGapPhaseCalculation() );
+        System.out.println("  RF Gap Phases " + MODEL_TEST.getProbe().getAlgorithm().getRfGapPhaseCalculation() );
 //        Trajectory<?> trjData = MODEL_TEST.getTrajectory();
         
         for (S state : trjData) {

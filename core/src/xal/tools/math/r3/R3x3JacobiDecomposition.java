@@ -20,11 +20,11 @@ import xal.tools.math.r3.R3x3.POS;
  *  </p>
  * <p>
  *  If the matrix is symmetric it can be factored as
- * <br/>
- * <br/>
+ * <br>
+ * <br>
  * &nbsp; &nbsp; <b>A</b> = <b>RDR</b><sup>T</sup>
- * <br/>
- * <br/>
+ * <br>
+ * <br>
  *  where <b>A</b> is the target matrix, <b>R</b> is an orthogonal 
  *  matrix in <i>SO</i>(3), and <b>D</b> is the diagonal matrix of real 
  *  eigenvales of <b>A</b>.
@@ -39,8 +39,8 @@ import xal.tools.math.r3.R3x3.POS;
  * 
  * @author Christopher K. Allen
  * 
- * #see gov.sns.tools.math.r3.R3x3
- * #see gov.sns.tools.math.r3.JacobiIterate
+ * #see xal.tools.math.r3.R3x3
+ * #see xal.tools.math.r3.JacobiIterate
  */
 
 public class R3x3JacobiDecomposition {
@@ -158,17 +158,6 @@ public class R3x3JacobiDecomposition {
         return arrEigvals;
     }
     
-//    /**
-//     * Get the eigenvalues as a vector in R3.
-//     * 
-//     * @return  vector of eigenvalues (lambda1, lambda2, lambda3) 
-//     */
-//    public R3   getEigenvalues()    {
-//        R3      vecVals = new R3(this.getRealEigenvalues());
-//
-//        return vecVals;
-//    }
-//    
     /**
      *  Get the matrix R of eigenvectors for the decomposition.  Note
      *  that this matrix is the diagonalizing matrix for the target matrix A. 
@@ -195,10 +184,6 @@ public class R3x3JacobiDecomposition {
         return this.matDiag;    
     }
     
-
-
-
-
     
     /*
      * Internal Support
@@ -207,11 +192,11 @@ public class R3x3JacobiDecomposition {
     /** 
      * <p>
      * Decomposes the given matrix <b>&sigma;</b> into the product
-     * <br/>
-     * <br/>
+     * <br>
+     * <br>
      * &nbsp; &nbsp; <b>&sigma;</b> = <b>RDR</b><sup><i>T</i></sup> ,
-     * <br/>
-     * <br/>
+     * <br>
+     * <br>
      * where <b>R</b> &in; <i>O</i>(3) is the conjugating rotation matrix and
      * <b>D</b> &in; <b>R</b><sub>+</sub><sup>3&times;3</sup> is the diagonal
      * matrix of eigenvalues of <b>&sigma;</b>.
@@ -418,15 +403,6 @@ class JacobiIterate {
      * @return          value of the coupling coefficient for given <code>pos</code>
      */
     private double compCoupling(POS pos)   {
-//        double  dblOffDiag = pos.getValue(matTarget);
-//        double  dblValue_2 = dblOffDiag*dblOffDiag;
-//        
-//        if (dblValue_2 < R3x3JacobiDecomposition.ERROR_TOLERANCE)
-//            return 0.0;
-//
-//        double  dblDiagRow = pos.getRowDiag(matTarget);
-//        double  dblDiagCol = pos.getColDiag(matTarget);
-//        return Math.abs( dblValue_2/(dblDiagRow*dblDiagCol) );
         
         double  dblVal = pos.getValue(matTarget);
         double  dblMag = Math.abs(dblVal);

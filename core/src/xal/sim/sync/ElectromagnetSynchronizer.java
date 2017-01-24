@@ -6,8 +6,7 @@ package xal.sim.sync;
 import java.util.Map;
 
 import xal.model.IElement;
-import xal.model.elem.IElectromagnet;
-
+import xal.model.elem.sync.IElectromagnet;
 import xal.smf.proxy.ElectromagnetPropertyAccessor;
 
 /**
@@ -18,7 +17,7 @@ import xal.smf.proxy.ElectromagnetPropertyAccessor;
 public class ElectromagnetSynchronizer implements Synchronizer {
 
 	/*
-	 * @see gov.sns.xal.model.sync.Synchronizer#resync(gov.sns.xal.model.IElement, java.util.Map)
+	 * @see xal.model.sync.Synchronizer#resync(xal.model.IElement, java.util.Map)
 	 */
 	public void resync( final IElement anElem, final Map<String,Double> valueMap ) throws SynchronizationException {
 		if ( !(anElem instanceof IElectromagnet) )  throw new IllegalArgumentException( "expected IElectromagnet instance, got: " + anElem.getClass().getName() );
@@ -30,7 +29,7 @@ public class ElectromagnetSynchronizer implements Synchronizer {
 
 	
 	/*
-	 * @see gov.sns.xal.model.sync.Synchronizer#checkSynchronization(gov.sns.xal.model.IElement, java.util.Map)
+	 * @see xal.model.sync.Synchronizer#checkSynchronization(xal.model.IElement, java.util.Map)
 	 */
 	public void checkSynchronization( final IElement anElem, Map<String,Double> valueMap ) throws SynchronizationException {
 		if ( !(anElem instanceof IElectromagnet) ) {

@@ -12,6 +12,7 @@ import java.util.Collection;
 
 import xal.ca.BadChannelException;
 import xal.ca.Channel;
+import xal.ca.ChannelFactory;
 import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.ca.IEventSinkValue;
@@ -76,7 +77,7 @@ public abstract class ProfileDevice extends AcceleratorNode {
          * Returns the number of signal samples in the profile data, that is,
          * the number of data points in the domain.
          * 
-         * @parameter   angle   the projection angle of the data set
+         * @param   angle   the projection angle of the data set
          * 
          * @return              number of data samples of the given angle
          *
@@ -102,7 +103,7 @@ public abstract class ProfileDevice extends AcceleratorNode {
          * Return the left-most position of the projection interval, that is, 
          * the minimum valued endpoint.
          *  
-         * @parameter   angle   the projection angle of the data set
+         * @param   angle   the projection angle of the data set
          * 
          * @return              left endpoint of the projection interval
          *
@@ -113,8 +114,19 @@ public abstract class ProfileDevice extends AcceleratorNode {
         
         /**
          * Return the length of the real interval containing the projection data.
-         * That is, return the measure of the smallest real interval containing the
-         * projection data.
+         * That is, return the length of the smallest interval containing the
+         * projection data. Note that this value may be different than the
+         * "scan length" as it may depend upon the measurement plane.
+         * The value, <i>L</i>, is typically given by the formula
+         * <br/>
+         * <br/>
+         * &nbsp; &nbsp; <i>L</i> = &alpha; <i>N</i><sub>steps</sub> &Delta;<i>L</i>
+         * <br/>
+         * <br/>
+         * where &alpha; is the correction factor, <i>N</i><sub>steps</sub> is the number
+         * of scan steps, and &Delta;<i>L</i> is the step length.  For example, if the
+         * scan actuator arm is physically at a 45 &deg; angle to the given measurement
+         * plane then &alpha; = 1/&radic;2. 
          *  
          * @param angle     the projection angle of the data set
          * 
@@ -230,7 +242,7 @@ public abstract class ProfileDevice extends AcceleratorNode {
          * <p>
          * If the profile device has no method of validating wire operation
          * then the method will return <code>true</code> regardless of 
-         * the argument, rather than a blanket <code>false</code for all
+         * the argument, rather than a blanket <code>false</code> for all
          * wires.
          * </p>
          * 
@@ -739,6 +751,22 @@ public abstract class ProfileDevice extends AcceleratorNode {
      * Initialization
      */
 
+	/**
+	 * Primary Constructor for ProfileDevice.
+	 *
+	 * @param strId
+	 * @param channelFactory factory for generating channels
+	 *
+	 * @author Christopher K. Allen
+	 * @since  Mar 21, 2014
+	 */
+	public ProfileDevice( final String strId, final ChannelFactory channelFactory ) {
+		super( strId, channelFactory );
+
+		this.tstConnect = new BatchConnectionTest(this);
+	}
+
+
     /**
      * Constructor for ProfileDevice.
      *
@@ -747,10 +775,8 @@ public abstract class ProfileDevice extends AcceleratorNode {
      * @author Christopher K. Allen
      * @since  Mar 21, 2014
      */
-    public ProfileDevice(String strId) {
-        super(strId);
-        
-        this.tstConnect = new BatchConnectionTest(this);
+    public ProfileDevice( final String strId ) {
+		this( strId, null );
     }
 
 
@@ -870,13 +896,13 @@ public abstract class ProfileDevice extends AcceleratorNode {
      * </p>
      * <p>
      * One can specify the event type which fires the monitor using
-     * the argument <arg>intEvtType</arg>.  Any combination of the following
+     * the argument intEvtType.  Any combination of the following
      * event types can be specified with a logical OR operation:
-     * <br/>
-     * <br/> &nbsp; <code>Monitor.VALUE</code> - fire upon PV value change
-     * <br/> &nbsp; <code>Monitor.LOG  </code> - 
-     * <br/> &nbsp; <code>Monitor.ALARM</code> - fire upon PV alarm value
-     * <br/>
+     * <br>
+     * <br> &nbsp; <code>Monitor.VALUE</code> - fire upon PV value change
+     * <br> &nbsp; <code>Monitor.LOG  </code> - 
+     * <br> &nbsp; <code>Monitor.ALARM</code> - fire upon PV alarm value
+     * <br>
      * The default value (i.e., no argument) is <code>Monitor.VALUE</code>.
      * </p> 
      *   
@@ -887,11 +913,11 @@ public abstract class ProfileDevice extends AcceleratorNode {
      *                       
      *  @return                 A new monitor on the given process variable
      *  
-     *  @throws gov.sns.xal.smf.NoSuchChannelException  
+     *  @throws xal.smf.NoSuchChannelException  
      *                                             if the handle does not identify any 
      *                                             process variable of this accelerator node
-     *  @throws gov.sns.ca.ConnectionException     channel is not connected
-     *  @throws gov.sns.ca.MonitorException        general monitor failure
+     *  @throws xal.ca.ConnectionException     channel is not connected
+     *  @throws xal.ca.MonitorException        general monitor failure
      */
     public Monitor createMonitor(XalPvDescriptor.IPvDescriptor pvdFld, IEventSinkValue snkEvents, int ...mskEvtType)
             throws ConnectionException, MonitorException, NoSuchChannelException 

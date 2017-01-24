@@ -37,12 +37,6 @@ public class Main extends ApplicationAdaptor {
     }
 	
     
-    /** handle the event indicating that the application has finished launching */
-    public void applicationFinishedLaunching() { 
-		System.out.println( "XYZ Correlator finished launching..." );
-    }
-    
-    
     static public void main( final String[] args ) {
 		String strUrl = null;
 		System.out.println( "Launching XYZ Correlator..." );

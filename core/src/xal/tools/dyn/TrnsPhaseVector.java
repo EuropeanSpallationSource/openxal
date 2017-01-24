@@ -216,17 +216,17 @@ public class TrnsPhaseVector extends BaseVector<TrnsPhaseVector> {
      *  by any of the characters <tt>" ,()[]{}"</tt>  Repeated, contiguous delimiters 
      *  are parsed together.  This conditions allows a variety of parseable string
      *  representations. For example,
-     *  <br/>
-     *  <br/>
+     *  <br>
+     *  <br>
      *  &nbsp; &nbsp; { 1, 2, 3, 4 }
-     *  <br/>
-     *  <br/>
+     *  <br>
+     *  <br>
      *  and
-     *  <br/>
-     *  <br/>
+     *  <br>
+     *  <br>
      *  &nbsp; &nbsp; [1 2 3 4]
-     *  <br/>
-     *  <br/>
+     *  <br>
+     *  <br>
      *  would parse to the same homogeneous vector (1, 2, 3, 4 | 1).
      *  </p>
      *
@@ -258,13 +258,16 @@ public class TrnsPhaseVector extends BaseVector<TrnsPhaseVector> {
      * 
      * @param arrMatrix   Java primitive array containing new vector values
      * 
-     * @exception  ArrayIndexOutOfBoundsException  the argument must have the same dimensions as this matrix
+     * @exception  IllegalArgumentException  the argument must have the same dimensions as this matrix
      *
      * @author Christopher K. Allen
      * @since  Oct 17, 2013
      */
-    public TrnsPhaseVector(double[] arrVals) throws ArrayIndexOutOfBoundsException {
-        super(INT_SIZE, arrVals);
+    public TrnsPhaseVector(double[] arrVals) throws IllegalArgumentException {
+        super(arrVals);
+
+        if (arrVals.length != INT_SIZE)
+            throw new IllegalArgumentException("Argument has wrong dimensions " + arrVals);
     }
     
     /*
@@ -295,8 +298,15 @@ public class TrnsPhaseVector extends BaseVector<TrnsPhaseVector> {
 	 * @since  Jun 17, 2014
 	 */
 	@Override
-	protected TrnsPhaseVector newInstance() {
+	protected TrnsPhaseVector newInstance(int size) {
 		return new TrnsPhaseVector();
+	}
+
+
+	@Override
+	protected TrnsPhaseVector newInstance(double[] arrVecInt) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

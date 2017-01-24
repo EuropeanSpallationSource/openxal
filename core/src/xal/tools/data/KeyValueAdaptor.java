@@ -511,7 +511,7 @@ class KeyedMethodSetter implements KeyedSetting {
 					return targetClass.getMethod( methodName, Byte.TYPE );
 				}
 				else {
-					return null;
+					return targetClass.getMethod( methodName, Object.class );
 				}
 			}
 			catch ( NoSuchMethodException subException ) {

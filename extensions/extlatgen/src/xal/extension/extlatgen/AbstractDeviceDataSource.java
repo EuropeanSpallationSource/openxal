@@ -8,6 +8,7 @@
 
 package xal.extension.extlatgen;
 
+import xal.service.pvlogger.PvLoggerException;
 import xal.service.pvlogger.sim.PVLoggerDataSource;
 import xal.smf.impl.Bend;
 import xal.smf.impl.Electromagnet;
@@ -122,8 +123,13 @@ class PVLoggerSnapshotDeviceDataSource extends MeasurementDataSource {
 		if ( magnet.isPermanent() ) {
 			return magnet.getDesignField();
 		}
-		else {
+		try {
 			return LOGGER_DATA_SOURCE.getLoggedField( (Electromagnet)magnet );
+		}
+		catch (PvLoggerException e) {
+			// TODO: Meaningful handle for this case, currently 
+			// this is handled as it was before the exception throwing
+			return 0.0;
 		}
 	}
 }

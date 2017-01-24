@@ -1,2 +1,2 @@
 #!/bin/sh
-mvn exec:java -Dexec.mainClass=xal.app.virtualaccelerator.Main
+mvn exec:java -Dexec.mainClass=xal.app.virtualaccelerator.Main -Drbac.useLocalService=true

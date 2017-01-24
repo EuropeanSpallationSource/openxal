@@ -1,0 +1,71 @@
+#!/bin/bash -x
+
+#!-*- sh -*-
+#
+# Abs: rdbClientRunner executes a client side program of the MEME rdb service. 
+#
+# Rem: rdb is a simple EPICS v4 RPC service client for gettig 
+#      data out of a relational database like Oracle.
+#
+# Args: $1 the name of a query (a SQL SELECT statement) to execute in
+#          the db. This must be a name in the RdbService's list of names of
+#          queries.
+#       $2 whether you want column or row oriented output (column
+#          is default) 
+#       $3 whether you want headings (the names of the db
+#          columns) in your printout
+#
+# Usage: 
+#
+#        Execute rdbClientRunner anytime while rdbServerRunner is running. It
+#        takes one non-optional argument, being the name of a query that itself
+#        is understood by your rdbServer to identify a SQL select statement. 
+# 
+#         > ./rdbClientRunner name-of-query-understood-by-your-server
+#
+#         Examples: 
+#         bash-3.2$ ./rdbClientRunner LCLS/elementInfo.byS
+#                   ./rdbClientRunner sls:allmagnetdata col nolabels 
+#                   
+# 
+# Ref: <TODO>
+# ----------------------------------------------------------------------------
+# Auth: 14-Sep-2011, Greg White (greg@slac.stanford.edu)
+# Mod:  12-Mar-2013, Greg White (greg@slac.stanford.edu, gregory.white@psi.ch)
+#       Changed way of finding a test/development version of rdb_setup.bash
+#       so as to use PATH 
+#       07-Feb-2012, Greg White (greg@slac.stanford.edu, gregory.white@psi.ch)
+#       bugfix: replaced -server with -client java command line opt. 
+# ============================================================================
+
+# This MEME service's resources are located at:
+SERVICE_ROOTDIR=${MEMEROOT:-/Users/greg/Development/meme/lclscvs/package/meme}/services/rdb
+
+# Set CLASSPATH to include EPICS and this service's classes.
+#
+
+M2_REPO=/Users/greg/.m2/repository
+E4_CLASSPATH=${M2_REPO}/org/epics/pvAccessJava/4.0.3/pvAccessJava-4.0.3.jar
+E4_CLASSPATH=${E4_CLASSPATH}:${M2_REPO}/org/epics/pvDataJava/4.0.2/pvDataJava-4.0.2.jar
+
+#E4_CLASSPATH=${E4_CLASSPATH:-/Users/greg/Development/epicsV4/R4.3.0/java-pre2/pvDataJava.jar:\
+#/Users/greg/Development/epicsV4/R4.3.0/java-pre2/pvAccessJava.jar}
+export CLASSPATH=${E4_CLASSPATH}:${SERVICE_ROOTDIR}/classes
+
+# Which rdbServer is now determined by envs_*.bash files
+# 
+# If the client is being executed in "DEV" mode, then use the 
+# development server and specific port number.
+#
+#if [ x"$MEME_MODE" = x"DEV" ]; then 
+#    export MEME_RDB_SERVER_BROADCAST_PORT=47239
+#    export EPICS_PVA_ADDR_LIST=lcls-dev1.slac.stanford.edu:${MEME_RDB_SERVER_BROADCAST_PORT}
+#fi
+
+# Execute the client of the service, passing arguments on.
+#
+java -client -Xmx1G -Xms1G \
+   edu.stanford.slac.meme.service.rdb.RdbClient $1 ${2:-col} ${3:-labels}
+
+exit $?
+

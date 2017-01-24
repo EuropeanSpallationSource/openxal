@@ -9,6 +9,7 @@
 package xal.smf.impl;
 
 import xal.ca.Channel;
+import xal.ca.ChannelFactory;
 import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.ca.PutException;
@@ -36,8 +37,8 @@ import xal.smf.scada.ScadaRecord;
  * fixed, physical (carbon) wires used to measure the profile of
  * the particle beam.  This class implements the device API.  
  * </p>
+ * <h3>NOTES:</h3>
  * <p>
- * <h4>NOTES:</h4>
  * &middot; There is a pretty egregious kluge on the attribute 
  * <code>DaqConfig.cntWires</code>.  The value is hard coded with the constant
  * <code>DaqConfig.CNT_WIRES</code> since there is no way to dynamically
@@ -60,7 +61,7 @@ public class WireHarp extends ProfileDevice {
      */
 
     /**
-     * <h4>Wire Scanner Commands</h4>
+     * <h3>Wire Scanner Commands</h3>
      * <p>
      * The commands below represent the possible values for the first argument 
      * in the command array.  It provides the
@@ -175,7 +176,7 @@ public class WireHarp extends ProfileDevice {
         //        /**
         //         * Returns the name of this class as the data label
         //         *
-        //         * @see gov.sns.tools.data.DataListener#dataLabel()
+        //         * @see xal.tools.data.DataListener#dataLabel()
         //         *
         //         * @author Christopher K. Allen
         //         * @since  Mar 20, 2014
@@ -192,8 +193,8 @@ public class WireHarp extends ProfileDevice {
 
         /**
          * Alarm flag for wire signal; it indicates correct operations.
-         * <br/>
-         * <br/>
+         * <br>
+         * <br>
          *  status: 0=OK, 1=Saturated
          */
         @AScada.Field(
@@ -298,9 +299,9 @@ public class WireHarp extends ProfileDevice {
      * that indicate the status of the data acquisition capabilities.  In particular,
      * there are status records for the operation of each wire within each 
      * measurement plane (eg., horizontal, vertical, diagonal). 
-     * <br/>
-     * <br/>
-     * <h4>NOTE</h4>
+     * <br>
+     * <h3>NOTE</h3>
+     * <br>
      * &middot; There is a pretty egregious kluge on the attribute 
      * <code>DaqConfig.cntWires</code>.  The value is hard coded with the constant
      * <code>DaqConfig.CNT_WIRES</code> since there is no way to dynamically
@@ -346,8 +347,8 @@ public class WireHarp extends ProfileDevice {
 
         /**   
          * The number of wires within the harp.
-         * <br/>
-         * <br/>
+         * <br>
+         * <br>
          * April, 2014: Currently this value must be provided externally as it is not available
          * via the control system. 
          */
@@ -391,11 +392,11 @@ public class WireHarp extends ProfileDevice {
         /**   
          * Bit record indicating operation status for each wire of the
          * horizontal wire set.
-         * <br/> <br/>
-         * &nbsp; &nbsp; bolStatus = 2<sup>n</sup> & statWireHor
-         * <br/> <br/>
+         * <br> <br>
+         * &nbsp; &nbsp; bolStatus = 2<sup>n</sup> &amp; statWireHor
+         * <br> <br>
          * where <i>n</i>=0,1,... is the index of the wire.
-         * <br/><br/>
+         * <br><br>
          * <b>Do Not</b> access this field directly!  
          */
         @AScada.Field(
@@ -408,11 +409,11 @@ public class WireHarp extends ProfileDevice {
         /**   
          * Bit record indicating operation status for each wire
          * of the vertical wire set.
-         * <br/> <br/>
-         * &nbsp; &nbsp; bolStatus = 2<sup>n</sup> & statWireVer
-         * <br/> <br/>
+         * <br> <br>
+         * &nbsp; &nbsp; bolStatus = 2<sup>n</sup> &amp; statWireVer
+         * <br> <br>
          * where <i>n</i>=0,1,... is the index of the wire.  
-         * <br/><br/>
+         * <br><br>
          * <b>Do Not</b> access this field directly!  
          */
         @AScada.Field(
@@ -425,11 +426,11 @@ public class WireHarp extends ProfileDevice {
         /**   
          * Bit record indicating operation status for each wire
          * of the diagonal wire set.
-         * <br/> <br/>
-         * &nbsp; &nbsp; bolStatus = 2<sup>n</sup> & statWireDia
-         * <br/> <br/>
+         * <br> <br>
+         * &nbsp; &nbsp; bolStatus = 2<sup>n</sup> &amp; statWireDia
+         * <br> <br>
          * where <i>n</i>=0,1,... is the index of the wire.  
-         * <br/><br/>
+         * <br><br>
          * <b>Do Not</b> access this field directly!  
          */
         @AScada.Field(
@@ -441,10 +442,10 @@ public class WireHarp extends ProfileDevice {
 
         /**
          * Type code of the current fitting profile
-         * <br/>0 = Super Gaussian
-         * <br/>1 = Super Gaussian &times; Gaussian
-         * <br/>2 = Super Gaussian + Gaussian
-         * <br/>3 = Super Gaussian &times; Parabola
+         * <br>0 = Super Gaussian
+         * <br>1 = Super Gaussian &times; Gaussian
+         * <br>2 = Super Gaussian + Gaussian
+         * <br>3 = Super Gaussian &times; Parabola
          */
         @AScada.Field(
                 type    = int.class,
@@ -614,7 +615,7 @@ public class WireHarp extends ProfileDevice {
 
         /**
          *
-         * @see gov.sns.xal.smf.impl.profile.ProfileDevice.IProfileDomain#getSampleCount(gov.sns.xal.smf.impl.profile.ProfileDevice.ANGLE)
+         * @see xal.smf.impl.profile.ProfileDevice.IProfileDomain#getSampleCount(xal.smf.impl.profile.ProfileDevice.ANGLE)
          *
          * @author Christopher K. Allen
          * @since  Apr 24, 2014
@@ -630,7 +631,7 @@ public class WireHarp extends ProfileDevice {
          * @author Christopher K. Allen
          * @since  Apr 24, 2014
          * 
-         * @see gov.sns.xal.smf.impl.profile.ProfileDevice.IProfileDomain#getSamplePositions(gov.sns.xal.smf.impl.profile.ProfileDevice.ANGLE)
+         * @see xal.smf.impl.profile.ProfileDevice.IProfileDomain#getSamplePositions(xal.smf.impl.profile.ProfileDevice.ANGLE)
          */
         @Override
         public double[] getSamplePositions(ANGLE angle) {
@@ -645,7 +646,7 @@ public class WireHarp extends ProfileDevice {
 
         /**
          *
-         * @see gov.sns.xal.smf.impl.profile.ProfileDevice.IProfileDomain#getInitialPosition(gov.sns.xal.smf.impl.profile.ProfileDevice.ANGLE)
+         * @see xal.smf.impl.profile.ProfileDevice.IProfileDomain#getInitialPosition(xal.smf.impl.profile.ProfileDevice.ANGLE)
          *
          * @author Christopher K. Allen
          * @since  Apr 24, 2014
@@ -660,7 +661,7 @@ public class WireHarp extends ProfileDevice {
 
         /**
          *
-         * @see gov.sns.xal.smf.impl.profile.ProfileDevice.IProfileDomain#getIntervalLength(gov.sns.xal.smf.impl.profile.ProfileDevice.ANGLE)
+         * @see xal.smf.impl.profile.ProfileDevice.IProfileDomain#getIntervalLength(xal.smf.impl.profile.ProfileDevice.ANGLE)
          *
          * @author Christopher K. Allen
          * @since  Apr 24, 2014
@@ -715,7 +716,7 @@ public class WireHarp extends ProfileDevice {
          * Returns the class name as the <code>DataAdaptor</code>
          * data label.
          *
-         * @see gov.sns.tools.data.DataListener#dataLabel()
+         * @see xal.tools.data.DataListener#dataLabel()
          *
          * @author Christopher K. Allen
          * @since  Mar 20, 2014
@@ -732,7 +733,7 @@ public class WireHarp extends ProfileDevice {
 
         /** 
          * The (discrete) common amplifier gain for all profile channels.
-         * <br/>
+         * <br>
          * &nbsp; &nbsp; Range = {0, 1, 2}  
          */
         @AScada.Field(
@@ -746,7 +747,7 @@ public class WireHarp extends ProfileDevice {
         //        /** 
         //         * The (discrete) amplifier gain for for the horizontal profile
         //         * channel.
-        //         * <br/>
+        //         * <br>
         //         * &nbsp; &nbsp; Range = {0, 1, 2}  
         //         */
         //        @AScada.Field(
@@ -760,7 +761,7 @@ public class WireHarp extends ProfileDevice {
         //        /** 
         //         * The (discrete) amplifier gain for for the vertical profile
         //         * channel.
-        //         * <br/>
+        //         * <br>
         //         * &nbsp; &nbsp; Range = {0, 1, 2}  
         //         */
         //        @AScada.Field(
@@ -774,7 +775,7 @@ public class WireHarp extends ProfileDevice {
         //        /** 
         //         * The (discrete) amplifier gain for for the diagonal profile
         //         * channel.
-        //         * <br/>
+        //         * <br>
         //         * &nbsp; &nbsp; Range = {0, 1, 2}  
         //         */
         //        @AScada.Field(
@@ -1356,16 +1357,22 @@ public class WireHarp extends ProfileDevice {
      * recognizes.
      */
     static {
-
-        final ElementTypeManager typeManager = ElementTypeManager.defaultManager();
-        typeManager.registerType( WireHarp.class, STR_TYPE_ID );
-        typeManager.registerType( WireHarp.class, HARDWARE_TYPE ); 
+		ElementTypeManager.defaultManager().registerTypes( WireHarp.class, STR_TYPE_ID, HARDWARE_TYPE );
     }
 
 
     /*
      * Initialization
      */
+
+	/**
+	 * Primary Constructor
+	 * @param strId unique identifier of this node
+	 * @param channelFactory factory for generating channels for this node
+	 */
+	public WireHarp( final String strId, final ChannelFactory channelFactory ) {
+		super( strId, channelFactory );
+	}
 
     /**
      * Creates a new instance of <code>WireHarp</code>.
@@ -1375,8 +1382,8 @@ public class WireHarp extends ProfileDevice {
      * @author Christopher K. Allen
      * @since  Feb 13, 2013
      */
-    public WireHarp(String strId) {
-        super(strId);
+    public WireHarp( final String strId ) {
+        this( strId, null );
     }
 
 

@@ -37,7 +37,7 @@ import java.util.List;
  * Tracking algorithm objects are  classes that implement the 
  * <code>IAlgorithm</code> interface.  This class provides default implementations
  * for all methods of the <code>IAlgorithm</code> interface.  Derived classes
- * must implement the <bold>doPropagation()</bold> abstract method in order to 
+ * must implement the <b>doPropagation()</b> abstract method in order to 
  * provide the actual dynamics of the algorithm.  Note that derived classes may 
  * wish to override the <code>propagate(IProbe, IElement)</code> method directly
  * for complete control of the propagation mechanism. 
@@ -53,17 +53,17 @@ import java.util.List;
  * </p>  
  * <p>
  * <strong>NOTES:</strong> &nbsp; CKA
- * <br/>
+ * <br>
  * &middot; We might get a significant performance upgrade by 
  * eliminating the calls to <code>validElement(IElement)</code>
  * and <code>validProbe(IProbe)</code> within the method
  * <code>propagate(IProbe, IElement)</code>.
- * <br/>
+ * <br>
  * &middot; Derived classes should call <code>registerProbeType(Class)</code>
  * in order that the 
  * the <code>validProbe()</code> method function properly, 
  * that is, identify all probes that this class recognizes.
- * <br/>
+ * <br>
  * &middot; Perhaps it's better to eliminate <code>validProbe</code>
  * as a safety measure since, in the
  * current implementation, each probe carries it's own algorithm object.
@@ -93,7 +93,7 @@ public abstract class Tracker implements IAlgorithm, IArchive {
      * </p>
      * <p>
      * NOTE:
-     * <br/>The protected method 
+     * <br>The protected method 
      * <code>advanceProbe(IProbe, IElement, double)</code>
      * is available for derived classes.  It is a convenience method
      * for performing many of the common tasks in the forward propagation 
@@ -163,7 +163,7 @@ public abstract class Tracker implements IAlgorithm, IArchive {
 
     // EditContext
     /** EditContext table name for Tracker Data */
-    private static final String     TBL_LBL_ALGORITHM = "Algorithm";
+    public static final String     TBL_LBL_ALGORITHM = "Algorithm";
       
     /** Table record primary key name */
     public final static String      TBL_PRIM_KEY_NAME = "name";
@@ -231,8 +231,8 @@ public abstract class Tracker implements IAlgorithm, IArchive {
      * <code>AcceleratorSeq</code> name. 
      * </p>
      * 
+     * <h3>NOTE</h3>
      * <p>
-     * <h4>NOTE</h4>
      * &middot; The returned algorithm type is that specified by the <tt>"type"</tt> attribute
      * of the <code>&lt;Algorithm&gt;</code> table contained in the 
      * <code>model.params</code> file.  The developer must ensure that the <tt>Probe</tt>
@@ -246,7 +246,7 @@ public abstract class Tracker implements IAlgorithm, IArchive {
      * @throws DataFormatException  bad data format, error reading data
      * 
      * @author Christopher K. Allen
-     * @since  > Oct 17, 2012
+     * @since  &gt; Oct 17, 2012
      * 
      * @deprecated  I want to discourage use of this method since it return the same "default"
      *              algorithm regardless the type of probe being used.  Please refer to
@@ -269,8 +269,8 @@ public abstract class Tracker implements IAlgorithm, IArchive {
      * have the given value of the argument <code>strLocationId</code>.
      * </p>
      * 
+     * <h3>NOTE</h3>
      * <p>
-     * <h4>NOTE</h4>
      * &middot; The returned algorithm type is that specified by the <tt>"type"</tt> attribute
      * of the <code>&lt;Algorithm&gt;</code> table contained in the 
      * <code>model.params</code> file.  The developer must ensure that the <tt>Probe</tt>
@@ -285,7 +285,7 @@ public abstract class Tracker implements IAlgorithm, IArchive {
      * @throws DataFormatException  bad data format, error reading data
      * 
      * @author Christopher K. Allen
-     * @since  > Oct 17, 2012
+     * @since  &gt; Oct 17, 2012
      * 
      * @deprecated  I want to discourage use of this method since it return the same "default"
      *              algorithm regardless the type of probe being used.  Please refer to
@@ -339,11 +339,15 @@ public abstract class Tracker implements IAlgorithm, IArchive {
     /** version of this algorithm */
     private int                 m_intVersion;
     
-    /** list of all probe classes recognized by this algorithm */
+    /** 
+     * List of all probe classes recognized by this algorithm 
+     */
     private List<Class<? extends IProbe>>   m_lstProbes;
 
-     /** flag to track the beam phase in multi gap cavities */
-     private boolean            m_bolCalcRfGapPhase = false;
+    /** 
+     * flag to track the beam phase in multi gap cavities 
+     */
+    private boolean            m_bolCalcRfGapPhase = false;
 
     /*
      * Tracker Settings
@@ -394,12 +398,14 @@ public abstract class Tracker implements IAlgorithm, IArchive {
     /** 
      * The tracking position of the within the current element    
      */
-    private double      m_dblPosElem = 0;
+    private double      m_dblPosElem = 0.0;
     
     /**
-     * Class type of the probe
+     * Class type of the current probe.
+     * @deprecated This property is never used 
      */
-    private Class<? extends IProbe> probeType;
+    @Deprecated
+    private Class<? extends IProbe>         probeType;
     
     /*
      * Initialization
@@ -515,8 +521,41 @@ public abstract class Tracker implements IAlgorithm, IArchive {
         return this.bolInclStopElem;
     }
     
+//    /**
+//     * TODO CKA - Remove, never used.
+//     * 
+//     * @author Christopher K. Allen
+//     * @since  Oct 20, 2014
+//     */
+//    public Class<? extends IProbe> getProbeType() {
+//        return probeType;
+//    }
+    
+    
+    /*
+     *  Abstract Methods
+     */
+    
     /**
-     * TODO CKA - Remove, never used.
+     * <p>
+     * The implementation must propagate the probe through the element 
+     * according to the dynamics of the 
+     * specific algorithm.  Derived classes must implement this method but the
+     * <code>Tracker</code> base provided convenient methods for this implementation.
+     * </p>
+     * <p>
+     * NOTE:
+     * <br/>The protected method 
+     * <code>advanceProbe(IProbe, IElement, double)</code>
+     * is available for derived classes.  It is a convenience method
+     * for performing many of the common tasks in the forward propagation 
+     * of any probe.  Thus, its use is not required.
+     * </p>
+     *
+     *  @param  probe   probe to propagate
+     *  @param  elem    element acting on probe
+     *
+     *  @exception  ModelException  invalid probe type or error in advancing probe
      * 
      * @author Christopher K. Allen
      * @since  Oct 20, 2014
@@ -529,16 +568,14 @@ public abstract class Tracker implements IAlgorithm, IArchive {
     /*
      *  IAlgorithm Interface
      */
-    
-    
+
     /** 
      * Indicates whether to calculate the beam phase in multi gap Rf cavities,
      * (a la Parmila) rather than use default values (a  la Trace   3D)
      * 
      * @return <code>true</code> if phase calculations are made, <code>false</code> otherwise
-     */
-    @Override
-    public boolean useRfGapPhaseCalculation() { return m_bolCalcRfGapPhase;}
+     */  
+    public boolean getRfGapPhaseCalculation() { return m_bolCalcRfGapPhase;}
 
 
     /**
@@ -681,11 +718,11 @@ public abstract class Tracker implements IAlgorithm, IArchive {
      * 
      * <p>
      * <strong>NOTE:</strong> &nbsp; CKA
-     * <br/>
+     * <br>
      * &middot; We might get a significant performance upgrade by 
      * eliminating the internal call to 
      * <code>{@link #validProbe(IProbe)}</code>.
-     * <br/>
+     * <br>
      * &middot; The method <code>validElement(IElement)}</code>
      * needs to be called here in the current implementation.  It is 
      * called for every element - Is there a better (faster) way?
@@ -820,7 +857,7 @@ public abstract class Tracker implements IAlgorithm, IArchive {
         DataAdaptor daptTrack = daptAlg.createChild(NODETAG_TRACKER);
         daptTrack.setValue(ATTRTAG_DEBUG, this.getDebugMode());
         daptTrack.setValue(ATTRTAG_UPDATE, this.getProbeUpdatePolicy());
-        daptTrack.setValue(ATTRTAG_RFGAP_PHASE, this.useRfGapPhaseCalculation());
+        daptTrack.setValue(ATTRTAG_RFGAP_PHASE, this.getRfGapPhaseCalculation());
     }
      
     
@@ -850,32 +887,38 @@ public abstract class Tracker implements IAlgorithm, IArchive {
     {
 
         // Initial conditions of the probe
-        double  s0 = probe.getPosition();
-        double  t0 = probe.getTime();
-        double  W0 = probe.getKineticEnergy();
+        double  s0   = probe.getPosition();
+        double  t0   = probe.getTime();
+        double  phi0 = probe.getLongitinalPhase();
+        double  W0   = probe.getKineticEnergy();
         
         // Properties of the element
-        double  L  = dblLen;
-        double  dT = elem.elapsedTime(probe, dblLen);
-        double  dW = elem.energyGain(probe, dblLen);
+        double  dL   = dblLen;
+        double  dT   = elem.elapsedTime(probe, dblLen);
+        double  dphi = elem.longitudinalPhaseAdvance(probe, dblLen);
+        double  dW   = elem.energyGain(probe, dblLen);
         
         // Advance the probe position and energy
-        double  s1 = s0 + L;
-        double  t1 = t0 + dT;
-        double  W1 = W0 + dW;
+        double  s1   = s0 + dL;
+        double  t1   = t0 + dT;
+        double  phi1 = phi0 + dphi;
+        double  W1   = W0 + dW;
         
         probe.setPosition(s1);
         probe.setTime(t1);
+        probe.setLongitudinalPhase(phi1);
         probe.setKineticEnergy(W1);
         
+        // The algorithm "element position" is also set in Element#propagate() ??!!
+        this.setElemPosition(this.getElemPosition() + dL);
+
         // Update probe trajectory
-        this.setElemPosition(this.getElemPosition() + L);
         if (this.getProbeUpdatePolicy() == Tracker.UPDATE_ALWAYS)
             probe.update();
     };
     
     /** 
-     * <p>Override of gov.sns.xal.model.alg.Tracker#advanceProbe(gov.sns.xal.model.IProbe, gov.sns.xal.model.IElement, double)</p>
+     * <p>Override of xal.model.alg.Tracker#advanceProbe(xal.model.IProbe, xal.model.IElement, double)</p>
      * 
      * <p>
      * This method is the <b>converse</b> of 
@@ -887,7 +930,7 @@ public abstract class Tracker implements IAlgorithm, IArchive {
      * </p>
      * <p>
      * NOTES: CKA
-     * <br/>
+     * <br>
      * &middot; In order to use this method the derived class
      * must override the <code>propagate</code> method, since it default
      * implementation forward propagates the probe.
@@ -945,7 +988,7 @@ public abstract class Tracker implements IAlgorithm, IArchive {
      * </p>
      * <p>
      * NOTE: CKA
-     * <br/>
+     * <br>
      * &middot; Maybe there is a better way of using start and stop
      * elements.
      * </p>
@@ -963,7 +1006,9 @@ public abstract class Tracker implements IAlgorithm, IArchive {
         // Check if there is a starting element defined and 
         if (!this.m_bolIsStarted) {                     // we haven't started propagating yet         
                
-            if (this.getStartElementId().equals(elem.getId())) {  // reached the starting element
+            if (this.getStartElementId().equals(elem.getId()) 
+            		|| this.getStartElementId().equals("BEGIN_"+elem.getParent().getId())) {  // IL: backward compatibility with BEGIN_section markers  
+            	// reached the starting element
                 this.m_bolIsStarted = true;                
                 
             } else {                // we haven't started and we haven't reached the start element

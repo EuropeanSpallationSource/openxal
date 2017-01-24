@@ -25,14 +25,28 @@ import xal.sim.scenario.ProbeFactory;
 import xal.sim.scenario.Scenario;
 import xal.smf.Accelerator;
 import xal.smf.AcceleratorSeq;
-import xal.smf.data.XMLDataManager;
 
 
 /**
+ * <p>
  * Check operation of the XAL online model.
+ * <p/>
+ * <p>
+ * Use Java virtual machine command line switch
+ * <br/>
+ * <br/>
+ * &nbsp; &nbsp; <tt>java -agentlib:hprof=cpu=times</tt>
+ * <br/>
+ * <br/>
+ * &nbsp; &nbsp; <tt>java -agentlib:hprof=heap=dump,format=b</tt>
+ * <br/>
+ * <br/>
+ * to create <code>java.hprof.TMP</code> files for profiling.
+ * </p>
  *
  * @author Christopher K. Allen
  * @since   Jul 30, 2012
+ * @version Dec 15, 2014
  */
 public class TestRunOnlineModel {
 
@@ -50,11 +64,11 @@ public class TestRunOnlineModel {
 
     
     /** Output file location */
-    static private String           STR_FILE_OUTPUT = TestRunOnlineModel.class.getName().replace('.', '/') + ".txt";
+    static private String           STR_FILE_OUTPUT = TestRunOnlineModel.class.getName() + ".txt";
     
     
     /** URL where we are dumping the output */
-    static public File              FILE_OUTPUT    = ResourceManager.getOutputFile(STR_FILE_OUTPUT);
+    static public File              FILE_OUTPUT    = ResourceManager.getOutputFile(TestRunOnlineModel.class, STR_FILE_OUTPUT);
     
     
     /** String identifier for accelerator sequence used in testing */
@@ -109,7 +123,8 @@ public class TestRunOnlineModel {
     public static void setUpBeforeClass() throws Exception {
         
         try {
-            ACCEL_TEST   = XMLDataManager.acceleratorWithUrlSpec(STRL_URL_ACCEL);
+//            ACCEL_TEST   = XMLDataManager.acceleratorWithUrlSpec(STRL_URL_ACCEL);
+            ACCEL_TEST   = ResourceManager.getTestAccelerator();
             SEQ_TEST     = ACCEL_TEST.findSequence(STR_SEQ_ID);
             MODEL_TEST   = Scenario.newScenarioFor(SEQ_TEST);
             
@@ -209,7 +224,7 @@ public class TestRunOnlineModel {
         Trajectory<EnvelopeProbeState>   trjData = MODEL_TEST.getTrajectory();
         
         this.saveSimData(trjData);
-        this.printSimData(trjData);
+//        this.printSimData(trjData);
     }
     
     /**
@@ -253,7 +268,7 @@ public class TestRunOnlineModel {
         Trajectory<ParticleProbeState>   trjData = MODEL_TEST.getTrajectory();
         
         this.saveSimData(trjData);
-        this.printSimData(trjData);
+//        this.printSimData(trjData);
     }
     
     /**
@@ -292,7 +307,7 @@ public class TestRunOnlineModel {
         // Write out header line
         String  strSimType = MODEL_TEST.getProbe().getClass().getName();
         WTR_OUTPUT.println("DATA FOR SIMULATION WITH " + strSimType);
-        WTR_OUTPUT.println("  RF Gap Phases " + MODEL_TEST.getProbe().getAlgorithm().useRfGapPhaseCalculation() );
+        WTR_OUTPUT.println("  RF Gap Phases " + MODEL_TEST.getProbe().getAlgorithm().getRfGapPhaseCalculation() );
         
         // Write out the simulation data
 //        Trajectory<?> trjData = MODEL_TEST.getTrajectory();
@@ -316,15 +331,19 @@ public class TestRunOnlineModel {
 
         // Print out the kinetic energy profile to stdout
         System.out.println("DATA FOR SIMULATION WITH " + MODEL_TEST.getProbe().getClass().getName());
-        System.out.println("  RF Gap Phases " + MODEL_TEST.getProbe().getAlgorithm().useRfGapPhaseCalculation() );
+        System.out.println("  RF Gap Phases " + MODEL_TEST.getProbe().getAlgorithm().getRfGapPhaseCalculation() );
 //        Trajectory<?> trjData = MODEL_TEST.getTrajectory();
         
         for (S state : trjData) {
             
-            String strId = state.getElementId();
-            double dblW  = state.getKineticEnergy();
+            String strId  = state.getElementId();
+            double dblPos = state.getPosition();
+            double dblW   = state.getKineticEnergy();
+            double dblPhs = state.getLongitudinalPhase(); 
             
-            System.out.println(strId + ": W = " + dblW);
+            dblPhs = (180.0/Math.PI) * Math.IEEEremainder(dblPhs, 2.0*Math.PI);
+            
+            System.out.println(strId + ": s=" + dblPos + ", phi=" + dblPhs + ", W=" + dblW);
         }
 
         System.out.println();

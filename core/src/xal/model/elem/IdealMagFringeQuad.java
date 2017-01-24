@@ -20,8 +20,8 @@ import xal.tools.math.r3.R3;
  * 
  * @author Hiroyuki Sako
  * 
- * @see gov.sns.xal.model.elem#IdealMagQuad
- * @see gov.sns.xal.model.elem#IdealMagFringeQuadFace
+ * @see xal.model.elem#IdealMagQuad
+ * @see xal.model.elem#IdealMagFringeQuadFace
  *
  */
 public class IdealMagFringeQuad extends ElectromagnetSeq {
@@ -88,7 +88,7 @@ public class IdealMagFringeQuad extends ElectromagnetSeq {
      * strings of each composite element.
      * 
      * @param   strId       identifier string of this compsite.
-     * @see gov.sns.xal.model.elem.ElementSeq#setId(java.lang.String)
+     * @see xal.model.elem.ElementSeq#setId(java.lang.String)
      */
     @Override
     public void setId(String strId) {
@@ -129,7 +129,7 @@ public class IdealMagFringeQuad extends ElectromagnetSeq {
      * 
      * <p>The physical length of this element is not set when invoking
      * this method.  That must be done separately with a call to 
-     * <code>setPhysicalLength(double></code>.
+     * <code>setPhysicalLength(double)</code>.
      * </p>
      * 
      * @param   dblPos      lattice position of element center (meters)
@@ -176,7 +176,7 @@ public class IdealMagFringeQuad extends ElectromagnetSeq {
      * 
      * @param   dblFldInt   fringe field integral (<b>unitless</b>)
      *  
-     * @see IdealMagDipoleFace#setFringeIntegral1
+     * @see IdealMagDipoleFace2#setFringeIntegral1
      */
     public void setExitFringeIntegral1(double dblFldInt) {
         this.getFaceExit().setFringeIntegral1(dblFldInt);
@@ -188,7 +188,7 @@ public class IdealMagFringeQuad extends ElectromagnetSeq {
      * 
      * @param   dblFldInt   fringe field integral (<b>unitless</b>)
      *  
-     * @see IdealMagDipoleFace#setFringeIntegral2
+     * @see IdealMagDipoleFace2#setFringeIntegral2
      */
     public void setExitFringeIntegral2(double dblFldInt) {
         this.getFaceExit().setFringeIntegral2(dblFldInt);
@@ -373,7 +373,7 @@ public class IdealMagFringeQuad extends ElectromagnetSeq {
     /**  
      *  Get the magnetic field strength of the dipole electromagnet
      *
-     *  @return     magnetic field (in <bold>Tesla</bold>).
+     *  @return     magnetic field (in <b>Tesla</b>).
      */
     public double getMagField() {
         return this.getMagBody().getMagField();
@@ -397,7 +397,7 @@ public class IdealMagFringeQuad extends ElectromagnetSeq {
     /**  
      *  Set the magnetic field strength of the dipole electromagnet.
      *
-     *  @param  dblField    magnetic field (in <bold>Tesla</bold>).
+     *  @param  dblField    magnetic field (in <b>Tesla</b>).
      */
     public void setMagField(double dblField) {
         this.getFaceEntr().setMagField(dblField);
@@ -444,17 +444,17 @@ public class IdealMagFringeQuad extends ElectromagnetSeq {
 	/**
 	 * Conversion method to be provided by the user
 	 * 
-	 * @param latticeElement the SMF node to convert
+	 * @param element the SMF node to convert
 	 */
 	@Override
 	public void initializeFrom(LatticeElement element) {
 		super.initializeFrom(element);
 		
-		Bend magnet = (Bend) element.getNode();
-		setPosition(element.getCenter(), element.getLength());
+		Bend magnet = (Bend) element.getHardwareNode();
+		setPosition(element.getCenterPosition(), element.getLength());
 
-		// gov.sns.xal.model.elem.ThickDipole xalDipole =
-		// new gov.sns.xal.model.elem.ThickDipole();
+		// xal.model.elem.ThickDipole xalDipole =
+		// new xal.model.elem.ThickDipole();
 		// xalDipole.setId(element.getNode().getId());
 		// xalDipole.setLength(element.getLength());
 		// xalDipole.setMagField(magnet.getDesignField());

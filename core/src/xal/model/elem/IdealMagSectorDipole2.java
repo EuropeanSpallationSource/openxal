@@ -13,9 +13,9 @@ import xal.tools.beam.PhaseMatrix;
 import xal.tools.beam.optics.BendingMagnet;
 import xal.tools.beam.optics.QuadrupoleLens;
 import xal.tools.math.ElementaryFunction;
-
 import xal.model.IProbe;
 import xal.model.ModelException;
+import xal.model.elem.sync.IElectromagnet;
 
 /**
  * <p>Represents a bending magnetic dipole magnet for a beam in a sector 
@@ -36,10 +36,10 @@ import xal.model.ModelException;
  * where only the quadrupole effects varied, and in contract with the
  * class <code>ThickDipole</code> where only the dipole effects varied.
  * </p>
+ * <h3>References</h3>
  * <p>
- * <h4>References</h4>
  * [1] D.C. Carey, The Optics of Charged Particle Beams (Harwood, 1987)
- * <br/>
+ * <br>
  * [2] H. Wiedemann, Particle Accelerator Physics I, 2nd Ed. (Springer, 1999)
  * </p>
  * 
@@ -49,10 +49,20 @@ import xal.model.ModelException;
  * 
  * @see xal.model.elem.IdealMagSectorDipole2
  * @see xal.model.elem.ThickDipole
+ * 
  */
 public class IdealMagSectorDipole2 extends ThickElectromagnet {
 
 
+    
+    /*
+     * Global Constants
+     */
+    
+    /** A small number used for comparing probe positions which are stepped via addition*/
+    private static final double    EPS = 1e-12;
+    
+    
 
     /*
      *  Global Attributes
@@ -263,11 +273,11 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
     /**
      * Return the magnetic field index of the magnet evaluated at the design
      * orbit.   The field index is defined as
-     * <br/>
-     * <br/>
+     * <br>
+     * <br>
      *      n := -(R0/B0)(dB/dR)
-     * <br/>
-     * <br/>
+     * <br>
+     * <br>
      * where R0 is the radius of the design orbit, B0 is the field at the
      * design orbit (see IdealMagSectorDipole#getField), and dB/dR is the
      * derivative of the field with respect to the path deflection - evaluated
@@ -350,7 +360,7 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
     
     /**
      * Compute and return the bending radius of the design orbit  
-     * throught the magnet.  Note that this value is the inverse of  
+     * throughout the magnet.  Note that this value is the inverse of  
      * design curvature h0.
      * 
      * @return  the design bending radius R0 (in meters)
@@ -400,13 +410,15 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
      * squared.  The square-root of this value provides the betatron
      * phase advance wave number.
      * </p>
-     * 
-     * <l>
+     *
+     * <br>
+     * <br>
      *  K_quad := (1/R)(1/B)(dB/dR)
-     * </l
-     * <l>
+     * <br>
+     * <br>
      *          = - h^2 * n0
-     * </l>
+     * <br>
+     * <br>
      * <p>
      * where <i>K_quad</i> is the quadrupole focusing constant, <i>R</i> is 
      * the bending radius at current settings, <i>B</i> is the current magnet 
@@ -437,19 +449,19 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
      * synchronous particle path length expands or contracts about the design path length when
      * considering the effects of dipole field strength other than the design value.
      * Denoting this quantity as <i>w</i> then it can be expressed
-     * <br/>
-     * <br/>
+     * <br>
+     * <br>
      * &nbsp; &nbsp; <i>w</i> = 1 - <i>h</i>/<i>h</i><sub>0</sub> ,
-     * <br/>
-     * <br/>
+     * <br>
+     * <br>
      * where <i>h</i><sub>0</sub> is the bending curvature of the design field and <i>h</i> is the
      * bending curvature of the current field strength.  Thus, for a distance &Delta;<i>s</i><sub>0</sub>
      * along the design path, the synchronous particle actually travels a distance
-     * <br/>
-     * <br/>
+     * <br>
+     * <br>
      * &nbsp; &nbsp; &Delta;<i>s</i> = <i>w</i>&Delta;<i>s</i><sub>0</sub>
-     * <br/>
-     * <br/>
+     * <br>
+     * <br>
      * along the actual path. 
      * </p>
      *  
@@ -501,7 +513,7 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
      *  @param  probe   propagating probe
      *  @param  dblLen  length of subsection to propagate through <b>meters</b>
      *  
-     *  @return         the elapsed time through section<bold>Units: seconds</bold> 
+     *  @return         the elapsed time through section<b>Units: seconds</b> 
      */
     @Override
     public double elapsedTime(IProbe probe, double dblLen)  {
@@ -786,8 +798,10 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
         double  s1 = this.compProbeLocation(probe);
         double  s2 = s1 + dL;
 
-        double  a1 = this.compCurrentAngle(s1);
-        double  a2 = this.compCurrentAngle(s2);
+//        double  a1 = this.compCurrentAngle(s1);
+//        double  a2 = this.compCurrentAngle(s2);
+        double  a1 = this.compCurrentAngle2(s1);
+        double  a2 = this.compCurrentAngle2(s2);
  
         double  dAng = a2 - a1;
         
@@ -812,14 +826,17 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
      * of cosines.
      * </p>
      * 
-     * 
      *  @param  s   physical distance from magnet entrance location (meters)
      * 
      *  @return     the partial deflection angle at distance s
      *  
      *  @author Christopher K. Allen
      *  @author sako   2007/11/27, exception handling
+     *  
+     *  @deprecated This method provides suspicious results and has been replaced by 
+     *              compCurrentAngle2()
      */
+    @Deprecated
     private double  compCurrentAngle(double s) {
         double  R0 = this.compDesignBendingRadius();
         double  L0 = this.getLength();
@@ -839,8 +856,76 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
         }
         
         double theta = Math.acos(ratio);
-
+//        double theta2 = compCurrentAngle2(s);
         return theta;
+    }
+    
+    /**
+     * <p>
+     * Compute and return the partial deflection angle of the
+     * design trajectory at a distance <i>s</i> from the magnet
+     * entrance.
+     * Note that here <i>s</i> is <b>not</b> the position along the design
+     * trajectory.  That value is found by multiplying the
+     * returned value by the bending radius of the magent.
+     * </p>
+     * <p>
+     * <h4>NOTES</h4>
+     * &middot; I have rewritten this method yet again because I am unsure of
+     * the previous formula derivations within the other methods.
+     * <br/>
+     * &middot; THe formulas derived here are quite simple, based solely
+     * on trigonometry applied to regions within the bending radius of the 
+     * magnet.
+     * <br/>
+     * &middot; This function is necessary since the space charge calculations
+     * step through the <b>physical</b> distance of the magnet, not the
+     * design path.
+     * <br/>
+     * &middot; The result is computed using repeated application of the law
+     * of cosines.
+     * </p>
+     * 
+     * @param s     the distance within the magnetic from the entrance,
+     *              Note <var>s</var> must be in the interval [0,<i>L</i><sub>0</sub>] where
+     *              <i>L</i><sub>0</sub> is the length of the magnet
+     * 
+     * @return      the partial bending angle at that internal position
+     * 
+     * @throws  IllegalArgumentException s not in the interval [0,<i>L</i><sub>0</sub>] 
+     *          (no longer thrown - messages are sent to system error stream) 
+     *
+     * @since  Jul 8, 2015   by Christopher K. Allen
+     */
+    private double compCurrentAngle2(double s) throws IllegalArgumentException {
+        double  L0   = this.getLength();
+        double theta = Math.abs( this.getDesignBendingAngle() );
+        
+        // Check for illegal argument
+        if (s < 0.0 - EPS) {
+            System.err.println("IdealMagSectorDipole#compCurrentAngle2(): probe position s=" + s + " is less than 0, i.e. before the dipole entrance");
+            
+            return 0.0;
+        }
+        
+        if (s > L0 + EPS) {
+            System.err.println("IdealMagSectorDipole#compCurrentAngle2(): probe position s=" + s + " is greater than L0, i.e. outside dipole exit");
+            
+            return theta;
+        }
+
+        // Compute trigonometric angles and partial angles
+        double R0    = Math.abs( this.compDesignBendingRadius() );
+
+        double thetaBy2 = Math.asin( (L0/2)/R0 );  // have the total bending angle
+        double partDefl = Math.asin( (s - (L0/2))/R0 ); // partial deflection for s>L0/2
+                                                            // complement of partial deflection for s<L0/2
+        
+        // Compute the deflection angle for a position s meters into the magnet
+        //  and return it.
+        double  dTheta = thetaBy2 + partDefl;
+        
+        return dTheta;
     }
 
     /**
@@ -858,7 +943,7 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
      *  
      *  @author Christopher K. Allen
      *  
-     *  @see    IdealMagSectorDipole#compCurrentAngle(doube)
+     *  @see    IdealMagSectorDipole2#compCurrentAngle(doube)
      */
     @SuppressWarnings("unused")
     private double approxCurrentAngle(double s) {

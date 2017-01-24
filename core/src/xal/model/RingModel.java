@@ -20,7 +20,9 @@ import xal.model.probe.TransferMapProbe;
 /**
  * @author Christopher K. Allen
  *
+ * @deprecated This class is never used
  */
+@Deprecated
 public class RingModel extends ElementSeq {
     /** default number of element positions to reserve in list array */
     public static final int    s_szDefReserve = 100;
@@ -133,10 +135,10 @@ public class RingModel extends ElementSeq {
      * </p>
      * <p>
      * <strong>NOTES</strong>: CKA
-     * <br/>
+     * <br>
      * &middot; Support for backward propagation
      * February, 2009.
-     * <br/>
+     * <br>
      * &middot; You must use the <em>proper algorithm</em> object
      * for this method to work correctly!
      * </p>
@@ -171,7 +173,7 @@ public class RingModel extends ElementSeq {
 		if ( startElementID == null )  return;	// nothing to do
 		
 		int startIndex = 0;
-		final List<IComponent> elements = getCompList();
+		final List<IComponent> elements = getForwardCompList();
 		final int numElements = elements.size();
 		for ( int index = 0 ; index < numElements ; index++ ) {
 			final IComponent element = elements.get( index );

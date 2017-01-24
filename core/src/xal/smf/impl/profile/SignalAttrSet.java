@@ -200,8 +200,8 @@ public abstract class SignalAttrSet implements DataListener {
      * data acquisition channels.  Since this is an active data structure
      * these channels are used internally to populate the data fields,
      * which is profile data taken from the hardware.
-     * <br/>
-     * <br/>
+     * <br>
+     * <br>
      * This <b>will work</b>. If the child class has been annotated by 
      * <code>ASignal.ASet</code> the <code>Signal</code> attributes
      * will be connected in the zero-argument constructor.
@@ -278,7 +278,7 @@ public abstract class SignalAttrSet implements DataListener {
      * See <code>Signal{@link SignalAttrs#average(Signal, double)}</code> for additional information.
      * 
      * @param setAvg    signal set to average into this one
-     * @param dblWtFac     averaging magnitude &lambda; &in; [0,1]
+     * @param dblWtFac     averaging magnitude &lambda; &isin; [0,1]
      *
      * @throws IllegalArgumentException the provided signal is not the same size as this signal
      *
@@ -307,7 +307,7 @@ public abstract class SignalAttrSet implements DataListener {
      * @since       Mar 4, 2010
      * @author  Christopher K. Allen
      *
-     * @see gov.sns.tools.data.DataListener#dataLabel()
+     * @see xal.tools.data.DataListener#dataLabel()
      */
     @Override
     public String dataLabel() {
@@ -324,7 +324,7 @@ public abstract class SignalAttrSet implements DataListener {
      * @since       Mar 4, 2010
      * @author  Christopher K. Allen
      *
-     * @see gov.sns.tools.data.DataListener#update(gov.sns.tools.data.DataAdaptor)
+     * @see xal.tools.data.DataListener#update(xal.tools.data.DataAdaptor)
      */
     @Override
     public void update(DataAdaptor daptSrc) {
@@ -385,7 +385,7 @@ public abstract class SignalAttrSet implements DataListener {
      * @since       Mar 4, 2010
      * @author  Christopher K. Allen
      *
-     * @see gov.sns.tools.data.DataListener#write(gov.sns.tools.data.DataAdaptor)
+     * @see xal.tools.data.DataListener#write(xal.tools.data.DataAdaptor)
      */
     @Override
     public void write(DataAdaptor adaptor) {

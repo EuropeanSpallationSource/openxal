@@ -11,55 +11,96 @@ package xal.app.virtualaccelerator;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Shape;
-import java.awt.event.*;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
-import javax.swing.*;
-import javax.swing.text.*;
-import javax.swing.event.*;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.JToggleButton.ToggleButtonModel;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.PlainDocument;
 
-import java.util.*;
-
-import xal.extension.application.smf.*;
-import xal.extension.application.*;
+import xal.ca.Channel;
+import xal.ca.ChannelFactory;
+import xal.ca.ConnectionException;
+import xal.ca.GetException;
+import xal.ca.PutException;
+import xal.ca.PutListener;
+import xal.extension.application.Application;
+import xal.extension.application.Commander;
+import xal.extension.application.XalWindow;
+import xal.extension.application.smf.AcceleratorDocument;
 import xal.extension.bricks.WindowReference;
-import xal.ca.*;
-import xal.smf.*;
-import xal.smf.attr.*;
-import xal.smf.data.*;
-import xal.smf.impl.*;
-import xal.smf.impl.qualify.*;
-import xal.model.*;
-import xal.model.probe.*;  // Probe for t3d header
-import xal.model.alg.*;
-import xal.model.probe.traj.TransferMapState;
-import xal.model.probe.traj.ProbeState;
-import xal.model.probe.traj.EnvelopeProbeState;
-import xal.sim.scenario.*;
-import xal.smf.*;
-import xal.model.xml.*;
-import xal.tools.beam.calc.*;
-import xal.tools.xml.*;
-import xal.tools.data.*;
-import xal.tools.beam.Twiss;
-import xal.tools.beam.PhaseVector;
+import xal.extension.widgets.apputils.SimpleProbeEditor;
 import xal.extension.widgets.plot.BasicGraphData;
 import xal.extension.widgets.plot.FunctionGraphsJPanel;
-import xal.extension.widgets.swing.KeyValueFilteredTableModel;
 import xal.extension.widgets.swing.DecimalField;
-import xal.tools.apputils.files.*;
-import xal.extension.widgets.apputils.SimpleProbeEditor;
+import xal.extension.widgets.swing.KeyValueFilteredTableModel;
+import xal.model.IAlgorithm;
+import xal.model.ModelException;
+import xal.model.alg.TransferMapTracker;
+import xal.model.probe.EnvelopeProbe;
+import xal.model.probe.Probe;  // Probe for t3d header
+import xal.model.probe.TransferMapProbe;
+import xal.model.probe.traj.EnvelopeProbeState;
+import xal.model.probe.traj.ProbeState;
 import xal.service.pvlogger.apputils.browser.PVLogSnapshotChooser;
 import xal.service.pvlogger.sim.PVLoggerDataSource;
-import xal.tools.dispatch.*;
+import xal.sim.scenario.AlgorithmFactory;
+import xal.sim.scenario.ProbeFactory;
+import xal.sim.scenario.Scenario;
+import xal.smf.AcceleratorNode;
+import xal.smf.AcceleratorSeq;
+import xal.smf.AcceleratorSeqCombo;
+import xal.smf.NoSuchChannelException;
+import xal.smf.Ring;
+import xal.smf.TimingCenter;
+import xal.smf.attr.BPMBucket;
+import xal.smf.impl.BPM;
+import xal.smf.impl.Bend;
+import xal.smf.impl.Electromagnet;
+import xal.smf.impl.HDipoleCorr;
+import xal.smf.impl.MagnetMainSupply;
+import xal.smf.impl.MagnetTrimSupply;
+import xal.smf.impl.ProfileMonitor;
+import xal.smf.impl.Quadrupole;
+import xal.smf.impl.RfCavity;
+import xal.smf.impl.RingBPM;
+import xal.smf.impl.SCLCavity;
+import xal.smf.impl.Solenoid;
+import xal.smf.impl.TrimmedQuadrupole;
+import xal.smf.impl.VDipoleCorr;
+import xal.smf.impl.qualify.QualifierFactory;
+import xal.smf.impl.qualify.TypeQualifier;
+import xal.tools.beam.PhaseVector;
+import xal.tools.beam.Twiss;
+import xal.tools.beam.calc.SimpleSimResultsAdaptor;
+import xal.tools.data.DataAdaptor;
+import xal.tools.dispatch.DispatchQueue;
+import xal.tools.dispatch.DispatchTimer;
 //TODO: CKA - Many unused imports
+import xal.tools.xml.XmlDataAdaptor;
 
 /**
  * <p>
@@ -74,8 +115,9 @@ import xal.tools.dispatch.*;
  * </p>
  * 
  * VADocument is a custom AcceleratorDocument for virtual accelerator application.
- * @version 1.5 15 Jul 2004
+ * @version 1.6 13 Jul 2015
  * @author Paul Chu
+ * @author Blaz Kranjc <blaz.kranjc@cosylab.com>
  */
 public class VADocument extends AcceleratorDocument implements ActionListener, PutListener {
     /** default BPM waveform size */
@@ -83,6 +125,12 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
     
     /** default BPM waveform data size (part of the waveform to populate with data) */
     final static private int DEFAULT_BPM_WAVEFORM_DATA_SIZE = 250;
+
+	/** factory for server channels 
+	 * Not sure whether it is better for this to be static and shared across all documents.
+	 * For now we will just use a common server factory across all documents (possibly prevents server conflicts).
+	 */
+	final static private ChannelFactory CHANNEL_SERVER_FACTORY = ChannelFactory.newServerFactory();
     
 	/** The document for the text pane in the main window. */
 	protected PlainDocument textDocument;
@@ -167,6 +215,8 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 	private LinkedHashMap<Channel, Double> ch_offsetMap;
 	
 	private VAServer _vaServer;
+	
+    protected Commander commander;
     
 //	private RecentFileTracker _probeFileTracker;
     
@@ -248,10 +298,22 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
         
 		if ( url == null )  return;
 	}
+
+
+	/**
+	 * Override the nextChannelFactory() method to return this document's channel server factory.
+	 * @return this document's channel server factory
+	 */
+	@Override
+	public ChannelFactory nextChannelFactory() {
+		//System.out.println( "Getting the server channel factory..." );
+		return CHANNEL_SERVER_FACTORY;
+	}
 	
 	
 	/** Make a main window by instantiating the my custom window. Set the text pane to use the textDocument variable as its document. */
-	public void makeMainWindow() {
+	@Override
+    public void makeMainWindow() {
 		mainWindow = (XalWindow)_windowReference.getWindow();
 		
 		final JTable readbackTable = (JTable)_windowReference.getView( "ReadbackTable" );
@@ -406,7 +468,8 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 	 * Save the document to the specified URL.
 	 * @param url The URL to which the document should be saved.
 	 */
-	public void saveDocumentAs(URL url) {
+	@Override
+    public void saveDocumentAs(URL url) {
         
 		XmlDataAdaptor xda = XmlDataAdaptor.newEmptyDocumentAdaptor();
 		DataAdaptor daLevel1 = xda.createChild("VA");
@@ -432,6 +495,19 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 				DataAdaptor daSeqComponents = daSeq.createChild( "seq" );
 				daSeqComponents.setValue( "name", sequenceName );
 			}
+            DataAdaptor daNoise = daLevel1.createChild("noiseLevels");
+            daNoise.setValue("quad", quadNoise);
+            daNoise.setValue("dipole", dipoleNoise);
+            daNoise.setValue("corrector", correctorNoise);
+            daNoise.setValue("bpm", bpmNoise);
+            daNoise.setValue("sol", solNoise);
+            
+            DataAdaptor daOffset = daLevel1.createChild("offsets");
+            daOffset.setValue("quad", quadOffset);
+            daOffset.setValue("dipole", dipoleOffset);
+            daOffset.setValue("corrector", correctorOffset);
+            daOffset.setValue("bpm", bpmOffset);
+            daOffset.setValue("sol", solOffset);      
 		}
         
 		daLevel1.setValue( "modelSyncPeriod", _modelSyncPeriod );
@@ -449,15 +525,18 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 	private void makeTextDocument() {
 		textDocument = new PlainDocument();
 		textDocument.addDocumentListener(new DocumentListener() {
-			public void changedUpdate(javax.swing.event.DocumentEvent evt) {
+			@Override
+            public void changedUpdate(javax.swing.event.DocumentEvent evt) {
 				setHasChanges(true);
 			}
             
-			public void removeUpdate(DocumentEvent evt) {
+			@Override
+            public void removeUpdate(DocumentEvent evt) {
 				setHasChanges(true);
 			}
             
-			public void insertUpdate(DocumentEvent evt) {
+			@Override
+            public void insertUpdate(DocumentEvent evt) {
 				setHasChanges(true);
 			}
 		});
@@ -494,12 +573,15 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 	}
     
     
-	public void customizeCommands(Commander commander) {
+	@Override
+    public void customizeCommands(Commander commander) {
 		// open probe editor
         // TODO: implement probe editor support
+	    this.commander = commander;
 		Action probeEditorAction = new AbstractAction("probe-editor") {
 			static final long serialVersionUID = 0;
-			public void actionPerformed(ActionEvent event) {
+			@Override
+            public void actionPerformed(ActionEvent event) {
 				if ( baseProbe != null ) {
 					stopServer();
 					final SimpleProbeEditor probeEditor = new SimpleProbeEditor( getMainWindow(), baseProbe );
@@ -523,7 +605,8 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 		// action for using online model as engine
 		olmModel.setSelected(true);
 		olmModel.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
+			@Override
+            public void actionPerformed(ActionEvent event) {
 				isForOLM = true;
 				isFromPVLogger = false;
 			}
@@ -533,7 +616,8 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 		// action for using PV logger snapshot through online model
 		pvlogModel.setSelected(false);
 		pvlogModel.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
+			@Override
+            public void actionPerformed(ActionEvent event) {
 				isForOLM = true;
 				isFromPVLogger = true;
                 
@@ -550,7 +634,8 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 		// action for direct replaying of PVLogger logged data
 		pvlogMovieModel.setSelected(false);
 		pvlogMovieModel.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
+			@Override
+            public void actionPerformed(ActionEvent event) {
 				isForOLM = false;
 				isFromPVLogger = true;
                 
@@ -567,16 +652,19 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 		// action for running model and Diagnostics acquisition
 		Action runAction = new AbstractAction() {
 			static final long serialVersionUID = 0;
-			public void actionPerformed(ActionEvent event) {
+			@Override
+            public void actionPerformed(ActionEvent event) {
 				if ( vaRunning ) {
 					JOptionPane.showMessageDialog( getMainWindow(), "Virtual Accelerator has already started.", "Warning!", JOptionPane.PLAIN_MESSAGE );
 					return;
 				}
-                
+				if(!Application.getApp().authorizeWithRBAC("Start")){
+				    JOptionPane.showMessageDialog( getMainWindow(), "You are unauthorized for this action.", "Warning!", JOptionPane.PLAIN_MESSAGE );
+                    return;
+				}
 				if ( getSelectedSequence() == null ) {
 					JOptionPane.showMessageDialog( getMainWindow(), "You need to select sequence(s) first.", "Warning!", JOptionPane.PLAIN_MESSAGE );
-				}
-				else {
+				} else {    
 					// use PV logger
 					if ( isFromPVLogger ) {
 						long pvLoggerId = plsc.getPVLogId();
@@ -632,7 +720,8 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 		// stop the channel access server
 		Action stopAction = new AbstractAction() {
 			static final long serialVersionUID = 0;
-			public void actionPerformed(ActionEvent event) {
+			@Override
+            public void actionPerformed(ActionEvent event) {
 				stopServer();
 			}
 		};
@@ -643,7 +732,18 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 		// set noise level
 		Action setNoiseAction = new AbstractAction() {
 			static final long serialVersionUID = 0;
-			public void actionPerformed(ActionEvent event) {
+			@Override
+            public void actionPerformed(ActionEvent event) {
+				df1.setValue(quadNoise);
+				df2.setValue(dipoleNoise);
+				df3.setValue(correctorNoise);
+				df4.setValue(bpmNoise);
+				df5.setValue(solNoise);
+				df11.setValue(quadOffset);
+				df21.setValue(dipoleOffset);
+				df31.setValue(correctorOffset);
+				df41.setValue(bpmOffset);
+				df51.setValue(solOffset);				
 				setNoise.setVisible(true);
 			}
 		};
@@ -653,7 +753,8 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 		// configure synchronization
 		final Action synchConfigAction = new AbstractAction() {
 			static final long serialVersionUID = 0;
-			public void actionPerformed(ActionEvent event) {
+			@Override
+            public void actionPerformed(ActionEvent event) {
 				final String result = JOptionPane.showInputDialog( getMainWindow(), "Set the Model Synchronization Period (milliseconds): ", _modelSyncPeriod );
 				if ( result != null ) {
 					try {
@@ -672,7 +773,8 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 	
 	
 	/** handle this document being closed */
-	public void willClose() {
+	@Override
+    public void willClose() {
 		System.out.println( "Document will be closed" );
 		destroyServer();
 	}
@@ -694,6 +796,24 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 			DataAdaptor da2a = da1.childAdaptor( "sequences" );
 			String seqName = da2a.stringValue( "name" );
             
+			DataAdaptor daNoise = da1.childAdaptor("noiseLevels");
+			if (daNoise != null) {
+				quadNoise = daNoise.doubleValue("quad");
+	            dipoleNoise = daNoise.doubleValue("dipole");
+	            correctorNoise = daNoise.doubleValue("corrector");
+	            bpmNoise = daNoise.doubleValue("bpm");
+	            solNoise = daNoise.doubleValue("sol");
+			}
+			
+            DataAdaptor daOffset = da1.childAdaptor("offsets");
+            if (daOffset != null) {
+	            quadOffset = daOffset.doubleValue("quad");
+	            dipoleOffset = daOffset.doubleValue("dipole");
+	            correctorOffset = daOffset.doubleValue("corrector");
+	            bpmOffset = daOffset.doubleValue("bpm");
+	            solOffset = daOffset.doubleValue("sol");
+            }
+			
 			temp = da2a.childAdaptors("seq");
             for ( final DataAdaptor da : temp ) {
 				seqs.add( getAccelerator().getSequence( da.stringValue("name") ) );
@@ -711,8 +831,8 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
             
 			if ( da1.hasAttribute( "modelSyncPeriod" ) ) {
 				_modelSyncPeriod = da1.longValue( "modelSyncPeriod" );
-			}
-		}
+			}			
+	}
         
 	}
     
@@ -741,25 +861,25 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
                         
                         final String[] warningPVs = fieldChannel.getWarningLimitPVs();
                         
-                        final Channel lowerWarningChannel = ChannelFactory.defaultFactory().getChannel( warningPVs[0], fieldChannel.getValueTransform() );
+                        final Channel lowerWarningChannel = CHANNEL_SERVER_FACTORY.getChannel( warningPVs[0], fieldChannel.getValueTransform() );
                         //                        System.out.println( "Lower Limit PV: " + lowerWarningChannel.channelName() );
                         if ( lowerWarningChannel.connectAndWait() ) {
                             lowerWarningChannel.putValCallback( bookField - warningOffset, this );
                         }
                         
-                        final Channel upperWarningChannel = ChannelFactory.defaultFactory().getChannel( warningPVs[1], fieldChannel.getValueTransform() );
+                        final Channel upperWarningChannel = CHANNEL_SERVER_FACTORY.getChannel( warningPVs[1], fieldChannel.getValueTransform() );
                         if ( upperWarningChannel.connectAndWait() ) {
                             upperWarningChannel.putValCallback( bookField + warningOffset, this );
                         }
                         
                         final String[] alarmPVs = fieldChannel.getAlarmLimitPVs();
                         
-                        final Channel lowerAlarmChannel = ChannelFactory.defaultFactory().getChannel( alarmPVs[0], fieldChannel.getValueTransform() );
+                        final Channel lowerAlarmChannel = CHANNEL_SERVER_FACTORY.getChannel( alarmPVs[0], fieldChannel.getValueTransform() );
                         if ( lowerAlarmChannel.connectAndWait() ) {
                             lowerAlarmChannel.putValCallback( bookField - alarmOffset, this );
                         }
                         
-                        final Channel upperAlarmChannel = ChannelFactory.defaultFactory().getChannel( alarmPVs[1], fieldChannel.getValueTransform() );
+                        final Channel upperAlarmChannel = CHANNEL_SERVER_FACTORY.getChannel( alarmPVs[1], fieldChannel.getValueTransform() );
                         if ( upperAlarmChannel.connectAndWait() ) {
                             upperAlarmChannel.putValCallback( bookField + alarmOffset, this );
                         }
@@ -914,18 +1034,24 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 		// for all rf cavities
         for ( final RfCavity rfCavity : rfCavities ) {
 			try {
-				Channel ampSetCh = rfCavity
-                .getAndConnectChannel(RfCavity.CAV_AMP_SET_HANDLE);
-				//System.out.println("Ready to put " + rfCavity.getDfltCavAmp() + " to " + ampSetCh.getId());
-				if (rfCavity instanceof xal.smf.impl.SCLCavity) {
-					ampSetCh.putValCallback( rfCavity.getDfltCavAmp()*((SCLCavity)rfCavity).getStructureTTF(), this );
+				final Channel ampSetCh = rfCavity.findChannel( RfCavity.CAV_AMP_SET_HANDLE );
+				if ( ampSetCh.isValid() ) {
+					ampSetCh.connectAndWait();
+					//System.out.println("Ready to put " + rfCavity.getDfltCavAmp() + " to " + ampSetCh.getId());
+					if (rfCavity instanceof xal.smf.impl.SCLCavity) {
+						ampSetCh.putValCallback( rfCavity.getDfltCavAmp()*((SCLCavity)rfCavity).getStructureTTF(), this );
+					}
+					else {
+						ampSetCh.putValCallback( rfCavity.getDfltCavAmp(), this );
+					}
 				}
-				else {
-					ampSetCh.putValCallback( rfCavity.getDfltCavAmp(), this );
+
+				final Channel phaseSetCh = rfCavity.findChannel( RfCavity.CAV_PHASE_SET_HANDLE );
+				if ( phaseSetCh.isValid() ) {
+					phaseSetCh.connectAndWait();
+					//System.out.println("Ready to put " + rfCavity.getDfltCavPhase() + " to " + phaseSetCh.getId());
+					phaseSetCh.putValCallback( rfCavity.getDfltCavPhase(), this );
 				}
-				Channel phaseSetCh = rfCavity.getAndConnectChannel(RfCavity.CAV_PHASE_SET_HANDLE);
-				//System.out.println("Ready to put " + rfCavity.getDfltCavPhase() + " to " + phaseSetCh.getId());
-				phaseSetCh.putValCallback( rfCavity.getDfltCavPhase(), this );
 			} catch (NoSuchChannelException e) {
 				System.err.println(e.getMessage());
 			} catch (ConnectionException e) {
@@ -1057,7 +1183,7 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 				bpmYAvgChannel.putValCallback( yAvg, this );
 				//                    bpmYTBTChannel.putValCallback( yTBT, this );  // don't post to channel access until the turn by turn data is generated correctly
 			
-				final double position = bpm.getPosition();
+				final double position = getSelectedSequence().getPosition(bpm);
 				tempBPMp.add(position);
 				tempBPMx.add(xAvg);
 				tempBPMy.add(yAvg);				
@@ -1190,7 +1316,8 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 	
 	
 	/** handle the CA put callback */
-	public void putCompleted( final Channel chan ) {}
+	@Override
+    public void putCompleted( final Channel chan ) {}
 	
     
 	/** create the map between the "readback" and "set" PVs */
@@ -1233,12 +1360,25 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 			
 			// for rf PVs
             for ( final RfCavity rfCav : rfCavities ) {
-				READBACK_SET_RECORDS.add( new ReadbackSetRecord( rfCav, rfCav.getChannel( RfCavity.CAV_AMP_AVG_HANDLE ), rfCav.getChannel( RfCavity.CAV_AMP_SET_HANDLE ) ) );
-				READBACK_SET_RECORDS.add( new ReadbackSetRecord( rfCav, rfCav.getChannel( RfCavity.CAV_PHASE_AVG_HANDLE ), rfCav.getChannel( RfCavity.CAV_PHASE_SET_HANDLE ) ) );
-				ch_noiseMap.put( rfCav.getChannel( RfCavity.CAV_AMP_AVG_HANDLE ), rfAmpNoise );
-				ch_noiseMap.put( rfCav.getChannel( RfCavity.CAV_PHASE_AVG_HANDLE ), rfPhaseNoise );
-				ch_offsetMap.put( rfCav.getChannel( RfCavity.CAV_AMP_AVG_HANDLE ), rfAmpOffset );
-				ch_offsetMap.put( rfCav.getChannel( RfCavity.CAV_PHASE_AVG_HANDLE ), rfPhaseOffset );
+				final Channel ampSetChannel = rfCav.findChannel( RfCavity.CAV_AMP_SET_HANDLE );
+				final Channel ampReadChannel = rfCav.findChannel( RfCavity.CAV_AMP_AVG_HANDLE );
+				if ( ampReadChannel != null && ampReadChannel.isValid() ) {
+					if ( ampSetChannel != null && ampSetChannel.isValid() ) {
+						READBACK_SET_RECORDS.add( new ReadbackSetRecord( rfCav, ampReadChannel, ampSetChannel ) );
+					}
+					ch_noiseMap.put( ampReadChannel, rfAmpNoise );
+					ch_offsetMap.put( ampReadChannel, rfAmpOffset );
+				}
+
+				final Channel phaseSetChannel = rfCav.findChannel( RfCavity.CAV_PHASE_SET_HANDLE );
+				final Channel phaseReadChannel = rfCav.findChannel( RfCavity.CAV_PHASE_AVG_HANDLE );
+				if ( phaseReadChannel != null && phaseReadChannel.isValid() ) {
+					if ( phaseSetChannel != null && phaseSetChannel.isValid() ) {
+						READBACK_SET_RECORDS.add( new ReadbackSetRecord( rfCav, phaseReadChannel, phaseSetChannel ) );
+					}
+					ch_noiseMap.put( phaseReadChannel, rfPhaseNoise );
+					ch_offsetMap.put( phaseReadChannel, rfPhaseOffset );
+				}
 			}
 			
 			Collections.sort( READBACK_SET_RECORDS, new ReadbackSetRecordPositionComparator( selectedSequence ) );
@@ -1275,7 +1415,8 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 	}
 	
 	
-	public void acceleratorChanged() {
+	@Override
+    public void acceleratorChanged() {
 		if (accelerator != null) {
 			stopServer();
 
@@ -1291,7 +1432,8 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 		}
 	}
     
-	public void selectedSequenceChanged() {
+	@Override
+    public void selectedSequenceChanged() {
 		destroyServer();
 		
 		if (selectedSequence != null) {
@@ -1355,7 +1497,8 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
         
 	}
     
-	public void actionPerformed(ActionEvent ev) {
+	@Override
+    public void actionPerformed(ActionEvent ev) {
 		if (ev.getActionCommand().equals("noiseSet")) {
 			quadNoise = df1.getDoubleValue();
 			dipoleNoise = df2.getDoubleValue();
@@ -1367,6 +1510,8 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 			correctorOffset = df31.getDoubleValue();
 			bpmOffset = df41.getDoubleValue();
 			solOffset = df51.getDoubleValue();
+			setHasChanges(true);
+			
 			/**add below*/
 			configureReadbacks();
 			setNoise.setVisible(false);
@@ -1398,7 +1543,8 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 	/** Get a runnable that syncs the online model */
 	private Runnable getOnlineModelSynchronizer() {
 		return new Runnable() {
-			public void run() {
+			@Override
+            public void run() {
 				syncOnlineModel();
 			}
 		};
@@ -1418,7 +1564,8 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 	/** Get a runnable that syncs with the PV Logger */
 	private Runnable getPVLoggerSynchronizer() {
 		return new Runnable() {
-			public void run() {
+			@Override
+            public void run() {
 				syncPVLogger();
 			}
 		};
@@ -1440,7 +1587,8 @@ class ReadbackSetRecordPositionComparator implements Comparator<ReadbackSetRecor
 	
 	
 	/** compare the records based on location relative to the start of the sequence */
-	public int compare( final ReadbackSetRecord record1, final ReadbackSetRecord record2 ) {
+	@Override
+    public int compare( final ReadbackSetRecord record1, final ReadbackSetRecord record2 ) {
 		if ( record1 == null && record2 == null ) {
 			return 0;
 		}
@@ -1459,13 +1607,15 @@ class ReadbackSetRecordPositionComparator implements Comparator<ReadbackSetRecor
 	
 	
 	/** all comparators of this class are the same */
-	public boolean equals( final Object object ) {
+	@Override
+    public boolean equals( final Object object ) {
 		return object instanceof ReadbackSetRecordPositionComparator;
 	}
 
 
 	/** override hashCode() as required for consistency with equals() */
-	public int hashCode() {
+	@Override
+    public int hashCode() {
 		return 1;	// constant since all comparators of this class are equivalent
 	}
 }

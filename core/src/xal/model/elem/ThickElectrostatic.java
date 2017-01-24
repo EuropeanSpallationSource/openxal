@@ -1,5 +1,6 @@
 package xal.model.elem;
 
+import xal.model.elem.sync.IElectrostatic;
 import xal.sim.scenario.LatticeElement;
 import xal.smf.impl.Electrostatic;
 
@@ -62,13 +63,13 @@ public abstract class ThickElectrostatic extends ThickElement implements IElectr
    /**  
     *  Get the magnetic field strength of the electromagnet
     *
-    *  @return     magnetic field (in <bold>Tesla/meter</bold>).
+    *  @return     magnetic field (in <b>Tesla/meter</b>).
     */
 
    /**  
     *  Get the magnetic field strength of the associated dipole
     *
-    *  @return     magnetic field (in <bold>Tesla</bold>).
+    *  @return     magnetic field (in <b>Tesla</b>).
     */
    public double getMagField() {
        return this.dblField;
@@ -95,13 +96,13 @@ public abstract class ThickElectrostatic extends ThickElement implements IElectr
    /**  
     *  Set the magnetic field strength of the electromagnet.
     *
-    *  @param  dblField    magnetic field (in <bold>Tesla/meter</bold>).
+    *  @param  dblField    magnetic field (in <b>Tesla/meter</b>).
     */
    
    /**  
     *  Set the magnetic field strength of the dipole electromagnet.
     *
-    *  @param  dblField    magnetic field (in <bold>Tesla</bold>).
+    *  @param  dblField    magnetic field (in <b>Tesla</b>).
     */
    public void setMagField(double dblField) {
        this.dblField = dblField;
@@ -116,7 +117,7 @@ public abstract class ThickElectrostatic extends ThickElement implements IElectr
    @Override
 	public void initializeFrom(LatticeElement latticeElement) {
 	   	super.initializeFrom(latticeElement);
-	   	Electrostatic magnetNode =  (Electrostatic)latticeElement.getNode();			
+	   	Electrostatic magnetNode =  (Electrostatic)latticeElement.getHardwareNode();			
 		int orientation = IElectrostatic.ORIENT_NONE;
 		if (magnetNode.isHorizontal()) {
 			orientation = IElectrostatic.ORIENT_HOR;

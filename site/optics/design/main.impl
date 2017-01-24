@@ -1,0 +1,13 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<deviceMapping>
+    <device class="xal.smf.AcceleratorSeq" type="sequence"/>
+    <device class="xal.smf.impl.Quadrupole" type="Q"/>
+    <device class="se.lu.esss.ics.jels.smf.impl.ESSBend" type="DV"/>
+    <device class="se.lu.esss.ics.jels.smf.impl.ESSRfCavity" type="RF"/>
+    <device class="xal.smf.impl.RfGap" type="RG"/>
+    <device class="xal.smf.impl.VDipoleCorr" type="DCV"/>
+    <device class="xal.smf.impl.Marker" type="marker"/>
+    <device class="se.lu.esss.ics.jels.smf.impl.ESSFieldMap" type="FM"/>
+    <device class="xal.smf.impl.HDipoleCorr" type="DCH"/>
+    <device class="xal.smf.impl.BPM" type="BPM"/>
+</deviceMapping>

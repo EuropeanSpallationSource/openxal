@@ -5,6 +5,7 @@ import xal.sim.scenario.ElementMapping;
 import xal.smf.impl.*;
 import xal.smf.impl.qualify.*;
 import xal.tools.data.*;
+import xal.ca.ChannelFactory;
 
 import java.util.*;
 import java.lang.reflect.*;
@@ -28,10 +29,10 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
 	private Map<String,AcceleratorSeqCombo> _comboSequences;    
     
     /** Map of main power supplies keyed by the power supply id */
-    protected Map<String,MagnetMainSupply> magnetMainSupplies;
+    private Map<String,MagnetMainSupply> magnetMainSupplies;
     
     /** Map of trim power supplies keyed by the power supply id */
-    protected Map<String,MagnetTrimSupply> magnetTrimSupplies;
+    private Map<String,MagnetTrimSupply> magnetTrimSupplies;
         
     /** edit context holds the dynamic data */
     private EditContext editContext;
@@ -103,21 +104,51 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
             String powerSupplyType = powerSupplyAdaptor.stringValue("type");
             String powerSupplyId = powerSupplyAdaptor.stringValue("id");
             if ( powerSupplyType.equals("main") ) {
-                MagnetMainSupply powerSupply = getMagnetMainSupply(powerSupplyId);
+				MagnetMainSupply powerSupply = getMagnetMainSupply( powerSupplyId );
                 if ( powerSupply == null )  powerSupply = new MagnetMainSupply(this);
                 powerSupply.update(powerSupplyAdaptor);
-                magnetMainSupplies.put( powerSupply.getId(), powerSupply );
+				putMagnetMainSupply( powerSupply );
             }
             else if ( powerSupplyType.equals("trim") ) {
-                MagnetTrimSupply powerSupply = getMagnetTrimSupply(powerSupplyId);
+				MagnetTrimSupply powerSupply = getMagnetTrimSupply( powerSupplyId );
                 if ( powerSupply == null )  powerSupply = new MagnetTrimSupply(this);
                 powerSupply.update(powerSupplyAdaptor);
-                magnetTrimSupplies.put( powerSupply.getId(), powerSupply );
+				putMagnetTrimSupply( powerSupply );
             }
         }
     }
-    
-    
+
+
+	/** 
+	 * Programmatically add or replace a magnet main supply keyed by its ID. 
+	 * If a power supply has the same ID as another power supply in this accelerator then it will replace that one.
+	 * @param mainSupply main power supply to add or replace
+	 * @throws IllegalArgumentException if the power supply's accelerator does not match this accelerator to which it is being put
+	 */
+	public void putMagnetMainSupply( final MagnetMainSupply mainSupply ) throws IllegalArgumentException {
+		if ( mainSupply.getAccelerator() == this ) {	// make sure this supply belongs here
+			magnetMainSupplies.put( mainSupply.getId(), mainSupply );
+		} else {
+			throw new IllegalArgumentException( "Attempted to put Magnet Main Supply: " + mainSupply.getId() + " whose accelerator does not match the accelerator to which it is being put." );
+		}
+	}
+
+
+	/**
+	 * Programmatically add or replace a magnet trim supply keyed by its ID.
+	 * If a power supply has the same ID as another power supply in this accelerator then it will replace that one.
+	 * @param trimSupply trim power supply to add or replace
+	 * @throws IllegalArgumentException if the power supply's accelerator does not match this accelerator to which it is being put
+	 */
+	public void putMagnetTrimSupply( final MagnetTrimSupply trimSupply ) {
+		if ( trimSupply.getAccelerator() == this ) {	// make sure this supply belongs here
+			magnetTrimSupplies.put( trimSupply.getId(), trimSupply );
+		} else {
+			throw new IllegalArgumentException( "Attempted to put Magnet Trim Supply: " + trimSupply.getId() + " whose accelerator does not match the accelerator to which it is being put." );
+		}
+	}
+
+
     /**
      * Instructs the accelerator to write its data to the adaptor for external
      * storage.
@@ -131,7 +162,13 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
         SimpleDateFormat dateFormatter = new SimpleDateFormat("MM.dd.yyyy");
         String dateString = dateFormatter.format(today);
         adaptor.setValue("date", dateString);
-        
+
+        // Combo sequences are problematic as they are only defined in Accelerator
+        for (AcceleratorSeqCombo seq : getComboSequences()) {
+			final DataAdaptor constituentAdaptor = adaptor.createChild("comboseq");
+			seq.write(constituentAdaptor);
+        }
+
         super.write(adaptor);
     }
     
@@ -150,6 +187,7 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
 		if ( comboSequence == null ) {
 			comboSequence = instantiateComboSequence(comboType, comboID, comboAdaptor);
 			comboSequence.setAccelerator(this.getAccelerator());
+			comboSequence.setParent(this);
 			addComboSequence(comboSequence);
 		}
 		else {
@@ -193,24 +231,38 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
     
     /** Primary constructor */
     public Accelerator( final String sysId ) {
-        super( sysId );
-        
-        m_strSysId = sysId;
+		this( sysId, ChannelFactory.defaultFactory() );
+    }
+
+
+	/** Primary constructor */
+	public Accelerator( final ChannelFactory channelFactory ) {
+		this( "", channelFactory );
+	}
+
+
+	/** Primary constructor */
+	public Accelerator( final String sysId, final ChannelFactory channelFactory ) {
+		super( sysId, channelFactory );
+
+		//System.out.println( "Instantiating Accelerator with channel factory: " + channelFactory );
+
+		m_strSysId = sysId;
 		_comboSequences = new HashMap<String,AcceleratorSeqCombo>();
 
-        // Create hash maps to hold the main and trim power supplies
-        magnetMainSupplies = new HashMap<String,MagnetMainSupply>();
-        magnetTrimSupplies = new HashMap<String,MagnetTrimSupply>();
-        
-        // Create an edit context to hold dynamic data -tap 6/7/2002
-        editContext = new EditContext();
-		
+		// Create hash maps to hold the main and trim power supplies
+		magnetMainSupplies = new HashMap<String,MagnetMainSupply>();
+		magnetTrimSupplies = new HashMap<String,MagnetTrimSupply>();
+
+		// Create an edit context to hold dynamic data -tap 6/7/2002
+		editContext = new EditContext();
+
 		// initialize the timing center
 		_timingCenter = new TimingCenter();
-    }
-	
-	
-	/** 
+	}
+
+
+	/**
 	 * Handle the event indicating that a node has been added.
 	 * @param p_node the node that has been added
 	 */
@@ -314,7 +366,7 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
 	 * Add a combo sequence to this accelerator
 	 * @param comboSequence The combo sequence to add
 	 */
-    protected void addComboSequence( final AcceleratorSeqCombo comboSequence ) {
+    public void addComboSequence( final AcceleratorSeqCombo comboSequence ) {
 		_comboSequences.put( comboSequence.getId(), comboSequence );
 	}
 	

@@ -16,6 +16,7 @@ import xal.tools.beam.optics.DriftSpace;
 import xal.tools.beam.optics.QuadrupoleLens;
 import xal.tools.math.r3.R3x3;
 import xal.model.IProbe;
+import xal.model.elem.sync.IElectromagnet;
 
 
 /**
@@ -50,24 +51,24 @@ import xal.model.IProbe;
  * object is always the same.  Driving the device with a negative supply
  * (see {@link IdealMagSkewQuad3#setMagField(double)}) in effect changes
  * its "orientation."
+ * </p>
  * 
  * <table cellpadding="10">
  * <tr>
  *   <td>
  *   Specifically,
  *   <br>
- *   <br>- A (+45&deg) skew quadrupole driven with a positive field focuses
+ *   <br>- A (+45&deg;) skew quadrupole driven with a positive field focuses
  *   in the 2<sup>nd</sup> and 4<sup>th</sup> quadrants.
  *   </td>
  * </tr>
  * <tr>
  *   <td>
- *   - A (+45&deg) skew quadrupole driven with a negative field focuses
+ *   - A (+45&deg;) skew quadrupole driven with a negative field focuses
  *   in the 1<sup>st</sup> and 3<sup>rd</sup> quadrants.
  *   </td>
  * </tr>
  * </table>
- * </p>
  * 
  * <p>
  * NOTES:
@@ -314,7 +315,7 @@ public class IdealMagSkewQuad3 extends ThickElectromagnet {
      *  @param  probe   propagating probe
      *  @param  dblLen  length of subsection to propagate through <b>meters</b>
      *  
-     *  @return         the elapsed time through section<bold>Units: seconds</bold>
+     *  @return         the elapsed time through section<b>Units: seconds</b>
      *   
      * @since   Mar 13, 2008
      * @author  Christopher K. Allen

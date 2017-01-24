@@ -1,0 +1,145 @@
+#!/bin/bash -f
+#!-*-sh-*-
+#
+# Abs: testServerRunner executes the MEME test service server.
+#
+# Rem: MEME's testService is a simple service for testing the MEME network.
+# All the data that may be returned by the test server is hard coded into
+# the server code, so a client can't get data back from the test server,
+# then there is necessarily something wrong with the MEME network itself,
+# rather than something about the data sources of MEME. 
+#
+# Usage: See usage function below.
+#
+# Ref: ../../README
+#
+# ----------------------------------------------------------------------------
+# Auth: 13-Oct-2013, Greg White (greg@slac.stanford.edu)
+# Mod:  19-May-2014, Greg White (greg@slac.stanford.edu)
+#       Added starting under prod, dev, sci, local mode.
+# ============================================================================
+
+function usage {
+echo "
+  Usage: 
+       testServerRunner [-{p,s,d,l}] [-h]
+ 
+     eg
+       testServerRunner -p     - Starts the production instance
+
+       where:
+           -p  - Server is intended for production. 
+                   This script should be being executed on production network 
+                   host, and the executable will be set to broadcast 
+           -d   - Server is intended for software development and testing.  
+                   This script should be being executed on a DMZ network host, 
+                   and executable will be set to broadcast (ie exactly as production).
+           -l   - Server is intended for initial software development and testing, 
+                   on a localhost, like laptop.
+
+           The default is -d, start a development server.
+
+        -h Prints this help.
+"
+}
+
+# Process server execution environment args. 
+#
+mode=dev
+while getopts psdl opt
+do
+    case "$opt" in
+       p) mode=prod;;
+       d) mode=dev;;
+       l) mode=local;;
+       h) usage; exit 0;;
+       *) echo "Unknown option"; exit 1;;
+    esac
+done
+shift $((OPTIND-1))
+if [ $# -gt 0 ]; then
+	echo "Unknown argument $1"
+	exit 0
+fi
+
+# Define the name of the MEME server, used for logging, process identification etc.
+#
+export SERVER_NAME=meme_testserver
+export INSTANCE_NAME=${SERVER_NAME}_${mode}
+
+# Default values of dir locations. These may be overridden by the environment. 
+# These set the instance of the service to execute, and against which EPICS V4 
+# jar files the service runs.
+#
+TESTSERVICE_ROOTDIR=${MEMEROOT:-/afs/slac/g/lcls/package/meme}/services/testservice
+SUPPORT_ROOTDIR=${MEMEROOT:-/afs/slac/g/lcls/package/meme}/support
+
+# EPICS 
+EPICS_BASE_TOP=/afs/slac/g/lcls/epics/base
+
+# 4.3 or 4.4 jar files
+#EPICS_PVJAVA=/u/cd/greg/Development/epics/base/v4/java
+EPICS_PVJAVA=${EPICS_BASE_TOP}/base-java-R4-4-0-pre1
+
+# 4.3
+#E4_CLASSPATH=\
+#${EPICS_PVJAVA}/pvDataJava-3.0.2.jar:\
+#${EPICS_PVJAVA}/pvAccessJava-3.0.4.jar
+
+# 4.4 pre1
+E4_CLASSPATH=\
+${EPICS_PVJAVA}/pvDataJava.jar:\
+${EPICS_PVJAVA}/pvAccessJava.jar
+
+
+# Set the classpath - the definition of which code we're executing.
+#
+export CLASSPATH=${E4_CLASSPATH}:${TESTSERVICE_ROOTDIR}/lib/meme_testserver.jar
+
+# SLAC overrides default EPICS_PVA_BROADCAST_PORT
+export EPICS_PVA_BROADCAST_PORT=5056
+export EPICS_PVA_SERVER_PORT=5055
+
+# Set execution options depending on mode.
+#
+#if [ x"$mode" == x"prod" ]; then
+#    PORTOPT="-DEPICS_PVA_BROADCAST_PORT=47237"
+#elif [ x"$mode" == x"dev" ]; then
+#    PORTOPT="-DEPICS_PVA_BROADCAST_PORT=47257"
+#fi
+
+# Logging
+#
+function header()
+{
+    echo "*************************************************************************"
+    echo "Starting ${INSTANCE_NAME} at `date +'%FT-%H-%M-%S'` from ${PWD} as $USER on"
+    echo "`uname -a`"
+    echo "*************************************************************************" 
+    echo
+    echo 'WHOLE ENVIRONEMNT (see beneath for summary environment)'
+    env | sort
+    echo ----------------------------------------------------
+    echo SUMMARY ENVIRONMENT
+    echo 
+    echo CLASSPATH = $CLASSPATH
+    echo LD_LIBRARY_PATH = $LD_LIBRARY_PATH
+    echo TNS_ADMIN = $TNS_ADMIN 
+    echo ----------------------------------------------------
+}  
+LOGGINGROOT=/tmp/meme/${INSTANCE_NAME}
+mkdir -p $LOGGINGROOT
+log_file=${LOGGINGROOT}/`date +"%FT-%H-%M-%S"`.log
+header 2>&1 | tee $log_file
+
+# Kill any existing instance of the same mode
+pkill -f "${INSTANCE_NAME}"  2>&1 | tee -a $log_file
+
+# Start the service as a pvaccess RPC server.  
+# Using exec -a to set the process name. 
+# 
+exec -a ${INSTANCE_NAME} java -server ${PORTOPT} \
+  -DSERVER_NAME=${SERVER_NAME} \
+  -DINSTANCE_NAME=${INSTANCE_NAME} \
+  -Djava.util.logging.config.file=${TESTSERVICE_ROOTDIR}/lib/testserverlogging.properties \
+     edu/stanford/slac/meme/service/testservice/TestServer 2>&1 | tee -a $log_file &

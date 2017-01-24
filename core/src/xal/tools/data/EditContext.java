@@ -28,7 +28,7 @@ public class EditContext {
     final protected EditContextListener NOTICE_PROXY;
 	
 	/** Map of tables associated with group */
-    final private Map<String,Set<DataTable>> TABLE_MAP_BY_GROUP;
+    final private Map<String,Collection<DataTable>> TABLE_MAP_BY_GROUP;
 	
 	/** Map of tables by name */
     final private Map<String,DataTable> TABLE_MAP_BY_NAME;
@@ -36,7 +36,7 @@ public class EditContext {
 	
     /** Constructor */
     public EditContext() {
-        TABLE_MAP_BY_GROUP = new HashMap<String,Set<DataTable>>();
+        TABLE_MAP_BY_GROUP = new HashMap<String,Collection<DataTable>>();
         TABLE_MAP_BY_NAME = new HashMap<String,DataTable>();
         
 		MESSAGE_CENTER = new MessageCenter( "Edit Context" );
@@ -73,11 +73,11 @@ public class EditContext {
 	
     
     /** Import the tables from the data adaptor and assign them to the specified group in this edit context. */
-	public void importTablesFromDataAdaptor( final DataAdaptor docAdaptor, final String tableGroup ) {
-        final Collection<DataTable> tableSet = new HashSet<DataTable>();
-		
+	public void importTablesFromDataAdaptor( final DataAdaptor docAdaptor, final String tableGroup ) {        		
         final DataAdaptor tableGroupAdaptor = docAdaptor.childAdaptor( EditContext.GROUP_TAG );
         final List<DataAdaptor> tableAdaptors = tableGroupAdaptor.childAdaptors( DataTable.DATA_LABEL );
+        final Collection<DataTable> tableSet = new ArrayList<DataTable>(tableAdaptors.size());
+        
         for( final DataAdaptor tableAdaptor : tableAdaptors ) {
             try {
                 final DataTable table = new DataTable( tableAdaptor );
@@ -145,10 +145,10 @@ public class EditContext {
 	 * @return the set of tables associated with the specified group
      */
     private Collection<DataTable> tableSetForGroup( final String group ) {
-        Set<DataTable> tableSet = null;
+    	Collection<DataTable> tableSet = null;
 
         if ( !TABLE_MAP_BY_GROUP.containsKey( group ) ) {
-            tableSet = new HashSet<DataTable>();
+            tableSet = new ArrayList<DataTable>();
             TABLE_MAP_BY_GROUP.put( group, tableSet );
         }
         else {

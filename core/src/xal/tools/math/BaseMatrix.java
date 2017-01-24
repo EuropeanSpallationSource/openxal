@@ -12,41 +12,41 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.StringTokenizer;
 
-import xal.tools.beam.PhaseMatrix;
+import org.ejml.data.DenseMatrix64F;
+import org.ejml.ops.CommonOps;
+import org.ejml.ops.MatrixFeatures;
+import org.ejml.ops.NormOps;
+
 import xal.tools.data.DataAdaptor;
 import xal.tools.data.DataFormatException;
 import xal.tools.data.IArchive;
-import Jama.Matrix;
 
 /**
  * <p>
  * Class <code>BaseMatrix</code>.  This is a base class for objects representing
  * real-number matrix objects.  Thus it contains basic matrix operations where the interacting
  * objects are all of type <code>M</code>, or vectors of the singular type <code>V</code>.
- * (If matrix and vectors are not of compatible dimensions the operations fail.)
  * The template parameter <code>M</code> is the type of the child class.  This 
  * mechanism allows <code>BaseMatrix&lt;M extends BaseMatrix&lt;M&gt;&gt;</code>
  * to recognize the type of it derived classes in order to create and process
  * new objects as necessary. 
  * </p>
  * <p>
- * Currently the internal matrix operations are supported by the <tt>Jama</tt>
- * matrix package.  However, the <tt>Jama</tt> matrix package has been deemed a 
- * "proof of principle" for the Java language and scientific computing and 
- * is, thus, no longer supported.  The objective of this base class is to hide
+ * The objective of this base class is to hide
  * the internal implementation of matrix operations from the child classes and
- * all developers using the matrix packages.  If it is determined that the <tt>Jama</tt>
- * matrix package is to be removed from XAL, the modification will be substantially
- * simplified in the current architecture.
+ * all developers using the matrix packages.
+ * </p>
+ * <p>
+ * Currently the internal matrix operations are supported by the <tt>EJML</tt>
+ * matrix package.
  * </p> 
  *
  * @author Christopher K. Allen
+ * @author Blaz Kranjc
  * @since  Oct 11, 2013
  */
 public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
 
-    
-    
     /*
      * Global Constants
      */
@@ -58,8 +58,14 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
 
     /** Attribute marker for data managed by IArchive interface */
     public static final String ATTR_DATA = "values";
-    
 
+    
+    /** A small number used in comparing matrix elements (e.g., #isEqual() ) */
+    protected static final double DBL_EPS  = 1.0e-12;
+
+    /** number of Units in the Last Place (ULPs) used for bracketing approximately equal values */
+    protected static final int    ULPS_BRACKET = 100;
+    
     /*
      * Global Attributes
      */
@@ -68,36 +74,13 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
     final static private DecimalFormat SCI_FORMAT = new DecimalFormat("0.000000E00");
    
     
-//    /*
-//     * Internal Classes
-//     */
-//
-//    /**
-//     * Interface <code>BaseMatrix.Ind</code> is exposed by objects
-//     * representing matrix indices.  In particular, the <code>enum</code>
-//     * types that are matrix indices expose this interface.
-//     *
-//     * @author Christopher K. Allen
-//     * @since  Sep 25, 2013
-//     */
-//    public interface IIndex extends IIndex {
-//    }
-//
-    
-    
     /*
      *  Local Attributes
      */
     
-    /** number of matrix rows */
-    private final int               cntRows;
-    
-    /** number of matrix columns */
-    private final int               cntCols;
-    
     /** internal matrix implementation */
-    protected final Jama.Matrix     matImpl;
-
+    private DenseMatrix64F matImpl;
+    
     
     /*
      * Object Overrides
@@ -131,9 +114,22 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      *  @exception  ArrayIndexOutOfBoundsException  an index was equal to or larger than the matrix size
      */
     public void setElem(int i, int j, double s) throws ArrayIndexOutOfBoundsException {
-
-        this.getMatrix().set(i,j, s);
+        this.matImpl.set(i,j, s);
     }
+    
+    /**
+     * Set the element specified by the given position indices to the
+     * given new value.
+     * 
+     * @param   iRow    matrix row location
+     * @param   iCol    matrix column index
+     * 
+     * @param   dblVal  matrix element at given row and column will be set to this value
+     */
+    public void setElem(IIndex iRow, IIndex iCol, double dblVal) {
+        this.matImpl.set(iRow.val(), iCol.val(), dblVal);
+    }
+
 
     /**
      *  Set a block sub-matrix within the current matrix.  If the given two-dimensional
@@ -146,15 +142,20 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      *  @param  j0      column index of upper left block
      *  @param  j1      column index of lower right block
      *  @param  arrSub  two-dimensional sub element array
-     *
-     *  @exception  ArrayIndexOutOfBoundsException  sub-matrix does not fit into base matrix
      */
     public void setSubMatrix(int i0, int i1, int j0,
-            int j1, double[][] arrSub) throws ArrayIndexOutOfBoundsException {
-                Jama.Matrix matSub = new Matrix(arrSub);
-            
-                this.getMatrix().setMatrix(i0,i1,j0,j1, matSub);
-            }
+            int j1, double[][] arrSub) {
+    	DenseMatrix64F result;
+    	DenseMatrix64F submat = new DenseMatrix64F(arrSub);
+
+    	if (i1-i0+1!=arrSub.length || j1-j0+1!=arrSub[0].length) {
+    		result = new DenseMatrix64F(i1-i0+1, j1-j0+1);
+    		CommonOps.extract(submat, i0, i1, j0, j1, result, 0, 0);
+    	} else {
+    		result = submat;
+    	}
+    	CommonOps.insert(result, this.matImpl, i0, j0);
+    }
 
     /**
      * Sets the entire matrix to the values given in the Java primitive type 
@@ -163,9 +164,6 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * @param arrMatrix Java primitive array containing new matrix values
      * 
      * @exception  ArrayIndexOutOfBoundsException  the argument must have the same dimensions as this matrix
-     *
-     * @author Christopher K. Allen
-     * @since  Oct 4, 2013
      */
     public void setMatrix(double[][] arrMatrix) throws ArrayIndexOutOfBoundsException {
         
@@ -176,47 +174,39 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
                    + this.getRowCnt() + "x" + this.getColCnt()
                    );
         
-        // Set the elements of this array to that given by the corresponding 
-        //  argument entries
-        for (int i=0; i<this.getRowCnt(); i++) 
-            for (int j=0; j<this.getColCnt(); j++) {
-                double dblVal = arrMatrix[i][j];
-                
-                this.setElem(i, j, dblVal);
-            }
+        this.matImpl = new DenseMatrix64F(arrMatrix);
     }
 
     /**
-     *  Parsing assignment - set the <code>PhaseMatrix</code> value
-     *  according to a token string of element values.  
+     *  Parsing assignment - set the matrix according to a token
+     *  string of element values.  
      *
      *  The token string argument is assumed to be one-dimensional and packed by
      *  column (aka FORTRAN).
      *
      *  @param  strValues   token vector of SIZE<sup>2</sup> numeric values
      *
-     *  @exception  IllegalArgumentException    wrong number of token strings
-     *  @exception  NumberFormatException       bad number format, unparseable
+     *  @exception  NumberFormatException  bad number format, unparseable
+     *  @exception  IllegalArgumentException  wrong number of token strings
      */
-    public void setMatrix(String strValues) throws NumberFormatException,
-            IllegalArgumentException {
+    public void setMatrix(String strValues) throws NumberFormatException {
                 
-                // Error check the number of token strings
-                StringTokenizer     tokArgs = new StringTokenizer(strValues, " ,()[]{}"); //$NON-NLS-1$
+    	// Error check the number of token strings
+    	StringTokenizer     tokArgs = new StringTokenizer(strValues, " ,()[]{}"); //$NON-NLS-1$
                 
-                if (tokArgs.countTokens() != this.getRowCnt()*this.getColCnt())
-                    throw new IllegalArgumentException("PhaseMatrix#setMatrix - wrong number of token strings: " + strValues); //$NON-NLS-1$
+    	if (tokArgs.countTokens() != this.getRowCnt()*this.getColCnt())
+    		throw new IllegalArgumentException("BaseMatrix#setMatrix - wrong number of token strings: " + strValues); //$NON-NLS-1$
                 
                 
-                // Extract initial phase coordinate values
-                for (int i=0; i<this.getRowCnt(); i++)
-                    for (int j=0; j<this.getColCnt(); j++) {
-                        String  strVal = tokArgs.nextToken();
-                        double  dblVal = Double.valueOf(strVal).doubleValue();
-                    
-                        this.setElem(i,j, dblVal);
-                    }
-            }
+    	// Extract initial phase coordinate values
+    	for (int i=0; i<this.getRowCnt(); i++)
+    		for (int j=0; j<this.getColCnt(); j++) {
+    			String  strVal = tokArgs.nextToken();
+    			double  dblVal = Double.valueOf(strVal).doubleValue();
+    			
+    			this.setElem(i,j, dblVal);
+    		}
+    }
 
 
 
@@ -235,7 +225,7 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * @since  Oct 14, 2013
      */
     public int getRowCnt() {
-        return this.cntRows;
+        return this.matImpl.numRows;
     }
     
     /**
@@ -249,12 +239,12 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * @since  Oct 14, 2013
      */
     public int getColCnt() {
-        return this.cntCols;
+        return this.matImpl.numCols;
     }
     
     /**
      *  Return matrix element value.  Get matrix element value at specified 
-     *  <code>Diagonal</code> position.
+     *  position.
      *
      *  @param  i       row index
      *  @param  j       column index
@@ -262,7 +252,7 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      *  @exception  ArrayIndexOutOfBoundsException  an index was equal to or larger than the matrix size
      */
     public double getElem(int i, int j) throws ArrayIndexOutOfBoundsException  {
-        return this.getMatrix().get(i,j);
+        return this.matImpl.get(i,j);
     }
 
     /**
@@ -270,12 +260,12 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * Returns the matrix element at the position indicated by the
      * given row and column index sources.  
      * </p>
+     * <h3>NOTES</h3>
      * <p>
-     * <h4>NOTES</h4>
      * &middot; It is expected that the
      * object exposing the <code>IIndex</code> interface is an enumeration
      * class restricting the number of possible index values.
-     * <br/>
+     * <br>
      * &middot; Consequently we do not declare a thrown exception assuming
      * that that enumeration class eliminates the possibility of an out of
      * bounds error.
@@ -290,24 +280,34 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * @since  Sep 30, 2013
      */
     public double getElem(IIndex indRow, IIndex indCol) {
-        double  dblVal = this.matImpl.get(indRow.val(), indCol.val());
-    
+        double dblVal = this.matImpl.get(indRow.val(), indCol.val());
         return dblVal;
+    }
+
+    /**
+     * Copies a 1D array of data to 2D array needed by the interface.
+     * 
+     * @param arr 1D array with matrix data
+     * @return 2D array of matrix
+     */
+    private double[][] arrayTo2D(double[] arr) {
+    	double[][] arr2D = new double[getRowCnt()][getColCnt()];
+    	for (int i=0; i < arr2D.length; i++)
+    		for (int j=0; j < arr2D[0].length; j++)
+    			arr2D[i][j] = arr[i*arr2D[0].length + j];
+    	return arr2D;
     }
 
     /**
      * Returns a copy of the internal Java array containing
      * the matrix elements.  The array dimensions are given by
-     * the size of this matrix, available from 
-     * <code>{@link #getSize()}</code>.  
+     * the size of this matrix.
      * 
      * @return  copied array of matrix values
-     *
-     * @author Christopher K. Allen
-     * @since  Sep 25, 2013
      */
     public double[][] getArrayCopy() {
-        return this.matImpl.getArrayCopy();
+    	double[] data = this.matImpl.getData();
+        return arrayTo2D(data);
     }
 
     
@@ -316,16 +316,73 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      */
     
     /**
+     * <p>
+     * Tests whether the given matrix is approximately equal to this matrix.
+     * The idea is that we ignore any numerical noise when comparing if the two
+     * matrices are equal.
+     * </p>
+     * <p>
+     * This is a convenience class for the method 
+     * <code>{@link #isApproxEqual(BaseMatrix,int)}</code> where the number of ULPs
+     * is set to <code>ULPS_BRACKET</code>.
+     * </p>
+     * <p>
+     * The matrices are compared element by element using 
+     * <code>{@link ElementaryFunction#approxEq(double, double)}</code>.
+     * </p>
+     *   
+     * @return  <code>true</code> if the given matrix is equal to this one with the
+     *          given number of significant digits, <code>false</code> otherwise.
+     *
+     * @since  Jul 22, 2015   by Christopher K. Allen
+     */
+    public boolean  isApproxEqual(M matTest) {
+        return this.isApproxEqual(matTest, ULPS_BRACKET);
+    }
+    
+    /**
+     * <p>
+     * Tests whether the given matrix is approximately equal to this matrix.
+     * The idea is that we ignore any numerical noise when comparing if the two
+     * matrices are equal.  This is done by ignoring the number of Units in the
+     * Last Place in the machine representation.  The larger this number the 
+     * more least significant digits we ignore.
+     * </p>
+     * <p>
+     * The matrices are compared element by element using 
+     * <code>{@link ElementaryFunction#approxEq(double, double, int)}</code>.
+     * </p>
+     *   
+     * @param   matTest the matrix being compared to this one.
+     * @param   the number of Units in the Last Place to ignore
+     * 
+     * @return  <code>true</code> if the given matrix is equal to this one with the
+     *          given number of significant digits, <code>false</code> otherwise.
+     *
+     * @since  Jul 22, 2015   by Christopher K. Allen
+     */
+    public boolean  isApproxEqual(M matTest, int cntUlp) {
+        for (int i=0; i<getRowCnt(); i++)
+            for (int j=0; j<getColCnt(); j++) {
+                double  dblVal = this.getElem(i, j);
+                double  dblCmp = matTest.getElem(i, j);
+                
+                if ( !ElementaryFunction.approxEq(dblVal, dblCmp, cntUlp) )
+                    return false;
+            }
+        
+        return true;
+    }
+    
+    /**
      * Create a deep copy of the this matrix object.  The returned 
      * object is completely decoupled from the original.
      * 
      * @return  a deep copy object of this matrix
      */
     public M copy() {
-    
-        M  matClone = this.newInstance();
-        ((BaseMatrix<M>)matClone).assignMatrix( this.getMatrix() );
-            
+        M  matClone = this.newInstance(this.getRowCnt(), this.getColCnt());
+        ((BaseMatrix<M>)matClone).assignMatrix( this.matImpl );
         return matClone;
     }
 
@@ -337,17 +394,61 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * @since  Oct 3, 2013
      */
     public void assignZero() {
-        for (int i=0; i<this.getRowCnt(); i++)
-            for (int j=0; j<this.getColCnt(); j++)
-                this.setElem(i, j, 0.0);
+    	CommonOps.fill(this.matImpl, 0.0);
+    }
+    
+    /**
+     * Assign this matrix to be the identity matrix.  The
+     * identity matrix is a matrix with 1's on the
+     * diagonal and 0's everywhere else.
+     */
+    public void assignIdentity() {
+    	CommonOps.setIdentity(this.matImpl);
+    }
+
+
+    /**
+     * Checks if the given matrix is algebraically equivalent to this
+     * matrix.  That is, it is equal in size and element values.
+     * 
+     * @param matTest   matrix under equivalency test
+     * 
+     * @return          <code>true</code> if the argument is equivalent to this matrix,
+     *                  <code>false</code> if otherwise
+     *
+     * @author Christopher K. Allen
+     * @since  Oct 1, 2013
+     */
+    public boolean isEquivalentTo(BaseMatrix<M> matTest) {
+        if ( !this.getClass().equals(matTest.getClass()) )
+            return false;
+
+        return MatrixFeatures.isEquals(this.matImpl, matTest.getMatrix(), 10e-6);
+    }
+    
+    /**
+     * Check if matrix is a square matrix.
+     * 
+     * @return true if matrix is square.
+     */
+    public boolean isSquare() {
+    	return (this.getColCnt() == this.getRowCnt());
     }
 
     /**
+     * Calculates the rank of the matrix.
+     * 
+     * @return Rank of the matrix
+     */
+    public int rank() {
+    	return MatrixFeatures.rank(this.matImpl);
+    }
+    
+    /**
      * Ratio of the largest singular value over the smallest singular value.
      * Note that this method does a singular value decomposition just to
-     * get the number (done in the (wasteful) <code>Jama.Matrix</code>
-     * internal implementation).  Thus, this computation is not cheap
-     * if the matrix is large.
+     * get the number (done in the (wasteful) EJML internal implementation).
+     * Thus, this computation is not cheap if the matrix is large.
      * 
      * @return      the ratio of extreme singular values
      *
@@ -355,13 +456,42 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * @since  Oct 16, 2013
      */
     public double conditionNumber() {
-        return this.matImpl.cond();
+    	return NormOps.conditionP2(this.matImpl);
     }
     
     
     /*
      *  Algebraic Operations
      */
+
+    /**
+     *  Non-destructive transpose of this matrix.
+     * 
+     *  @return     transposed copy of this matrix or <code>null</code> if error
+     */
+    public M transpose()  {
+    	M result = newInstance(this.getColCnt(), this.getRowCnt());
+        CommonOps.transpose(this.matImpl, result.getMatrix());
+        
+        return result;
+    }
+
+    /**
+     *  Inverse of the matrix if the matrix is square, if the matrix is not square this is
+     *  a pseudo-inverse.
+     * 
+     *  @return inverse or pseudo-inverse of the matrix.
+     */
+    public M inverse()  {
+    	M result = newInstance(this.getColCnt(), this.getRowCnt());
+    	if (this.isSquare()) {
+    		CommonOps.invert(this.matImpl, result.getMatrix());
+    	} else {
+    		CommonOps.pinv(this.matImpl, result.getMatrix());
+    	}
+    	return result;
+    }
+
 
     /**
      *  Non-destructive matrix addition. This matrix is unaffected.
@@ -372,11 +502,10 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      *                  or <code>null</code> if error
      */
     public M plus(M matAddend) {
-        Jama.Matrix    impAdd = ((BaseMatrix<M>)matAddend).getMatrix();
-        Jama.Matrix    impSum = this.getMatrix().plus( impAdd );
-        M              matAns = this.newInstance(impSum);
+    	M result = newInstance(this.getRowCnt(), this.getColCnt());
+        CommonOps.add(this.matImpl, matAddend.getMatrix(), result.getMatrix());
 
-        return matAns;
+        return result;
     }
 
     /**
@@ -386,9 +515,7 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      *  @param  mat     matrix to be added to this (no new objects are created)
      */
     public void plusEquals(M  mat) {
-        BaseMatrix<M>     matBase = (BaseMatrix<M>)mat;
-        
-        this.getMatrix().plusEquals( matBase.getMatrix() );
+    	CommonOps.addEquals(this.matImpl, mat.getMatrix());
     }
 
     /**
@@ -400,11 +527,10 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      *                      or <code>null</code> if an error occurred
      */
     public M minus(M matSub) {
-        Jama.Matrix    impSub = ((BaseMatrix<M>)matSub).getMatrix();
-        Jama.Matrix    impDif = this.getMatrix().minus( impSub );
-        M              matAns = this.newInstance(impDif);
+        M result = newInstance(this.getRowCnt(), this.getColCnt());
+        CommonOps.subtract(this.matImpl, matSub.getMatrix(), result.getMatrix());
 
-        return matAns;
+        return result;
     }
 
     /**
@@ -414,11 +540,72 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      *  @param  mat     subtrahend
      */
     public void minusEquals(M mat) {
-        BaseMatrix<M> matBase = (BaseMatrix<M>)mat;
-        
-        this.getMatrix().minusEquals( matBase.getMatrix() );
+    	CommonOps.subtractEquals(this.matImpl, mat.getMatrix());
     }
 
+    /**
+     *  Non-destructive scalar multiplication.  This matrix is unaffected.
+     *
+     *  @param  s   multiplier
+     *
+     *  @return     new matrix equal to the element-wise product of <i>s</i> and this matrix,
+     *                      or <code>null</code> if an error occurred
+     */
+    public M times(double s) {
+    	M result = newInstance(this.getRowCnt(), this.getColCnt());
+        CommonOps.scale(s, this.matImpl, result.getMatrix());
+
+        return result;
+    }
+    
+    /**
+     *  In-place scalar multiplication.  Each element of this matrix is replaced
+     *  by its product with the argument.
+     *
+     *  @param  s   multiplier
+     */
+    public void timesEquals(double s) {
+        CommonOps.scale(s, this.matImpl);
+    }
+    
+    
+    /**
+     *  Non-destructive matrix multiplication.  A new matrix is returned with the
+     *  product while both multiplier and multiplicand are unchanged.  
+     *
+     *  @param  matRight    multiplicand - right operand of matrix multiplication operator
+     *
+     *  @return             new matrix which is the matrix product of this matrix and the argument,
+     *                      or <code>null</code> if an error occurred
+     */
+    public M times(M matRight) {
+    	M result = newInstance(this.getRowCnt(), matRight.getColCnt());
+    	CommonOps.mult(this.matImpl, matRight.getMatrix(), result.getMatrix());
+    	return result;
+    }
+
+
+    /**
+     * <p>
+     * Non-destructive matrix-vector multiplication.  The returned value is the
+     * usual product of the given vector pre-multiplied by this matrix.  Specifically,
+     * denote by <b>A</b> this matrix and by <b>x</b> the argument vector, then
+     * the components {<i>y<sub>i</sub></i>} of the returned vector <b>y</b> are given by
+     * <br>
+     * &nbsp; &nbsp; <i>y</i><sub><i>i</i></sub> = &Sigma;<sub><i>j</i></sub> <i>A<sub>ij</sub>x<sub>j</sbu></i>
+     * <br>
+     *  
+     * @param vecFac    the vector factor
+     * 
+     * @return          the matrix-vector product of this matrix with the argument
+     * 
+     */
+    public <V extends BaseVector<V>> V times(V vecFac) {
+    	V result = vecFac.newInstance(this.getRowCnt());
+        CommonOps.mult(this.matImpl,vecFac.getVector(), result.getVector());
+    
+        return result;
+    }
 
     /*
      *  Topological Operations
@@ -429,27 +616,17 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * Return the maximum absolute value of all matrix elements.  This can
      * be considered a norm on matrices, but it is not sub-multiplicative.
      * That is,
-     * <br/>
-     * <br/>
+     * <br>
+     * <br>
      * ||<b>AB</b>||<sub>max</sub> is not necessarily bound by ||<b>A</b>||<sub>max</sub> ||<b>B</b>||<sub>max</sub> .    
-     * <br/>
-     * <br/>
+     * <br>
+     * <br>
      * </p>
      * 
      * @return  max<sub><i>i,j</i></sub> | <b>A</b><sub><i>i,j</i></sub> | 
      */
     public double max() {
-        double      val = 0.0;
-        double      max = Math.abs(getElem(0,0));
-        
-        for (int i=0; i<this.getRowCnt(); i++)
-            for (int j=0; j<this.getColCnt(); j++) {
-                val = Math.abs( getElem(i,j) );
-                if (val > max)
-                    max = val;
-            }
-    
-        return max;
+    	return CommonOps.elementMax(this.matImpl);
     }
 
     /**
@@ -464,8 +641,8 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      *  where, by context, the second occurrence of ||&middot;||<sub>1</sub> is the 
      *  Lesbeque 1-norm on <b>R</b><sup><i>n</i><sup>. 
      *  </p>
+     *  <h3>NOTES:</h3>
      *  <p>
-     *  <h4>NOTES:</h4>
      *  &middot; For square matrices induced norms are sub-multiplicative, that is
      *  ||<b>AB</b>|| &le; ||<b>A</b>|| ||<b>B</b>||.
      *  <br/>
@@ -476,7 +653,7 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      *
      *  @return     ||<b>M</b>||<sub>1</sub> = max<sub><i>i</i></sub> &Sigma;<sub><i>j</i></sub> |<i>M<sub>i,j</i></sub>|
      */
-    public double norm1() { return this.getMatrix().norm1(); }
+    public double norm1() { return NormOps.normP1(this.matImpl); }
 
     /**
      *  <p>
@@ -496,7 +673,7 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      *
      *  @return     the maximum singular value of this matrix
      */
-    public double norm2() { return this.getMatrix().norm2(); }
+    public double norm2() { return NormOps.normP2(this.matImpl); }
 
     /**
      *  <p>
@@ -511,8 +688,8 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      *  where, by context, the second occurrence of ||&middot;||<sub>&infin;</sub> is the 
      *  Lesbeque &infin;-norm on <b>R</b><sup><i>n</i><sup>. 
      *  </p>
+     *  <h3>NOTES:</h3>
      *  <p>
-     *  <h4>NOTES:</h4>
      *  &middot; For square matrices induced norms are sub-multiplicative, that is
      *  ||<b>AB</b>|| &le; ||<b>A</b>|| ||<b>B</b>||.
      *  <br/>
@@ -523,7 +700,7 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      *
      *  @return     ||<b>M</b>||<sub>1</sub> = max<sub><i>i</i></sub> &Sigma;<sub><i>j</i></sub> |<i>M<sub>i,j</i></sub>|
      */
-    public double normInf() { return this.getMatrix().normInf(); }
+    public double normInf() { return NormOps.normPInf(this.matImpl); }
 
     /**
      * <p>
@@ -540,8 +717,8 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * where Tr is the trace operator and &sigma;<sub><i>i</i></sub> are the singular values of
      * matrix <b>A</b>.  
      * </p>
+     * <h3>NOTES</h3>
      * <p>
-     * <h4>NOTES</h4>
      * &middot; Since the Schatten norms are sub-multiplicative, the Frobenius norm
      * is sub-multiplicative.
      * <br/>
@@ -554,7 +731,7 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      *  @return     ||<b>A</b>||<sub><i>F</i></sub> = [ &Sigma;<sub><i>i,j</i></sub> <i>A<sub>ij</sub></i><sup>2</sup> ]<sup>1/2</sup>
      */
     public double normF() { 
-        return this.getMatrix().normF(); 
+        return NormOps.normF(this.matImpl); 
     }
 
     
@@ -563,12 +740,13 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      */
 
     /**
-     *  Print out the contents of the R2x2 in text format.
+     *  Print out the contents of the matrix in text format.
      *
      *  @param  os      output stream to receive text dump
      */
     public void print(PrintWriter os) {
-        this.matImpl.print(os, new DecimalFormat("0.#####E0"), this.getColCnt());
+    	String strMatrix = this.toStringMatrix(new DecimalFormat("0.#####E0"), this.getColCnt());
+    	os.print(strMatrix);
     }
 
     
@@ -577,7 +755,7 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      */
     
     /**
-     * Save the value of this <code>PhaseMatrix</code> to a data sink 
+     * Save the value of this matrix to a data sink 
      * represented by the <code>DataAdaptor</code> interface.
      * 
      * @param daptArchive   interface to data sink 
@@ -590,20 +768,19 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
     }
 
     /**
-     * Restore the value of the this <code>PhaseMatrix</code> from the
+     * Restore the value of the this matrix from the
      * contents of a data archive.
      * 
      * @param daptArchive   interface to data source
      * 
      * @throws DataFormatException      malformed data
-     * @throws IllegalArgumentException wrong number of string tokens
      * 
      * @see xal.tools.data.IArchive#load(xal.tools.data.DataAdaptor)
      */
     @Override
     public void load(DataAdaptor daptArchive) throws DataFormatException {
-        if ( daptArchive.hasAttribute(PhaseMatrix.ATTR_DATA) )  {
-            String  strValues = daptArchive.stringValue(PhaseMatrix.ATTR_DATA);
+        if ( daptArchive.hasAttribute(BaseMatrix.ATTR_DATA) )  {
+            String  strValues = daptArchive.stringValue(BaseMatrix.ATTR_DATA);
             this.setMatrix(strValues);         
         }
     }
@@ -623,7 +800,6 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      */
     @Override
     public boolean equals(Object objTest) {
-        //boolean bResult = this.equals(objTest);	// this code causes an infinite recursion
 		final boolean bResult = super.equals( objTest );
         
         return bResult;
@@ -710,12 +886,20 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * @since  Feb 8, 2013
      */
     public String   toStringMatrix(NumberFormat fmt, int intColWd) {
-        StringWriter sw = new StringWriter();
-        PrintWriter  pw = new PrintWriter(sw);
-        
-        matImpl.print(pw, fmt, intColWd);
-        
-        return  sw.toString();
+    	StringWriter sw = new StringWriter();
+    	PrintWriter pw = new PrintWriter(sw);
+
+   		pw.print("{ ");
+    	for (int i=0; i<this.getRowCnt(); i++) {
+    		pw.print("{ ");
+    		for (int j=0; j<this.getColCnt(); j++) {
+    			pw.print(fmt.format(this.getElem(i, j)) + ", ");
+    		}
+    		pw.print(" }\n");
+    	}
+    	pw.print(" }");
+    	
+    	return sw.toString();
     }
     
     
@@ -746,28 +930,25 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
     /**
      *  Return the internal matrix representation.
      *
-     *  @return     the Jama matrix object
+     *  @return     the internal matrix implementation
      */
-    protected Jama.Matrix getMatrix() { 
+    protected DenseMatrix64F getMatrix() { 
         return matImpl; 
     }
 
+
     /**
      * Sets the internal matrix value to that given in the argument. This
-     * is a deep copy operation.
+     * is a deep copy operation.  Note that the complete matrix is copy,
+     * thus the dimensions and other parameters are assigned as well.
      * 
      * @param matValue  internal implementation of matrix values
      *
      * @author Christopher K. Allen
      * @since  Oct 1, 2013
      */
-    protected void assignMatrix(Jama.Matrix matValue) {
-        for (int i=0; i<this.getRowCnt(); i++)
-            for (int j=0; j<this.getColCnt(); j++) {
-                double dblVal = matValue.get(i, j);
-                
-                this.matImpl.set(i, j, dblVal);
-            }
+    protected void assignMatrix(DenseMatrix64F matValue) {
+        this.matImpl = matValue.copy();
     }
 
     /**
@@ -782,27 +963,16 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * the compiler to do more error checking.
      * </p>
      * 
+     * @param row Number of rows.
+     * @param col Number of columns.
+     * 
      * @return  uninitialized matrix object of type <code>M</code>
      * 
      * @author Ivo List
      * @author Christopher K. Allen
      * @since  Oct 1, 2013
      */
-    protected abstract M newInstance();
-//    protected M newInstance() throws InstantiationException {
-//        try {
-//            M matNewInst = this.ctrType.newInstance();
-//    
-//            return matNewInst;
-//    
-//        } catch (InstantiationException   | 
-//                IllegalAccessException   | 
-//                IllegalArgumentException | 
-//                InvocationTargetException e) {
-//    
-//            throw new InstantiationException("Unable to copy matrix " + this.getClass().getName());
-//        }
-//    }
+    protected abstract M newInstance(int row, int col);
     
     /**
      * Creates a new instance of this matrix type initialized to the given
@@ -815,18 +985,12 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * @author Christopher K. Allen
      * @since  Oct 1, 2013
      */
-    protected M newInstance(Jama.Matrix impInit) {
-        
-        M   matNewInst = this.newInstance();
-        
-        ((BaseMatrix<M>)matNewInst).assignMatrix(impInit);
+    protected M newInstance(DenseMatrix64F impInit)     {
+        M matNewInst = this.newInstance(impInit.numRows, impInit.numCols);
+        matNewInst.assignMatrix(impInit);
         
         return matNewInst;
     }
-    
-//    public <U extends Vector<U>, V extends Vector<V>>  U times (V vec) {
-//        return null;
-//    }
 
     
     /*
@@ -842,10 +1006,8 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      *  
      * @throws UnsupportedOperationException  child class has not defined a public, zero-argument constructor
      */
-    protected BaseMatrix(int cntRows, int cntCols) /*throws UnsupportedOperationException*/ {
-        this.cntRows = cntRows;
-        this.cntCols = cntCols;
-        this.matImpl = new Jama.Matrix(cntRows, cntCols, 0.0);
+    protected BaseMatrix(int cntRows, int cntCols) {
+        this.matImpl = new DenseMatrix64F(cntRows, cntCols);
     }
 
     /**
@@ -853,37 +1015,33 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * copy of the given object.  The dimensions are set and the 
      * internal array is cloned. 
      *
-     * @param matParent     the matrix to be cloned
+     * @param matTemplate     the matrix to be cloned
      *
-     * @throws UnsupportedOperationException  base class has not defined a public, zero-argument constructor
-     *  
      * @author Christopher K. Allen
      * @since  Sep 25, 2013
      */
     protected BaseMatrix(M matParent) {
-        this(matParent.getRowCnt(), matParent.getColCnt());
-        
-        BaseMatrix<M> matBase = (BaseMatrix<M>)matParent;
-        this.assignMatrix(matBase.getMatrix()); 
+        this.assignMatrix(matParent.getMatrix());
     }
     
     /**
+     *  <p>
      *  Parsing Constructor - creates an instance of the child class and initialize it
      *  according to a token string of element values.  
-     *
+     *  </p>
+     *  <p>
      *  The token string argument is assumed to be one-dimensional and packed by
      *  column (ala FORTRAN).
+     *  </p>
      *
      *  @param  cntRows     the matrix row size of this object
      *  @param  cntCols     the matrix column size of this object
      *  @param  strTokens   token vector of getSize()^2 numeric values
      *
-     *  @exception  IllegalArgumentException    wrong number of token strings
      *  @exception  NumberFormatException       bad number format, unparseable
      */
     protected BaseMatrix(int cntRows, int cntCols, String strTokens)    
-        throws IllegalArgumentException, NumberFormatException
-    {
+        throws NumberFormatException {
         this(cntRows, cntCols);
         
         // Error check the number of token strings
@@ -906,31 +1064,51 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
     
     /**
      * <p>
-     * Initializing constructor for bases class <code>SquareMatrix</code>.  
+     * Initializing constructor for bases class <code>BaseMatrix</code>.  
      * Sets the entire matrix to the values given in the Java primitive type 
      * double array. The argument itself remains unchanged. 
      * </p>
      * <p>
-     * The dimensions of the given Java double array must be 
-     * consistent with the size of the matrix.  Thus, if the arguments are
+     * The dimensions of the given Java double array determine the size of the matrix.
+     * An <i>m</i>x<i>n</i> Java double array creates an <i>m</i>x<i>n</i> 
+     * <code>BaseMatrix</code> array.  If the argument is not fully allocated or 
      * inconsistent, an exception is thrown.
      * </p>
+     * <p>
+     * As an example consider the following Java array
+     * <pre>
+     * <code>
+     * double[][] arrInternal = new double[][] { 
+     *                               {1.1, 1.2, 1.3, 1.4, 1.5},
+     *                               {2.1, 2.2, 2.3, 2.0, 2.5},
+     *                               {3.1, 3.2, 3.3, 3.4, 3.0}
+     *                                };
+     * </code>
+     * </pre>
+     * This array would produce a 3&times;5 matrix.  Note that the given argument becomes
+     * the internal representation of the matrix object.  Thus, the Java array 
+     * <code>arrInternal</code> will be changed by the the encapsulating matrix object
+     * so should no longer be referenced after presenting it to this constructor.
+     * </p>
      * 
-     * @param cntRows     the matrix row size of this object
-     * @param cntCols     the matrix column size of this object
-     * @param arrMatrix   Java primitive array containing new matrix values
+     * @param arrMatrix   Java primitive array to be new internal matrix value representation
      * 
-     * @exception  ArrayIndexOutOfBoundsException  the argument must have the same dimensions as this matrix
+     * @exception  IllegalArgumentException  the argument is degenerate and cannot represent a matrix
      *
-     * @author Christopher K. Allen
-     * @since  Oct 4, 2013
+     * @since  Oct 4, 2013  by Christopher K. Allen
      */
-    protected BaseMatrix(int cntRows, int cntCols, double[][] arrVals) throws ArrayIndexOutOfBoundsException {
-        this(cntRows, cntCols);
-        
-        this.setMatrix(arrVals);;
+    protected BaseMatrix(double[][] arrVals) {
+        this.matImpl = new DenseMatrix64F(arrVals);
     }
 
+    /**
+     * Initializing constructor for class <code>BaseMatrix</code>.  
+     * Sets the internal matrix to the copy of the argument.
+     * 
+     * @param matrix implementation object to copy to this matrix
+     */
+    protected BaseMatrix(DenseMatrix64F matrix) {
+        this.matImpl = matrix.copy();
+    }
 
-    
 }

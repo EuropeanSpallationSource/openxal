@@ -169,15 +169,15 @@ public class TimingCenter implements DataListener {
      * </p>
      * <p>
      * String values: 
-     * <br/>    "Off", 
-     * <br/>    "Standby", 
-     * <br/>    "MPS Test", 
-     * <br/>    "10 uSec", 
-     * <br/>    "50 uSec", 
-     * <br/>    "100 uSec",
-     * <br/>    "1 mSec", 
-     * <br/>    "Full Power", 
-     * <br/>    "Unknown!"
+     * <br>    "Off", 
+     * <br>    "Standby", 
+     * <br>    "MPS Test", 
+     * <br>    "10 uSec", 
+     * <br>    "50 uSec", 
+     * <br>    "100 uSec",
+     * <br>    "1 mSec", 
+     * <br>    "Full Power", 
+     * <br>    "Unknown!"
      * </p>
      */
 	public static final String BEAM_MODE_HANDLE ="beamMode";
@@ -198,10 +198,18 @@ public class TimingCenter implements DataListener {
 	/**
 	 * Create an empty TimingCenter
 	 */
-	public TimingCenter() {
-		_channelSuite = new ChannelSuite();
+	public TimingCenter( final ChannelFactory channelFactory ) {
+		_channelSuite = channelFactory != null ? new ChannelSuite( channelFactory ) : new ChannelSuite();
 	}
-	
+
+
+	/**
+	 * Create an empty TimingCenter
+	 */
+	public TimingCenter() {
+		this( null );
+	}
+
 	
 	/**
 	 * Get the default TimingCenter corresponding to the user's default main optics source

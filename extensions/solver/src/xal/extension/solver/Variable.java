@@ -9,8 +9,6 @@
  */
 package xal.extension.solver;
 
-import java.util.*;
-
 
 /**
  * Variable describes a parameter that may be varied by the solver.  It specifies a name, an initial guess and upper and lower limits.
@@ -22,13 +20,13 @@ public class Variable {
 	protected final String _name;
 	
 	/** the initial value/guess assigned to the variable */
-	protected final double _initialValue;
+	protected double _initialValue;
 	
 	/** the lowest value that can be assigned to the variable */
-	protected final double _lowerLimit;
+	protected double _lowerLimit;
 	
 	/** the highest value that can be assigned to the variable */
-	protected final double _upperLimit;
+	protected double _upperLimit;
 	
 	
 	/**
@@ -90,6 +88,20 @@ public class Variable {
 	public double getUpperLimit() {
 		return _upperLimit;
 	}
+	
+	public void setInitialValue(double initialValue) {
+		_initialValue = initialValue;
+	}
+	
+	public void setLowerLimit(double lowerLimit) {
+		_lowerLimit = lowerLimit;
+	}
+	
+	public void setUpperLimit(double upperLimit) {
+		_upperLimit = upperLimit;
+	}
+	
+	
 	
 	
 	/**

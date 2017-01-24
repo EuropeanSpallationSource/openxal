@@ -18,7 +18,6 @@ import xal.tools.data.DataFormatException;
 import xal.tools.math.r3.R3;
 import xal.model.probe.traj.Trajectory;
 import xal.model.probe.traj.TwissProbeState;
-import xal.model.xml.ParsingException;
 
 /**
  * <p>
@@ -26,11 +25,11 @@ import xal.model.xml.ParsingException;
  * Specifically, the state of this probe is the 7x7 matrix of homogeneous phase
  * space moments up to, and including second order. This is the correlation
  * matrix for the beam and is represented as
- * <br/>
- * <br/>
+ * <br>
+ * <br>
  * &nbsp; &nbsp; <b>&chi;</b> = &lt; <b>zz</b><sup>T</sup>&gt;
- * <br/>
- * <br/>
+ * <br>
+ * <br>
  * where <b>z </b>=(x,x',y,y',z,z',1) is the vector of homogeneous phase space
  * coordinates, and &lt;.&gt; is the moment operator with respect to the beam
  * distribution.
@@ -367,7 +366,7 @@ public class TwissProbe extends BunchProbe<TwissProbeState> {
      * @since  Nov 5, 2013
      */
     @Override
-    protected TwissProbeState readStateFrom(DataAdaptor container) throws ParsingException {
+    protected TwissProbeState readStateFrom(DataAdaptor container) throws DataFormatException {
         TwissProbeState state = new TwissProbeState();
         state.load(container);
         return state;

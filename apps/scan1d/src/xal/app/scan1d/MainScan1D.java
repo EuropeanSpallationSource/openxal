@@ -6,8 +6,6 @@
 package xal.app.scan1d;
 
 import javax.swing.*;
-import javax.swing.event.*;
-import java.awt.event.*;
 import java.net.*;
 
 import xal.extension.application.*;
@@ -87,22 +85,6 @@ public class MainScan1D extends ApplicationAdaptor {
 	 */
 	public void editPreferences(XalDocument document) {
 		((ScanDocument1D) document).editPreferences();
-	}
-
-
-	/**
-	 *  Specifies whether the one dimensional scan will send standard output and
-	 *  error to the console.
-	 *
-	 *@return    Name of my application.
-	 */
-	public boolean usesConsole() {
-		String usesConsoleProperty = System.getProperty("usesConsole");
-		if (usesConsoleProperty != null) {
-			return Boolean.valueOf(usesConsoleProperty).booleanValue();
-		} else {
-			return true;
-		}
 	}
 
 

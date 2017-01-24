@@ -18,8 +18,8 @@ import xal.smf.impl.Bend;
  * <code>IdealDipoleFace</code> elements that provided the thin lens
  * dynamics of the tilted pole faces.
  * </p>
+ * <h3>NOTE:</h3>
  * <p>
- * <h4>NOTE:</h4>
  * A rectangle dipole can be specified by setting equal exit and entrance
  * pole face angles.
  * </p>
@@ -28,7 +28,9 @@ import xal.smf.impl.Bend;
  * @see xal.model.elem#IdealMagSectorDipole
  * @see xal.model.elem#IdealMagDipoleFace
  *
+ * @deprecated  This class has been replaced by <code>IdealMagWedgeDipole2</code>
  */
+@Deprecated
 public class IdealMagWedgeDipole extends ElectromagnetSeq {
 
 
@@ -267,7 +269,7 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
     /**  
      *  Get the magnetic field strength of the dipole electromagnet
      *
-     *  @return     magnetic field (in <bold>Tesla</bold>).
+     *  @return     magnetic field (in <b>Tesla</b>).
      */
     public double getMagField() {
         return this.getMagBody().getMagField();
@@ -291,7 +293,7 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
     /**  
      *  Set the magnetic field strength of the dipole electromagnet.
      *
-     *  @param  dblField    magnetic field (in <bold>Tesla</bold>).
+     *  @param  dblField    magnetic field (in <b>Tesla</b>).
      */
     public void setMagField(double dblField) {
         this.getEntrFace().setMagField(dblField);
@@ -303,16 +305,16 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
 	/**
 	 * Conversion method to be provided by the user
 	 * 
-	 * @param latticeElement the SMF node to convert
+	 * @param element the SMF node to convert
 	 */
 	@Override
 	public void initializeFrom(LatticeElement element) {
 		super.initializeFrom(element);
 		
-		Bend magnet = (Bend) element.getNode();		
+		Bend magnet = (Bend) element.getHardwareNode();		
 
-		// gov.sns.xal.model.elem.ThickDipole xalDipole =
-		// new gov.sns.xal.model.elem.ThickDipole();
+		// xal.model.elem.ThickDipole xalDipole =
+		// new xal.model.elem.ThickDipole();
 		// xalDipole.setId(element.getNode().getId());
 		// xalDipole.setLength(element.getLength());
 		// xalDipole.setMagField(magnet.getDesignField());
@@ -340,9 +342,9 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
 		setFieldIndex(fld_ind0);
 		/*setDesignBendAngle(ang_bend);*/
 						
-		if (element.getPartNr() == 0) // first piece
+		if (element.isFirstSlice()) // first piece
 			setEntrPoleAngle(magnet.getEntrRotAngle() * Math.PI / 180.);
-		if (element.getParts()-1 == element.getPartNr()) // last piece					
+		if (element.isLastSlice()) // last piece					
 			setExitPoleAngle(magnet.getExitRotAngle() * Math.PI / 180.);
 	}
 

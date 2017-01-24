@@ -7,11 +7,11 @@
 package xal.extension.twissobserver;
 
 import xal.tools.beam.CovarianceMatrix;
+import xal.tools.math.GenericMatrix;
 import xal.model.ModelException;
 
 import java.util.ArrayList;
 
-import Jama.Matrix;
 
 /**
  * Reconstructs the zero-current second-order beam moments from multiple profile data measurements
@@ -78,8 +78,8 @@ public class CsZeroCurrentEstimator extends CourantSnyderEstimator {
      * the minimum norm (or "least energy") solution; specifically, the solution that has the smallest
      * Lebesgue 2-norm.  If we have 3 data points for the phase plane then the unique solution is returned.
      * </p>
+     * <h3>NOTE</h3>
      * <p>
-     * <h4>NOTE</h4>
      * &middot;  If the reconstruction device has non-zero length the location of the moments corresponds 
      * to the exit of the device.
      * </p>
@@ -99,9 +99,9 @@ public class CsZeroCurrentEstimator extends CourantSnyderEstimator {
     {
         this.genTransMat.generateWithoutSpaceCharge();
 
-        Matrix  vecMmtsHor = this.computeReconSubFunction(PHASEPLANE.HOR, strRecDevId, arrData);
-        Matrix  vecMmtsVer = this.computeReconSubFunction(PHASEPLANE.VER, strRecDevId, arrData);
-        Matrix  vecMmtsLng = this.computeReconSubFunction(PHASEPLANE.LNG, strRecDevId, arrData);
+        GenericMatrix  vecMmtsHor = this.computeReconSubFunction(PHASEPLANE.HOR, strRecDevId, arrData);
+        GenericMatrix  vecMmtsVer = this.computeReconSubFunction(PHASEPLANE.VER, strRecDevId, arrData);
+        GenericMatrix  vecMmtsLng = this.computeReconSubFunction(PHASEPLANE.LNG, strRecDevId, arrData);
 
         CovarianceMatrix   matSig = PHASEPLANE.constructCovariance(vecMmtsHor, vecMmtsVer, vecMmtsLng);
 

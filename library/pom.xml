@@ -5,11 +5,11 @@
     <parent>
         <groupId>org.xal</groupId>
         <artifactId>openxal</artifactId>
-        <version>1.0.3</version>
+        <version>1.0.9</version>
     </parent>
 
     <artifactId>openxal.library</artifactId>
-    <version>1.0.3</version>
+    <version>1.0.9</version>
 
     <packaging>jar</packaging>
 
@@ -34,7 +34,7 @@
                     </execution>
                 </executions>
             </plugin>
- 
+
             <!-- This will copy all applications jars to the target directory -->
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
@@ -46,104 +46,154 @@
                         <goals>
                             <goal>copy-resources</goal>
                         </goals>
-				<configuration>
-				    <outputDirectory>${project.build.directory}</outputDirectory>
-				    <overwrite>true</overwrite>
-				    <resources>
-					<resource><directory>../apps/bricks/target</directory><includes><include>openxal.apps.bricks-${project.version}.jar</include></includes></resource>
-					<resource><directory>../apps/dbbrowser/target</directory><includes><include>openxal.apps.dbbrowser-${project.version}.jar</include></includes></resource>
-					<resource><directory>../apps/experimentautomator/target</directory><includes><include>openxal.apps.experimentautomator-${project.version}.jar</include></includes></resource>
-					<resource><directory>../apps/extlatgenerator/target</directory><includes><include>openxal.apps.extlatgenerator-${project.version}.jar</include></includes></resource>
-					<resource><directory>../apps/knobs/target</directory><includes><include>openxal.apps.knobs-${project.version}.jar</include></includes></resource>
-					<resource><directory>../apps/launcher/target</directory><includes><include>openxal.apps.launcher-${project.version}.jar</include></includes></resource>
-					<resource><directory>../apps/machinesimulator/target</directory><includes><include>openxal.apps.machinesimulator-${project.version}.jar</include></includes></resource>
-					<resource><directory>../apps/mtv/target</directory><includes><include>openxal.apps.mtv-${project.version}.jar</include></includes></resource>
-					<resource><directory>../apps/opticseditor/target</directory><includes><include>openxal.apps.opticseditor-${project.version}.jar</include></includes></resource>
-					<resource><directory>../apps/opticsswitcher/target</directory><includes><include>openxal.apps.opticsswitcher-${project.version}.jar</include></includes></resource>
-					<resource><directory>../apps/orbitcorrect/target</directory><includes><include>openxal.apps.orbitcorrect-${project.version}.jar</include></includes></resource>
-					<resource><directory>../apps/pvhistogram/target</directory><includes><include>openxal.apps.pvhistogram-${project.version}.jar</include></includes></resource>
-					<resource><directory>../apps/pvlogger/target</directory><includes><include>openxal.apps.pvlogger-${project.version}.jar</include></includes></resource>
-					<resource><directory>../apps/scan1d/target</directory><includes><include>openxal.apps.scan1d-${project.version}.jar</include></includes></resource>
-					<resource><directory>../apps/scan2d/target</directory><includes><include>openxal.apps.scan2d-${project.version}.jar</include></includes></resource>
-					<resource><directory>../apps/scope/target</directory><includes><include>openxal.apps.scope-${project.version}.jar</include></includes></resource>
-					<resource><directory>../apps/virtualaccelerator/target</directory><includes><include>openxal.apps.virtualaccelerator-${project.version}.jar</include></includes></resource>
-					<resource><directory>../apps/xyzcorrelator/target</directory><includes><include>openxal.apps.xyzcorrelator-${project.version}.jar</include></includes></resource>
-				    </resources>
-				</configuration>
-			    </execution>
-			</executions>
-		    </plugin>
-		</plugins>
-	</build>
+                <configuration>
+                    <outputDirectory>${project.build.directory}</outputDirectory>
+                    <overwrite>true</overwrite>
+                    <resources>
+                    <resource><directory>../apps/acceleratorapplicationtemplate/target</directory><includes><include>openxal.apps.acceleratorapplicationtemplate-${project.version}.jar</include></includes></resource>
+                    <resource><directory>../apps/acceleratordemo/target</directory><includes><include>openxal.apps.acceleratordemo-${project.version}.jar</include></includes></resource>
+                    <resource><directory>../apps/arraypvviewer/target</directory><includes><include>openxal.apps.arraypvviewer-${project.version}.jar</include></includes></resource>
+                    <resource><directory>../apps/beam_matcher/target</directory><includes><include>openxal.apps.beam_matcher-${project.version}.jar</include></includes></resource>
+                    <resource><directory>../apps/bpmviewer/target</directory><includes><include>openxal.apps.bpmviewer-${project.version}.jar</include></includes></resource>
+                    <resource><directory>../apps/bricks/target</directory><includes><include>openxal.apps.bricks-${project.version}.jar</include></includes></resource>
+                    <resource><directory>../apps/bsmanalysis/target</directory><includes><include>openxal.apps.bsmanalysis-${project.version}.jar</include></includes></resource>
+                    <resource><directory>../apps/dbbrowser/target</directory><includes><include>openxal.apps.dbbrowser-${project.version}.jar</include></includes></resource>
+                    <resource><directory>../apps/demo/target</directory><includes><include>openxal.apps.demo-${project.version}.jar</include></includes></resource>
+                    <resource><directory>../apps/demobricks/target</directory><includes><include>openxal.apps.demobricks-${project.version}.jar</include></includes></resource>
+                    <resource><directory>../apps/desktopdemo/target</directory><includes><include>openxal.apps.desktopdemo-${project.version}.jar</include></includes></resource>
+                    <resource><directory>../apps/diagtiming/target</directory><includes><include>openxal.apps.diagtiming-${project.version}.jar</include></includes></resource>
+                    <resource><directory>../apps/ema/target</directory><includes><include>openxal.apps.ema-${project.version}.jar</include></includes></resource>
+                    <resource><directory>../apps/emittanceanalysis/target</directory><includes><include>openxal.apps.emittanceanalysis-${project.version}.jar</include></includes></resource>
+                    <resource><directory>../apps/energymanager/target</directory><includes><include>openxal.apps.energymanager-${project.version}.jar</include></includes></resource>
+                    <resource><directory>../apps/experimentautomator/target</directory><includes><include>openxal.apps.experimentautomator-${project.version}.jar</include></includes></resource>
+                    <resource><directory>../apps/extlatgenerator/target</directory><includes><include>openxal.apps.extlatgenerator-${project.version}.jar</include></includes></resource>
+                    <resource><directory>../apps/injdumpwizard/target</directory><includes><include>openxal.apps.injdumpwizard-${project.version}.jar</include></includes></resource>
+                    <resource><directory>../apps/knobs/target</directory><includes><include>openxal.apps.knobs-${project.version}.jar</include></includes></resource>
+                    <resource><directory>../apps/labbook/target</directory><includes><include>openxal.apps.labbook-${project.version}.jar</include></includes></resource>
+                    <resource><directory>../apps/launcher/target</directory><includes><include>openxal.apps.launcher-${project.version}.jar</include></includes></resource>
+                    <resource><directory>../apps/machinerecorder/target</directory><includes><include>openxal.apps.machinerecorder-${project.version}.jar</include></includes></resource>
+                    <resource><directory>../apps/machinesimulator/target</directory><includes><include>openxal.apps.machinesimulator-${project.version}.jar</include></includes></resource>
+                    <resource><directory>../apps/magnetcycling/target</directory><includes><include>openxal.apps.magnetcycling-${project.version}.jar</include></includes></resource>
+                    <resource><directory>../apps/modelmanager/target</directory><includes><include>openxal.apps.modelmanager-${project.version}.jar</include></includes></resource>
+                    <resource><directory>../apps/mtv/target</directory><includes><include>openxal.apps.mtv-${project.version}.jar</include></includes></resource>
+                    <resource><directory>../apps/opticseditor/target</directory><includes><include>openxal.apps.opticseditor-${project.version}.jar</include></includes></resource>
+                    <resource><directory>../apps/opticsswitcher/target</directory><includes><include>openxal.apps.opticsswitcher-${project.version}.jar</include></includes></resource>
+                    <resource><directory>../apps/orbitcorrect/target</directory><includes><include>openxal.apps.orbitcorrect-${project.version}.jar</include></includes></resource>
+                    <resource><directory>../apps/pasta/target</directory><includes><include>openxal.apps.pasta-${project.version}.jar</include></includes></resource>
+                    <resource><directory>../apps/pvhistogram/target</directory><includes><include>openxal.apps.pvhistogram-${project.version}.jar</include></includes></resource>
+                    <resource><directory>../apps/pvlogger/target</directory><includes><include>openxal.apps.pvlogger-${project.version}.jar</include></includes></resource>
+                    <resource><directory>../apps/rfphaseshaker/target</directory><includes><include>openxal.apps.rfphaseshaker-${project.version}.jar</include></includes></resource>
+                    <resource><directory>../apps/saddam/target</directory><includes><include>openxal.apps.saddam-${project.version}.jar</include></includes></resource>
+                    <resource><directory>../apps/scalarpvviewer/target</directory><includes><include>openxal.apps.scalarpvviewer-${project.version}.jar</include></includes></resource>
+                    <resource><directory>../apps/scan1d/target</directory><includes><include>openxal.apps.scan1d-${project.version}.jar</include></includes></resource>
+                    <resource><directory>../apps/scan2d/target</directory><includes><include>openxal.apps.scan2d-${project.version}.jar</include></includes></resource>
+                    <resource><directory>../apps/sclmonitor/target</directory><includes><include>openxal.apps.sclmonitor-${project.version}.jar</include></includes></resource>
+                    <resource><directory>../apps/scope/target</directory><includes><include>openxal.apps.scope-${project.version}.jar</include></includes></resource>
+                    <resource><directory>../apps/score/target</directory><includes><include>openxal.apps.score-${project.version}.jar</include></includes></resource>
+                    <resource><directory>../apps/template/target</directory><includes><include>openxal.apps.template-${project.version}.jar</include></includes></resource>
+                    <resource><directory>../apps/timestamptest/target</directory><includes><include>openxal.apps.timestamptest-${project.version}.jar</include></includes></resource>
+                    <resource><directory>../apps/ttffactory/target</directory><includes><include>openxal.apps.ttffactory-${project.version}.jar</include></includes></resource>
+                    <resource><directory>../apps/virtualaccelerator/target</directory><includes><include>openxal.apps.virtualaccelerator-${project.version}.jar</include></includes></resource>
+                    <resource><directory>../apps/wirescan/target</directory><includes><include>openxal.apps.wirescan-${project.version}.jar</include></includes></resource>
+                    <resource><directory>../apps/xyzcorrelator/target</directory><includes><include>openxal.apps.xyzcorrelator-${project.version}.jar</include></includes></resource>
+                    </resources>
+                </configuration>
+                </execution>
+            </executions>
+            </plugin>
+        </plugins>
+    </build>
 
-	<dependencies>
-		<dependency>
-		    <groupId>org.xal</groupId>
-		    <artifactId>openxal.extensions.widgets</artifactId>
-		</dependency>
-		<dependency>
-		    <groupId>org.xal</groupId>
-		    <artifactId>openxal.extensions.bricks</artifactId>
-		</dependency>
-		<dependency>
-		    <groupId>org.xal</groupId>
-		    <artifactId>openxal.extensions.service</artifactId>
-		</dependency>
-		<dependency>
-		    <groupId>org.xal</groupId>
-		    <artifactId>openxal.extensions.application</artifactId>
-		</dependency>
-		<dependency>
-		    <groupId>org.xal</groupId>
-		    <artifactId>openxal.extensions.pvlogger</artifactId>
-		</dependency>
-		<dependency>
-		    <groupId>org.xal</groupId>
-		    <artifactId>openxal.extensions.extlatgen</artifactId>
-		</dependency>
-		<dependency>
-		    <groupId>org.xal</groupId>
-		    <artifactId>openxal.extensions.solver</artifactId>
-		</dependency>
-		<dependency>
-		    <groupId>org.xal</groupId>
-		    <artifactId>openxal.extensions.fit</artifactId>
-		</dependency>
-		<dependency>
-		    <groupId>org.xal</groupId>
-		    <artifactId>openxal.extensions.orbit</artifactId>
-		</dependency>
-		<dependency>
-		    <groupId>org.xal</groupId>
-		    <artifactId>openxal.extensions.recordselector</artifactId>
-		</dependency>
-		<dependency>
-		    <groupId>org.xal</groupId>
-		    <artifactId>openxal.extensions.scan</artifactId>
-		</dependency>
-		<dependency>
-		    <groupId>org.xal</groupId>
-		    <artifactId>openxal.extensions.twissobserver</artifactId>
-		</dependency>
-		<dependency>
-		    <groupId>org.xal</groupId>
-		    <artifactId>openxal.extensions.worker</artifactId>
-		</dependency>
-		<dependency>
-		    <groupId>org.xal</groupId>
-		    <artifactId>openxal.plugins.jca</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.xal</groupId>
-			<artifactId>openxal.plugins.postgres</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>se.lu.esss.ics.jels</groupId>
-			<artifactId>jels</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>se.lu.esss.ics.linaclego</groupId>
-			<artifactId>openxal.extensions.linaclego</artifactId>
-		</dependency>
-	</dependencies>
+    <repositories>
+        <repository>
+            <id>epics</id>
+            <name>EPICS Repository</name>
+            <url>http://epics.sourceforge.net/maven2/</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.xal</groupId>
+            <artifactId>openxal.extensions.widgets</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.xal</groupId>
+            <artifactId>openxal.extensions.bricks</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.xal</groupId>
+            <artifactId>openxal.extensions.service</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.xal</groupId>
+            <artifactId>openxal.extensions.application</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.xal</groupId>
+            <artifactId>openxal.extensions.pvlogger</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.xal</groupId>
+            <artifactId>openxal.extensions.extlatgen</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.xal</groupId>
+            <artifactId>openxal.extensions.solver</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.xal</groupId>
+            <artifactId>openxal.extensions.fit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.xal</groupId>
+            <artifactId>openxal.extensions.orbit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.xal</groupId>
+            <artifactId>openxal.extensions.recordselector</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.xal</groupId>
+            <artifactId>openxal.extensions.scan</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.xal</groupId>
+            <artifactId>openxal.extensions.twissobserver</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.xal</groupId>
+            <artifactId>openxal.extensions.wirescan</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.xal</groupId>
+            <artifactId>openxal.extensions.worker</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.xal</groupId>
+            <artifactId>openxal.plugins.jca</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.xal</groupId>
+            <artifactId>openxal.plugins.postgres</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>se.lu.esss.ics.jels</groupId>
+            <artifactId>jels</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>se.lu.esss.ics.linaclego</groupId>
+            <artifactId>openxal.extensions.linaclego</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.epics</groupId>
+            <artifactId>pvDataJava</artifactId>
+            <version>5.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.epics</groupId>
+            <artifactId>pvAccessJava</artifactId>
+            <version>4.1.1</version>
+        </dependency>
+    </dependencies>
 </project>

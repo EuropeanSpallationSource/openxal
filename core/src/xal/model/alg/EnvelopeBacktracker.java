@@ -12,16 +12,12 @@ import xal.model.IElement;
 import xal.model.IProbe;
 import xal.model.ModelException;
 import xal.model.elem.ChargeExchangeFoil;
-import xal.model.elem.IdealMagQuad;
 import xal.model.elem.IdealRfGap;
 import xal.model.probe.EnvelopeProbe;
 import xal.model.probe.traj.EnvelopeProbeState;
-import xal.model.probe.traj.ProbeState;
 import xal.tools.beam.CovarianceMatrix;
 import xal.tools.beam.PhaseMap;
 import xal.tools.beam.PhaseMatrix;
-import xal.tools.beam.Twiss;
-import xal.tools.math.r3.R3;
 
 
 /**
@@ -45,10 +41,10 @@ import xal.tools.math.r3.R3;
  * correlation matrix.  The linear fit is weighted by the beam distribution itself, so it is 
  * more accurate in regions of higher charged density.  For a complete description see the reference
  * below.
- * </P
+ * </p>
  * <p>
  * <strong>NOTES</strong>: (CKA)
- * <br/>
+ * <br>
  * &middot;  This class has been un-deprecated.  Currently refactoring the 
  * hierarchy structure of the Algorithm base to simplify implementation of
  * implementation is not supported yet. Considering a modification
@@ -172,7 +168,7 @@ public class EnvelopeBacktracker extends EnvelopeTrackerBase {
         int     cntSteps;   // number of steps through element
         double  dblStep;    // step size through element
         
-        if(this.getSpaceChargeFlag())
+        if(this.getUseSpacecharge())
             cntSteps = (int) Math.max(Math.ceil(propLen / getStepSize()), 1);
         else 
             cntSteps = 1;
@@ -205,7 +201,7 @@ public class EnvelopeBacktracker extends EnvelopeTrackerBase {
      * @author Christopher K. Allen
      * @since Feb 9, 2009
      *
-     * @see gov.sns.xal.model.alg.EnvelopeTracker#advanceState(gov.sns.xal.model.IProbe, gov.sns.xal.model.IElement, double)
+     * @see xal.model.alg.EnvelopeTracker#advanceState(xal.model.IProbe, xal.model.IElement, double)
      * 
      */
     protected void retractState(IProbe ifcProbe, IElement ifcElem, double dblLen)
@@ -221,7 +217,7 @@ public class EnvelopeBacktracker extends EnvelopeTrackerBase {
         PhaseMatrix         matTau0  = probe.getCovariance();
 
         // Remove the emittance growth
-        if (this.getEmittanceGrowthFlag())   
+        if (this.getEmittanceGrowth())   
             matTau0 = this.removeEmittanceGrowth(probe, ifcElem, matTau0);
         
         // Compute the transfer matrix
@@ -263,13 +259,13 @@ public class EnvelopeBacktracker extends EnvelopeTrackerBase {
      * 
      * <p>
      * <strong>NOTE</strong>: (CKA)
-     * <br/>
+     * <br>
      * &middot; If space charge is included, the space charge matrix is computed for length
      * <code>dblLen</code>, but at a half-step location behind the current probe
      * position.  This method is the same technique used by Trace3D.  The space charge
      * matrix is then pre- and post- multiplied by the element transfer matrix for
      * a half-step before and after the mid-step position, respectively.  
-     * <br/>
+     * <br>
      * &middot; I do not
      * know if this (leap-frog) technique buys us much more accuracy then full 
      * stepping.
@@ -303,7 +299,7 @@ public class EnvelopeBacktracker extends EnvelopeTrackerBase {
             probe.setKineticEnergy(W-dW);
             PhaseMatrix matPhiI = elemRfGap.transferMap(probe, dblLen).getFirstOrder();
             
-            if (this.getEmittanceGrowthFlag()) {
+            if (this.getEmittanceGrowth()) {
                 double      dphi     = this.effPhaseSpread(probe, elemRfGap);
                 
                 matPhiI = super.modTransferMatrixForEmitGrowth(dphi, matPhiI);
@@ -322,7 +318,7 @@ public class EnvelopeBacktracker extends EnvelopeTrackerBase {
         }
          
         // Check for easy case of no space charge
-        if (!this.getSpaceChargeFlag())    {
+        if (!this.getUseSpacecharge())    {
             matPhi = ifcElem.transferMap(probe, dblLen).getFirstOrder();
             
         // we must treat space charge
@@ -367,20 +363,6 @@ public class EnvelopeBacktracker extends EnvelopeTrackerBase {
             
             // Compute the full transfer matrix for the distance dblLen
             matPhi   = matPhi1.times( matPhiSc.times(matPhi0) );
-        }
-        
-        
-        
-        if (ifcElem instanceof IdealMagQuad) {   
-            // sako  put alignment error in sigma matrix
-            //  NOTE the use of negative displacements for back-propagation
-            IdealMagQuad    elemQuad = (IdealMagQuad)ifcElem;
-            
-            double delx = - elemQuad.getAlignX();
-            double dely = - elemQuad.getAlignY();
-            double delz = - elemQuad.getAlignZ();
-            
-            matPhi = this.modTransferMatrixForDisplError(delx, dely, delz, matPhi);
         }
         
         return matPhi;
@@ -429,23 +411,23 @@ public class EnvelopeBacktracker extends EnvelopeTrackerBase {
      * <i>x'<sub>i</sub></i> and 
      * <i>x'<sub>f</sub></i>, respectively, 
      * are related by the following formula:
-     * <br/>
-     * <br/>
+     * <br>
+     * <br>
      * &nbsp; &lt;<i>x'<sub>f</sub></i><sup>2</sup>&gt; = 
      *         &Delta;&lt;<i>x'<sub>f</sub></i><sup>2</sup>&gt; +
      *         &lt;<i>x'<sub>i</sub></i><sup>2</sup>&gt;
-     * <br/>
-     * <br/>
+     * <br>
+     * <br>
      * where &Delta;&lt;<i>x'<sub>f</sub></i><sup>2</sup>&gt;
      * is the emittance growth factor given by
-     * <br/>
-     * <br/>
+     * <br>
+     * <br>
      * &nbsp;  &Delta;&lt;<i>x'<sub>f</sub></i><sup>2</sup>&gt; &equiv; 
      *        <i>k<sub>t</sub></i><sup>2</sup>
      *        <i>G<sub>t</sub></i>(<i>&phi;<sub>s</sub></i>,&Delta;<i>&phi;</i>)
      *        &lt;<i>x<sub>i</sub></i></i><sup>2</sup>&gt;.
-     * <br/>
-     * <br/>
+     * <br>
+     * <br>
      * where 
      * <i>G<sub>t</sub></i>(<i>&phi;<sub>s</sub></i>,&Delta;<i>&phi;</i>)
      * is the transverse 3-dimensional emittance growth function,
@@ -459,28 +441,28 @@ public class EnvelopeBacktracker extends EnvelopeTrackerBase {
      * <i>&epsilon;<sub>t,i</sub></i> and 
      * <i>&epsilon;<sub>t,f</sub></i>, respectively, 
      * is now described by the following formula:
-     * <br/>
-     * <br/>
+     * <br>
+     * <br>
      * &nbsp; <i>&epsilon;<sub>t,f</sub></i><sup>2</sup> = 
      *        <i>&eta;</i><sup>2</sup><i>&epsilon;<sub>t,i</sub></i><sup>2</sup> +
      *        &Delta;<i>&epsilon;<sub>t,f</sub></i><sup>2</sup>
-     * <br/>
-     * <br/>
+     * <br>
+     * <br>
      * where <i>&eta;</i> is the momentum compaction due to acceleration
-     * <br/>
-     * <br/>
+     * <br>
+     * <br>
      *  <i>&eta;</i> &equiv; 
      *    <i>&beta;<sub>i</sub>&gamma;<sub>i</sub></i>/<i>&beta;<sub>f</sub>&gamma;<sub>f</sub></i>
-     * <br/>
-     * <br/>
+     * <br>
+     * <br>
      * and &Delta;<i>&epsilon;<sub>t,f</sub></i> is the emittance increase term 
-     * <br/>
-     * <br/>
+     * <br>
+     * <br>
      * &nbsp;  &Delta;<i>&epsilon;<sub>t,f</sub></i><sup>2</sup> &equiv; 
      *        &Delta;&lt;<i>x'<sub>f</sub></i><sup>2</sup>&gt;
      *        &lt;<i>x<sub>f</sub></i></i><sup>2</sup>&gt;<sup>2</sup>.
-     * <br/>
-     * <br/>
+     * <br>
+     * <br>
      * There are analogous formulas for the before and after gap
      * longitudinal plane emittances 
      * <i>&epsilon;<sub>z,i</sub></i> and 
@@ -493,7 +475,7 @@ public class EnvelopeBacktracker extends EnvelopeTrackerBase {
      * </p> 
      * <p>
      * <strong>NOTES</strong>: CKA
-     * <br/>
+     * <br>
      * &middot; Since we are modeling the RF gap as a thin lens, only the 
      * momentum (divergance angle) is modified, &lt;<i>x</i><sup>2</sup>&gt;,
      * &lt;<i>y</i><sup>2</sup>&gt;, and &lt;<i>z</i><sup>2</sup>&gt; remain
@@ -502,13 +484,13 @@ public class EnvelopeBacktracker extends EnvelopeTrackerBase {
      * &lt;<i>z<sub>f</sub></i><sup>2</sup>&gt;
      * = &lt;<i>z<sub>i</sub></i><sup>2</sup>&gt; and may be computed
      * as such in the above.
-     * <br/>
+     * <br>
      * &middot; The &lt;<i>x'</i><sup>2</sup>&gt; element is modified by the formula
-     * <br/>
-     * <br/>
+     * <br>
+     * <br>
      * &nbsp; &lt;<i>x'</i><sup>2</sup>&gt; = &lt;<i>x'</i><sup>2</sup>&gt; + <i>c<sub>eg</sub></i>&lt;<i>x</i><sup>2</sup>&gt;
-     * <br/>
-     * <br/>
+     * <br>
+     * <br>
      * where <i>c<sub>eg</sub></i> is the emittance growth coefficent.  There are similar 
      * equations for the other phase planes.  The emittance growth coefficents are computed
      * in the base class <code>EnvelopeTrackerBase</code> by the methods 
@@ -517,7 +499,7 @@ public class EnvelopeBacktracker extends EnvelopeTrackerBase {
      * </p>  
      * <p>
      * <strong>NOTES</strong>: (H. SAKO)
-     * <br/>
+     * <br>
      *  &middot; Increase emittance using same (nonlinear) procedure on the second
      *  moments as in Trace3D. 
      * </p>
@@ -547,7 +529,7 @@ public class EnvelopeBacktracker extends EnvelopeTrackerBase {
         if (!(iElem instanceof IdealRfGap))
             return matTau;
         
-        if (!this.getEmittanceGrowthFlag())
+        if (!this.getEmittanceGrowth())
             return matTau;
     
         
@@ -642,7 +624,7 @@ public class EnvelopeBacktracker extends EnvelopeTrackerBase {
 
     /**
      * <p>
-     * Test for a <code>ChargeExchangeFoil<code> element.
+     * Test for a <code>ChargeExchangeFoil</code> element.
      * If found, the probe represent an H<sup>+</sup> beam, the electrons 
      * are added and the beam becomes H<sup>-</sup>.
      * </p>
@@ -656,7 +638,7 @@ public class EnvelopeBacktracker extends EnvelopeTrackerBase {
      * 
      * @author Hiroyuki Sako
      * 
-     * @see gov.sns.xal.model.elem.ChargeExchangeFoil
+     * @see xal.model.elem.ChargeExchangeFoil
      * @see EnvelopeTracker#treatChargeExchange(EnvelopeProbe, IElement)
      */
     private void treatChargeExchange(EnvelopeProbe probe, IElement ifcElem) {

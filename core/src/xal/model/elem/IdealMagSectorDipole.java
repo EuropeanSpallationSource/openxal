@@ -12,11 +12,10 @@ import xal.tools.beam.PhaseMap;
 import xal.tools.beam.PhaseMatrix;
 import xal.tools.beam.optics.BendingMagnet;
 import xal.tools.beam.optics.QuadrupoleLens;
-
 import xal.tools.math.ElementaryFunction;
-
 import xal.model.IProbe;
 import xal.model.ModelException;
+import xal.model.elem.sync.IElectromagnet;
 
 /**
  * Represents a thick magnetic dipole magnet for a beam in a sector 
@@ -35,9 +34,12 @@ import xal.model.ModelException;
  * @author jdg
  * @author Christopher K. Allen
  * 
- * @see D.C. Carey, The Optics of Charged Particle Beams (Harwood, 1987)
- * @see H. Wiedemann, Particle Accelerator Physics I, 2nd Ed. (Springer, 1999)    
+ * @see "D.C. Carey, The Optics of Charged Particle Beams (Harwood, 1987)"
+ * @see "H. Wiedemann, Particle Accelerator Physics I, 2nd Ed. (Springer, 1999)"   
+ *     
+ * @deprecated  This class has been replaced by <code>IdealMagSectorDipole2</code>
  */
+@Deprecated
 public class IdealMagSectorDipole extends ThickElectromagnet {
 
 
@@ -104,12 +106,11 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
      *  Creates a new instance of IdealMagSectorDipole 
      *
      *  @param  strId  identifier for this IdealMagSectorDipole object
-     *  @param  fld    field gradient strength (in <b>Tesla</b>)
-     *  @param  len    pathLength of the dipole (in m)
-     *  @param  entAng entrance angle of the dipole (in rad)
-     *  @param  exitAng exit angle of the dipole (in rad)
-     *  @param  gap    full pole gap of the dipole (in m)
-     *  @param  fInt   The dimensionless integral term for the extended fringe field focsing, Should be = 1/6 for linear drop off, ~ 0.4 for clamped Rogowski coil, or 0.7 for an unclamped Rogowski coil. (dimensionless)
+     *  @param  dblFld    field gradient strength (in <b>Tesla</b>)
+     *  @param  dblLen    pathLength of the dipole (in m)
+     *  @param  enmOrient orientation
+     *  @param  dblGap    full pole gap of the dipole (in m)
+     *  @param  dblFldInd field index
      *
     */
     public IdealMagSectorDipole(String strId, double dblLen, 
@@ -255,7 +256,7 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
      *  @param  probe   propagating probe
      *  @param  dblLen  length of subsection to propagate through <b>meters</b>
      *  
-     *  @return         the elapsed time through section<bold>Units: seconds</bold> 
+     *  @return         the elapsed time through section<b>Units: seconds</b> 
      */
     @Override
     public double elapsedTime(IProbe probe, double dblLen)  {

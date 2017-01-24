@@ -9,6 +9,7 @@
 package xal.tools.text;
 
 import java.text.*;
+import java.util.Comparator;
 
 
 /** 
@@ -18,22 +19,29 @@ import java.text.*;
  * @author Thomas Pelaia
  * @since  2/22/06
  */
-public class FormattedNumber extends Number {
+public class FormattedNumber extends Number implements Comparable<FormattedNumber> {
 
     /** Serialization version */
     private static final long serialVersionUID = 1L;
 
     /** default number format when none is specified */
 	final static protected NumberFormat DEFAULT_NUMBER_FORMAT = new DecimalFormat( "0.0000E0" );
-	
+
+	/** comparator which compares FormattedNumber instances according to their double value */
+	final static private Comparator<FormattedNumber> DOUBLE_VALUE_COMPARATOR = new Comparator<FormattedNumber>() {
+		public int compare( final FormattedNumber left, final FormattedNumber right ) {
+			return Double.compare( left.doubleValue(), right.doubleValue() );
+		}
+	};
+
 	/** the number */
 	final protected Number _number;
 	
 	/** the format for displaying the number */
 	final protected NumberFormat _format;
-	
-	
-	/** 
+
+
+	/**
 	 * Primary Constructor
 	 * @param format the number format for display
 	 * @param value the value to represent
@@ -150,5 +158,16 @@ public class FormattedNumber extends Number {
     public String toString() {
 		return _format.format( _number );
 	}
-	
+
+
+	/** compare this number with the specified other number */
+	public int compareTo(final FormattedNumber other) {
+		return DOUBLE_VALUE_COMPARATOR.compare( this, other );
+	}
+
+
+	/** Get a comparator which compares FormattedNumber instances by their double value */
+	static Comparator<FormattedNumber> doubleValueComparator() {
+		return DOUBLE_VALUE_COMPARATOR;
+	}
 }

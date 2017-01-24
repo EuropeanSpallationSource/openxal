@@ -16,11 +16,10 @@ import xal.model.IElement;
 import xal.model.IProbe;
 import xal.model.ModelException;
 import xal.model.elem.ChargeExchangeFoil;
-import xal.model.elem.IdealMagQuad;
 import xal.model.elem.IdealRfGap;
+import xal.model.elem.IdealRfGapUpgraded;
 import xal.model.probe.EnvelopeProbe;
 import xal.model.probe.traj.EnvelopeProbeState;
-import xal.model.probe.traj.ProbeState;
 import xal.tools.beam.CovarianceMatrix;
 import xal.tools.beam.PhaseMap;
 import xal.tools.beam.PhaseMatrix;
@@ -57,7 +56,7 @@ import xal.tools.beam.PhaseMatrix;
  * </p>
  * <p>
  * NOTES: CKA
- * <br/>
+ * <br>
  * &middot; The default step size for space charge calculations is currently
  * 4 mm.  This may be overly conservative for most applications.  Not only is this
  * situation CPU intensive, but it creates a serious burden on memory resources
@@ -162,7 +161,7 @@ public class EnvelopeTracker extends EnvelopeTrackerBase {
         	return;
         }
   
-        if(this.getSpaceChargeFlag())
+        if(this.getUseSpacecharge())
             cntSteps = (int) Math.max(Math.ceil(propLen / getStepSize()), 1);
         else 
             cntSteps = 1;
@@ -226,7 +225,7 @@ public class EnvelopeTracker extends EnvelopeTrackerBase {
         PhaseMatrix matTau1  = matTau0.conjugateTrans( matPhi_sc );
         
         
-        if (this.getEmittanceGrowthFlag())   
+        if (this.getEmittanceGrowth())   
             matTau1 = this.addEmittanceGrowth(probe, iElem, matTau1);
         
         
@@ -289,7 +288,7 @@ public class EnvelopeTracker extends EnvelopeTrackerBase {
 
         
         // Check for easy case of no space charge
-        if (this.getSpaceChargeFlag()==false || dblLen==0.0)    {
+        if (this.getUseSpacecharge()==false || dblLen==0.0)    {
             matPhi = ifcElem.transferMap(probe, dblLen).getFirstOrder();
 
         // we must treat space charge
@@ -316,7 +315,7 @@ public class EnvelopeTracker extends EnvelopeTrackerBase {
 
             probe.setPosition(pos);
             probe.setCovariance(covTau1);
-            
+            // TODO update energy of the probe
             
             // space charge transfer matrix
             PhaseMatrix matPhiSc = this.compScheffMatrix(dblLen, probe, ifcElem);   
@@ -338,21 +337,13 @@ public class EnvelopeTracker extends EnvelopeTrackerBase {
         
         
         // Check for exceptional circumstance and modify transfer matrix accordingly
-        if (this.getEmittanceGrowthFlag() && ifcElem instanceof IdealRfGap) {
+        if (this.getEmittanceGrowth() && ifcElem instanceof IdealRfGap) {  // use this part for IdealRfGaps
             IdealRfGap elemRfGap = (IdealRfGap)ifcElem;
+//        if (this.getEmittanceGrowth() && ifcElem instanceof IdealRfGapUpgraded) {
+//            IdealRfGap elemRfGap = (IdealRfGap)ifcElem;
             double      dphi     = this.effPhaseSpread(probe, elemRfGap);
             
             matPhi = this.modTransferMatrixForEmitGrowth(dphi, matPhi);
-        }
-        
-        if (ifcElem instanceof IdealMagQuad) {   // sako  put alignment error in sigma matrix
-            IdealMagQuad    elemQuad = (IdealMagQuad)ifcElem;
-            
-            double delx = elemQuad.getAlignX();
-            double dely = elemQuad.getAlignY();
-            double delz = elemQuad.getAlignZ();
-            
-            matPhi = this.modTransferMatrixForDisplError(delx, dely, delz, matPhi);
         }
         
         return matPhi;
@@ -390,23 +381,23 @@ public class EnvelopeTracker extends EnvelopeTrackerBase {
      * <i>x'<sub>i</sub></i> and 
      * <i>x'<sub>f</sub></i>, respectively, 
      * are related by the following formula:
-     * <br/>
-     * <br/>
+     * <br>
+     * <br>
      * &nbsp; &lt;<i>x'<sub>f</sub></i><sup>2</sup>&gt; = 
      *         &Delta;&lt;<i>x'<sub>f</sub></i><sup>2</sup>&gt; +
      *         &lt;<i>x'<sub>i</sub></i><sup>2</sup>&gt;
-     * <br/>
-     * <br/>
+     * <br>
+     * <br>
      * where &Delta;&lt;<i>x'<sub>f</sub></i><sup>2</sup>&gt;
      * is the emittance growth factor given by
-     * <br/>
-     * <br/>
+     * <br>
+     * <br>
      * &nbsp;  &Delta;&lt;<i>x'<sub>f</sub></i><sup>2</sup>&gt; &equiv; 
      *        <i>k<sub>t</sub></i><sup>2</sup>
      *        <i>G<sub>t</sub></i>(<i>&phi;<sub>s</sub></i>,&Delta;<i>&phi;</i>)
      *        &lt;<i>x<sub>i</sub></i></i><sup>2</sup>&gt;.
-     * <br/>
-     * <br/>
+     * <br>
+     * <br>
      * where 
      * <i>G<sub>t</sub></i>(<i>&phi;<sub>s</sub></i>,&Delta;<i>&phi;</i>)
      * is the transverse 3-dimensional emittance growth function,
@@ -420,28 +411,28 @@ public class EnvelopeTracker extends EnvelopeTrackerBase {
      * <i>&epsilon;<sub>t,i</sub></i> and 
      * <i>&epsilon;<sub>t,f</sub></i>, respectively, 
      * is now described by the following formula:
-     * <br/>
-     * <br/>
+     * <br>
+     * <br>
      * &nbsp; <i>&epsilon;<sub>t,f</sub></i><sup>2</sup> = 
      *        <i>&eta;</i><sup>2</sup><i>&epsilon;<sub>t,i</sub></i><sup>2</sup> +
      *        &Delta;<i>&epsilon;<sub>t,f</sub></i><sup>2</sup>
-     * <br/>
-     * <br/>
+     * <br>
+     * <br>
      * where <i>&eta;</i> is the momentum compaction due to acceleration
-     * <br/>
-     * <br/>
+     * <br>
+     * <br>
      *  <i>&eta;</i> &equiv; 
      *    <i>&beta;<sub>i</sub>&gamma;<sub>i</sub></i>/<i>&beta;<sub>f</sub>&gamma;<sub>f</sub></i>
-     * <br/>
-     * <br/>
+     * <br>
+     * <br>
      * and &Delta;<i>&epsilon;<sub>t,f</sub></i> is the emittance increase term 
-     * <br/>
-     * <br/>
+     * <br>
+     * <br>
      * &nbsp;  &Delta;<i>&epsilon;<sub>t,f</sub></i><sup>2</sup> &equiv; 
      *        &Delta;&lt;<i>x'<sub>f</sub></i><sup>2</sup>&gt;
      *        &lt;<i>x<sub>f</sub></i></i><sup>2</sup>&gt;<sup>2</sup>.
-     * <br/>
-     * <br/>
+     * <br>
+     * <br>
      * There are analogous formulas for the before and after gap
      * longitudinal plane emittances 
      * <i>&epsilon;<sub>z,i</sub></i> and 
@@ -454,7 +445,7 @@ public class EnvelopeTracker extends EnvelopeTrackerBase {
      * </p> 
      * <p>
      * <strong>NOTES</strong>: CKA
-     * <br/>
+     * <br>
      * &middot; Since we are modeling the RF gap as a thin lens, only the 
      * momentum (divergance angle) is modified, &lt;<i>x</i><sup>2</sup>&gt;,
      * &lt;<i>y</i><sup>2</sup>&gt;, and &lt;<i>z</i><sup>2</sup>&gt; remain
@@ -463,13 +454,13 @@ public class EnvelopeTracker extends EnvelopeTrackerBase {
      * &lt;<i>z<sub>f</sub></i><sup>2</sup>&gt;
      * = &lt;<i>z<sub>i</sub></i><sup>2</sup>&gt; and may be computed
      * as such in the above.
-     * <br/>
+     * <br>
      * &middot; The &lt;<i>x'</i><sup>2</sup>&gt; element is modified by the formula
-     * <br/>
-     * <br/>
+     * <br>
+     * <br>
      * &nbsp; &lt;<i>x'</i><sup>2</sup>&gt; = &lt;<i>x'</i><sup>2</sup>&gt; + <i>c<sub>eg</sub></i>&lt;<i>x</i><sup>2</sup>&gt;
-     * <br/>
-     * <br/>
+     * <br>
+     * <br>
      * where <i>c<sub>eg</sub></i> is the emittance growth coefficent.  There are similar 
      * equations for the other phase planes.  The emittance growth coefficents are computed
      * in the base class <code>EnvelopeTrackerBase</code> by the methods 
@@ -478,7 +469,7 @@ public class EnvelopeTracker extends EnvelopeTrackerBase {
      * </p>  
      * <p>
      * <strong>NOTES</strong>: (H. SAKO)
-     * <br/>
+     * <br>
      *  &middot; Increase emittance using same (nonlinear) procedure on the second
      *  moments as in Trace3D. 
      * </p>
@@ -507,7 +498,7 @@ public class EnvelopeTracker extends EnvelopeTrackerBase {
         if (!(iElem instanceof IdealRfGap))
             return matTau;
         
-        if (!this.getEmittanceGrowthFlag())
+        if (!this.getEmittanceGrowth())
             return matTau;
   
         
@@ -566,7 +557,7 @@ public class EnvelopeTracker extends EnvelopeTrackerBase {
     }
 
     /**
-     * Test for a <code>{ChargeExchangeFoil<code> element.
+     * Test for a <code>ChargeExchangeFoil</code> element.
      * If found, the probe represent an H<sup>-</sup> beam, the electrons 
      * are stripped and the beam becomes H<sup>+</sup>.
      * 
@@ -575,7 +566,7 @@ public class EnvelopeTracker extends EnvelopeTrackerBase {
      * 
      * @author Hiroyuki Sako
      * 
-     * @see gov.sns.xal.model.elem.ChargeExchangeFoil
+     * @see xal.model.elem.ChargeExchangeFoil
      */
     private void treatChargeExchange(EnvelopeProbe probe, IElement ifcElem) {
     	if (ifcElem instanceof ChargeExchangeFoil) {

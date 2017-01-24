@@ -20,6 +20,8 @@ import java.io.PrintWriter;
 
 import xal.model.IProbe;
 import xal.model.ModelException;
+import xal.sim.scenario.LatticeElement;
+import xal.smf.impl.EDipole;
 import xal.tools.beam.PhaseMap;
 import xal.tools.beam.PhaseMatrix;
 import xal.tools.beam.optics.BendingMagnet;
@@ -296,7 +298,7 @@ public class IdealEDipole extends ThickElectrostatic
    *
    */
 
-  public void setReferenceBendAngle(double dblAng)
+  public void setDesignBendAngle(double dblAng)
   {
     this.referenceBendAngle = dblAng;
   }
@@ -307,7 +309,7 @@ public class IdealEDipole extends ThickElectrostatic
    *
    */
 
-  public double getReferenceBendAngle()
+  public double getDesignBendAngle()
   {
     return referenceBendAngle;
   }
@@ -364,7 +366,7 @@ public class IdealEDipole extends ThickElectrostatic
    *
    *  Sets the magnetic field strength.
    *
-   *  @param  voltage    pole tip voltage (in <bold>kV</bold>).
+   *  @param  voltage    pole tip voltage (in <b>kV</b>).
    *
    */
 
@@ -377,7 +379,7 @@ public class IdealEDipole extends ThickElectrostatic
    *
    *  Returns the applied voltage.
    *
-   *  @return     voltage at the pole tips (in <bold>kV</bold>).
+   *  @return     voltage at the pole tips (in <b>kV</b>).
    *
    */
 
@@ -402,7 +404,7 @@ public class IdealEDipole extends ThickElectrostatic
    *  @param  probe   propagating probe
    *  @param  dblLen  subsection propagation length <b>meters</b>
    *
-   *  @return         elapsed propagaton time<bold>Units: seconds</bold>
+   *  @return         elapsed propagaton time<b>Units: seconds</b>
    *
    */
 
@@ -500,7 +502,7 @@ public class IdealEDipole extends ThickElectrostatic
 
     // Magnet parameters
 
-    double angle = getReferenceBendAngle() * dL / this.getLength();
+    double angle = getDesignBendAngle() * dL / this.getLength();
     System.out.println("Element " + this.getId() + " theta " + angle);
     //angle = -angle;
     
@@ -800,4 +802,29 @@ public class IdealEDipole extends ThickElectrostatic
     os.println("  magnet orientation : " + this.getOrientation());
   }
 
+  @Override
+  public void initializeFrom(LatticeElement element) {
+	super.initializeFrom(element);				
+	 
+	EDipole edp = (EDipole) element.getHardwareNode();
+	double len_sect = element.getLength();		
+	double len_path0 = edp.getDfltPathLength();
+	double ang_bend0 = edp.getDfltBendAngle() * Math.PI / 180.0;
+
+	double R_bend0 = len_path0 / ang_bend0;
+	double ang_bend = ang_bend0 * (len_sect / len_path0);
+	double len_path = R_bend0 * ang_bend;
+	
+	setPathLength(len_path);		
+	setDesignBendAngle(ang_bend);
+	
+  }
+  
+  public void setPathLength(double dblPathLen)  {
+	  pathLength = dblPathLen;
+  }
+  
+  public double getPathLength() {
+	  return pathLength;
+  }
 };

@@ -145,7 +145,7 @@ public class BunchLengthSimulator {
     public void setSyncToMachineHistory(final long lngPvLogId) {
         
         PVLoggerDataSource  srcPvLog = new PVLoggerDataSource(lngPvLogId);
-        this.mdlBeamline = srcPvLog.setModelSource(this.smfSeq, this.mdlBeamline);
+        srcPvLog.setModelSource(this.smfSeq, this.mdlBeamline);
     }
     
     /**

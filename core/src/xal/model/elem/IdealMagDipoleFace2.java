@@ -11,6 +11,7 @@ import xal.tools.beam.PhaseMatrix;
 import xal.tools.beam.optics.BendingMagnet;
 import xal.model.IProbe;
 import xal.model.ModelException;
+import xal.model.elem.sync.IElectromagnet;
 
 /**
  * <p>
@@ -23,8 +24,8 @@ import xal.model.ModelException;
  * </p>
  * <p>  
  * The model for the pole face effect is taken from D.C. Carey's book.
- * <br/>
- * <br/>
+ * <br>
+ * <br>
  *  D.C. Carey, <i>The Optics of Charged Particle Beams</i> (Harwood, 1987)
  * </p>
  * 
@@ -336,7 +337,7 @@ public class IdealMagDipoleFace2 extends ThinElectromagnet {
      * @return
      * @throws ModelException
      * 
-     * @see xal.sim.slg.sns.xal.model.elem.ThinElement#transferMap(gov.sns.xal.model.IProbe)
+     * @see xal.model.elem.ThinElement#transferMap(xal.model.IProbe)
      */
     @Override
     protected PhaseMap transferMap(IProbe probe) throws ModelException {

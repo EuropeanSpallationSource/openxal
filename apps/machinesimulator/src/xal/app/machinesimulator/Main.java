@@ -7,9 +7,6 @@
 package xal.app.machinesimulator;
 
 import javax.swing.*;
-import javax.swing.event.*;
-import java.awt.event.*;
-import java.net.*;
 import java.util.logging.*;
 
 import xal.extension.application.*;
@@ -63,13 +60,6 @@ public class Main extends ApplicationAdaptor {
      */
     public String applicationName() {
         return "Machine Simulator";
-    }
-    
-    
-    /** Capture the application launched event and print it */
-    public void applicationFinishedLaunching() {
-        System.out.println( "Application finished launching..." );
-		Logger.getLogger( "global" ).log( Level.INFO, "Application finished launching." );
     }
     
     

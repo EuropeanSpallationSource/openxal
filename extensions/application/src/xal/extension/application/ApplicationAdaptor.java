@@ -21,17 +21,17 @@ import java.net.*;
  * @author  t6p
  */
 abstract public class ApplicationAdaptor extends AbstractApplicationAdaptor {
-	/** wildcard file extension */
-	static public final String WILDCARD_FILE_EXTENSION = FileFilterFactory.WILDCARD_FILE_EXTENSION;
-	
-	
-	/**
-	 * Launch the application with the specified document URLs.
-	 * @param urls The document URLs to open upon launching the application.
-	 */
-	void launchApplication( final URL[] urls ) {
-		FrameApplication.launch( this, urls );
-	}
+    /** wildcard file extension */
+    static public final String WILDCARD_FILE_EXTENSION = FileFilterFactory.WILDCARD_FILE_EXTENSION;
+    
+    
+    /**
+     * Launch the application with the specified document URLs.
+     * @param urls The document URLs to open upon launching the application.
+     */
+    void launchApplication( final URL[] urls ) {
+        FrameApplication.launch( this, urls );
+    }
     
 
     /**
@@ -41,15 +41,15 @@ abstract public class ApplicationAdaptor extends AbstractApplicationAdaptor {
      */
     abstract public XalDocument newEmptyDocument();
     
-	
+    
     /**
-	 * Subclasses should implement this method to return an instance of their
+     * Subclasses should implement this method to return an instance of their
      * custom subclass of XalDocument.
      * @return An instance of the custom subclass of XalDocument
      */
-	public XalDocument newEmptyDocument( final String type ) {
-		return newEmptyDocument();
-	}
+    public XalDocument newEmptyDocument( final String type ) {
+        return newEmptyDocument();
+    }
     
     
     /**
@@ -59,23 +59,23 @@ abstract public class ApplicationAdaptor extends AbstractApplicationAdaptor {
      */
     abstract public XalDocument newDocument( URL url );
     
-	
+    
     /**
-	 * Generate a new empty document.
+     * Generate a new empty document.
      * @return an instance of the custom subclass of XalAbstractDocument
      */
     final public XalAbstractDocument generateEmptyDocument( final String type ) {
-		return newEmptyDocument( type );
-	}
+        return newEmptyDocument( type );
+    }
     
     
     /**
-	 * Generate a document from the specified URL.
+     * Generate a document from the specified URL.
      * @return An instance of the custom subclass of XalDocument
      */
     final XalAbstractDocument generateDocument( final URL url ) {
-		return newDocument( url );
-	}
+        return newDocument( url );
+    }
     
     
     /**
@@ -89,7 +89,4 @@ abstract public class ApplicationAdaptor extends AbstractApplicationAdaptor {
         document.displayWarning( "No Preference Panel", "This application has not implemented a preference panel." );
     }
 }
-
-
-
 

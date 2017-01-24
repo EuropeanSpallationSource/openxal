@@ -271,7 +271,7 @@ public class R4x4 extends SquareMatrix<R4x4> {
      * @since  Oct 15, 2013
      */
     public R4x4(double[][] arrVals) throws ArrayIndexOutOfBoundsException {
-        super(INT_SIZE, arrVals);
+        super(arrVals);
     }
 
     /**
@@ -322,7 +322,7 @@ public class R4x4 extends SquareMatrix<R4x4> {
 	 * @since  Jun 17, 2014
 	 */
 	@Override
-	protected R4x4 newInstance() {
+	protected R4x4 newInstance(int row, int cnt) {
 		return new R4x4();
 	}
     

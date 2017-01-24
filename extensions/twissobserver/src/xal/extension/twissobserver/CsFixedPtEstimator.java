@@ -10,6 +10,8 @@ package xal.extension.twissobserver;
 import xal.tools.beam.CovarianceMatrix;
 import xal.tools.beam.PhaseMatrix;
 import xal.tools.collections.LinearBuffer;
+import xal.tools.math.GenericMatrix;
+import xal.tools.math.GenericSquareMatrix;
 import xal.model.ModelException;
 
 import java.util.ArrayList;
@@ -17,8 +19,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
-import Jama.Matrix;
 
 
 /**
@@ -40,11 +40,11 @@ import Jama.Matrix;
  * generator.  It is safer to require pre-construction of the matrix
  * generator rather than offer all the opions for such generation here.
  * </p>
+ * <h3>NOTES:</h3>
  * <p>
- * <h4>NOTES:</h4>
  * &middot; Bunch charge <i>Q</i> is given by beam current <i>I</i> divided by
  *          machine frequency <i>f</i>.  Specifically, <i>Q</i> = <i>I</i>/<i>f</i>.
- * <br/>
+ * <br>
  * &middot; A <code>{@link TransferMatrixGenerator}</code> object must be supplied
  * for the construction of one of these objects.  This is done because of
  * the variety of options that exist when creating the transfer matrix
@@ -109,8 +109,8 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
     
     /**
      * This class is a
-     * <br/>
-     * <br/>
+     * <br>
+     * <br>
      * This idea probably won't work. 
      *
      * @author Christopher K. Allen
@@ -179,7 +179,7 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
      * @since  Apr 10, 2013
      *
      */
-    private class MomentVectorBuffer  extends HashMap<PHASEPLANE, LinearBuffer<Matrix>> {
+    private class MomentVectorBuffer  extends HashMap<PHASEPLANE, LinearBuffer<GenericMatrix>> {
         
         /*
          * Global Constants
@@ -203,7 +203,7 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
         public MomentVectorBuffer() {
             for ( PHASEPLANE plane : PHASEPLANE.values() ) {
                 int                     cntSize = plane.getCovariantBasisSize();
-                LinearBuffer<Matrix>  bufVec  = new LinearBuffer<Matrix>(cntSize);
+                LinearBuffer<GenericMatrix>  bufVec  = new LinearBuffer<GenericMatrix>(cntSize);
                 
                 this.put(plane, bufVec);
             }
@@ -224,7 +224,7 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
          * @author Christopher K. Allen
          * @since  Apr 11, 2013
          */
-        public void add(PHASEPLANE plane, Matrix vecCov) {
+        public void add(PHASEPLANE plane, GenericMatrix vecCov) {
             super.get(plane).add(vecCov);
         }
         
@@ -238,11 +238,11 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
         public void initWithBasisVectors() {
             for ( PHASEPLANE plane : PHASEPLANE.values() ) {
                 int                     szBasis    = plane.getCovariantBasisSize();
-                LinearBuffer<Matrix>  bufCovVecs = this.get(plane);
+                LinearBuffer<GenericMatrix>  bufCovVecs = this.get(plane);
                 
                 for (int i=0; i<szBasis; i++) {
-                    Matrix  vecCovBasis = new Matrix(szBasis, 1);
-                    vecCovBasis.set(i, 0, 1.0);
+                    GenericMatrix  vecCovBasis = new GenericMatrix(szBasis, 1);
+                    vecCovBasis.setElem(i, 0, 1.0);
                     
                     bufCovVecs.add(vecCovBasis);
                 }
@@ -260,19 +260,19 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
          * @author Christopher K. Allen
          * @since  Apr 11, 2013
          */
-        public Matrix   createAugmentedMatrix(PHASEPLANE plane) {
-            LinearBuffer<Matrix>    bufVecs = this.get(plane);
+        public GenericMatrix   createAugmentedMatrix(PHASEPLANE plane) {
+            LinearBuffer<GenericMatrix>    bufVecs = this.get(plane);
             
             // Instantiate the augmented matrix
-            int         szRow  = bufVecs.get(0).getRowDimension();
+            int         szRow  = bufVecs.get(0).getRowCnt();
             int         szCol  = bufVecs.size();
-            Matrix      matAug = new Matrix(szRow, szCol);
+            GenericMatrix      matAug = new GenericMatrix(szRow, szCol);
             
             // Pack the matrix with the vectors containing herein
             int         indCol = 0;
-            for (Matrix vecCov : bufVecs) {
+            for (GenericMatrix vecCov : bufVecs) {
                 
-                matAug.setMatrix(0, szRow-1, indCol, indCol, vecCov);
+                matAug.setSubMatrix(0, szRow-1, indCol, indCol, vecCov.getArrayCopy());
                 indCol++;
             }
             
@@ -430,15 +430,15 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
      * ignores completely the previous iterate.  This parameter is designed to slow down convergence 
      * for the sake of stability.  Let <b>F</b>(<b>&sigma;</b><sub><i>i</i></sub>) be the iteration
      * map then the next solution iterate <b>&sigma;</b><sub><i>i</i>+1</sub> is
-     * <br/>
-     * <br/>
+     * <br>
+     * <br>
      * &nbsp; &nbsp;  <b>&sigma;</b><sub><i>i</i>+1</sub> = (1 - &alpha;)<b>&sigma;</b><sub><i>i</i></sub> 
      *                                                    + &alpha;<b>F</b>(<b>&sigma;</b><sub><i>i</i></sub>) . 
-     * <br/>
-     * <br/>
+     * <br>
+     * <br>
      * </p>
+     * <h3>NOTES:</h3>
      * <p>
-     * <h4>NOTES:</h4>
      * &middot; A &lambda; value near 1 can cause a type of "super convergence" instability.  
      * </p>
      *
@@ -496,8 +496,8 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
      * covariance matrix is passed to the method 
      * <code>{@link #computeCovarianceFiniteCurrent(String, double, CovarianceMatrix, ArrayList)}</code>.
      * </p>
+     * <h3>NOTE:</h3>
      * <p>
-     * <h4>NOTE:</h4>
      * &middot; Bunch charge <i>Q</i> is given by beam current <i>I</i> divided by
      *          machine frequency <i>f</i>.  Specifically, <i>Q</i> = <i>I</i>/<i>f</i>.
      * </p> 
@@ -537,8 +537,8 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
      * initial guess.  Thus, the closer <var>matSigInit</var> is to the solution (using the
      * Frobenius norm) the faster the algorithm converges. 
      * </p>
+     * <h3>NOTE:</h3>
      * <p>
-     * <h4>NOTE:</h4>
      * &middot; Bunch charge <i>Q</i> is given by beam current <i>I</i> divided by
      *          machine frequency <i>f</i>.  Specifically, <i>Q</i> = <i>I</i>/<i>f</i>.
      * </p> 
@@ -650,19 +650,19 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
         this.genTransMat.generateWithSpaceCharge(null, dblBnchFreq, dblBmCurr, matSig0);
 
         // Recurse through all the phase planes computing the new value of the recursion function
-        Map<PHASEPLANE, Matrix> mapFcurr = new HashMap<PHASEPLANE, Matrix>();
+        Map<PHASEPLANE, GenericMatrix> mapFcurr = new HashMap<PHASEPLANE, GenericMatrix>();
         
         for ( PHASEPLANE plane : PHASEPLANE.values() ) {
 
             // Compute the new value of the recursion function 
-            Matrix  vecFcurr = this.computeReconSubFunction(plane, strRecDevId, arrData);
+            GenericMatrix  vecFcurr = this.computeReconSubFunction(plane, strRecDevId, arrData);
             mapFcurr.put(plane, vecFcurr);
         }
         
         // Construct the new recursion function value as a covariance matrix 
-        Matrix  vecMmtsHor = mapFcurr.get(PHASEPLANE.HOR);
-        Matrix  vecMmtsVer = mapFcurr.get(PHASEPLANE.VER);
-        Matrix  vecMmtsLng = mapFcurr.get(PHASEPLANE.LNG);
+        GenericMatrix  vecMmtsHor = mapFcurr.get(PHASEPLANE.HOR);
+        GenericMatrix  vecMmtsVer = mapFcurr.get(PHASEPLANE.VER);
+        GenericMatrix  vecMmtsLng = mapFcurr.get(PHASEPLANE.LNG);
         
         CovarianceMatrix   covF1 = PHASEPLANE.constructCovariance(vecMmtsHor, vecMmtsVer, vecMmtsLng);
         
@@ -679,15 +679,15 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
         for ( PHASEPLANE plane : PHASEPLANE.values() ) {
             
             // Now compute the change in the recursion function value
-            Matrix  vecFprev = plane.extractCovarianceVector(this.matCurrF);
-            Matrix  vecFcurr = mapFcurr.get(plane);
-            Matrix  vecDelF  = vecFcurr.minus(vecFprev);
+            GenericMatrix  vecFprev = plane.extractCovarianceVector(this.matCurrF);
+            GenericMatrix  vecFcurr = mapFcurr.get(plane);
+            GenericMatrix  vecDelF  = vecFcurr.minus(vecFprev);
             this.mapDeltaF.add(plane, vecDelF);
             
             // Compute the change in the moments that produces the recursion function change
-            Matrix  vecSigPrev = plane.extractCovarianceVector(this.matCurrSigma);
-            Matrix  vecSigCurr = plane.extractCovarianceVector(covSig1);
-            Matrix  vecDelSig  = vecSigCurr.minus(vecSigPrev);
+            GenericMatrix  vecSigPrev = plane.extractCovarianceVector(this.matCurrSigma);
+            GenericMatrix  vecSigCurr = plane.extractCovarianceVector(covSig1);
+            GenericMatrix  vecDelSig  = vecSigCurr.minus(vecSigPrev);
             this.mapDeltaSig.add(plane, vecDelSig);
         }
         
@@ -715,28 +715,29 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
         for (PHASEPLANE plane : PHASEPLANE.values()) {
             
             // Create the augmented change in values matrices
-            Matrix  matDelF   = this.mapDeltaF.createAugmentedMatrix(plane);
-            Matrix  matDelSig = this.mapDeltaSig.createAugmentedMatrix(plane);
+            GenericMatrix  matDelF   = this.mapDeltaF.createAugmentedMatrix(plane);
+            GenericMatrix  matDelSig = this.mapDeltaSig.createAugmentedMatrix(plane);
             
             // Create an identity matrix
-            int     cntRows = matDelSig.getRowDimension();
-            int     cntCols = matDelSig.getColumnDimension();
+            int     cntRows = matDelSig.getRowCnt();
+            int     cntCols = matDelSig.getColCnt();
             
-            Matrix  matIden = Matrix.identity(cntRows, cntCols);
+            GenericMatrix  matIden = new GenericMatrix(cntRows, cntCols); 
+            matIden.assignIdentity();
             
             // Check the rank of the change in sigma values matrix
             //  If not of full rank, we need to skip this plane
-            int     szRank  = matDelSig.rank();
+            int  szRank  = matDelSig.rank();
             
             if (szRank < cntRows) 
                 continue;
             
-            // Compute the approximation to the partial of the recusion function
-            Matrix  matDelSigInv = matDelSig.inverse();
-            Matrix  matFpApprox  = matDelF.times(matDelSigInv);
+            // Compute the approximation to the partial of the recursion function
+            GenericMatrix  matDelSigInv = matDelSig.inverse();
+            GenericMatrix  matFpApprox  = matDelF.times(matDelSigInv);
             
             // Compute the alpha value for this plane
-            Matrix  matResolv = matIden.minus(matFpApprox);
+            GenericSquareMatrix  matResolv = GenericMatrix.createSquare(matIden.minus(matFpApprox));
             double  dblNumer  = Math.abs( matResolv.trace() );
             double  dblDenom  = matResolv.normF();
             
@@ -744,22 +745,9 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
             
             if (dblAlphaNew > dblAlpha)
                 dblAlpha = dblAlphaNew;
-            
-//            if (this.bolDebug) {
-//                System.out.println("\n  PHASEPLANE=" + plane + ", dblNumer=" + dblNumer + ", dblDenom=" + dblDenom);
-//                System.out.println("  ----Delta F---");
-//                matDelF.print(this.fmtMatrix, 10);
-//                System.out.println("\n  ----Delta Sigma---");
-//                matDelSig.print(this.fmtMatrix, 10);
-//                System.out.println("\n  ----F' approx---- ");
-//                matFpApprox.print(this.fmtMatrix, 10);
-//                System.out.println("\n  ----Resolve(F)--- ");
-//                matResolv.print(this.fmtMatrix, 10);
-//            }
         }
         
         return dblAlpha;
-//        return this.dblAlpha;
     }
     
     /**
@@ -776,9 +764,6 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
     private void    fireProgressUpdate(int cntIter, double dblAlpha, double dblError) {
         if (this.lstProgLsns.size() > 0)
             for (IProgressListener lsnProg : this.lstProgLsns) {
-//                ProgressUpdateThread    thdUpdate = new ProgressUpdateThread(lsnProg, cntIter, dblError, dblAlpha);
-//                
-//                thdUpdate.start();
                 lsnProg.iterationUpdate(cntIter, dblAlpha, dblError);
             }
     }

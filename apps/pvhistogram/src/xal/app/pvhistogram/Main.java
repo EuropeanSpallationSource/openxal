@@ -67,13 +67,6 @@ public class Main extends ApplicationAdaptor {
     }
     
     
-    /** Capture the application launched event and print it */
-    public void applicationFinishedLaunching() {
-        System.out.println( "Application finished launching..." );
-		Logger.getLogger( "global" ).log( Level.INFO, "Application finished launching." );
-    }
-    
-    
     /** The main method of the application. */
     static public void main(String[] args) {
         try {

@@ -6,19 +6,23 @@
 
 package xal.extension.application;
 
-import xal.tools.ResourceManager;
-import xal.tools.IconLib;
-import xal.tools.IconLib.*;
+import java.awt.event.KeyEvent;
+import java.net.URL;
+import java.util.EventListener;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.*;
 import javax.swing.JToggleButton.ToggleButtonModel;
-import javax.swing.event.*;
-import javax.swing.text.*;
-import java.awt.event.*;
-import java.awt.BorderLayout;
-import java.util.*;
-import java.util.logging.*;
-import java.net.URL;
+import javax.swing.event.MenuListener;
+import javax.swing.text.JTextComponent;
+
+import xal.extension.application.rbac.RBACMenu;
+import xal.rbac.RBACSubject;
+import xal.tools.IconLib;
+import xal.tools.ResourceManager;
 
 
 /**
@@ -177,21 +181,29 @@ public class Commander {
 		Util.mergeResourceBundle( _controlMap, resourceURL );
     }
     
-    
     /**
      * Make and return a new menubar based on the menu definition file.
+     * 
      * @return The new menubar
      */
     public JMenuBar getMenubar() {
         final JMenuBar menuBar = new JMenuBar();
-        
-		final String menubarStr = _controlMap.get( "menubar" );
-		if ( menubarStr == null || menubarStr.isEmpty() )  return null;		// check if a menubar definition was found
-		
-        final String[] menuKeys = Util.getTokens( menubarStr );
-        
-        appendMenubarMenusWithKeys( menuBar, menuKeys );
-        
+
+        final String menubarStr = _controlMap.get("menubar");
+        if (menubarStr == null || menubarStr.isEmpty())
+            return null; // check if a menubar definition was found
+
+        final String[] menuKeys = Util.getTokens(menubarStr);
+
+        appendMenubarMenusWithKeys(menuBar, menuKeys);
+
+        // Add RBAC menu to the menubar if RBAC is used
+        RBACSubject subject = Application.getApp().getRbacSubject();
+        if (subject != null) {
+            menuBar.add(Box.createHorizontalGlue()); // Flush right
+            menuBar.add(new RBACMenu());
+        }
+
         return menuBar;
     }
     
@@ -377,9 +389,6 @@ public class Commander {
 					button = new JButton( label );
                     button.setEnabled( false );
                 }
-				if ( button == null ) {
-					button = new JButton( label );
-				}
 				final Icon icon = getIcon( buttonKey );
 				if ( icon != null ) {
 					button.setIcon( icon );

@@ -11,6 +11,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -150,7 +151,7 @@ public class TestSimResultsAdaptor {
 			System.out.println( "Exception: " + e );
 			e.printStackTrace();
             System.err.println("Unable to initial the static test resources");
-            
+            Assert.fail();
         }
     }
 

@@ -1,3 +1,4 @@
+
 /**
  * TestParticleProbeTrajectory.java
  *
@@ -22,20 +23,35 @@ import xal.extension.widgets.olmplot.GraphFrame;
 import xal.extension.widgets.olmplot.PLANE;
 import xal.extension.widgets.olmplot.ParticleCurve;
 import xal.extension.widgets.plot.FunctionGraphsJPanel;
+import xal.model.IComponent;
+import xal.model.Lattice;
+import xal.model.ModelException;
 import xal.model.alg.ParticleTracker;
+import xal.model.elem.Element;
 import xal.model.probe.ParticleProbe;
 import xal.sim.scenario.AlgorithmFactory;
 import xal.sim.scenario.ProbeFactory;
 import xal.sim.scenario.Scenario;
 import xal.smf.Accelerator;
 import xal.smf.AcceleratorSeq;
-import xal.smf.data.XMLDataManager;
-
-import xal.tools.ResourceManager;
 import xal.tools.beam.PhaseVector;
 
 /**
- * Class <code></code>.
+ * <p>
+ * Class <code>TestParticleProbeTrajectory</code>.
+ * <p/>
+ * <p>
+ * Use Java virtual machine command line switch
+ * <br/>
+ * <br/>
+ * &nbsp; &nbsp; <tt>java -agentlib:hprof=cpu=times</tt>
+ * <br/>
+ * <br/>
+ * &nbsp; &nbsp; <tt>java -agentlib:hprof=heap=dump,format=b</tt>
+ * <br/>
+ * <br/>
+ * to create <code>java.hprof.TMP</code> files for profiling.
+ * </p>
  *
  *
  * @author Christopher K. Allen
@@ -49,7 +65,7 @@ public class TestParticleProbeTrajectory {
     
     
     /** Flag used for indicating whether to type out to stout or file */
-    private static final boolean        BOL_TYPE_STOUT = true;
+    private static final boolean        BOL_TYPE_STOUT = false;
     
     /** Flag used for running tests involving live accelerator */
     private static final boolean        BOL_MAKE_PLOTS = false;
@@ -65,13 +81,14 @@ public class TestParticleProbeTrajectory {
     static final private String         STR_CFGFILE_PROD = "/site/optics/production/main.xal";
     
     
-    /** Location of the output file */
-    static final private String         STR_FILENAME_OUTPUT = "ParticleTrajOutput.txt";
+    /** Output file name */
+    static final private String         STR_FILENAME_OUTPUT = TestParticleProbeTrajectory.class.getName() + ".txt";
 
    
     
     /** The sequence we are testing in both accelerator configurations */
     static final private String         STR_ID_TESTSEQ = "SCLMed";
+//    static final private String         STR_ID_TESTSEQ = "CCL1";
 
     
     /*
@@ -86,7 +103,7 @@ public class TestParticleProbeTrajectory {
     
     
     /** The design Accelerator Sequence under test */
-    static private AcceleratorSeq     SEQ_PROD;
+    static private AcceleratorSeq       SEQ_PROD;
 
     /** The design Accelerator Sequence under test */
     static private AcceleratorSeq     SEQ_DSGN;
@@ -119,13 +136,14 @@ public class TestParticleProbeTrajectory {
      * @since  Sep 8, 2014
      */
     private static Accelerator loadAccelerator(String ...arrPathRel) {
-        if (arrPathRel.length == 0)
-            return xal.test.ResourceManager.getTestAccelerator();
-        String  strPathRel = arrPathRel[0];
-        String  strPathXal = ResourceManager.getProjectHomePath();
-        String  strFileAccel = strPathXal + strPathRel;
-        
-        Accelerator accel = XMLDataManager.acceleratorWithPath(strFileAccel);
+//        if (arrPathRel.length == 0)
+//            return XMLDataManager.loadDefaultAccelerator();
+//        String  strPathRel = arrPathRel[0];
+//        String  strPathXal = ResourceManager.getProjectHomePath();
+//        String  strFileAccel = strPathXal + strPathRel;
+//        
+//        Accelerator accel = XMLDataManager.acceleratorWithPath(strFileAccel);
+        Accelerator accel = xal.test.ResourceManager.getTestAccelerator();
         return accel;
     }
     
@@ -232,8 +250,8 @@ public class TestParticleProbeTrajectory {
             ACCEL_PROD = loadAccelerator();
         }
 
-        SEQ_DSGN = ACCEL_DSGN.getSequence(STR_ID_TESTSEQ);
-        SEQ_PROD = ACCEL_PROD.getSequence(STR_ID_TESTSEQ);
+        SEQ_DSGN = ACCEL_DSGN.findSequence(STR_ID_TESTSEQ);
+        SEQ_PROD = ACCEL_PROD.findSequence(STR_ID_TESTSEQ);
         
         MOD_DSGN = Scenario.newScenarioFor(SEQ_DSGN);
         MOD_DSGN.setSynchronizationMode(Scenario.SYNC_MODE_DESIGN);
@@ -266,6 +284,36 @@ public class TestParticleProbeTrajectory {
     }
 
     /**
+     * Prints out all the element in the online model.
+     *
+     * @throws ModelException 
+     *
+     * @author Christopher K. Allen
+     * @since  Aug 26, 2014
+     */
+    @Test
+    public final void testModel() throws ModelException {
+        Lattice              latTest = MOD_DSGN.getLattice();
+        Iterator<IComponent> itrCmps = latTest.globalIterator();
+        
+        int index = 0;
+        PRN_OUTPUT.println();
+        PRN_OUTPUT.println("ELEMENTS contained in MODEL");
+        while (itrCmps.hasNext()) {
+            IComponent cmp = itrCmps.next();
+            if (cmp instanceof Element)
+                PRN_OUTPUT.println("  " + index + " " + (Element)cmp);
+            else
+                PRN_OUTPUT.println("  " + index + " " + cmp.getId());
+            index++;
+        }
+    }
+ 
+    /*
+     * Support Methods
+     */
+    
+    /**
      * Make plots of the design and production particle trajectories for
      * all the phase planes.
      *
@@ -274,29 +322,29 @@ public class TestParticleProbeTrajectory {
      */
     @Test
     public final void testPlotDesignAndProduction() {
-        if (BOL_MAKE_PLOTS == false)
+        if (!BOL_MAKE_PLOTS)
             return;
         
         runModels();
         
         Trajectory<ParticleProbeState>  trjDsgn = MOD_DSGN.getTrajectory();
         Trajectory<ParticleProbeState>  trjProd = MOD_PROD.getTrajectory();
-
+    
         for (PLANE plane : PLANE.values()) {
             final ParticleCurve crvDsgn = new ParticleCurve(plane, trjDsgn);
             final ParticleCurve crvProd = new ParticleCurve(plane, trjProd);
-
+    
             FunctionGraphsJPanel pltPlane = new FunctionGraphsJPanel();
             pltPlane.addGraphData(crvDsgn);
             pltPlane.addGraphData(crvProd);
             pltPlane.setLegendVisible(true);
-            pltPlane.setPreferredSize(new Dimension(850,650));
+            pltPlane.setPreferredSize(new Dimension(1000,750));
             
             
             final GraphFrame  frmPlotTraj = new GraphFrame("Particle Trajectory for Plane " + plane.name(), pltPlane);
             frmPlotTraj.display();
         }
-       
+    
         while (true);
     }
 
@@ -315,8 +363,10 @@ public class TestParticleProbeTrajectory {
             Trajectory<ParticleProbeState>  trjDsgn = MOD_DSGN.getTrajectory();
             this.writeTrajectory("DESIGN TRAJECTORY", trjDsgn);
             
-            Trajectory<ParticleProbeState>  trjProd = MOD_PROD.getTrajectory();
-            this.writeTrajectory("PRODUCTION TRACTORY", trjProd);
+            if (BOL_COMPARE) {
+                Trajectory<ParticleProbeState>  trjProd = MOD_PROD.getTrajectory();
+                this.writeTrajectory("PRODUCTION TRAJECTORY", trjProd);
+            }
 
         } catch (Exception e) {
             
@@ -350,9 +400,11 @@ public class TestParticleProbeTrajectory {
             ParticleProbeState  state     = itr.next();
             String              strElemId = state.getElementId();
             double              dblPos    = state.getPosition();
+            double              dblPhs    = state.getLongitudinalPhase();
+            double              dblNrg    = state.getKineticEnergy();
             PhaseVector         vecState  = state.getPhaseCoordinates();
 
-            String strLine = strElemId + " " + dblPos + " " + vecState.toString();
+            String strLine = strElemId + " s=" + dblPos + ", phi=" + dblPhs + ", W=" + dblNrg + ", z=" + vecState.toString();
             prs.println(strLine);
         }
         prs.println();

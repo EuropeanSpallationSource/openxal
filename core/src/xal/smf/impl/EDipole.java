@@ -2,9 +2,10 @@ package xal.smf.impl;
 
 import xal.smf.impl.qualify.ElementTypeManager;
 import xal.tools.data.DataAdaptor;
+import xal.ca.ChannelFactory;
 
 public class EDipole extends Electrostatic {
-
+	/** standard type for instances of this class */
     public static String      s_strType   = "EDipole";
 
     // orientation constants
@@ -17,7 +18,9 @@ public class EDipole extends Electrostatic {
 	
 	/** vertical dipole type */
     public static final String VERTICAL_TYPE = "DVE";
-    
+
+
+	// static initialization
     static {
         registerType();
     }
@@ -27,18 +30,24 @@ public class EDipole extends Electrostatic {
      * Register type for qualification
      */
     private static void registerType() {
-//        ElementTypeManager typeManager = ElementTypeManager.defaultManager();
-//        typeManager.registerType(EQuad.class, "EQuad");
+		ElementTypeManager.defaultManager().registerTypes( EDipole.class, s_strType );
     }
-    
-    public EDipole(String strId) {
-		super(strId);
-		// TODO Auto-generated constructor stub
+
+
+	/** Primary Constructor */
+	public EDipole( final String strId, final ChannelFactory channelFactory ) {
+		super( strId, channelFactory );
 	}
+
+
+	/** Constructor */
+    public EDipole( final String strId ) {
+		this( strId, null );
+	}
+
 
 	@Override
 	public String getType() {
-		// TODO Auto-generated method stub
 		return s_strType;
 	}
 
@@ -52,6 +61,18 @@ public class EDipole extends Electrostatic {
     	return s_strType.equalsIgnoreCase( HORIZONTAL_TYPE ) ? HORIZONTAL : VERTICAL;
     }          
       
+    /**
+     * Get the dipole bend magnet bending angle.
+     */
+    public double getDfltBendAngle() {
+        return m_bucMagnet.getBendAngle();
+    }
+    
+    /** returns design path length in meters */
+    public double getDfltPathLength() {
+        return m_bucMagnet.getPathLength();
+    }
+    
     /**
      * Update the instance with data from the data adaptor.  Overrides the default implementation to 
 	 * set the quadrupole type since a quadrupole type can be either "QHE" or "QVE".

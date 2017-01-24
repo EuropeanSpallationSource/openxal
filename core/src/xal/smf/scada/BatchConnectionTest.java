@@ -83,14 +83,14 @@ public class BatchConnectionTest {
         /**
          * <p>
          * The requested connection was made.  Consequently, 
-         * <br/>
+         * <br>
          * &nbsp; &sdot; We remove ourself from the channel's set of connection listeners
-         * <br/>
+         * <br>
          * &nbsp; &sdot; We remove the channel from the list of open requests
          * </p>
          * 
          * @since Feb 4, 2011
-         * @see gov.sns.ca.ConnectionListener#connectionMade(gov.sns.ca.Channel)
+         * @see xal.ca.ConnectionListener#connectionMade(xal.ca.Channel)
          */
         @Override
         @SuppressWarnings("synthetic-access")
@@ -106,7 +106,7 @@ public class BatchConnectionTest {
          * could have happened.
          * 
          * @since Feb 4, 2011
-         * @see gov.sns.ca.ConnectionListener#connectionDropped(gov.sns.ca.Channel)
+         * @see xal.ca.ConnectionListener#connectionDropped(xal.ca.Channel)
          */
         @Override
         public void connectionDropped(Channel channel) {
@@ -335,8 +335,8 @@ public class BatchConnectionTest {
      * Add the given channel to the list of channels pending 
      * connectivity test.
      * </p>
+     * <h3>NOTE:</h3>
      * <p>
-     * <h4>NOTE:</h4>
      * &mdot; Only channel that are not previously connected
      * are added to the list.  That is, if the 
      * <code>@link Channel#isConnected}</code> returns true then

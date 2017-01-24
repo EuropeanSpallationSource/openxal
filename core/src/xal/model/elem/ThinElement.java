@@ -7,7 +7,10 @@
 package xal.model.elem;
 
 import xal.tools.beam.PhaseMap;
-
+import xal.tools.beam.PhaseMatrix;
+import xal.tools.beam.PhaseVector;
+import xal.tools.math.r3.R3;
+import xal.tools.math.r3.R3x3;
 import xal.model.IProbe;
 import xal.model.ModelException;
 
@@ -52,7 +55,7 @@ public abstract class ThinElement extends Element {
     
     
     /*
-     *  Abstact Protocol for concrete ThinElements
+     *  Abstract Protocol for concrete ThinElements
      */
      
     /**
@@ -60,7 +63,7 @@ public abstract class ThinElement extends Element {
      * 
      *  @param  probe   propagating probe
      *  
-     *  @return         elapsed time through element <bold>Units: seconds</bold> 
+     *  @return         elapsed time through element <b>Units: seconds</b> 
      */
     protected abstract double elapsedTime(IProbe probe);
     
@@ -79,8 +82,34 @@ public abstract class ThinElement extends Element {
     protected abstract PhaseMap transferMap(IProbe probe) throws ModelException;
         
     
+    /**
+     * <p>
+     * Again, this is a kluge.
+     * We return zero since the notion of frequency is not defined for every
+     * element (perhaps if this element is the child of an RF cavity).  
+     * For those elements that do create a phase advance they
+     * need to override this method.
+     * </p>
+     * <p>
+     * There is some legitimacy in returning zero since a thin element generally 
+     * has no phase advance. That is, there is no propagation therefore no elapsed
+     * time and no phase advance.  Only if there is energy gain must there be a
+     * corresponding conjugate phase advance.  
+     * </p>
+     * 
+     * @param probe     probe experiencing a phase advance through this element
+     * 
+     * @return          the change in phase while going through the element
+     *
+     * @author Christopher K. Allen
+     * @since  Nov 23, 2014
+     */
+    protected double longitudinalPhaseAdvance(IProbe probe) {
+        return 0.0;
+    }
+    
     /*
-     *  IElement Interface
+     *  IComponent Interface
      */
     
     /** 
@@ -90,6 +119,11 @@ public abstract class ThinElement extends Element {
      */
     @Override
     public double getLength() { return 0.0; };
+
+    
+    /*
+     *  IElement Interface
+     */
     
     /**
      * Returns the time taken for the probe to drift through part of the
@@ -98,7 +132,7 @@ public abstract class ThinElement extends Element {
      *  @param  probe   propagating probe
      *  @param  dblLen  length of subsection to propagate through <b>meters</b>
      *  
-     *  @return         the elapsed time through section<bold>Units: seconds</bold> 
+     *  @return         the elapsed time through section<b>Units: seconds</b> 
      */
     @Override
     public double elapsedTime(IProbe probe, double dblLen)  {
@@ -116,6 +150,23 @@ public abstract class ThinElement extends Element {
     @Override
     public double energyGain(IProbe probe, double dblLen) {
     	return energyGain(probe);
+    }
+    
+    /**
+     * Calculate the longitudinal phase advance through this element ignoring the
+     * length parameter (or lack thereof). We simply return
+     * 0 assume the zero length of this element allows no phase advance.  Of course
+     * there are thin elements which do create a finite phase advance (e.g., an
+     * RF gap), those element must override this method.
+     *
+     * @see xal.model.elem.Element#longitudinalPhaseAdvance(xal.model.IProbe, double)
+     *
+     * @author Christopher K. Allen
+     * @since  Nov 23, 2014
+     */
+    @Override
+    public double longitudinalPhaseAdvance(IProbe probe, double dblLen) {
+        return longitudinalPhaseAdvance(probe);
     }
     
     /**
@@ -140,4 +191,54 @@ public abstract class ThinElement extends Element {
     	return transferMap(probe);
     }
 
+    /**
+     * <h2>Add Rotation and Displacement Error to Transfer Matrix</h2>
+     * <p>
+     * Method to add the effects of a spatial rotation and displacement to the
+     * beamline element represented by the given transfer matrix.
+     * </p>
+     * <p>
+     * The returned matrix is the original transfer matrix conjugated by the 
+     * rotation and displacement matrix.
+     * </p>
+     *
+     * @param   matPhi      transfer matrix <b>&Phi;</b> to be processed
+     * @return  transfer matrix <b>&Phi;</b> after applying displacement
+     * 
+     * @author  Hiroyuki Sako
+     * @author  Christopher K. Allen
+     * @author  Ivo List
+     * 
+     * @see PhaseMatrix
+     * @see PhaseMatrix#translation(PhaseVector)
+     */
+    protected PhaseMatrix applyErrors(PhaseMatrix matPhi)
+    {		
+			double px = getPhiX();
+		    double py = getPhiY();
+		    double pz = getPhiZ();
+	    	double dx = getAlignX();
+	        double dy = getAlignY();
+	        double dz = getAlignZ();
+	        
+		    if (px != 0. || py != 0.) {
+		    	PhaseMatrix T = PhaseMatrix.translation(new PhaseVector(0., -px, 0., -py, 0., 0.));
+		    	PhaseMatrix Ti = PhaseMatrix.translation(new PhaseVector(0., px, 0., py, 0., 0.));
+		    	matPhi = Ti.times(matPhi).times(T);
+		    }
+		    
+		    if (pz != 0.) {		   
+		    	PhaseMatrix R = PhaseMatrix.rotationProduct(R3x3.newRotationZ(pz));		
+		    	matPhi = matPhi.conjugateTrans(R);		    			    	
+		    }		   
+
+	        if ((dx != 0)||(dy != 0)||(dz !=0)) {
+	            PhaseMatrix T = PhaseMatrix.spatialTranslation(new R3(-dx, -dy, -dz));
+	            PhaseMatrix Ti = PhaseMatrix.spatialTranslation(new R3(dx, dy, dz));
+	        	matPhi = Ti.times(matPhi).times(T);
+	        }
+		  		   
+	        return matPhi;
+    }
+    
 };

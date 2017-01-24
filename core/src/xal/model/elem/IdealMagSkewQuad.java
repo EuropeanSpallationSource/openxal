@@ -27,7 +27,10 @@ import xal.model.IProbe;
  * transport/accelerator system.
  *
  * @author Jeff Holmes
+ * 
+ * @deprecated  This class has been replaced by <code>IdealMagSkewQuad3</code>
  */
+@Deprecated
 public class IdealMagSkewQuad extends IdealMagQuad {
     /** string type identifier for all IdealMagSkewQuad objects */
     public static final String s_strType = "IdealMagSkewQuad";
@@ -53,8 +56,8 @@ public class IdealMagSkewQuad extends IdealMagQuad {
      *  @param  dblFld    field gradient strength (in <b>Tesla/meter</b>)
      *  @param  dblLen    length of the skew quadrupole
      *  @param  dblAng    angle of the skew quadrupole:
-     *                    dblAng > 0 -> focuses in quadrants 1 and 3
-     *                    dblAng < 0 -> focuses in quadrants 2 and 4
+     *                    dblAng &gt; 0 -&gt; focuses in quadrants 1 and 3
+     *                    dblAng &lt; 0 -&gt; focuses in quadrants 2 and 4
      */
     public IdealMagSkewQuad(
         String strId,
@@ -85,7 +88,7 @@ public class IdealMagSkewQuad extends IdealMagQuad {
     /**
      *  Get the rotation angle of the electromagnet.
      *
-     *  @return     rotation angle (in <bold>degrees</bold>).
+     *  @return     rotation angle (in <b>degrees</b>).
      */
     public double getSkewAngle() {
         return m_dblSkewAngle;
@@ -95,7 +98,7 @@ public class IdealMagSkewQuad extends IdealMagQuad {
     /**
      *  Set the rotation angle of the electromagnet.
      *
-     *  @param  dblAngle    rotation angle (in <bold>degrees</bold>).
+     *  @param  dblAngle    rotation angle (in <b>degrees</b>).
      */
     public void setSkewAngle(double dblAngle) {
         m_dblSkewAngle = dblAngle;

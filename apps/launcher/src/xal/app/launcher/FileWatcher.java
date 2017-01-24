@@ -8,13 +8,11 @@
 
 package xal.app.launcher;
 
-import xal.tools.StringJoiner;
 import xal.tools.data.*;
 
 import java.io.*;
 import java.net.URL;
 import java.util.*;
-import java.util.regex.Pattern;
 
 
 /** Watches specified folders for new files of particular types */
@@ -33,10 +31,13 @@ public class FileWatcher implements DataListener {
 	
 	/** model */
 	final private LaunchModel MODEL;
-	
+
+	/** Set of directories which are automatically loaded and should not be saved in the document */
+	final private Set<File> AUTO_WATCHED_FOLDERS = new HashSet<>();
+
 	/** list of folders to watch */
 	private List<File> _folders;
-	
+
 	
 	// static initializer
 	static {
@@ -59,10 +60,16 @@ public class FileWatcher implements DataListener {
 			final URL jarURL = getClass().getProtectionDomain().getCodeSource().getLocation();
 			final File jarFile = new File( jarURL.toURI() );
 			final File applicationsDirectory = jarFile.getParentFile();
+			AUTO_WATCHED_FOLDERS.add( applicationsDirectory );
 			justWatchFolder( applicationsDirectory );			// watch the applications directory
-			
-			final File productsDirectory = applicationsDirectory.getParentFile();		// products directory is the parent of the apps directory
-			justWatchFolder( new File( productsDirectory, "scripts" ) );	// watch the scripts directory
+
+			// products directory is the parent of the apps directory
+			final File productsDirectory = applicationsDirectory.getParentFile();
+
+			// watch the scripts directory
+			final File scriptsDirectory = new File( productsDirectory, "scripts" );
+			AUTO_WATCHED_FOLDERS.add( scriptsDirectory );
+			justWatchFolder( scriptsDirectory );	// watch the scripts directory
 		}
 		catch( Exception exception ) {
 			exception.printStackTrace();
@@ -85,10 +92,20 @@ public class FileWatcher implements DataListener {
      */
     public void update( final DataAdaptor adaptor ) {
 		_folders.clear();
+
+		// add the auto watched folders
+		_folders.addAll( AUTO_WATCHED_FOLDERS );
+
+		// add the folders that are explicitly contained in the document
 		final List<DataAdaptor> pathAdaptors = adaptor.childAdaptors( "Paths" );
 		for ( final DataAdaptor pathAdaptor : pathAdaptors ) {
 			final String path = pathAdaptor.stringValue( "path" );
-			justWatchFolder( new File( path ) );
+			final File folder = new File( path );
+
+			// only need to add the folders which aren't already being watched automatically
+			if ( !AUTO_WATCHED_FOLDERS.contains( folder ) ) {
+				justWatchFolder( folder );
+			}
 		}
     }
     
@@ -99,8 +116,11 @@ public class FileWatcher implements DataListener {
      */
     public void write( final DataAdaptor adaptor ) {
 		for ( final File folder : _folders ) {
-			final DataAdaptor pathAdaptor = adaptor.createChild( "Paths" );
-			pathAdaptor.setValue( "path", folder.getPath() );
+			// only need to save the folders that aren't watched automatically
+			if ( !AUTO_WATCHED_FOLDERS.contains( folder ) ) {
+				final DataAdaptor pathAdaptor = adaptor.createChild( "Paths" );
+				pathAdaptor.setValue( "path", folder.getPath() );
+			}
 		}
     }
 		

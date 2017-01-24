@@ -8,23 +8,9 @@
 
 package xal.extension.application;
 
-import java.awt.Point;
-import java.awt.Window;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.filechooser.FileFilter;
-import java.awt.Toolkit;
+import java.net.URL;
 
-import java.util.*;
-import java.util.logging.*;
-import java.net.*;
-import java.io.*;
-import java.util.prefs.Preferences;
-
-import xal.tools.StringJoiner;
-import xal.tools.apputils.files.*;
-import xal.tools.messaging.MessageCenter;
-import xal.extension.service.*;
+import javax.swing.SwingUtilities;
 
 
 /** Application subclass for JFrame based applications. */

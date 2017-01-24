@@ -13,13 +13,10 @@ package xal.app.launcher;
 import xal.extension.application.*;
 import xal.tools.data.*;
 import xal.tools.xml.XmlDataAdaptor;
-import xal.tools.IconLib;
 import xal.extension.bricks.WindowReference;
 import xal.tools.messaging.MessageCenter;
 
 import java.net.URL;
-import java.awt.event.*;
-import javax.swing.event.*;
 import javax.swing.*;
 import javax.swing.text.*;
 

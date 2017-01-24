@@ -4,10 +4,10 @@
  */
 package xal.smf.impl;
 
-import xal.smf.*;
-import xal.smf.impl.qualify.*;
-import xal.ca.*;
-import xal.tools.data.*;
+import xal.ca.ChannelFactory;
+import xal.smf.impl.qualify.ElementTypeManager;
+import xal.smf.impl.qualify.MagnetType;
+import xal.tools.data.DataAdaptor;
 
 
 /** 
@@ -22,58 +22,64 @@ import xal.tools.data.*;
  * 
  * @author  Nikolay Malitsky, Christopher K. Allen
  * @author Tom Pelaia
+ * @author Blaz Kranjc
  */
 
 public class Quadrupole extends Electromagnet {
-    public static final String s_strType   = "Q";
-	
-	/** horizontal quadrupole type */
-    public static final String HORIZONTAL_TYPE = "QH";
-	
-	/** vertical quadrupole type */
-    public static final String VERTICAL_TYPE = "QV";
-    
-    /**
-     * skew quadrupole type
-     */
-    public static final String SKEW_TYPE = "QSC";
-    	
-    /** the type of quadrupole (horizontal or vertical) */
-    protected String _type;
-	
-    
-	// static initializer
-    static {
-        registerType();
-    }
+	public static final String s_strType   = "Q";
 
-    
-    /**
-     * Register type for qualification.  These are the types that are common to all instances.  
+	/** horizontal quadrupole type */
+	public static final String HORIZONTAL_TYPE = "QH";
+
+	/** vertical quadrupole type */
+	public static final String VERTICAL_TYPE = "QV";
+
+	/**
+	 * skew quadrupole type
+	 */
+	public static final String SKEW_TYPE = "QSC";
+
+	/** the type of quadrupole (horizontal or vertical)
+	 * The default value is used if Quadrupole is never updated. */
+	protected String _type = "Q";
+
+
+	// static initializer
+	static {
+		registerType();
+	}
+
+
+	/**
+	 * Register type for qualification.  These are the types that are common to all instances.
 	 * The <code>isKindOf</code> method handles the type qualification specific to an instance.
-     * @see #isKindOf
-     */
-     private static void registerType() {
-        ElementTypeManager typeManager = ElementTypeManager.defaultManager();
-        typeManager.registerType(Quadrupole.class, s_strType);
-        typeManager.registerType(Quadrupole.class, "emquad");
-        typeManager.registerType(Quadrupole.class, "quad");
-        typeManager.registerType(Quadrupole.class, "quadrupole");
-        typeManager.registerType(Quadrupole.class, MagnetType.QUADRUPOLE);
-    }
-    
-  
-    /**
-     * Constructor
+	 * @see #isKindOf
+	 */
+	private static void registerType() {
+		ElementTypeManager.defaultManager().registerTypes( Quadrupole.class, s_strType, "emquad", "quad", "quadrupole", MagnetType.QUADRUPOLE );
+	}
+
+
+	/**
+	 * Primary Constructor
 	 * @param strID the unique node identifier
-     */
-    public Quadrupole( final String strID ) {
-        super( strID ); 
-    }
-    
-    
-    /** 
-     * Override to provide the correct type signature per instance.  This is 
+	 */
+	public Quadrupole( final String strID, final ChannelFactory channelFactory ) {
+		super( strID, channelFactory );
+	}
+
+
+	/**
+	 * Constructor
+	 * @param strID the unique node identifier
+	 */
+	public Quadrupole( final String strID ) {
+		this( strID, null );
+	}
+
+
+    /**
+     * Override to provide the correct type signature per instance.  This is
      * necessary since the Quadrupole class can represent more than one 
      * official type (QH or QV).
      * @return The official type consistent with the naming convention.

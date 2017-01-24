@@ -2,6 +2,7 @@ package se.lu.esss.linaclego;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -15,15 +16,20 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
+import se.lu.esss.ics.jels.ImporterHelpers;
 import se.lu.esss.ics.jels.JElsDemo;
 import se.lu.esss.ics.jels.model.elem.jels.JElsElementMapping;
 import se.lu.esss.linaclego.elements.Drift;
 import se.lu.esss.linaclego.elements.Quad;
 import xal.model.ModelException;
 import xal.model.probe.EnvelopeProbe;
+import xal.model.probe.traj.EnvelopeProbeState;
+import xal.sim.scenario.AlgorithmFactory;
 import xal.sim.scenario.ElementMapping;
+import xal.sim.scenario.ProbeFactory;
 import xal.smf.Accelerator;
 import xal.smf.AcceleratorSeq;
+import xal.smf.AcceleratorSeqCombo;
 
 public class LinacLego {
 	public static Linac load(String sourceFileName) throws JAXBException, SAXException, ParserConfigurationException, MalformedURLException 
@@ -60,22 +66,49 @@ public class LinacLego {
 		}
 	}
 	
-	public static void main(String[] args) throws ModelException
+	
+	public static Accelerator loadAcceleatorWithInitialConditions(String sourceFileName, ElementMapping modelMapping) {
+		try {
+			OpenXALExporter exporter = OpenXALExporter.convertFull(LinacLego.load(sourceFileName));
+			Accelerator accelerator = exporter.getAccelerator();
+			accelerator.setElementMapping(modelMapping);
+			
+			accelerator.setElementMapping(JElsElementMapping.getInstance());
+			// add initial parameters
+			AcceleratorSeqCombo comboSeq = ImporterHelpers.addDefaultComboSeq(accelerator);
+
+			EnvelopeProbe probe = ImporterHelpers.defaultProbe();
+			exporter.readInitialParameters(probe);
+			probe.initialize();		        
+	        ProbeFactory.createSchema(accelerator.editContext(), probe);
+		    
+		    List<EnvelopeProbeState> states = ImporterHelpers.simulateInitialValues(probe, comboSeq);
+		    ProbeFactory.storeInitialValues(accelerator.editContext(), states);			
+			
+			return accelerator;						
+		} catch (MalformedURLException | JAXBException | SAXException
+				| ParserConfigurationException|ModelException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	
+	public static void main(String[] args) throws ModelException, InstantiationException
 	{
 		if (args.length == 0) {
 			System.out.println("Usage: <path/url to linacLego.xml> [probe file]");
 			return;
 		}
 		
-		AcceleratorSeq sequence = loadAcceleator(args[0]);
+		AcceleratorSeq sequence = loadAcceleatorWithInitialConditions(args[0], JElsElementMapping.getInstance());
 		EnvelopeProbe probe;
 		if (args.length > 1) {
 			probe = JElsDemo.loadProbeFromXML(args[1]);
 		} else {
-			probe = JElsDemo.defaultProbe();
+			probe = ProbeFactory.getEnvelopeProbe(sequence, AlgorithmFactory.createEnvelopeTracker(sequence));
 		}
 		
 		JElsDemo.run(sequence, probe);
 	}
-	
 }

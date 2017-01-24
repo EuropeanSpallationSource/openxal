@@ -12,6 +12,7 @@ package xal.smf.impl;
 
 import xal.ca.BadChannelException;
 import xal.ca.Channel;
+import xal.ca.ChannelFactory;
 import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.ca.IEventSinkValue;
@@ -51,18 +52,18 @@ import java.util.concurrent.RejectedExecutionException;
  * device API interfaced with the <tt>SMF</tt> class
  * <code>{@link ProfileMonitor}</code>.
  * </p>
+ * <h3>NOTES:</h3>
  * <p>
- * <h4>NOTES:</h4>
  * &middot; After a command is issued to a wire scanner device the command
  * buffer must be cleared back to zero.  This is due to a "quirk"
  * in the current EPICS installation where command signal echos
  * occur in the network.  To prevent the command from being issued
  * multiple times it is necessary to clear the command buffer after
  * issuing a command.
- * <br/>
+ * <br>
  * &middot; The time between the issuing of a command and the clearing
  * of the command buffer is call the <i>command latency</i>.
- * <br/>
+ * <br>
  * &middot; Currently the command buffer is not reset - the new controller
  * software appears to correct the EPICS quirk. 
  * <br>
@@ -97,7 +98,7 @@ public class WireScanner extends ProfileDevice {
      */
 
     /**
-     * <h4>Wire Scanner Commands</h4>
+     * <h3>Wire Scanner Commands</h3>
      * <p>
      * The commands below represent the possible values for the first argument 
      * in the command array.  It provides the
@@ -450,11 +451,11 @@ public class WireScanner extends ProfileDevice {
          * Returns the argument of this command.  
          * This method is actually a shortcut for the 
          * method call
-         * <br/>
-         * <br/>
+         * <br>
+         * <br>
          *  &nbsp; &nbsp; <code>{@link #getArgument(int)}</code>
-         * <br/>
-         * <br/>
+         * <br>
+         * <br>
          * for the argument of 0.  Specially, use this method
          * if there is only one argument to the command.
          * 
@@ -550,12 +551,8 @@ public class WireScanner extends ProfileDevice {
      * recognizes.
      */
     static {
-        
-        final ElementTypeManager typeManager = ElementTypeManager.defaultManager();
-        typeManager.registerType( WireScanner.class, s_strType );
-        typeManager.registerType( WireScanner.class, HARDWARE_TYPE ); 
+		ElementTypeManager.defaultManager().registerTypes( WireScanner.class, s_strType, HARDWARE_TYPE );
     }
-
 
 
     
@@ -1053,7 +1050,7 @@ public class WireScanner extends ProfileDevice {
          * Thus, this is the maximum possible distance the
          * wire can travel while taking data.  It is a mechanical
          * limitation. 
-         * <br/> <br/>
+         * <br> <br>
          * The product of <code>stepLength</code> &times; 
          * <code>stepCount</code> must be less than this value. 
          * This is a read-only quantity.
@@ -1134,6 +1131,36 @@ public class WireScanner extends ProfileDevice {
             super(ws);
         }
 
+        /*
+         * Convenience Methods
+         */
+        
+        /**
+         * Returns the stroke length of the actuator arm for a scan.  This is the
+         * total physical distances traveled by the actuator arm during a scan
+         * and is <b>not</b> necessarily the abscissa of the measured data.  
+         * This value, <i>L</i>, is typically given by the formula
+         * <br/>
+         * <br/>
+         * &nbsp; &nbsp; <i>L</i> = <i>N</i><sub>steps</sub> &Delta;<i>L</i>
+         * <br/>
+         * <br/>
+         * where <i>N</i><sub>steps</sub> is the number
+         * of scan steps and &Delta;<i>L</i> is the step length.  
+         * 
+         * @return      movement distance <i>L</i> of scan actuator
+         *
+         * @author Christopher K. Allen
+         * @since  Oct 8, 2015
+         */
+        public double getScanlLength() {
+
+            // Get the total stroke length of the actuator arm
+            double  dblLen = this.stepCount * this.stepLength;
+
+            return dblLen;
+        }
+        
         
         /*
          * IProfileDomain Interface
@@ -1206,7 +1233,7 @@ public class WireScanner extends ProfileDevice {
         @Override
         public double getIntervalLength(ANGLE angle) {
             
-            // Get the total stroke length of the accuator arm
+            // Get the total stroke length of the actuator arm
             double  dblLen = this.stepCount * this.stepLength;
             
             switch (angle) {
@@ -1539,8 +1566,8 @@ public class WireScanner extends ProfileDevice {
         /**
          * Alarm flag for wire signal; it indicates a
          * saturation condition.
-         * <br/>
-         * <br/>
+         * <br>
+         * <br>
          *  status: 0=OK, 1=Saturated
          */
         @AScada.Field(
@@ -1582,8 +1609,8 @@ public class WireScanner extends ProfileDevice {
 
         /** 
          * Horizontal wire damage
-         * <br/>
-         * <br/>
+         * <br>
+         * <br>
          *  status: 0=OK, 1=MPS trip
          */
         @AScada.Field(
@@ -1595,8 +1622,8 @@ public class WireScanner extends ProfileDevice {
 
         /** 
          * Vertical wire damage 
-         * <br/>
-         * <br/>
+         * <br>
+         * <br>
          *  status: 0=OK, 1=MPS trip
          */
         @AScada.Field(
@@ -1608,8 +1635,8 @@ public class WireScanner extends ProfileDevice {
 
         /** 
          * Diagonal wire damage
-         * <br/>
-         * <br/>
+         * <br>
+         * <br>
          *  status: 0=OK, 1=Damage 
          */
         @AScada.Field(
@@ -1632,8 +1659,8 @@ public class WireScanner extends ProfileDevice {
 
         /** 
          * MPS 0 trip 
-         * <br/>
-         * <br/>
+         * <br>
+         * <br>
          *  status: 0=OK, 1=MPS trip
          */
         @AScada.Field(
@@ -1645,8 +1672,8 @@ public class WireScanner extends ProfileDevice {
 
         /** 
          * MPS 1 trip 
-         * <br/>
-         * <br/>
+         * <br>
+         * <br>
          *  status: 0=OK, 1=MPS trip
          */
         @AScada.Field(
@@ -1658,8 +1685,8 @@ public class WireScanner extends ProfileDevice {
 
         /** 
          * General power supply error 
-         * <br/>
-         * <br/>
+         * <br>
+         * <br>
          *  status: 0=OK, 1=Error condition
          */
         @AScada.Field(
@@ -1671,8 +1698,8 @@ public class WireScanner extends ProfileDevice {
         
         /** 
          * General error during scan 
-         * <br/>
-         * <br/>
+         * <br>
+         * <br>
          *  status: 0=OK, 1=Error condition
          */
         @AScada.Field(
@@ -1685,8 +1712,8 @@ public class WireScanner extends ProfileDevice {
         /** 
          * Actuator collision error. Motion was disabled 
          * to prevent collision with another device. 
-         * <br/>
-         * <br/>
+         * <br>
+         * <br>
          *  status: 0=OK, 1=collision detected
          */
         @AScada.Field( 
@@ -1710,8 +1737,8 @@ public class WireScanner extends ProfileDevice {
 
         /** 
          * Movement state of the wire.
-         * <br/>
-         * <br/>
+         * <br>
+         * <br>
          * Values: 0=stationary, 1=moving, 2=failure
          */
         @AScada.Field( 
@@ -2279,13 +2306,13 @@ public class WireScanner extends ProfileDevice {
      * Data structure contain the profile data available
      * during data acquisition in a point-by-point fashion 
      * (i.e., as the scan progress).
-     * <p/>
+     * </p>
      * <p>
      * This appears to be then entire profile available after every
      * measurement sample.  This is different than the addition point
      * value after each sample.  The connected Process Variables are different,
      * so it is likely that this should work.
-     * <p/>
+     * </p>
      * <p>
      * However, it is <b>never used</b> as of yet.
      * </p>
@@ -2799,6 +2826,16 @@ public class WireScanner extends ProfileDevice {
      * Initialization
      */
 
+	/**
+	 * Primary Constructor.
+	 * @param nodeID unique identifier for this node
+	 * @param channelFactory factory for generating channels for this node
+	 */
+	public WireScanner( final String nodeID, final ChannelFactory channelFactory )   {
+		super( nodeID, channelFactory );
+	}
+
+
     /**
      * Create a new <code>WireScanner</code> object.
      *
@@ -2808,7 +2845,7 @@ public class WireScanner extends ProfileDevice {
      * @author    Christopher K. Allen
      */
     public WireScanner( final String nodeID )   { 
-        super( nodeID ); 
+        this( nodeID, null );
     }   
 
 
@@ -2993,13 +3030,13 @@ public class WireScanner extends ProfileDevice {
      * </p>
      * <p>
      * One can specify the event type which fires the monitor using
-     * the argument <arg>intEvtType</arg>.  Any combination of the following
+     * the argument intEvtType.  Any combination of the following
      * event types can be specified with a logical OR operation:
-     * <br/>
-     * <br/> &nbsp; <code>Monitor.VALUE</code> - fire upon PV value change
-     * <br/> &nbsp; <code>Monitor.LOG  </code> - 
-     * <br/> &nbsp; <code>Monitor.ALARM</code> - fire upon PV alarm value
-     * <br/>
+     * <br>
+     * <br> &nbsp; <code>Monitor.VALUE</code> - fire upon PV value change
+     * <br> &nbsp; <code>Monitor.LOG  </code> - 
+     * <br> &nbsp; <code>Monitor.ALARM</code> - fire upon PV alarm value
+     * <br>
      * The default value (i.e., no argument) is <code>Monitor.VALUE</code>.
      * </p> 
      *   

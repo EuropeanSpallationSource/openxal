@@ -10,15 +10,12 @@
 
 package xal.model.elem;
 
-
-
 import java.io.PrintWriter;
 
 import xal.tools.beam.PhaseMap;
 import xal.tools.beam.PhaseMatrix;
 import xal.tools.beam.optics.DriftSpace;
 import xal.tools.beam.optics.QuadrupoleLens;
-
 import xal.model.IProbe;
 
 
@@ -172,7 +169,7 @@ public class IdealMagQuad extends ThickElectromagnet {
      *  @param  probe   propagating probe
      *  @param  dblLen  length of subsection to propagate through <b>meters</b>
      *  
-     *  @return         the elapsed time through section<bold>Units: seconds</bold> 
+     *  @return         the elapsed time through section<b>Units: seconds</b> 
      */
     @Override
     public double elapsedTime(IProbe probe, double dblLen)  {
@@ -261,14 +258,37 @@ public class IdealMagQuad extends ThickElectromagnet {
 			matPhi.setSubMatrix( 0, 1, 0, 1, arrD );
 			matPhi.setSubMatrix( 2, 3, 2, 3, arrF );			
 		}
+				
+		// apply alignment and rotation errors
+		matPhi = applyErrors(matPhi, probe, length);			
 		
-	//sako, Apply align error
-
-	   PhaseMatrix Phidx = applyAlignError(matPhi);	
-	   matPhi = Phidx;
-	
-	   return new PhaseMap( matPhi );
+	    return new PhaseMap( matPhi );
    }
+    
+    /*
+     * Object Overrides
+     */
+    
+    /**
+     *
+     * @see xal.model.elem.Element#toString()
+     *
+     * @since  Jan 27, 2015   by Christopher K. Allen
+     */
+    @Override
+    public String   toString() {
+
+        StringBuffer    bufOut = new StringBuffer();
+        
+        bufOut.append( super.toString() );
+
+        bufOut.append("  magnetic field     : " + this.getMagField() );
+        bufOut.append('\n');
+        bufOut.append("  magnet orientation : " + this.getOrientation() );
+        bufOut.append('\n');
+        
+        return bufOut.toString();
+    }
 
 
     /*

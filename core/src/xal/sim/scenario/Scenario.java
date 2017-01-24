@@ -12,6 +12,7 @@ import xal.model.probe.traj.ProbeState;
 import xal.model.probe.traj.Trajectory;
 import xal.sim.sync.SynchronizationException;
 import xal.sim.sync.SynchronizationManager;
+import xal.smf.Accelerator;
 import xal.smf.AcceleratorNode;
 import xal.smf.AcceleratorSeq;
 import xal.smf.Ring;
@@ -21,27 +22,123 @@ import java.util.Map;
 
 
 /**
+ * <p>
  * Packages an on-line model scenario, including accelerator node proxy manager,
  * lattice, probe, and synchronization manager.
+ * </p>
+ * <p>
+ * It is not necessary for the <code>Scenario</code> object to maintain a back reference
+ * to the original <code>AcceleratorSeq</code> object that it models.  In fact it is 
+ * undesirable since this represents a dependency of the online model with the SMF
+ * hardware representation component of Open XAL.  Its current uses here are not 
+ * so requirements,
+ * typically used to lookup hardware nodes from their IDs.  This can be done directly
+ * on the hardware sequence itself without using this class as a proxy.
+ * <p> 
  * 
  * @author Craig McChesney
  * @author Christopher K. Allen
  */
 public class Scenario {
+    
+    /*
+     * Global Constants
+     */
+    
+    /** Synchronization manager constant for live machine synchronization */
     public static final String SYNC_MODE_LIVE = "LIVE";
+
+    /** Synchronization manager constant for design parameter synchronization */
     public static final String SYNC_MODE_DESIGN = "DESIGN";
-	public static final String SYNC_MODE_RF_DESIGN = "RF_DESIGN";
-	
+
+    /** Synchronization manager constant for synchronization only to live magnet values */
+    public static final String SYNC_MODE_RF_DESIGN = "RF_DESIGN";
+    
+
+    /*
+     * Global Operations
+     */
+    
+    /**
+     * Creates a new Scenario for the supplied accelerator sequence.
+     * 
+     * @param smfSeq    the accelerator sequence to build a scenario for
+     * @return          a new Scenario for the supplied accelerator sequence
+     * 
+     * @throws          ModelException error building Scenario
+     */
+    public static Scenario newScenarioFor( final AcceleratorSeq smfSeq ) throws ModelException {
+
+        // We have a linear accelerator/transport line - process as such
+        Accelerator         smfAccel      = smfSeq.getAccelerator();
+        ElementMapping      mapNodeToElem = smfAccel.getElementMapping();
+        ScenarioGenerator   mdlGenScnr    = new ScenarioGenerator(mapNodeToElem);
+
+        return mdlGenScnr.generateScenario(smfSeq);
+    }
+
+    /**
+     * Creates a new Scenario for the supplied accelerator sequence and element mapping.
+     *   
+     * @param smfSeq        the accelerator sequence to build a scenario for
+     * @param mapNodeToElem the element mapping to build a scenario with
+     * @return              a new model <code>Scenario</code> for the supplied accelerator sequence
+     * @throws ModelException   general error building model lattice
+     */
+    public static Scenario newScenarioFor( final AcceleratorSeq smfSeq, ElementMapping mapNodeToElem ) throws ModelException {
+
+        // We have a linear accelerator/transport line - process as such
+        ScenarioGenerator mdlGenScnr = new ScenarioGenerator(mapNodeToElem);
+
+        return mdlGenScnr.generateScenario(smfSeq);
+    }
+
+
+    /**
+     * Creates a new <code>Scenario</code> object for the explicit case where
+     * the <code>AcceleratorSeq</code> object is of type 
+     * <code>xal.smf.Ring</code>.
+     * 
+     * @param   smfRing     target hardware (SMF) ring object 
+     * @return              <code>Scenario</code> object encapsulating ring
+     * 
+     * @throws ModelException   unable to build modeling scenario
+     */
+    public static Scenario  newScenarioFor( final Ring smfRing ) throws ModelException {
+
+        // We have a ring structure
+        Accelerator         smfAccel      = smfRing.getAccelerator();
+        ElementMapping      mapNodeToElem = smfAccel.getElementMapping();
+        ScenarioGenerator   mdlGenScnr    = new ScenarioGenerator( mapNodeToElem );
+
+        return mdlGenScnr.generateScenario( smfRing ); 
+    }
+
+
+    
+    /*
+     * Local Attributes
+     */
+    
+    /** The model lattice that we are managing */
     private Lattice                         lattice;
+    
+    /** Synchronization manager synchronizing the model lattice parameters to the synchronization source */
+    private final SynchronizationManager    mgrSync;
+    
+    /** Back reference to the hardware that this scenario model - CKA: I really want to eliminate this */
+    private final AcceleratorSeq            smfSeq;
+
+    
+    /** Current probe driving the simulation through the model lattice */
     private Probe<?>                        probe;
-    private final SynchronizationManager    syncManager;
-    private final AcceleratorSeq            _sequence;
     
     /** element from which to start propagation */
     private String idElemStart = null;
     
     /** element at which to stop propagation */
     private String idElemStop = null;
+
     
     /**
      * Flag indicating that propagation should stop at the entrance of
@@ -50,57 +147,15 @@ public class Scenario {
     private boolean     bolInclStopElem = true;
     
     
-    /** Constructor */
-    protected Scenario( final AcceleratorSeq aSeq, final Lattice aLattice, final SynchronizationManager aSyncMgr ) {
-        _sequence = aSeq;
-        lattice = aLattice;
-        syncManager = aSyncMgr;
+    /** 
+     * Constructor 
+     */
+    protected Scenario( final AcceleratorSeq smfSeq, final Lattice mdlLattice, final SynchronizationManager mgrSync ) {
+        this.smfSeq = smfSeq;
+        this.lattice = mdlLattice;
+        this.mgrSync = mgrSync;
     }
     
-	 /**
-     * Creates a new Scenario for the supplied accelerator sequence.
-     * 
-     * @param smfSeq    the accelerator sequence to build a scenario for
-     * @return          a new Scenario for the supplied accelerator sequence
-     * @throws          ModelException error building Scenario
-     */
-    public static Scenario newScenarioFor( final AcceleratorSeq smfSeq ) throws ModelException {
-       // We have a linear accelerator/transport line - process as such
-        ScenarioGenerator generator = new ScenarioGenerator(smfSeq);
-        return generator.generateScenario();
-    }
-	
-	 /**
-     * Creates a new Scenario for the supplied accelerator sequence and element mapping.
-     * 	 
-     * @param smfSeq    the accelerator sequence to build a scenario for
-	 * @param elementMapping    the element mapping to build a scenario with
-     * @return          a new Scenario for the supplied accelerator sequence
-     * @throws          ModelException error building Scenario
-     */
-    public static Scenario newScenarioFor( final AcceleratorSeq smfSeq, ElementMapping elementMapping ) throws ModelException {
-       // We have a linear accelerator/transport line - process as such
-        ScenarioGenerator generator = new ScenarioGenerator(smfSeq, elementMapping);
-        return generator.generateScenario();
-    }
-
-
-    /**
-     * Creates a new <code>Scenario</code> object for the explicit case where
-     * the <code>AcceleratorSeq</code> object is of type 
-     * <code>gov.sns.xal.smf.Ring</code>.
-     * 
-     * @param   smfRing     target hardware (SMF) ring object 
-     * @return              <code>Scenario</code> object encapsulating ring
-     * 
-     * @throws ModelException   unable to build modeling scenario
-     */
-    public static Scenario  newScenarioFor( final Ring smfRing ) throws ModelException {
-        ScenarioGenerator genScen = new ScenarioGenerator( smfRing );
-        return genScen.generateScenario(); 
-    }
-
-
     // Model Operations ========================================================
     
     /**
@@ -111,13 +166,13 @@ public class Scenario {
      * @throws IllegalArgumentException if the specified mode is unknown
      */
     public void setSynchronizationMode( final String newMode ) {
-        syncManager.setSynchronizationMode(newMode);
+        mgrSync.setSynchronizationMode(newMode);
     }
 
 	
 	/** get the synchronization mode */
 	public String getSynchronizationMode() {
-		return syncManager.getSynchronizationMode();
+		return mgrSync.getSynchronizationMode();
 	}
 
 
@@ -126,7 +181,7 @@ public class Scenario {
      * @throws SynchronizationException if an error is encountered reading a data source
      */
     public void resync() throws SynchronizationException {
-        syncManager.resync();
+        mgrSync.resync();
     }
     
 	
@@ -135,7 +190,7 @@ public class Scenario {
      * @throws SynchronizationException if an error is encountered reading a data source
      */
     public void resyncFromCache() throws SynchronizationException {
-        syncManager.resyncFromCache();
+        mgrSync.resyncFromCache();
     }
 	
         
@@ -244,7 +299,7 @@ public class Scenario {
 	 * @return the corresponding position relative to this scenario's starting element
 	 */
 	public double getPositionRelativeToStart( final double positionInSequence ) {
-		return ( idElemStart == null ) ? positionInSequence : _sequence.getRelativePosition( positionInSequence, idElemStart );
+		return ( idElemStart == null ) ? positionInSequence : smfSeq.getRelativePosition( positionInSequence, idElemStart );
 	}
     
 	
@@ -283,7 +338,12 @@ public class Scenario {
             alg.unsetStopElementId();
         
         // Propagate probe
-	lattice.propagate(probe);
+        probe.initialize();
+        probe.update();
+        
+        lattice.propagate(probe);
+
+//        probe.performPostProcessing();
     }
     
 	
@@ -305,18 +365,19 @@ public class Scenario {
     }
 	
     /**
+     * <h3>NOTE</h3>
      * <p>
      * Returns the trajectory obtained by running the model.
-     * <h4>NOTE</h4>
-     * &middot; The type of the object returned is actually <code>Trajectory<?></code>
+     *
+     * &middot; The type of the object returned is actually <code>Trajectory&lt;?&gt;</code>
      * since the actual type of the trajectory is not known.  Any type of probe
      * may be used to run the scenario.  
-     * <br/>
-     * <br/>
+     * <br>
+     * <br>
      * &middot; This is simply a convenient way to avoid the clumsy Java
      * type casting, however, it is essentially the same thing.
-     * <br/>
-     * <br/>
+     * <br>
+     * <br>
      * &middot; A runtime cast exception will be thrown if the trajectory does
      * not match the probe type currently run.  
      * </p>
@@ -351,7 +412,7 @@ public class Scenario {
      */
     public Map<String,Double> propertiesForNode( final AcceleratorNode aNode ) throws SynchronizationException {
         if (aNode == null)  throw new IllegalArgumentException( "node cannot be null getting property values" );
-		return syncManager.propertiesForNode(aNode);
+		return mgrSync.propertiesForNode(aNode);
     }
     
 	
@@ -363,7 +424,7 @@ public class Scenario {
      * @return AcceleratorNode with specified id
      */
     public AcceleratorNode nodeWithId( final String id ) {
-        return _sequence.getNodeWithId(id);
+        return smfSeq.getNodeWithId(id);
     }
     
 	
@@ -374,7 +435,7 @@ public class Scenario {
      * @return a List of Elements mapped to the specified node
      */
     public List<IElement> elementsMappedTo( final AcceleratorNode aNode ) {
-        return syncManager.allElementsMappedTo(aNode);
+        return mgrSync.allElementsMappedTo(aNode);
     }
     
 	
@@ -441,7 +502,7 @@ public class Scenario {
      * @param val double value for property
      */
     public ModelInput setModelInput( final AcceleratorNode aNode, final String propName, final double val ) {
-        return syncManager.setModelInput(aNode, propName, val);
+        return mgrSync.setModelInput(aNode, propName, val);
     }
     
 	
@@ -452,7 +513,7 @@ public class Scenario {
      * @param propName name of property to get a ModelInput for
      */
     public ModelInput getModelInput( final AcceleratorNode aNode, final String propName ) {
-        return syncManager.getModelInput(aNode, propName);
+        return mgrSync.getModelInput(aNode, propName);
     }
     
 	
@@ -464,7 +525,7 @@ public class Scenario {
      * @param property name of property whose input to remove
      */
     public void removeModelInput( final AcceleratorNode aNode, final String property ) {
-        syncManager.removeModelInput(aNode, property);
+        mgrSync.removeModelInput(aNode, property);
     }
     
     
@@ -499,7 +560,7 @@ public class Scenario {
     
     /** Testing Support */
     public boolean checkSynchronization( final AcceleratorNode aNode, final Map<String,Double> values ) throws SynchronizationException {
-        return syncManager.checkSynchronization(aNode, values);
+        return mgrSync.checkSynchronization(aNode, values);
     }
     
 	
@@ -519,6 +580,6 @@ public class Scenario {
     }
 
 	public AcceleratorSeq getSequence() {
-		return _sequence;
+		return smfSeq;
 	}
 }

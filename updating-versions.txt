@@ -1,0 +1,11 @@
+-= 1.STEP List pom.xml-s =-
+
+Update files to new version by executing: 
+
+    mvn versions:set -DnewVersion=1.0.2
+
+Note: To List the pom.xml-s execute this command: ag -l --ignore '*/packaging/*' --ignore 'packaging*' '1\.0\.1\-SNAPSHOT' .  | sort
+
+-= 2. STEP Check for possible forgotten renames =-
+
+ag '1\.0\.0\-SNAPSHOT' . 

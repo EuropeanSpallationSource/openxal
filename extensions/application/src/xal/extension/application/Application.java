@@ -8,25 +8,48 @@ package xal.extension.application;
 
 import java.awt.Point;
 import java.awt.Window;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.filechooser.FileFilter;
-import java.awt.Toolkit;
-
-import java.util.*;
-import java.util.logging.*;
-import java.net.*;
-import java.io.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.channels.FileChannel;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Properties;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
-import xal.extension.application.platform.*;
-import xal.tools.StringJoiner;
-import xal.tools.apputils.files.*;
-import xal.tools.messaging.MessageCenter;
-import xal.extension.service.*;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+
+import xal.extension.application.platform.MacAdaptor;
+import xal.extension.application.rbac.AuthenticationPane;
+import xal.extension.service.ServiceDirectory;
+import xal.rbac.AccessDeniedException;
+import xal.rbac.Credentials;
+import xal.rbac.RBACException;
+import xal.rbac.RBACLogin;
+import xal.rbac.RBACSubject;
 import xal.tools.URLReference;
 import xal.tools.apputils.ApplicationSupport;
+import xal.tools.apputils.files.DefaultFolderAccessory;
+import xal.tools.apputils.files.FileFilterFactory;
+import xal.tools.apputils.files.RecentFileTracker;
+import xal.tools.messaging.MessageCenter;
 
 
 /**
@@ -40,6 +63,7 @@ import xal.tools.apputils.ApplicationSupport;
  * common to all multi-document applications.
  *
  * @author  t6p
+ * @author Blaž Kranjc <blaz.kranjc@cosylab.com>
  */
 abstract public class Application {
 	// public static constants for confirmation dialogs
@@ -61,10 +85,7 @@ abstract public class Application {
     private JFileChooser _saveFileChooser;   // file chooser for save
 	/** cache and retrieve recently accessed files */
 	private RecentFileTracker _recentFileTracker;
-	
-	/** keep track of the application's default documents folder */
-	private DefaultFolderAccessory _defaultFolderAccessory;
-    
+
     // messaging instance variables
     private MessageCenter _messageCenter;        // local message center
     protected ApplicationListener _noticeProxy;    // proxy for broadcasting ApplicationListener events
@@ -78,6 +99,11 @@ abstract public class Application {
     /** default folder */
     private File _defaultDocumentFolder;
     
+
+    /* RBAC service */
+    private RBACLogin rbacLogin;
+    private RBACSubject rbacSubject;
+
 	
 	/** static initializer */
 	static {
@@ -117,12 +143,133 @@ abstract public class Application {
         
         // assign the global application instance before the setup since it is referenced there (among other places).
         Application._application = this;
-		
+        
+        while (true) { 
+        	if (authenticateWithRBAC()) {
+        		if (authorizeWithRBAC("Run")) {
+        			break;
+        		} else {
+        			final int option = JOptionPane.showConfirmDialog(getActiveWindow(), 
+        					"No authorisation. Would you like to login with another user?", 
+        					"No authorisation", JOptionPane.OK_CANCEL_OPTION);
+        			if (option == JOptionPane.OK_OPTION) {
+        				try {
+							rbacSubject.logout();
+						} catch (RBACException e) {
+							JOptionPane.showMessageDialog(getActiveWindow(), e.getMessage(), "Error while trying to logout", JOptionPane.ERROR_MESSAGE);
+						}
+        				rbacSubject = null;
+        			} else {
+        				quit();
+        			}
+        		}
+        	}
+        }
+
         setup( urls );
     }
+    
+    
+    /**
+     * Convention method for authenticating user.
+     * 
+     * <p>
+     * If RBACPlugin couldn't be loaded the application will not use RBAC !!!
+     * @return true if authentication successful, false if not.
+     */
+    private boolean authenticateWithRBAC(){
+      //RBAC authentication
+        try {
+            rbacLogin = RBACLogin.newRBACLogin();
+        } catch (RuntimeException e) {
+            System.err.println("RBAC plugin not found. Continuing without RBAC.");
+            return true;
+        }
+        
+        if (rbacSubject == null) {
+	        try {
+	        	// Try to use the local token.
+	        	rbacSubject = rbacLogin.authenticate(null, null);
+	        	System.out.println("Already logged in.");
+	        	if (rbacSubject != null) return true;
+	        } catch (Exception e) {
+	        	// Fall to authentication pane
+	        }
+        }
+
+        try {
+        	System.out.println("Starting authentication.");
+        	
+            final Credentials credentials = AuthenticationPane.getCredentials();
+            if(credentials == null){
+                // User pressed cancel
+            	System.out.println("Exiting...");
+            	quit();
+                return false;
+            }           
+            rbacSubject = rbacLogin.authenticate(credentials.getUsername(),credentials.getPassword(),credentials.getPreferredRole(),credentials.getIP());
+            System.out.printf("Authentication successful with username %s.\n", credentials.getUsername());
+            return (rbacSubject != null);
+        } catch (AccessDeniedException e) {
+            System.err.printf("Access denied during authentication: %s\n",e.getMessage());
+            JOptionPane.showMessageDialog(getActiveWindow(), e.getMessage(), "Access denied", JOptionPane.ERROR_MESSAGE);
+            return false;
+        } catch (RBACException e) {
+            System.err.printf("Error while trying to authenticate: %s\n",e.getMessage());
+            JOptionPane.showMessageDialog(getActiveWindow(), e.getMessage(), "Error while trying to authenticate", JOptionPane.ERROR_MESSAGE);
+            return false; 
+        }
+    }
+    
+    /**
+     * Authenticates and authorizes user. If successful returns true.
+     * 
+     * <p>
+     * Asks for given permission on resource : "Xal" + application name without spaces.
+     * Eg. for Virtual Accelerator this is XalVirtualAccelerator.
+     * </p>
+     * 
+     * @param permission for which to authenticate.
+     * 
+     * @return true if authorization was successful, else false.
+     */
+    public boolean authorizeWithRBAC(final String permission){
+        //RBAC authorization
+        if(rbacSubject != null){
+            try {
+            	String appName = getAdaptor().applicationName().replace(" ", "");
+            	String resource = "Xal" + appName.substring(0, 1).toUpperCase() + appName.substring(1);
+                System.out.printf("Starting authorization for resource %s, permission %s.\n", resource, permission);
+                if (rbacSubject.hasPermission(resource, permission)) {
+                	System.out.println("Authorization successful. Proceeding...");
+                	return true;
+                } else {
+                	System.err.printf("No authorisation for resource %s, permission %s.\n", resource, permission);
+                    return false;
+                }
+            } catch (RBACException e) {
+                System.err.printf("Error while trying to authorize: %s.\n", e.getMessage());
+                JOptionPane.showMessageDialog(getActiveWindow(), e.getMessage(), "Error while trying to authorize", JOptionPane.ERROR_MESSAGE);
+                return false;
+            } catch (AccessDeniedException e) {
+                System.err.printf("Access denied during authorisation: %s\n", e.getMessage());
+                JOptionPane.showMessageDialog(getActiveWindow(), e.getMessage(), "Access denied", JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
+        } else {
+        	return true; // no RBAC module
+        }
+    }
 	
-	
-	/** Load the user's custom properties and set them as the defaults, but do not override existing properties. */
+	public RBACLogin getRbacLogin() {
+        return rbacLogin;
+    }
+
+    public RBACSubject getRbacSubject() {
+        return rbacSubject;
+    }
+
+    /** Load the user's custom properties and set them as the defaults, but do not override existing properties. */
 	static private void loadUserProperties() {
 		final Preferences prefs = xal.tools.apputils.Preferences.nodeForPackage( Application.class );
 		final String propertiesPath = prefs.get( "UserPropertiesFile", "" );
@@ -288,7 +435,7 @@ abstract public class Application {
 	 */
 	public void setSaveFileChooser( final JFileChooser fileChooser ) {
 		_saveFileChooser = fileChooser;
-		_defaultFolderAccessory.applyTo( _saveFileChooser );
+		_applicationAdaptor.getDefaultFolderAccessory().applyTo( _saveFileChooser );
 	}
 	
 	
@@ -307,15 +454,14 @@ abstract public class Application {
 	 */
 	public void setOpenFileChooser( final JFileChooser fileChooser ) {
 		_openFileChooser = fileChooser;
-		_defaultFolderAccessory.applyTo( _openFileChooser );
+		_applicationAdaptor.getDefaultFolderAccessory().applyTo( _openFileChooser );
 	}
     
     
     /** Create a file chooser for opening and saving documents. */
     protected void makeFileChoosers() {
-		_recentFileTracker = new RecentFileTracker( getAdaptor().getClass(), "recent_files" );
-		_defaultFolderAccessory = new DefaultFolderAccessory( XalDocument.class, null, getAdaptor().applicationName() );
-		
+		_recentFileTracker = new RecentFileTracker( 10, getAdaptor().getUserPreferencesNode(), "recent_files" );
+
 		setOpenFileChooser( new JFileChooser() );
 		FileFilterFactory.applyFileFilters( _openFileChooser, _applicationAdaptor.readableDocumentTypes() );
         _openFileChooser.setMultiSelectionEnabled( true );
@@ -872,33 +1018,92 @@ abstract public class Application {
     
     /** Handle the "Quit" action by quitting the application. */
     public void quit() {
-		boolean warnUnsavedChanges = false;
-		final List<XalAbstractDocument> documents = getDocuments();
-		for ( final XalAbstractDocument document : documents ) {
-			warnUnsavedChanges |= ( document.warnUserOfUnsavedChangesWhenClosing() && document.hasChanges() );
-		}
-		
-		if ( warnUnsavedChanges ) {
-			try {
-				int status = JOptionPane.showConfirmDialog( getActiveWindow(), "Some documents have unsaved changes.  Continue Quitting?", "Unsaved Changes", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE );
-				if ( status == JOptionPane.NO_OPTION ) {
-					return;
-				}
-			}
-			catch( java.awt.HeadlessException exception ) {
-				Logger.getLogger("global").log( Level.SEVERE, "Exception while quitting the application.", exception );
-				System.err.println( exception );
-				exception.printStackTrace();
-			}
-		}
-        
-        _noticeProxy.applicationWillQuit();
+        boolean warnUnsavedChanges = false;
+        final List<XalAbstractDocument> documents = getDocuments();
+        for (final XalAbstractDocument document : documents) {
+            warnUnsavedChanges |= (document.warnUserOfUnsavedChangesWhenClosing() && document.hasChanges());
+        }
+
+        if (warnUnsavedChanges) {
+            try {
+                int status = JOptionPane.showConfirmDialog(getActiveWindow(),
+                        "Some documents have unsaved changes.  Continue Quitting?", "Unsaved Changes",
+                        JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+                if (status == JOptionPane.NO_OPTION) {
+                    return;
+                }
+            } catch (java.awt.HeadlessException exception) {
+                Logger.getLogger("global").log(Level.SEVERE, "Exception while quitting the application.", exception);
+                System.err.println(exception);
+                exception.printStackTrace();
+            }
+        }
+
+        rbacLogout();
+
+        if (_noticeProxy != null)
+            _noticeProxy.applicationWillQuit();
 
         System.exit(0);
     }
-    
-    
-    
+
+    /**
+     * Prompts a logout dialog for the RBAC user to logout and logs out the user
+     * if <code>YES_OPTION</code> was selected. Otherwise it does nothing.
+     * 
+     * @return true if user was logged out or if user is not logged in, false
+     *         otherwise
+     */
+    private boolean rbacLogout() {
+        if (rbacSubject != null) {
+            final int option = JOptionPane.showConfirmDialog(getActiveWindow(), "Would you like to logout?", "Logout",
+                    JOptionPane.YES_NO_OPTION);
+            if (option == JOptionPane.YES_OPTION) {
+                try {
+                    rbacSubject.logout();
+                } catch (RBACException e) {
+                    JOptionPane.showMessageDialog(getActiveWindow(), e.getMessage(), "Error while trying to logout",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+                rbacSubject = null;
+                return true;
+            }
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Changes the user
+     */
+    public void changeRBACUser() {
+        boolean isLogout = rbacLogout();
+        if (!isLogout)
+            return; // The user did not logout
+        while (true) {
+            if (authenticateWithRBAC()) {
+                if (authorizeWithRBAC("Run")) {
+                    break;
+                } else {
+                    final int option = JOptionPane.showConfirmDialog(getActiveWindow(),
+                            "No authorisation. Would you like to login with another user?", "No authorisation",
+                            JOptionPane.OK_CANCEL_OPTION);
+                    if (option == JOptionPane.OK_OPTION) {
+                        try {
+                            rbacSubject.logout();
+                        } catch (RBACException e) {
+                            JOptionPane.showMessageDialog(getActiveWindow(), e.getMessage(),
+                                    "Error while trying to logout", JOptionPane.ERROR_MESSAGE);
+                        }
+                        rbacSubject = null;
+                    } else {
+                        quit();
+                    }
+                }
+            }
+        }
+    }
+
     // --------- Window menu actions -------------------------------------------
 
     
@@ -1045,7 +1250,7 @@ abstract public class Application {
 	 */
 	public File getDefaultDocumentFolder() {
         if ( _defaultDocumentFolder == null ) {
-            _defaultDocumentFolder = _defaultFolderAccessory.getDefaultFolder();
+            _defaultDocumentFolder = _applicationAdaptor.getDefaultDocumentFolder();
         }
         
         return _defaultDocumentFolder;
@@ -1057,7 +1262,7 @@ abstract public class Application {
 	 * @return the default folder for documents as a URL or null if none has been set.
 	 */
 	public URL getDefaultDocumentFolderURL() {
-		return _defaultFolderAccessory.getDefaultFolderURL();
+		return _applicationAdaptor.getDefaultDocumentFolderURL();
 	}
     
     
@@ -1318,6 +1523,7 @@ abstract public class Application {
             }
             
             newButton.addActionListener( new ActionListener() {
+                @Override
                 public void actionPerformed( final ActionEvent event ) {
                     setOpenMode( NEW_MODE );
                     DOCUMENT_CHOOSER.approveSelection();
@@ -1325,6 +1531,7 @@ abstract public class Application {
             });
             
             openButton.addActionListener( new ActionListener() {
+                @Override
                 public void actionPerformed( final ActionEvent event ) {
                     DOCUMENT_CHOOSER.setCurrentDirectory( documentFolder );
                     setOpenMode( DOCUMENT_MODE );
@@ -1332,6 +1539,7 @@ abstract public class Application {
             });
             
             templateButton.addActionListener( new ActionListener() {
+                @Override
                 public void actionPerformed( final ActionEvent event ) {
                     DOCUMENT_CHOOSER.setCurrentDirectory( templateFolder );
                     setOpenMode( TEMPLATE_MODE );
@@ -1339,6 +1547,7 @@ abstract public class Application {
             });
             
             recentButton.addActionListener( new ActionListener() {
+                @Override
                 public void actionPerformed( final ActionEvent event ) {
                     final URLReference selection = (URLReference)JOptionPane.showInputDialog( DOCUMENT_CHOOSER, "Open the selected document", "Recent Documents", JOptionPane.PLAIN_MESSAGE, null, recentURLReferences, null );
                     if ( selection != null ) {
@@ -1433,11 +1642,13 @@ abstract public class Application {
         
         
         /** Create the dialog */
+        @Override
         protected JDialog createDialog( final java.awt.Component parent ) throws java.awt.HeadlessException {
             final JDialog dialog = super.createDialog( parent );
             dialog.setLocation( INITIAL_LOCATION );
             
             dialog.addComponentListener( new java.awt.event.ComponentAdapter() {
+                @Override
                 public void componentMoved( final java.awt.event.ComponentEvent event ) {
                     setNextDocumentOpenLocation( dialog.getLocationOnScreen() );
                 }

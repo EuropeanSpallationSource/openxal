@@ -9,23 +9,19 @@
 
 package xal.extension.application;
 
-import java.awt.Point;
-import java.awt.Window;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.filechooser.FileFilter;
-import java.awt.Toolkit;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.net.URL;
 
-import java.util.*;
-import java.util.logging.*;
-import java.net.*;
-import java.io.*;
-import java.util.prefs.Preferences;
+import javax.swing.JDesktopPane;
+import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
+import javax.swing.JMenuBar;
+import javax.swing.SwingUtilities;
+import javax.swing.WindowConstants;
 
-import xal.tools.StringJoiner;
-import xal.tools.apputils.files.*;
-import xal.tools.messaging.MessageCenter;
-import xal.extension.service.*;
+import xal.Info;
 
 
 /** Application subclass for JDesktopPane based applications. */
@@ -135,7 +131,7 @@ public class DesktopApplication extends Application implements XalInternalDocume
 		final JDesktopPane desktop = new JDesktopPane();
 		desktop.setDragMode( ((DesktopApplicationAdaptor)_applicationAdaptor).drawsDocumentContentOnDrag() ? JDesktopPane.LIVE_DRAG_MODE : JDesktopPane.OUTLINE_DRAG_MODE );
 		
-		_desktopFrame = new JFrame( _applicationAdaptor.applicationName() );
+		_desktopFrame = new JFrame( Info.getLabel() + " - " + _applicationAdaptor.applicationName() );
 		_desktopFrame.setSize( 1024, 768 );
 		_desktopFrame.setContentPane( desktop );
 		

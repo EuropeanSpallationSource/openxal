@@ -10,12 +10,13 @@ import java.io.PrintWriter;
 import xal.model.IElement;
 import xal.model.IProbe;
 import xal.model.ModelException;
+import xal.model.elem.sync.IRfGap;
 import xal.sim.scenario.LatticeElement;
 import xal.smf.impl.RfGap;
 import xal.tools.beam.PhaseMap;
 import xal.tools.beam.PhaseMatrix;
 import xal.tools.beam.RelativisticParameterConverter;
-import xal.tools.math.poly.UnivariateRealPolynomial;
+import xal.tools.math.fnc.poly.RealUnivariatePolynomial;
 
 /**
  *  <p>
@@ -136,22 +137,22 @@ public class IdealRfGap extends ThinElement implements IRfGap {
 	/**
 	 *  fit of the TTF vs. beta
 	 */
-	private UnivariateRealPolynomial TTFFit;
+	private RealUnivariatePolynomial TTFFit;
 
 	/**
 	 *  fit of the TTF-prime vs. beta
 	 */
-	private UnivariateRealPolynomial TTFPrimeFit;
+	private RealUnivariatePolynomial TTFPrimeFit;
 
 	/**
 	 *  fit of the S factor vs. beta
 	 */
-	private UnivariateRealPolynomial SFit;
+	private RealUnivariatePolynomial SFit;
 
 	/**
 	 *  fit of the S-prime vs. beta
 	 */
-	private UnivariateRealPolynomial SPrimeFit;
+	private RealUnivariatePolynomial SPrimeFit;
 
 	/**
 	 *  Creates a new instance of IdealRfGap
@@ -184,7 +185,7 @@ public class IdealRfGap extends ThinElement implements IRfGap {
 	 *  Return the ETL product of the gap, where E is the longitudinal electric
 	 *  field, T is the transit time factor, and L is the gap length.
 	 *
-	 *@return    the ETL product of the gap (in <bold>volts</bold> ).
+	 *@return    the ETL product of the gap (in <b>volts</b> ).
 	 */
 	public double getETL() {
 		return m_dblETL;
@@ -194,7 +195,7 @@ public class IdealRfGap extends ThinElement implements IRfGap {
 	 *  Return the RF phase delay of the gap with respect to the synchronous
 	 *  particle.
 	 *
-	 *@return    phase delay w.r.t. synchronous particle (in <bold>radians</bold> ).
+	 *@return    phase delay w.r.t. synchronous particle (in <b>radians</b> ).
 	 */
 	public double getPhase() {
 		return m_dblPhase;
@@ -203,7 +204,7 @@ public class IdealRfGap extends ThinElement implements IRfGap {
 	/**
 	 *  Get the operating frequency of the RF gap.
 	 *
-	 *@return    frequency of RF gap (in <bold>Hertz</bold> )
+	 *@return    frequency of RF gap (in <b>Hertz</b> )
 	 */
 	public double getFrequency() {
 		return m_dblFreq;
@@ -227,7 +228,7 @@ public class IdealRfGap extends ThinElement implements IRfGap {
 	 *  The maximum energy gain from the gap is given by qETL where q is the charge
 	 *  (in coulombs) of the species particle.
 	 *
-	 *@param  dblETL  ETL product of gap (in <bold>volts</bold> ).
+	 *@param  dblETL  ETL product of gap (in <b>volts</b> ).
 	 */
 	public void setETL(double dblETL) {
 		m_dblETL = dblETL;
@@ -239,7 +240,7 @@ public class IdealRfGap extends ThinElement implements IRfGap {
 	 *  where dbkPhi is the phase delay.
 	 *
 	 *@param  dblPhase  phase delay of the RF w.r.t. synchonouse particle (in
-	 *      <bold>radians</bold> ).
+	 *      <b>radians</b> ).
 	 */
 	public void setPhase(double dblPhase) {
 		m_dblPhase = dblPhase;
@@ -248,7 +249,7 @@ public class IdealRfGap extends ThinElement implements IRfGap {
 	/**
 	 *  Set the operating frequency of the RF gap.
 	 *
-	 *@param  dblFreq  frequency of RF gap (in <bold>Hertz</bold> )
+	 *@param  dblFreq  frequency of RF gap (in <b>Hertz</b> )
 	 */
 	public void setFrequency(double dblFreq) {
 		m_dblFreq = dblFreq;
@@ -494,7 +495,7 @@ public class IdealRfGap extends ThinElement implements IRfGap {
 		// the following section is to calculate the phase of the beam at each gap, rather than use hardwired phases.
 
 // update the energy gain first:
-		if(probe.getAlgorithm().useRfGapPhaseCalculation()) {
+		if(probe.getAlgorithm().getRfGapPhaseCalculation()) {
 			compEnergyGain(probe);
 		} else {
 			simpleEnergyGain(probe);
@@ -668,12 +669,12 @@ public class IdealRfGap extends ThinElement implements IRfGap {
 	/**
 	 * Conversion method to be provided by the user
 	 * 
-	 * @param latticeElement the SMF node to convert
+	 * @param element the SMF node to convert
 	 */
 	@Override
 	public void initializeFrom(LatticeElement element) {
 		super.initializeFrom(element);		
-		RfGap rfgap = (RfGap) element.getNode();
+		RfGap rfgap = (RfGap) element.getHardwareNode();
 		
 	    // Initialize from source values
 	    initialGap = rfgap.isFirstGap();

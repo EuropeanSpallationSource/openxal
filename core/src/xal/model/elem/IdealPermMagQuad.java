@@ -17,9 +17,9 @@ import xal.tools.beam.PhaseMap;
 import xal.tools.beam.PhaseMatrix;
 import xal.tools.beam.optics.DriftSpace;
 import xal.tools.beam.optics.QuadrupoleLens;
-
 import xal.model.IProbe;
 import xal.model.ModelException;
+import xal.model.elem.sync.IElectromagnet;
 
 
 
@@ -224,7 +224,7 @@ public class IdealPermMagQuad extends ThickElectromagnet {
      *  @param  probe   propagating probe
      *  @param  dblLen  length of subsection to propagate through <b>meters</b>
      *  
-     *  @return         the elapsed time through section<bold>Units: seconds</bold> 
+     *  @return         the elapsed time through section<b>Units: seconds</b> 
      */
     @Override
     public double elapsedTime(IProbe probe, double dblLen)  {
@@ -686,7 +686,7 @@ public double calcK(IProbe probe, double dblLen) {
                 matPhi.setSubMatrix(2, 3, 2, 3, arrF);
          }
         
-        matPhi = applyAlignError(matPhi);
+        matPhi = applyErrors(matPhi, probe, dblLen);
 
         return new PhaseMap(matPhi);
     }

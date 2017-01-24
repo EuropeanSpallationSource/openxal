@@ -6,16 +6,18 @@ package xal.sim.sync;
 import java.util.Map;
 
 import xal.model.IElement;
-import xal.model.elem.IRfCavity;
+import xal.model.elem.sync.IRfCavity;
 import xal.smf.proxy.RfCavityPropertyAccessor;
 
 /**
+ * TODO CKA Add PROPERTY_FREQUENCY property synchronizer??
+ * 
  * @author Craig McChesney
  */
 public class RfCavitySynchronizer implements Synchronizer {
 
 	/*
-	 * @see gov.sns.xal.model.sync.Synchronizer#resync(gov.sns.xal.model.IElement, java.util.Map)
+	 * @see xal.model.sync.Synchronizer#resync(xal.model.IElement, java.util.Map)
 	 */
 	public void resync( final IElement anElem, final Map<String,Double> valueMap ) throws SynchronizationException {
 		if ( !(anElem instanceof IRfCavity) )  throw new IllegalArgumentException( "expected IRfCavity instance, got: " + anElem.getClass().getName() );
@@ -31,7 +33,7 @@ public class RfCavitySynchronizer implements Synchronizer {
 
 	
 	/*
-	 * @see gov.sns.xal.model.sync.Synchronizer#checkSynchronization(gov.sns.xal.model.IElement, java.util.Map)
+	 * @see xal.model.sync.Synchronizer#checkSynchronization(xal.model.IElement, java.util.Map)
 	 */
 	public void checkSynchronization( final IElement anElem, final Map<String,Double> valueMap ) throws SynchronizationException {
 		if ( !(anElem instanceof IRfCavity) ) throw new IllegalArgumentException( "expected IRfCavity instance, got: " + anElem.getClass().getName() );

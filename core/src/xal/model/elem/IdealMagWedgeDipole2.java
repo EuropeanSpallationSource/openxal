@@ -46,15 +46,19 @@ public class IdealMagWedgeDipole2 extends ElectromagnetSeq {
     /*
      * Local Attributes
      */
-     
+    
+    /** local position of this element - position within parent sequence */
+    private double      dblPos;
+    
+    
     /** magnet body */
-    private IdealMagSectorDipole2    magBody = new IdealMagSectorDipole2();
+    private final IdealMagSectorDipole2    magBody = new IdealMagSectorDipole2();
     
     /** magnet entrance pole face */
-    private IdealMagDipoleFace2      polEntr = new IdealMagDipoleFace2();
+    private final IdealMagDipoleFace2      polEntr = new IdealMagDipoleFace2();
     
     /** magnet entrance pole face */
-    private IdealMagDipoleFace2      polExit = new IdealMagDipoleFace2();
+    private final IdealMagDipoleFace2      polExit = new IdealMagDipoleFace2();
     
 
 
@@ -64,7 +68,7 @@ public class IdealMagWedgeDipole2 extends ElectromagnetSeq {
      */
 
     /**
-     * Default constructor - creates a new unitialized instance of 
+     * Default constructor - creates a new uninitialized instance of 
      * <code>IdealMagWedgeDipole</code>.
      */
     public IdealMagWedgeDipole2() {
@@ -80,30 +84,13 @@ public class IdealMagWedgeDipole2 extends ElectromagnetSeq {
     public IdealMagWedgeDipole2(String strId) {
         super(s_strType, strId, s_szReserve);
         
+        this.dblPos = 0.0;
+        
         this.addChild(this.polEntr);
         this.addChild(this.magBody);
         this.addChild(this.polExit);
     }
 
-    
-    /**
-     * Override the default <code>setId(String)</code> method for
-     * <code>ElementSeq</code> objects so we can set the identifier
-     * strings of each composite element.
-     * 
-     * @param   strId       identifier string of this composite.
-     * 
-     * @see xal.model.elem.ElementSeq#setId(java.lang.String)
-     */
-    @Override
-    public void setId(String strId) {
-        super.setId(strId);
-        
-        this.getMagBody().setId(strId + "Body");
-        this.getFaceEntr().setId(strId + "Entr");
-        this.getFaceExit().setId(strId + "Exit");
-    }
-    
     /**
      * Overrides the default <code>setHardwareNodeId(String)</code> method
      * for the <code>ElementSeq</code> base class so we can set the
@@ -183,7 +170,7 @@ public class IdealMagWedgeDipole2 extends ElectromagnetSeq {
      * 
      * <p>The physical length of this element is not set when invoking
      * this method.  That must be done separately with a call to 
-     * <code>setPhysicalLength(double></code>.
+     * <code>setPhysicalLength(double)</code>.
      * </p>
      * 
      * @param   dblPos      lattice position of element center (meters)
@@ -191,20 +178,55 @@ public class IdealMagWedgeDipole2 extends ElectromagnetSeq {
      * 
      * @see IdealMagWedgeDipole2#setPhysicalLength(double)
      */
-    public void setPosition(double dblPos, double dblLen)   {
-        this.getMagBody().setPosition(dblPos);
-        this.getFaceEntr().setPosition(dblPos - dblLen/2.0);
-        this.getFaceExit().setPosition(dblPos + dblLen/2.0);
+    public void setPosition(double dblPos)   {
+//        this.getMagBody().setPosition(dblPos);
+        this.dblPos = dblPos;
     }
+
+    /**
+     * Set the physical length of the bending dipole magnet itself.  
+     * The design path length
+     * is generally larger than this value because of the curvature.
+     *  
+     * @param dblLen    physical length through bend in <b>meters</b>
+     */
+    public void setPhysicalLength(double dblLen)    {
+        this.getMagBody().setLength( dblLen );
+    }
+    
+    /**
+     * Set the reference (design) orbit path-length through
+     * the magnet.
+     * 
+     * @param   dblPathLen      path length of design trajectory (meters)
+     * 
+     */
+    public void setDesignPathLength(double dblPathLen)  {
+        this.getFaceEntr().setDesignPathLength( dblPathLen );
+        this.getMagBody().setDesignPathLength( dblPathLen );
+        this.getFaceExit().setDesignPathLength( dblPathLen );
+    }
+    
+    /**
+     * Set the bending angle of the reference (design) orbit.
+     * 
+     * @param   dblBendAng      design trajectory bending angle (radians) 
+     */
+    public void setDesignBendAngle(double dblBendAng)   {
+        this.getFaceEntr().setDesignBendAngle( dblBendAng );
+        this.getMagBody().setDesignBendAngle( dblBendAng );
+        this.getFaceExit().setDesignBendAngle( dblBendAng );
+    }
+
 
     /**
      * Set the magnetic field index of the magnet evaluated at the design
      * orbit.   The field index is defined as
-     * <br/>
-     * <br/>
+     * <br>
+     * <br>
      * &nbsp; &nbsp;   n &equiv; -(R0/B0)(dB/dR)
-     * <br/>
-     * <br/>
+     * <br>
+     * <br>
      * where R0 is the radius of the design orbit, B0 is the field at the
      * design orbit (@see IdealMagSectorDipole#getField), and dB/dR is the
      * derivative of the field with respect to the path deflection - evaluated
@@ -261,7 +283,7 @@ public class IdealMagWedgeDipole2 extends ElectromagnetSeq {
      * 
      * @param   dblFldInt   fringe field integral (<b>unitless</b>)
      *  
-     * @see IdealMagDipoleFace#setFringeIntegral
+     * @see IdealMagDipoleFace2#setFringeIntegral
      */
     public void setEntrFringeIntegral(double dblFldInt) {
         this.getFaceEntr().setFringeIntegral(dblFldInt);
@@ -274,7 +296,7 @@ public class IdealMagWedgeDipole2 extends ElectromagnetSeq {
      * 
      * @param   dblFldInt   fringe field integral (<b>unitless</b>)
      *  
-     * @see IdealMagDipoleFace#setFringeIntegral
+     * @see IdealMagDipoleFace2#setFringeIntegral
      */
     public void setExitFringeIntegral(double dblFldInt) {
         this.getFaceExit().setFringeIntegral(dblFldInt);
@@ -282,41 +304,6 @@ public class IdealMagWedgeDipole2 extends ElectromagnetSeq {
 
     
     
-    /**
-     * Set the physical length of the bending dipole.  The design path length
-     * is generally larger than this value because of the curvature.
-     *  
-     * @param dblLen    physical length through bend in <b>meters</b>
-     */
-    public void setPhysicalLength(double dblLen)    {
-        this.getMagBody().setLength( dblLen );
-    }
-    
-    /**
-     * Set the reference (design) orbit path-length through
-     * the magnet.
-     * 
-     * @param   dblPathLen      path length of design trajectory (meters)
-     * 
-     */
-    public void setDesignPathLength(double dblPathLen)  {
-    	this.getFaceEntr().setDesignPathLength( dblPathLen );
-        this.getMagBody().setDesignPathLength( dblPathLen );
-        this.getFaceExit().setDesignPathLength( dblPathLen );
-    }
-    
-    /**
-     * Set the bending angle of the reference (design) orbit.
-     * 
-     * @param   dblBendAng      design trajectory bending angle (radians) 
-     */
-    public void setDesignBendAngle(double dblBendAng)   {
-    	this.getFaceEntr().setDesignBendAngle( dblBendAng );
-        this.getMagBody().setDesignBendAngle( dblBendAng );
-        this.getFaceExit().setDesignBendAngle( dblBendAng );
-    }
-
-
     /**
      * sako use design field if fieldPathFlag = 1, and use bfield if 0
      */
@@ -409,7 +396,7 @@ public class IdealMagWedgeDipole2 extends ElectromagnetSeq {
      * 
      * @return  fringe field integral (<b>unitless</b>)
      *  
-     * @see IdealMagDipoleFace#getFringeIntegral
+     * @see IdealMagDipoleFace2#getFringeIntegral
      */
     public double   getExitFringeIntegral() {
         return this.getFaceExit().getFringeIntegral();
@@ -421,11 +408,11 @@ public class IdealMagWedgeDipole2 extends ElectromagnetSeq {
      * <p>
      * Return the magnetic field index of the magnet evaluated at the design
      * orbit.   The field index is defined as
-     * <br/>
-     * <br/>
+     * <br>
+     * <br>
      * &nbsp; &nbsp; <i>n</i> &equiv; -(<i>R</i><sub>0</sub>/<i>B</i><sub>0</sub>)(<i>dB/dR</i>)
-     * <br/>
-     * <br/>
+     * <br>
+     * <br>
      * where <i>R</i><sub>0</sub> is the radius of the design orbit, <i>B</i><sub>0</sub>
      * is the field at the
      * design orbit (see {@link IdealMagSectorDipole2#getFieldIndex()}), and <i>dB/dR</i> is the
@@ -443,6 +430,7 @@ public class IdealMagWedgeDipole2 extends ElectromagnetSeq {
      * is generally larger than this value because of the curvature.
      *  
      * @return  physical length through bend in <b>meters</b>
+     * 
      */
     public double getPhysicalLength()    {
         return this.getMagBody().getLength();
@@ -453,6 +441,7 @@ public class IdealMagWedgeDipole2 extends ElectromagnetSeq {
      * magnet.
      * 
      * @return      design trajectory path length (in meters)
+     * 
      */
     public double   getDesignPathLength()   {
         return this.getMagBody().getDesignPathLength();
@@ -461,13 +450,13 @@ public class IdealMagWedgeDipole2 extends ElectromagnetSeq {
     /**
      * Return the bending angle of the magnet's design trajectory.
      * 
-     *  @return     design trajectory bending angle (in radians)
+     * @return     design trajectory bending angle (in radians)
+     * 
      */
     public double   getDesignBendingAngle() {
         return this.getMagBody().getDesignBendingAngle();
     }
 
-    
     
     /*
      * Dynamic Parameters
@@ -488,6 +477,115 @@ public class IdealMagWedgeDipole2 extends ElectromagnetSeq {
     }
 
 
+    /*
+     * ElementSeq Overrides
+     */
+    
+    /**
+     * Override the default <code>setId(String)</code> method for
+     * <code>ElementSeq</code> objects so we can set the identifier
+     * strings of each composite element.
+     * 
+     * @param   strId       identifier string of this composite.
+     * 
+     * @see xal.model.elem.ElementSeq#setId(java.lang.String)
+     */
+    @Override
+    public void setId(String strId) {
+        super.setId(strId);
+        
+        this.getMagBody().setId(strId + "Body");
+        this.getFaceEntr().setId(strId + "Entr");
+        this.getFaceExit().setId(strId + "Exit");
+    }
+
+    
+    /*
+     * IComponent Interface
+     */
+
+    /**
+     * This method overrides the <code>ElementSeq</code> base class implementation
+     * to return an independent property for this element.  This property is 
+     * set upon initialization since, although this element is a sequence, it
+     * represents a single hardware node.  Thus, the position is a hardware
+     * property, and not a dynamic property of the sequence.
+     *
+     * @see xal.model.elem.ElementSeq#getPosition()
+     *
+     * @since  Dec 3, 2015,  Christopher K. Allen
+     */
+    @Override
+    public double getPosition() {
+//        return this.getMagBody().getPosition();
+        return this.dblPos;
+    }
+
+    /**
+     * Override the method in base class <code>ElementSeq</code> to return an independent
+     * property for this element.  Since this class represents a single hardware node
+     * it has a length that does not change.
+     *
+     * @see xal.model.elem.ElementSeq#getLength()
+     *
+     * @since  Dec 3, 2015,  Christopher K. Allen
+     */
+    @Override
+    public double getLength() {
+        return this.getMagBody().getLength();
+    }
+
+    /**
+     * Conversion method to be provided by the user
+     * 
+     * @param element the SMF node to convert
+     */
+    @Override
+    public void initializeFrom(LatticeElement element) {
+        super.initializeFrom(element);
+        
+        Bend magnet = (Bend) element.getHardwareNode();
+        this.setPosition(element.getCenterPosition());
+    
+        // xal.model.elem.ThickDipole xalDipole =
+        // new xal.model.elem.ThickDipole();
+        // xalDipole.setId(element.getNode().getId());
+        // xalDipole.setLength(element.getLength());
+        // xalDipole.setMagField(magnet.getDesignField());
+        // xalDipole.setKQuad(magnet.getQuadComponent());
+        // double angle = magnet.getDfltBendAngle()*Math.PI/180. * element.getLength() / magnet.getDfltPathLength();
+        // xalDipole.setReferenceBendAngle(angle);
+    
+        // Replace ThickDipole object with an IdealMagWedgeDipole2
+        // First retrieve all the physical parameters for a bending dipole              
+        double len_sect = element.getLength();      
+        double len_path0 = magnet.getDfltPathLength();
+        double ang_bend0 = magnet.getDfltBendAngle() * Math.PI / 180.0;
+        double k_quad0 = magnet.getQuadComponent();
+    
+        // Now compute the dependent parameters
+        double R_bend0 = len_path0 / ang_bend0;
+        double fld_ind0 = -k_quad0 * R_bend0 * R_bend0;
+    
+        double ang_bend = ang_bend0 * (len_sect / len_path0);
+        double len_path = R_bend0 * ang_bend;
+    
+        // Set the parameters for the new model element             
+        setPhysicalLength(len_sect);
+        setDesignPathLength(len_path);      
+        setFieldIndex(fld_ind0);
+        setDesignBendAngle(ang_bend);
+        
+        this.magBody.setPosition(len_sect/2.0);
+        this.polEntr.setPosition(0.0);
+        this.polExit.setPosition(len_sect);
+                        
+        if (element.isFirstSlice()) // first piece
+            setEntrPoleAngle(magnet.getEntrRotAngle() * Math.PI / 180.);
+        if (element.isLastSlice()) // last piece
+            setExitPoleAngle(magnet.getExitRotAngle() * Math.PI / 180.);
+    }
+
 
     /*
      *  IElectromagnet Interface
@@ -500,6 +598,7 @@ public class IdealMagWedgeDipole2 extends ElectromagnetSeq {
      *              ORIENT_VER  - dipole has steering action in y (vertical) plane
      *              ORIENT_NONE - error
      */
+    @Override
     public int getOrientation() {
         return this.getMagBody().getOrientation();
     };
@@ -507,8 +606,9 @@ public class IdealMagWedgeDipole2 extends ElectromagnetSeq {
     /**  
      *  Get the magnetic field strength of the dipole electromagnet
      *
-     *  @return     magnetic field (in <bold>Tesla</bold>).
+     *  @return     magnetic field (in <b>Tesla</b>).
      */
+    @Override
     public double getMagField() {
         return this.getMagBody().getMagField();
     };
@@ -522,6 +622,7 @@ public class IdealMagWedgeDipole2 extends ElectromagnetSeq {
      *
      *  @see    #getOrientation
      */
+    @Override
     public void setOrientation(int enmOrient) {
         this.getFaceEntr().setOrientation(enmOrient);
         this.getMagBody().setOrientation(enmOrient);
@@ -531,15 +632,14 @@ public class IdealMagWedgeDipole2 extends ElectromagnetSeq {
     /**  
      *  Set the magnetic field strength of the dipole electromagnet.
      *
-     *  @param  dblField    magnetic field (in <bold>Tesla</bold>).
+     *  @param  dblField    magnetic field (in <b>Tesla</b>).
      */
+    @Override
     public void setMagField(double dblField) {
         this.getFaceEntr().setMagField(dblField);
         this.getMagBody().setMagField(dblField);
         this.getFaceExit().setMagField(dblField);
     };
-
-
 
 
     /*
@@ -574,52 +674,5 @@ public class IdealMagWedgeDipole2 extends ElectromagnetSeq {
     private IdealMagSectorDipole2    getMagBody()    {
         return this.magBody;
     }
-
-	/**
-	 * Conversion method to be provided by the user
-	 * 
-	 * @param latticeElement the SMF node to convert
-	 */
-	@Override
-	public void initializeFrom(LatticeElement element) {
-		super.initializeFrom(element);
-		
-		Bend magnet = (Bend) element.getNode();
-		setPosition(element.getCenter(), element.getLength());
-
-		// gov.sns.xal.model.elem.ThickDipole xalDipole =
-		// new gov.sns.xal.model.elem.ThickDipole();
-		// xalDipole.setId(element.getNode().getId());
-		// xalDipole.setLength(element.getLength());
-		// xalDipole.setMagField(magnet.getDesignField());
-		// xalDipole.setKQuad(magnet.getQuadComponent());
-		// double angle = magnet.getDfltBendAngle()*Math.PI/180. * element.getLength() / magnet.getDfltPathLength();
-		// xalDipole.setReferenceBendAngle(angle);
-
-		// Replace ThickDipole object with an IdealMagWedgeDipole2
-		// First retrieve all the physical parameters for a bending dipole				
-		double len_sect = element.getLength();		
-		double len_path0 = magnet.getDfltPathLength();
-		double ang_bend0 = magnet.getDfltBendAngle() * Math.PI / 180.0;
-		double k_quad0 = magnet.getQuadComponent();
-
-		// Now compute the dependent parameters
-		double R_bend0 = len_path0 / ang_bend0;
-		double fld_ind0 = -k_quad0 * R_bend0 * R_bend0;
-
-		double ang_bend = ang_bend0 * (len_sect / len_path0);
-		double len_path = R_bend0 * ang_bend;
-
-		// Set the parameters for the new model element				
-		setPhysicalLength(len_sect);
-		setDesignPathLength(len_path);		
-		setFieldIndex(fld_ind0);
-		setDesignBendAngle(ang_bend);
-						
-		if (element.getPartNr() == 0) // first piece
-			setEntrPoleAngle(magnet.getEntrRotAngle() * Math.PI / 180.);
-		if (element.getParts()-1 == element.getPartNr()) // last piece					
-			setExitPoleAngle(magnet.getExitRotAngle() * Math.PI / 180.);
-	}
 
 }

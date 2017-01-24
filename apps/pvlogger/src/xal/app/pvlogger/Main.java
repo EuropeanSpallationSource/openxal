@@ -10,9 +10,10 @@
 
 package xal.app.pvlogger;
 
-import xal.extension.application.*;
-import xal.extension.application.smf.*;
-import xal.service.pvlogger.*;
+import xal.extension.application.Application;
+import xal.extension.application.ApplicationAdaptor;
+import xal.extension.application.XalDocument;
+import xal.extension.application.smf.AcceleratorApplication;
 
 
 /**
@@ -98,14 +99,6 @@ public class Main extends ApplicationAdaptor {
     
     
     // --------- Application events --------------------------------------------
-    
-    /** 
-     * Capture the application launched event and print it.  This is an optional
-     * hook that can be used to do something useful at the end of the application launch.
-     */
-    public void applicationFinishedLaunching() {
-        System.out.println("Application has finished launching!");
-    }
 	
 	    
     /**

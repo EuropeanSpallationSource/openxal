@@ -7,13 +7,13 @@
 package xal.model.probe;
 
 
+import xal.tools.annotation.AProperty.NoEdit;
 import xal.tools.beam.PhaseMatrix;
 import xal.tools.beam.PhaseVector;
 import xal.tools.data.DataAdaptor;
-import xal.tools.annotation.AProperty.NoEdit;
+import xal.tools.data.DataFormatException;
 import xal.model.probe.traj.ParticleProbeState;
 import xal.model.probe.traj.Trajectory;
-import xal.model.xml.ParsingException;
 
 
 /**
@@ -92,11 +92,11 @@ public class ParticleProbe extends Probe<ParticleProbeState> {
      * state location <b>z</b>.  The response matrix represents the sensitivity of
      * the current phase coordinate position <b>z</b> to the initial phase coordinate
      * location <b>z</b><sub>0</sub> at the start of the simulation.  That is,
-     * <br/>
-     * <br/>
+     * <br>
+     * <br>
      * &nbsp; &nbsp; <b>&Phi;</b> &equiv; &part;<b>z</b>/&part;<b>z</b><sub>0</sub>
-     * <br/>
-     * <br/>
+     * <br>
+     * <br>
      * so that small changes &Delta;<b>z</b><sub>0</sub> in the initial phase position
      * yield a corresponding change &Delta;<b>z</b> = <b>&Phi;</b>&Delta;<b>z</b><sub>0</sub>
      * in the current particle location.
@@ -129,11 +129,11 @@ public class ParticleProbe extends Probe<ParticleProbeState> {
      * state location <b>z</b>.  The response matrix represents the sensitivity of
      * the current phase coordinate position <b>z</b> to the initial phase coordinate
      * location <b>z</b><sub>0</sub> at the start of the simulation.  That is,
-     * <br/>
-     * <br/>
+     * <br>
+     * <br>
      * &nbsp; &nbsp; <b>&Phi;</b> &equiv; &part;<b>z</b>/&part;<b>z</b><sub>0</sub>
-     * <br/>
-     * <br/>
+     * <br>
+     * <br>
      * so that small changes &Delta;<b>z</b><sub>0</sub> in the initial phase position
      * yield a corresponding change &Delta;<b>z</b> = <b>&Phi;</b>&Delta;<b>z</b><sub>0</sub>
      * in the current particle location.
@@ -234,7 +234,7 @@ public class ParticleProbe extends Probe<ParticleProbeState> {
 //    }
     
     @Override
-    protected ParticleProbeState readStateFrom(DataAdaptor container) throws ParsingException {
+    protected ParticleProbeState readStateFrom(DataAdaptor container) throws DataFormatException {
         ParticleProbeState state = new ParticleProbeState();
         state.load(container);
         return state;

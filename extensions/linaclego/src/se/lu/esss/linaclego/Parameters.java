@@ -28,8 +28,8 @@ public class Parameters extends AbstractList<Parameters.D> {
 	
 	public double getDoubleValue(String id)
 	{
-		Parameters.D p = hashedData.get(id);
-		return p == null ? 0 : Double.parseDouble(p.getValue());
+		Parameters.D p = hashedData.get(id);		
+		return p == null || "".equals(p.getValue().trim()) ? 0 : Double.parseDouble(p.getValue());		
 	}
 	
 

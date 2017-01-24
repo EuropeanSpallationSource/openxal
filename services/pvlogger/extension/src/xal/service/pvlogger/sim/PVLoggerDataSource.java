@@ -8,26 +8,48 @@
  */
 package xal.service.pvlogger.sim;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import xal.smf.*;
-import xal.smf.impl.*;
-import xal.smf.impl.qualify.*;
-import xal.smf.proxy.*;
-import xal.tools.ArrayValue;
-import xal.service.pvlogger.*;
-import xal.tools.database.*;
-import xal.sim.scenario.*;
-import xal.sim.sync.SynchronizationException;
 import xal.ca.Channel;
+import xal.service.pvlogger.ChannelSnapshot;
+import xal.service.pvlogger.MachineSnapshot;
+import xal.service.pvlogger.PVLogger;
+import xal.service.pvlogger.PvLoggerException;
+import xal.sim.scenario.Scenario;
+import xal.sim.sync.SynchronizationException;
+import xal.smf.AcceleratorNode;
+import xal.smf.AcceleratorSeq;
+import xal.smf.impl.Bend;
+import xal.smf.impl.CurrentMonitor;
+import xal.smf.impl.Electromagnet;
+import xal.smf.impl.HDipoleCorr;
+import xal.smf.impl.MagnetMainSupply;
+import xal.smf.impl.MagnetTrimSupply;
+import xal.smf.impl.Quadrupole;
+import xal.smf.impl.TrimmedQuadrupole;
+import xal.smf.impl.VDipoleCorr;
+import xal.smf.impl.qualify.AndTypeQualifier;
+import xal.smf.impl.qualify.KindQualifier;
+import xal.smf.impl.qualify.OrTypeQualifier;
+import xal.smf.impl.qualify.TypeQualifier;
+import xal.smf.proxy.ElectromagnetPropertyAccessor;
+import xal.tools.ArrayValue;
+import xal.tools.database.ConnectionDictionary;
+import xal.tools.database.ConnectionPreferenceController;
 import xal.tools.transforms.ValueTransform;
 
 
 /**
  * This class provides an interface for online model with PV logger data source.
  *
- * @version 0.1 03 Jan 2005
+ * @version 0.2 1 Oct 2015
  * @author Paul Chu
+ * @author Blaz Kranjc
+ * 
+ * TODO Things with hardcoded PV names should be redesigned
  */
 public class PVLoggerDataSource {
 	/** PV Logger */
@@ -35,7 +57,7 @@ public class PVLoggerDataSource {
     
 	private Map<String,ChannelSnapshot> SNAPSHOT_MAP;
 
-    private ChannelSnapshot[] CHANNEL_SNAPSHOTS;
+	private ChannelSnapshot[] CHANNEL_SNAPSHOTS;
 	
 	/** magnet values keyed by PV */
 	private Map<String,Double> _magnetFields;
@@ -79,7 +101,7 @@ public class PVLoggerDataSource {
     
     
 	/**
-     * Constructor
+	 * Constructor
 	 * @param id the PV logger ID
 	 */
 	public PVLoggerDataSource( final long id ) {
@@ -122,7 +144,7 @@ public class PVLoggerDataSource {
 			_magnetFields = getMagnetMap();
 			_magnetPowerSupplyValues = getMagnetPSMap();
 		}
-		catch( Exception exception ) {
+		catch ( Exception exception ) {
 			throw new RuntimeException( exception );
 		}
 	}
@@ -156,6 +178,7 @@ public class PVLoggerDataSource {
 
 		for (int i = 0; i < CHANNEL_SNAPSHOTS.length; i++) {
 			final String snapshotPV = CHANNEL_SNAPSHOTS[i].getPV();
+			// CHECK: This also matches all the power supplies
 			if ( CHANNEL_SNAPSHOTS[i].getPV().contains( "Mag:" ) ) {
 				double[] val = CHANNEL_SNAPSHOTS[i].getValue();
 				pvMap.put( snapshotPV, val[0] );
@@ -171,7 +194,7 @@ public class PVLoggerDataSource {
 		final Map<String, Double> pvMap = new HashMap<String, Double>();
 
 		for (int i = 0; i < CHANNEL_SNAPSHOTS.length; i++) {
-			if (CHANNEL_SNAPSHOTS[i].getPV().indexOf("Mag:PS_Q") > -1) {
+			if (CHANNEL_SNAPSHOTS[i].getPV().contains("Mag:PS_Q")) {
 				double[] val = CHANNEL_SNAPSHOTS[i].getValue();
 				pvMap.put(CHANNEL_SNAPSHOTS[i].getPV(), new Double(val[0]));
 			}
@@ -186,7 +209,7 @@ public class PVLoggerDataSource {
 		final Map<String, Double> bpmXMap = new HashMap<String, Double>();
 
 		for (int i = 0; i < CHANNEL_SNAPSHOTS.length; i++) {
-			if (CHANNEL_SNAPSHOTS[i].getPV().indexOf(":xAvg") > -1) {
+			if (CHANNEL_SNAPSHOTS[i].getPV().contains(":xAvg")) {
 				double[] val = CHANNEL_SNAPSHOTS[i].getValue();
 				bpmXMap.put(CHANNEL_SNAPSHOTS[i].getPV(), new Double(val[0]));
 			}
@@ -201,7 +224,7 @@ public class PVLoggerDataSource {
 		Map<String, Double> bpmYMap = new HashMap<String, Double>();
 
 		for (int i = 0; i < CHANNEL_SNAPSHOTS.length; i++) {
-			if (CHANNEL_SNAPSHOTS[i].getPV().indexOf(":yAvg") > -1) {
+			if (CHANNEL_SNAPSHOTS[i].getPV().contains(":yAvg")) {
 				double[] val = CHANNEL_SNAPSHOTS[i].getValue();
 				bpmYMap.put(CHANNEL_SNAPSHOTS[i].getPV(), new Double(val[0]));
 			}
@@ -216,7 +239,7 @@ public class PVLoggerDataSource {
 		final Map<String, Double> bpmYMap = new HashMap<String, Double>();
 
 		for (int i = 0; i < CHANNEL_SNAPSHOTS.length; i++) {
-			if (CHANNEL_SNAPSHOTS[i].getPV().indexOf(":amplitudeAvg") > -1) {
+			if (CHANNEL_SNAPSHOTS[i].getPV().contains(":amplitudeAvg")) {
 				double[] val = CHANNEL_SNAPSHOTS[i].getValue();
 				bpmYMap.put(CHANNEL_SNAPSHOTS[i].getPV(), new Double(val[0]));
 			}
@@ -231,7 +254,7 @@ public class PVLoggerDataSource {
 		final Map<String, Double> bpmYMap = new HashMap<String, Double>();
 
 		for (int i = 0; i < CHANNEL_SNAPSHOTS.length; i++) {
-			if (CHANNEL_SNAPSHOTS[i].getPV().indexOf(":phaseAvg") > -1) {
+			if (CHANNEL_SNAPSHOTS[i].getPV().contains(":phaseAvg")) {
 				double[] val = CHANNEL_SNAPSHOTS[i].getValue();
 				bpmYMap.put(CHANNEL_SNAPSHOTS[i].getPV(), new Double(val[0]));
 			}
@@ -241,9 +264,14 @@ public class PVLoggerDataSource {
 	}
 	
 	
-	/** Get the logged magnets that are in the specified sequence */
+	/**
+	 * Get all magnets that are in the specified sequence
+	 * TODO Misnamed method, returns all the magnets in the sequence not just the logged ones.
+	 * @param sequence Accelerator sequence to get magnets from
+	 * @return List of magnets in the sequence
+	 */
 	private List<Electromagnet> getLoggedMagnets( final AcceleratorSeq sequence ) {
-		// inlclude quadrupoles, dipole correctors and optionally bends
+		// include quadrupoles, dipole correctors and optionally bends
 		final OrTypeQualifier magnetQualifier = OrTypeQualifier.qualifierForKinds( Quadrupole.s_strType, HDipoleCorr.s_strType, VDipoleCorr.s_strType );
 		if ( _usesLoggedBendFields )  magnetQualifier.or( Bend.s_strType );	// optionally include bends
 		
@@ -297,8 +325,14 @@ public class PVLoggerDataSource {
 	}
 
 
-	/** Get the magnet's field from the PV Logger Snapshot */
-	public double getLoggedField( final Electromagnet magnet ) {
+	/**
+	 * Get the magnet's field from the PV Logger Snapshot
+	 * Throw an exception if the field is not found in the snapshot.
+	 * @param magnet The magnet to check the snapshot for
+	 * @return field of the magnet from the snapshot
+	 * @throws PvLoggerException if the field for the magnet is not in the snapshot
+	 */
+	public double getLoggedField( final Electromagnet magnet ) throws PvLoggerException {
 		double totalField = 0.0;
 
 		// use field readback
@@ -329,6 +363,7 @@ public class PVLoggerDataSource {
 					}
 					else {
 						System.out.println( "No logged field for " + magnet.getId() + " after trying: " + pvName + ", " + mainSupplyReadbackPV + ", " + mainSupplySetpointPV  );
+						throw new PvLoggerException("No logged field for magnet " + magnet.getId());
 					}
 				}
 			}
@@ -352,7 +387,7 @@ public class PVLoggerDataSource {
 
 						// todo: this logic needs to move to the TrimmedQuadrupole class
 						// handle shunt PS differently
-						if ( trimFieldPV.indexOf( "ShntC" ) > -1 ) {
+						if ( trimFieldPV.contains( "ShntC" ) ) {
 							final double shuntField = Math.abs( trimField );	// shunt is unipolar
 							// shunt always opposes the main field
 							totalField = totalField * trimField > 0 ? totalField - shuntField : totalField + shuntField;
@@ -371,6 +406,9 @@ public class PVLoggerDataSource {
 					final double rawValue = _magnetFields.get( fieldReadbackPV );
 					totalField = toFieldFromRaw( magnet, readbackChannel, rawValue );
 				}
+				else {
+					throw new PvLoggerException("No logged field for magnet " + magnet.getId());
+				}
 			}
 		}
 
@@ -381,17 +419,19 @@ public class PVLoggerDataSource {
 	/**
 	 * set the model lattice with PV logger data source
 	 * @param sequence accelerator sequence
-	 * @param scenario Model Scenario object
-	 * @return a new scenario with lattice from PV logger data
+	 * @param scenario Model Scenario object that will be changed
 	 */
-	public Scenario setModelSource( final AcceleratorSeq sequence, final Scenario scenario ) {
+	public void setModelSource( final AcceleratorSeq sequence, final Scenario scenario ) {
 		_sequence = sequence;
 		
 		final List<Electromagnet> magnets = getLoggedMagnets( sequence );
-		for ( int i = 0; i < magnets.size(); i++ ) {
-			final Electromagnet magnet = magnets.get(i);
-			final double field = getLoggedField( magnet );
-			scenario.setModelInput( magnet, ElectromagnetPropertyAccessor.PROPERTY_FIELD, field );
+		for ( final Electromagnet magnet : magnets) {
+			try {
+				final double field = getLoggedField( magnet );
+				scenario.setModelInput( magnet, ElectromagnetPropertyAccessor.PROPERTY_FIELD, field );
+			} catch (PvLoggerException e) {
+				continue;
+			}
 		}
 
 		try {
@@ -399,8 +439,6 @@ public class PVLoggerDataSource {
 		} catch (SynchronizationException e) {
 			System.out.println(e);
 		}
-
-		return scenario;
 	}
 
 	public void setAccelSequence(AcceleratorSeq seq) {
@@ -422,8 +460,8 @@ public class PVLoggerDataSource {
 		if (_sequence.getAllNodesOfType("BCM").size() > 0) {
 			String firstBCM = ((CurrentMonitor) allBCMs.get(0)).getId();
 			for (int i = 0; i < CHANNEL_SNAPSHOTS.length; i++) {
-				if (CHANNEL_SNAPSHOTS[i].getPV().indexOf(firstBCM) > -1
-						&& CHANNEL_SNAPSHOTS[i].getPV().indexOf(":currentMax") > -1) {
+				if (CHANNEL_SNAPSHOTS[i].getPV().contains(firstBCM)
+						&& CHANNEL_SNAPSHOTS[i].getPV().contains(":currentMax")) {
 					current = CHANNEL_SNAPSHOTS[i].getValue()[0];
 					return current;
 				} else if (CHANNEL_SNAPSHOTS[i].getPV().equals("MEBT_Diag:BCM02:currentMax")) {
@@ -447,8 +485,8 @@ public class PVLoggerDataSource {
 	public double getBeamCurrent(String bcm) {
 		double current = 20;
 		for (int i = 0; i < CHANNEL_SNAPSHOTS.length; i++) {
-			if (CHANNEL_SNAPSHOTS[i].getPV().indexOf(bcm) > -1
-					&& CHANNEL_SNAPSHOTS[i].getPV().indexOf(":currentMax") > -1) {
+			if (CHANNEL_SNAPSHOTS[i].getPV().contains(bcm)
+					&& CHANNEL_SNAPSHOTS[i].getPV().contains(":currentMax")) {
 				current = CHANNEL_SNAPSHOTS[i].getValue()[0];
 				return current;
 			}
