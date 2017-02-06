@@ -9,7 +9,7 @@ before_install:
     - if [[ "$TRAVIS_BRANCH" =~ "site.ess" ]]; then
         git clone https://bitbucket.org/europeanspallationsource/ess-java-config;
         cd ess-java-config;
-        mvn install;
+        mvn installi -B;
         cd "$TRAVIS_BUILD_DIR";
       fi
 

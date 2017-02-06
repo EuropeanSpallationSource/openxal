@@ -13,6 +13,6 @@ pipelines:
                     - rpm -i jdk-${JDK_VERSION}-linux-x64.rpm
                     - git clone https://bitbucket.org/europeanspallationsource/ess-java-config.git
                     - cd ess-java-config
-                    - mvn install
+                    - mvn install -B
                     - cd ../
-                    - mvn package
+                    - mvn package -B
