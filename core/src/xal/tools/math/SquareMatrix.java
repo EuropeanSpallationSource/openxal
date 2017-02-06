@@ -74,7 +74,7 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
      */
     public double det() { 
     	return CommonOps.det(this.getMatrix());
-    };
+    }
 
 
     /**
