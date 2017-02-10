@@ -144,7 +144,7 @@ public class GenericRecord implements KeyedRecord, DataListener {
 	 * @param key The key for which to associated the new value.
 	 */
     public void setValueForKey( final int value, final String key ) {
-        setValueForKey( new Integer( value ), key );
+        setValueForKey( Integer.valueOf( value ), key );
     }
     
     
@@ -166,7 +166,7 @@ public class GenericRecord implements KeyedRecord, DataListener {
 	 * @param key The key for which to associated the new value.
 	 */
     public void setValueForKey( final long value, final String key ) {
-        setValueForKey( new Long( value ), key );
+        setValueForKey( Long.valueOf( value ), key );
     }
     
     

@@ -212,7 +212,7 @@ public class PVTreeNode extends DefaultMutableTreeNode {
                 next = (PVTreeNode) next.getNextNode();
             }
             if(getNumberOfSelectedNodes(root) == 1){
-                index = new Integer(indSelected); 
+                index = Integer.valueOf(indSelected);
             }
         }
         return index;

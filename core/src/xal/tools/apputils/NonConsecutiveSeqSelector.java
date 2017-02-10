@@ -212,7 +212,7 @@ public class NonConsecutiveSeqSelector implements ActionListener {
 				// 'if' block.
 				// XXX: See TableEditDemo.java for a better solution!!!
 				try {
-					data[row][col] = new Integer(value.toString());
+					data[row][col] = Integer.valueOf(value.toString());
 					fireTableCellUpdated(row, col);
 				} catch (NumberFormatException e) {
 					JFrame frame = new JFrame();

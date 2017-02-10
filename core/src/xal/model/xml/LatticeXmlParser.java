@@ -392,23 +392,23 @@ public class LatticeXmlParser {
 				    
 				        if (strType.equals("boolean"))  {
 				            clsParam = boolean.class;
-				            objParam = new Boolean(strValue);
+				            objParam = Boolean.valueOf(strValue);
 				            
 				        } else if (strType.equals("byte"))  {
 				            clsParam = byte.class;
-				            objParam = new Byte(strValue);
+				            objParam = Byte.valueOf(strValue);
 				            
 				        } else if (strType.equals("int"))   {
 				            clsParam = int.class;
-				            objParam = new Integer(strValue);
+				            objParam = Integer.valueOf(strValue);
 				        
 				        } else if (strType.equals("float")) {
 				            clsParam = float.class;
-				            objParam = new Float(strValue);
+				            objParam = Float.valueOf(strValue);
 				            
 				        } else if (strType.equals("double")){
 				            clsParam = double.class;
-				            objParam = new Double(strValue);
+				            objParam = Double.valueOf(strValue);
 				            
 				        } else {
 				            clsParam  = Class.forName(strType);
