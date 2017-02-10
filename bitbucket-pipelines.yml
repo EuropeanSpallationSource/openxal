@@ -8,6 +8,7 @@ pipelines:
             - step:
                 script:
                     - "echo \"Testing OpenXAL on ESS branch using Oracle JDK $JDK_VERSION-$JDK_BUILD_VERSION\""
+                    - yum clean all
                     - yum install maven git -y
                     - "curl -LO \"http://download.oracle.com/otn-pub/java/jdk/${JDK_VERSION}-${JDK_BUILD_VERSION}/jdk-${JDK_VERSION}-linux-x64.rpm\" -H \"Cookie: oraclelicense=accept-securebackup-cookie\""
                     - rpm -i jdk-${JDK_VERSION}-linux-x64.rpm
