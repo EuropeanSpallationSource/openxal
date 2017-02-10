@@ -20,3 +20,4 @@ Branch | Build Result
 ------ | ------------
 Open XAL Master | [![Open XAL Master Build Test](https://travis-ci.org/openxal/openxal.svg)](https://travis-ci.org/openxal/openxal)
 ESS Master | [![ESS Build Test](https://jenkins02.esss.lu.se/buildStatus/icon?job=openxal)](https://jenkins02.esss.lu.se/job/openxal/)
+
