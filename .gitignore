@@ -17,4 +17,6 @@ dependency-reduced-pom.xml
 # Vim
 .*.swp
 .*.un~
+*.iml
+.*.swo
 
