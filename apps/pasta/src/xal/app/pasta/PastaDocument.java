@@ -37,7 +37,7 @@ public class PastaDocument extends AcceleratorDocument {
     /** the first BPM to use in gathering beam info */
     protected BPM BPM1;
     /** the second BPM to use in gathering beam info */
-    protected BPM BPM2;	
+    protected BPM BPM2; 
     /** The RF cavity to analyze */
     protected RfCavity theCavity;
     /** The BCM to validate with */
@@ -100,15 +100,15 @@ public class PastaDocument extends AcceleratorDocument {
         
     /** workaround to avoid jca context initialization exception */
     static{
-	ChannelFactory.defaultFactory().init();
+    ChannelFactory.defaultFactory().init();
     }
    
    
     /** Create a new empty document */
     public PastaDocument() {
-	scanStuff = new ScanStuff(this);
-	analysisStuff = new AnalysisStuff(this);
-	saveOpen = new SaveOpen(this);
+    scanStuff = new ScanStuff(this);
+    analysisStuff = new AnalysisStuff(this);
+    saveOpen = new SaveOpen(this);
     }
     
     
@@ -117,14 +117,14 @@ public class PastaDocument extends AcceleratorDocument {
      * @param url The URL of the file to load into the new document.
      */
     public PastaDocument(java.net.URL url) {
-	this();
+    this();
         if ( url == null )  {
-	    return;
-	}
+        return;
+    }
         else {
             System.out.println("Opening document: " + url.toString());
             setSource(url);
-        }	
+        }   
     }
     
     
@@ -135,9 +135,9 @@ public class PastaDocument extends AcceleratorDocument {
     public void makeMainWindow() {
         mainWindow = new PastaWindow(this);
 
-	// now that we have a window, let's read in the input file + set it up
-	if(getSource() != null ) saveOpen.readSetupFrom(getSource());
-	
+    // now that we have a window, let's read in the input file + set it up
+    if(getSource() != null ) saveOpen.readSetupFrom(getSource());
+    
     }    
 
     
@@ -146,8 +146,8 @@ public class PastaDocument extends AcceleratorDocument {
      * @param url The URL to which the document should be saved.
      */
     public void saveDocumentAs(URL url) {
-	saveOpen.saveTo(url);
-	setHasChanges(false);	    
+    saveOpen.saveTo(url);
+    setHasChanges(false);       
     }
     
     
@@ -176,41 +176,40 @@ public class PastaDocument extends AcceleratorDocument {
      * selected sequence in the main window.
      */
     public void selectedSequenceChanged() {
-	Collection<RfCavity> cavs2;
-	theSequence = selectedSequence;
-	
+    Collection<RfCavity> cavs2;
+    theSequence = selectedSequence;
+    
         if ( selectedSequence == null ) return;
-	
-	theBPMs = selectedSequence.getAllNodesOfType("BPM");
-	theCavities  = selectedSequence.getAllNodesOfType("rfcavity");
-	/*
-	if ((selectedSequence.getClass()).equals(AcceleratorSeqCombo.class)) 
-	{
-		KindQualifier kq = new KindQualifier("rfcavity");
-		cavs2 = ((AcceleratorSeqCombo) selectedSequence).getConstituentsWithQualifier(kq);
-		Iterator itr = cavs2.iterator();
-		while (itr.hasNext())
-			theCavities.add(itr.next());
-	}
-	else {
-		if(selectedSequence.isKindOf("rfcavity"))
-			theCavities.add(selectedSequence);
-	}
-	*/
-	KindQualifier kq = new KindQualifier("rfcavity");
-	cavs2 = selectedSequence.getAllInclusiveNodesWithQualifier(kq);
-	Iterator<RfCavity> itr = cavs2.iterator();
-	while (itr.hasNext())
-		theCavities.add(itr.next());
-	
-	// get a list of BCMs in the linac:
-	AcceleratorSeqCombo seq2 = getAccelerator().getComboSequence("MEBT-DTL");
-	theBCMs = seq2.getAllNodesOfType("BCM");
-		
-	myWindow().updateSelectionLists();
-	
-	analysisStuff.modelReady = false;
-	
-	/** set the analysis model for the selected sequence */
+    
+    theBPMs = selectedSequence.getAllNodesOfType("BPM");
+    theCavities  = selectedSequence.getAllNodesOfType("rfcavity");
+    /*
+    if ((selectedSequence.getClass()).equals(AcceleratorSeqCombo.class)) 
+    {
+        KindQualifier kq = new KindQualifier("rfcavity");
+        cavs2 = ((AcceleratorSeqCombo) selectedSequence).getConstituentsWithQualifier(kq);
+        Iterator itr = cavs2.iterator();
+        while (itr.hasNext())
+            theCavities.add(itr.next());
+    }
+    else {
+        if(selectedSequence.isKindOf("rfcavity"))
+            theCavities.add(selectedSequence);
+    }
+    */
+    KindQualifier kq = new KindQualifier("rfcavity");
+    cavs2 = selectedSequence.getAllInclusiveNodesWithQualifier(kq);
+    Iterator<RfCavity> itr = cavs2.iterator();
+    while (itr.hasNext())
+        theCavities.add(itr.next());
+    
+    // get a list of all BCMs in the linac:
+    theBCMs = getAccelerator().getAllNodesOfType("BCM");
+        
+    myWindow().updateSelectionLists();
+    
+    analysisStuff.modelReady = false;
+    
+    /** set the analysis model for the selected sequence */
     }
 }
