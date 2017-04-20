@@ -12,11 +12,9 @@ package xal.smf.data;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.*;
 import javax.swing.*;
 import javax.swing.event.*;
-import java.util.*;
-import java.io.*;
-import java.text.*;
 
 
 /**
@@ -394,8 +392,9 @@ class OpticsSelectionEditor {
 	 */
     private void updateView() {
         boolean textSame = PATH_FIELD.getText().equals( AcceleratorChooser.defaultPath() );
-        COMMIT_BUTTON.setEnabled( !textSame );
         REVERT_BUTTON.setEnabled( !textSame );
+        //  CR [19.04.2017]: Commented to allow the button being always enabled.
+        //COMMIT_BUTTON.setEnabled( !textSame );
     }
 }
 
