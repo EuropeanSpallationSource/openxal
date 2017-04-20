@@ -79,6 +79,11 @@ import xal.tools.beam.CovarianceMatrix;
 import xal.tools.beam.Twiss;
 
 
+/**
+ * The class handling the browser window content.
+ * 
+ * @author claudiorosati
+ */
 public class FXMLController implements Initializable {
 
     private static final String CELL_DEFAULT_STYLE = "-fx-font-style:normal; -fx-font-weight:normal;";

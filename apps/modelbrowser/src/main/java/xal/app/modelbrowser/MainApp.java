@@ -24,6 +24,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import static javafx.application.Application.launch;
@@ -46,28 +47,23 @@ public class MainApp extends Application {
     @Override
     public void start( Stage stage ) throws Exception {
 
-//        try {
+        Parent root = FXMLLoader.load(getClass().getResource("/fxml/Scene.fxml"));
 
-            Parent root = FXMLLoader.load(getClass().getResource("/fxml/Scene.fxml"));
+        root.getStyleClass().add("windows-document-decoration");
 
-            root.getStyleClass().add("windows-document-decoration");
+        Scene scene = new Scene(root);
 
-            Scene scene = new Scene(root);
+        stage.getIcons().add(new Image(getClass().getResourceAsStream("/icons/logo-32.png")));
+        stage.getIcons().add(new Image(getClass().getResourceAsStream("/icons/logo-64.png")));
+        stage.getIcons().add(new Image(getClass().getResourceAsStream("/icons/logo-128.png")));
+        stage.getIcons().add(new Image(getClass().getResourceAsStream("/icons/logo-256.png")));
+        stage.getIcons().add(new Image(getClass().getResourceAsStream("/icons/logo-512.png")));
+        stage.getIcons().add(new Image(getClass().getResourceAsStream("/icons/logo-1024.png")));
 
-            stage.setTitle("OpenXAL Model Browser");
-            stage.setScene(scene);
-            stage.show();
+        stage.setTitle("OpenXAL Model Browser");
+        stage.setScene(scene);
+        stage.show();
 
-//        } catch ( Exception ex ) {
-//            LOGGER.log(Level.SEVERE, null, ex);
-//        }
-
-    }
-
-    @Override
-    public void stop() throws Exception {
-        super.stop();
-//        System.exit(0);
     }
 
 }
