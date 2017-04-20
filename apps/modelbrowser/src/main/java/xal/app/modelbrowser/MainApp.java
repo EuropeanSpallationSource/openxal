@@ -60,6 +60,8 @@ public class MainApp extends Application {
         stage.getIcons().add(new Image(getClass().getResourceAsStream("/icons/logo-512.png")));
         stage.getIcons().add(new Image(getClass().getResourceAsStream("/icons/logo-1024.png")));
 
+        stage.setOnCloseRequest(e -> System.exit(0));
+
         stage.setTitle("OpenXAL Model Browser");
         stage.setScene(scene);
         stage.show();
