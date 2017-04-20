@@ -13,17 +13,12 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>acceleratorapplicationtemplate</module>
-        <module>acceleratordemo</module>
         <module>arraypvviewer</module>
         <module>beam_matcher</module>
         <module>bpmviewer</module>
         <module>bricks</module>
         <module>bsmanalysis</module>
         <module>dbbrowser</module>
-        <module>demo</module>
-        <module>demobricks</module>
-        <module>desktopdemo</module>
         <module>diagtiming</module>
         <module>ema</module>
         <module>emittanceanalysis</module>
@@ -53,7 +48,6 @@
         <module>sclmonitor</module>
         <module>scope</module>
         <module>score</module>
-        <module>template</module>
         <module>timestamptest</module>
         <module>ttffactory</module>
         <module>virtualaccelerator</module>
