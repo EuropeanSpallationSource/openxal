@@ -18,37 +18,21 @@
 package xal.app.modelbrowser;
 
 
-import gov.aps.jca.dbr.Severity;
-import gov.aps.jca.dbr.Status;
 import java.beans.BeanInfo;
 import java.beans.IndexedPropertyDescriptor;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
-import javafx.beans.binding.StringBinding;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import javafx.beans.property.adapter.ReadOnlyJavaBeanObjectPropertyBuilder;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.concurrent.Service;
-import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -60,8 +44,6 @@ import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Control;
-import javafx.scene.control.Label;
 import javafx.scene.control.Labeled;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.ProgressIndicator;
@@ -72,7 +54,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.Tooltip;
-import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -81,25 +62,12 @@ import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.util.Callback;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
-import xal.ca.Channel;
-import xal.ca.ChannelTimeRecord;
-import xal.ca.ConnectionException;
-import xal.ca.GetException;
-import xal.ca.MonitorController;
-import xal.ca.MonitorEventListener;
-import xal.ca.Timestamp;
 import xal.model.alg.EnvTrackerAdapt;
 import xal.model.probe.EnvelopeProbe;
-import xal.model.probe.Probe;
-import xal.model.probe.traj.EnvelopeProbeState;
-import xal.model.probe.traj.ProbeState;
-import xal.model.probe.traj.Trajectory;
 import xal.sim.scenario.AlgorithmFactory;
 import xal.sim.scenario.ProbeFactory;
 import xal.sim.scenario.Scenario;
@@ -107,11 +75,8 @@ import xal.smf.Accelerator;
 import xal.smf.AcceleratorNode;
 import xal.smf.AcceleratorSeq;
 import xal.smf.ChannelSuite;
-import xal.smf.attr.Attribute;
 import xal.tools.beam.CovarianceMatrix;
 import xal.tools.beam.Twiss;
-
-import static java.util.logging.Level.WARNING;
 
 
 public class FXMLController implements Initializable {
@@ -167,8 +132,28 @@ public class FXMLController implements Initializable {
     private final XYChart.Series<Double, Double> sigmaXSeries = new XYChart.Series<>("x", FXCollections.observableArrayList());
     private final XYChart.Series<Double, Double> sigmaYSeries = new XYChart.Series<>("y", FXCollections.observableArrayList());
     private final XYChart.Series<Double, Double> sigmaZSeries = new XYChart.Series<>("z", FXCollections.observableArrayList());
-    private final RunSimulationService simulationWorker = new RunSimulationService();
+    private final RunSimulationService simulationWorker = new RunSimulationService(this);
     private final Map<String, CheckMenuItem> typeMap = new TreeMap<>();
+
+    public LineChart<Double, Double> getChart() {
+        return chart;
+    }
+
+    public TreeView<AcceleratorNode> getModelTree() {
+        return modelTree;
+    }
+
+    public XYChart.Series<Double, Double> getSigmaXSeries() {
+        return sigmaXSeries;
+    }
+
+    public XYChart.Series<Double, Double> getSigmaYSeries() {
+        return sigmaYSeries;
+    }
+
+    public XYChart.Series<Double, Double> getSigmaZSeries() {
+        return sigmaZSeries;
+    }
 
     @Override
     public void initialize( URL url, ResourceBundle rb ) {
@@ -756,434 +741,6 @@ public class FXMLController implements Initializable {
         populateTreeWithComboSequences(rootNode, accelerator, searchPattern);
 
         modelTree.setRoot(rootNode);
-
-    }
-
-    @SuppressWarnings( "PublicInnerClass" )
-    public enum Alarm {
-        NONE, MINOR, MAJOR, INVALID
-    }
-
-    @SuppressWarnings( "PublicInnerClass" )
-    public class AttributeWrapper extends BaseWrapper {
-
-        AttributeWrapper ( Attribute attribute, String name ) {
-            setName(name);
-            setTooltip(attribute.stringValue());
-            setValue(attribute.stringValue());
-        }
-
-        @Override
-        public void dispose() {
-        }
-
-    }
-
-    @SuppressWarnings( "PublicInnerClass" )
-    public abstract class BaseWrapper {
-
-        private ObjectProperty<Alarm> alarm = null;
-        private StringProperty name = null;
-        private StringProperty tooltip = null;
-        private StringProperty value = null;
-
-        @SuppressWarnings( "FinalMethod" )
-        public final ObjectProperty<Alarm> alarmProperty() {
-
-            if ( alarm == null ) {
-                alarm = new SimpleObjectProperty<>(Alarm.NONE);
-            }
-
-            return alarm;
-
-        }
-
-        public abstract void dispose();
-
-        @SuppressWarnings( "FinalMethod" )
-        public final Alarm getAlarm() {
-            return ( alarm == null ) ? Alarm.NONE : alarm.getValue();
-        }
-
-        @SuppressWarnings( "FinalMethod" )
-        public final String getName() {
-            return ( name == null ) ? "–" : name.getValueSafe();
-        }
-
-        @SuppressWarnings( "FinalMethod" )
-        public final String getTooltip() {
-            return ( tooltip == null ) ? "–" : tooltip.getValueSafe();
-        }
-
-        @SuppressWarnings( "FinalMethod" )
-        public final String getValue() {
-            return ( value == null ) ? "–" : value.getValueSafe();
-        }
-
-        @SuppressWarnings( "FinalMethod" )
-        public final StringProperty nameProperty() {
-
-            if ( name == null ) {
-                name = new SimpleStringProperty("–");
-            }
-
-            return name;
-
-        }
-
-        @SuppressWarnings( "FinalMethod" )
-        public final void setAlarm ( Alarm alarm ) {
-            alarmProperty().set(alarm);
-        }
-
-        @SuppressWarnings( "FinalMethod" )
-        public final void setName ( String name ) {
-            nameProperty().set(name);
-        }
-
-        @SuppressWarnings( "FinalMethod" )
-        public final void setTooltip ( String name ) {
-            tooltipProperty().set(name);
-        }
-
-        @SuppressWarnings( "FinalMethod" )
-        public final void setValue ( String value ) {
-            valueProperty().set(value);
-        }
-
-        @SuppressWarnings( "FinalMethod" )
-        public final StringProperty tooltipProperty() {
-
-            if ( tooltip == null ) {
-                tooltip = new SimpleStringProperty("–");
-            }
-
-            return tooltip;
-
-        }
-
-        @SuppressWarnings( "FinalMethod" )
-        public final StringProperty valueProperty() {
-
-            if ( value == null ) {
-                value = new SimpleStringProperty("–");
-            }
-
-            return value;
-
-        }
-
-    }
-
-    @SuppressWarnings( "PublicInnerClass" )
-    public class ChannelWrapper extends BaseWrapper {
-
-        private final MonitorController monitorController;
-        private final MonitorEventListener monitorListener = new MonitorEventListener() {
-
-            @Override
-            public void connectionChanged( Channel channel, boolean connected ) {
-            }
-
-            @Override
-            public void valueChanged( final Channel channel, final ChannelTimeRecord record ) {
-                Platform.runLater(() -> {
-                    setAlarm(Alarm.values()[record.severity()]);
-                    setTooltip(tooltipString(channel, record));
-                    setValue(valueString(channel, record));
-                });
-            }
-
-        };
-
-        ChannelWrapper ( Channel channel, String name ) {
-
-            setName(name);
-            
-            monitorController = new MonitorController(channel);
-
-            monitorController.addMonitorEventListener(monitorListener);
-            monitorController.requestMonitor();
-
-        }
-
-        @Override
-        public void dispose() {
-            monitorController.removeMonitorEventListener(monitorListener);
-            monitorController.dispose();
-        }
-
-        private String tooltipString ( final Channel channel, final ChannelTimeRecord record ) {
-
-            String units = "–";
-
-            try {
-                units = channel.getUnits();
-            } catch ( ConnectionException | GetException ex ) {
-            }
-
-            Timestamp ts = record.getTimestamp();
-            String timestamp = StringUtils.defaultIfEmpty(ts.toString(), "–");
-
-            return MessageFormat.format(
-                "Value: {0}\nUnit: {1}\nStatus: {2}\nSeverity: {3}\nTimestamp: {4}]",
-                record.stringValue(),
-                units,
-                Status.forValue(record.status()).getName(),
-                Severity.forValue(record.severity()).getName(),
-                timestamp
-            );
-
-        }
-
-        private String valueString ( final Channel channel, final ChannelTimeRecord record ) {
-
-            String units = "–";
-
-            try {
-                units = channel.getUnits();
-            } catch ( ConnectionException | GetException ex ) {
-            }
-
-            return MessageFormat.format("{0} [{1}]", record.stringValue(), units);
-
-        }
-
-    }
-
-    @SuppressWarnings( "PublicInnerClass" )
-    public class PropertyWrapper extends BaseWrapper {
-
-        @SuppressWarnings( { "UseSpecificCatch", "BroadCatchBlock", "TooBroadCatch" } )
-        PropertyWrapper ( Object bean, String name ) throws NoSuchMethodException {
-            this(
-                null,
-                name, 
-                ReadOnlyJavaBeanObjectPropertyBuilder.create().bean(bean).name(name).build()
-            );
-        }
-
-        @SuppressWarnings( { "UseSpecificCatch", "BroadCatchBlock", "TooBroadCatch" } )
-        PropertyWrapper ( String prefix, Object bean, String name ) throws NoSuchMethodException {
-            this(
-                prefix,
-                name,
-                ReadOnlyJavaBeanObjectPropertyBuilder.create().bean(bean).name(name).build()
-            );
-        }
-
-        @SuppressWarnings( { "UseSpecificCatch", "BroadCatchBlock", "TooBroadCatch" } )
-        PropertyWrapper ( Object bean, String name, String getter ) throws NoSuchMethodException {
-            this(
-                null,
-                name,
-                ReadOnlyJavaBeanObjectPropertyBuilder.create().bean(bean).name(name).getter(getter).build()
-            );
-        }
-
-        @SuppressWarnings( { "UseSpecificCatch", "BroadCatchBlock", "TooBroadCatch" } )
-        PropertyWrapper ( String prefix, Object bean, String name, String getter ) throws NoSuchMethodException {
-            this(
-                prefix,
-                name,
-                ReadOnlyJavaBeanObjectPropertyBuilder.create().bean(bean).name(name).getter(getter).build()
-            );
-        }
-
-        @SuppressWarnings( { "UseSpecificCatch", "BroadCatchBlock", "TooBroadCatch" } )
-        PropertyWrapper ( String prefix, String name, ReadOnlyObjectProperty<Object> property ) {
-
-            setName(StringUtils.isBlank(prefix) ? name : prefix + name);
-
-            try {
-
-                StringBinding binding = Bindings.when(property.isNotNull()).then(property.asString()).otherwise("–");
-
-                tooltipProperty().bind(binding);
-                valueProperty().bind(binding);
-
-            } catch ( Exception ex ) {
-
-                setAlarm(Alarm.INVALID);
-
-                StringBuilder builder = new StringBuilder(200);
-                Throwable t = ex;
-
-                while ( t != null ) {
-
-                    StackTraceElement[] st = t.getStackTrace();
-
-                    builder.append(st[0].toString()).append(": ").append(ex.getClass().getSimpleName());
-
-                    String m = t.getMessage();
-
-                    if ( m != null ) {
-                        builder.append(" [").append(m).append("]");
-                    }
-
-                    t = t.getCause();
-
-                    if ( t != null ) {
-                        builder.append("\n");
-                    }
-
-                }
-
-                setTooltip(builder.toString());
-
-            }
-
-        }
-
-        @Override
-        public void dispose() {
-        }
-
-    }
-
-    private class NodeTreeCell extends TreeCell<AcceleratorNode> {
-
-        private final Label classNameInfoLabel = new Label();
-        private final Label displayInfoLabel = new Label();
-        private final HBox graphic = new HBox();
-        private final Label iconsLabel = new Label();
-
-        NodeTreeCell() {
-
-            // We cannot dynamically update the HBox graphic children
-            // in the cell.updateItem method.
-            // We set once the graphic children, then we update the
-            // managed property of the children depending on the cell item.
-            graphic.getChildren().setAll(iconsLabel, classNameInfoLabel, displayInfoLabel);
-
-            // CSS
-            graphic.getStyleClass().add("tree-cell-graphic");
-            displayInfoLabel.getStyleClass().add("hierarchy-readwrite-label");
-
-            // Layout
-            classNameInfoLabel.setMinWidth(Control.USE_PREF_SIZE);
-            displayInfoLabel.setMaxWidth(Double.MAX_VALUE);
-
-            HBox.setHgrow(displayInfoLabel, Priority.ALWAYS);
-
-        }
-
-        @Override
-        protected void updateItem( AcceleratorNode item, boolean empty ) {
-
-            super.updateItem(item, empty);
-
-            // The cell is not empty (TreeItem is not null)
-            // AND the TreeItem value is not null
-            if ( !empty && item != null ) {
-
-                // Update Icon
-                iconsLabel.setGraphic(getTreeItem().getGraphic());
-
-                // Update Labels
-                String classNameInfo = item.getId();
-
-                classNameInfoLabel.setText(classNameInfo);
-                classNameInfoLabel.setManaged(classNameInfo != null);
-                classNameInfoLabel.setVisible(classNameInfo != null);
-
-                String displayInfo = null;
-
-                try {
-                    displayInfo = item.getClass().getMethod("getType").invoke(item).toString();
-                } catch ( IllegalAccessException | IllegalArgumentException | NoSuchMethodException | SecurityException | InvocationTargetException ex ) {
-                    LOGGER.log(WARNING, "Getting type for {0}", classNameInfo);
-                }
-
-                displayInfoLabel.setText(displayInfo);
-                displayInfoLabel.setManaged(displayInfo != null);
-                displayInfoLabel.setVisible(displayInfo != null);
-
-                setGraphic(graphic);
-                setText(null);
-
-            } else {
-                assert item == null;
-                setGraphic(null);
-                setText(null);
-            }
-
-        }
-
-    }
-
-    private class RunSimulationService extends Service<Void> {
-
-        private volatile AtomicReference<String> synchronizationMode = new AtomicReference<>(Scenario.SYNC_MODE_DESIGN);
-
-        public void setSynchronizationMode( String synchronizationMode ) {
-            this.synchronizationMode.set(synchronizationMode);
-        }
-
-        @Override
-        protected Task<Void> createTask() {
-            return new Task<Void>() {
-                @Override
-                @SuppressWarnings( { "ValueOfIncrementOrDecrementUsed", "CallToThreadYield" } )
-                protected Void call() throws Exception {
-
-                    AcceleratorSeq sequence = (AcceleratorSeq) modelTree.getSelectionModel().getSelectedItem().getValue();
-
-                    updateTitle(sequence.getId());
-
-                    EnvTrackerAdapt envelopeTracker = AlgorithmFactory.createEnvTrackerAdapt(sequence);
-
-                    envelopeTracker.setMaxIterations(1000);
-                    envelopeTracker.setAccuracyOrder(1);
-                    envelopeTracker.setErrorTolerance(0.001);
-
-                    Probe<?> probe = ProbeFactory.getEnvelopeProbe(sequence, envelopeTracker);
-                    Scenario model = Scenario.newScenarioFor(sequence);
-
-                    model.setProbe(probe);
-                    model.setSynchronizationMode(synchronizationMode.get());
-                    model.resync();
-                    model.run();
-
-                    probe = model.getProbe();
-
-                    Trajectory<? extends ProbeState<?>> trajectory = probe.getTrajectory();
-                    int numStates = trajectory.numStates();
-                    List<? extends ProbeState<?>> stateElement = trajectory.getStatesViaIndexer();
-                    ObservableList<XYChart.Data<Double, Double>> sigmaXData = FXCollections.observableArrayList();
-                    ObservableList<XYChart.Data<Double, Double>> sigmaYData = FXCollections.observableArrayList();
-                    ObservableList<XYChart.Data<Double, Double>> sigmaZData = FXCollections.observableArrayList();
-
-                    for ( int i = 0; i < numStates; i++ ) {
-
-                        ProbeState<?> pState = stateElement.get(i);
-
-                        if ( pState instanceof EnvelopeProbeState ) {
-
-                            EnvelopeProbeState state = (EnvelopeProbeState) pState;
-                            CovarianceMatrix matrix = state.getCovarianceMatrix();
-                            double position = state.getPosition();
-
-                            sigmaXData.add(new XYChart.Data<>(position, matrix.getSigmaX()));
-                            sigmaYData.add(new XYChart.Data<>(position, matrix.getSigmaY()));
-                            sigmaZData.add(new XYChart.Data<>(position, matrix.getSigmaZ()));
-
-                        }
-
-                    }
-
-                    Platform.runLater(() -> {
-                        chart.setTitle(sequence.getId());
-                        sigmaXSeries.setData(sigmaXData);
-                        sigmaYSeries.setData(sigmaYData);
-                        sigmaZSeries.setData(sigmaZData);
-                    });
-
-                    return null;
-
-                }
-            };
-        }
 
     }
 
