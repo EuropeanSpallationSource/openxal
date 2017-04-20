@@ -32,6 +32,7 @@
         <module>machinerecorder</module>
         <module>machinesimulator</module>
         <module>magnetcycling</module>
+        <module>modelbrowser</module>
         <module>modelmanager</module>
         <module>mtv</module>
         <module>opticseditor</module>
