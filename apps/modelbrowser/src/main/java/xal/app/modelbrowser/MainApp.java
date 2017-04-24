@@ -62,7 +62,7 @@ public class MainApp extends Application {
 
         stage.setOnCloseRequest(e -> System.exit(0));
 
-        stage.setTitle("OpenXAL Model Browser");
+        stage.setTitle("Open XAL Model Browser");
         stage.setScene(scene);
         stage.show();
 
