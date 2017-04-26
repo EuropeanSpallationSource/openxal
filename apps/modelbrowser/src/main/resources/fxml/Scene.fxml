@@ -182,7 +182,7 @@
                   <HBox alignment="CENTER_LEFT" styleClass="panel-header" GridPane.columnIndex="2">
                      <children>
                         <Label minWidth="105.0" text="Simulation" HBox.hgrow="NEVER" />
-                        <StackPane prefHeight="150.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
+                        <StackPane HBox.hgrow="ALWAYS" />
                         <Button fx:id="runSimulationButton" contentDisplay="RIGHT" disable="true" minHeight="16.0" minWidth="54.0" mnemonicParsing="false" onAction="#runSimulation" styleClass="menu-button" text="RUN  " HBox.hgrow="NEVER">
                            <graphic>
                               <Region styleClass="run-shape" />
