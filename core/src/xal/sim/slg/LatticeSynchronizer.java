@@ -515,7 +515,7 @@ public class LatticeSynchronizer implements Visitor {
 			try {
 				return rfgap.getGapPhaseAvg()*Math.PI/180.;
 				//				return -99.d;
-			} catch (Throwable e) {
+			} catch (Exception e) {
 				//				throw new Error(e.getMessage());
 				if (e.getMessage() != null) {
 					System.out.println(e.getMessage());
@@ -540,7 +540,7 @@ public class LatticeSynchronizer implements Visitor {
 			try {
 				return rfgap.getGapE0TL()*1.e6;
 				//				return -99.d;
-			} catch (Throwable e) {
+			} catch (Exception e) {
 				//				throw new Error(e.getMessage());
 				if (e.getMessage() != null) {
 					System.out.println(e.getMessage());
@@ -570,7 +570,7 @@ public class LatticeSynchronizer implements Visitor {
 				} else {
                                     return magnet.getDesignField();
 				}
-			} catch (Throwable e) {
+			} catch (Exception e) {
 				//				throw new Error(e.getMessage());
 				if (e.getMessage() != null) {
 					System.out.println(e.getMessage());
@@ -598,7 +598,7 @@ public class LatticeSynchronizer implements Visitor {
 				} else {
                                     return magnet.getDesignField();
 				}
-			} catch (Throwable e) {
+			} catch (Exception e) {
 				//				throw new Error(e.getMessage());
 				if (e.getMessage() != null) {
 					System.out.println(e.getMessage());

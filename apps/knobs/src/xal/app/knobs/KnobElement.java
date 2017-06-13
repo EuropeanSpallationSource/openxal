@@ -426,20 +426,20 @@ public class KnobElement implements DataListener {
 	 * @return the excuse for not being ready
 	 */
 	public String getInactiveExcuse() {
-		if ( _channel == null || isReady() )  return null;
+		if ( isReady() )
+		    return null;
 		
 		final StringJoiner joiner = new StringJoiner();
-		if ( !_channel.isConnected() ) {
+		if ( _channel == null ) {
+		    joiner.append("No channel specified!");
+		} else if ( !_channel.isConnected() ) {
 			joiner.append( _channel.channelName() + " is not connected" );
-		}
-		else {
+		} else {
 			if ( Double.isNaN( _settingValue ) ) {
 				joiner.append( _channel.channelName() + " set point has not been found" );
-			}
-			if ( !_limitsHandler.isReady() ) {
+			} if ( !_limitsHandler.isReady() ) {
 				joiner.append( _limitsHandler.getInactiveExcuse() );
-			}
-			else if ( !isSettingValueWithinLimits() ) {
+			} else if ( !isSettingValueWithinLimits() ) {
 				joiner.append( _channel.channelName() + " set point ( " + _settingValue + " ) outside limits [ " + _lowerLimit + ", " + _upperLimit + " ]" );
 			}
 		}

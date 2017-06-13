@@ -8,23 +8,35 @@
 
 package xal.app.knobs;
 
-import xal.tools.dispatch.*;
-
-import java.beans.*;
-import java.util.*;
 import java.awt.Color;
-import java.awt.Component;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JOptionPane;
+import javax.swing.JSlider;
 
 import xal.extension.widgets.swing.Wheelswitch;
+import xal.tools.dispatch.DispatchQueue;
 
 
-/** view for allowing users to use a knob */
+/**
+ *  view for allowing users to use a knob 
+ *  
+ *  @author unknown
+ *  @author <a href="mailto:blaz.kranjc@cosylab.com">Blaz Kranjc</a>
+ */
 public class KnobControl extends Box implements KnobListener {
+    
     /** serialization identifier */
     private static final long serialVersionUID = 1L;
+    /** Default display format */
+    private static final String DEFAULT_FORMAT = "+#.#####";
+
 	/** queue on which to perform resync operations */
 	final private DispatchQueue RESYNC_QUEUE;
 
@@ -69,7 +81,7 @@ public class KnobControl extends Box implements KnobListener {
 		WHEEL_EVENT_HANDLER = new WheelEventHandler();
 		KNOB_WHEEL = createKnobWheel();
 		
-		READY_INDICATOR = new JButton( "" );
+		READY_INDICATOR = new JButton();
 		READY_INDICATOR.addActionListener( new ActionListener() {
 			public void actionPerformed( final ActionEvent event ) {
 				final String inactiveExcuse = knob.getInactiveExcuse();
@@ -123,7 +135,6 @@ public class KnobControl extends Box implements KnobListener {
 			public void run() {
 				if ( !KNOB.hasElements() ) {
 					READY_INDICATOR.setText( "No Channels" );
-					READY_INDICATOR.setForeground( Color.ORANGE );
 					READY_INDICATOR.setEnabled( false );
 					KNOB_WHEEL.setEnabled( false );
 				}
@@ -133,7 +144,6 @@ public class KnobControl extends Box implements KnobListener {
 					READY_INDICATOR.setEnabled( false );
 					KNOB_WHEEL.setToolTipText( null );
 					KNOB_WHEEL.setEnabled( true );
-					READY_INDICATOR.setForeground( Color.GREEN );
 				}
 				else {
 					READY_INDICATOR.setText( "Show Problems..." );
@@ -151,7 +161,7 @@ public class KnobControl extends Box implements KnobListener {
 	/** create the knob wheel */
 	protected Wheelswitch createKnobWheel() {
 		final Wheelswitch wheel = new Wheelswitch();
-		wheel.setFormat( "+#.#####" );
+		wheel.setFormat( DEFAULT_FORMAT );
 		wheel.setValue( KNOB.getCurrentSetting() );
 		
 		setWheelEventEnable( wheel, true );
@@ -263,40 +273,52 @@ public class KnobControl extends Box implements KnobListener {
 	}
 	
 	
-	/** Generate the wheel format for the specified limits */
+	/**
+	 * Generate the wheel format for the specified limits.
+	 * 
+	 * The knob format is generated with 5 significant digits in mind, but the actual display might show more,
+	 * due to the fact that the one's place digit is always shown, e.g. if a limit size is 10E6, the returned format
+	 * is 6 digits long.
+	 * 
+	 * The format is always limited to 8 digits.
+	 * 
+	 * @param lowerLimit lower limit value
+	 * @param upperLimit upper limit value
+	 * 
+	 * @return generated number format
+	 */
 	static final String generateWheelFormat( final double lowerLimit, final double upperLimit ) {
-		final double scale = Math.max( Math.abs( lowerLimit ), Math.abs( upperLimit ) );
-		final int diffDigits = (int)Math.ceil( Math.log10( Math.abs( upperLimit - lowerLimit ) ) );
-		final int digitsToLeft = (int)Math.ceil( Math.log10( scale ) );
-		final int SIGNIFICANT_DIGITS = 5 + Math.abs( digitsToLeft - diffDigits );
-				
+		final int SIGNIFICANT_DIGITS = 5;
+		final int MAX_DIGITS = 8;
+
+		final double maxLimit = Math.max( Math.abs( lowerLimit ), Math.abs( upperLimit ) );
+		final int nIntegralDigits = maxLimit > 0 ? (int)Math.ceil(Math.log10(maxLimit)) : -1 * MAX_DIGITS;
 		final StringBuffer buffer = new StringBuffer( "+" );
+
+		// Always use at least one integral part digit
+		buffer.append( "#" );
 		
-		int digitCount = 0;
-		for ( int digit = 0 ; digit < digitsToLeft ; digit++ ) {
-			++digitCount;
+		// Limit the display value to MAX_DIGITS digits (ones digit is already included)
+		final int nIntegralDigitsLimited = nIntegralDigits > MAX_DIGITS-1 ? MAX_DIGITS-1 : nIntegralDigits;
+
+		for ( int digit = 0 ; digit < nIntegralDigitsLimited - 1 ; digit++ ) {
 			buffer.append( "#" );
 		}
 		
-		buffer.append( "." );
+		final int nDecimalDigits = SIGNIFICANT_DIGITS - nIntegralDigitsLimited;
 		
-		final int zerosToRight = Math.max( 0, - digitsToLeft );
-		for ( int digit = 0 ; digit < zerosToRight; digit++ ) {
-			++digitCount;
-			if ( digitCount < 8 ) {		// handle wheelswitch bug
-				buffer.append( "#" );
-			}
+		if (nDecimalDigits > 0) {
+		    // Show at most MAX_DIGITS-1 decimal places (a digit is already in ones slot)
+		    final int nDecimalDigitsLimited =  nDecimalDigits > MAX_DIGITS-1 ? MAX_DIGITS-1 : nDecimalDigits;
+
+		    buffer.append( "." );
+
+		    for ( int digit = 0 ; digit < nDecimalDigitsLimited; digit++ ) {
+		        buffer.append( "#" );
+		    }
 		}
-		
-		final int digitsToRight = Math.max( 0, Math.min( SIGNIFICANT_DIGITS, SIGNIFICANT_DIGITS - digitsToLeft ) );
-		for ( int digit = 0 ; digit < digitsToRight ; digit++ ) {
-			++digitCount;
-			if ( digitCount < 8 ) {		// handle wheel switch bug
-				buffer.append( "#" );
-			}
-		}
-		
-		return buffer.toString();
+
+   		return buffer.toString();
 	}
 	
 	

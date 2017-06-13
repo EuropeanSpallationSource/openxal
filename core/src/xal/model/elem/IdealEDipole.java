@@ -43,7 +43,7 @@ import xal.tools.beam.optics.BendingMagnet;
  * TODO - Add "tilt" angle of the dipole.
  *
  * @author  jdg
- * @author  Carla Benatti 
+ * @author  Carla Benatti
  *
  */
 
@@ -141,7 +141,7 @@ public class IdealEDipole extends ThickElectrostatic
    */
 
   private int m_enmOrient = ORIENT_HOR;
-    
+
   /**
    *
    * The quadrupole term = 1/(B-rho) * dB_y/dx
@@ -154,7 +154,7 @@ public class IdealEDipole extends ThickElectrostatic
    * dipole indicator, 0 = first half of a split dipole, 1 = means second half of a split dipole, 2 = others
    */
   private int dipoleInd = 2;
-  
+
   /**
    *
    *  Creates a new instance of IdealEDipole.
@@ -186,7 +186,7 @@ public class IdealEDipole extends ThickElectrostatic
   }
 
   /**
-   * 
+   *
    *  JavaBean constructor - creates a new uninitialized instance
    *                         of ThickDipole.
    *  This is the constructor called in automatic lattice generation.
@@ -252,8 +252,8 @@ public class IdealEDipole extends ThickElectrostatic
    */
 
   public double getExitAngle()
-  {  
-    return exitAngle; 
+  {
+    return exitAngle;
   }
 
 
@@ -282,13 +282,13 @@ public class IdealEDipole extends ThickElectrostatic
   {
     return k1;
   }
-  
+
   /**
    * convenient method to return fringe field integral
    * @return fringe field integral
    */
   public double getFieldIntegral() {
-	  return fringeIntegral;
+      return fringeIntegral;
   }
 
 
@@ -336,13 +336,13 @@ public class IdealEDipole extends ThickElectrostatic
   {
     m_enmOrient = enmOrient;
   }
-  
+
   /**
    * Set dipole indicator so the transfer map can handle edge effect correctly.
    * @param ind 0 = first half of a dipole, 1 = second half and 2 = no split
    */
   public void setDipoleInd(int ind) {
-	  dipoleInd = ind;
+      dipoleInd = ind;
   }
 
   /**
@@ -484,7 +484,7 @@ public class IdealEDipole extends ThickElectrostatic
   {
 
     // Some constants (for series approximations)
-    
+
     final double c1 = 1.0;
     final double c2 = 1.0 / 2.0;
     final double c3 = 1.0 / 24.0;
@@ -505,7 +505,7 @@ public class IdealEDipole extends ThickElectrostatic
     double angle = getDesignBendAngle() * dL / this.getLength();
     System.out.println("Element " + this.getId() + " theta " + angle);
     //angle = -angle;
-    
+
     double kQuad = getKQuad();
     double entAng = entranceAngle;
     double exAng = exitAngle;
@@ -528,7 +528,7 @@ public class IdealEDipole extends ThickElectrostatic
     // this case, assuming an entrance angle of zero
 
     double h = angle / dL;
-    
+
     //Not sure about curvature here with V instead of B
     double hProbe = BendingMagnet.compCurvature(probe, V);
 
@@ -542,12 +542,12 @@ public class IdealEDipole extends ThickElectrostatic
     }
 
     //  Compute body horizontal and longitudinal matrix elements
-    
+
     double xksq = h * h + kQuad;
     double xk = Math.sqrt(Math.abs(xksq));
     double xkl = xk * dL;
     double xklsq = xksq * dL * dL;
-   
+
     double cx = 0.0;
     double sx = 0.0;
     double dx = 0.0;
@@ -561,8 +561,6 @@ public class IdealEDipole extends ThickElectrostatic
       sx = (s1 - xklsq * (s2 - xklsq * s3)) * dL;
       dx = (c2 - xklsq * (c3 - xklsq * c4)) * dL * dL;
       fx = (s2 - xklsq * (s3 - xklsq * s4)) * Math.pow(dL , 3);
-      gx = (cg0 - xklsq * (cg1 - xklsq * cg2)) * Math.pow(dL , 5);
-      hx = (ch0 - xklsq * (ch1 - xklsq * ch2)) * Math.pow(dL , 7);
     }
     else
     {
@@ -578,8 +576,6 @@ public class IdealEDipole extends ThickElectrostatic
       }
       dx = (1.0 - cx) / xksq;
       fx = (dL  - sx) / xksq;
-      gx = (3.0 * dL - sx * (4.0 - cx)) / (2.0 * xksq *xksq);
-      hx = (15.0 * dL - sx * (22.0 - 9.0 * cx + 2.0 * cx * cx)) / (6.0 * Math.pow(xksq , 3));
     }
 
     double M00 = cx;
@@ -593,12 +589,12 @@ public class IdealEDipole extends ThickElectrostatic
     double M45 = dL * bi2gi2 - h * h * fx * bi2;
 
 //  Body Vertical
-    
+
     double yksq = -kQuad;
     double yk = Math.sqrt(Math.abs(yksq));
     double ykl = yk * dL;
     double yklsq = yksq * dL * dL;
-   
+
     double cy = 0.0;
     double sy = 0.0;
 
@@ -638,16 +634,12 @@ public class IdealEDipole extends ThickElectrostatic
     double rho = 1.0e12;
     if (h != 0.0)
       rho = 1.0 / h;
-    
+
     double rhoProbe = 1.0e12;
     if (hProbe != 0.0)
       rhoProbe = 1.0 / hProbe;
-    
-    double zprimeProbe = (rhoProbe - rho) / (rhoProbe * gamma * gamma);
 
-    double M06 = M05 * zprimeProbe;
-    double M16 = M15 * zprimeProbe;
-    double M46 = M45 * zprimeProbe;
+    double zprimeProbe = (rhoProbe - rho) / (rhoProbe * gamma * gamma);
 
     // The following three lines need to be better understood
 
@@ -656,12 +648,12 @@ public class IdealEDipole extends ThickElectrostatic
 //  M45 *= rhoProbe / rho;
 
     // Assemble the body and edge focusing matrices
-    
+
     PhaseMatrix matBody = PhaseMatrix.identity();
     PhaseMatrix matEntrance = PhaseMatrix.identity();
     PhaseMatrix matExit = PhaseMatrix.identity();
 
-        
+
     matBody.setElem(0, 0, M00);
     matBody.setElem(0, 1, M01);
     matBody.setElem(0, 5, M05);
@@ -682,22 +674,22 @@ public class IdealEDipole extends ThickElectrostatic
     matBody.setElem(1, 6, 0);//M16
     matBody.setElem(4, 6, 0);//M46
 
-    
-	
-    
-    
+
+
+
+
     matEntrance.setElem(1, 0, h * Math.tan(entAng));
     matEntrance.setElem(3, 2, -h * Math.tan(entAng - entranceAnglePhi));
 
     matExit.setElem(1, 0, h * Math.tan(exAng));
     matExit.setElem(3, 2, -h * Math.tan(exAng - exitAnglePhi));
-    
+
     // Multiply the 3 matrices together, starting at entrance side;
     // deal with "split bend disease" here
 
     PhaseMatrix matProd1;
     PhaseMatrix matProd2;
-    
+
     switch(dipoleInd)
     {
     case 0:
@@ -708,7 +700,7 @@ public class IdealEDipole extends ThickElectrostatic
       // if this is the second half of a split dipole
       matProd2 = matExit.times(matBody);
       break;
-    case 2:	
+    case 2:
       // if this is a normal dipole with both edges
       matProd1 = matBody.times(matEntrance);
       matProd2 = matExit.times(matProd1);
@@ -725,7 +717,7 @@ public class IdealEDipole extends ThickElectrostatic
     if (getOrientation() == xal.smf.impl.Magnet.VERTICAL)
     {
       // prepare a rotation matrix
-        
+
       PhaseMatrix rotMat = PhaseMatrix.identity();
       rotMat.setElem(0, 0, 0.);
       rotMat.setElem(1, 1, 0.);
@@ -744,47 +736,10 @@ public class IdealEDipole extends ThickElectrostatic
 
       matProd2 = matProd2.times(rotMatTrans);
       matProd2 = rotMat.times(matProd2);
-      
-      //System.out.println("Element " + this.getId() + " Matrix " + matProd2);
+
     }
 
-/*    System.out.println(this.getId() + ": dL = " + dL
-     + ", angle = " + angle
-     + ", kQuad = " + kQuad
-     + ", B = " + B
-     + "\n\t, entAng = " + entAng
-     + ", exAng = " + exAng
-     + ", gapHeight = " + gapHeight
-     + ", fringeIntegral = " + fringeIntegral
-     + "\n\t, beta = " + beta
-     + ", gamma = " + gamma
-     + "\n\t, h = " + h
-     + ", hProbe = " + hProbe
-     + ", rho = " + rho
-     + ", rhoProbe = " + rhoProbe
-     + ", zprimeProbe = " + zprimeProbe
-     + "\n\t, entrAnglePhi = " + entranceAnglePhi
-     + ", exitAnglePhi = " + exitAnglePhi
-     + ", dipoleInd = " + dipoleInd
-     + "\n\t, M00 = " + M00
-     + ", M01 = " + M01
-     + ", M05 = " + M05
-     + "\n\t, M10 = " + M10
-     + ", M11 = " + M11
-     + ", M15 = " + M15
-     + "\n\t, M22 = " + M22
-     + ", M23 = " + M23
-     + ", M32 = " + M32
-     + ", M33 = " + M33
-     + "\n\t, M40 = " + M40
-     + ", M41 = " + M41
-     + ", M45 = " + M45
-     + "\n\t, M06 = " + M06
-     + ", M16 = " + M16
-     + ", M46 = " + M46
-    );
-*/    
-    return new PhaseMap( matProd2 );		
+    return new PhaseMap( matProd2 );
   }
 
 
@@ -804,27 +759,27 @@ public class IdealEDipole extends ThickElectrostatic
 
   @Override
   public void initializeFrom(LatticeElement element) {
-	super.initializeFrom(element);				
-	 
-	EDipole edp = (EDipole) element.getHardwareNode();
-	double len_sect = element.getLength();		
-	double len_path0 = edp.getDfltPathLength();
-	double ang_bend0 = edp.getDfltBendAngle() * Math.PI / 180.0;
+    super.initializeFrom(element);
 
-	double R_bend0 = len_path0 / ang_bend0;
-	double ang_bend = ang_bend0 * (len_sect / len_path0);
-	double len_path = R_bend0 * ang_bend;
-	
-	setPathLength(len_path);		
-	setDesignBendAngle(ang_bend);
-	
+    EDipole edp = (EDipole) element.getHardwareNode();
+    double len_sect = element.getLength();
+    double len_path0 = edp.getDfltPathLength();
+    double ang_bend0 = edp.getDfltBendAngle() * Math.PI / 180.0;
+
+    double R_bend0 = len_path0 / ang_bend0;
+    double ang_bend = ang_bend0 * (len_sect / len_path0);
+    double len_path = R_bend0 * ang_bend;
+
+    setPathLength(len_path);
+    setDesignBendAngle(ang_bend);
+
   }
-  
+
   public void setPathLength(double dblPathLen)  {
-	  pathLength = dblPathLen;
+      pathLength = dblPathLen;
   }
-  
+
   public double getPathLength() {
-	  return pathLength;
+      return pathLength;
   }
 };

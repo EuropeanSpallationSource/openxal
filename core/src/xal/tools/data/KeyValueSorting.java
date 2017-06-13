@@ -76,11 +76,6 @@ public class KeyValueSorting {
 				}
 				return 0;
 			}
-			
-			/** the specified object is equal to this comparator */
-			public boolean equals( final Object object ) {
-				return object == this;
-			}
 		};
 	}
 }

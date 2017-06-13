@@ -28,15 +28,22 @@ public class NoiseGenerator {
      * @param pvVal the "set" PV value
      * @param noiseLevel noise level for the readback PV 
      * @param offset offset from the nominal value
+     * @param relative if noise should be set relative to pvVal
      * @return readback PV value with noise added
      */
-    public static double setValForPV(double pvVal, double noiseLevel, double offset) {
-        return pvVal + noiseLevel * (Math.random()-0.5)*2./100. + offset;
+    public static double setValForPV(double pvVal, double noiseLevel, double offset, boolean relative) {
+        if (relative)
+            return pvVal * (1 + noiseLevel * (Math.random()-0.5)*2./100.) + offset;
+        else
+            return pvVal  + noiseLevel * (Math.random()-0.5)*2. + offset;
     }
     
-    
     /**
-     * Get an array with noise based on a nominal value
+     * Get an array with noise based on a nominal value.
+     *
+     * This function is used by instrumentation,
+     * so we assume that noise is given in respective units and not in percentage.
+     *
      * @param arrayLength total length of the array
      * @param dataLength length of the array to populate with data starting with index 0
      * @param nominalValue nominal value for entire array
@@ -48,7 +55,7 @@ public class NoiseGenerator {
         
         final double[] noisyArray = new double[arrayLength];
         for ( int index = 0 ; index < dataLength ; index++ ) {
-            noisyArray[index] = setValForPV( nominalValue, noiseLevel, offset );
+            noisyArray[index] = setValForPV( nominalValue, noiseLevel, offset, false );
         }
         
         return noisyArray;

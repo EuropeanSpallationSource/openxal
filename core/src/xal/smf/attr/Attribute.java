@@ -122,10 +122,10 @@ public final class Attribute extends Object implements java.io.Serializable {
     
     
     //  Set Methods
-    public void set(int newVal)         { m_objValue = new Integer(newVal); m_intTypeId = iInteger; };
-    public void set(long newVal)        { m_objValue = new Long(newVal);    m_intTypeId = iLong; };
-    public void set(float newVal)       { m_objValue = new Float(newVal);   m_intTypeId = iFloat; };
-    public void set(double newVal)      { m_objValue = new Double(newVal);  m_intTypeId = iDouble; };
+    public void set(int newVal)         { m_objValue = Integer.valueOf(newVal); m_intTypeId = iInteger; };
+    public void set(long newVal)        { m_objValue = Long.valueOf(newVal);    m_intTypeId = iLong; };
+    public void set(float newVal)       { m_objValue = Float.valueOf(newVal);   m_intTypeId = iFloat; };
+    public void set(double newVal)      { m_objValue = Double.valueOf(newVal);  m_intTypeId = iDouble; };
     public void set(String newVal)      { m_objValue = newVal;  m_intTypeId = iString; };
     
     public void set(int[] newArr)       { m_objValue = newArr;  m_intTypeId = iArrInt; };

@@ -19,8 +19,5 @@ Open XAL is designed to be a flexible application framework for developing accel
 Branch | Build Result
 ------ | ------------
 Open XAL Master | [![Open XAL Master Build Test](https://travis-ci.org/openxal/openxal.svg)](https://travis-ci.org/openxal/openxal)
-ESS Master | [![ESS Build Test](https://gitlab01.esss.lu.se/ess-csr/openxal/badges/site.ess.master/build.svg)](https://gitlab01.esss.lu.se/ess-csr/openxal/builds)
-
-
-
+ESS Master | [![ESS Build Test](https://jenkins02.esss.lu.se/buildStatus/icon?job=openxal)](https://jenkins02.esss.lu.se/job/openxal/)
 

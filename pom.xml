@@ -10,7 +10,7 @@
 
     <groupId>org.xal</groupId>
     <artifactId>openxal</artifactId>
-    <version>1.0.9</version>
+    <version>1.0.10</version>
 
     <packaging>pom</packaging>
 
@@ -101,11 +101,6 @@
             <dependency>
                 <groupId>org.xal</groupId>
                 <artifactId>openxal.plugins.ess-rbac</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.xal</groupId>
-                <artifactId>openxal.plugins.dummy-rbac</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

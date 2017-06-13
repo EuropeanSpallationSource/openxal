@@ -12,9 +12,9 @@ test.maven:
         - yum install maven -y
         - git clone https://bitbucket.org/europeanspallationsource/ess-java-config.git
         - cd ess-java-config
-        - mvn install
+        - mvn install -B
         - cd ../
-        - mvn package
+        - mvn package -B
     only:
         - /^site.ess.*$/
 

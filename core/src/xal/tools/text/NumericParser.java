@@ -77,7 +77,7 @@ class ByteParser extends NumericParser {
      * @throws java.lang.NumberFormatException if the string cannot be parsed into a number
      */
     public Number getNumericValue(String stringValue) throws NumberFormatException {
-        return new Byte( Byte.parseByte(stringValue) );
+        return Byte.valueOf( Byte.parseByte(stringValue) );
     }
 }
 
@@ -95,7 +95,7 @@ class DoubleParser extends NumericParser {
      * @throws java.lang.NumberFormatException if the string cannot be parsed into a number
      */
     public Number getNumericValue(String stringValue) throws NumberFormatException {
-        return new Double( Double.parseDouble(stringValue) );
+        return Double.valueOf( Double.parseDouble(stringValue) );
     }
 }
 
@@ -113,7 +113,7 @@ class FloatParser extends NumericParser {
      * @throws java.lang.NumberFormatException if the string cannot be parsed into a number
      */
     public Number getNumericValue(String stringValue) throws NumberFormatException {
-        return new Float( Float.parseFloat(stringValue) );
+        return Float.valueOf( Float.parseFloat(stringValue) );
     }
 }
 
@@ -131,7 +131,7 @@ class IntegerParser extends NumericParser {
      * @throws java.lang.NumberFormatException if the string cannot be parsed into a number
      */
     public Number getNumericValue(String stringValue) throws NumberFormatException {
-        return new Integer( Integer.parseInt(stringValue) );
+        return Integer.valueOf( Integer.parseInt(stringValue) );
     }
 }
 
@@ -148,7 +148,7 @@ class LongParser extends NumericParser {
      * @throws java.lang.NumberFormatException if the string cannot be parsed into a number
      */
     public Number getNumericValue(String stringValue) throws NumberFormatException {
-        return new Long( Long.parseLong(stringValue) );
+        return Long.valueOf( Long.parseLong(stringValue) );
     }
 }
 
@@ -166,7 +166,7 @@ class ShortParser extends NumericParser {
      * @throws java.lang.NumberFormatException if the string cannot be parsed into a number
      */
     public Number getNumericValue(String stringValue) throws NumberFormatException {
-        return new Short( Short.parseShort(stringValue) );
+        return Short.valueOf( Short.parseShort(stringValue) );
     }
 }
 
