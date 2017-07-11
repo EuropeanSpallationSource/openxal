@@ -44,6 +44,7 @@
         <module>rfphaseshaker</module>
         <module>saddam</module>
         <module>scalarpvviewer</module>
+        <module>scanner</module>
         <module>scan1d</module>
         <module>scan2d</module>
         <module>sclmonitor</module>

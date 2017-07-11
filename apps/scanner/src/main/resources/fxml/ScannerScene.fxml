@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TreeTableColumn?>
+<?import javafx.scene.control.TreeTableView?>
+<?import javafx.scene.effect.Light.Distant?>
+<?import javafx.scene.effect.Lighting?>
+<?import javafx.scene.input.KeyCodeCombination?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="546.0" prefWidth="1096.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xal.app.scanner.FXMLController">
+   <children>
+      <SplitPane dividerPositions="0.5" orientation="VERTICAL" prefHeight="533.0" prefWidth="1096.0">
+        <items>
+            <MenuBar>
+              <menus>
+                <Menu mnemonicParsing="false" text="File">
+                  <items>
+                    <MenuItem mnemonicParsing="false" text="New" />
+                        <MenuItem mnemonicParsing="false" text="New from template" />
+                        <MenuItem mnemonicParsing="false" text="Open" />
+                        <MenuItem mnemonicParsing="false" text="Open Recent" />
+                        <MenuItem mnemonicParsing="false" text="Open Version" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <MenuItem id="close" mnemonicParsing="false" text="Close">
+                           <accelerator>
+                              <KeyCodeCombination alt="UP" code="W" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
+                           </accelerator>
+                        </MenuItem>
+                        <MenuItem mnemonicParsing="false" text="Close All" />
+                        <MenuItem mnemonicParsing="false" text="Save" />
+                        <MenuItem mnemonicParsing="false" text="Save As" />
+                        <MenuItem mnemonicParsing="false" text="Save All" />
+                        <MenuItem mnemonicParsing="false" text="Revert To Saved" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <MenuItem mnemonicParsing="false" text="Print" />
+                        <MenuItem mnemonicParsing="false" text="Page Setup" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <MenuItem mnemonicParsing="false" text="Quit" />
+                  </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Edit">
+                  <items>
+                    <MenuItem mnemonicParsing="false" text="Delete" />
+                  </items>
+                </Menu>
+                  <Menu mnemonicParsing="false" text="Accelerator">
+                     <items>
+                        <MenuItem mnemonicParsing="false" text="Delete" />
+                     </items>
+                  </Menu>
+                  <Menu mnemonicParsing="false" text="View">
+                     <items>
+                        <MenuItem mnemonicParsing="false" text="Delete" />
+                     </items>
+                  </Menu>
+                <Menu mnemonicParsing="false" text="Help">
+                  <items>
+                    <MenuItem mnemonicParsing="false" text="About" />
+                  </items>
+                </Menu>
+              </menus>
+            </MenuBar>
+            <SplitPane dividerPositions="0.39464882943143814" prefHeight="297.0" prefWidth="1094.0">
+              <items>
+                  <TabPane prefHeight="398.0" prefWidth="148.0" tabClosingPolicy="UNAVAILABLE">
+                    <tabs>
+                      <Tab text="Scan">
+                           <content>
+                              <AnchorPane prefHeight="386.0" prefWidth="428.0">
+                                 <children>
+                                    <Button id="scan_add_pv" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#handleScanAddPV" text="Add PV">
+                                       <effect>
+                                          <Lighting bumpInput="$null">
+                                             <light>
+                                                <Light.Distant color="#52f56a" />
+                                             </light>
+                                          </Lighting>
+                                       </effect>
+                                    </Button>
+                                    <Button id="scan_remove_pv" layoutX="95.0" layoutY="14.0" mnemonicParsing="false" onAction="#handleScanRemovePV" text="Remove PV">
+                                       <effect>
+                                          <Lighting bumpInput="$null">
+                                             <light>
+                                                <Light.Distant color="#ff401a" />
+                                             </light>
+                                          </Lighting>
+                                       </effect>
+                                    </Button>
+                                    <TreeTableView fx:id="scanTree" layoutY="56.0" prefHeight="406.0" prefWidth="428.0">
+                                      <columns>
+                                        <TreeTableColumn fx:id="scanTablePV" prefWidth="337.0" text="PV" />
+                                        <TreeTableColumn fx:id="scanTableInclude" minWidth="2.0" prefWidth="90.0" text="Include" />
+                                      </columns>
+                                    </TreeTableView>
+                                 </children>
+                              </AnchorPane>
+                           </content>
+                      </Tab>
+                        <Tab text="Read">
+                           <content>
+                              <StackPane prefHeight="150.0" prefWidth="200.0">
+                                 <children>
+                                    <ListView prefHeight="200.0" prefWidth="200.0" />
+                                 </children>
+                              </StackPane>
+                           </content>
+                        </Tab>
+                        <Tab text="Run">
+                           <content>
+                              <StackPane prefHeight="150.0" prefWidth="200.0">
+                                 <children>
+                                    <ListView prefHeight="200.0" prefWidth="200.0" />
+                                 </children>
+                              </StackPane>
+                           </content>
+                        </Tab>
+                        <Tab text="Analyse">
+                           <content>
+                              <StackPane prefHeight="150.0" prefWidth="200.0">
+                                 <children>
+                                    <ListView prefHeight="200.0" prefWidth="200.0" />
+                                 </children>
+                              </StackPane>
+                           </content>
+                        </Tab>
+                    </tabs>
+                  </TabPane>
+                  <StackPane prefHeight="398.0" prefWidth="315.0">
+                     <children>
+                        <LineChart prefHeight="308.0" prefWidth="355.0">
+                          <xAxis>
+                            <CategoryAxis side="BOTTOM" />
+                          </xAxis>
+                          <yAxis>
+                            <NumberAxis side="LEFT" />
+                          </yAxis>
+                        </LineChart>
+                     </children>
+                  </StackPane>
+              </items>
+            </SplitPane>
+        </items>
+      </SplitPane>
+   </children>
+</VBox>
