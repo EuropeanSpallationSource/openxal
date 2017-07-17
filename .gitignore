@@ -20,3 +20,6 @@ dependency-reduced-pom.xml
 *.iml
 .*.swo
 
+# Netbeans
+nb-configuration.xml
+nbactions.xml
