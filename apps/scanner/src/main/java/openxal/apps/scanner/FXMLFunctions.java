@@ -5,7 +5,8 @@
  */
 package openxal.apps.scanner;
 
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -15,12 +16,12 @@ import java.util.Random;
 public class FXMLFunctions {
     
     /**
-     * A list of the created datasets..
+     * A dictionary of the created datasets..
      */
-    public static ArrayList<int[][]> dataSets;
+    public static Map<String, double[][]> dataSets;
     
     public static void initialize() {
-        dataSets = new ArrayList<>();
+        dataSets = new HashMap<>();
     }
     
     /**
@@ -34,15 +35,16 @@ public class FXMLFunctions {
         System.out.println("You remove a PV");
     }
 
-    public static int[][] actionExecute() {
+    public static double[][] actionExecute() {
         System.out.println("Executing");
-        int[][] xy = new int[2][10];
+        double[][] xy = new double[2][10];
         Random rnd = new Random();
         for (int i=0;i<10;i++) {
             xy[0][i]=i+1;
-            xy[1][i]=rnd.nextInt();
+            xy[1][i]=rnd.nextDouble();
         }
-        dataSets.add(xy);
+        int measNum = dataSets.size()+1;
+        dataSets.put("Measurement "+measNum, xy);
         System.out.println("There are " + dataSets.size() + " data sets now.");
         return xy;
     }

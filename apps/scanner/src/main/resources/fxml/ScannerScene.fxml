@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.Button?>
@@ -20,6 +19,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Rectangle?>
 
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="546.0" prefWidth="1096.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="openxal.apps.scanner.FXMLController">
    <children>
@@ -133,23 +133,24 @@
                            <content>
                               <StackPane prefHeight="150.0" prefWidth="200.0">
                                  <children>
-                                    <ListView fx:id="analyseList" prefHeight="200.0" prefWidth="200.0" />
+                                    <ListView fx:id="analyseList" onMouseClicked="#analyseListMouseClicked" prefHeight="200.0" prefWidth="200.0" />
                                  </children>
                               </StackPane>
                            </content>
                         </Tab>
                     </tabs>
                   </TabPane>
-                  <StackPane prefHeight="398.0" prefWidth="315.0">
+                  <StackPane fx:id="analyseGraphPane" prefHeight="398.0" prefWidth="315.0">
                      <children>
-                        <LineChart fx:id="graph01" prefHeight="308.0" prefWidth="355.0">
+                        <LineChart fx:id="graph01" animated="false" legendVisible="false" prefHeight="308.0" prefWidth="355.0">
                           <xAxis>
-                            <CategoryAxis side="BOTTOM" />
+                            <NumberAxis side="BOTTOM" />
                           </xAxis>
                           <yAxis>
                             <NumberAxis side="LEFT" />
                           </yAxis>
                         </LineChart>
+                        <Rectangle fx:id="selectRect" arcHeight="5.0" arcWidth="5.0" fill="#ebebeb" height="586.0" mouseTransparent="true" opacity="0.2" stroke="BLACK" strokeType="INSIDE" visible="false" width="658.0" StackPane.alignment="TOP_LEFT" />
                      </children>
                   </StackPane>
               </items>
