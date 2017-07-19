@@ -21,7 +21,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="546.0" prefWidth="1096.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xal.app.scanner.FXMLController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="546.0" prefWidth="1096.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="openxal.apps.scanner.FXMLController">
    <children>
       <SplitPane dividerPositions="0.5" orientation="VERTICAL" prefHeight="533.0" prefWidth="1096.0">
         <items>
@@ -123,7 +123,8 @@
                            <content>
                               <StackPane prefHeight="150.0" prefWidth="200.0">
                                  <children>
-                                    <ListView prefHeight="200.0" prefWidth="200.0" />
+                                    <ListView fx:id="run_execute" prefHeight="200.0" prefWidth="200.0" />
+                                    <Button mnemonicParsing="false" onAction="#handleRunExecute" prefHeight="112.0" prefWidth="158.0" text="Execute" />
                                  </children>
                               </StackPane>
                            </content>
@@ -132,7 +133,7 @@
                            <content>
                               <StackPane prefHeight="150.0" prefWidth="200.0">
                                  <children>
-                                    <ListView prefHeight="200.0" prefWidth="200.0" />
+                                    <ListView fx:id="analyseList" prefHeight="200.0" prefWidth="200.0" />
                                  </children>
                               </StackPane>
                            </content>
@@ -141,7 +142,7 @@
                   </TabPane>
                   <StackPane prefHeight="398.0" prefWidth="315.0">
                      <children>
-                        <LineChart prefHeight="308.0" prefWidth="355.0">
+                        <LineChart fx:id="graph01" prefHeight="308.0" prefWidth="355.0">
                           <xAxis>
                             <CategoryAxis side="BOTTOM" />
                           </xAxis>
