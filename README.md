@@ -16,8 +16,8 @@ Open XAL is designed to be a flexible application framework for developing accel
 
 ## Build Results
 
-Branch | Build Result
------- | ------------
-Open XAL Master | [![Open XAL Master Build Test](https://travis-ci.org/openxal/openxal.svg)](https://travis-ci.org/openxal/openxal)
-ESS Master | [![ESS Build Test](https://jenkins02.esss.lu.se/buildStatus/icon?job=openxal)](https://jenkins02.esss.lu.se/job/openxal/)
-
+Branch | Travis | GitLab-CI | Jenkins
+------ | ------ | --------- | -------
+Open XAL Master | [![Open XAL Master Build Test](https://travis-ci.org/openxal/openxal.svg?branch=master)](https://travis-ci.org/openxal/openxal)| - | - |
+SNS Master | [![Open XAL sns.master Build Test](https://travis-ci.org/openxal/openxal.svg?branch=site.sns.master)](https://travis-ci.org/openxal/openxal)| - | - |
+ESS Master | [![Build Status](https://travis-ci.org/EuropeanSpallationSource/openxal.svg?branch=site.ess.master)](https://travis-ci.org/EuropeanSpallationSource/openxal) | [![build status](https://gitlab01.esss.lu.se/ess-crs/openxal/badges/site.ess.master/build.svg)](https://gitlab01.esss.lu.se/ess-crs/openxal/) | [![ESS Build Test](https://jenkins02.esss.lu.se/buildStatus/icon?job=openxal)](https://jenkins02.esss.lu.se/job/openxal/)
