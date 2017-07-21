@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import openxal.apps.scanner.*?>
+<?import java.net.URL?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+<?scenebuilder-classpath-element ../../../../target/classes?>
+
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="openxal.apps.scanner.FXMLAddPV">
+    <stylesheets>
+        <URL value="@/styles/Styles.css" />
+    </stylesheets>
+   <children>
+      <Text layoutX="176.0" layoutY="60.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Add a PV" textAlignment="CENTER" wrappingWidth="219.21875">
+         <font>
+            <Font size="29.0" />
+         </font>
+      </Text>
+      <PVTree layoutX="159.0" layoutY="125.0" prefHeight="255.0" prefWidth="261.0" />
+   </children>
+</AnchorPane>
