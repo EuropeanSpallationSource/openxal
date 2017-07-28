@@ -111,13 +111,19 @@
                               </AnchorPane>
                            </content>
                       </Tab>
-                        <Tab text="Read">
+                        <Tab text="Configure">
                            <content>
-                              <StackPane prefHeight="150.0" prefWidth="200.0">
-                                 <children>
-                                    <ListView prefHeight="200.0" prefWidth="200.0" />
-                                 </children>
-                              </StackPane>
+                              <SplitPane dividerPositions="0.5" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0">
+                                <items>
+                                    <TableView fx:id="listOfWriteables" prefHeight="200.0" prefWidth="200.0">
+                                      <columns>
+                                        <TableColumn fx:id="listOfWriteablesShortVar" prefWidth="58.0" text="Var" />
+                                        <TableColumn fx:id="listOfWriteablesPV" prefWidth="370.0" text="Full name" />
+                                      </columns>
+                                    </TableView>
+                                    <ListView fx:id="constraintsList" editable="true" prefHeight="200.0" prefWidth="200.0" />
+                                </items>
+                              </SplitPane>
                            </content>
                         </Tab>
                         <Tab text="Run">

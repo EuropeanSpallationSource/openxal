@@ -48,6 +48,9 @@ public class ChannelWrapper {
     private final StringProperty m_type;
     private final SimpleBooleanProperty isScanned;
     private final SimpleBooleanProperty isRead;
+    private final SimpleStringProperty instance;
+    // This is probably not the best way to do this.
+    public static int instanceCount = 0;
 
     ChannelWrapper(Channel c) {
         m_channel = c;
@@ -57,6 +60,8 @@ public class ChannelWrapper {
         m_unit = new SimpleStringProperty(this, "unit");
         isScanned = new SimpleBooleanProperty(false);
         isRead = new SimpleBooleanProperty(false);
+        instanceCount+=1;
+        instance = new SimpleStringProperty("x"+instanceCount);
 
 
         m_id.set(c.getId());
@@ -87,6 +92,9 @@ public class ChannelWrapper {
     }
     public String getChannelName() {
         return m_id.getValue();
+    }
+    public SimpleStringProperty instanceProperty() {
+        return instance;
     }
     public StringProperty handleProperty() {
         return m_handle;

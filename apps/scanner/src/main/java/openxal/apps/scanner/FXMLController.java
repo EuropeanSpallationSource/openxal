@@ -41,6 +41,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -58,6 +59,7 @@ import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldListCell;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
@@ -83,6 +85,18 @@ public class FXMLController implements Initializable {
 
     @FXML
     private TableColumn<ChannelWrapper, Boolean> scanTableScan;
+
+    @FXML
+    private TableView<ChannelWrapper> listOfWriteables;
+
+    @FXML
+    private TableColumn<ChannelWrapper, String> listOfWriteablesShortVar;
+
+    @FXML
+    private TableColumn<ChannelWrapper, String> listOfWriteablesPV;
+
+    @FXML
+    private ListView<String> constraintsList;
 
     @FXML
     private ListView<?> run_execute;
@@ -197,7 +211,7 @@ public class FXMLController implements Initializable {
         scanTablePV.setCellValueFactory(new PropertyValueFactory<>("channelName"));
         scanTableRead.setCellFactory(CheckBoxTableCell.forTableColumn((Integer param) -> {
             if (PVlist.get(param).getIsRead())
-                MainFunctions.actionScanAddPV(PVlist.get(param).getChannel(), true, false);
+                MainFunctions.actionScanAddPV(PVlist.get(param).getChannel(), "", true, false);
             else
                 MainFunctions.actionScanRemovePV(PVlist.get(param).getChannel(), true, false);
             return PVlist.get(param).isReadProperty();
@@ -205,20 +219,42 @@ public class FXMLController implements Initializable {
         scanTableRead.setCellValueFactory((CellDataFeatures<ChannelWrapper, Boolean> param) -> param.getValue().isReadProperty());
         scanTableScan.setCellFactory(CheckBoxTableCell.forTableColumn((Integer param) -> {
             if (PVlist.get(param).getIsScanned())
-                MainFunctions.actionScanAddPV(PVlist.get(param).getChannel(), false, true);
+                MainFunctions.actionScanAddPV(PVlist.get(param).getChannel(), PVlist.get(param).instanceProperty().get(), false, true);
             else
                 MainFunctions.actionScanRemovePV(PVlist.get(param).getChannel(), false, true);
             return PVlist.get(param).isScannedProperty();
         }));
         scanTableScan.setCellValueFactory((CellDataFeatures<ChannelWrapper, Boolean> param) -> param.getValue().isScannedProperty());
 
+        // Initialize the configurations list
+
         // Initialize the list of measurements
         measurements = FXCollections.observableArrayList();
         analyseList.setItems(measurements);
         analyseList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
+        // This is wrong, should only be list of the ones which have isScanned set to true
+        listOfWriteables.setItems(PVlist);
+        listOfWriteablesPV.setCellValueFactory(new PropertyValueFactory<>("channelName"));
+        listOfWriteablesShortVar.setCellValueFactory(new PropertyValueFactory<>("instance"));
 
+        // Initialize functionality
         MainFunctions.initialize();
+
+        // Initialize constraints
+        ObservableList<String> constraints = FXCollections.observableArrayList("", "", "", "", "","", "", "", "");
+        // Copy this to MainFunctions..
+        constraints.forEach((constraint) -> MainFunctions.constraints.add(constraint));
+
+        constraintsList.setItems(constraints);
+        constraintsList.setCellFactory(TextFieldListCell.forListView());
+        constraintsList.setOnEditCommit((ListView.EditEvent<String> t) -> {
+            constraintsList.getItems().set(t.getIndex(), t.getNewValue());
+            System.out.println("Add constraint "+t.getIndex()+", "+t.getNewValue());
+                // TODO: is there not a better replace function for Lists?
+                MainFunctions.constraints.add(t.getIndex(), t.getNewValue());
+                MainFunctions.constraints.remove(t.getIndex()+1);
+        });
 
         // Allow zooming in the chart..
         zoomManager = new ChartZoomManager( analyseGraphPane, selectRect, pvReadbacksGraph );

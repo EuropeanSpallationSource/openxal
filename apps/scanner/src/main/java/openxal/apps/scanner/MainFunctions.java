@@ -32,12 +32,18 @@
 
 package openxal.apps.scanner;
 
+import java.beans.Expression;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 import xal.ca.Channel;
 import xal.smf.Accelerator;
 import xal.smf.AcceleratorNode;
@@ -61,6 +67,13 @@ public class MainFunctions {
      */
     public static Map<String, List<Channel>> allPVw;
 
+    /**
+     * To calculate constraints, we need to know the short hand variable name
+     * for each variable..
+     */
+    public static Map<Channel, String> constraintsVars;
+    public static List<String> constraints;
+
     // The Readback channels
     public static List<Channel> pvReadbacks;
     // The Set channels
@@ -74,10 +87,12 @@ public class MainFunctions {
         dataSets = new HashMap<>();
         allPVrb = new HashMap<>();
         allPVw = new HashMap<>();
+        constraintsVars = new HashMap<>();
         pvReadbacks = new ArrayList<>();
         pvWriteables = new ArrayList<>();
         pvScanPoints = new HashMap<>();
         combos = new ArrayList<>();
+        constraints = new ArrayList<>();
 
         Accelerator acc = Model.getInstance().getAccelerator();
 
@@ -94,15 +109,18 @@ public class MainFunctions {
         pvReadbacks.add(acc.getNode("BPM4").getChannel("yAvg"));
         pvReadbacks.add(acc.getNode("BPM5").getChannel("yAvg"));
         */
+        System.out.println("DBG --");
+        System.out.println("DBG --");
     }
 
     /**
      *
      * @param channel The channel to add
+     * @param shorthand The short hand name of variable for constraint view
      * @param read Add the channel to readbacks
      * @param write Add the channel to writeables
      */
-    public static void actionScanAddPV(Channel channel, Boolean read, Boolean write) {
+    public static void actionScanAddPV(Channel channel, String shorthand, Boolean read, Boolean write) {
 
         Accelerator acc = Model.getInstance().getAccelerator();
 
@@ -113,6 +131,7 @@ public class MainFunctions {
         if (write) {
             if (! pvWriteables.contains(channel)) {
                 pvWriteables.add(channel);
+                constraintsVars.put(channel,shorthand);
                 pvScanPoints.put(channel,new double[] {1,2,3,4});
             }
         }
@@ -135,7 +154,30 @@ public class MainFunctions {
         if (write) {
             pvWriteables.remove(channel);
             pvScanPoints.remove(channel);
+            constraintsVars.remove(channel);
         }
+    }
+
+    /**
+     * Check a combo for any of the potentially defined constraints
+     * @throws ScriptException
+     */
+    public static boolean checkConstraints(double[] combo) throws ScriptException {
+        ScriptEngineManager manager = new ScriptEngineManager();
+        ScriptEngine engine = manager.getEngineByName("js");
+        for(int i=0;i<combo.length;i++) {
+            engine.eval(constraintsVars.get(pvWriteables.get(i))+"="+combo[i]);
+            System.out.println("DBG " + constraintsVars.get(pvWriteables.get(i))+"="+combo[i]);
+        }
+        for(String constraint:constraints) {
+            if (constraint.length()>0)
+                if (!(boolean)engine.eval(constraint)) {
+                    System.out.println("Refused based on "+constraint);
+                    return false;
+                }
+
+        }
+        return true;
     }
 
     // Returns the current reading of the i'th pvWriteables
@@ -182,6 +224,21 @@ public class MainFunctions {
             }
             n2*=pvScanPoints.get(pvWriteables.get(i)).length;
          }
+
+        // Now we check if any of the combos are invalid..
+        int i=0;
+        while(i<combos.size())
+        {
+            try {
+                if (!checkConstraints(combos.get(i))) {
+                    combos.remove(i);
+                    continue;
+                }
+            } catch (ScriptException ex) {
+                Logger.getLogger(MainFunctions.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            i+=1;
+        }
     }
 
     //
