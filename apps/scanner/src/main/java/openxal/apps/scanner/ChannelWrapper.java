@@ -31,6 +31,7 @@
  */
 package openxal.apps.scanner;
 
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import xal.ca.Channel;
@@ -45,6 +46,8 @@ public class ChannelWrapper {
     private final StringProperty m_handle;
     private final StringProperty m_unit;
     private final StringProperty m_type;
+    private final SimpleBooleanProperty isScanned;
+    private final SimpleBooleanProperty isRead;
 
     ChannelWrapper(Channel c) {
         m_channel = c;
@@ -52,6 +55,8 @@ public class ChannelWrapper {
         m_handle = new SimpleStringProperty(this, "handle");
         m_type = new SimpleStringProperty(this, "type");
         m_unit = new SimpleStringProperty(this, "unit");
+        isScanned = new SimpleBooleanProperty(false);
+        isRead = new SimpleBooleanProperty(false);
 
 
         m_id.set(c.getId());
@@ -77,6 +82,12 @@ public class ChannelWrapper {
     public StringProperty idProperty() {
         return m_id;
     }
+    public Channel getChannel() {
+        return m_channel;
+    }
+    public String getChannelName() {
+        return m_id.getValue();
+    }
     public StringProperty handleProperty() {
         return m_handle;
     }
@@ -85,5 +96,17 @@ public class ChannelWrapper {
     }
     public StringProperty typeProperty() {
         return m_type;
+    }
+    public boolean getIsScanned() {
+        return isScanned.get();
+    }
+    public SimpleBooleanProperty isScannedProperty() {
+        return isScanned;
+    }
+    public SimpleBooleanProperty isReadProperty() {
+        return isRead;
+    }
+    public boolean getIsRead() {
+        return isRead.get();
     }
 }

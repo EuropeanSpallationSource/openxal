@@ -36,6 +36,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
+import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -48,12 +50,19 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellDataFeatures;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
+import javafx.scene.control.cell.CheckBoxTableCell;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 
 import org.gillius.jfxutils.chart.ChartZoomManager;
 import xal.ca.Channel;
@@ -64,13 +73,16 @@ public class FXMLController implements Initializable {
     private URL location;
 
     @FXML
-    private TreeTableView<?> scanTree;
+    private TableView<ChannelWrapper> scanTable;
 
     @FXML
-    private TreeTableColumn<?, ?> scanTablePV;
+    private TableColumn<ChannelWrapper, String> scanTablePV;
 
     @FXML
-    private TreeTableColumn<?, ?> scanTableInclude;
+    private TableColumn<ChannelWrapper, Boolean> scanTableRead;
+
+    @FXML
+    private TableColumn<ChannelWrapper, Boolean> scanTableScan;
 
     @FXML
     private ListView<?> run_execute;
@@ -92,13 +104,13 @@ public class FXMLController implements Initializable {
 
     private static ObservableList<String> measurements;
 
+    public static ObservableList<ChannelWrapper> PVlist;
+
     private static ChartZoomManager zoomManager;
 
     @FXML
     private void handleScanAddPV(ActionEvent event) {
-        MainFunctions.actionScanAddPV();
         try {
-            //Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("/fxml/AddPV.fxml"));
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/AddPV.fxml"));
             Parent root = (Parent) fxmlLoader.load();
             Stage stage = new Stage();
@@ -113,7 +125,6 @@ public class FXMLController implements Initializable {
 
     @FXML
     private void handleScanRemovePV(ActionEvent event) {
-        MainFunctions.actionScanRemovePV();
     }
 
     private void plotMeasurement(String measName) {
@@ -121,7 +132,7 @@ public class FXMLController implements Initializable {
         List<Channel> pvR = MainFunctions.allPVrb.get(measName);
         List<Channel> pvW = MainFunctions.allPVw.get(measName);
         if (measurement != null) {
-            for (int i=0;i<pvR.size();i++) {
+            for (int i=0;i<pvW.size();i++) {
                 XYChart.Series<Number, Number> series = new XYChart.Series();
                 for (int j=0;j<measurement.length;j++) {
                     series.getData().add( new XYChart.Data(j, measurement[j][i]) );
@@ -169,20 +180,44 @@ public class FXMLController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        assert scanTree != null : "fx:id=\"scanTree\" was not injected: check your FXML file 'ScannerScene.fxml'.";
+        assert scanTable != null : "fx:id=\"scanTable\" was not injected: check your FXML file 'ScannerScene.fxml'.";
         assert scanTablePV != null : "fx:id=\"scanTablePV\" was not injected: check your FXML file 'ScannerScene.fxml'.";
-        assert scanTableInclude != null : "fx:id=\"scanTableInclude\" was not injected: check your FXML file 'ScannerScene.fxml'.";
+        assert scanTableRead != null : "fx:id=\"scanTableRead\" was not injected: check your FXML file 'ScannerScene.fxml'.";
+        assert scanTableScan != null : "fx:id=\"scanTableScan\" was not injected: check your FXML file 'ScannerScene.fxml'.";
         assert run_execute != null : "fx:id=\"run_execute\" was not injected: check your FXML file 'ScannerScene.fxml'.";
         assert analyseList != null : "fx:id=\"analyseList\" was not injected: check your FXML file 'ScannerScene.fxml'.";
         assert pvReadbacksGraph != null : "fx:id=\"pvReadbacksGraph\" was not injected: check your FXML file 'ScannerScene.fxml'.";
         assert selectRect != null : "fx:id=\"selectRect\" was not injected: check your FXML file 'ScannerScene.fxml'.";
         assert pvWriteablesGraph != null : "fx:id=\"pvWriteablesGraph\" was not injected: check your FXML file 'ScannerScene.fxml'.";
 
+        // Initialize the list of scan variables..
+        // TODO: A variable cannot be both read and written to..
+        PVlist = FXCollections.observableArrayList();
+        scanTable.setItems(PVlist);
+        scanTablePV.setCellValueFactory(new PropertyValueFactory<>("channelName"));
+        scanTableRead.setCellFactory(CheckBoxTableCell.forTableColumn((Integer param) -> {
+            if (PVlist.get(param).getIsRead())
+                MainFunctions.actionScanAddPV(PVlist.get(param).getChannel(), true, false);
+            else
+                MainFunctions.actionScanRemovePV(PVlist.get(param).getChannel(), true, false);
+            return PVlist.get(param).isReadProperty();
+        }));
+        scanTableRead.setCellValueFactory((CellDataFeatures<ChannelWrapper, Boolean> param) -> param.getValue().isReadProperty());
+        scanTableScan.setCellFactory(CheckBoxTableCell.forTableColumn((Integer param) -> {
+            if (PVlist.get(param).getIsScanned())
+                MainFunctions.actionScanAddPV(PVlist.get(param).getChannel(), false, true);
+            else
+                MainFunctions.actionScanRemovePV(PVlist.get(param).getChannel(), false, true);
+            return PVlist.get(param).isScannedProperty();
+        }));
+        scanTableScan.setCellValueFactory((CellDataFeatures<ChannelWrapper, Boolean> param) -> param.getValue().isScannedProperty());
 
+        // Initialize the list of measurements
         measurements = FXCollections.observableArrayList();
         analyseList.setItems(measurements);
-
         analyseList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+
+
         MainFunctions.initialize();
 
         // Allow zooming in the chart..

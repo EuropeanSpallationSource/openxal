@@ -11,8 +11,8 @@
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
-<?import javafx.scene.control.TreeTableColumn?>
-<?import javafx.scene.control.TreeTableView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.effect.Light.Distant?>
 <?import javafx.scene.effect.Lighting?>
 <?import javafx.scene.input.KeyCodeCombination?>
@@ -100,12 +100,13 @@
                                           </Lighting>
                                        </effect>
                                     </Button>
-                                    <TreeTableView fx:id="scanTree" layoutY="56.0" prefHeight="406.0" prefWidth="428.0">
+                                    <TableView fx:id="scanTable" editable="true" layoutY="57.0" prefHeight="580.0" prefWidth="428.0">
                                       <columns>
-                                        <TreeTableColumn fx:id="scanTablePV" prefWidth="337.0" text="PV" />
-                                        <TreeTableColumn fx:id="scanTableInclude" minWidth="2.0" prefWidth="90.0" text="Include" />
+                                        <TableColumn fx:id="scanTablePV" editable="false" prefWidth="334.0" text="PV" />
+                                        <TableColumn fx:id="scanTableRead" prefWidth="50.0" sortable="false" text="Read" />
+                                        <TableColumn fx:id="scanTableScan" prefWidth="43.0" sortable="false" text="Scan" />
                                       </columns>
-                                    </TreeTableView>
+                                    </TableView>
                                  </children>
                               </AnchorPane>
                            </content>

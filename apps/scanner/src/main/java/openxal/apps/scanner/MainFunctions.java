@@ -66,7 +66,7 @@ public class MainFunctions {
     // The Set channels
     public static List<Channel> pvWriteables;
     // The scan points for each channel in pvWriteAbles
-    public static List<double[]> pvScanPoints;
+    public static Map<Channel, double[]> pvScanPoints;
     // The combination of scan points (each double[] is equal to number of writeables)
     public static List<double[]> combos;
 
@@ -76,13 +76,13 @@ public class MainFunctions {
         allPVw = new HashMap<>();
         pvReadbacks = new ArrayList<>();
         pvWriteables = new ArrayList<>();
-        pvScanPoints = new ArrayList<>();
+        pvScanPoints = new HashMap<>();
         combos = new ArrayList<>();
 
         Accelerator acc = Model.getInstance().getAccelerator();
 
 
-        pvWriteables.add(acc.getNode("ST1-VC").getChannel("fieldRB"));
+        /*pvWriteables.add(acc.getNode("ST1-VC").getChannel("fieldRB"));
         pvScanPoints.add(new double[] {1,2,3,4});
         pvWriteables.add(acc.getNode("ST2-VC").getChannel("fieldRB"));
         pvScanPoints.add(new double[] {5,6});
@@ -93,17 +93,49 @@ public class MainFunctions {
         pvReadbacks.add(acc.getNode("BPM3").getChannel("yAvg"));
         pvReadbacks.add(acc.getNode("BPM4").getChannel("yAvg"));
         pvReadbacks.add(acc.getNode("BPM5").getChannel("yAvg"));
+        */
     }
 
     /**
      *
+     * @param channel The channel to add
+     * @param read Add the channel to readbacks
+     * @param write Add the channel to writeables
      */
-    public static void actionScanAddPV() {
-        System.out.println("DBG You add a PV");
+    public static void actionScanAddPV(Channel channel, Boolean read, Boolean write) {
+
+        Accelerator acc = Model.getInstance().getAccelerator();
+
+        System.out.println("DBG You add: "+channel.getId()+", "+read+":"+write);
+        if (read)
+            if (! pvReadbacks.contains(channel))
+                pvReadbacks.add(channel);
+        if (write) {
+            if (! pvWriteables.contains(channel)) {
+                pvWriteables.add(channel);
+                pvScanPoints.put(channel,new double[] {1,2,3,4});
+            }
+        }
+
+
     }
 
-    public static void actionScanRemovePV() {
-        System.out.println("DBG You remove a PV");
+    /**
+     *
+     * @param channel The channel to remove
+     * @param read Remove the channel from readbacks
+     * @param write Remove the channel from writeables
+     */
+    public static void actionScanRemovePV(Channel channel, Boolean read, Boolean write) {
+        Accelerator acc = Model.getInstance().getAccelerator();
+        System.out.println("DBG You remove: "+channel.getId()+", "+read+":"+write);
+        if (read) {
+            pvReadbacks.remove(channel);
+        }
+        if (write) {
+            pvWriteables.remove(channel);
+            pvScanPoints.remove(channel);
+        }
     }
 
     // Returns the current reading of the i'th pvWriteables
@@ -121,8 +153,8 @@ public class MainFunctions {
 
         // Create the correct amount of combos..
         int ncombos=1;
-        for(double[] sp: pvScanPoints)
-            ncombos*=sp.length;
+        for(Channel ch: pvWriteables)
+            ncombos*=pvScanPoints.get(ch).length;
         for (int i = 0;i<ncombos+1;i++)
             combos.add(new double[pvScanPoints.size()]);
 
@@ -139,16 +171,16 @@ public class MainFunctions {
         for (int i=0; i<pvScanPoints.size();i++) {
             // The combo index we are currently inserting
             int m = 1;
-            n1/=pvScanPoints.get(i).length;
+            n1/=pvScanPoints.get(pvWriteables.get(i)).length;
             for (int l=0;l<n2;l++) {
-                for ( double sp : pvScanPoints.get(i)) {
+                for ( double sp : pvScanPoints.get(pvWriteables.get(i))) {
                     for (int k=0;k<n1;k++) {
                         combos.get(m)[i]=sp;
                         m+=1;
                     }
                 }
             }
-            n2*=pvScanPoints.get(i).length;
+            n2*=pvScanPoints.get(pvWriteables.get(i)).length;
          }
     }
 
@@ -170,6 +202,8 @@ public class MainFunctions {
     }
 
     public static double[][] actionExecute() {
+        pvReadbacks.forEach(pv -> System.out.println("Read PV: "+pv.channelName()));
+        pvWriteables.forEach(pv -> System.out.println("Write PV: "+pv.channelName()));
         calculateCombos();
         double[][] measurement = new double[combos.size()][pvWriteables.size()+pvReadbacks.size()];
 

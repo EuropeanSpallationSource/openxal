@@ -134,7 +134,11 @@ public class PVTree extends SplitPane {
 
     @FXML
     void addSelectedPV(ActionEvent event) {
-       epicsTable.getSelectionModel().getSelectedItems().forEach(c -> System.out.println("Adding PV "+c.idProperty().getValue()));
+        epicsTable.getSelectionModel().getSelectedItems().forEach((ChannelWrapper c) -> {
+            System.out.println("Adding PV "+c.idProperty().getValue());
+            FXMLController.PVlist.add(c);
+            });
+
     }
 
     @FXML
