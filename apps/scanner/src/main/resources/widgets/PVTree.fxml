@@ -1,24 +1,70 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.RadioMenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.control.TreeView?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.StackPane?>
 
-<fx:root type="javafx.scene.control.SplitPane" dividerPositions="0.5" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL" prefHeight="400.0" prefWidth="225.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root dividerPositions="0.11" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL" prefHeight="600.0" prefWidth="500.0" type="javafx.scene.control.SplitPane" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
   <items>
-      <HBox prefHeight="195.0" prefWidth="222.0">
+      <HBox prefHeight="85.0" prefWidth="223.0">
          <children>
-            <Label text="Model " />
-            <TextField />
+            <Label text="Element ">
+               <HBox.margin>
+                  <Insets left="3.0" top="5.0" />
+               </HBox.margin></Label>
+            <TextField fx:id="elementSearch">
+               <HBox.margin>
+                  <Insets top="2.0" />
+               </HBox.margin></TextField>
+            <MenuButton fx:id="elementSearchMenuButton" mnemonicParsing="false" text="Filter">
+              <items>
+                  <RadioMenuItem fx:id="elementSortAlphabetically" mnemonicParsing="false" onAction="#elementSortChanged" text="Sort Alphabetically">
+                     <toggleGroup>
+                        <ToggleGroup fx:id="elementSortGroup" />
+                     </toggleGroup></RadioMenuItem>
+                  <RadioMenuItem mnemonicParsing="false" onAction="#elementSortChanged" selected="true" text="Sort by Position" toggleGroup="$elementSortGroup" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
+                <MenuItem mnemonicParsing="false" text="Select All Types" />
+                <MenuItem mnemonicParsing="false" text="Unselect All Types" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
+              </items>
+               <HBox.margin>
+                  <Insets top="2.0" />
+               </HBox.margin>
+            </MenuButton>
          </children>
       </HBox>
-      <StackPane prefHeight="187.0" prefWidth="496.0">
-         <children>
-            <TreeView prefHeight="200.0" prefWidth="200.0" />
-         </children>
-      </StackPane>
+      <SplitPane dividerPositions="0.572289156626506" prefHeight="160.0" prefWidth="200.0">
+        <items>
+            <TreeView fx:id="elementTree" prefHeight="528.0" prefWidth="278.0" />
+            <SplitPane dividerPositions="0.8371428571428572" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0">
+              <items>
+                  <TableView fx:id="epicsTable" prefHeight="200.0" prefWidth="200.0">
+                    <columns>
+                      <TableColumn fx:id="epicsNameColumn" prefWidth="149.0" text="EPICS" />
+                      <TableColumn fx:id="epicsTypeColumn" prefWidth="60.0" text="Type" />
+                    </columns>
+                  </TableView>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                     <children>
+                        <Button fx:id="pvAddButton" layoutX="78.0" layoutY="24.0" mnemonicParsing="false" onAction="#addSelectedPV" prefHeight="35.0" prefWidth="54.0" text="Add" />
+                     </children>
+                  </AnchorPane>
+              </items>
+            </SplitPane>
+        </items>
+      </SplitPane>
   </items>
 </fx:root>

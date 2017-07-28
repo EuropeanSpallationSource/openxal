@@ -140,9 +140,22 @@
                         </Tab>
                     </tabs>
                   </TabPane>
-                  <StackPane fx:id="analyseGraphPane" prefHeight="398.0" prefWidth="315.0">
-                     <children>
-                        <LineChart fx:id="graph01" animated="false" legendVisible="false" prefHeight="308.0" prefWidth="355.0">
+                  <SplitPane dividerPositions="0.793010752688172" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0">
+                    <items>
+                        <StackPane fx:id="analyseGraphPane" prefHeight="536.0" prefWidth="658.0">
+                           <children>
+                              <LineChart fx:id="pvReadbacksGraph" animated="false" legendVisible="false" prefHeight="308.0" prefWidth="355.0">
+                                <xAxis>
+                                  <NumberAxis side="BOTTOM" />
+                                </xAxis>
+                                <yAxis>
+                                  <NumberAxis side="LEFT" />
+                                </yAxis>
+                              </LineChart>
+                              <Rectangle fx:id="selectRect" arcHeight="5.0" arcWidth="5.0" fill="#ebebeb" height="586.0" mouseTransparent="true" opacity="0.2" stroke="BLACK" strokeType="INSIDE" visible="false" width="658.0" StackPane.alignment="TOP_LEFT" />
+                           </children>
+                        </StackPane>
+                        <LineChart fx:id="pvWriteablesGraph" animated="false" prefHeight="208.0" prefWidth="658.0">
                           <xAxis>
                             <NumberAxis side="BOTTOM" />
                           </xAxis>
@@ -150,9 +163,8 @@
                             <NumberAxis side="LEFT" />
                           </yAxis>
                         </LineChart>
-                        <Rectangle fx:id="selectRect" arcHeight="5.0" arcWidth="5.0" fill="#ebebeb" height="586.0" mouseTransparent="true" opacity="0.2" stroke="BLACK" strokeType="INSIDE" visible="false" width="658.0" StackPane.alignment="TOP_LEFT" />
-                     </children>
-                  </StackPane>
+                    </items>
+                  </SplitPane>
               </items>
             </SplitPane>
         </items>

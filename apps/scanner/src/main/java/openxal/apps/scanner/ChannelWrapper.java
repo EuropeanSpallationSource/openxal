@@ -1,22 +1,22 @@
 /*
  * Copyright (c) 2017, Open XAL Collaboration
- * 
+ *
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
- * 
+ *
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * 3. Neither the name of the copyright holder nor the names of its contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -29,41 +29,61 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
 package openxal.apps.scanner;
 
-import javafx.application.Application;
-import static javafx.application.Application.launch;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import xal.ca.Channel;
+
+/**
+ *
+ * @author yngvelevinsen
+ */
+public class ChannelWrapper {
+    private final Channel m_channel;
+    private final StringProperty m_id;
+    private final StringProperty m_handle;
+    private final StringProperty m_unit;
+    private final StringProperty m_type;
+
+    ChannelWrapper(Channel c) {
+        m_channel = c;
+        m_id = new SimpleStringProperty(this, "id");
+        m_handle = new SimpleStringProperty(this, "handle");
+        m_type = new SimpleStringProperty(this, "type");
+        m_unit = new SimpleStringProperty(this, "unit");
 
 
-public class MainApp extends Application {
+        m_id.set(c.getId());
+        setType();
 
-    @Override
-    public void start(Stage stage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("/fxml/ScannerScene.fxml"));
-        
-        Scene scene = new Scene(root);
-        scene.getStylesheets().add("/styles/Styles.css");
-        
-        stage.setTitle("Scanner Application");
-        stage.setScene(scene);
-        stage.show();
+       try {
+            m_unit.set(c.getUnits());
+        } catch (Exception ex) { }
     }
 
-    /**
-     * The main() method is ignored in correctly deployed JavaFX application.
-     * main() serves only as fallback in case the application can not be
-     * launched through deployment artifacts, e.g., in IDEs with limited FX
-     * support. NetBeans ignores main().
-     *
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        launch(args);
-    }
+    private void setType() {
+        try {
+            if (m_channel.readAccess() && m_channel.writeAccess()) {
+                m_type.set("rw");
+            } else if (m_channel.readAccess() ) {
+                m_type.set("r");
+            } else if (m_channel.writeAccess() ) {
+                m_type.set("w");
+            }
+                } catch (Exception ex) {  m_type.set("w"); }
 
+    }
+    public StringProperty idProperty() {
+        return m_id;
+    }
+    public StringProperty handleProperty() {
+        return m_handle;
+    }
+    public StringProperty unitProperty() {
+        return m_unit;
+    }
+    public StringProperty typeProperty() {
+        return m_type;
+    }
 }
