@@ -61,7 +61,6 @@ import org.apache.commons.lang3.StringUtils;
 import xal.smf.Accelerator;
 import xal.smf.AcceleratorNode;
 import xal.smf.AcceleratorSeq;
-import xal.smf.ChannelSuite;
 
 public class PVTree extends SplitPane {
 
@@ -179,18 +178,15 @@ public class PVTree extends SplitPane {
 
         if (oldValue == newValue)
             return;
-
         if ( newValue != null ) {
             AcceleratorNode node = newValue.getValue();
 
-            ChannelSuite channelSuite = node.channelSuite();
-
             epicsChannels.clear();
 
-            channelSuite.getHandles()
+            node.getHandles()
                 .stream()
                 .sorted(( h1, h2 ) -> String.CASE_INSENSITIVE_ORDER.compare(h1, h2))
-                .forEach(h -> epicsChannels.add(new ChannelWrapper(channelSuite.getChannel(h))));
+                .forEach(h -> epicsChannels.add(new ChannelWrapper(node.getChannel(h))));
         }
     }
 

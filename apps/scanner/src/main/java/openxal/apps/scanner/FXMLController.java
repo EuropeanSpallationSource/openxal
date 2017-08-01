@@ -160,6 +160,7 @@ public class FXMLController implements Initializable {
 
     @FXML
     private void handleRunExecute(ActionEvent event) {
+        MainFunctions.actionExecute();
         pvReadbacksGraph.getData().clear();
         pvWriteablesGraph.getData().clear();
         measurements.add("Measurement " + (measurements.size()+1));
