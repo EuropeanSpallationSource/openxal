@@ -36,12 +36,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
-import javafx.beans.property.ReadOnlyStringWrapper;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -54,9 +51,6 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeTableColumn;
-import javafx.scene.control.TreeTableView;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldListCell;
@@ -64,7 +58,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 
 import org.gillius.jfxutils.chart.ChartZoomManager;
 import xal.ca.Channel;
@@ -167,7 +160,6 @@ public class FXMLController implements Initializable {
 
     @FXML
     private void handleRunExecute(ActionEvent event) {
-        double[][] measurement = MainFunctions.actionExecute();
         pvReadbacksGraph.getData().clear();
         pvWriteablesGraph.getData().clear();
         measurements.add("Measurement " + (measurements.size()+1));
@@ -185,7 +177,7 @@ public class FXMLController implements Initializable {
         pvReadbacksGraph.getData().clear();
         pvWriteablesGraph.getData().clear();
         zoomManager.stop();
-        // There is a bug in getSelectedItems() so need to call this twice..
+        // There is a problem in getSelectedItems() so need to call this twice..
         analyseList.getSelectionModel().getSelectedItems().forEach((meas) -> dummyBugFunction());
         analyseList.getSelectionModel().getSelectedItems().forEach((meas) -> plotMeasurement(meas));
         zoomManager.start();
