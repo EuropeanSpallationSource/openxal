@@ -6,18 +6,19 @@
 package se.lu.esss.ics.jels.model.elem.jels;
 
 import java.io.PrintWriter;
+import se.lu.esss.ics.jels.smf.impl.ESSRfGap;
 
+import se.lu.esss.ics.jels.tools.math.InverseRealPolynomial;
 import se.lu.esss.ics.jels.tools.math.MeanFieldPolynomial;
+
 import xal.model.IProbe;
 import xal.model.ModelException;
 import xal.model.elem.ThinElement;
 import xal.model.elem.sync.IRfCavityCell;
 import xal.model.elem.sync.IRfGap;
 import xal.sim.scenario.LatticeElement;
-import xal.smf.impl.RfGap;
 import xal.tools.beam.PhaseMap;
 import xal.tools.beam.PhaseMatrix;
-import xal.tools.math.fnc.poly.RealUnivariatePolynomial;
 
 /**
  * <p>
@@ -91,7 +92,7 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
     /**
      * fit of the TTF vs. beta
      */
-    protected RealUnivariatePolynomial TTFFit;
+    protected InverseRealPolynomial TTFFit;
 
     /**
      * the energy gained in this gap (eV)
@@ -127,9 +128,8 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
     private int indCell = 0;
 
     /*
-     * Initialization 
+     * Initialization
      */
-
     /**
      * Creates a new instance of IdealRfGap
      *
@@ -146,26 +146,19 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
         this.setFrequency(dblFreq);
     }
 
-    ;
-    
-    /** 
-     *  JavaBean constructor - creates a new unitialized instance of IdealRfGap
+    /**
+     * JavaBean constructor - creates a new uninitialized instance of IdealRfGap
      *
-     *  <b>BE CAREFUL</b>
+     * <b>BE CAREFUL</b>
      */
     public IdealRfGap() {
         super(s_strType);
     }
 
-    ;
-    
-    
-
-
-    
-    /** 
-     * return wheteher this gap is the initial gap of a cavity 
+    /**
+     * return whether this gap is the initial gap of a cavity
      */
+    @Override
     public boolean isFirstGap() {
         return initialGap;
     }
@@ -179,77 +172,76 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
      *
      * @return the ETL product of the gap (in <bold>volts</bold>).
      */
+    @Override
     public double getETL() {
         return m_dblETL;
     }
 
-    ;
-     
-    /**  
-     *  Return the RF phase delay of the gap with respect to the synchonous particle.
+    /**
+     * Return the RF phase delay of the gap with respect to the synchronous
+     * particle.
      *
-     *  @return     phase delay w.r.t. synchonous particle (in <bold>radians</bold>).
+     * @return phase delay w.r.t. synchronous particle (in <bold>radians</bold>).
      */
-     public double getPhase() {
+    @Override
+    public double getPhase() {
         return m_dblPhase;
     }
 
-    ;
-     
-    /**  
+    /**
      * Get the operating frequency of the RF gap.
      *
-     *  @return  frequency of RF gap (in <bold>Hertz</bold>)
+     * @return frequency of RF gap (in <bold>Hertz</bold>)
      */
+    @Override
     public double getFrequency() {
         return m_dblFreq;
     }
 
-    ;
-     
-     
-     /**  
-     * Set the ETL product of the RF gap where
-     *      E is the longitudinal electric field of the gap,
-     *      T is the transit time factor of the gap,
-     *      L is the length of the gap.
+    /**
+     * Set the ETL product of the RF gap where E is the longitudinal electric
+     * field of the gap, T is the transit time factor of the gap, L is the
+     * length of the gap.
      * <p>
-     * The maximum energy gain from the gap is given by qETL where q is the charge
-     * (in coulombs) of the species particle.
+     * The maximum energy gain from the gap is given by qETL where q is the
+     * charge (in coulombs) of the species particle.
      *
-     *  @param  dblETL  ETL product of gap (in <bold>volts</bold>).
+     * @param dblETL ETL product of gap (in <bold>volts</bold>).
      */
+    @Override
     public void setETL(double dblETL) {
         m_dblETL = dblETL;
     }
 
-    ;
-     
-    /**  Set the phase delay of the RF in gap with respect to the synchronous particle.
-     *  The actual energy gain from the gap is given by qETLcos(dblPhi) where dbkPhi is
-     *  the phase delay.
+    /**
+     * Set the phase delay of the RF in gap with respect to the synchronous
+     * particle. The actual energy gain from the gap is given by qETLcos(dblPhi)
+     * where dbkPhi is the phase delay.
      *
-     *  @param  dblPhase    phase delay of the RF w.r.t. synchronous particle (in <bold>radians</bold>).
+     * @param dblPhase phase delay of the RF w.r.t. synchronous particle (in
+     * <bold>radians</bold>).
      */
+    @Override
     public void setPhase(double dblPhase) {
         m_dblPhase = dblPhase;
     }
 
-    ;
-     
-    /**  Set the operating frequency of the RF gap.
+    /**
+     * Set the operating frequency of the RF gap.
      *
-     *  @param dblFreq  frequency of RF gap (in <bold>Hertz</bold>)
+     * @param dblFreq frequency of RF gap (in <bold>Hertz</bold>)
      */
+    @Override
     public void setFrequency(double dblFreq) {
         m_dblFreq = dblFreq;
     }
 
-    ;
-     
-    /** Set the on accelerating field
-    * @param E - the on axis field (V/m)
-    */
+    /**
+     * Set the on accelerating field
+     *
+     * @param E - the on axis field (V/m)
+     */
+    @Override
     public void setE0(double E) {
         E0 = E;
     }
@@ -257,6 +249,7 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
     /**
      * Get the on accelerating field (V/m)
      */
+    @Override
     public double getE0() {
         return E0;
     }
@@ -301,26 +294,27 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
         return beta;
     }
 
-    ;
-    
     /**
-     * <p>  
-     * Compute the transfer map for an ideal RF gap.
-     * </p
      * <p>
-     * New transfer matrix with same definitions of <i>k<sub>r</sub></i> and <i>k<sub>z</sub></i>
-     * from Trace3D manual, but correctly considering XAL and trace3d longitudinal phase. 
-     * transformation
+     * Compute the transfer map for an ideal RF gap. </p <p>
+     * New transfer matrix with same definitions of <i>k<sub>r</sub></i> and
+     * <i>k<sub>z</sub></i>
+     * from Trace3D manual, but correctly considering XAL and trace3d
+     * longitudinal phase. transformation
      * </p>
      * <p>
      * Modified on 21 Jul 06 Sako (consistency checked with Trace3D).
      * </p>
-     * 
-     *  @param  probe       compute transfer map using parameters from this probe
+     * <p>
+     * Modified on 15 Aug 17 Juan F. Esteban Müller to correct synchronous phase
+     * calculation
+     * </p>
      *
-     *  @return             transfer map for the probe
-     *<map smf="fm" model="se.lu.esss.ics.jels.model.elem.jels.FieldMapNCells"/>
-     *  @exception  ModelException  this should not occur
+     * @param probe compute transfer map using parameters from this probe
+     *
+     * @return transfer map for the probe
+     * <map smf="fm" model="se.lu.esss.ics.jels.model.elem.jels.FieldMapNCells"/>
+     * @exception ModelException this should not occur
      */
     @Override
     protected PhaseMap transferMap(IProbe probe) throws ModelException {
@@ -368,7 +362,7 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
                 beta_end = computeBetaFromGamma(gamma_end);
                 gamma_avg = (gamma_end + gamma_start) / 2;
                 double beta_avg = computeBetaFromGamma(gamma_avg);
-                deltaPhi = E0TL_scaled / mass * Math.sin(Phis) / (Math.pow(gamma_avg, 2) * beta_avg) * (kToverT);
+                deltaPhi = E0TL_scaled / mass * Math.sin(Phis) / (Math.pow(gamma_avg, 3) * Math.pow(beta_avg, 2)) * (kToverT); // Evaluate the change of Phi
 
                 kxy = -Math.PI * E0TL_scaled / mass * Math.sin(Phis) / (Math.pow(gamma_avg * beta_avg, 2) * lambda);
                 kx = 1 - E0TL_scaled / (2 * mass) * Math.cos(Phis) / (Math.pow(beta_avg, 2) * Math.pow(gamma_avg, 3)) * (Math.pow(gamma_avg, 2) + kToverT);
@@ -383,7 +377,6 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
                 beta_end = computeBetaFromGamma(gamma_end);
 
                 gamma_avg = (gamma_end + gamma_start) / 2;
-                //double beta_avg=(beta_end+beta_start)/2;
                 double beta_avg = computeBetaFromGamma(gamma_avg);
 
                 kxy = -Math.PI * E0TL * Math.sin(Phis) / (Math.pow(gamma_avg * beta_avg, 2) * lambda * mass);
@@ -402,9 +395,6 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
             matPhi.setElem(3, 2, kxy / (beta_end * gamma_end));
             matPhi.setElem(3, 3, ky * C);
 
-            /*matPhi.setElem(4,4,1);
-    		matPhi.setElem(5,4,kz/(beta_end*Math.pow(gamma_end,3)));
-    		matPhi.setElem(5,5,(beta_start*Math.pow(gamma_start,3))/(beta_end*Math.pow(gamma_end,3)));*/
             matPhi.setElem(4, 4, gamma_end / gamma_start);
             matPhi.setElem(5, 4, kz / (beta_end * Math.pow(gamma_end, 2) * gamma_start));
             matPhi.setElem(5, 5, (beta_start * Math.pow(gamma_start, 2)) / (beta_end * Math.pow(gamma_end, 2)));
@@ -436,23 +426,23 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
     /**
      * Conversion method to be provided by the user
      *
-     * @param latticeElement the SMF node to convert
+     * @param element the SMF node to convert
      */
     @Override
     public void initializeFrom(LatticeElement element) {
         super.initializeFrom(element);
 
-        RfGap rfgap = (RfGap) element.getHardwareNode();
+        ESSRfGap rfgap = (ESSRfGap) element.getHardwareNode();
 
         // Initialize from source values
         initialGap = rfgap.isFirstGap();
         cellLength = rfgap.getGapLength();
         gapOffset = rfgap.getGapOffset();
-        if (rfgap.getSFit().getCoef(0) != 0) { //TODO
+
+        if (rfgap.getSFit().getCoef(0) != 0) {
             TTFFit = new MeanFieldPolynomial(rfgap.getTTFFit(), rfgap.getTTFPrimeFit(), rfgap.getSFit(), rfgap.getSPrimeFit());
         } else {
             TTFFit = rfgap.getTTFFit();
-
         }
         structureMode = rfgap.getStructureMode();
     }
@@ -473,20 +463,18 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
         this.structureMode = structureMode;
     }
 
-    public void setTTFFit(RealUnivariatePolynomial TTFFit) {
+    public void setTTFFit(InverseRealPolynomial TTFFit) {
         this.TTFFit = TTFFit;
     }
 
     @Override
     protected double longitudinalPhaseAdvance(IProbe probe) {
-        double dphi2 = 0.;
-
-        if (isFirstGap()) { // WORKAROUND to set the initial phase 
+        if (isFirstGap()) { // WORKAROUND to set the initial phase
             double phi0 = this.getPhase();
             double phi = probe.getLongitinalPhase();
-            dphi2 += -phi + phi0;
+            return deltaPhi - phi + phi0;
         }
-        return deltaPhi + dphi2;
+        return deltaPhi;
     }
 
     /*
