@@ -1,38 +1,33 @@
 package se.lu.esss.ics.jels.tools.math;
 
-import xal.tools.math.fnc.poly.RealUnivariatePolynomial;
+public class MeanFieldPolynomial extends InverseRealPolynomial {
 
-public class MeanFieldPolynomial extends RealUnivariatePolynomial {	
-	private RealUnivariatePolynomial TTF, TTFPrime, STF, STFPrime;
-	
-	public MeanFieldPolynomial(RealUnivariatePolynomial TTF, RealUnivariatePolynomial TTFPrime, RealUnivariatePolynomial STF, RealUnivariatePolynomial STFPrime)
-	{
-		this.TTF = TTF;
-		this.TTFPrime = TTFPrime;
-		this.STF = STF;
-		this.STFPrime = STFPrime;
-	}
+    private InverseRealPolynomial TTF, TTFPrime, STF, STFPrime;
 
-	@Override
+    public MeanFieldPolynomial(InverseRealPolynomial TTF, InverseRealPolynomial TTFPrime, InverseRealPolynomial STF, InverseRealPolynomial STFPrime) {
+        this.TTF = TTF;
+        this.TTFPrime = TTFPrime;
+        this.STF = STF;
+        this.STFPrime = STFPrime;
+    }
+
+    @Override
     public double evaluateAt(double dblVal) {
-    	/*double T = TTF.evaluateAt(dblVal);
-    	double S = STF.evaluateAt(dblVal);
-    	return Math.sqrt(T*T+S*S);*/
-    	return TTF.evaluateAt(dblVal);
+        return TTF.evaluateAt(dblVal);
     }
 
     @Override
     public double derivativeAt(double dblVal) {
-    	/*double T = TTF.evaluateAt(dblVal);
-    	double S = STF.evaluateAt(dblVal);
-    	double Tp = 0.01*TTFPrime.evaluateAt(dblVal);
-    	double Sp = 0.01*STFPrime.evaluateAt(dblVal);
-    	return (T*Sp-Tp*S)/Math.sqrt(T*T+S*S);*/
-    	//return TTF.evaluateDerivativeAt(dblVal);
-    	return 0.01*TTFPrime.evaluateAt(dblVal);
-	}
-    
-    public double getCoef(int iOrder)   {
-    	return 1.0;
+        // If TTFPrime coefficients are not provided, it uses TTF
+        if (TTFPrime.getCoef(0) != 0) {
+            return 0.01 * TTFPrime.evaluateAt(dblVal);
+        } else {
+            return TTF.derivativeAt(dblVal);
+        }
+    }
+
+    @Override
+    public double getCoef(int iOrder) {
+        return TTF.getCoef(iOrder); // TODO: return coefficients of all polynomials
     }
 }
