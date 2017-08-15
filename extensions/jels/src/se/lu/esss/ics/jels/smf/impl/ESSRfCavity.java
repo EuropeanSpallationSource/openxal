@@ -29,6 +29,11 @@ public class ESSRfCavity extends RfCavity {
 		super(strId, intReserve);
 		setRfField(new ESSRfCavityBucket());
 	}
+        
+        public ESSRfCavity(String strId, ChannelFactory channelFactory, int intReserve) {
+            super(strId, channelFactory, intReserve);
+            setRfField(new ESSRfCavityBucket());
+        }
 		
 	@Override
 	public ESSRfCavityBucket getRfField() {
