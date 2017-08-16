@@ -44,9 +44,7 @@ public class ESSRfGap extends RfGap {
 
         // A set of coefficients is defined for this fit.
         //  Create the fitting function and return it.
-        InverseRealPolynomial polyFit = new InverseRealPolynomial(arrCoeffs);
-
-        return polyFit;
+        return new InverseRealPolynomial(arrCoeffs);
     }
 
     /**
@@ -87,9 +85,7 @@ public class ESSRfGap extends RfGap {
 
         // A set of coefficients is defined for this fit.
         //  Create the fitting function and return it.
-        InverseRealPolynomial polyFit = new InverseRealPolynomial(arrCoeffs);
-
-        return polyFit;
+        return new InverseRealPolynomial(arrCoeffs);
     }
 
     /**

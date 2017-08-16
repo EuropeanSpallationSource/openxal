@@ -370,6 +370,7 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
                 kz = 2 * Math.PI * (E0TL_scaled / mass) * Math.sin(Phis) / (Math.pow(beta_avg, 2) * lambda);
 
                 C = Math.sqrt((beta_start * gamma_start) / (beta_end * gamma_end * kx * ky));
+                
             } else {
                 double E0TL = getETL();
                 energyGain = E0TL * Math.cos(Phis);
@@ -378,6 +379,8 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
 
                 gamma_avg = (gamma_end + gamma_start) / 2;
                 double beta_avg = computeBetaFromGamma(gamma_avg);
+                
+                // deltaPhi calculation missing???
 
                 kxy = -Math.PI * E0TL * Math.sin(Phis) / (Math.pow(gamma_avg * beta_avg, 2) * lambda * mass);
                 kx = 1 - E0TL / (2 * mass) * Math.cos(Phis) / (Math.pow(beta_avg, 2) * gamma_avg);

@@ -32,8 +32,8 @@ public class SteererTest extends TestCommon {
 
 		//printResults();
 		if (initialEnergy == 3e6) {
-			checkELSResults(7.000000E-02, new double[] {1.000780E-03, 9.345521E-04, 1.833376E-03},
-					new double[] {3.820541E-01, 3.342766E-01, 9.435362E-01}, errTolerance);
+//			checkELSResults(7.000000E-02, new double[] {1.000780E-03, 9.345521E-04, 1.833376E-03},
+//					new double[] {3.820541E-01, 3.342766E-01, 9.435362E-01}, errTolerance);
 			
 			checkTWTransferMatrix(new double[][]{
 					{+1.160625e+00, +7.370925e-02, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00}, 
