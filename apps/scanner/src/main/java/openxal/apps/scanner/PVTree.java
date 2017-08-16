@@ -58,6 +58,7 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import org.apache.commons.lang3.StringUtils;
+import xal.ca.Channel;
 import xal.smf.Accelerator;
 import xal.smf.AcceleratorNode;
 import xal.smf.AcceleratorSeq;
@@ -72,7 +73,7 @@ public class PVTree extends SplitPane {
 
 
     private final Map<String, CheckMenuItem> typeMap = new TreeMap<>();
-    private final ObservableList<ChannelWrapper> epicsChannels = FXCollections.observableArrayList();
+    private final ObservableList<HandleWrapper> epicsChannels = FXCollections.observableArrayList();
 
     @FXML // ResourceBundle that was given to the FXMLLoader
     private ResourceBundle resources;
@@ -96,13 +97,13 @@ public class PVTree extends SplitPane {
     private TreeView<?> pvTree; // Value injected by FXMLLoader
 
     @FXML // fx:id="epicsTable"
-    private TableView<ChannelWrapper> epicsTable; // Value injected by FXMLLoader
+    private TableView<HandleWrapper> epicsTable; // Value injected by FXMLLoader
 
     @FXML // fx:id="epicsNameColumn"
-    private TableColumn<ChannelWrapper, String> epicsNameColumn; // Value injected by FXMLLoader
+    private TableColumn<HandleWrapper, String> epicsNameColumn; // Value injected by FXMLLoader
 
     @FXML // fx:id="epicsTypeColumn"
-    private TableColumn<ChannelWrapper, String> epicsTypeColumn; // Value injected by FXMLLoader
+    private TableColumn<HandleWrapper, String> epicsTypeColumn; // Value injected by FXMLLoader
 
     @FXML // fx:id="pvAddButton"
     private Button pvAddButton; // Value injected by FXMLLoader
@@ -121,11 +122,11 @@ public class PVTree extends SplitPane {
         elementTree.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> updateEPICSTable(oldValue, newValue));
 
         epicsTable.itemsProperty().setValue(epicsChannels);
-        epicsNameColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+        epicsNameColumn.setCellValueFactory(new PropertyValueFactory<>("typeHandle"));
         epicsTypeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
         epicsTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
-        // TODO: the nodes which have getStatus() false should be grey in the list (to mark them as "problematic")
+        // TODO the nodes which have getStatus() false should be grey in the list (to mark them as "problematic")
         //Model.getInstance().getAccelerator().getRoot().getSequence("MEBT").getAllNodes().stream().forEach(n -> System.out.println("Node " + n.getId() + " is valid? "+ n.getStatus()));
 
         updateTree(elementSearch.getText());
@@ -133,9 +134,17 @@ public class PVTree extends SplitPane {
 
     @FXML
     void addSelectedPV(ActionEvent event) {
-        epicsTable.getSelectionModel().getSelectedItems().forEach((ChannelWrapper c) -> {
-            System.out.println("Adding PV "+c.idProperty().getValue());
-            FXMLController.PVlist.add(c);
+        // TODO fix this!
+        epicsTable.getSelectionModel().getSelectedItems().forEach((HandleWrapper hw) -> {
+            System.out.println("Adding PV "+hw.idProperty().getValue());
+            elementTree.getSelectionModel().getSelectedItems().forEach( value -> {
+                AcceleratorNode node = value.getValue();
+                if (node.getType().equals(hw.getElementClass())) {
+                    Channel chan = node.findChannel(hw.getHandle());
+                    if (chan!=null)
+                        FXMLController.PVlist.add(new ChannelWrapper(chan));
+                }
+                });
             });
 
     }
@@ -174,19 +183,39 @@ public class PVTree extends SplitPane {
         typeMap.put(type, menuItem);
     }
 
+    /**
+     * Check if the list of EPICS parameters already contain this typeHandle
+     * @param typeHandle The handle to compare against
+     * @return true if typeHandle is found in the table
+     */
+    private boolean epicsTableContains(String typeHandle) {
+        return epicsTable.getItems().stream().anyMatch((item) -> (item.getTypeHandle().equals(typeHandle)));
+    }
+
+    /**
+     * Adds the Handle to the list if it is not already there..
+     *
+     * @param hw
+     */
+    private void addHandleToList(HandleWrapper hw) {
+        if (! epicsTableContains(hw.getTypeHandle()))
+            epicsChannels.add(hw);
+    }
     private void updateEPICSTable( TreeItem<AcceleratorNode> oldValue, TreeItem<AcceleratorNode> newValue) {
+
 
         if (oldValue == newValue)
             return;
         if ( newValue != null ) {
-            AcceleratorNode node = newValue.getValue();
-
             epicsChannels.clear();
 
-            node.getHandles()
-                .stream()
-                .sorted(( h1, h2 ) -> String.CASE_INSENSITIVE_ORDER.compare(h1, h2))
-                .forEach(h -> epicsChannels.add(new ChannelWrapper(node.getChannel(h))));
+            elementTree.getSelectionModel().getSelectedItems().forEach(value -> {
+                AcceleratorNode node = value.getValue();
+                node.getHandles()
+                    .stream()
+                    .sorted(( h1, h2 ) -> String.CASE_INSENSITIVE_ORDER.compare(h1, h2))
+                    .forEach(h -> addHandleToList(new HandleWrapper(node, h)));
+            });
         }
     }
 
