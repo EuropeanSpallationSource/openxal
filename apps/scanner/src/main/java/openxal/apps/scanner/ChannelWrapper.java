@@ -43,7 +43,6 @@ import xal.ca.Channel;
 public class ChannelWrapper {
     private final Channel m_channel;
     private final StringProperty m_id;
-    private final StringProperty m_handle;
     private final StringProperty m_unit;
     private final StringProperty m_type;
     private final SimpleBooleanProperty isScanned;
@@ -55,7 +54,6 @@ public class ChannelWrapper {
     ChannelWrapper(Channel c) {
         m_channel = c;
         m_id = new SimpleStringProperty(this, "id");
-        m_handle = new SimpleStringProperty(this, "handle");
         m_type = new SimpleStringProperty(this, "type");
         m_unit = new SimpleStringProperty(this, "unit");
         isScanned = new SimpleBooleanProperty(false);
@@ -95,9 +93,6 @@ public class ChannelWrapper {
     }
     public SimpleStringProperty instanceProperty() {
         return instance;
-    }
-    public StringProperty handleProperty() {
-        return m_handle;
     }
     public StringProperty unitProperty() {
         return m_unit;
