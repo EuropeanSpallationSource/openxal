@@ -13,11 +13,12 @@
 
 
     <build>
-        <sourceDirectory>src/main/java</sourceDirectory>
+        <sourceDirectory>src</sourceDirectory>
 
         <resources>
             <resource>
-                <directory>src/main/resources</directory>
+                <directory>resources</directory>
+                <targetPath>xal/extension/tracewin/resources</targetPath>
             </resource>
         </resources>
     </build>
@@ -25,8 +26,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>se.lu.esss.ics.jels</groupId>
-            <artifactId>jels</artifactId>
+            <groupId>org.xal</groupId>
+            <artifactId>openxal.extensions.jels</artifactId>
             </dependency>
     </dependencies>
 </project>
+

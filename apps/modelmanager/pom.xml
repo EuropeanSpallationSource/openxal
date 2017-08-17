@@ -41,8 +41,8 @@
         <artifactId>openxal.extensions.zplot</artifactId>
     </dependency>
     <dependency>
-        <groupId>se.lu.esss.ics.jels</groupId>
-        <artifactId>jels</artifactId>
+        <groupId>org.xal</groupId>
+        <artifactId>openxal.extensions.jels</artifactId>
     </dependency>
     <dependency>
         <groupId>se.lu.esss.ics.linaclego</groupId>
