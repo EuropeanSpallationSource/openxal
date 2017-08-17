@@ -5,8 +5,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import eu.ess.lt.tracewin.TraceWin;
-import se.lu.esss.ics.jels.ImporterHelpers;
-import se.lu.esss.ics.jels.model.elem.jels.JElsElementMapping;
+import xal.extension.jels.ImporterHelpers;
+import xal.extension.jels.model.elem.jels.JElsElementMapping;
 import se.lu.esss.linaclego.LinacLego;
 import xal.smf.Accelerator;
 import xal.smf.data.XMLDataManager;

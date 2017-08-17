@@ -16,9 +16,9 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
-import se.lu.esss.ics.jels.ImporterHelpers;
-import se.lu.esss.ics.jels.JElsDemo;
-import se.lu.esss.ics.jels.model.elem.jels.JElsElementMapping;
+import xal.extension.jels.ImporterHelpers;
+import xal.extension.jels.JElsDemo;
+import xal.extension.jels.model.elem.jels.JElsElementMapping;
 import se.lu.esss.linaclego.elements.Drift;
 import se.lu.esss.linaclego.elements.Quad;
 import xal.model.ModelException;

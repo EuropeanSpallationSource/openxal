@@ -21,7 +21,7 @@ import org.w3c.dom.NodeList;
 import eu.ess.bled.Subsystem;
 import eu.ess.lt.parser.openxal.OpenXalExporter;
 import eu.ess.lt.parser.tracewin.TraceWinImporter;
-import se.lu.esss.ics.jels.model.elem.jels.JElsElementMapping;
+import xal.extension.jels.model.elem.jels.JElsElementMapping;
 import xal.sim.scenario.ElementMapping;
 import xal.smf.Accelerator;
 import xal.tools.xml.XmlDataAdaptor;

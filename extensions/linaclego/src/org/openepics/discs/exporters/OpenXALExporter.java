@@ -15,11 +15,11 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
-import se.lu.esss.ics.jels.ImporterHelpers;
-import se.lu.esss.ics.jels.smf.ESSElementFactory;
-import se.lu.esss.ics.jels.smf.impl.ESSBend;
-import se.lu.esss.ics.jels.smf.impl.ESSFieldMap;
-import se.lu.esss.ics.jels.smf.impl.ESSRfCavity;
+import xal.extension.jels.ImporterHelpers;
+import xal.extension.jels.smf.ESSElementFactory;
+import xal.extension.jels.smf.impl.ESSBend;
+import xal.extension.jels.smf.impl.ESSFieldMap;
+import xal.extension.jels.smf.impl.ESSRfCavity;
 import se.lu.esss.linaclego.BLEVisitor;
 import se.lu.esss.linaclego.Cell;
 import se.lu.esss.linaclego.FieldProfile;
@@ -71,7 +71,7 @@ public class OpenXALExporter implements BLEVisitor {
 	private Accelerator accelerator;
 	private AcceleratorSeq currentSequence;
 
-	private Map<String, se.lu.esss.ics.jels.smf.impl.FieldProfile> fieldProfiles = new HashMap<>();
+	private Map<String, xal.extension.jels.smf.impl.FieldProfile> fieldProfiles = new HashMap<>();
 	
 	protected OpenXALExporter() 
 	{
@@ -129,7 +129,7 @@ public class OpenXALExporter implements BLEVisitor {
 		System.out.printf("Writing output to: %s\n", fileName);
 		XmlWriter.writeToFile(document, new File(fileName));
 		
-		for (Entry<String, se.lu.esss.ics.jels.smf.impl.FieldProfile> e : exporter.fieldProfiles.entrySet()) {
+		for (Entry<String, xal.extension.jels.smf.impl.FieldProfile> e : exporter.fieldProfiles.entrySet()) {
 			String destinationFile = new URL(new URL(document.getDocumentURI()), e.getKey()+".edz").toString();
 			System.out.printf("Saving fieldmap %s to: %s\n", e.getKey(), destinationFile);
 			e.getValue().saveFile(destinationFile);
@@ -368,7 +368,7 @@ public class OpenXALExporter implements BLEVisitor {
 		ApertureBucket aper = generateApertureBucket(fieldMap);
 		double L = fieldMap.getLength()*1e-3;
 		FieldProfile fp = fieldMap.getFieldProfile();
-		final se.lu.esss.ics.jels.smf.impl.FieldProfile fp2 = new se.lu.esss.ics.jels.smf.impl.FieldProfile(fp.getLength()*1e-3, fp.getField());
+		final xal.extension.jels.smf.impl.FieldProfile fp2 = new xal.extension.jels.smf.impl.FieldProfile(fp.getLength()*1e-3, fp.getField());
 		fieldProfiles.put(fieldMap.getFieldmapFile(),  fp2);
 		AcceleratorNode fm = ESSElementFactory.createESSFieldMap(fieldMap.getEssId(), L, fieldMap.getFrequency(),
 				fieldMap.getElectricFieldFactor(), fieldMap.getRFPhase(), fieldMap.getFieldmapFile(), fp2, aper, sectionPosition + L/2);

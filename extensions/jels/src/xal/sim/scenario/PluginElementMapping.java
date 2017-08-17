@@ -1,6 +1,6 @@
 package xal.sim.scenario;
 
-import se.lu.esss.ics.jels.model.elem.jels.JElsElementMapping;
+import xal.extension.jels.model.elem.jels.JElsElementMapping;
 
 
 public class PluginElementMapping {
