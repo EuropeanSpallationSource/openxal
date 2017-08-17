@@ -31,10 +31,16 @@
  */
 package openxal.apps.scanner;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import xal.ca.Channel;
+import xal.ca.ConnectionException;
+import xal.ca.GetException;
 
 /**
  *
@@ -45,22 +51,41 @@ public class ChannelWrapper {
     private final StringProperty m_id;
     private final StringProperty m_unit;
     private final StringProperty m_type;
+    private final SimpleDoubleProperty min;
+    private final SimpleDoubleProperty max;
+    private final SimpleDoubleProperty initialValue;
+    private final SimpleIntegerProperty npoints;
     private final SimpleBooleanProperty isScanned;
     private final SimpleBooleanProperty isRead;
     private final SimpleStringProperty instance;
+    private double[] scanPoints;
     // This is probably not the best way to do this.
     public static int instanceCount = 0;
 
     ChannelWrapper(Channel c) {
         m_channel = c;
+        initialValue = new SimpleDoubleProperty(0.0);
+        try {
+            initialValue.set(c.getRawValueRecord().doubleValue());
+        } catch (ConnectionException | GetException ex) {
+            Logger.getLogger(ChannelWrapper.class.getName()).log(Level.WARNING, null, ex);
+        }
         m_id = new SimpleStringProperty(this, "id");
         m_type = new SimpleStringProperty(this, "type");
         m_unit = new SimpleStringProperty(this, "unit");
+        min = new SimpleDoubleProperty(initialValue.get()-1.0);
+        max = new SimpleDoubleProperty(initialValue.get()+1.0);
+        npoints = new SimpleIntegerProperty(5);
+
         isScanned = new SimpleBooleanProperty(false);
         isRead = new SimpleBooleanProperty(false);
-        instanceCount+=1;
-        instance = new SimpleStringProperty("x"+instanceCount);
+        instance = new SimpleStringProperty("x0");
 
+        updateScanRange(min.get(),max.get());
+
+        npoints.addListener((observable, oldValue, newValue) -> updateScanRange(oldValue, newValue));
+        min.addListener((observable, oldValue, newValue) -> updateScanRange(oldValue, newValue));
+        max.addListener((observable, oldValue, newValue) -> updateScanRange(oldValue, newValue));
 
         m_id.set(c.getId());
         setType();
@@ -85,12 +110,6 @@ public class ChannelWrapper {
     public StringProperty idProperty() {
         return m_id;
     }
-    public Channel getChannel() {
-        return m_channel;
-    }
-    public String getChannelName() {
-        return m_id.getValue();
-    }
     public SimpleStringProperty instanceProperty() {
         return instance;
     }
@@ -100,16 +119,58 @@ public class ChannelWrapper {
     public StringProperty typeProperty() {
         return m_type;
     }
-    public boolean getIsScanned() {
-        return isScanned.get();
-    }
     public SimpleBooleanProperty isScannedProperty() {
         return isScanned;
     }
     public SimpleBooleanProperty isReadProperty() {
         return isRead;
     }
+    public SimpleDoubleProperty minProperty() {
+        return min;
+    }
+    public SimpleDoubleProperty maxProperty() {
+        return max;
+    }
+    public SimpleIntegerProperty npointsProperty() {
+        return npoints;
+    }
+
+    public Channel getChannel() {
+        return m_channel;
+    }
+    public String getChannelName() {
+        return m_id.getValue();
+    }
+    public boolean getIsScanned() {
+        return isScanned.get();
+    }
     public boolean getIsRead() {
         return isRead.get();
+    }
+    public int getNpoints() {
+        return npoints.get();
+    }
+    private void updateScanRange(Number oldValue, Number newValue) {
+        if ( newValue==null || newValue == oldValue ) {
+            return;
+        }
+        scanPoints = new double[npoints.get()];
+        for(int i=0;i<npoints.get();i++) {
+            scanPoints[i] = min.get()+(max.get()-min.get())/(npoints.get()-1)*i;
+        }
+
+    }
+    public double[] getScanPoints() {
+        if (scanPoints==null)
+            updateScanRange(min.get(),max.get());
+        return scanPoints;
+    }
+
+    public String setInstance() {
+        if (instance.get().equals("x0")) {
+            instanceCount+=1;
+            instance.set("x"+instanceCount);
+        }
+        return instance.get();
     }
 }

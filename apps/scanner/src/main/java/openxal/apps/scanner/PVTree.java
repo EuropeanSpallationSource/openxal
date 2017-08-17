@@ -134,9 +134,7 @@ public class PVTree extends SplitPane {
 
     @FXML
     void addSelectedPV(ActionEvent event) {
-        // TODO fix this!
         epicsTable.getSelectionModel().getSelectedItems().forEach((HandleWrapper hw) -> {
-            System.out.println("Adding PV "+hw.idProperty().getValue());
             elementTree.getSelectionModel().getSelectedItems().forEach( value -> {
                 AcceleratorNode node = value.getValue();
                 if (node.getType().equals(hw.getElementClass())) {

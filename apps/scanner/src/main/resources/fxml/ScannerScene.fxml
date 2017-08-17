@@ -7,12 +7,14 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.effect.Light.Distant?>
 <?import javafx.scene.effect.Lighting?>
 <?import javafx.scene.input.KeyCodeCombination?>
@@ -20,6 +22,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
 
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="546.0" prefWidth="1096.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="openxal.apps.scanner.FXMLController">
    <children>
@@ -111,32 +114,43 @@
                               </AnchorPane>
                            </content>
                       </Tab>
-                        <Tab text="Configure">
+                        <Tab fx:id="tabConfigure" text="Configure">
                            <content>
-                              <SplitPane dividerPositions="0.5" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0">
+                              <SplitPane dividerPositions="0.5, 0.5" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0">
                                 <items>
-                                    <TableView fx:id="listOfWriteables" prefHeight="200.0" prefWidth="200.0">
+                                    <TableView fx:id="listOfWriteables" editable="true" prefHeight="200.0" prefWidth="200.0">
                                       <columns>
-                                        <TableColumn fx:id="listOfWriteablesShortVar" prefWidth="58.0" text="Var" />
-                                        <TableColumn fx:id="listOfWriteablesPV" prefWidth="370.0" text="Full name" />
+                                        <TableColumn fx:id="listOfWriteablesShortVar" editable="false" prefWidth="58.0" text="Var" />
+                                        <TableColumn fx:id="listOfWriteablesPV" editable="false" prefWidth="190.0" text="Full name" />
+                                          <TableColumn fx:id="listOfWriteablesMin" prefWidth="57.0" sortable="false" text="Min" />
+                                          <TableColumn fx:id="listOfWriteablesMax" prefWidth="57.0" sortable="false" text="Max" />
+                                          <TableColumn fx:id="listOfWriteablesNpoints" prefWidth="66.0" text="Npoints" />
                                       </columns>
                                     </TableView>
-                                    <ListView fx:id="constraintsList" editable="true" prefHeight="200.0" prefWidth="200.0" />
+                                    <TextField editable="false" text="Add constraints below" />
+                                    <ListView fx:id="constraintsList" accessibleHelp="Accessible Help" accessibleText="Accessible Text" editable="true" prefHeight="200.0" prefWidth="200.0" />
                                 </items>
                               </SplitPane>
                            </content>
                         </Tab>
-                        <Tab text="Run">
+                        <Tab fx:id="tabRun" text="Run">
                            <content>
-                              <StackPane prefHeight="150.0" prefWidth="200.0">
+                              <AnchorPane prefHeight="200.0" prefWidth="200.0">
                                  <children>
-                                    <ListView fx:id="run_execute" prefHeight="200.0" prefWidth="200.0" />
-                                    <Button mnemonicParsing="false" onAction="#handleRunExecute" prefHeight="112.0" prefWidth="158.0" text="Execute" />
+                                    <Button fx:id="executeButton" layoutX="138.0" layoutY="226.0" mnemonicParsing="false" onAction="#handleRunExecute" prefHeight="70.0" prefWidth="158.0" text="Execute">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font></Button>
+                                    <TextField fx:id="textFieldNumMeas" editable="false" layoutX="92.0" layoutY="122.0" prefHeight="27.0" prefWidth="249.0" />
+                                    <TextField fx:id="textFieldTimeEstimate" editable="false" layoutX="92.0" layoutY="170.0" prefHeight="27.0" prefWidth="250.0" />
+                                    <Button layoutX="135.0" layoutY="37.0" mnemonicParsing="false" onAction="#handlePreCalculate" prefHeight="55.0" prefWidth="158.0" text="Pre-calculate" />
+                                    <TextField fx:id="textFieldCurrentMeas" editable="false" layoutX="92.0" layoutY="342.0" prefHeight="27.0" prefWidth="250.0" />
+                                    <ProgressBar fx:id="runProgressBar" layoutX="114.0" layoutY="432.0" prefWidth="200.0" progress="0.0" />
                                  </children>
-                              </StackPane>
+                              </AnchorPane>
                            </content>
                         </Tab>
-                        <Tab text="Analyse">
+                        <Tab fx:id="tabDisplay" text="Display">
                            <content>
                               <StackPane prefHeight="150.0" prefWidth="200.0">
                                  <children>

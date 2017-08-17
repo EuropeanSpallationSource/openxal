@@ -36,6 +36,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -46,18 +48,25 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldListCell;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
+import javafx.util.converter.DoubleStringConverter;
+import javafx.util.converter.IntegerStringConverter;
 
 import org.gillius.jfxutils.chart.ChartZoomManager;
 import xal.ca.Channel;
@@ -80,6 +89,9 @@ public class FXMLController implements Initializable {
     private TableColumn<ChannelWrapper, Boolean> scanTableScan;
 
     @FXML
+    private Tab tabConfigure;
+
+    @FXML
     private TableView<ChannelWrapper> listOfWriteables;
 
     @FXML
@@ -89,7 +101,37 @@ public class FXMLController implements Initializable {
     private TableColumn<ChannelWrapper, String> listOfWriteablesPV;
 
     @FXML
+    private TableColumn<ChannelWrapper, Double> listOfWriteablesMin;
+
+    @FXML
+    private TableColumn<ChannelWrapper, Double> listOfWriteablesMax;
+
+    @FXML
+    private TableColumn<ChannelWrapper, Integer> listOfWriteablesNpoints;
+
+    @FXML
     private ListView<String> constraintsList;
+
+    @FXML
+    private Tab tabRun;
+
+    @FXML
+    private Button executeButton;
+
+    @FXML
+    private TextField textFieldNumMeas;
+
+    @FXML
+    private TextField textFieldTimeEstimate;
+
+    @FXML
+    private TextField textFieldCurrentMeas;
+
+    @FXML
+    private ProgressBar runProgressBar;
+
+    @FXML
+    private Tab tabDisplay;
 
     @FXML
     private ListView<?> run_execute;
@@ -112,6 +154,7 @@ public class FXMLController implements Initializable {
     private static ObservableList<String> measurements;
 
     public static ObservableList<ChannelWrapper> PVlist;
+    public static ObservableList<ChannelWrapper> PVscanList;
 
     private static ChartZoomManager zoomManager;
 
@@ -159,6 +202,13 @@ public class FXMLController implements Initializable {
     }
 
     @FXML
+    void handlePreCalculate(ActionEvent event) {
+        int nPoints = MainFunctions.calculateCombos();
+        textFieldNumMeas.setText("Number of measurement points: "+nPoints);
+        textFieldTimeEstimate.setText("This will take "+MainFunctions.getTimeString(nPoints*2));
+    }
+
+    @FXML
     private void handleRunExecute(ActionEvent event) {
         MainFunctions.actionExecute();
         pvReadbacksGraph.getData().clear();
@@ -167,6 +217,8 @@ public class FXMLController implements Initializable {
         plotMeasurement("Measurement " + (measurements.size()));
         analyseList.getSelectionModel().clearAndSelect(measurements.size()-1);
         analyseList.autosize();
+        tabDisplay.setDisable(false);
+        textFieldCurrentMeas.setText("Finished");
     }
 
     private void dummyBugFunction() {
@@ -200,21 +252,46 @@ public class FXMLController implements Initializable {
         // Initialize the list of scan variables..
         // TODO: A variable cannot be both read and written to..
         PVlist = FXCollections.observableArrayList();
+        PVscanList = FXCollections.observableArrayList();
         scanTable.setItems(PVlist);
         scanTablePV.setCellValueFactory(new PropertyValueFactory<>("channelName"));
         scanTableRead.setCellFactory(CheckBoxTableCell.forTableColumn((Integer param) -> {
-            if (PVlist.get(param).getIsRead())
-                MainFunctions.actionScanAddPV(PVlist.get(param).getChannel(), "", true, false);
-            else
-                MainFunctions.actionScanRemovePV(PVlist.get(param).getChannel(), true, false);
+            if (PVlist.get(param).getIsRead()) {
+                MainFunctions.actionScanAddPV(PVlist.get(param), "", true, false);
+                if (MainFunctions.checkSufficientParams()) {
+                    tabConfigure.setDisable(false);
+                    tabRun.setDisable(false);
+                }
+            } else {
+                MainFunctions.actionScanRemovePV(PVlist.get(param), true, false);
+                if (!MainFunctions.checkSufficientParams()) {
+                    tabConfigure.setDisable(true);
+                    tabRun.setDisable(true);
+                }
+            }
             return PVlist.get(param).isReadProperty();
         }));
         scanTableRead.setCellValueFactory((CellDataFeatures<ChannelWrapper, Boolean> param) -> param.getValue().isReadProperty());
         scanTableScan.setCellFactory(CheckBoxTableCell.forTableColumn((Integer param) -> {
-            if (PVlist.get(param).getIsScanned())
-                MainFunctions.actionScanAddPV(PVlist.get(param).getChannel(), PVlist.get(param).instanceProperty().get(), false, true);
-            else
-                MainFunctions.actionScanRemovePV(PVlist.get(param).getChannel(), false, true);
+            MainFunctions.isCombosUpdated.set(false);
+            if (PVlist.get(param).getIsScanned()) {
+                PVlist.get(param).setInstance();
+                if (MainFunctions.actionScanAddPV(PVlist.get(param), PVlist.get(param).instanceProperty().get(), false, true))
+                    PVscanList.add(PVlist.get(param));
+                if (MainFunctions.checkSufficientParams()) {
+                    tabConfigure.setDisable(false);
+                    tabRun.setDisable(false);
+                }
+            }
+            else {
+                MainFunctions.actionScanRemovePV(PVlist.get(param), false, true);
+                PVscanList.remove(PVlist.get(param));
+                if(PVscanList.isEmpty()) {
+                    tabConfigure.setDisable(true);
+                    tabRun.setDisable(true);
+                }
+                clearAllConstraints();
+            }
             return PVlist.get(param).isScannedProperty();
         }));
         scanTableScan.setCellValueFactory((CellDataFeatures<ChannelWrapper, Boolean> param) -> param.getValue().isScannedProperty());
@@ -226,10 +303,15 @@ public class FXMLController implements Initializable {
         analyseList.setItems(measurements);
         analyseList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
-        // This is wrong, should only be list of the ones which have isScanned set to true
-        listOfWriteables.setItems(PVlist);
+        listOfWriteables.setItems(PVscanList);
         listOfWriteablesPV.setCellValueFactory(new PropertyValueFactory<>("channelName"));
         listOfWriteablesShortVar.setCellValueFactory(new PropertyValueFactory<>("instance"));
+        listOfWriteablesMin.setCellValueFactory(new PropertyValueFactory<>("min"));
+        listOfWriteablesMin.setCellFactory(TextFieldTableCell.<ChannelWrapper, Double>forTableColumn(new DoubleStringConverter()));
+        listOfWriteablesMax.setCellValueFactory(new PropertyValueFactory<>("max"));
+        listOfWriteablesMax.setCellFactory(TextFieldTableCell.<ChannelWrapper, Double>forTableColumn(new DoubleStringConverter()));
+        listOfWriteablesNpoints.setCellValueFactory(new PropertyValueFactory<>("npoints"));
+        listOfWriteablesNpoints.setCellFactory(TextFieldTableCell.<ChannelWrapper, Integer>forTableColumn(new IntegerStringConverter()));
 
         // Initialize functionality
         MainFunctions.initialize();
@@ -243,16 +325,45 @@ public class FXMLController implements Initializable {
         constraintsList.setCellFactory(TextFieldListCell.forListView());
         constraintsList.setOnEditCommit((ListView.EditEvent<String> t) -> {
             constraintsList.getItems().set(t.getIndex(), t.getNewValue());
-            System.out.println("Add constraint "+t.getIndex()+", "+t.getNewValue());
-                // TODO: is there not a better replace function for Lists?
-                MainFunctions.constraints.add(t.getIndex(), t.getNewValue());
-                MainFunctions.constraints.remove(t.getIndex()+1);
+            // TODO: is there not a better replace function for Lists?
+            MainFunctions.constraints.add(t.getIndex(), t.getNewValue());
+            MainFunctions.constraints.remove(t.getIndex()+1);
+            MainFunctions.isCombosUpdated.set(false);
         });
+
+        // Only allow to push execute when the combo list is up to date..
+        executeButton.setDisable(!MainFunctions.isCombosUpdated.getValue());
+        MainFunctions.isCombosUpdated.addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> executeButton.setDisable(!newValue));
+        // Write the current measurement point...
+        MainFunctions.runProgress.addListener(new ChangeListener() {
+            @Override
+            public void changed(ObservableValue o, Object oldVal, Object newVal) {
+                textFieldCurrentMeas.setText("Running..");
+                runProgressBar.setProgress(MainFunctions.runProgress.getValue());
+            }
+          });
+
+        MainFunctions.isCombosUpdated.addListener((observable, oldValue, newValue) -> {
+                    if(!newValue) {
+                        textFieldNumMeas.setText("");
+                        textFieldTimeEstimate.setText("");
+                    }
+                });
 
         // Allow zooming in the chart..
         zoomManager = new ChartZoomManager( analyseGraphPane, selectRect, pvReadbacksGraph );
         zoomManager.setMouseWheelZoomAllowed(true);
         zoomManager.setZoomDurationMillis(100);
         zoomManager.start();
+
+        tabConfigure.setDisable(true);
+        tabRun.setDisable(true);
+        tabDisplay.setDisable(true);
+    }
+
+    private void clearAllConstraints() {
+        constraintsList.getItems().setAll("");
+        MainFunctions.constraints.clear();
+        constraintsList.getItems().forEach((constraint) -> MainFunctions.constraints.add(constraint));
     }
 }
