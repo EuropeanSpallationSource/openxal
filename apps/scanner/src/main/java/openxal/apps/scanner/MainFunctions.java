@@ -310,7 +310,6 @@ public class MainFunctions {
             @Override
             public void run() {
                 for (int i=0; i<combos.size(); i++) {
-                    updateProgress(i+1, combos.size());
                     System.out.println("DBG, execute "+i+" : "+Arrays.toString(combos.get(i)));
                     setCombo(combos.get(i));
                     try {
@@ -321,6 +320,7 @@ public class MainFunctions {
                     double[] readings = makeReading();
                     System.arraycopy(combos.get(i), 0, measurement[i], 0, pvWriteables.size());
                     System.arraycopy(readings, 0, measurement[i], pvWriteables.size(), pvReadbacks.size());
+                    updateProgress(i+1, combos.size());
                 }
             }
 

@@ -64,6 +64,7 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.converter.DoubleStringConverter;
 import javafx.util.converter.IntegerStringConverter;
@@ -119,13 +120,10 @@ public class FXMLController implements Initializable {
     private Button executeButton;
 
     @FXML
-    private TextField textFieldNumMeas;
+    private Text textFieldNumMeas;
 
     @FXML
-    private TextField textFieldTimeEstimate;
-
-    @FXML
-    private TextField textFieldCurrentMeas;
+    private Text textFieldTimeEstimate;
 
     @FXML
     private ProgressBar runProgressBar;
@@ -211,14 +209,10 @@ public class FXMLController implements Initializable {
     @FXML
     private void handleRunExecute(ActionEvent event) {
         MainFunctions.actionExecute();
-        pvReadbacksGraph.getData().clear();
-        pvWriteablesGraph.getData().clear();
         measurements.add("Measurement " + (measurements.size()+1));
-        plotMeasurement("Measurement " + (measurements.size()));
         analyseList.getSelectionModel().clearAndSelect(measurements.size()-1);
         analyseList.autosize();
         tabDisplay.setDisable(false);
-        textFieldCurrentMeas.setText("Finished");
     }
 
     private void dummyBugFunction() {
@@ -338,8 +332,19 @@ public class FXMLController implements Initializable {
         MainFunctions.runProgress.addListener(new ChangeListener() {
             @Override
             public void changed(ObservableValue o, Object oldVal, Object newVal) {
-                textFieldCurrentMeas.setText("Running..");
-                runProgressBar.setProgress(MainFunctions.runProgress.getValue());
+                System.out.println("DBG11 "+MainFunctions.runProgress.getValue());
+                if(MainFunctions.runProgress.getValue()<1.0) {
+                    executeButton.setText("Running..");
+                    executeButton.setDisable(true);
+                    runProgressBar.setProgress(MainFunctions.runProgress.getValue());
+                } else {
+                    executeButton.setText("Execute");
+                    executeButton.setDisable(false);
+                    runProgressBar.setProgress(0.0);
+                }
+                pvReadbacksGraph.getData().clear();
+                pvWriteablesGraph.getData().clear();
+                plotMeasurement("Measurement " + (measurements.size()));
             }
           });
 
