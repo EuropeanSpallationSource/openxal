@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import eu.ess.lt.tracewin.TraceWin;
+import xal.extension.tracewinimporter.TraceWin;
 import xal.extension.jels.ImporterHelpers;
 import xal.extension.jels.model.elem.jels.JElsElementMapping;
 import se.lu.esss.linaclego.LinacLego;

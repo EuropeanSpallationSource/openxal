@@ -1,4 +1,4 @@
-package eu.ess.lt.parser.openxal;
+package xal.extension.tracewinimporter.openxalexporter;
 
 import eu.ess.bled.Subsystem;
 import javax.annotation.PostConstruct;

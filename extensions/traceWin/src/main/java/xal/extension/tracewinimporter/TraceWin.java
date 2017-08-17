@@ -1,4 +1,4 @@
-package eu.ess.lt.tracewin;
+package xal.extension.tracewinimporter;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -19,8 +19,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import eu.ess.bled.Subsystem;
-import eu.ess.lt.parser.openxal.OpenXalExporter;
-import eu.ess.lt.parser.tracewin.TraceWinImporter;
+import xal.extension.tracewinimporter.openxalexporter.OpenXalExporter;
+import xal.extension.tracewinimporter.parser.TraceWinImporter;
 import xal.extension.jels.model.elem.jels.JElsElementMapping;
 import xal.sim.scenario.ElementMapping;
 import xal.smf.Accelerator;
@@ -70,7 +70,7 @@ public class TraceWin {
 	public static Accelerator loadAcceleator(URI fileName, ElementMapping modelMapping) throws IOException {
 		Accelerator acc = null;
 		// Importing from TraceWin formated file
-		eu.ess.lt.parser.tracewin.TraceWinImporter importer = new TraceWinImporter();
+		xal.extension.tracewinimporter.parser.TraceWinImporter importer = new TraceWinImporter();
 		BufferedReader br = new BufferedReader(new InputStreamReader(fileName.toURL().openStream()));
 		List<Subsystem> systems = importer.importFromTraceWin(br, new PrintWriter(System.err), new File(fileName).getParentFile().toURI().toString());
 		br.close();

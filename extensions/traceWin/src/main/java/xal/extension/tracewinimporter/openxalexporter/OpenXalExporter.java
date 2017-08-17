@@ -1,4 +1,4 @@
-package eu.ess.lt.parser.openxal;
+package xal.extension.tracewinimporter.openxalexporter;
 
 import java.util.ArrayList;
 import java.util.Arrays;

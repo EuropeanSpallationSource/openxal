@@ -1,4 +1,4 @@
-package eu.ess.lt.parser.tracewin;
+package xal.extension.tracewinimporter.parser;
 
 import java.util.ArrayList;
 

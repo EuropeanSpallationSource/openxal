@@ -1,4 +1,4 @@
-package eu.ess.lt.parser.tracewin;
+package xal.extension.tracewinimporter.parser;
 
 /**
  * All the TraceWin tags use in the TraceWin files.

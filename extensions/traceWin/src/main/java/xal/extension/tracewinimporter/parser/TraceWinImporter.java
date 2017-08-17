@@ -1,4 +1,4 @@
-package eu.ess.lt.parser.tracewin;
+package xal.extension.tracewinimporter.parser;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
