@@ -20,6 +20,7 @@ import eu.ess.bled.devices.lattice.Marker;
 import eu.ess.bled.devices.lattice.NCell;
 import eu.ess.bled.devices.lattice.Quadrupole;
 import eu.ess.bled.devices.lattice.RFCavity;
+import xal.extension.jels.smf.ESSAccelerator;
 import xal.extension.jels.smf.ESSElementFactory;
 import xal.extension.jels.smf.impl.ESSRfCavity;
 import xal.extension.jels.smf.impl.ESSRfGap;
@@ -34,6 +35,7 @@ import xal.smf.attr.SequenceBucket;
 import xal.smf.impl.Magnet;
 import xal.smf.impl.MagnetMainSupply;
 import xal.smf.impl.MagnetPowerSupply;
+import xal.smf.impl.PermQuadrupole;
 import xal.smf.impl.RfGap;
 import xal.smf.impl.qualify.MagnetType;
 import xal.tools.data.DataAdaptor;
@@ -58,7 +60,7 @@ public class OpenXalExporter {
     // comands
     private OnLeafComparator leafComparator = new OnLeafComparator();
 
-    private Accelerator acc;
+    private ESSAccelerator acc;
     private Corrector lastCorrector;
 
     // variables to help exporting lattice points
@@ -67,7 +69,7 @@ public class OpenXalExporter {
     /**
      * Main exporting entry point
      */
-    public Accelerator exportToOpenxal(Subsystem parentSystem, List<Subsystem> systems) {
+    public ESSAccelerator exportToOpenxal(Subsystem parentSystem, List<Subsystem> systems) {
         leafComparator.init(systems);
 
         // Getting lattice commands
@@ -79,17 +81,7 @@ public class OpenXalExporter {
         }
         Collections.sort(latticeCommands, leafComparator);
 
-        acc = new Accelerator("ESS") {
-            @Override
-            public void write(DataAdaptor adaptor) {
-                super.write(adaptor);
-                // write out power supplies
-                DataAdaptor powerSuppliesAdaptor = adaptor.createChild("powersupplies");
-                for (MagnetPowerSupply mps : getMagnetMainSupplies()) {
-                    mps.write(powerSuppliesAdaptor.createChild("ps"));
-                }
-            }
-        };
+        acc = new ESSAccelerator("ESS");
         AcceleratorSeq seq = export(parentSystem, systems, 0., leafComparator);
         AcceleratorSeq previousSeq = null;
         for (AcceleratorSeq s : new ArrayList<AcceleratorSeq>(seq.getSequences())) {
@@ -205,7 +197,7 @@ public class OpenXalExporter {
                     }
 
                     latticeElements = Integer.parseInt(latticeCommand.getValue().split(" ")[1]);
-                    ;
+                    
                     periodicLatticeId++;
                     node = exportMarker("LATTICE-START-" + periodicLatticeId, currentPosition);
                 }
@@ -358,7 +350,7 @@ public class OpenXalExporter {
 
         ApertureBucket aper = generateApertureBucket(element);
 
-        final RfGap gap = ElementFactory.createRfGap(element.getName() + ":G", true, 1.0, aper, 1.0, 0);
+        final ESSRfGap gap = ESSElementFactory.createESSRfGap(element.getName() + ":G", true, 1.0, aper, 1.0, 0);
         ESSRfCavity cavity = ESSElementFactory.createESSRfCavity(element.getName(), 0, gap, Phis, amplitude,
                 getFrequency(element) * 1e-6, currentPosition);
         if (betas == 0.0) {
@@ -366,8 +358,10 @@ public class OpenXalExporter {
             cavity.getRfField().setTTF_endCoefs(new double[]{});
         } else {
             cavity.getRfField().setTTFCoefs(new double[]{betas, Ts, kTs, k2Ts});
+            cavity.getRfField().setTTF_startCoefs(new double[]{betas, Ts, kTs, k2Ts});
             cavity.getRfField().setTTF_endCoefs(new double[]{betas, Ts, kTs, k2Ts});
             cavity.getRfField().setSTFCoefs(new double[]{betas, 0, kS, k2S});
+            cavity.getRfField().setSTF_startCoefs(new double[]{betas, Ts, kTs, k2Ts});
             cavity.getRfField().setSTF_endCoefs(new double[]{betas, 0, kS, k2S});
         }
         return cavity;
@@ -382,7 +376,7 @@ public class OpenXalExporter {
     }
 
     private AcceleratorNode exportNCell(final NCell element, double currentPosition) {
-        double frequency = getFrequency(element) * 1e-6;
+        double frequency = getFrequency(element);
 
         double Phis = element.getRfPhase();
         double E0T = element.getE0T();
@@ -411,45 +405,55 @@ public class OpenXalExporter {
 
         double lambda = IElement.LightSpeed / frequency;
         double Lc0, Lc, Lcn;
-        double amp0, ampn;
-        double pos0, posn;
+        double amp0 = 1;
+        double ampn = 1;
+        double pos0, posn;        
+        
+        ApertureBucket apertureBucket = generateApertureBucket(element);
 
-        amp0 = (1 + kE0Ti) * (Ti / Ts);
-        ampn = (1 + kE0To) * (To / Ts);
-        if (m == 0) {
-            Lc = Lc0 = Lcn = betag * lambda;
-            pos0 = 0.5 * Lc0 + dzi;
-            posn = Lc0 + (n - 2) * Lc + 0.5 * Lcn + dzo;
-        } else if (m == 1) {
-            Lc = Lc0 = Lcn = 0.5 * betag * lambda;
-            pos0 = 0.5 * Lc0 + dzi;
-            posn = Lc0 + (n - 2) * Lc + 0.5 * Lcn + dzo;
-        } else { // m==2
-            Lc0 = Lcn = 0.75 * betag * lambda;
-            Lc = betag * lambda;
-            pos0 = 0.25 * betag * lambda + dzi;
-            posn = Lc0 + (n - 2) * Lc + 0.5 * betag * lambda + dzo;
+        if (betas == 0.0) {
+            amp0 = (1 + kE0Ti) * (Ti / Ts);
+            ampn = (1 + kE0To) * (To / Ts);
+        }
+        switch (m) {
+            case 0:
+                Lc = Lc0 = Lcn = betag * lambda;
+                pos0 = 0.5 * Lc0 + dzi;
+                posn = Lc0 + (n - 2) * Lc + 0.5 * Lcn + dzo;
+                break;
+            case 1:
+                Lc = Lc0 = Lcn = 0.5 * betag * lambda;
+                pos0 = 0.5 * Lc0 + dzi;
+                posn = Lc0 + (n - 2) * Lc + 0.5 * Lcn + dzo;
+                break;
+            default:
+                // m==2
+                Lc0 = Lcn = 0.75 * betag * lambda;
+                Lc = betag * lambda;
+                pos0 = 0.25 * betag * lambda + dzi;
+                posn = Lc0 + (n - 2) * Lc + 0.5 * betag * lambda + dzo;
+                break;
         }
 
         AcceleratorNode[] nodes = new AcceleratorNode[n];
 
         // setup
-        nodes[0] = ESSElementFactory.createESSRfGap(element.getName() + ":G0", true, amp0, new ApertureBucket(),
+        nodes[0] = ESSElementFactory.createESSRfGap(element.getName() + ":G0", true, amp0, apertureBucket,
                 Lc0, pos0);
 
         for (int i = 1; i < n - 1; i++) {
-            nodes[i] = ESSElementFactory.createESSRfGap(element.getName() + "G" + i, false, 1, new ApertureBucket(),
+            nodes[i] = ESSElementFactory.createESSRfGap(element.getName() + "G" + i, false, 1, apertureBucket,
                     Lc, Lc0 + (i - 0.5) * Lc);
         }
 
-        ESSRfGap lastGap = ESSElementFactory.createESSRfGap(element.getName() + ":G" + (n - 1), false, ampn, new ApertureBucket(),
+        ESSRfGap lastGap = ESSElementFactory.createESSRfGap(element.getName() + ":G" + (n - 1), false, ampn, apertureBucket,
                 Lcn, posn);
         lastGap.getRfGap().setEndCell(1);
 
         nodes[n - 1] = lastGap;
 
         ESSRfCavity cavity = ESSElementFactory.createESSRfCavity(element.getName(), Lc0 + (n - 2) * Lc + Lcn, nodes, Phis, E0T * 1e-6,
-                frequency, currentPosition);
+                frequency * 1e-6, currentPosition);
 
         if (betas == 0.0) {
             cavity.getRfField().setTTF_startCoefs(new double[]{});
@@ -485,17 +489,17 @@ public class OpenXalExporter {
 
         double B1 = element.getB1p();
         double B2 = element.getB2p();
-
+        
         double length = L - Lq1 - Lq2;
 
-        MagnetMainSupply ps1 = ElementFactory.createMainSupply(element.getName() + "A-PS", acc);
-        xal.smf.impl.Quadrupole quad1 = ElementFactory.createQuadrupole(element.getName() + ":Q1", Lq1, B1, new ApertureBucket(),
-                ps1, Lq1 / 2);
-        MagnetMainSupply ps2 = ElementFactory.createMainSupply(element.getName() + "B-PS", acc);
-        xal.smf.impl.Quadrupole quad2 = ElementFactory.createQuadrupole(element.getName() + ":Q2", Lq2, B2, new ApertureBucket(),
-                ps2, L - Lq2 / 2);
+        ApertureBucket apertureBucket = generateApertureBucket(element);
+        
+        PermQuadrupole quad1 = ElementFactory.createPermQuadrupole(element.getName() + ":Q1", Lq1, B1, apertureBucket,
+                Lq1 / 2);
+        PermQuadrupole quad2 = ElementFactory.createPermQuadrupole(element.getName() + ":Q2", Lq2, B2, apertureBucket,
+                L - Lq2 / 2);
 
-        RfGap gap = ElementFactory.createRfGap(element.getName() + ":G", true, 1, new ApertureBucket(), length, L / 2 - g);
+        RfGap gap = ESSElementFactory.createESSRfGap(element.getName() + ":G", true, 1, apertureBucket, length, L / 2 - g);
 
         ESSRfCavity cavity = ESSElementFactory.createESSRfCavity(element.getName(), L, new AcceleratorNode[]{quad1, gap, quad2},
                 Phis, E0TL * 1e-6 / length, getFrequency(element) * 1e-6, currentPosition);
@@ -504,8 +508,10 @@ public class OpenXalExporter {
             cavity.getRfField().setTTFCoefs(new double[]{});
         } else {
             cavity.getRfField().setTTFCoefs(new double[]{betas, Ts, kTs, k2Ts});
+            cavity.getRfField().setTTF_startCoefs(new double[]{betas, Ts, kTs, k2Ts});
             cavity.getRfField().setTTF_endCoefs(new double[]{betas, Ts, kTs, k2Ts});
             cavity.getRfField().setSTFCoefs(new double[]{betas, 0, kS, k2S});
+            cavity.getRfField().setSTF_startCoefs(new double[]{betas, Ts, kTs, k2Ts});
             cavity.getRfField().setSTF_endCoefs(new double[]{betas, 0, kS, k2S});
         }
 
