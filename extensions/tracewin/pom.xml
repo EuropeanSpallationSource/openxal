@@ -11,18 +11,15 @@
 
     <artifactId>openxal.extensions.tracewin</artifactId>
 
-
     <build>
         <sourceDirectory>src</sourceDirectory>
 
         <resources>
             <resource>
                 <directory>resources</directory>
-                <targetPath>xal/extension/tracewin/resources</targetPath>
             </resource>
         </resources>
     </build>
-
 
     <dependencies>
         <dependency>
