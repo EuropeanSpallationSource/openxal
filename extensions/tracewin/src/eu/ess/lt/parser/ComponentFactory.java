@@ -41,6 +41,7 @@ public class ComponentFactory {
 	private String fieldmapPath = "";
 	private String basePath = "";
 	
+        private final ApertureType defaultAperture = ApertureType.toEnum(1); // ellipse
 	
 	/**
 	 * Returns an existing {@link Aperture} identified by its name, or creates a
@@ -112,6 +113,8 @@ public class ComponentFactory {
 		bend.setBendAngle(bendAngle);
 		bend.setCurvatureRadius(curvatureRadius);
 		bend.setApertureX(aperture);
+		bend.setApertureY(aperture);
+		bend.setApertureType(defaultAperture);
 		bend.setOrientation(orientation);
 		bend.setGap(gap);
 		// Entrance edge
@@ -169,7 +172,9 @@ public class ComponentFactory {
 		rfCavity.setGapVoltage(gapVoltage);
 		rfCavity.setPhase(rfPhase);
 		rfCavity.setApertureX(apertureRadius);
-		rfCavity.setAbsolutePhase(isPhaseAbsolute);
+		rfCavity.setApertureY(apertureRadius);
+                rfCavity.setApertureType(defaultAperture);
+                rfCavity.setAbsolutePhase(isPhaseAbsolute);
 		rfCavity.setBeta(beta);
 		rfCavity.setTransitTimeFactor(transitTimeFactor);
 		rfCavity.setkT(kT);
@@ -265,6 +270,8 @@ public class ComponentFactory {
 		dtlCell.setE0TL(gapVoltage);
 		dtlCell.setRfPhase(rfPhase);
 		dtlCell.setApertureX(aperture);
+		dtlCell.setApertureY(aperture);                
+                dtlCell.setApertureType(defaultAperture);
 		dtlCell.setAbsolutePhase(isPhaseAbsolute);
 		dtlCell.setBetas(beta);
 		dtlCell.setTransitTime(transitTimeFactor);
@@ -305,6 +312,8 @@ public class ComponentFactory {
 		acceleration.setVoltage(voltage);
 		acceleration.setDefocal(defocal);
 		acceleration.setApertureX(aperture);
+		acceleration.setApertureY(aperture);
+		acceleration.setApertureType(defaultAperture);
 		acceleration.setPreviousSubsystem(previousSubsystem);
 		// CHECK acceleration.setSubsystemType(defaultType());
 		return acceleration;
@@ -346,6 +355,8 @@ public class ComponentFactory {
 		quadrupole.setLength(length);
 		quadrupole.setVoltage(voltage);
 		quadrupole.setApertureX(apertureRadius);
+		quadrupole.setApertureY(apertureRadius);
+		quadrupole.setApertureType(defaultAperture);
 		quadrupole.setSkewAngle(skewAngle);
 		quadrupole.setSextupoleVoltage(sextupoleVoltage);
 		quadrupole.setOctupoleVoltage(octupoleVoltage);
@@ -394,6 +405,8 @@ public class ComponentFactory {
 		fieldMap.setGeom(geom);
 		fieldMap.setRfPhase(rfPhase);
 		fieldMap.setApertureX(aperture);
+		fieldMap.setApertureY(aperture);
+		fieldMap.setApertureType(defaultAperture);
 		fieldMap.setMagneticIntensityFactor(magneticIntensityFactor);
 		fieldMap.setElectricIntensityFactor(electricIntensityFactor);
 		fieldMap.setSpaceChargeCompensationFactor(spaceChargeCompensationFactor);
@@ -442,6 +455,8 @@ public class ComponentFactory {
 		multipoleMagnet.setSteps(numberOfSteps);
 		multipoleMagnet.setDipoleStrength(magneticField);
 		multipoleMagnet.setApertureX(aperture);
+		multipoleMagnet.setApertureY(aperture);
+		multipoleMagnet.setApertureType(defaultAperture);
 		multipoleMagnet.setSolenoidLength(solenoidLength);
 		multipoleMagnet.setSolenoidSteps(solenoidStepNumber);
 		multipoleMagnet.setPreviousSubsystem(previousSubsystem);
@@ -487,6 +502,8 @@ public class ComponentFactory {
 		quadrupole.setLength(length);
 		quadrupole.setQuadrupoleGradient(quadrupoleGradient);
 		quadrupole.setApertureX(aperture);
+		quadrupole.setApertureY(aperture);
+                quadrupole.setApertureType(defaultAperture);
 		quadrupole.setSkewAngle(skewAngle);
 		quadrupole.setSextupoleGradient(sextupoleGradient);
 		quadrupole.setOctupoleGradient(octupoleGradient);
@@ -574,6 +591,8 @@ public class ComponentFactory {
 		nCell.setE0T(gapVoltage);
 		nCell.setRfPhase(rfPhase);
 		nCell.setApertureX(aperture);
+		nCell.setApertureY(aperture);
+		nCell.setApertureType(defaultAperture);
 		nCell.setAbsolutePhase(isPhaseAbsolute);
 		nCell.setkE0Ti(inputFieldCorrection);
 		nCell.setkE0To(outputFieldCorrection);
@@ -679,6 +698,8 @@ public class ComponentFactory {
 		rfCavity.setAverageField(averageAccField);
 		rfCavity.setPhase(phaseAtEntrance);
 		rfCavity.setApertureX(aperture);
+		rfCavity.setApertureY(aperture);
+		rfCavity.setApertureType(defaultAperture);
 		rfCavity.setAbsolutePhase(isPhaseAbsolute);
 		rfCavity.setType(cavityType);
 		rfCavity.setPreviousSubsystem(previousSubsystem);
@@ -710,6 +731,8 @@ public class ComponentFactory {
 		solenoid.setLength(length);
 		solenoid.setMagneticField(magneticField);
 		solenoid.setApertureX(aperture);
+		solenoid.setApertureY(aperture);
+		solenoid.setApertureType(defaultAperture);
 		solenoid.setPreviousSubsystem(previousSubsystem);
 		// CHECK solenoid.setSubsystemType(defaultType());
 		return solenoid;
@@ -768,6 +791,8 @@ public class ComponentFactory {
 		corrector.setPreviousSubsystem(previousSubsystem);
 		// CHECK corrector.setSubsystemType(defaultType());
 		corrector.setApertureX(aperture);
+		corrector.setApertureY(aperture);
+		corrector.setApertureType(defaultAperture);
 		return corrector;
 	}
 
@@ -881,6 +906,8 @@ public class ComponentFactory {
 		bendEle.setCurvatureRadius(curvatureRadius);
 		bendEle.setBendType(bendType);
 		bendEle.setApertureX(aperture);
+		bendEle.setApertureY(aperture);
+		bendEle.setApertureType(defaultAperture);
 		bendEle.setVertical(horizVert);
 		bendEle.setPreviousSubsystem(previousSubsystem);
 		// CHECK bendEle.setSubsystemType(defaultType());
