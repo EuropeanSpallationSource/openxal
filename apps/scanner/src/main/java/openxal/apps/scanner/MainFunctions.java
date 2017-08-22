@@ -32,12 +32,9 @@
 
 package openxal.apps.scanner;
 
+import java.io.File;
 import static java.lang.Thread.sleep;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.net.MalformedURLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -47,7 +44,6 @@ import javafx.concurrent.Task;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
-import xal.ca.Channel;
 import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.smf.Accelerator;
@@ -59,33 +55,7 @@ import xal.ca.PutException;
  */
 public class MainFunctions {
 
-    /**
-     * A dictionary of the created datasets..
-     */
-    public static Map<String, double[][]> dataSets;
-    /**
-     * For every measurement, store the channels read for this measurement..
-     */
-    public static Map<String, List<Channel>> allPVrb;
-    /**
-     * For every measurement, store the channels written to for this measurement..
-     */
-    public static Map<String, List<Channel>> allPVw;
-
-
-    /**
-     * To calculate constraints, we need to know the short hand variable name
-     * for each variable..
-     */
-    public static Map<ChannelWrapper, String> constraintsVars;
-    public static List<String> constraints;
-
-    // The Readback channels
-    public static List<Channel> pvReadbacks;
-    // The Set channels
-    public static List<ChannelWrapper> pvWriteables;
-    // The combination of scan points (each double[] is equal to number of writeables)
-    public static List<double[]> combos;
+    public static ScannerDocument mainDocument;
 
     // Holds the progress of the execution
     public static SimpleDoubleProperty runProgress;
@@ -94,14 +64,9 @@ public class MainFunctions {
     public static SimpleBooleanProperty isCombosUpdated;
 
     public static void initialize() {
-        dataSets = new HashMap<>();
-        allPVrb = new HashMap<>();
-        allPVw = new HashMap<>();
-        constraintsVars = new HashMap<>();
-        pvReadbacks = new ArrayList<>();
-        pvWriteables = new ArrayList<>();
-        combos = new ArrayList<>();
-        constraints = new ArrayList<>();
+
+        mainDocument = new ScannerDocument();
+
         isCombosUpdated = new SimpleBooleanProperty(false);
         runProgress = new SimpleDoubleProperty(-1.0);
     }
@@ -119,17 +84,17 @@ public class MainFunctions {
         Accelerator acc = Model.getInstance().getAccelerator();
 
         if (read)
-            if (! pvReadbacks.contains(cWrapper.getChannel())) {
-                pvReadbacks.add(cWrapper.getChannel());
+            if (! mainDocument.pvReadbacks.contains(cWrapper.getChannel())) {
+                mainDocument.pvReadbacks.add(cWrapper.getChannel());
                 return true;
             }
         if (write) {
-            if (! pvWriteables.contains(cWrapper)) {
-                pvWriteables.add(cWrapper);
+            if (! mainDocument.pvWriteables.contains(cWrapper)) {
+                mainDocument.pvWriteables.add(cWrapper);
                 cWrapper.npointsProperty().addListener((observable, oldValue, newValue) -> isCombosUpdated.set(false));
                 cWrapper.minProperty().addListener((observable, oldValue, newValue) -> isCombosUpdated.set(false));
                 cWrapper.maxProperty().addListener((observable, oldValue, newValue) -> isCombosUpdated.set(false));
-                constraintsVars.put(cWrapper,shorthand);
+                mainDocument.constraintsVars.put(cWrapper,shorthand);
                 return true;
             }
         }
@@ -145,11 +110,11 @@ public class MainFunctions {
     public static void actionScanRemovePV(ChannelWrapper cWrapper, Boolean read, Boolean write) {
         Accelerator acc = Model.getInstance().getAccelerator();
         if (read) {
-            pvReadbacks.remove(cWrapper.getChannel());
+            mainDocument.pvReadbacks.remove(cWrapper.getChannel());
         }
         if (write) {
-            pvWriteables.remove(cWrapper);
-            constraintsVars.remove(cWrapper);
+            mainDocument.pvWriteables.remove(cWrapper);
+            mainDocument.constraintsVars.remove(cWrapper);
         }
     }
 
@@ -166,9 +131,9 @@ public class MainFunctions {
         ScriptEngineManager manager = new ScriptEngineManager();
         ScriptEngine engine = manager.getEngineByName("js");
         for(int i=0;i<combo.length;i++) {
-            engine.eval(constraintsVars.get(pvWriteables.get(i))+"="+combo[i]);
+            engine.eval(mainDocument.constraintsVars.get(mainDocument.pvWriteables.get(i))+"="+combo[i]);
         }
-        for(String constraint:constraints) {
+        for(String constraint:mainDocument.constraints) {
             if (constraint.trim().length()>0)
                 if (!(boolean)engine.eval(constraint))
                     return false;
@@ -177,14 +142,11 @@ public class MainFunctions {
     }
 
     private static boolean hasConstraints() {
-        for(String constraint:constraints)
-            if (constraint.trim().length()>0)
-                return true;
-        return false;
+        return mainDocument.constraints.stream().anyMatch((constraint) -> (constraint.trim().length()>0));
     }
     // Return the current reading of the i'th pvWriteables
     private static double getPVsetting(int i) throws ConnectionException, GetException {
-        return pvWriteables.get(i).getChannel().getRawValueRecord().doubleValue();
+        return mainDocument.pvWriteables.get(i).getChannel().getRawValueRecord().doubleValue();
     }
     /*
      * This function updates combos with the correct combinations of settings
@@ -193,26 +155,26 @@ public class MainFunctions {
      * Note that combos.get(0) always returns the INITIAL SETTINGS
      */
     public static int calculateCombos() {
-         combos.clear();
+         mainDocument.combos.clear();
 
         // Calculate the correct amount of combos..
         int ncombos=1;
-        for (ChannelWrapper cw : pvWriteables) {
+        for (ChannelWrapper cw : mainDocument.pvWriteables) {
             ncombos*=cw.getNpoints();
         }
         for (int i = 0;i<ncombos+2;i++)
-            combos.add(new double[pvWriteables.size()]);
+            mainDocument.combos.add(new double[mainDocument.pvWriteables.size()]);
 
         // Read in all settings before any modifications..
         // First and last measurement is at initial parameters
-        for (int i=0;i<pvWriteables.size();i++) {
+        for (int i=0;i<mainDocument.pvWriteables.size();i++) {
              try {
-                 combos.get(0)[i] = getPVsetting(i);
-                 combos.get(ncombos+1)[i] = combos.get(0)[i];
+                 mainDocument.combos.get(0)[i] = getPVsetting(i);
+                 mainDocument.combos.get(ncombos+1)[i] = mainDocument.combos.get(0)[i];
              } catch (ConnectionException | GetException ex) {
                 Logger.getLogger(MainFunctions.class.getName()).log(Level.WARNING, null, ex);
-                combos.get(0)[i] = 0.0;
-                combos.get(ncombos+1)[i] = 0.0;
+                mainDocument.combos.get(0)[i] = 0.0;
+                mainDocument.combos.get(ncombos+1)[i] = 0.0;
              }
         }
 
@@ -222,29 +184,29 @@ public class MainFunctions {
         // n2 will say how many times we should loop the current PV
         int n2 = 1;
         // Write out one parameter at the time
-        for (int i=0; i<pvWriteables.size();i++) {
+        for (int i=0; i<mainDocument.pvWriteables.size();i++) {
             // The combo index we are currently inserting
             int m = 1;
-            n1/=pvWriteables.get(i).getNpoints();
+            n1/=mainDocument.pvWriteables.get(i).getNpoints();
             for (int l=0;l<n2;l++) {
-                for ( double sp : pvWriteables.get(i).getScanPoints()) {
+                for ( double sp : mainDocument.pvWriteables.get(i).getScanPoints()) {
                     for (int k=0;k<n1;k++) {
-                        combos.get(m)[i]=sp;
+                        mainDocument.combos.get(m)[i]=sp;
                         m+=1;
                     }
                 }
             }
-            n2*=pvWriteables.get(i).getNpoints();
+            n2*=mainDocument.pvWriteables.get(i).getNpoints();
          }
 
         // Now we check if any of the combos are invalid..
         if (hasConstraints()) {
             int i=0;
-            while(i<combos.size())
+            while(i<mainDocument.combos.size())
             {
                 try {
-                    if (!checkConstraints(combos.get(i))) {
-                        combos.remove(i);
+                    if (!checkConstraints(mainDocument.combos.get(i))) {
+                        mainDocument.combos.remove(i);
                         continue;
                     }
                 } catch (ScriptException ex) {
@@ -254,7 +216,7 @@ public class MainFunctions {
             }
         }
         isCombosUpdated.set(true);
-        return combos.size();
+        return mainDocument.combos.size();
     }
 
     /*
@@ -264,8 +226,8 @@ public class MainFunctions {
     private static void setCombo(double[] combo) {
         for (int i=0;i<combo.length;i++) {
             try {
-                if (pvWriteables.get(i).getChannel().connectAndWait(5))
-                    pvWriteables.get(i).getChannel().putVal(combo[i]);
+                if (mainDocument.pvWriteables.get(i).getChannel().connectAndWait(5))
+                    mainDocument.pvWriteables.get(i).getChannel().putVal(combo[i]);
             } catch (ConnectionException | PutException ex) {
                 Logger.getLogger(MainFunctions.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -273,11 +235,11 @@ public class MainFunctions {
     }
 
     private static double [] makeReading() {
-        double[] readings = new double[pvReadbacks.size()];
+        double[] readings = new double[mainDocument.pvReadbacks.size()];
         for (int i=0;i<readings.length;i++) {
             try {
                 // Here you insert an actual reading of the PV value..
-                readings[i]=pvReadbacks.get(i).getRawValueRecord().doubleValue();
+                readings[i]=mainDocument.pvReadbacks.get(i).getRawValueRecord().doubleValue();
             } catch (ConnectionException | GetException ex) {
                 Logger.getLogger(MainFunctions.class.getName()).log(Level.SEVERE, null, ex);
                 readings[i]=0.0;
@@ -299,28 +261,43 @@ public class MainFunctions {
 
     public static double[][] actionExecute() {
 
-
-        pvReadbacks.forEach(pv -> System.out.println("Read PV: "+pv.channelName()));
-        pvWriteables.forEach(pv -> System.out.println("Write PV: "+pv.getChannel().channelName()));
         if (!isCombosUpdated.get()) calculateCombos();
-        double[][] measurement = new double[combos.size()][pvWriteables.size()+pvReadbacks.size()];
+        double[][] measurement = new double[mainDocument.combos.size()][mainDocument.pvWriteables.size()+mainDocument.pvReadbacks.size()];
 
+        try {
+            MainFunctions.mainDocument.saveDocumentAs(new File("scanner.xml").toURI().toURL());
+        } catch (MalformedURLException ex) {
+            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         Task task = new Task<Void>() {
             @Override
             public void run() {
-                for (int i=0; i<combos.size(); i++) {
-                    System.out.println("DBG, execute "+i+" : "+Arrays.toString(combos.get(i)));
-                    setCombo(combos.get(i));
+                for (int i=0; i<mainDocument.combos.size(); i++) {
+                    setCombo(mainDocument.combos.get(i));
                     try {
                         sleep(2000);
                     } catch (InterruptedException ex) {
                         Logger.getLogger(MainFunctions.class.getName()).log(Level.SEVERE, null, ex);
                     }
                     double[] readings = makeReading();
-                    System.arraycopy(combos.get(i), 0, measurement[i], 0, pvWriteables.size());
-                    System.arraycopy(readings, 0, measurement[i], pvWriteables.size(), pvReadbacks.size());
-                    updateProgress(i+1, combos.size());
+                    System.arraycopy(mainDocument.combos.get(i), 0, measurement[i], 0, mainDocument.pvWriteables.size());
+                    System.arraycopy(readings, 0, measurement[i], mainDocument.pvWriteables.size(), mainDocument.pvReadbacks.size());
+                    updateProgress(i+1, mainDocument.combos.size());
+                    mainDocument.saveCurrentMeas(measurement, i);
+                }
+
+                // Make sure we are back to initial settings!
+                setCombo(mainDocument.combos.get(0));
+                int measNum = mainDocument.dataSets.size()+1;
+                mainDocument.dataSets.put("Measurement "+measNum, measurement);
+                mainDocument.allPVrb.put("Measurement "+measNum, mainDocument.pvReadbacks.stream().collect(Collectors.toList()));
+                mainDocument.allPVw.put("Measurement "+measNum, mainDocument.pvWriteables.stream().map(cw -> cw.getChannel()).collect(Collectors.toList()));
+
+                try {
+                    MainFunctions.mainDocument.saveDocumentAs(new File("scanner.xml").toURI().toURL());
+                } catch (MalformedURLException ex) {
+                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
 
@@ -332,13 +309,6 @@ public class MainFunctions {
         runProgress.bind(task.progressProperty());
         new Thread(task).start();
 
-        // Make sure we are back to initial settings!
-        setCombo(combos.get(0));
-        int measNum = dataSets.size()+1;
-        dataSets.put("Measurement "+measNum, measurement);
-        allPVrb.put("Measurement "+measNum, pvReadbacks.stream().collect(Collectors.toList()));
-        allPVw.put("Measurement "+measNum, pvWriteables.stream().map(cw -> cw.getChannel()).collect(Collectors.toList()));
-
         return measurement;
     }
     /**
@@ -347,7 +317,7 @@ public class MainFunctions {
      * @return true if we have at least one parameter to scan and one to read
      */
     static boolean checkSufficientParams() {
-        if (pvReadbacks.isEmpty() || pvWriteables.isEmpty())
+        if (mainDocument.pvReadbacks.isEmpty() || mainDocument.pvWriteables.isEmpty())
             return false;
         return true;
     }

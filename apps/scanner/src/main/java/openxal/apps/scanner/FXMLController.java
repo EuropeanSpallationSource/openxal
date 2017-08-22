@@ -32,10 +32,14 @@
 
 package openxal.apps.scanner;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -56,7 +60,6 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldListCell;
@@ -175,10 +178,20 @@ public class FXMLController implements Initializable {
     private void handleScanRemovePV(ActionEvent event) {
     }
 
+    @FXML
+    void saveDocument(ActionEvent event) {
+        System.out.println("Save document..");
+        try {
+            MainFunctions.mainDocument.saveDocumentAs(new File("scanner.xml").toURI().toURL());
+        } catch (MalformedURLException ex) {
+            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
     private void plotMeasurement(String measName) {
-        double [][] measurement = MainFunctions.dataSets.get(measName);
-        List<Channel> pvR = MainFunctions.allPVrb.get(measName);
-        List<Channel> pvW = MainFunctions.allPVw.get(measName);
+        double [][] measurement = MainFunctions.mainDocument.dataSets.get(measName);
+        List<Channel> pvR = MainFunctions.mainDocument.allPVrb.get(measName);
+        List<Channel> pvW = MainFunctions.mainDocument.allPVw.get(measName);
         if (measurement != null) {
             for (int i=0;i<pvW.size();i++) {
                 XYChart.Series<Number, Number> series = new XYChart.Series();
@@ -313,15 +326,15 @@ public class FXMLController implements Initializable {
         // Initialize constraints
         ObservableList<String> constraints = FXCollections.observableArrayList("", "", "", "", "","", "", "", "");
         // Copy this to MainFunctions..
-        constraints.forEach((constraint) -> MainFunctions.constraints.add(constraint));
+        constraints.forEach((constraint) -> MainFunctions.mainDocument.constraints.add(constraint));
 
         constraintsList.setItems(constraints);
         constraintsList.setCellFactory(TextFieldListCell.forListView());
         constraintsList.setOnEditCommit((ListView.EditEvent<String> t) -> {
             constraintsList.getItems().set(t.getIndex(), t.getNewValue());
             // TODO: is there not a better replace function for Lists?
-            MainFunctions.constraints.add(t.getIndex(), t.getNewValue());
-            MainFunctions.constraints.remove(t.getIndex()+1);
+            MainFunctions.mainDocument.constraints.add(t.getIndex(), t.getNewValue());
+            MainFunctions.mainDocument.constraints.remove(t.getIndex()+1);
             MainFunctions.isCombosUpdated.set(false);
         });
 
@@ -332,7 +345,6 @@ public class FXMLController implements Initializable {
         MainFunctions.runProgress.addListener(new ChangeListener() {
             @Override
             public void changed(ObservableValue o, Object oldVal, Object newVal) {
-                System.out.println("DBG11 "+MainFunctions.runProgress.getValue());
                 if(MainFunctions.runProgress.getValue()<1.0) {
                     executeButton.setText("Running..");
                     executeButton.setDisable(true);
@@ -368,7 +380,7 @@ public class FXMLController implements Initializable {
 
     private void clearAllConstraints() {
         constraintsList.getItems().setAll("");
-        MainFunctions.constraints.clear();
-        constraintsList.getItems().forEach((constraint) -> MainFunctions.constraints.add(constraint));
+        MainFunctions.mainDocument.constraints.clear();
+        constraintsList.getItems().forEach((constraint) -> MainFunctions.mainDocument.constraints.add(constraint));
     }
 }

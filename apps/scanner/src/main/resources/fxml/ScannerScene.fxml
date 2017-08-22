@@ -44,7 +44,7 @@
                            </accelerator>
                         </MenuItem>
                         <MenuItem mnemonicParsing="false" text="Close All" />
-                        <MenuItem mnemonicParsing="false" text="Save" />
+                        <MenuItem mnemonicParsing="false" onAction="#saveDocument" text="Save" />
                         <MenuItem mnemonicParsing="false" text="Save As" />
                         <MenuItem mnemonicParsing="false" text="Save All" />
                         <MenuItem mnemonicParsing="false" text="Revert To Saved" />
