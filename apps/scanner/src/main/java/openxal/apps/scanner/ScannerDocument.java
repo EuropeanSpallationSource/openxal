@@ -38,7 +38,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import xal.ca.Channel;
+import xal.smf.Accelerator;
 import xal.tools.data.DataAdaptor;
 import xal.tools.xml.XmlDataAdaptor;
 
@@ -64,11 +67,10 @@ public class ScannerDocument {
      * To calculate constraints, we need to know the short hand variable name
      * for each variable..
      */
-    public Map<ChannelWrapper, String> constraintsVars;
-    public List<String> constraints;
+    public ObservableList<String> constraints;
 
     // The Readback channels
-    public List<Channel> pvReadbacks;
+    public List<ChannelWrapper> pvReadbacks;
     // The Set channels
     public List<ChannelWrapper> pvWriteables;
     // The combination of scan points (each double[] is equal to number of writeables)
@@ -94,11 +96,10 @@ public class ScannerDocument {
         dataSets = new HashMap<>();
         allPVrb = new HashMap<>();
         allPVw = new HashMap<>();
-        constraintsVars = new HashMap<>();
         pvReadbacks = new ArrayList<>();
         pvWriteables = new ArrayList<>();
         combos = new ArrayList<>();
-        constraints = new ArrayList<>();
+        constraints = FXCollections.observableArrayList("x1=5", "", "", "");
     }
 
 
@@ -162,7 +163,7 @@ public class ScannerDocument {
         DataAdaptor scannerAdaptor =  da.createChild(scanner_SR);
         currentMeasAdaptor = null;
         scannerAdaptor.setValue("title", url.getFile());
-        scannerAdaptor.setValue("date", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+        scannerAdaptor.setValue("date", new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date()));
 
 
         // Store information about all measurements done..
@@ -209,7 +210,7 @@ public class ScannerDocument {
         DataAdaptor measpvScanner = scannerAdaptor.createChild(measurePVs_SR);
         pvReadbacks.forEach((pv) -> {
             DataAdaptor meas_PV_name =  measpvScanner.createChild("PV");
-            meas_PV_name.setValue("name", pv.getId() );
+            meas_PV_name.setValue("name", pv.getChannel().getId() );
         });
 
         DataAdaptor constraintsAdaptor = scannerAdaptor.createChild(constraints_SR);
@@ -229,4 +230,61 @@ public class ScannerDocument {
         currentMeasAdaptor.createChild("step").setValue("values", measurement[nmeas]);
         da.writeToUrl( defaultUrl );
     };
+
+
+    /**
+     *  Reads the content of the document from the specified URL, and loads the information into the application.
+     *
+     * @param  url  The path to the XML file
+     */
+    public void loadDocument(URL url) {
+        DataAdaptor readAdp = XmlDataAdaptor.adaptorForUrl( url, false );
+        DataAdaptor scannerAdaptor =  readAdp.childAdaptor(scanner_SR);
+
+        Accelerator acc = Model.getInstance().getAccelerator();
+
+        // Load list of variables to read & write.. ChannelWrapper objects
+        // There is probably an issue since these variables are not read into MainFunctions.PVlist
+        DataAdaptor scanpvScanner = scannerAdaptor.childAdaptor(scanPVs_SR);
+        pvWriteables.clear();
+        scanpvScanner.childAdaptors().forEach( (childAdaptor) -> {
+            String name = childAdaptor.stringValue("name");
+            double min = childAdaptor.doubleValue("min");
+            double max = childAdaptor.doubleValue("max");
+            int npoints = childAdaptor.intValue("npoints");
+            String instance = childAdaptor.stringValue("instance");
+
+            Channel chan = acc.channelSuite().getChannelFactory().getChannel(name);
+
+            ChannelWrapper cWrap = new ChannelWrapper(chan);
+            cWrap.isScannedProperty().set(true);
+            cWrap.minProperty().set(min);
+            cWrap.maxProperty().set(max);
+            cWrap.npointsProperty().set(npoints);
+            cWrap.forceInstance(instance);
+
+            pvWriteables.add(cWrap);
+        });
+
+        DataAdaptor readpvScanner = scannerAdaptor.childAdaptor(measurePVs_SR);
+        pvReadbacks.clear();
+        readpvScanner.childAdaptors().forEach( (childAdaptor) -> {
+            String name = childAdaptor.stringValue("name");
+
+            Channel chan = acc.channelSuite().getChannelFactory().getChannel(name);
+            ChannelWrapper cWrap = new ChannelWrapper(chan);
+            cWrap.isReadProperty().set(true);
+
+            pvReadbacks.add(cWrap);
+        });
+
+        DataAdaptor constraintsAdaptor = scannerAdaptor.childAdaptor(constraints_SR);
+        for(int i = 0; i<constraints.size();i++)
+            constraints.set(i, "");
+        for (int i = 0; i<constraintsAdaptor.childAdaptors().size();i++) {
+            DataAdaptor childAdaptor = constraintsAdaptor.childAdaptors().get(i);
+            constraints.set(i,childAdaptor.stringValue("value"));
+        }
+
+    }
 }

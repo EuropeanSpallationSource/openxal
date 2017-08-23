@@ -63,6 +63,9 @@ public class MainFunctions {
     // True if combos list is up to date
     public static SimpleBooleanProperty isCombosUpdated;
 
+    // Sleep time in ms between setting parameters and reading back.
+    private static final long sleepTime = 2000;
+
     public static void initialize() {
 
         mainDocument = new ScannerDocument();
@@ -74,18 +77,15 @@ public class MainFunctions {
     /**
      *
      * @param cWrapper The channel to add
-     * @param shorthand The short hand name of variable for constraint view
      * @param read Add the channel to readbacks
      * @param write Add the channel to writeables
      * @return true if the channel was added (ie was not already in list)
      */
-    public static boolean actionScanAddPV(ChannelWrapper cWrapper, String shorthand, Boolean read, Boolean write) {
-
-        Accelerator acc = Model.getInstance().getAccelerator();
+    public static boolean actionScanAddPV(ChannelWrapper cWrapper, Boolean read, Boolean write) {
 
         if (read)
-            if (! mainDocument.pvReadbacks.contains(cWrapper.getChannel())) {
-                mainDocument.pvReadbacks.add(cWrapper.getChannel());
+            if (! mainDocument.pvReadbacks.contains(cWrapper)) {
+                mainDocument.pvReadbacks.add(cWrapper);
                 return true;
             }
         if (write) {
@@ -94,7 +94,6 @@ public class MainFunctions {
                 cWrapper.npointsProperty().addListener((observable, oldValue, newValue) -> isCombosUpdated.set(false));
                 cWrapper.minProperty().addListener((observable, oldValue, newValue) -> isCombosUpdated.set(false));
                 cWrapper.maxProperty().addListener((observable, oldValue, newValue) -> isCombosUpdated.set(false));
-                mainDocument.constraintsVars.put(cWrapper,shorthand);
                 return true;
             }
         }
@@ -110,11 +109,10 @@ public class MainFunctions {
     public static void actionScanRemovePV(ChannelWrapper cWrapper, Boolean read, Boolean write) {
         Accelerator acc = Model.getInstance().getAccelerator();
         if (read) {
-            mainDocument.pvReadbacks.remove(cWrapper.getChannel());
+            mainDocument.pvReadbacks.remove(cWrapper);
         }
         if (write) {
             mainDocument.pvWriteables.remove(cWrapper);
-            mainDocument.constraintsVars.remove(cWrapper);
         }
     }
 
@@ -131,7 +129,7 @@ public class MainFunctions {
         ScriptEngineManager manager = new ScriptEngineManager();
         ScriptEngine engine = manager.getEngineByName("js");
         for(int i=0;i<combo.length;i++) {
-            engine.eval(mainDocument.constraintsVars.get(mainDocument.pvWriteables.get(i))+"="+combo[i]);
+            engine.eval(mainDocument.pvWriteables.get(i).instanceProperty().get()+"="+combo[i]);
         }
         for(String constraint:mainDocument.constraints) {
             if (constraint.trim().length()>0)
@@ -199,6 +197,7 @@ public class MainFunctions {
             n2*=mainDocument.pvWriteables.get(i).getNpoints();
          }
 
+        mainDocument.constraints.forEach(constraint -> System.out.println("DBG combos constraint "+constraint));
         // Now we check if any of the combos are invalid..
         if (hasConstraints()) {
             int i=0;
@@ -239,7 +238,7 @@ public class MainFunctions {
         for (int i=0;i<readings.length;i++) {
             try {
                 // Here you insert an actual reading of the PV value..
-                readings[i]=mainDocument.pvReadbacks.get(i).getRawValueRecord().doubleValue();
+                readings[i]=mainDocument.pvReadbacks.get(i).getChannel().getRawValueRecord().doubleValue();
             } catch (ConnectionException | GetException ex) {
                 Logger.getLogger(MainFunctions.class.getName()).log(Level.SEVERE, null, ex);
                 readings[i]=0.0;
@@ -248,7 +247,8 @@ public class MainFunctions {
         return readings;
     }
 
-    public static String getTimeString(int seconds) {
+    public static String getTimeString(int npoints) {
+        int seconds = (int) (npoints*sleepTime/1000);
         int hours = (seconds - seconds%3600)/3600;
         int min = (seconds - seconds%60)/60;
         String time = ""+(seconds%60)+" s";
@@ -276,7 +276,7 @@ public class MainFunctions {
                 for (int i=0; i<mainDocument.combos.size(); i++) {
                     setCombo(mainDocument.combos.get(i));
                     try {
-                        sleep(2000);
+                        sleep(sleepTime);
                     } catch (InterruptedException ex) {
                         Logger.getLogger(MainFunctions.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -291,7 +291,7 @@ public class MainFunctions {
                 setCombo(mainDocument.combos.get(0));
                 int measNum = mainDocument.dataSets.size()+1;
                 mainDocument.dataSets.put("Measurement "+measNum, measurement);
-                mainDocument.allPVrb.put("Measurement "+measNum, mainDocument.pvReadbacks.stream().collect(Collectors.toList()));
+                mainDocument.allPVrb.put("Measurement "+measNum, mainDocument.pvReadbacks.stream().map(cw -> cw.getChannel()).collect(Collectors.toList()));
                 mainDocument.allPVw.put("Measurement "+measNum, mainDocument.pvWriteables.stream().map(cw -> cw.getChannel()).collect(Collectors.toList()));
 
                 try {
@@ -317,9 +317,7 @@ public class MainFunctions {
      * @return true if we have at least one parameter to scan and one to read
      */
     static boolean checkSufficientParams() {
-        if (mainDocument.pvReadbacks.isEmpty() || mainDocument.pvWriteables.isEmpty())
-            return false;
-        return true;
+        return !(mainDocument.pvReadbacks.isEmpty() || mainDocument.pvWriteables.isEmpty());
     }
 
 }

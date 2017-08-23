@@ -86,7 +86,6 @@ public class ChannelWrapper {
         npoints.addListener((observable, oldValue, newValue) -> updateScanRange(oldValue, newValue));
         min.addListener((observable, oldValue, newValue) -> updateScanRange(oldValue, newValue));
         max.addListener((observable, oldValue, newValue) -> updateScanRange(oldValue, newValue));
-
         m_id.set(c.getId());
         setType();
 
@@ -171,6 +170,14 @@ public class ChannelWrapper {
             instanceCount+=1;
             instance.set("x"+instanceCount);
         }
+        return instance.get();
+    }
+
+    public String forceInstance(String shortName) {
+        // Guessing that this counter will continue work,
+        // but it is not guaranteed!
+        instanceCount+=1;
+        instance.set(shortName);
         return instance.get();
     }
 }

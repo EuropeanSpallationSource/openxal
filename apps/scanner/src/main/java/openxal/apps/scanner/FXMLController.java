@@ -45,6 +45,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -179,10 +180,32 @@ public class FXMLController implements Initializable {
     }
 
     @FXML
-    void saveDocument(ActionEvent event) {
+    void handleSaveDocument(ActionEvent event) {
         System.out.println("Save document..");
         try {
             MainFunctions.mainDocument.saveDocumentAs(new File("scanner.xml").toURI().toURL());
+        } catch (MalformedURLException ex) {
+            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    @FXML
+    void handleLoadDocument(ActionEvent event) {
+        Logger.getLogger(FXMLController.class.getName()).log(Level.INFO, "Loading document..");
+        try {
+            MainFunctions.mainDocument.loadDocument(new File("scanner.xml").toURI().toURL());
+            PVscanList.clear();
+            MainFunctions.mainDocument.pvWriteables.forEach(cWrapper -> PVscanList.add(cWrapper));
+            PVlist.clear();
+            MainFunctions.mainDocument.pvWriteables.forEach(cWrapper -> PVlist.add(cWrapper));
+            MainFunctions.mainDocument.pvReadbacks.forEach(cWrapper -> PVlist.add(cWrapper));
+
+            MainFunctions.mainDocument.constraints.forEach(constraint -> System.out.println("DBG37 "+constraint));
+            constraintsList.setItems(MainFunctions.mainDocument.constraints);
+            MainFunctions.isCombosUpdated.set(false);
+            handlePreCalculate(event);
+            System.out.println("DBG updated "+MainFunctions.isCombosUpdated);
+
         } catch (MalformedURLException ex) {
             Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -216,7 +239,7 @@ public class FXMLController implements Initializable {
     void handlePreCalculate(ActionEvent event) {
         int nPoints = MainFunctions.calculateCombos();
         textFieldNumMeas.setText("Number of measurement points: "+nPoints);
-        textFieldTimeEstimate.setText("This will take "+MainFunctions.getTimeString(nPoints*2));
+        textFieldTimeEstimate.setText("This will take "+MainFunctions.getTimeString(nPoints));
     }
 
     @FXML
@@ -264,7 +287,7 @@ public class FXMLController implements Initializable {
         scanTablePV.setCellValueFactory(new PropertyValueFactory<>("channelName"));
         scanTableRead.setCellFactory(CheckBoxTableCell.forTableColumn((Integer param) -> {
             if (PVlist.get(param).getIsRead()) {
-                MainFunctions.actionScanAddPV(PVlist.get(param), "", true, false);
+                MainFunctions.actionScanAddPV(PVlist.get(param), true, false);
                 if (MainFunctions.checkSufficientParams()) {
                     tabConfigure.setDisable(false);
                     tabRun.setDisable(false);
@@ -280,11 +303,12 @@ public class FXMLController implements Initializable {
         }));
         scanTableRead.setCellValueFactory((CellDataFeatures<ChannelWrapper, Boolean> param) -> param.getValue().isReadProperty());
         scanTableScan.setCellFactory(CheckBoxTableCell.forTableColumn((Integer param) -> {
-            MainFunctions.isCombosUpdated.set(false);
             if (PVlist.get(param).getIsScanned()) {
                 PVlist.get(param).setInstance();
-                if (MainFunctions.actionScanAddPV(PVlist.get(param), PVlist.get(param).instanceProperty().get(), false, true))
+                if (MainFunctions.actionScanAddPV(PVlist.get(param), false, true)) {
                     PVscanList.add(PVlist.get(param));
+                    MainFunctions.isCombosUpdated.set(false);
+                }
                 if (MainFunctions.checkSufficientParams()) {
                     tabConfigure.setDisable(false);
                     tabRun.setDisable(false);
@@ -292,12 +316,14 @@ public class FXMLController implements Initializable {
             }
             else {
                 MainFunctions.actionScanRemovePV(PVlist.get(param), false, true);
-                PVscanList.remove(PVlist.get(param));
+                if(PVscanList.remove(PVlist.get(param))) {
+                    clearAllConstraints();
+                    MainFunctions.isCombosUpdated.set(false);
+                }
                 if(PVscanList.isEmpty()) {
                     tabConfigure.setDisable(true);
                     tabRun.setDisable(true);
                 }
-                clearAllConstraints();
             }
             return PVlist.get(param).isScannedProperty();
         }));
@@ -324,17 +350,11 @@ public class FXMLController implements Initializable {
         MainFunctions.initialize();
 
         // Initialize constraints
-        ObservableList<String> constraints = FXCollections.observableArrayList("", "", "", "", "","", "", "", "");
-        // Copy this to MainFunctions..
-        constraints.forEach((constraint) -> MainFunctions.mainDocument.constraints.add(constraint));
-
-        constraintsList.setItems(constraints);
+        constraintsList.setItems(MainFunctions.mainDocument.constraints);
         constraintsList.setCellFactory(TextFieldListCell.forListView());
         constraintsList.setOnEditCommit((ListView.EditEvent<String> t) -> {
             constraintsList.getItems().set(t.getIndex(), t.getNewValue());
-            // TODO: is there not a better replace function for Lists?
-            MainFunctions.mainDocument.constraints.add(t.getIndex(), t.getNewValue());
-            MainFunctions.mainDocument.constraints.remove(t.getIndex()+1);
+            MainFunctions.mainDocument.constraints.set(t.getIndex(), t.getNewValue());
             MainFunctions.isCombosUpdated.set(false);
         });
 
@@ -362,6 +382,7 @@ public class FXMLController implements Initializable {
 
         MainFunctions.isCombosUpdated.addListener((observable, oldValue, newValue) -> {
                     if(!newValue) {
+                        System.out.println("DBG removing text again..");
                         textFieldNumMeas.setText("");
                         textFieldTimeEstimate.setText("");
                     }
@@ -379,8 +400,9 @@ public class FXMLController implements Initializable {
     }
 
     private void clearAllConstraints() {
-        constraintsList.getItems().setAll("");
-        MainFunctions.mainDocument.constraints.clear();
-        constraintsList.getItems().forEach((constraint) -> MainFunctions.mainDocument.constraints.add(constraint));
+        System.out.println("DBG clearing constraints.. " +MainFunctions.isCombosUpdated.get());
+        for(int i = 0; i<MainFunctions.mainDocument.constraints.size();i++)
+            MainFunctions.mainDocument.constraints.set(i, "");
+        constraintsList.setItems(MainFunctions.mainDocument.constraints);
     }
 }
