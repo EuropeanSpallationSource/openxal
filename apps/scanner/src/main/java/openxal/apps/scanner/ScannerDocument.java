@@ -38,10 +38,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import xal.ca.Channel;
+import xal.ca.ConnectionException;
 import xal.smf.Accelerator;
+import xal.smf.NoSuchChannelException;
 import xal.tools.data.DataAdaptor;
 import xal.tools.xml.XmlDataAdaptor;
 
@@ -62,6 +66,8 @@ public class ScannerDocument {
      * For every measurement, store the channels written to for this measurement..
      */
     public Map<String, List<Channel>> allPVw;
+
+    public double[][] currentMeasurement;
 
     /**
      * To calculate constraints, we need to know the short hand variable name
@@ -222,12 +228,12 @@ public class ScannerDocument {
         da.writeToUrl( url );
     }
 
-    public void saveCurrentMeas(double[][] measurement, int nmeas) {
+    public void saveCurrentMeas(int nmeas) {
         System.out.println("Saving meas "+nmeas);
         if (currentMeasAdaptor==null) {
             currentMeasAdaptor=da.childAdaptor(scanner_SR).createChild(currentMeas_SR).createChild("dataSet");
         }
-        currentMeasAdaptor.createChild("step").setValue("values", measurement[nmeas]);
+        currentMeasAdaptor.createChild("step").setValue("values", currentMeasurement[nmeas]);
         da.writeToUrl( defaultUrl );
     };
 
@@ -284,6 +290,48 @@ public class ScannerDocument {
         for (int i = 0; i<constraintsAdaptor.childAdaptors().size();i++) {
             DataAdaptor childAdaptor = constraintsAdaptor.childAdaptors().get(i);
             constraints.set(i,childAdaptor.stringValue("value"));
+        }
+
+
+        // Load earlier measurements..
+        if ( scannerAdaptor.childAdaptor(measurements_SR) != null) {
+            DataAdaptor measurementsScanner = scannerAdaptor.childAdaptor(measurements_SR);
+            measurementsScanner.childAdaptors().forEach( (measAdaptor) -> {
+                List<Channel> pvW = new ArrayList<>();
+                List<Channel> pvR = new ArrayList<>();
+                int ncombos = measAdaptor.childAdaptor("dataSet").childAdaptors().get(0).doubleArray("data").length;
+                int nchannels = measAdaptor.childAdaptor("dataSet").childAdaptors().size();
+                double[][] data = new double[ncombos][nchannels];
+                //dataSets.get(measAdaptor.stringValue("title"));
+                for (int ichan=0;ichan<nchannels;ichan++) {
+                    DataAdaptor chanAdaptor = measAdaptor.childAdaptor("dataSet").childAdaptors().get(ichan);
+                    double[] channelData = chanAdaptor.doubleArray("data");
+                    for (int icombo=0;icombo<ncombos;icombo++) {
+                        data[icombo][ichan] = channelData[icombo];
+                    }
+                    Channel chan;
+                    chan = Model.getInstance().getAccelerator().findChannel(chanAdaptor.stringValue("name"));
+                    if ("w".equals(chanAdaptor.stringValue("type"))) {
+                        pvW.add(chan);
+                    } else if ("r".equals(chanAdaptor.stringValue("type"))) {
+                        pvR.add(chan);
+                    }
+                }
+                dataSets.put(measAdaptor.stringValue("title"), data);
+                allPVw.put(measAdaptor.stringValue("title"), pvW);
+                allPVrb.put(measAdaptor.stringValue("title"), pvR);
+
+            });
+        }
+
+        if ( scannerAdaptor.childAdaptor(currentMeas_SR) != null) {
+            DataAdaptor dataSet = scannerAdaptor.childAdaptor(currentMeas_SR).childAdaptor("dataSet");
+            dataSet.childAdaptors().forEach( (childAdaptor) -> {
+                 double [] values = childAdaptor.doubleArray("values");
+                 System.out.println("DBG "+values);
+            });
+            System.out.println("DBG found current meas");
+
         }
 
     }

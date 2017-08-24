@@ -200,11 +200,13 @@ public class FXMLController implements Initializable {
             MainFunctions.mainDocument.pvWriteables.forEach(cWrapper -> PVlist.add(cWrapper));
             MainFunctions.mainDocument.pvReadbacks.forEach(cWrapper -> PVlist.add(cWrapper));
 
-            MainFunctions.mainDocument.constraints.forEach(constraint -> System.out.println("DBG37 "+constraint));
             constraintsList.setItems(MainFunctions.mainDocument.constraints);
             MainFunctions.isCombosUpdated.set(false);
             handlePreCalculate(event);
-            System.out.println("DBG updated "+MainFunctions.isCombosUpdated);
+            if (MainFunctions.mainDocument.dataSets.size()>0) {
+                tabDisplay.setDisable(false);
+                MainFunctions.mainDocument.dataSets.entrySet().forEach(dataSet -> measurements.add(dataSet.getKey()));
+            }
 
         } catch (MalformedURLException ex) {
             Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
@@ -328,7 +330,6 @@ public class FXMLController implements Initializable {
             return PVlist.get(param).isScannedProperty();
         }));
         scanTableScan.setCellValueFactory((CellDataFeatures<ChannelWrapper, Boolean> param) -> param.getValue().isScannedProperty());
-
         // Initialize the configurations list
 
         // Initialize the list of measurements

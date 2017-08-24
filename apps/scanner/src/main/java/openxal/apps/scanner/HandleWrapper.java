@@ -58,6 +58,7 @@ public class HandleWrapper {
 
     HandleWrapper(AcceleratorNode node, String handle) {
         m_channel = node.getChannel(handle);
+        m_channel.connectAndWait();
         m_node = node;
         m_id = new SimpleStringProperty(this, "id");
         m_typeHandle = new SimpleStringProperty(this, "typeHandle");
@@ -88,7 +89,7 @@ public class HandleWrapper {
             } else if (m_channel.writeAccess() ) {
                 m_type.set("w");
             }
-                } catch (Exception ex) {  m_type.set("w"); }
+                } catch (Exception ex) {  m_type.set("rw"); }
 
     }
 

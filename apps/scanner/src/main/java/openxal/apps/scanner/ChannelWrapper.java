@@ -41,6 +41,8 @@ import javafx.beans.property.StringProperty;
 import xal.ca.Channel;
 import xal.ca.ConnectionException;
 import xal.ca.GetException;
+import xal.ca.IServerChannel;
+import xal.smf.ChannelSuite;
 
 /**
  *
@@ -64,6 +66,7 @@ public class ChannelWrapper {
 
     ChannelWrapper(Channel c) {
         m_channel = c;
+        m_channel.connectAndWait();
         initialValue = new SimpleDoubleProperty(0.0);
         try {
             initialValue.set(c.getRawValueRecord().doubleValue());
@@ -81,6 +84,7 @@ public class ChannelWrapper {
         isRead = new SimpleBooleanProperty(false);
         instance = new SimpleStringProperty("x0");
 
+
         updateScanRange(min.get(),max.get());
 
         npoints.addListener((observable, oldValue, newValue) -> updateScanRange(oldValue, newValue));
@@ -91,20 +95,19 @@ public class ChannelWrapper {
 
        try {
             m_unit.set(c.getUnits());
-        } catch (Exception ex) { }
+        } catch (ConnectionException | GetException ex) { }
     }
 
     private void setType() {
         try {
             if (m_channel.readAccess() && m_channel.writeAccess()) {
-                m_type.set("rw");
+                 m_type.set("rw");
             } else if (m_channel.readAccess() ) {
-                m_type.set("r");
+                 m_type.set("r");
             } else if (m_channel.writeAccess() ) {
                 m_type.set("w");
-            }
-                } catch (Exception ex) {  m_type.set("w"); }
-
+             }
+        } catch (Exception ex) { m_type.set("w"); }
     }
     public StringProperty idProperty() {
         return m_id;

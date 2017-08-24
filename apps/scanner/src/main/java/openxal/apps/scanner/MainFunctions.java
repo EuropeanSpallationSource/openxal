@@ -107,7 +107,6 @@ public class MainFunctions {
      * @param write Remove the channel from writeables
      */
     public static void actionScanRemovePV(ChannelWrapper cWrapper, Boolean read, Boolean write) {
-        Accelerator acc = Model.getInstance().getAccelerator();
         if (read) {
             mainDocument.pvReadbacks.remove(cWrapper);
         }
@@ -262,7 +261,7 @@ public class MainFunctions {
     public static double[][] actionExecute() {
 
         if (!isCombosUpdated.get()) calculateCombos();
-        double[][] measurement = new double[mainDocument.combos.size()][mainDocument.pvWriteables.size()+mainDocument.pvReadbacks.size()];
+        mainDocument.currentMeasurement = new double[mainDocument.combos.size()][mainDocument.pvWriteables.size()+mainDocument.pvReadbacks.size()];
 
         try {
             MainFunctions.mainDocument.saveDocumentAs(new File("scanner.xml").toURI().toURL());
@@ -281,16 +280,16 @@ public class MainFunctions {
                         Logger.getLogger(MainFunctions.class.getName()).log(Level.SEVERE, null, ex);
                     }
                     double[] readings = makeReading();
-                    System.arraycopy(mainDocument.combos.get(i), 0, measurement[i], 0, mainDocument.pvWriteables.size());
-                    System.arraycopy(readings, 0, measurement[i], mainDocument.pvWriteables.size(), mainDocument.pvReadbacks.size());
+                    System.arraycopy(mainDocument.combos.get(i), 0, mainDocument.currentMeasurement[i], 0, mainDocument.pvWriteables.size());
+                    System.arraycopy(readings, 0, mainDocument.currentMeasurement[i], mainDocument.pvWriteables.size(), mainDocument.pvReadbacks.size());
                     updateProgress(i+1, mainDocument.combos.size());
-                    mainDocument.saveCurrentMeas(measurement, i);
+                    mainDocument.saveCurrentMeas(i);
                 }
 
                 // Make sure we are back to initial settings!
                 setCombo(mainDocument.combos.get(0));
                 int measNum = mainDocument.dataSets.size()+1;
-                mainDocument.dataSets.put("Measurement "+measNum, measurement);
+                mainDocument.dataSets.put("Measurement "+measNum, mainDocument.currentMeasurement);
                 mainDocument.allPVrb.put("Measurement "+measNum, mainDocument.pvReadbacks.stream().map(cw -> cw.getChannel()).collect(Collectors.toList()));
                 mainDocument.allPVw.put("Measurement "+measNum, mainDocument.pvWriteables.stream().map(cw -> cw.getChannel()).collect(Collectors.toList()));
 
@@ -309,8 +308,9 @@ public class MainFunctions {
         runProgress.bind(task.progressProperty());
         new Thread(task).start();
 
-        return measurement;
+        return mainDocument.currentMeasurement;
     }
+
     /**
      * Check if we have selected enough parameters to do a scan
      *
