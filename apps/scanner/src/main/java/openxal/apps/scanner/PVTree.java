@@ -149,7 +149,7 @@ public class PVTree extends SplitPane {
 
     @FXML
     void elementSortChanged(ActionEvent event) {
-        System.out.println("DBG Changing sorting type (not implemented yet!)");
+        throw new UnsupportedOperationException("Changing sorting type not implemented yet)");
     }
 
     public PVTree() {

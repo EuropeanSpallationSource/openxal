@@ -46,7 +46,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -178,7 +177,7 @@ public class FXMLController implements Initializable {
             stage.show();
         }
         catch (IOException e) {
-            System.out.println("DBG Error opening Add PV window");
+            Logger.getLogger(MainFunctions.class.getName()).log(Level.SEVERE, "Error opening Add PV window", e);
         }
     }
 
@@ -196,6 +195,16 @@ public class FXMLController implements Initializable {
         }
     }
 
+    // Extend the the first dimension of the double array to length newLength
+    private double[][] extendArray(double[][] origArray, int newLength) {
+        double[][] newArray = new double[newLength][origArray[0].length];
+        for (int i=0;i<origArray.length;i++) {
+            for (int j=0;j<origArray[0].length;j++) {
+                newArray[i][j]=origArray[i][j];
+            }
+        }
+        return newArray;
+    }
     @FXML
     void handleLoadDocument(ActionEvent event) {
         Logger.getLogger(FXMLController.class.getName()).log(Level.INFO, "Loading document..");
@@ -210,6 +219,13 @@ public class FXMLController implements Initializable {
             constraintsList.setItems(MainFunctions.mainDocument.constraints);
             MainFunctions.isCombosUpdated.set(false);
             handlePreCalculate(event);
+            // In case there is a half finished measurement in the file..
+            if (MainFunctions.mainDocument.currentMeasurement != null) {
+                MainFunctions.mainDocument.nCombosDone = MainFunctions.mainDocument.currentMeasurement.length;
+                double[][] fullMeasurement = extendArray(MainFunctions.mainDocument.currentMeasurement, MainFunctions.mainDocument.combos.size());
+                MainFunctions.mainDocument.currentMeasurement = fullMeasurement;
+                plotMeasurement();
+            }
             if (MainFunctions.mainDocument.dataSets.size()>0) {
                 tabDisplay.setDisable(false);
                 MainFunctions.mainDocument.dataSets.entrySet().forEach(dataSet -> measurements.add(dataSet.getKey()));
@@ -225,7 +241,7 @@ public class FXMLController implements Initializable {
         double [][] measurement = MainFunctions.mainDocument.dataSets.get(measName);
         List<Channel> pvR = MainFunctions.mainDocument.allPVrb.get(measName);
         List<Channel> pvW = MainFunctions.mainDocument.allPVw.get(measName);
-        plotMeasurement(measurement, pvR, pvW);
+        plotMeasurement(measurement, pvW, pvR);
     }
 
     // Plot the current (ongoing) measurement
@@ -269,7 +285,8 @@ public class FXMLController implements Initializable {
     @FXML
     private void handleRunExecute(ActionEvent event) {
         MainFunctions.actionExecute();
-        measurements.add("Measurement " + (measurements.size()+1));
+        if (MainFunctions.mainDocument.nCombosDone == 0)
+            measurements.add("Measurement " + (measurements.size()+1));
         analyseList.getSelectionModel().clearSelection();
         plotMeasurement();
         analyseList.autosize();
@@ -406,8 +423,6 @@ public class FXMLController implements Initializable {
                     pauseButton.setText("Pause");
             }
           });
-        MainFunctions.pauseTask.addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> pauseButton.setDisable(!newValue));
-        MainFunctions.stopTask.addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> stopButton.setDisable(!newValue));
 
         // Deal with the progress of the run, activate to pause/stop buttons, plot last measurement etc..
         MainFunctions.runProgress.addListener(new ChangeListener() {

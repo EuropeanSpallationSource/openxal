@@ -65,6 +65,9 @@ public class ScannerDocument {
 
     public double[][] currentMeasurement;
 
+    // The current number of measurement points done
+    public int nCombosDone;
+
     /**
      * To calculate constraints, we need to know the short hand variable name
      * for each variable..
@@ -174,13 +177,11 @@ public class ScannerDocument {
             // convenience variables..
             List<Channel> pvW = allPVw.get(measurement.getKey());
             List<Channel> pvR = allPVrb.get(measurement.getKey());
-            System.out.println("DBG88 "+measurement.getKey() +", "+ pvW.size() +", "+ pvR.size() );
             DataAdaptor measurementAdaptor = measurementsScanner.createChild("measurement");
             measurementAdaptor.setValue("title", measurement.getKey());
             for (int i=0;i<measurement.getValue()[0].length;i++) {
                 DataAdaptor channelAdaptor = measurementAdaptor.createChild("channel");
                 if (i<pvW.size()) {
-            System.out.println("DBG89 "+i+pvW.get(i));
                     channelAdaptor.setValue("name", pvW.get(i).getId());
                     channelAdaptor.setValue("type", "w");
                 } else {
@@ -198,7 +199,7 @@ public class ScannerDocument {
 
         // Store information about current measurement setup..
 
-        // Store list of variables to read & write.. HandleWrapper objects
+        // Store list of variables to read & write.. ChannelWrapper objects
         DataAdaptor scanpvScanner = scannerAdaptor.createChild(scanPVs_SR);
         pvWriteables.forEach((pv) -> {
             DataAdaptor scan_PV_name =  scanpvScanner.createChild("PV");
@@ -244,7 +245,7 @@ public class ScannerDocument {
 
         Accelerator acc = Model.getInstance().getAccelerator();
 
-        // Load list of variables to read & write.. HandleWrapper objects
+        // Load list of variables to read & write.. ChannelWrapper objects
         // There is probably an issue since these variables are not read into MainFunctions.PVlist
         DataAdaptor scanpvScanner = scannerAdaptor.childAdaptor(scanPVs_SR);
         pvWriteables.clear();
@@ -305,7 +306,6 @@ public class ScannerDocument {
                         data[icombo][ichan] = channelData[icombo];
                     }
                     Channel chan = acc.channelSuite().getChannelFactory().getChannel(chanAdaptor.stringValue("name"));
-                    System.out.println("DBG90 "+chanAdaptor.stringValue("name") +", "+chan);
                     if ("w".equals(chanAdaptor.stringValue("type"))) {
                         pvW.add(chan);
                     } else if ("r".equals(chanAdaptor.stringValue("type"))) {
@@ -320,10 +320,17 @@ public class ScannerDocument {
         }
 
         if ( scannerAdaptor.childAdaptor(currentMeas_SR) != null) {
-            DataAdaptor currentMeasAdaptor = scannerAdaptor.childAdaptor(currentMeas_SR);
-            currentMeasAdaptor.childAdaptors().forEach( (childAdaptor) -> {
-                 double [] values = childAdaptor.doubleArray("values");
-            });
+            currentMeasAdaptor = scannerAdaptor.childAdaptor(currentMeas_SR);
+            // Need to calculate nmeas (or ncombos if you want)
+            nCombosDone=currentMeasAdaptor.childAdaptors().size();
+            int nVars = pvWriteables.size() + pvReadbacks.size();
+            currentMeasurement = new double[nCombosDone][nVars];
+            for(int i = 0;i<nCombosDone;i++) {
+                double [] values = currentMeasAdaptor.childAdaptors().get(i).doubleArray("values");
+                for (int j=0;j<nVars;j++) {
+                    currentMeasurement[i][j] = values[j];
+                }
+            }
         }
 
     }

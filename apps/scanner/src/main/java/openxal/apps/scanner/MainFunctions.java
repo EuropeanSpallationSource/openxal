@@ -33,7 +33,6 @@
 package openxal.apps.scanner;
 
 import java.io.File;
-import static java.lang.Thread.sleep;
 import java.net.MalformedURLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -46,7 +45,6 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import xal.ca.ConnectionException;
 import xal.ca.GetException;
-import xal.smf.Accelerator;
 import xal.ca.PutException;
 
 /**
@@ -158,6 +156,7 @@ public class MainFunctions {
      */
     public static int calculateCombos() {
          mainDocument.combos.clear();
+         mainDocument.nCombosDone = 0;
 
         // Calculate the correct amount of combos..
         int ncombos=1;
@@ -265,7 +264,9 @@ public class MainFunctions {
     public static double[][] actionExecute() {
 
         if (!isCombosUpdated.get()) calculateCombos();
-        mainDocument.currentMeasurement = new double[mainDocument.combos.size()][mainDocument.pvWriteables.size()+mainDocument.pvReadbacks.size()];
+
+        if (mainDocument.nCombosDone == 0)
+            mainDocument.currentMeasurement = new double[mainDocument.combos.size()][mainDocument.pvWriteables.size()+mainDocument.pvReadbacks.size()];
 
         try {
             MainFunctions.mainDocument.saveDocumentAs(new File("scanner.xml").toURI().toURL());
@@ -281,7 +282,7 @@ public class MainFunctions {
 
             @Override
             public void run() {
-                for (int i=0; i<mainDocument.combos.size(); i++) {
+                while (mainDocument.nCombosDone<mainDocument.combos.size()) {
                     while (pauseTask.get()) {
                         try {
                             Thread.sleep(sleepTime);
@@ -290,17 +291,18 @@ public class MainFunctions {
                         }
                     }
 
-                    setCombo(mainDocument.combos.get(i));
+                    setCombo(mainDocument.combos.get(mainDocument.nCombosDone));
                     try {
                         Thread.sleep(sleepTime);
                     } catch (InterruptedException ex) {
                         Logger.getLogger(MainFunctions.class.getName()).log(Level.SEVERE, "Sleep thread interrupted", ex);
                     }
                     double[] readings = makeReading();
-                    System.arraycopy(mainDocument.combos.get(i), 0, mainDocument.currentMeasurement[i], 0, mainDocument.pvWriteables.size());
-                    System.arraycopy(readings, 0, mainDocument.currentMeasurement[i], mainDocument.pvWriteables.size(), mainDocument.pvReadbacks.size());
-                    updateProgress(i+1, mainDocument.combos.size());
-                    mainDocument.saveCurrentMeas(i);
+                    System.arraycopy(mainDocument.combos.get(mainDocument.nCombosDone), 0, mainDocument.currentMeasurement[mainDocument.nCombosDone], 0, mainDocument.pvWriteables.size());
+                    System.arraycopy(readings, 0, mainDocument.currentMeasurement[mainDocument.nCombosDone], mainDocument.pvWriteables.size(), mainDocument.pvReadbacks.size());
+                    updateProgress(mainDocument.nCombosDone+1, mainDocument.combos.size());
+                    mainDocument.saveCurrentMeas(mainDocument.nCombosDone);
+                    mainDocument.nCombosDone++;
                     // if a stop is requested, break the task loop
                     if (stopTask.get())
                         break;
@@ -308,15 +310,19 @@ public class MainFunctions {
 
                 // Make sure we are back to initial settings!
                 setCombo(mainDocument.combos.get(0));
-                int measNum = mainDocument.dataSets.size()+1;
-                mainDocument.dataSets.put("Measurement "+measNum, mainDocument.currentMeasurement);
-                mainDocument.allPVrb.put("Measurement "+measNum, mainDocument.pvReadbacks.stream().map(cw -> cw.getChannel()).collect(Collectors.toList()));
-                mainDocument.allPVw.put("Measurement "+measNum, mainDocument.pvWriteables.stream().map(cw -> cw.getChannel()).collect(Collectors.toList()));
 
-                try {
-                    MainFunctions.mainDocument.saveDocumentAs(new File("scanner.xml").toURI().toURL());
-                } catch (MalformedURLException ex) {
-                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, "Failed to save document", ex);
+                // If we finished the measurement, store the new data.
+                if (mainDocument.nCombosDone == mainDocument.combos.size()) {
+                    int measNum = mainDocument.dataSets.size()+1;
+                    mainDocument.dataSets.put("Measurement "+measNum, mainDocument.currentMeasurement);
+                    mainDocument.allPVrb.put("Measurement "+measNum, mainDocument.pvReadbacks.stream().map(cw -> cw.getChannel()).collect(Collectors.toList()));
+                    mainDocument.allPVw.put("Measurement "+measNum, mainDocument.pvWriteables.stream().map(cw -> cw.getChannel()).collect(Collectors.toList()));
+                    mainDocument.nCombosDone=0;
+                    try {
+                        MainFunctions.mainDocument.saveDocumentAs(new File("scanner.xml").toURI().toURL());
+                    } catch (MalformedURLException ex) {
+                        Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, "Failed to save document", ex);
+                    }
                 }
             }
 
@@ -341,12 +347,14 @@ public class MainFunctions {
     }
 
     static public void triggerPause() {
-        Logger.getLogger(FXMLController.class.getName()).log(Level.INFO, "Pause triggered");
         // flip the pause state true/false
-        if (pauseTask.get())
+        if (pauseTask.get()) {
+            Logger.getLogger(FXMLController.class.getName()).log(Level.INFO, "Continue triggered");
             pauseTask.set(false);
-        else
+        } else {
+            Logger.getLogger(FXMLController.class.getName()).log(Level.INFO, "Pause triggered");
             pauseTask.set(true);
+        }
     }
 
     static public void triggerStop() {

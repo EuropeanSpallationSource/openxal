@@ -59,45 +59,16 @@ public class HandleWrapper {
     private final StringProperty m_typeHandle;
     private final StringProperty m_unit;
     private final StringProperty m_type;
-    private final SimpleDoubleProperty min;
-    private final SimpleDoubleProperty max;
-    private final SimpleDoubleProperty initialValue;
-    private final SimpleIntegerProperty npoints;
-    private final SimpleBooleanProperty isScanned;
-    private final SimpleBooleanProperty isRead;
-    private final SimpleStringProperty instance;
-    private double[] scanPoints;
-    // This is probably not the best way to do this.
-    public static int instanceCount = 0;
 
     HandleWrapper(AcceleratorNode node, String handle) {
         m_node = node;
         m_channel = node.getChannel(handle);
         m_channel.connectAndWait();
-        initialValue = new SimpleDoubleProperty(0.0);
-        try {
-            initialValue.set(m_channel.getRawValueRecord().doubleValue());
-        } catch (ConnectionException | GetException ex) {
-            Logger.getLogger(ChannelWrapper.class.getName()).log(Level.WARNING, null, ex);
-        }
         m_id = new SimpleStringProperty(this, "id");
         m_typeHandle = new SimpleStringProperty(this, "typeHandle");
         m_handle = new SimpleStringProperty(this, "handle");
         m_type = new SimpleStringProperty(this, "type");
         m_unit = new SimpleStringProperty(this, "unit");
-        min = new SimpleDoubleProperty(initialValue.get()-1.0);
-        max = new SimpleDoubleProperty(initialValue.get()+1.0);
-        npoints = new SimpleIntegerProperty(5);
-
-        isScanned = new SimpleBooleanProperty(false);
-        isRead = new SimpleBooleanProperty(false);
-        instance = new SimpleStringProperty("x0");
-
-        updateScanRange(min.get(),max.get());
-
-        npoints.addListener((observable, oldValue, newValue) -> updateScanRange(oldValue, newValue));
-        min.addListener((observable, oldValue, newValue) -> updateScanRange(oldValue, newValue));
-        max.addListener((observable, oldValue, newValue) -> updateScanRange(oldValue, newValue));
 
         m_id.set(m_channel.getId());
         m_handle.set(handle);
@@ -127,9 +98,6 @@ public class HandleWrapper {
     public StringProperty idProperty() {
         return m_id;
     }
-    public SimpleStringProperty instanceProperty() {
-        return instance;
-    }
     public StringProperty handleProperty() {
         return m_handle;
     }
@@ -142,21 +110,6 @@ public class HandleWrapper {
     public StringProperty typeProperty() {
         return m_type;
     }
-    public SimpleBooleanProperty isScannedProperty() {
-        return isScanned;
-    }
-    public SimpleBooleanProperty isReadProperty() {
-        return isRead;
-    }
-    public SimpleDoubleProperty minProperty() {
-        return min;
-    }
-    public SimpleDoubleProperty maxProperty() {
-        return max;
-    }
-    public SimpleIntegerProperty npointsProperty() {
-        return npoints;
-    }
 
     // get functions...
 
@@ -166,20 +119,6 @@ public class HandleWrapper {
     public String getChannelName() {
         return m_id.getValue();
     }
-    public boolean getIsScanned() {
-        return isScanned.get();
-    }
-    public boolean getIsRead() {
-        return isRead.get();
-    }
-    public int getNpoints() {
-        return npoints.get();
-    }
-    public double[] getScanPoints() {
-        if (scanPoints==null)
-            updateScanRange(min.get(),max.get());
-        return scanPoints;
-    }
     public String getHandle() {
         return m_handle.get();
     }
@@ -188,28 +127,5 @@ public class HandleWrapper {
     }
     public String getElementClass() {
         return m_node.getType();
-    }
-
-    // set functions
-
-    public String setInstance() {
-        if (instance.get().equals("x0")) {
-            instanceCount+=1;
-            instance.set("x"+instanceCount);
-        }
-        return instance.get();
-    }
-
-    // other
-
-    private void updateScanRange(Number oldValue, Number newValue) {
-        if ( newValue==null || newValue == oldValue ) {
-            return;
-        }
-        scanPoints = new double[npoints.get()];
-        for(int i=0;i<npoints.get();i++) {
-            scanPoints[i] = min.get()+(max.get()-min.get())/(npoints.get()-1)*i;
-        }
-
     }
 }
