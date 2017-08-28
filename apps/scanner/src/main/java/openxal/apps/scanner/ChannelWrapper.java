@@ -41,8 +41,6 @@ import javafx.beans.property.StringProperty;
 import xal.ca.Channel;
 import xal.ca.ConnectionException;
 import xal.ca.GetException;
-import xal.ca.IServerChannel;
-import xal.smf.ChannelSuite;
 
 /**
  *
@@ -162,6 +160,7 @@ public class ChannelWrapper {
         }
 
     }
+
     public double[] getScanPoints() {
         if (scanPoints==null)
             updateScanRange(min.get(),max.get());

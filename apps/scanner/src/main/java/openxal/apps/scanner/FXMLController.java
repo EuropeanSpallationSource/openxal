@@ -36,6 +36,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -121,7 +122,13 @@ public class FXMLController implements Initializable {
     private Tab tabRun;
 
     @FXML
+    private Button stopButton;
+
+    @FXML
     private Button executeButton;
+
+    @FXML
+    private ProgressBar runProgressBar;
 
     @FXML
     private Text textFieldNumMeas;
@@ -130,7 +137,7 @@ public class FXMLController implements Initializable {
     private Text textFieldTimeEstimate;
 
     @FXML
-    private ProgressBar runProgressBar;
+    private Button pauseButton;
 
     @FXML
     private Tab tabDisplay;
@@ -213,25 +220,40 @@ public class FXMLController implements Initializable {
         }
     }
 
+    // Plot measurement of name measName
     private void plotMeasurement(String measName) {
         double [][] measurement = MainFunctions.mainDocument.dataSets.get(measName);
         List<Channel> pvR = MainFunctions.mainDocument.allPVrb.get(measName);
         List<Channel> pvW = MainFunctions.mainDocument.allPVw.get(measName);
+        plotMeasurement(measurement, pvR, pvW);
+    }
+
+    // Plot the current (ongoing) measurement
+    private void plotMeasurement() {
+        List<Channel> _pvR = new ArrayList<>();
+        List<Channel> _pvW = new ArrayList<>();
+        MainFunctions.mainDocument.pvReadbacks.forEach(cWrap -> _pvR.add(cWrap.getChannel()));
+        MainFunctions.mainDocument.pvWriteables.forEach(cWrap -> _pvW.add(cWrap.getChannel()));
+        plotMeasurement(MainFunctions.mainDocument.currentMeasurement,_pvW,_pvR);
+    }
+
+    // Manually provide list of data and list of channels for the plot
+    private void plotMeasurement(double [][] measurement, List<Channel> pvWriteables, List<Channel> pvReadbacks) {
         if (measurement != null) {
-            for (int i=0;i<pvW.size();i++) {
+            for (int i=0;i<pvWriteables.size();i++) {
                 XYChart.Series<Number, Number> series = new XYChart.Series();
                 for (int j=0;j<measurement.length;j++) {
                     series.getData().add( new XYChart.Data(j, measurement[j][i]) );
                 }
-                series.setName("PV writeable #" + (measurements.size()+1)+", "+i);
+                series.setName(pvWriteables.get(i).getId());
                 pvWriteablesGraph.getData().add(series);
             }
-            for (int i=pvW.size();i<measurement[0].length;i++) {
+            for (int i=pvWriteables.size();i<measurement[0].length;i++) {
                 XYChart.Series<Number, Number> series = new XYChart.Series();
                 for (int j=0;j<measurement.length;j++) {
                     series.getData().add( new XYChart.Data(j, measurement[j][i]) );
                 }
-                series.setName("PV readback #" + (measurements.size()+1)+", "+i);
+                series.setName(pvReadbacks.get(i-pvWriteables.size()).getId());
                 pvReadbacksGraph.getData().add(series);
             }
         }
@@ -248,13 +270,24 @@ public class FXMLController implements Initializable {
     private void handleRunExecute(ActionEvent event) {
         MainFunctions.actionExecute();
         measurements.add("Measurement " + (measurements.size()+1));
-        analyseList.getSelectionModel().clearAndSelect(measurements.size()-1);
+        analyseList.getSelectionModel().clearSelection();
+        plotMeasurement();
         analyseList.autosize();
         tabDisplay.setDisable(false);
     }
 
+    @FXML
+    private void handleRunPause(ActionEvent event) {
+        MainFunctions.triggerPause();
+    }
+
+    @FXML
+    private void handleRunStop(ActionEvent event) {
+        MainFunctions.triggerStop();
+    }
+
     private void dummyBugFunction() {
-        // Needed due to bug in getSelectedItems()
+        // Needed due to problem with getSelectedItems()
     }
 
     @FXML
@@ -362,28 +395,47 @@ public class FXMLController implements Initializable {
         // Only allow to push execute when the combo list is up to date..
         executeButton.setDisable(!MainFunctions.isCombosUpdated.getValue());
         MainFunctions.isCombosUpdated.addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> executeButton.setDisable(!newValue));
-        // Write the current measurement point...
+
+        // Similarly for stop and pause buttons..
+        MainFunctions.pauseTask.addListener(new ChangeListener() {
+            @Override
+            public void changed(ObservableValue o, Object oldVal, Object newVal) {
+                if (MainFunctions.pauseTask.get())
+                    pauseButton.setText("Continue");
+                else
+                    pauseButton.setText("Pause");
+            }
+          });
+        MainFunctions.pauseTask.addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> pauseButton.setDisable(!newValue));
+        MainFunctions.stopTask.addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> stopButton.setDisable(!newValue));
+
+        // Deal with the progress of the run, activate to pause/stop buttons, plot last measurement etc..
         MainFunctions.runProgress.addListener(new ChangeListener() {
             @Override
             public void changed(ObservableValue o, Object oldVal, Object newVal) {
-                if(MainFunctions.runProgress.getValue()<1.0) {
+                if(MainFunctions.runProgress.getValue()<1.0 && MainFunctions.stopTask.get()==false) {
                     executeButton.setText("Running..");
                     executeButton.setDisable(true);
+                    pauseButton.setVisible(true);
+                    stopButton.setVisible(true);
                     runProgressBar.setProgress(MainFunctions.runProgress.getValue());
                 } else {
                     executeButton.setText("Execute");
                     executeButton.setDisable(false);
-                    runProgressBar.setProgress(0.0);
+                    pauseButton.setVisible(false);
+                    stopButton.setVisible(false);
+                    if (MainFunctions.stopTask.get()==false)
+                        runProgressBar.setProgress(0.0);
                 }
                 pvReadbacksGraph.getData().clear();
                 pvWriteablesGraph.getData().clear();
-                plotMeasurement("Measurement " + (measurements.size()));
+                plotMeasurement();
             }
           });
 
+
         MainFunctions.isCombosUpdated.addListener((observable, oldValue, newValue) -> {
                     if(!newValue) {
-                        System.out.println("DBG removing text again..");
                         textFieldNumMeas.setText("");
                         textFieldTimeEstimate.setText("");
                     }
@@ -401,7 +453,6 @@ public class FXMLController implements Initializable {
     }
 
     private void clearAllConstraints() {
-        System.out.println("DBG clearing constraints.. " +MainFunctions.isCombosUpdated.get());
         for(int i = 0; i<MainFunctions.mainDocument.constraints.size();i++)
             MainFunctions.mainDocument.constraints.set(i, "");
         constraintsList.setItems(MainFunctions.mainDocument.constraints);

@@ -137,14 +137,24 @@
                            <content>
                               <AnchorPane prefHeight="200.0" prefWidth="200.0">
                                  <children>
-                                    <Button fx:id="executeButton" layoutX="138.0" layoutY="226.0" mnemonicParsing="false" onAction="#handleRunExecute" prefHeight="70.0" prefWidth="158.0" text="Execute">
+                                    <Button fx:id="executeButton" layoutX="160.0" layoutY="234.0" mnemonicParsing="false" onAction="#handleRunExecute" prefHeight="54.0" prefWidth="109.0" text="Execute">
                                        <font>
                                           <Font size="14.0" />
                                        </font></Button>
-                                    <Button layoutX="135.0" layoutY="37.0" mnemonicParsing="false" onAction="#handlePreCalculate" prefHeight="55.0" prefWidth="158.0" text="Pre-calculate" />
+                                    <Button layoutX="157.0" layoutY="39.0" mnemonicParsing="false" onAction="#handlePreCalculate" prefHeight="41.0" prefWidth="116.0" text="Pre-calculate" />
                                     <ProgressBar fx:id="runProgressBar" layoutX="119.0" layoutY="346.0" prefWidth="200.0" progress="0.0" />
                                     <Text fx:id="textFieldNumMeas" layoutX="120.0" layoutY="135.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" />
                                     <Text fx:id="textFieldTimeEstimate" layoutX="155.0" layoutY="177.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" />
+                                    <Button fx:id="pauseButton" layoutX="37.0" layoutY="234.0" mnemonicParsing="false" onAction="#handleRunPause" prefHeight="54.0" prefWidth="109.0" text="Pause" visible="false">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font>
+                                    </Button>
+                                    <Button fx:id="stopButton" layoutX="289.0" layoutY="234.0" mnemonicParsing="false" onAction="#handleRunStop" prefHeight="54.0" prefWidth="109.0" text="Stop" visible="false">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font>
+                                    </Button>
                                  </children>
                               </AnchorPane>
                            </content>

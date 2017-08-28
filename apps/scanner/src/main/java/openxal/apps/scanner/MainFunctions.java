@@ -66,12 +66,17 @@ public class MainFunctions {
     // Sleep time in ms between setting parameters and reading back.
     private static final long sleepTime = 2000;
 
+    public static SimpleBooleanProperty pauseTask;
+    public static SimpleBooleanProperty stopTask;
+
     public static void initialize() {
 
         mainDocument = new ScannerDocument();
 
         isCombosUpdated = new SimpleBooleanProperty(false);
         runProgress = new SimpleDoubleProperty(-1.0);
+        pauseTask = new SimpleBooleanProperty(false);
+        stopTask = new SimpleBooleanProperty(false);
     }
 
     /**
@@ -196,7 +201,6 @@ public class MainFunctions {
             n2*=mainDocument.pvWriteables.get(i).getNpoints();
          }
 
-        mainDocument.constraints.forEach(constraint -> System.out.println("DBG combos constraint "+constraint));
         // Now we check if any of the combos are invalid..
         if (hasConstraints()) {
             int i=0;
@@ -269,21 +273,37 @@ public class MainFunctions {
             Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        Task task = new Task<Void>() {
+        pauseTask.set(false);
+        stopTask.set(false);
+
+        Task runTask = new Task<Void>() {
+
+
             @Override
             public void run() {
                 for (int i=0; i<mainDocument.combos.size(); i++) {
+                    while (pauseTask.get()) {
+                        try {
+                            Thread.sleep(sleepTime);
+                        } catch (InterruptedException ex) {
+                            Logger.getLogger(MainFunctions.class.getName()).log(Level.SEVERE, "Sleep thread interrupted", ex);
+                        }
+                    }
+
                     setCombo(mainDocument.combos.get(i));
                     try {
-                        sleep(sleepTime);
+                        Thread.sleep(sleepTime);
                     } catch (InterruptedException ex) {
-                        Logger.getLogger(MainFunctions.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(MainFunctions.class.getName()).log(Level.SEVERE, "Sleep thread interrupted", ex);
                     }
                     double[] readings = makeReading();
                     System.arraycopy(mainDocument.combos.get(i), 0, mainDocument.currentMeasurement[i], 0, mainDocument.pvWriteables.size());
                     System.arraycopy(readings, 0, mainDocument.currentMeasurement[i], mainDocument.pvWriteables.size(), mainDocument.pvReadbacks.size());
                     updateProgress(i+1, mainDocument.combos.size());
                     mainDocument.saveCurrentMeas(i);
+                    // if a stop is requested, break the task loop
+                    if (stopTask.get())
+                        break;
                 }
 
                 // Make sure we are back to initial settings!
@@ -296,7 +316,7 @@ public class MainFunctions {
                 try {
                     MainFunctions.mainDocument.saveDocumentAs(new File("scanner.xml").toURI().toURL());
                 } catch (MalformedURLException ex) {
-                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, "Failed to save document", ex);
                 }
             }
 
@@ -305,8 +325,8 @@ public class MainFunctions {
                 throw new UnsupportedOperationException("Not supported yet.");
             }
         };
-        runProgress.bind(task.progressProperty());
-        new Thread(task).start();
+        runProgress.bind(runTask.progressProperty());
+        new Thread(runTask).start();
 
         return mainDocument.currentMeasurement;
     }
@@ -318,6 +338,20 @@ public class MainFunctions {
      */
     static boolean checkSufficientParams() {
         return !(mainDocument.pvReadbacks.isEmpty() || mainDocument.pvWriteables.isEmpty());
+    }
+
+    static public void triggerPause() {
+        Logger.getLogger(FXMLController.class.getName()).log(Level.INFO, "Pause triggered");
+        // flip the pause state true/false
+        if (pauseTask.get())
+            pauseTask.set(false);
+        else
+            pauseTask.set(true);
+    }
+
+    static public void triggerStop() {
+        Logger.getLogger(FXMLController.class.getName()).log(Level.INFO, "Stop triggered");
+        stopTask.set(true);
     }
 
 }
