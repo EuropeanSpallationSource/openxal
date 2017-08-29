@@ -1,13 +1,7 @@
 package openxal.apps.scanner;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import static openxal.apps.scanner.ChannelWrapper.instanceCount;
 import xal.ca.Channel;
 import xal.ca.ConnectionException;
 import xal.ca.GetException;
