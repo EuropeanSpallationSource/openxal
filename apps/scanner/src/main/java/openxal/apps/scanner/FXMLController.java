@@ -41,6 +41,8 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
+import javafx.beans.InvalidationListener;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -121,9 +123,6 @@ public class FXMLController implements Initializable {
     private Tab tabRun;
 
     @FXML
-    private Button stopButton;
-
-    @FXML
     private Button executeButton;
 
     @FXML
@@ -136,7 +135,13 @@ public class FXMLController implements Initializable {
     private Text textFieldTimeEstimate;
 
     @FXML
+    private Button stopButton;
+
+    @FXML
     private Button pauseButton;
+
+    @FXML
+    private Button restartButton;
 
     @FXML
     private Tab tabDisplay;
@@ -205,6 +210,7 @@ public class FXMLController implements Initializable {
         }
         return newArray;
     }
+
     @FXML
     void handleLoadDocument(ActionEvent event) {
         Logger.getLogger(FXMLController.class.getName()).log(Level.INFO, "Loading document..");
@@ -225,10 +231,7 @@ public class FXMLController implements Initializable {
                 double[][] fullMeasurement = extendArray(MainFunctions.mainDocument.currentMeasurement, MainFunctions.mainDocument.combos.size());
                 MainFunctions.mainDocument.currentMeasurement = fullMeasurement;
                 plotMeasurement();
-            }
-            if (MainFunctions.mainDocument.dataSets.size()>0) {
-                tabDisplay.setDisable(false);
-                MainFunctions.mainDocument.dataSets.entrySet().forEach(dataSet -> measurements.add(dataSet.getKey()));
+                restartButton.setVisible(true);
             }
 
         } catch (MalformedURLException ex) {
@@ -285,12 +288,24 @@ public class FXMLController implements Initializable {
     @FXML
     private void handleRunExecute(ActionEvent event) {
         MainFunctions.actionExecute();
-        if (MainFunctions.mainDocument.nCombosDone == 0)
-            measurements.add("Measurement " + (measurements.size()+1));
-        analyseList.getSelectionModel().clearSelection();
+        restartButton.setVisible(false);
+        if (MainFunctions.mainDocument.nCombosDone == 0) {
+            analyseList.getSelectionModel().clearSelection();
+            analyseList.autosize();
+        }
         plotMeasurement();
+    }
+
+    @FXML
+    void handleRunRestart(ActionEvent event) {
+        // Similar to handleRunExecute, but we set combos done back to 0
+        // We do not care about showing tabDisplay (it must be available at this point)
+        MainFunctions.mainDocument.nCombosDone = 0;
+        MainFunctions.actionExecute();
+        restartButton.setVisible(false);
+        analyseList.getSelectionModel().clearSelection();
         analyseList.autosize();
-        tabDisplay.setDisable(false);
+        plotMeasurement();
     }
 
     @FXML
@@ -301,6 +316,8 @@ public class FXMLController implements Initializable {
     @FXML
     private void handleRunStop(ActionEvent event) {
         MainFunctions.triggerStop();
+        // This does not seem to work properly.
+        restartButton.setVisible(MainFunctions.mainDocument.nCombosDone != 0);
     }
 
     private void dummyBugFunction() {
@@ -413,6 +430,9 @@ public class FXMLController implements Initializable {
         executeButton.setDisable(!MainFunctions.isCombosUpdated.getValue());
         MainFunctions.isCombosUpdated.addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> executeButton.setDisable(!newValue));
 
+
+        MainFunctions.mainDocument.numberOfMeasurements.addListener((observable, oldValue, newValue) -> updateAnalysisList());
+
         // Similarly for stop and pause buttons..
         MainFunctions.pauseTask.addListener(new ChangeListener() {
             @Override
@@ -471,5 +491,19 @@ public class FXMLController implements Initializable {
         for(int i = 0; i<MainFunctions.mainDocument.constraints.size();i++)
             MainFunctions.mainDocument.constraints.set(i, "");
         constraintsList.setItems(MainFunctions.mainDocument.constraints);
+    }
+
+    // Whenever there is an update to the list of finished measurements, this should be called
+    private void updateAnalysisList() {
+        // This is typically called by a thread, so use Platform.runLater in order to avoid IllegalStateException
+        Platform.runLater(
+            () -> {
+                measurements.clear();
+                MainFunctions.mainDocument.dataSets.entrySet().forEach(dataSet -> measurements.add(dataSet.getKey()));
+                if (measurements.size() >0 )
+                    tabDisplay.setDisable(false);
+                Logger.getLogger(FXMLController.class.getName()).log(Level.FINER, "Analysis list updated");
+            }
+          );
     }
 }

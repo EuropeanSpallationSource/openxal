@@ -38,6 +38,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import xal.ca.Channel;
@@ -62,6 +63,8 @@ public class ScannerDocument {
      * For every measurement, store the channels written to for this measurement..
      */
     public Map<String, List<Channel>> allPVw;
+
+    public SimpleIntegerProperty numberOfMeasurements;
 
     public double[][] currentMeasurement;
 
@@ -105,6 +108,7 @@ public class ScannerDocument {
         pvWriteables = new ArrayList<>();
         combos = new ArrayList<>();
         constraints = FXCollections.observableArrayList("", "", "", "");
+        numberOfMeasurements = new SimpleIntegerProperty(0);
     }
 
 
@@ -315,6 +319,7 @@ public class ScannerDocument {
                 dataSets.put(measAdaptor.stringValue("title"), data);
                 allPVw.put(measAdaptor.stringValue("title"), pvW);
                 allPVrb.put(measAdaptor.stringValue("title"), pvR);
+                numberOfMeasurements.set(numberOfMeasurements.get()+1);
 
             });
         }

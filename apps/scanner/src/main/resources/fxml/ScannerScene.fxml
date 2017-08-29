@@ -137,7 +137,7 @@
                            <content>
                               <AnchorPane prefHeight="200.0" prefWidth="200.0">
                                  <children>
-                                    <Button fx:id="executeButton" layoutX="160.0" layoutY="234.0" mnemonicParsing="false" onAction="#handleRunExecute" prefHeight="54.0" prefWidth="109.0" text="Execute">
+                                    <Button fx:id="executeButton" layoutX="165.0" layoutY="234.0" mnemonicParsing="false" onAction="#handleRunExecute" prefHeight="54.0" prefWidth="109.0" text="Execute">
                                        <font>
                                           <Font size="14.0" />
                                        </font></Button>
@@ -151,6 +151,11 @@
                                        </font>
                                     </Button>
                                     <Button fx:id="stopButton" layoutX="289.0" layoutY="234.0" mnemonicParsing="false" onAction="#handleRunStop" prefHeight="54.0" prefWidth="109.0" text="Stop" visible="false">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font>
+                                    </Button>
+                                    <Button fx:id="restartButton" layoutX="160.0" layoutY="396.0" mnemonicParsing="false" onAction="#handleRunRestart" prefHeight="54.0" prefWidth="109.0" text="Restart" visible="false">
                                        <font>
                                           <Font size="14.0" />
                                        </font>

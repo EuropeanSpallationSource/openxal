@@ -313,10 +313,10 @@ public class MainFunctions {
 
                 // If we finished the measurement, store the new data.
                 if (mainDocument.nCombosDone == mainDocument.combos.size()) {
-                    int measNum = mainDocument.dataSets.size()+1;
-                    mainDocument.dataSets.put("Measurement "+measNum, mainDocument.currentMeasurement);
-                    mainDocument.allPVrb.put("Measurement "+measNum, mainDocument.pvReadbacks.stream().map(cw -> cw.getChannel()).collect(Collectors.toList()));
-                    mainDocument.allPVw.put("Measurement "+measNum, mainDocument.pvWriteables.stream().map(cw -> cw.getChannel()).collect(Collectors.toList()));
+                    mainDocument.dataSets.put("Measurement "+(mainDocument.numberOfMeasurements.get()+1), mainDocument.currentMeasurement);
+                    mainDocument.allPVrb.put("Measurement "+(mainDocument.numberOfMeasurements.get()+1), mainDocument.pvReadbacks.stream().map(cw -> cw.getChannel()).collect(Collectors.toList()));
+                    mainDocument.allPVw.put("Measurement "+(mainDocument.numberOfMeasurements.get()+1), mainDocument.pvWriteables.stream().map(cw -> cw.getChannel()).collect(Collectors.toList()));
+                    mainDocument.numberOfMeasurements.set(mainDocument.numberOfMeasurements.get()+1);
                     mainDocument.nCombosDone=0;
                     try {
                         MainFunctions.mainDocument.saveDocumentAs(new File("scanner.xml").toURI().toURL());
