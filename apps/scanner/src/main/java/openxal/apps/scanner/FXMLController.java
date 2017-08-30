@@ -86,13 +86,19 @@ public class FXMLController implements Initializable {
     private TableView<ChannelWrapper> scanTable;
 
     @FXML
-    private TableColumn<ChannelWrapper, String> scanTablePV;
+    private TableColumn<ChannelWrapper, String> scanColumnPV;
 
     @FXML
-    private TableColumn<ChannelWrapper, Boolean> scanTableRead;
+    private TableColumn<ChannelWrapper, Boolean> scanColumnSelect;
 
     @FXML
-    private TableColumn<ChannelWrapper, Boolean> scanTableScan;
+    private TableView<ChannelWrapper> readTable;
+
+    @FXML
+    private TableColumn<ChannelWrapper, String> readColumnPV;
+
+    @FXML
+    private TableColumn<ChannelWrapper, Boolean> readColumnSelect;
 
     @FXML
     private Tab tabConfigure;
@@ -165,8 +171,10 @@ public class FXMLController implements Initializable {
 
     private static ObservableList<String> measurements;
 
-    public static ObservableList<ChannelWrapper> PVlist;
+    public static ObservableList<ChannelWrapper> PvScannablelist;
+    public static ObservableList<ChannelWrapper> PvReadablelist;
     public static ObservableList<ChannelWrapper> PVscanList;
+    public static ObservableList<ChannelWrapper> PVreadList;
 
     private static ChartZoomManager zoomManager;
 
@@ -217,9 +225,10 @@ public class FXMLController implements Initializable {
             MainFunctions.mainDocument.loadDocument(new File("scanner.xml").toURI().toURL());
             PVscanList.clear();
             MainFunctions.mainDocument.pvWriteables.forEach(cWrapper -> PVscanList.add(cWrapper));
-            PVlist.clear();
-            MainFunctions.mainDocument.pvWriteables.forEach(cWrapper -> PVlist.add(cWrapper));
-            MainFunctions.mainDocument.pvReadbacks.forEach(cWrapper -> PVlist.add(cWrapper));
+            PvScannablelist.clear();
+            PvReadablelist.clear();
+            MainFunctions.mainDocument.pvWriteables.forEach(cWrapper -> PvScannablelist.add(cWrapper));
+            MainFunctions.mainDocument.pvReadbacks.forEach(cWrapper -> PvReadablelist.add(cWrapper));
 
             constraintsList.setItems(MainFunctions.mainDocument.constraints);
             MainFunctions.isCombosUpdated.set(false);
@@ -338,43 +347,69 @@ public class FXMLController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         assert scanTable != null : "fx:id=\"scanTable\" was not injected: check your FXML file 'ScannerScene.fxml'.";
-        assert scanTablePV != null : "fx:id=\"scanTablePV\" was not injected: check your FXML file 'ScannerScene.fxml'.";
-        assert scanTableRead != null : "fx:id=\"scanTableRead\" was not injected: check your FXML file 'ScannerScene.fxml'.";
-        assert scanTableScan != null : "fx:id=\"scanTableScan\" was not injected: check your FXML file 'ScannerScene.fxml'.";
-        assert run_execute != null : "fx:id=\"run_execute\" was not injected: check your FXML file 'ScannerScene.fxml'.";
+        assert scanColumnPV != null : "fx:id=\"scanColumnPV\" was not injected: check your FXML file 'ScannerScene.fxml'.";
+        assert scanColumnSelect != null : "fx:id=\"scanColumnSelect\" was not injected: check your FXML file 'ScannerScene.fxml'.";
+        assert readTable != null : "fx:id=\"readTable\" was not injected: check your FXML file 'ScannerScene.fxml'.";
+        assert readColumnPV != null : "fx:id=\"readColumnPV\" was not injected: check your FXML file 'ScannerScene.fxml'.";
+        assert readColumnSelect != null : "fx:id=\"readColumnSelect\" was not injected: check your FXML file 'ScannerScene.fxml'.";
+        assert tabConfigure != null : "fx:id=\"tabConfigure\" was not injected: check your FXML file 'ScannerScene.fxml'.";
+        assert listOfWriteables != null : "fx:id=\"listOfWriteables\" was not injected: check your FXML file 'ScannerScene.fxml'.";
+        assert listOfWriteablesShortVar != null : "fx:id=\"listOfWriteablesShortVar\" was not injected: check your FXML file 'ScannerScene.fxml'.";
+        assert listOfWriteablesPV != null : "fx:id=\"listOfWriteablesPV\" was not injected: check your FXML file 'ScannerScene.fxml'.";
+        assert listOfWriteablesMin != null : "fx:id=\"listOfWriteablesMin\" was not injected: check your FXML file 'ScannerScene.fxml'.";
+        assert listOfWriteablesMax != null : "fx:id=\"listOfWriteablesMax\" was not injected: check your FXML file 'ScannerScene.fxml'.";
+        assert listOfWriteablesNpoints != null : "fx:id=\"listOfWriteablesNpoints\" was not injected: check your FXML file 'ScannerScene.fxml'.";
+        assert constraintsList != null : "fx:id=\"constraintsList\" was not injected: check your FXML file 'ScannerScene.fxml'.";
+        assert tabRun != null : "fx:id=\"tabRun\" was not injected: check your FXML file 'ScannerScene.fxml'.";
+        assert executeButton != null : "fx:id=\"executeButton\" was not injected: check your FXML file 'ScannerScene.fxml'.";
+        assert runProgressBar != null : "fx:id=\"runProgressBar\" was not injected: check your FXML file 'ScannerScene.fxml'.";
+        assert textFieldNumMeas != null : "fx:id=\"textFieldNumMeas\" was not injected: check your FXML file 'ScannerScene.fxml'.";
+        assert textFieldTimeEstimate != null : "fx:id=\"textFieldTimeEstimate\" was not injected: check your FXML file 'ScannerScene.fxml'.";
+        assert pauseButton != null : "fx:id=\"pauseButton\" was not injected: check your FXML file 'ScannerScene.fxml'.";
+        assert stopButton != null : "fx:id=\"stopButton\" was not injected: check your FXML file 'ScannerScene.fxml'.";
+        assert restartButton != null : "fx:id=\"restartButton\" was not injected: check your FXML file 'ScannerScene.fxml'.";
+        assert tabDisplay != null : "fx:id=\"tabDisplay\" was not injected: check your FXML file 'ScannerScene.fxml'.";
         assert analyseList != null : "fx:id=\"analyseList\" was not injected: check your FXML file 'ScannerScene.fxml'.";
+        assert analyseGraphPane != null : "fx:id=\"analyseGraphPane\" was not injected: check your FXML file 'ScannerScene.fxml'.";
         assert pvReadbacksGraph != null : "fx:id=\"pvReadbacksGraph\" was not injected: check your FXML file 'ScannerScene.fxml'.";
         assert selectRect != null : "fx:id=\"selectRect\" was not injected: check your FXML file 'ScannerScene.fxml'.";
         assert pvWriteablesGraph != null : "fx:id=\"pvWriteablesGraph\" was not injected: check your FXML file 'ScannerScene.fxml'.";
 
+
         // Initialize the list of scan variables..
         // TODO: A variable cannot be both read and written to..
-        PVlist = FXCollections.observableArrayList();
+        PvScannablelist = FXCollections.observableArrayList();
+        PvReadablelist = FXCollections.observableArrayList();
         PVscanList = FXCollections.observableArrayList();
-        scanTable.setItems(PVlist);
-        scanTablePV.setCellValueFactory(new PropertyValueFactory<>("channelName"));
-        scanTableRead.setCellFactory(CheckBoxTableCell.forTableColumn((Integer param) -> {
-            if (PVlist.get(param).getIsRead()) {
-                MainFunctions.actionScanAddPV(PVlist.get(param), true, false);
+        scanTable.setItems(PvScannablelist);
+        readTable.setItems(PvReadablelist);
+
+        scanColumnPV.setCellValueFactory(new PropertyValueFactory<>("channelName"));
+        readColumnPV.setCellValueFactory(new PropertyValueFactory<>("channelName"));
+
+        readColumnSelect.setCellFactory(CheckBoxTableCell.forTableColumn((Integer param) -> {
+            if (PvReadablelist.get(param).getIsRead()) {
+                MainFunctions.actionScanAddPV(PvReadablelist.get(param), true, false);
                 if (MainFunctions.checkSufficientParams()) {
                     tabConfigure.setDisable(false);
                     tabRun.setDisable(false);
                 }
             } else {
-                MainFunctions.actionScanRemovePV(PVlist.get(param), true, false);
+                MainFunctions.actionScanRemovePV(PvReadablelist.get(param), true, false);
                 if (!MainFunctions.checkSufficientParams()) {
                     tabConfigure.setDisable(true);
                     tabRun.setDisable(true);
                 }
             }
-            return PVlist.get(param).isReadProperty();
+            return PvReadablelist.get(param).isReadProperty();
         }));
-        scanTableRead.setCellValueFactory((CellDataFeatures<ChannelWrapper, Boolean> param) -> param.getValue().isReadProperty());
-        scanTableScan.setCellFactory(CheckBoxTableCell.forTableColumn((Integer param) -> {
-            if (PVlist.get(param).getIsScanned()) {
-                PVlist.get(param).setInstance();
-                if (MainFunctions.actionScanAddPV(PVlist.get(param), false, true)) {
-                    PVscanList.add(PVlist.get(param));
+        readColumnSelect.setCellValueFactory((CellDataFeatures<ChannelWrapper, Boolean> param) -> param.getValue().isReadProperty());
+
+        scanColumnSelect.setCellFactory(CheckBoxTableCell.forTableColumn((Integer param) -> {
+            if (PvScannablelist.get(param).getIsScanned()) {
+                PvScannablelist.get(param).setInstance();
+                if (MainFunctions.actionScanAddPV(PvScannablelist.get(param), false, true)) {
+                    PVscanList.add(PvScannablelist.get(param));
                     MainFunctions.isCombosUpdated.set(false);
                 }
                 if (MainFunctions.checkSufficientParams()) {
@@ -383,8 +418,8 @@ public class FXMLController implements Initializable {
                 }
             }
             else {
-                MainFunctions.actionScanRemovePV(PVlist.get(param), false, true);
-                if(PVscanList.remove(PVlist.get(param))) {
+                MainFunctions.actionScanRemovePV(PvScannablelist.get(param), false, true);
+                if(PVscanList.remove(PvScannablelist.get(param))) {
                     clearAllConstraints();
                     MainFunctions.isCombosUpdated.set(false);
                 }
@@ -393,9 +428,11 @@ public class FXMLController implements Initializable {
                     tabRun.setDisable(true);
                 }
             }
-            return PVlist.get(param).isScannedProperty();
+            return PvScannablelist.get(param).isScannedProperty();
         }));
-        scanTableScan.setCellValueFactory((CellDataFeatures<ChannelWrapper, Boolean> param) -> param.getValue().isScannedProperty());
+        scanColumnSelect.setCellValueFactory((CellDataFeatures<ChannelWrapper, Boolean> param) -> param.getValue().isScannedProperty());
+
+        
         // Initialize the configurations list
 
         // Initialize the list of measurements

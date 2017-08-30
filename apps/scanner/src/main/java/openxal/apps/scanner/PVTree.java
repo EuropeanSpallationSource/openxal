@@ -40,6 +40,8 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -59,6 +61,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import org.apache.commons.lang3.StringUtils;
 import xal.ca.Channel;
+import xal.ca.ConnectionException;
 import xal.smf.Accelerator;
 import xal.smf.AcceleratorNode;
 import xal.smf.AcceleratorSeq;
@@ -140,7 +143,14 @@ public class PVTree extends SplitPane {
                 if (node.getType().equals(hw.getElementClass())) {
                     Channel chan = node.findChannel(hw.getHandle());
                     if (chan!=null)
-                        FXMLController.PVlist.add(new ChannelWrapper(chan));
+                        try {
+                            if (chan.writeAccess())
+                                FXMLController.PvScannablelist.add(new ChannelWrapper(chan));
+                            else
+                                FXMLController.PvReadablelist.add(new ChannelWrapper(chan));
+                        } catch (ConnectionException ex) {
+                            Logger.getLogger(PVTree.class.getName()).log(Level.SEVERE, "Failed to check channel access", ex);
+                        }
                 }
                 });
             });
