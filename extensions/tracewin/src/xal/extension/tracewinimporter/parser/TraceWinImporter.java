@@ -135,8 +135,8 @@ public class TraceWinImporter implements TraceWinTags {
      * @throws IOException if there is a problem reading form the stream.
      */
     private void parseFromBufferedReader(Subsystem parentSubsystem, BufferedReader reader) throws IOException {
-        String line = null;
-        String originalLine = null;
+        String line;
+        String originalLine;
         int idx, trailinglen;
         String[] values;
 

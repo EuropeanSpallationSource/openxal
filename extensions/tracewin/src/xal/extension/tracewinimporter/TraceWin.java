@@ -8,10 +8,6 @@ import java.io.PrintWriter;
 import java.net.URI;
 import java.util.List;
 
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
 import eu.ess.bled.Subsystem;
 import java.net.URISyntaxException;
 import java.util.logging.Level;
@@ -99,7 +95,7 @@ public class TraceWin {
      *
      * @param args
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) {       
         // Checking commandline arguments
         if (args.length < 3) {
             System.out.println("Usage: TraceWin inputFile outputDir outputName");
@@ -123,67 +119,8 @@ public class TraceWin {
         AcceleratorExporter accExp = new AcceleratorExporter(accelerator, outputDir, outputName);
         try {
             accExp.export();
-        } catch (IOException ex) {
-            Logger.getLogger(TraceWin.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (URISyntaxException ex) {
+        } catch (IOException | URISyntaxException ex) {
             Logger.getLogger(TraceWin.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
-    /**
-     * Cleans up XML OpenXal produces
-     *
-     * @param parent node to clean
-     */
-    public static void cleanup(Node parent) {
-        NodeList children = parent.getChildNodes();
-        NamedNodeMap attrs = parent.getAttributes();
-        if (attrs != null) {
-            // unneeded attributes
-            if (attrs.getNamedItem("s") != null) {
-                attrs.removeNamedItem("s");
-            }
-            if (attrs.getNamedItem("pid") != null) {
-                attrs.removeNamedItem("pid");
-            }
-            if (attrs.getNamedItem("status") != null) {
-                attrs.removeNamedItem("status");
-            }
-            if (attrs.getNamedItem("eid") != null) {
-                attrs.removeNamedItem("eid");
-            }
-
-            // remove type="sequence" on sequences - import doesn't work
-            // otherwise
-            if ("sequence".equals(parent.getNodeName()) && attrs.getNamedItem("type") != null
-                    && "sequence".equals(attrs.getNamedItem("type").getNodeValue())) {
-                attrs.removeNamedItem("type");
-            }
-        }
-
-        for (int i = 0; i < children.getLength();) {
-            Node child = children.item(i);
-            attrs = child.getAttributes();
-
-            if ("align".equals(child.getNodeName()) || "twiss".equals(child.getNodeName())) // remove twiss and align - not needed
-            {
-                parent.removeChild(child);
-            } else if ("channelsuite".equals(child.getNodeName()) && !child.hasChildNodes()) {
-                parent.removeChild(child);
-            } else if ("aperture".equals(child.getNodeName()) && "0.0".equals(attrs.getNamedItem("x").getNodeValue())) // remove empty apertures
-            {
-                parent.removeChild(child);
-            } else {
-                cleanup(child);
-                // remove empty attributes
-                if ("attributes".equals(child.getNodeName()) && child.getChildNodes().getLength() == 0) {
-                    parent.removeChild(child);
-                } else {
-                    i++;
-                }
-            }
-        }
-
-    }
-
 }

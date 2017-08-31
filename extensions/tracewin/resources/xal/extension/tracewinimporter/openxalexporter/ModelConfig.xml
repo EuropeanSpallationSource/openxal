@@ -9,7 +9,6 @@
     </elements>
     
     <associations>
-		<map smf="fm" model="xal.extension.jels.model.elem.jels.FieldMapNCells"/>
 		<map smf="fm" model="xal.extension.jels.model.elem.jels.FieldMap"/>
 		<map smf="dh" model="xal.extension.jels.model.elem.jels.IdealMagWedgeDipole2"/>
 		<map smf="q" model="xal.model.elem.IdealMagQuad"/>

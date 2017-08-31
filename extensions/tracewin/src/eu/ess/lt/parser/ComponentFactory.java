@@ -78,6 +78,8 @@ public class ComponentFactory {
 	 *
 	 * @param name
 	 *            {@link String} name of the bending magnet.
+     * @param entranceEdgeName
+     * @param exitEdgeName
 	 * @param bendAngle
 	 *            <code>double</code> angle of bending.
 	 * @param curvatureRadius

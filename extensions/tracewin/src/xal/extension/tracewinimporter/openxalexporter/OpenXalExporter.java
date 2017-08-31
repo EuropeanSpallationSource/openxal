@@ -22,11 +22,11 @@ import eu.ess.bled.devices.lattice.Quadrupole;
 import eu.ess.bled.devices.lattice.RFCavity;
 import xal.extension.jels.smf.ESSAccelerator;
 import xal.extension.jels.smf.ESSElementFactory;
+import xal.extension.jels.smf.impl.ESSDTLTank;
 import xal.extension.jels.smf.impl.ESSRfCavity;
 import xal.extension.jels.smf.impl.ESSRfGap;
 import xal.extension.jels.smf.impl.FieldProfile;
 import xal.model.IElement;
-import xal.smf.Accelerator;
 import xal.smf.AcceleratorNode;
 import xal.smf.AcceleratorSeq;
 import xal.smf.ElementFactory;
@@ -34,17 +34,15 @@ import xal.smf.attr.ApertureBucket;
 import xal.smf.attr.SequenceBucket;
 import xal.smf.impl.Magnet;
 import xal.smf.impl.MagnetMainSupply;
-import xal.smf.impl.MagnetPowerSupply;
 import xal.smf.impl.PermQuadrupole;
-import xal.smf.impl.RfGap;
 import xal.smf.impl.qualify.MagnetType;
-import xal.tools.data.DataAdaptor;
 
 /**
  * Converter from BLED to OpenXAL
  *
  * @author Ivo List <ivo.list@cosylab.com>
  * @author Blaz Kranjc
+ * @author Juan F. Esteban Müller <juanf.estebanmuller@esss.se>
  */
 public class OpenXalExporter {
     // Those are the constants used during export and depend on the initial beam
@@ -53,8 +51,8 @@ public class OpenXalExporter {
     public static final double InitialFrequency = 352.21 * 1e6;
     public static final double beta_gamma_Er_by_e0_c = -0.08980392292066133;
 
-    private static List<String> expSections = Arrays.asList("lebt", "rfq", "mebt", "dtl", "spoke", "mb", "sbx", "hb",
-            "hebt", "cont", "dog-a2t");
+    private static List<String> expSections = Arrays.asList("lebt", "rfq",
+            "mebt", "dtl", "spk", "mbl", "hbl", "hebt", "a2t");
 
     private List<LatticeCommand> latticeCommands; // a list of all lattice
     // comands
@@ -159,6 +157,9 @@ public class OpenXalExporter {
         }
         Collections.sort(sortedSubsystemList, comparator);
 
+        AcceleratorSeq old_seq = null;
+        Integer dtlTankNumber = 1;
+        double old_currentPosition = 0;
         // Export according to class.
         for (Subsystem subsystem : sortedSubsystemList) {
             AcceleratorNode node = null;
@@ -179,8 +180,48 @@ public class OpenXalExporter {
                 node = exportFieldMap((FieldMap) subsystem, currentPosition);
                 latticeCount++;
             } else if (subsystem instanceof DTLCell) {
-                node = exportDTLCell((DTLCell) subsystem, currentPosition);
-                latticeCount++;
+                // First cell: create cavity 
+                if (((DTLCell) subsystem).getRfPhase() != 0) {
+                    old_seq = seq;
+                    seq = exportDTLTank((DTLCell) subsystem, currentPosition, "DTLTank" + dtlTankNumber.toString());
+                    dtlTankNumber++;
+                    old_currentPosition = currentPosition;
+                    currentPosition = 0;
+                }
+
+                AcceleratorNode[] nodes = exportDTLCell((DTLCell) subsystem, currentPosition, ((ESSDTLTank) seq).getDfltCavAmp());
+                // Extend the previous quadrupole if exists
+                if (seq.getNodeCount() != 0 && seq.getNodeAt(seq.getNodeCount() - 1).getType().equals("PQ")) {
+                    PermQuadrupole previous_PQ = (PermQuadrupole) seq.getNodeAt(seq.getNodeCount() - 1);
+                    if (nodes[0] != null && nodes[0].getType().equals("PQ")
+                            && ((PermQuadrupole) nodes[0]).getDesignField() == previous_PQ.getDesignField()) {
+                        previous_PQ.setLength(previous_PQ.getLength() + nodes[0].getLength());
+                        previous_PQ.getMagBucket().setEffLength(previous_PQ.getEffLength() + nodes[0].getLength());
+                        previous_PQ.setPosition(previous_PQ.getPosition() + nodes[0].getLength() / 2);
+                        nodes[0] = null;
+                    }
+                }
+                for (AcceleratorNode node_i : nodes) {
+                    if (node_i != null) {
+                        seq.addNode(node_i);
+                    }
+                }
+
+                currentPosition += ((DTLCell) subsystem).getLength();
+
+                // Last element, export DTLTank
+                if (((DTLCell) subsystem).getBetas() == 0) {
+                    seq.setPosition(old_currentPosition);
+                    AcceleratorNode lastNode = seq.getNodeAt(seq.getNodeCount() - 1);
+//                    seq.setLength(lastNode.getPosition()+lastNode.getLength()/2);
+                    seq.setLength(currentPosition);
+                    currentPosition = old_currentPosition;
+                    node = seq;
+                    seq = old_seq;
+                    latticeCount++;
+                } else {
+                    node = null;
+                }
             } else if (subsystem instanceof Corrector) {
                 if (((Corrector) subsystem).getInsideNext()) {
                     nextCorrector = (Corrector) subsystem;
@@ -197,7 +238,7 @@ public class OpenXalExporter {
                     }
 
                     latticeElements = Integer.parseInt(latticeCommand.getValue().split(" ")[1]);
-                    
+
                     periodicLatticeId++;
                     node = exportMarker("LATTICE-START-" + periodicLatticeId, currentPosition);
                 }
@@ -372,7 +413,7 @@ public class OpenXalExporter {
         ApertureBucket aper = generateApertureBucket(element);
         return ESSElementFactory.createESSFieldMap(element.getName(), element.getLength(),
                 getFrequency(element) * 1e-6, element.getElectricIntensityFactor(), element.getRfPhase(),
-                element.getFileName(), profile, aper, currentPosition + element.getLength() / 2);
+                element.getFileName(), profile, aper, currentPosition);
     }
 
     private AcceleratorNode exportNCell(final NCell element, double currentPosition) {
@@ -407,8 +448,8 @@ public class OpenXalExporter {
         double Lc0, Lc, Lcn;
         double amp0 = 1;
         double ampn = 1;
-        double pos0, posn;        
-        
+        double pos0, posn;
+
         ApertureBucket apertureBucket = generateApertureBucket(element);
 
         if (betas == 0.0) {
@@ -472,13 +513,31 @@ public class OpenXalExporter {
         return cavity;
     }
 
-    private AcceleratorNode exportDTLCell(final DTLCell element, double currentPosition) {
+    private AcceleratorSeq exportDTLTank(final DTLCell element,
+            double currentPosition, String name) {
+        double L = element.getLength();
+        double Lq1 = element.getLq1();
+        double Lq2 = element.getLq2();
+        double Phis = element.getRfPhase();
+        double E0TL = element.getE0TL();
+
+        double length = L - Lq1 - Lq2;
+
+        ESSDTLTank dtlTank = ESSElementFactory.createESSDTLTank(name, L,
+                new AcceleratorNode[0], Phis, E0TL / length * 1e-6,
+                getFrequency(element) * 1e-6, currentPosition);
+
+        return dtlTank;
+    }
+
+    private AcceleratorNode[] exportDTLCell(final DTLCell element,
+            double currentPosition, double amplitude) {
         double L = element.getLength();
         double Lq1 = element.getLq1();
         double Lq2 = element.getLq2();
         double g = element.getCellCenter();
-
         double Phis = element.getRfPhase();
+
         double betas = element.getBetas();
         double Ts = element.getTransitTime();
         double kTs = element.getkTsp();
@@ -489,33 +548,41 @@ public class OpenXalExporter {
 
         double B1 = element.getB1p();
         double B2 = element.getB2p();
-        
+
         double length = L - Lq1 - Lq2;
 
         ApertureBucket apertureBucket = generateApertureBucket(element);
-        
-        PermQuadrupole quad1 = ElementFactory.createPermQuadrupole(element.getName() + ":Q1", Lq1, B1, apertureBucket,
-                Lq1 / 2);
-        PermQuadrupole quad2 = ElementFactory.createPermQuadrupole(element.getName() + ":Q2", Lq2, B2, apertureBucket,
-                L - Lq2 / 2);
 
-        RfGap gap = ESSElementFactory.createESSRfGap(element.getName() + ":G", true, 1, apertureBucket, length, L / 2 - g);
+        double ampFactor = E0TL / length * 1e-6 / amplitude;
 
-        ESSRfCavity cavity = ESSElementFactory.createESSRfCavity(element.getName(), L, new AcceleratorNode[]{quad1, gap, quad2},
-                Phis, E0TL * 1e-6 / length, getFrequency(element) * 1e-6, currentPosition);
+        boolean isFirst = Phis != 0;
+        ESSRfGap gap = ESSElementFactory.createESSRfGap(element.getName() + ":G", isFirst, ampFactor, apertureBucket, length, currentPosition + L / 2 - g);
 
         if (betas == 0.0) {
-            cavity.getRfField().setTTFCoefs(new double[]{});
+            gap.getRfGap().setTCoefficients(new double[]{});
+            gap.getRfGap().setEndCell(1);
         } else {
-            cavity.getRfField().setTTFCoefs(new double[]{betas, Ts, kTs, k2Ts});
-            cavity.getRfField().setTTF_startCoefs(new double[]{betas, Ts, kTs, k2Ts});
-            cavity.getRfField().setTTF_endCoefs(new double[]{betas, Ts, kTs, k2Ts});
-            cavity.getRfField().setSTFCoefs(new double[]{betas, 0, kS, k2S});
-            cavity.getRfField().setSTF_startCoefs(new double[]{betas, Ts, kTs, k2Ts});
-            cavity.getRfField().setSTF_endCoefs(new double[]{betas, 0, kS, k2S});
+            gap.getRfGap().setTCoefficients(new double[]{betas, Ts, kTs, k2Ts});
+            gap.getRfGap().setSCoefficients(new double[]{betas, 0, kS, k2S});
         }
 
-        return cavity;
+        PermQuadrupole quad1 = ElementFactory.createPermQuadrupole(element.getName() + ":Q1", Lq1, B1, apertureBucket,
+                currentPosition + Lq1 / 2);
+        PermQuadrupole quad2 = ElementFactory.createPermQuadrupole(element.getName() + ":Q2", Lq2, B2, apertureBucket,
+                currentPosition + L - Lq2 / 2);
+
+        AcceleratorNode[] cell = {null, null, null};
+        if (B1 != 0.0) {
+            cell[0] = quad1;
+        }
+        if (betas != 0.0) {
+            cell[1] = gap;
+        }
+        if (B2 != 0) {
+            cell[2] = quad2;
+        }
+
+        return cell;
     }
 
     private ApertureBucket generateApertureBucket(BeamlineElement element) {

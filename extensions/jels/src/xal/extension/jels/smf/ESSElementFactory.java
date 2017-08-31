@@ -182,7 +182,7 @@ public final class ESSElementFactory {
 
         double amplitude = (fieldProfile.getE0L(frequency) / fieldProfile.getLength()) * 1e-6;
 
-        ESSRfCavity cavity = createESSRfCavity(name, length, new AcceleratorNode[]{fm}, rfphase, amplitude, frequency, position - length / 2.);
+        ESSRfCavity cavity = createESSRfCavity(name, length, new AcceleratorNode[]{fm}, rfphase, amplitude, frequency, position);
         return cavity;
     }
 

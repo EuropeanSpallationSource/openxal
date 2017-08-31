@@ -125,7 +125,10 @@ public class AcceleratorExporter {
         Element root = xml.getDocumentElement();
         root.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
         root.setAttributeNS("http://www.w3.org/2001/XMLSchema-instance",
-                "xsi:noNamespaceSchemaLocation", "http://sourceforge.net/p/xaldev/openxal/ci/master/tree/core/resources/xal/schemas/xdxf.xsd?format=raw");
+                "xsi:noNamespaceSchemaLocation",
+                "https://bitbucket.org/europeanspallationsource/openxal/raw/site.ess.master/core/resources/xal/schemas/xdxf.xsd");
+
+        da.writeTo(opticsFile);
 
         // Field Maps
         List<AcceleratorNode> fieldMapNodes = acc.getAllNodesOfType("FM");
@@ -134,8 +137,6 @@ public class AcceleratorExporter {
             String destinationFile = new URL(dir.toURI().toURL(), fieldMap.getFieldMapFile() + ".edz").toString();
             fieldMap.getFieldProfile().saveFile(destinationFile);
         }
-
-        da.writeTo(opticsFile);
     }
 
     /**
