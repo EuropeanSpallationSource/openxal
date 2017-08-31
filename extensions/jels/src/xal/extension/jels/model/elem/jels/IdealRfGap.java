@@ -181,7 +181,8 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
      * Return the RF phase delay of the gap with respect to the synchronous
      * particle.
      *
-     * @return phase delay w.r.t. synchronous particle (in <bold>radians</bold>).
+     * @return phase delay w.r.t. synchronous particle (in
+     * <bold>radians</bold>).
      */
     @Override
     public double getPhase() {
@@ -313,7 +314,7 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
      * @param probe compute transfer map using parameters from this probe
      *
      * @return transfer map for the probe
-     * <map smf="fm" model="se.lu.esss.ics.jels.model.elem.jels.FieldMapNCells"/>
+     * <map smf="fm" model="xal.extension.jels.model.elem.jels.FieldMapNCells"/>
      * @exception ModelException this should not occur
      */
     @Override
@@ -362,7 +363,7 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
                 beta_end = computeBetaFromGamma(gamma_end);
                 gamma_avg = (gamma_end + gamma_start) / 2;
                 double beta_avg = computeBetaFromGamma(gamma_avg);
-                deltaPhi = E0TL_scaled / mass * Math.sin(Phis) / (Math.pow(gamma_avg, 3) * Math.pow(beta_avg, 2)) * (kToverT); // Evaluate the change of Phi
+                deltaPhi = E0TL_scaled / mass * Math.sin(Phis) / (Math.pow(gamma_avg, 3) * Math.pow(beta_avg, 2)) * (kToverT);
 
                 kxy = -Math.PI * E0TL_scaled / mass * Math.sin(Phis) / (Math.pow(gamma_avg * beta_avg, 2) * lambda);
                 kx = 1 - E0TL_scaled / (2 * mass) * Math.cos(Phis) / (Math.pow(beta_avg, 2) * Math.pow(gamma_avg, 3)) * (Math.pow(gamma_avg, 2) + kToverT);
@@ -370,7 +371,7 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
                 kz = 2 * Math.PI * (E0TL_scaled / mass) * Math.sin(Phis) / (Math.pow(beta_avg, 2) * lambda);
 
                 C = Math.sqrt((beta_start * gamma_start) / (beta_end * gamma_end * kx * ky));
-                
+
             } else {
                 double E0TL = getETL();
                 energyGain = E0TL * Math.cos(Phis);
@@ -379,9 +380,9 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
 
                 gamma_avg = (gamma_end + gamma_start) / 2;
                 double beta_avg = computeBetaFromGamma(gamma_avg);
-                
-                // deltaPhi calculation missing???
 
+                // deltaPhi calculation missing???
+                
                 kxy = -Math.PI * E0TL * Math.sin(Phis) / (Math.pow(gamma_avg * beta_avg, 2) * lambda * mass);
                 kx = 1 - E0TL / (2 * mass) * Math.cos(Phis) / (Math.pow(beta_avg, 2) * gamma_avg);
                 ky = kx;
@@ -389,7 +390,7 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
 
                 C = 1.0;
             }
-
+            
             matPhi.setElem(0, 0, kx * C);
             matPhi.setElem(1, 0, kxy / (beta_end * gamma_end));
             matPhi.setElem(1, 1, ky * C);
@@ -398,9 +399,9 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
             matPhi.setElem(3, 2, kxy / (beta_end * gamma_end));
             matPhi.setElem(3, 3, ky * C);
 
-            matPhi.setElem(4, 4, gamma_end / gamma_start);
-            matPhi.setElem(5, 4, kz / (beta_end * Math.pow(gamma_end, 2) * gamma_start));
-            matPhi.setElem(5, 5, (beta_start * Math.pow(gamma_start, 2)) / (beta_end * Math.pow(gamma_end, 2)));
+            matPhi.setElem(4, 4, 1);
+            matPhi.setElem(5, 4, kz / (beta_end * Math.pow(gamma_end, 3)));
+            matPhi.setElem(5, 5, (beta_start * Math.pow(gamma_start, 3)) / (beta_end * Math.pow(gamma_end, 3)));
         }
 
         matPhi.setElem(6, 6, 1);

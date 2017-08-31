@@ -229,10 +229,12 @@ public abstract class TestCommon {
         PhaseMatrix r = pm.getFirstOrder();
 
         for (int i = 0; i < 6; i++) {
-            r.setElem(i, 4, r.getElem(i, 4) * gamma_start);
-            r.setElem(i, 5, r.getElem(i, 5) / gamma_start);
-            r.setElem(4, i, r.getElem(4, i) / gamma_end);
-            r.setElem(5, i, r.getElem(5, i) * gamma_end);
+//            r.setElem(i, 4, r.getElem(i, 4) * gamma_start);
+//            r.setElem(i, 5, r.getElem(i, 5) / gamma_start);
+//            r.setElem(4, i, r.getElem(4, i) / gamma_end);
+//            r.setElem(5, i, r.getElem(5, i) * gamma_end);
+            r.setElem(i, 5, r.getElem(i, 5) / gamma_start / gamma_start);
+            r.setElem(5, i, r.getElem(5, i) * gamma_end * gamma_end);
         }
         pm.setLinearPart(r);
     }
@@ -249,15 +251,17 @@ public abstract class TestCommon {
     protected void checkTWResults(double gammaTw, double[][] centCovTw66, double[] meanTw6, double errTolerance) {
 
         System.out.printf("TW gamma diff: %.2g\n", tr(probe.getGamma(), gammaTw));
-        System.out.printf("OX gamma: %.8g\n", probe.getGamma());
+        System.out.printf("OX gamma: %.12g\n", probe.getGamma());
         Assert.assertTrue("TW gamma", tr(probe.getGamma(), gammaTw) < errTolerance);
 
         // transform cov
         for (int i = 0; i < 6; i++) {
-            centCovTw66[i][4] *= gammaTw;
-            centCovTw66[i][5] /= gammaTw;
-            centCovTw66[4][i] *= gammaTw;
-            centCovTw66[5][i] /= gammaTw;
+//            centCovTw66[i][4] *= gammaTw;
+//            centCovTw66[i][5] /= gammaTw;
+//            centCovTw66[4][i] *= gammaTw;
+//            centCovTw66[5][i] /= gammaTw;
+            centCovTw66[i][5] /= gammaTw*gammaTw;
+            centCovTw66[5][i] /= gammaTw*gammaTw;
             meanTw6[i] *= 1e-3;
         }
 
@@ -297,10 +301,12 @@ public abstract class TestCommon {
                 System.out.printf("{");
                 for (int j = 0; j < 6; j++) {
                     aux = 1;
-                    if (j==4) aux /= gammaTw;
-                    if (j==5) aux *= gammaTw;
-                    if (i==4) aux /= gammaTw;
-                    if (i==5) aux *= gammaTw;
+//                    if (j==4) aux /= gammaTw;
+//                    if (j==5) aux *= gammaTw;
+//                    if (i==4) aux /= gammaTw;
+//                    if (i==5) aux *= gammaTw;
+                    if (j==5) aux *= gammaTw*gammaTw;
+                    if (i==5) aux *= gammaTw*gammaTw;
         
                     System.out.printf("%E,\t", aux * centCovOx.getElem(i, j));
                 }

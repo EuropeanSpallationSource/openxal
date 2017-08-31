@@ -2,6 +2,7 @@ package xal.extension.jels.smf.impl;
 
 import xal.extension.jels.smf.attr.ESSMagnetBucket;
 import xal.ca.ChannelFactory;
+import xal.smf.impl.Bend;
 import xal.smf.impl.qualify.ElementTypeManager;
 import xal.tools.data.DataAdaptor;
 
@@ -10,7 +11,7 @@ import xal.tools.data.DataAdaptor;
  * 
  * @author Ivo List
  */
-public class ESSBend extends xal.smf.impl.Bend {
+public class ESSBend extends Bend {
 	
 	/** horizontal dipole type */
     public static final String HORIZONTAL_TYPE = "DH";

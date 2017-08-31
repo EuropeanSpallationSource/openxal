@@ -445,11 +445,11 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
     		matPhi.setElem(4,5,-Math.pow(h*gamma,2)*(kx*Deltas*Math.pow(probe.getBeta(),2)-Math.sin(kx*Deltas))/Math.pow(kx,3)+Deltas*(1-Math.pow(h/kx,2)));
     		matPhi.setElem(5,5,1);
 
-    		matPhi.setElem(4,0,-gamma*h*Math.sin(kx*Deltas)/kx);
-    		matPhi.setElem(4,1,-gamma*h*(1-Math.cos(kx*Deltas))/Math.pow(kx,2));
+    		matPhi.setElem(4,0,-h*Math.sin(kx*Deltas)/kx);
+    		matPhi.setElem(4,1,-h*(1-Math.cos(kx*Deltas))/Math.pow(kx,2));
 
-    		matPhi.setElem(0,5,gamma*h*(1-Math.cos(kx*Deltas))/Math.pow(kx,2));
-    		matPhi.setElem(1,5,gamma*h*Math.sin(kx*Deltas)/kx);
+    		matPhi.setElem(0,5,Math.pow(gamma,2)*h*(1-Math.cos(kx*Deltas))/Math.pow(kx,2));
+    		matPhi.setElem(1,5,Math.pow(gamma,2)*h*Math.sin(kx*Deltas)/kx);
     	}
     	
     	if (getOrientation()==IElectromagnet.ORIENT_VER)
@@ -469,11 +469,11 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
     		matPhi.setElem(4,5,-Math.pow(h*gamma,2)*(kx*Deltas*Math.pow(probe.getBeta(),2)-Math.sin(kx*Deltas))/Math.pow(kx,3)+Deltas*(1-Math.pow(h/kx,2)));
     		matPhi.setElem(5,5,1);
 
-    		matPhi.setElem(4,2,-gamma*h*Math.sin(kx*Deltas)/kx);
-    		matPhi.setElem(4,3,-gamma*h*(1-Math.cos(kx*Deltas))/Math.pow(kx,2));
+    		matPhi.setElem(4,2,-h*Math.sin(kx*Deltas)/kx);
+    		matPhi.setElem(4,3,-h*(1-Math.cos(kx*Deltas))/Math.pow(kx,2));
 
-    		matPhi.setElem(2,5,gamma*h*(1-Math.cos(kx*Deltas))/Math.pow(kx,2));
-    		matPhi.setElem(3,5,gamma*h*Math.sin(kx*Deltas)/kx);    		
+    		matPhi.setElem(2,5,Math.pow(gamma,2)*h*(1-Math.cos(kx*Deltas))/Math.pow(kx,2));
+    		matPhi.setElem(3,5,Math.pow(gamma,2)*h*Math.sin(kx*Deltas)/kx);    		
     	}
 
     	return new PhaseMap(matPhi);
