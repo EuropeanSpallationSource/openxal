@@ -229,10 +229,6 @@ public abstract class TestCommon {
         PhaseMatrix r = pm.getFirstOrder();
 
         for (int i = 0; i < 6; i++) {
-//            r.setElem(i, 4, r.getElem(i, 4) * gamma_start);
-//            r.setElem(i, 5, r.getElem(i, 5) / gamma_start);
-//            r.setElem(4, i, r.getElem(4, i) / gamma_end);
-//            r.setElem(5, i, r.getElem(5, i) * gamma_end);
             r.setElem(i, 5, r.getElem(i, 5) / gamma_start / gamma_start);
             r.setElem(5, i, r.getElem(5, i) * gamma_end * gamma_end);
         }
@@ -256,10 +252,6 @@ public abstract class TestCommon {
 
         // transform cov
         for (int i = 0; i < 6; i++) {
-//            centCovTw66[i][4] *= gammaTw;
-//            centCovTw66[i][5] /= gammaTw;
-//            centCovTw66[4][i] *= gammaTw;
-//            centCovTw66[5][i] /= gammaTw;
             centCovTw66[i][5] /= gammaTw*gammaTw;
             centCovTw66[5][i] /= gammaTw*gammaTw;
             meanTw6[i] *= 1e-3;
@@ -301,10 +293,6 @@ public abstract class TestCommon {
                 System.out.printf("{");
                 for (int j = 0; j < 6; j++) {
                     aux = 1;
-//                    if (j==4) aux /= gammaTw;
-//                    if (j==5) aux *= gammaTw;
-//                    if (i==4) aux /= gammaTw;
-//                    if (i==5) aux *= gammaTw;
                     if (j==5) aux *= gammaTw*gammaTw;
                     if (i==5) aux *= gammaTw*gammaTw;
         
@@ -314,10 +302,14 @@ public abstract class TestCommon {
             }
             System.out.printf("};\nTW covariance matrix: \n");
             for (int i = 0; i < 6; i++) {
+                System.out.printf("{");
                 for (int j = 0; j < 6; j++) {
-                    System.out.printf("%E ", centCovTw.getElem(i, j));
+                    aux = 1;
+                    if (j==5) aux *= gammaTw*gammaTw;
+                    if (i==5) aux *= gammaTw*gammaTw;
+                    System.out.printf("%E ", aux * centCovTw.getElem(i, j));
                 }
-                System.out.printf("\n");
+                System.out.printf("},\n");
             }
         }
         
