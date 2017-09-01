@@ -122,8 +122,6 @@ public class TraceWin {
      * @param args
      */
     public static void main(String[] args) {
-//        args = new String[] {"/Users/juanfestebanmuller/git/ess-lattice", "/Users/juanfestebanmuller/optics/test", "main"};
-//        args = new String[] {"/Users/juanfestebanmuller/optics/lattice_import/lattice_next_201708.dat", "/Users/juanfestebanmuller/optics/test", "main"};
         // Checking commandline arguments
         if (args.length < 3) {
             System.out.println("Usage: TraceWin input outputDir outputName");
