@@ -20,6 +20,7 @@ import eu.ess.bled.devices.lattice.Marker;
 import eu.ess.bled.devices.lattice.NCell;
 import eu.ess.bled.devices.lattice.Quadrupole;
 import eu.ess.bled.devices.lattice.RFCavity;
+import java.nio.file.Paths;
 import xal.extension.jels.smf.ESSAccelerator;
 import xal.extension.jels.smf.ESSElementFactory;
 import xal.extension.jels.smf.impl.ESSDTLTank;
@@ -159,7 +160,9 @@ public class OpenXalExporter {
 
         AcceleratorSeq old_seq = null;
         Integer dtlTankNumber = 1;
-        double old_currentPosition = 0;
+        double dtl_currentLength = 0;
+        AcceleratorSeq dtlTank = null;
+        AcceleratorNode prev_node = null;
         // Export according to class.
         for (Subsystem subsystem : sortedSubsystemList) {
             AcceleratorNode node = null;
@@ -182,17 +185,42 @@ public class OpenXalExporter {
             } else if (subsystem instanceof DTLCell) {
                 // First cell: create cavity 
                 if (((DTLCell) subsystem).getRfPhase() != 0) {
-                    old_seq = seq;
-                    seq = exportDTLTank((DTLCell) subsystem, currentPosition, "DTLTank" + dtlTankNumber.toString());
+                    dtlTank = exportDTLTank((DTLCell) subsystem, currentPosition, "DTLTank" + dtlTankNumber.toString());
+                    dtlTank.setPosition(currentPosition);
                     dtlTankNumber++;
-                    old_currentPosition = currentPosition;
-                    currentPosition = 0;
+                    dtl_currentLength = 0;
+                    node = dtlTank;
+                    latticeCount++;
+                } else {
+                    node = null;
+
+                    // Find the dtl tank
+                    int i = 1;
+                    boolean dtlTankFound = false;
+                    while (!dtlTankFound) {
+                        if (seq.getNodeAt(seq.getNodeCount() - i).isKindOf("DTLTank")) {
+                            dtlTankFound = true;
+                            dtlTank = (AcceleratorSeq) seq.getNodeAt(seq.getNodeCount() - i);
+                        } else {
+                            i++;
+                        }
+                    }
+                    // Adding to the dtl tank any element found in between
+                    while (i > 1) {
+                        i--;
+                        prev_node = seq.getNodeAt(seq.getNodeCount() - i);
+                        seq.removeNode(prev_node);
+                        prev_node.setPosition(prev_node.getPosition() - dtlTank.getPosition());
+                        dtlTank.addNode(prev_node);
+                        dtl_currentLength += prev_node.getLength();
+                        dtlTank.setLength(dtl_currentLength);
+                    }
                 }
 
-                AcceleratorNode[] nodes = exportDTLCell((DTLCell) subsystem, currentPosition, ((ESSDTLTank) seq).getDfltCavAmp());
+                AcceleratorNode[] nodes = exportDTLCell((DTLCell) subsystem, dtl_currentLength, ((ESSDTLTank) dtlTank).getDfltCavAmp());
                 // Extend the previous quadrupole if exists
-                if (seq.getNodeCount() != 0 && seq.getNodeAt(seq.getNodeCount() - 1).getType().equals("PQ")) {
-                    PermQuadrupole previous_PQ = (PermQuadrupole) seq.getNodeAt(seq.getNodeCount() - 1);
+                if (dtlTank.getNodeCount() != 0 && dtlTank.getNodeAt(dtlTank.getNodeCount() - 1).getType().equals("PQ")) {
+                    PermQuadrupole previous_PQ = (PermQuadrupole) dtlTank.getNodeAt(dtlTank.getNodeCount() - 1);
                     if (nodes[0] != null && nodes[0].getType().equals("PQ")
                             && ((PermQuadrupole) nodes[0]).getDesignField() == previous_PQ.getDesignField()) {
                         previous_PQ.setLength(previous_PQ.getLength() + nodes[0].getLength());
@@ -203,25 +231,13 @@ public class OpenXalExporter {
                 }
                 for (AcceleratorNode node_i : nodes) {
                     if (node_i != null) {
-                        seq.addNode(node_i);
+                        dtlTank.addNode(node_i);
                     }
                 }
 
-                currentPosition += ((DTLCell) subsystem).getLength();
-
-                // Last element, export DTLTank
-                if (((DTLCell) subsystem).getBetas() == 0) {
-                    seq.setPosition(old_currentPosition);
-                    AcceleratorNode lastNode = seq.getNodeAt(seq.getNodeCount() - 1);
-//                    seq.setLength(lastNode.getPosition()+lastNode.getLength()/2);
-                    seq.setLength(currentPosition);
-                    currentPosition = old_currentPosition;
-                    node = seq;
-                    seq = old_seq;
-                    latticeCount++;
-                } else {
-                    node = null;
-                }
+                dtl_currentLength += ((DTLCell) subsystem).getLength();
+                dtlTank.setLength(dtl_currentLength);
+                currentPosition = dtlTank.getPosition() + dtl_currentLength;
             } else if (subsystem instanceof Corrector) {
                 if (((Corrector) subsystem).getInsideNext()) {
                     nextCorrector = (Corrector) subsystem;
@@ -409,7 +425,7 @@ public class OpenXalExporter {
     }
 
     private AcceleratorNode exportFieldMap(final FieldMap element, double currentPosition) {
-        FieldProfile profile = FieldProfile.getInstance(element.getBasePath() + element.getFileName() + ".edz");
+        FieldProfile profile = FieldProfile.getInstance(Paths.get(element.getBasePath(), element.getFileName() + ".edz").toString());
         ApertureBucket aper = generateApertureBucket(element);
         return ESSElementFactory.createESSFieldMap(element.getName(), element.getLength(),
                 getFrequency(element) * 1e-6, element.getElectricIntensityFactor(), element.getRfPhase(),

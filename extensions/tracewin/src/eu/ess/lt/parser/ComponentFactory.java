@@ -27,6 +27,7 @@ import eu.ess.bled.devices.lattice.RFQCell;
 import eu.ess.bled.devices.lattice.Solenoid;
 import eu.ess.bled.devices.lattice.SpaceChargeCompensation;
 import eu.ess.bled.devices.lattice.ThinLens;
+import java.nio.file.Paths;
 
 /**
  * A factory that generates BLED entities. If the factory can connect to the
@@ -413,7 +414,7 @@ public class ComponentFactory {
 		fieldMap.setElectricIntensityFactor(electricIntensityFactor);
 		fieldMap.setSpaceChargeCompensationFactor(spaceChargeCompensationFactor);
 		fieldMap.setApertureFlag(apertureFlag);
-		fieldMap.setFileName(fieldmapPath + fileName);
+		fieldMap.setFileName(Paths.get(fieldmapPath, fileName).toString());
 		fieldMap.setBasePath(basePath);
 		fieldMap.setPreviousSubsystem(previousSubsystem);
 		// CHECK fieldMap.setSubsystemType(defaultType());
@@ -958,7 +959,7 @@ public class ComponentFactory {
 	}
 
 	public void setFieldmapPath(String fieldmapPath) {
-		this.fieldmapPath = fieldmapPath + "/";		
+		this.fieldmapPath = fieldmapPath;// + "/";		
 	}
 	
 	public void setBasePath(String basePath) {
