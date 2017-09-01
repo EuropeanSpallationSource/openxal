@@ -1,15 +1,15 @@
 package xal.extension.tracewinimporter;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.util.List;
 
 import eu.ess.bled.Subsystem;
 import java.net.URISyntaxException;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import xal.extension.jels.ImporterHelpers;
@@ -36,6 +36,7 @@ import xal.sim.scenario.ElementMapping;
  * @author Juan F. Esteban Müller <juanf.estebanmuller@esss.se>
  */
 public class TraceWin {
+
     /**
      * Calls {{@link #loadAcceleator(String, ElementMapping)} with default
      * (JEls) element mapping.
@@ -50,6 +51,10 @@ public class TraceWin {
         return loadAcceleator(sourceFileName, JElsElementMapping.getInstance());
     }
 
+    public static ESSAccelerator loadAcceleator(URI[] sourceFileNames, String[] sequenceNames, String basePath) throws IOException {
+        return loadAcceleator(sourceFileNames, sequenceNames, basePath, JElsElementMapping.getInstance());
+    }
+
     /**
      * Loads accelerator from given file
      *
@@ -61,16 +66,34 @@ public class TraceWin {
      * @throws IOException if there was a problem reading from file
      */
     public static ESSAccelerator loadAcceleator(URI sourceFileName, ElementMapping modelMapping) throws IOException {
-        ESSAccelerator acc;
         // Importing from TraceWin formated file
         TraceWinImporter importer = new TraceWinImporter();
-        BufferedReader br = new BufferedReader(new InputStreamReader(sourceFileName.toURL().openStream()));
-        List<Subsystem> systems = importer.importFromTraceWin(br, new PrintWriter(System.err), new File(sourceFileName).getParentFile().toURI().toString());
-        br.close();
+        List<Subsystem> systems;
 
+        String basePath = new File(sourceFileName).getParentFile().toURI().toString();
+        systems = importer.importFromTraceWin(sourceFileName, new PrintWriter(System.err), basePath);
+
+        ESSAccelerator acc = exportToOpenxal(systems, modelMapping);
+
+        return acc;
+    }
+
+    public static ESSAccelerator loadAcceleator(URI[] sourceFileNames, String[] sequenceNames, String basePath, ElementMapping modelMapping) throws IOException {
+        // Importing from TraceWin formated file
+        TraceWinImporter importer = new TraceWinImporter();
+        List<Subsystem> systems;
+
+        systems = importer.importFromTraceWinSequences(sourceFileNames, sequenceNames, new PrintWriter(System.err), basePath);
+
+        ESSAccelerator acc = exportToOpenxal(systems, modelMapping);
+
+        return acc;
+    }
+
+    public static ESSAccelerator exportToOpenxal(List<Subsystem> systems, ElementMapping modelMapping) {
         // Exporting to openxal format
         OpenXalExporter exporter = new OpenXalExporter();
-        acc = exporter.exportToOpenxal(systems.get(0), systems);
+        ESSAccelerator acc = exporter.exportToOpenxal(systems.get(0), systems);
 
         // Setting element mapping
         acc.setElementMapping(modelMapping);
@@ -80,25 +103,30 @@ public class TraceWin {
         ImporterHelpers.addHardcodedInitialParameters(acc);
 
         return acc;
-
     }
 
     /**
      * Converts accelerator in TraceWin formatted file to the OpenXAL format
      * with all all required files.
      * <p>
-     * Usage: TraceWin inputFile outputFile inputFile TraceWin formatted file in
-     * which the accelerator is. (.dat) outputDir directory where export Open
-     * XAL files outputName file name of the accelerator files to generate
+     * Usage: TraceWin input outputFile outputName
+     * <br>
+     * input TraceWin formatted file in which the accelerator is (.dat) or
+     * directory with the same structure as ess-lattice repository
+     * <br>
+     * outputDir directory where export Open XAL files
+     * <br>outputName file name of the accelerator files to generate
      *
      * </p>
      *
      * @param args
      */
-    public static void main(String[] args) {       
+    public static void main(String[] args) {
+//        args = new String[] {"/Users/juanfestebanmuller/git/ess-lattice", "/Users/juanfestebanmuller/optics/test", "main"};
+//        args = new String[] {"/Users/juanfestebanmuller/optics/lattice_import/lattice_next_201708.dat", "/Users/juanfestebanmuller/optics/test", "main"};
         // Checking commandline arguments
         if (args.length < 3) {
-            System.out.println("Usage: TraceWin inputFile outputDir outputName");
+            System.out.println("Usage: TraceWin input outputDir outputName");
             System.exit(0);
         }
         final String input = args[0];
@@ -108,10 +136,30 @@ public class TraceWin {
         // Starting conversion
         System.out.println("Started parsing.");
         ESSAccelerator accelerator = null;
+        File fileInput = new File(input);
         try {
-            accelerator = loadAcceleator(new File(input).toURI());
+            if (fileInput.isFile()) {
+                accelerator = loadAcceleator(fileInput.toURI());
+            } else if (fileInput.isDirectory()) {
+                File[] inputFiles = fileInput.listFiles();
+                List<URI> sourceFileNames = new ArrayList<>();
+                List<String> sequenceNames = new ArrayList<>();
+                for (File inputFile : inputFiles) {
+                    if (inputFile.isDirectory() && inputFile.getName().substring(0, 1).matches("\\d+(\\.\\d+)?")
+                            && Integer.parseInt(inputFile.getName().substring(0, 1)) > 2) {
+                        File traceWinFile = Paths.get(inputFile.toString(), "Beam_Physics", "lattice.dat").toFile();
+                        if (traceWinFile.exists()) {
+                            sourceFileNames.add(traceWinFile.toURI());
+                            sequenceNames.add(inputFile.getName().substring(4));
+                        }
+                    }
+                }
+                accelerator = loadAcceleator(sourceFileNames.toArray(new URI[]{}), sequenceNames.toArray(new String[]{}), fileInput.toURI().toString());
+            } else {
+                throw new IOException();
+            }
         } catch (IOException e1) {
-            System.err.println("Error while trying to read file.");
+            System.err.println("Error while trying to read input.");
             System.exit(1);
         }
         System.out.println("Parsing finished.");
@@ -124,3 +172,4 @@ public class TraceWin {
         }
     }
 }
+;

@@ -7,6 +7,7 @@ import java.io.IOException;
 import org.junit.Test;
 
 import xal.extension.jels.model.elem.jels.FieldMap;
+import xal.extension.jels.model.elem.jels.FieldMapExpInt;
 import xal.extension.jels.model.elem.jels.FieldMapNCells;
 import xal.extension.jels.model.elem.jels.JElsElementMapping;
 import xal.model.ModelException;
@@ -47,6 +48,17 @@ public class FieldMapNCellsTest {
             //GeneralTest.saveResults("resultnc"+i, dataOXNC);
             probe.reset();
 
+            // Test also first order integrator against the exponential one
+            acc.getAccelerator().setElementMapping(new JElsElementMapping() {
+                @Override
+                protected void initialize() {
+                    putMap("fm", FieldMapExpInt.class);
+                    super.initialize();
+                }
+            });
+            double dataOXEI[][] = GeneralTest.run(probe, acc);
+            probe.reset();
+
             System.out.printf("%s\t", probe.getComment());
             StringBuilder message = new StringBuilder();
             boolean ok = true;
@@ -55,6 +67,13 @@ public class FieldMapNCellsTest {
                 //System.out.printf("%s: %E %c %E\n",allCols[j].name(), e, e < allCols[j].allowedError ? '<' : '>', allCols[j].allowedError);
                 System.out.printf("%E\t", e);
                 if (e >= 0.05) {
+                    message.append(j).append(" ");
+                    ok = false;
+                }
+                
+                e = GeneralTest.compare(dataOXFM[0], dataOXEI[0], dataOXFM[j], dataOXEI[j]);
+                System.out.printf("%E\t", e);
+                if (e >= 1e-3) {
                     message.append(j).append(" ");
                     ok = false;
                 }

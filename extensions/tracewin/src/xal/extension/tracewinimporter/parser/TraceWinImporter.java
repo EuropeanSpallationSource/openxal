@@ -39,6 +39,8 @@ import eu.ess.bled.devices.lattice.SpaceChargeCompensation;
 import eu.ess.bled.devices.lattice.ThinLens;
 import eu.ess.lt.parser.ComponentFactory;
 import eu.ess.lt.parser.ValidationResult;
+import java.io.InputStreamReader;
+import java.nio.file.Paths;
 import xal.extension.tracewinimporter.parser.Section;
 
 /**
@@ -104,7 +106,7 @@ public class TraceWinImporter implements TraceWinTags {
         bledComponentFactory = new ComponentFactory();
     }
 
-    public List<Subsystem> importFromTraceWin(BufferedReader tracewinInput, PrintWriter responseWriter, String basePath)
+    public List<Subsystem> importFromTraceWin(URI sourceFileName, PrintWriter responseWriter, String basePath)
             throws FileNotFoundException, IOException {
         // Initializing
         initClassVariables();
@@ -114,7 +116,43 @@ public class TraceWinImporter implements TraceWinTags {
         // Parsing
         Subsystem parentSubsystem = new Subsystem();
         parentSubsystem.setName("Accelerator");
-        parseFromBufferedReader(parentSubsystem, tracewinInput);
+        try (BufferedReader tracewinInput = new BufferedReader(new InputStreamReader(sourceFileName.toURL().openStream()))) {
+            parseFromBufferedReader(parentSubsystem, tracewinInput);
+        }
+
+        // Putting it all together
+        buildHierarchy();
+
+        List<Subsystem> allSubsystems = new ArrayList<Subsystem>();
+        allSubsystems.add(parentSubsystem);
+        allSubsystems.addAll(Arrays.asList(section.getBeamlines()));
+        allSubsystems.addAll(Arrays.asList(section.getSlots()));
+        allSubsystems.addAll(Arrays.asList(section.getComponents()));
+        // Done
+        return allSubsystems;
+    }
+
+    public List<Subsystem> importFromTraceWinSequences(URI[] sourceFileNames, String[] sequencesNames, PrintWriter responseWriter, String basePath)
+            throws FileNotFoundException, IOException {
+        // Initializing
+        initClassVariables();
+        bledComponentFactory.setBasePath(basePath);
+        bledComponentFactory.setFieldmapPath(Paths.get("Field_Maps","1D").toString());
+        this.responseWriter = responseWriter;
+
+        // Parsing
+        Subsystem parentSubsystem = new Subsystem();
+        parentSubsystem.setName("Accelerator");
+        for (int i=0; i<sourceFileNames.length; i++){
+            currentBeamline = bledComponentFactory.getBeamline(sequencesNames[i], "", lastSubsystem);
+            currentBeamline.setParentSubsystem(parentSubsystem);
+            section.addBeamline(currentBeamline);
+            lastSubsystem = lastSubsystem + 1;
+            
+            try (BufferedReader tracewinInput = new BufferedReader(new InputStreamReader(sourceFileNames[i].toURL().openStream()))) {
+                parseFromBufferedReader(parentSubsystem, tracewinInput);
+            }
+        }
 
         // Putting it all together
         buildHierarchy();
