@@ -53,7 +53,6 @@ public class GitParser {
                 json_main_page = new JSONObject(IOUtils.toString(url.openStream()));
                 json_seq_list = json_main_page.getJSONArray("values");
                 for (int i = 0; i < json_seq_list.length(); i++) {
-                    System.out.println(json_seq_list.getJSONObject(i).getString("path"));
                     seq_name = json_seq_list.getJSONObject(i).getString("path");
                     if ( seq_name.substring(0, 1).matches("\\d+(\\.\\d+)?")
                             && Integer.parseInt(seq_name.substring(0, 1)) > 2
@@ -74,7 +73,6 @@ public class GitParser {
             sequenceNames = sequences.toArray(new String[]{});
             basePath = new File(sourceFileNames[0].getPath()).getParentFile().getParentFile().getParent();
             basePath = new URL(sourceFileNames[0].toURL().getProtocol() , sourceFileNames[0].toURL().getHost() , sourceFileNames[0].toURL().getPort() , basePath).toString();
-            System.out.println(basePath);
             
             return true;
         } catch (Exception e) {

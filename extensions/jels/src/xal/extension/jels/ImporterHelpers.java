@@ -67,25 +67,27 @@ public class ImporterHelpers {
         return envelopeProbe;
     }
 
-    public static void setupInitialParameters(EnvelopeProbe probe) {
+    public static void setupInitialParameters(EnvelopeProbe probe, double bunchFrequency, double beamCurrent, double kineticEnergy, Twiss[] initialTwiss) {
         probe.setSpeciesCharge(1);
 //        probe.setSpeciesRestEnergy(9.382720813E8);    // More accurate value
         probe.setSpeciesRestEnergy(9.38272029E8); // TraceWin value
         probe.setSpeciesName("PROTON");
-        probe.setKineticEnergy(3.6217853e6); //energy in eV
+        probe.setKineticEnergy(kineticEnergy); //energy in eV
         probe.setPosition(0.0);
         probe.setTime(0.0);
+        probe.setBeamCurrent(beamCurrent);
+        probe.setBunchFrequency(bunchFrequency*1e6);
 
         double beta = probe.getBeta();
         double gamma = probe.getGamma();
         double beta_gamma = beta * gamma;
 
-        probe.initFromTwiss(new Twiss[]{new Twiss(-0.051805615, 0.20954703, 0.25288 * 1e-6 / beta_gamma),
-            new Twiss(-0.30984478, 0.37074849, 0.251694 * 1e-6 / beta_gamma),
-            new Twiss(-0.48130325, 0.92564505, 0.3615731 * 1e-6 / (beta_gamma*gamma*gamma))});
+        // Convert from TraceWin coordinates (z,deltap/p) to Open XAL (z,z')
+        initialTwiss[0].setTwiss(initialTwiss[0].getAlpha(), initialTwiss[0].getBeta(), initialTwiss[0].getEmittance() / beta_gamma);
+        initialTwiss[1].setTwiss(initialTwiss[1].getAlpha(), initialTwiss[1].getBeta(), initialTwiss[1].getEmittance() / beta_gamma);
+        initialTwiss[2].setTwiss(initialTwiss[2].getAlpha(), initialTwiss[2].getBeta(), initialTwiss[2].getEmittance() / (beta_gamma * gamma * gamma));
 
-        probe.setBeamCurrent(62.5e-3);
-        probe.setBunchFrequency(352.21e6);
+        probe.initFromTwiss(initialTwiss);
     }
 
     public static List<EnvelopeProbeState> simulateInitialValues(EnvelopeProbe probe, AcceleratorSeqCombo seqCombo) throws ModelException {
@@ -114,32 +116,46 @@ public class ImporterHelpers {
         return initialValues;
     }
 
+    private static void addEnvTrackerAdapt(EditContext editContext) {
+        DataTable tblEnvTrackerAdapt = new DataTable("EnvTrackerAdapt", Arrays.asList(new DataAttribute[]{
+            new DataAttribute("name", String.class, true),
+            new DataAttribute("initstep", Double.class, false, Double.toString(0.01)),
+            new DataAttribute("maxstep", Double.class, false, Double.toString(0.0)),
+            new DataAttribute("maxstepdriftpmq", Double.class, false, Double.toString(0.0)),
+            new DataAttribute("errortol", Double.class, false, Double.toString(1e-5)),
+            new DataAttribute("slack", Double.class, false, Double.toString(0.05)),
+            new DataAttribute("norm", Integer.class, false, Integer.toString(0)),
+            new DataAttribute("maxiter", Integer.class, false, Integer.toString(50)),
+            new DataAttribute("order", Integer.class, false, Integer.toString(2))
+        }));
+        GenericRecord defaultRec = new GenericRecord(tblEnvTrackerAdapt);
+        defaultRec.setValueForKey("default", Tracker.TBL_PRIM_KEY_NAME);
+        tblEnvTrackerAdapt.add(defaultRec);
+        editContext.addTableToGroup(tblEnvTrackerAdapt, "modelparams");
+    }
+
     public static void addHardcodedInitialParameters(Accelerator accelerator) {
+        double beamCurrent = 62.5e-3;
+        double bunchFrequency = 352.21;
+        double kineticEnergy = 3.6217853e6;
+        Twiss[] initialTwiss = new Twiss[]{new Twiss(-0.051805615, 0.20954703, 0.25288 * 1e-6),
+            new Twiss(-0.30984478, 0.37074849, 0.251694 * 1e-6),
+            new Twiss(-0.48130325, 0.92564505, 0.3615731 * 1e-6)};
+        addInitialParameters(accelerator, beamCurrent, bunchFrequency, kineticEnergy, initialTwiss);
+    }
+
+    public static void addInitialParameters(Accelerator accelerator, double bunchFrequency, double beamCurrent, double kineticEnergy, Twiss[] initialTwiss) {
         if (accelerator != null) {
             AcceleratorSeqCombo comboSeq = addDefaultComboSeq(accelerator);
 
             EditContext editContext = new EditContext();
 
             EnvelopeProbe probe = defaultProbe();
-            setupInitialParameters(probe);
+            setupInitialParameters(probe, bunchFrequency, beamCurrent, kineticEnergy, initialTwiss);
             ProbeFactory.createSchema(editContext, probe);
 
             // Adding hardcoded EnvTrackerAdapt table, which is not created in createSchema()
-            DataTable tblEnvTrackerAdapt = new DataTable("EnvTrackerAdapt", Arrays.asList(new DataAttribute[]{
-                new DataAttribute("name", String.class, true),
-                new DataAttribute("initstep", Double.class, false, Double.toString(0.01)),
-                new DataAttribute("maxstep", Double.class, false, Double.toString(0.0)),
-                new DataAttribute("maxstepdriftpmq", Double.class, false, Double.toString(0.0)),
-                new DataAttribute("errortol", Double.class, false, Double.toString(1e-5)),
-                new DataAttribute("slack", Double.class, false, Double.toString(0.05)),
-                new DataAttribute("norm", Integer.class, false, Integer.toString(0)),
-                new DataAttribute("maxiter", Integer.class, false, Integer.toString(50)),
-                new DataAttribute("order", Integer.class, false, Integer.toString(2))
-            }));
-            GenericRecord defaultRec = new GenericRecord(tblEnvTrackerAdapt);
-            defaultRec.setValueForKey("default", Tracker.TBL_PRIM_KEY_NAME);
-            tblEnvTrackerAdapt.add(defaultRec);
-            editContext.addTableToGroup(tblEnvTrackerAdapt, "modelparams");
+            addEnvTrackerAdapt(editContext);
 
             accelerator.setEditContext(editContext);
             try {
@@ -152,7 +168,6 @@ public class ImporterHelpers {
                 ProbeFactory.storeInitialValues(editContext, states);
             }
         }
-
     }
 
     /**

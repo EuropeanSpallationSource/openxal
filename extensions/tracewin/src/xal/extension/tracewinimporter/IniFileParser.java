@@ -1,0 +1,184 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package xal.extension.tracewinimporter;
+
+import java.io.BufferedInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import xal.tools.beam.Twiss;
+
+/**
+ * This class parses initial parameters from TraceWin project files (.ini). In
+ * particular, it retrieves the beam current, initial kinetic energy and the Twiss parameters
+ * for the 3 planes.
+ * <br><br>
+ * NOTE: the position in the .ini files was found by reverse engineering, as
+ * there is no documentation about them. The format is believed to be standard
+ * for different versions of TraceWin, but that can change.
+ *
+ * @author juanfestebanmuller
+ */
+public class IniFileParser {
+
+    private double kineticEnergy;       // in eV
+    private Twiss[] initialTwiss = null;
+    private double beamCurrent = 0;         // in A
+    private double bunchFrequency = 0;  // in MHz
+
+    public double getBunchFrequency() {
+        return bunchFrequency;
+    }
+    
+    public double getBeamCurrent() {
+        return beamCurrent;
+    }
+
+    public double getKineticEnergy() {
+        return kineticEnergy;
+    }
+
+    public Twiss[] getInitialTwiss() {
+        return initialTwiss;
+    }
+
+    /**
+     * Load initial parameters from TraceWin project files (.ini).
+     *
+     * @param iniFilePath The path of the .ini file.
+     */
+    public void loadTwissFromIni(String iniFilePath) {
+
+        BufferedInputStream iniFile = null;
+
+        double emittanceX = 0;
+        double emittanceY = 0;
+        double emittanceZ = 0;
+        double alphaX = 0;
+        double alphaY = 0;
+        double alphaZ = 0;
+        double betaX = 0;
+        double betaY = 0;
+        double betaZ = 0;
+
+        try {
+            iniFile = new BufferedInputStream(new URL(iniFilePath).openStream());
+
+            int nBytes = 8;
+            byte[] doubleAux = new byte[8];
+
+            long currentOffset = 0;
+
+            // Read beam current
+            long offsetFrequency = 0x2f24;
+            iniFile.skip(offsetFrequency);
+            if (iniFile.read(doubleAux, 0, nBytes) == nBytes) {
+                bunchFrequency = ByteBuffer.wrap(doubleAux).order(ByteOrder.LITTLE_ENDIAN).getDouble();
+            } else {
+                throw new IOException();
+            }
+            currentOffset += offsetFrequency + nBytes;
+
+            // Read beam current
+            long offsetCurrent = 0x2f34;
+            iniFile.skip(offsetCurrent-currentOffset);
+            if (iniFile.read(doubleAux, 0, nBytes) == nBytes) {
+                beamCurrent = ByteBuffer.wrap(doubleAux).order(ByteOrder.LITTLE_ENDIAN).getDouble();
+            } else {
+                throw new IOException();
+            }
+            currentOffset = offsetCurrent + nBytes;
+
+            // Read kinetic energy and emittances
+            long offsetKineticEnergy = 0x2f44;
+
+            iniFile.skip(offsetKineticEnergy - currentOffset);
+            if (iniFile.read(doubleAux, 0, nBytes) == nBytes) {
+                kineticEnergy = ByteBuffer.wrap(doubleAux).order(ByteOrder.LITTLE_ENDIAN).getDouble();
+            } else {
+                throw new IOException();
+            }
+            iniFile.skip(nBytes);
+            if (iniFile.read(doubleAux, 0, nBytes) == nBytes) {
+                emittanceX = ByteBuffer.wrap(doubleAux).order(ByteOrder.LITTLE_ENDIAN).getDouble();
+            } else {
+                throw new IOException();
+            }
+            iniFile.skip(nBytes);
+            if (iniFile.read(doubleAux, 0, nBytes) == nBytes) {
+                emittanceY = ByteBuffer.wrap(doubleAux).order(ByteOrder.LITTLE_ENDIAN).getDouble();
+            } else {
+                throw new IOException();
+            }
+            iniFile.skip(nBytes);
+            if (iniFile.read(doubleAux, 0, nBytes) == nBytes) {
+                emittanceZ = ByteBuffer.wrap(doubleAux).order(ByteOrder.LITTLE_ENDIAN).getDouble();
+            } else {
+                throw new IOException();
+            }
+
+            currentOffset = offsetKineticEnergy + 7 * nBytes;
+
+            // Now move to the area where alpha and beta parameters are stored
+            long offsetAlphaX = 0x30dc;
+
+            iniFile.skip(offsetAlphaX - currentOffset);
+            if (iniFile.read(doubleAux, 0, nBytes) == nBytes) {
+                alphaX = ByteBuffer.wrap(doubleAux).order(ByteOrder.LITTLE_ENDIAN).getDouble();
+            } else {
+                throw new IOException();
+            }
+            if (iniFile.read(doubleAux, 0, nBytes) == nBytes) {
+                betaX = ByteBuffer.wrap(doubleAux).order(ByteOrder.LITTLE_ENDIAN).getDouble();
+            } else {
+                throw new IOException();
+            }
+            iniFile.skip(2 * nBytes);
+            if (iniFile.read(doubleAux, 0, nBytes) == nBytes) {
+                alphaY = ByteBuffer.wrap(doubleAux).order(ByteOrder.LITTLE_ENDIAN).getDouble();
+            } else {
+                throw new IOException();
+            }
+            if (iniFile.read(doubleAux, 0, nBytes) == nBytes) {
+                betaY = ByteBuffer.wrap(doubleAux).order(ByteOrder.LITTLE_ENDIAN).getDouble();
+            } else {
+                throw new IOException();
+            }
+            iniFile.skip(2 * nBytes);
+            if (iniFile.read(doubleAux, 0, nBytes) == nBytes) {
+                alphaZ = ByteBuffer.wrap(doubleAux).order(ByteOrder.LITTLE_ENDIAN).getDouble();
+            } else {
+                throw new IOException();
+            }
+            if (iniFile.read(doubleAux, 0, nBytes) == nBytes) {
+                betaZ = ByteBuffer.wrap(doubleAux).order(ByteOrder.LITTLE_ENDIAN).getDouble();
+            } else {
+                throw new IOException();
+            }
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(TraceWin.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(IniFileParser.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            if (iniFile != null) {
+                try {
+                    iniFile.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(IniFileParser.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+
+        initialTwiss = new Twiss[]{new Twiss(alphaX, betaX, emittanceX),
+            new Twiss(alphaY, betaY, emittanceY),
+            new Twiss(alphaZ, betaZ, emittanceZ)};
+    }
+
+}

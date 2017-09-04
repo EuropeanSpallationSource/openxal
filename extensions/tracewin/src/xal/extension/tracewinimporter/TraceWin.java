@@ -21,6 +21,7 @@ import xal.extension.jels.smf.ESSAccelerator;
 import xal.extension.tracewinimporter.openxalexporter.AcceleratorExporter;
 
 import xal.sim.scenario.ElementMapping;
+import xal.tools.beam.Twiss;
 
 /**
  * Loader for accelerators in TraceWin formatted files.
@@ -73,9 +74,18 @@ public class TraceWin {
         String basePath = new File(sourceFileName).getParentFile().toURI().toString();
         systems = importer.importFromTraceWin(sourceFileName, new PrintWriter(System.err), basePath);
 
-        ESSAccelerator acc = exportToOpenxal(systems, modelMapping);
+        // Hardcoded initial parameters if using a TraceWin file
+        double bunchFrequency = 352.21;
+        double beamCurrent = 62.5e-3;
+        double kineticEnergy = 3.6217853e6;
 
-        return acc;
+        Twiss[] initialTwiss = new Twiss[]{new Twiss(-0.051805615, 0.20954703, 0.25288 * 1e-6),
+            new Twiss(-0.30984478, 0.37074849, 0.251694 * 1e-6),
+            new Twiss(-0.48130325, 0.92564505, 0.3615731 * 1e-6)};
+
+        ESSAccelerator accelerator = exportToOpenxal(systems, modelMapping, bunchFrequency, beamCurrent, kineticEnergy, initialTwiss);
+
+        return accelerator;
     }
 
     public static ESSAccelerator loadAcceleator(URI[] sourceFileNames, String[] sequenceNames, String basePath, ElementMapping modelMapping) throws IOException {
@@ -85,24 +95,31 @@ public class TraceWin {
 
         systems = importer.importFromTraceWinSequences(sourceFileNames, sequenceNames, new PrintWriter(System.err), basePath);
 
-        ESSAccelerator acc = exportToOpenxal(systems, modelMapping);
+        // Taking initial parameters from MEBT. For the other sequences are simulated.
+        IniFileParser iniFileParser = new IniFileParser();
+        iniFileParser.loadTwissFromIni(basePath + "/ProjectFiles/MEBT.ini");
+        double bunchFrequency = iniFileParser.getBunchFrequency();
+        double beamCurrent = iniFileParser.getBeamCurrent();
+        double kineticEnergy = iniFileParser.getKineticEnergy();
+        Twiss[] initialTwiss = iniFileParser.getInitialTwiss();
 
-        return acc;
+        ESSAccelerator accelerator = exportToOpenxal(systems, modelMapping, bunchFrequency, beamCurrent, kineticEnergy, initialTwiss);
+
+        return accelerator;
     }
 
-    public static ESSAccelerator exportToOpenxal(List<Subsystem> systems, ElementMapping modelMapping) {
+    public static ESSAccelerator exportToOpenxal(List<Subsystem> systems, ElementMapping modelMapping, double bunchFrequency, double beamCurrent, double kineticEnergy, Twiss[] initialTwiss) {
         // Exporting to openxal format
         OpenXalExporter exporter = new OpenXalExporter();
-        ESSAccelerator acc = exporter.exportToOpenxal(systems.get(0), systems);
+        ESSAccelerator accelerator = exporter.exportToOpenxal(systems.get(0), systems);
 
         // Setting element mapping
-        acc.setElementMapping(modelMapping);
+        accelerator.setElementMapping(modelMapping);
 
-        // Loading hardcoded initial paramaters. 
-        // TODO: load from Tracewin init files
-        ImporterHelpers.addHardcodedInitialParameters(acc);
+        // Loading initial paramaters
+        ImporterHelpers.addInitialParameters(accelerator, bunchFrequency, beamCurrent, kineticEnergy, initialTwiss);
 
-        return acc;
+        return accelerator;
     }
 
     /**
@@ -136,7 +153,6 @@ public class TraceWin {
         System.out.println("Started parsing.");
         ESSAccelerator accelerator = null;
         File fileInput = new File(input);
-
         try {
             if (fileInput.isFile()) {
                 accelerator = loadAcceleator(fileInput.toURI());
