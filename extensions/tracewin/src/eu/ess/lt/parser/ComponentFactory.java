@@ -1,6 +1,5 @@
 package eu.ess.lt.parser;
 
-import java.io.File;
 
 import eu.ess.bled.Subsystem;
 import eu.ess.bled.devices.lattice.Aperture;
@@ -27,7 +26,6 @@ import eu.ess.bled.devices.lattice.RFQCell;
 import eu.ess.bled.devices.lattice.Solenoid;
 import eu.ess.bled.devices.lattice.SpaceChargeCompensation;
 import eu.ess.bled.devices.lattice.ThinLens;
-import java.nio.file.Paths;
 
 /**
  * A factory that generates BLED entities. If the factory can connect to the
@@ -414,7 +412,7 @@ public class ComponentFactory {
 		fieldMap.setElectricIntensityFactor(electricIntensityFactor);
 		fieldMap.setSpaceChargeCompensationFactor(spaceChargeCompensationFactor);
 		fieldMap.setApertureFlag(apertureFlag);
-		fieldMap.setFileName(Paths.get(fieldmapPath, fileName).toString());
+		fieldMap.setFileName(fieldmapPath+"/"+fileName);
 		fieldMap.setBasePath(basePath);
 		fieldMap.setPreviousSubsystem(previousSubsystem);
 		// CHECK fieldMap.setSubsystemType(defaultType());

@@ -20,7 +20,6 @@ import eu.ess.bled.devices.lattice.Marker;
 import eu.ess.bled.devices.lattice.NCell;
 import eu.ess.bled.devices.lattice.Quadrupole;
 import eu.ess.bled.devices.lattice.RFCavity;
-import java.nio.file.Paths;
 import xal.extension.jels.smf.ESSAccelerator;
 import xal.extension.jels.smf.ESSElementFactory;
 import xal.extension.jels.smf.impl.ESSDTLTank;
@@ -425,7 +424,8 @@ public class OpenXalExporter {
     }
 
     private AcceleratorNode exportFieldMap(final FieldMap element, double currentPosition) {
-        FieldProfile profile = FieldProfile.getInstance(Paths.get(element.getBasePath(), element.getFileName() + ".edz").toString());
+//        FieldProfile profile = FieldProfile.getInstance(Paths.get(element.getBasePath(), element.getFileName() + ".edz").toString());
+        FieldProfile profile = FieldProfile.getInstance(element.getBasePath() + "/" + element.getFileName() + ".edz");
         ApertureBucket aper = generateApertureBucket(element);
         return ESSElementFactory.createESSFieldMap(element.getName(), element.getLength(),
                 getFrequency(element) * 1e-6, element.getElectricIntensityFactor(), element.getRfPhase(),

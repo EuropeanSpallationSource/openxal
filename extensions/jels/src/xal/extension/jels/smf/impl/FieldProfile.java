@@ -2,12 +2,13 @@ package xal.extension.jels.smf.impl;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -80,9 +81,9 @@ public class FieldProfile {
 	 * @throws URISyntaxException
 	 */
 	private void loadFile(String path) throws IOException, URISyntaxException {
-		BufferedReader br = new BufferedReader(new FileReader(new File(new URI(path))));
+		BufferedReader br = new BufferedReader(new InputStreamReader(new URL(path).openStream()));
 
-		// first line
+                // first line
 		String line = br.readLine();
 		String[] data = line.split(" ");
 

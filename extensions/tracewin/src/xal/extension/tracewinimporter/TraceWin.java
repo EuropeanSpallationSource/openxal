@@ -111,8 +111,9 @@ public class TraceWin {
      * <p>
      * Usage: TraceWin input outputFile outputName
      * <br>
-     * input TraceWin formatted file in which the accelerator is (.dat) or
-     * directory with the same structure as ess-lattice repository
+     * input TraceWin formatted file in which the accelerator is (.dat), a
+     * directory with the same structure as ess-lattice repository, or the
+     * address (REST) of the bitbucket repository
      * <br>
      * outputDir directory where export Open XAL files
      * <br>outputName file name of the accelerator files to generate
@@ -135,6 +136,7 @@ public class TraceWin {
         System.out.println("Started parsing.");
         ESSAccelerator accelerator = null;
         File fileInput = new File(input);
+
         try {
             if (fileInput.isFile()) {
                 accelerator = loadAcceleator(fileInput.toURI());
@@ -153,6 +155,10 @@ public class TraceWin {
                     }
                 }
                 accelerator = loadAcceleator(sourceFileNames.toArray(new URI[]{}), sequenceNames.toArray(new String[]{}), fileInput.toURI().toString());
+            } else if (input.startsWith("http")) {
+                GitParser gitParser = new GitParser();
+                gitParser.URL2Json(input);
+                accelerator = loadAcceleator(gitParser.getSourceFileNames(), gitParser.getSequenceNames(), gitParser.getBasePath());
             } else {
                 throw new IOException();
             }
@@ -169,5 +175,4 @@ public class TraceWin {
             Logger.getLogger(TraceWin.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-}
-;
+};
