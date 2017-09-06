@@ -44,27 +44,27 @@
             <attribute isPrimaryKey="false" name="beta" type="java.lang.Double"/>
             <attribute isPrimaryKey="false" name="emittance" type="java.lang.Double"/>
         </schema>
-        <record alpha="-0.051805615" beta="0.20954703" coordinate="x" emittance="2.8753043563474503E-6" name="MEBT"/>
-        <record alpha="-0.30984478000000004" beta="0.37074849" coordinate="y" emittance="2.861819260781853E-6" name="MEBT"/>
-        <record alpha="-0.48130325" beta="0.92564505" coordinate="z" emittance="4.1111701580514565E-6" name="MEBT"/>
-        <record alpha="1.722643279331406" beta="0.2608904455463832" coordinate="x" emittance="2.8753043563473084E-6" name="DTL"/>
-        <record alpha="-4.895110289405088" beta="0.8770500988772826" coordinate="y" emittance="2.861819260781754E-6" name="DTL"/>
-        <record alpha="-0.10690558382484007" beta="0.3876733209110904" coordinate="z" emittance="4.1111701580514844E-6" name="DTL"/>
-        <record alpha="-4.679465341215445" beta="10.591667030260478" coordinate="x" emittance="5.643322666715734E-7" name="SPK"/>
-        <record alpha="1.0618538686030037" beta="4.638466986336" coordinate="y" emittance="5.616855644085945E-7" name="SPK"/>
-        <record alpha="0.09050468076521276" beta="6.227995897681566" coordinate="z" emittance="6.77162558430946E-7" name="SPK"/>
-        <record alpha="-3.828445077569367" beta="24.605396583272032" coordinate="x" emittance="3.5241420025979623E-7" name="MBL"/>
-        <record alpha="-0.06892213443099551" beta="9.209049315175404" coordinate="y" emittance="3.507613876945087E-7" name="MBL"/>
-        <record alpha="0.9004880631694132" beta="19.35185692032129" coordinate="z" emittance="3.35195099522199E-7" name="MBL"/>
-        <record alpha="-4.281206625781478" beta="30.268284342019605" coordinate="x" emittance="2.0084178739280006E-7" name="HBL"/>
-        <record alpha="-0.3262555249535059" beta="11.338277214034187" coordinate="y" emittance="1.9989984512818137E-7" name="HBL"/>
-        <record alpha="-0.10376817464707945" beta="33.52931739131363" coordinate="z" emittance="1.1193486448735001E-7" name="HBL"/>
-        <record alpha="-2.873037850555171" beta="67.57117925818756" coordinate="x" emittance="8.553416573343105E-8" name="HEBT"/>
-        <record alpha="0.7333421721907014" beta="33.107007053601" coordinate="y" emittance="8.513301293143122E-8" name="HEBT"/>
-        <record alpha="-0.5252113957292623" beta="557.5625601954549" coordinate="z" emittance="1.2652440164899282E-8" name="HEBT"/>
-        <record alpha="-0.6737850611222324" beta="28.051205616179324" coordinate="x" emittance="8.553416573342241E-8" name="A2T"/>
-        <record alpha="0.884772345572839" beta="13.529037877171513" coordinate="y" emittance="8.547002978720468E-8" name="A2T"/>
-        <record alpha="-289.0849657758612" beta="30603.689762777103" coordinate="z" emittance="1.2676364342103932E-8" name="A2T"/>
+        <record alpha="-0.051805615" beta="0.20954703" coordinate="x" emittance="3.269287860499322E-5" name="MEBT"/>
+        <record alpha="-0.30984478" beta="0.37074849" coordinate="y" emittance="3.253954993516753E-5" name="MEBT"/>
+        <record alpha="-0.48130325" beta="0.92564505" coordinate="z" emittance="4.6030118341948327E-5" name="MEBT"/>
+        <record alpha="1.3469831" beta="0.21307501" coordinate="x" emittance="3.3505764026982447E-6" name="DTL"/>
+        <record alpha="-4.1153851" beta="0.74752686" coordinate="y" emittance="3.5245714222556286E-6" name="DTL"/>
+        <record alpha="5.872398702899226E-149" beta="-2.5689246908924516E139" coordinate="z" emittance="4.749832880796967E-6" name="DTL"/>
+        <record alpha="-3.2450568" beta="7.4238895" coordinate="x" emittance="6.896865489329136E-7" name="SPK"/>
+        <record alpha="1.107339" beta="4.3346793" coordinate="y" emittance="7.031152292316565E-7" name="SPK"/>
+        <record alpha="0.16675996" beta="6.1052993" coordinate="z" emittance="7.955452335068762E-7" name="SPK"/>
+        <record alpha="-2.5890862" beta="17.004103" coordinate="x" emittance="4.801139060879474E-7" name="MBL"/>
+        <record alpha="-0.062235924" beta="8.6565595" coordinate="y" emittance="4.6831929576589205E-7" name="MBL"/>
+        <record alpha="0.4751011" beta="11.241424" coordinate="z" emittance="4.076613485404133E-7" name="MBL"/>
+        <record alpha="-3.0734314" beta="23.38107" coordinate="x" emittance="2.89074875401202E-7" name="HBL"/>
+        <record alpha="-0.31094597" beta="8.6641293" coordinate="y" emittance="2.766821332931291E-7" name="HBL"/>
+        <record alpha="0.23650126" beta="16.442068" coordinate="z" emittance="1.4098819356593027E-7" name="HBL"/>
+        <record alpha="-1.9731683" beta="51.903226" coordinate="x" emittance="1.1898073740848976E-7" name="HEBT"/>
+        <record alpha="0.51930644" beta="28.878755" coordinate="y" emittance="1.2308738056798241E-7" name="HEBT"/>
+        <record alpha="0.1073404" beta="49.078583" coordinate="z" emittance="1.5944555327594865E-8" name="HEBT"/>
+        <record alpha="-1.0191976" beta="27.823781" coordinate="x" emittance="1.133272393585098E-7" name="A2T"/>
+        <record alpha="0.70355989" beta="12.514001" coordinate="y" emittance="1.2133546201187885E-7" name="A2T"/>
+        <record alpha="-17.169904" beta="1830.4725" coordinate="z" emittance="2.3296320600362807E-8" name="A2T"/>
     </table>
     <table name="location" recordClass="xal.tools.data.GenericRecord">
         <schema>
@@ -76,12 +76,12 @@
             <attribute defaultValue="0" isPrimaryKey="false" name="t" type="java.lang.Double"/>
         </schema>
         <record W="3621785.3" name="MEBT"/>
-        <record W="3621785.3" name="DTL"/>
-        <record W="8.989514084273985E7" name="SPK"/>
-        <record W="2.165648096738087E8" name="MBL"/>
-        <record W="5.703731513657991E8" name="HBL"/>
-        <record W="1.990094441258264E9" name="HEBT"/>
-        <record W="1.990094441258264E9" name="A2T"/>
+        <record W="3620000.0" name="DTL"/>
+        <record W="8.9887822E7" name="SPK"/>
+        <record W="2.1654179E8" name="MBL"/>
+        <record W="5.7096562E8" name="HBL"/>
+        <record W="1.9911104E9" name="HEBT"/>
+        <record W="1.9911105E9" name="A2T"/>
     </table>
     <table name="EnvTrackerAdapt" recordClass="xal.tools.data.GenericRecord">
         <schema>

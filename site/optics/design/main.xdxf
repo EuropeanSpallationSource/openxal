@@ -1,5 +1,5 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
-<xdxf date="08.31.2017" system="ESS" ver="" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://bitbucket.org/europeanspallationsource/openxal/raw/site.ess.master/core/resources/xal/schemas/xdxf.xsd">
+<xdxf date="09.06.2017" system="ESS" ver="" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://bitbucket.org/europeanspallationsource/openxal/raw/site.ess.master/core/resources/xal/schemas/xdxf.xsd">
     <comboseq id="MEBT-A2T">
         <sequence id="MEBT"/>
         <sequence id="DTL"/>
@@ -333,7 +333,7 @@
                     <rfgap TTF="1.0" ampFactor="0.9547977368824289" endCell="0" gapOffset="0.0" length="0.028276440000000007" phaseFactor="0.0" stfCoeffs="0.0919382,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.0919382,0.792678,-0.361117,-0.169146"/>
                 </attributes>
             </node>
-            <node id="BPM8" len="0.0" pos="0.23016067" type="BPM">
+            <node id="BPM8" len="0.0" pos="0.23016067000000004" type="BPM">
                 <attributes>
                     <bpm frequency="3.5221E8" length="1.0" orientation="1"/>
                 </attributes>
@@ -1195,7 +1195,7 @@
         </sequence>
         <sequence id="DTLTank2" len="7.339504700000002" pos="7.82093766" type="DTLTank">
             <attributes>
-                <rfcavity amp="3.9288205917664207" ampFactor="1.0" freq="352.21" phase="-34.0" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
+                <rfcavity amp="4.4012106159059945" ampFactor="1.0" freq="352.21" phase="-34.0" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
             </attributes>
             <channelsuite>
                 <channel handle="cavPhaseAvg" settable="false" signal="DTLTank2:Phs" valid="true"/>
@@ -1212,13 +1212,13 @@
             <node id="DTL63:G" len="0.0" pos="0.09055188000700001" type="RG">
                 <attributes>
                     <aperture shape="1" x="0.011" y="0.011"/>
-                    <rfgap TTF="1.0" ampFactor="1.0" endCell="0" gapOffset="0.0" length="0.1304366" phaseFactor="0.0" stfCoeffs="0.210485,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.210485,0.894659,-0.200612,-0.161659"/>
+                    <rfgap TTF="1.0" ampFactor="1.0" endCell="0" gapOffset="0.0" length="0.11643660000000003" phaseFactor="0.0" stfCoeffs="0.210485,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.210485,0.894659,-0.200612,-0.161659"/>
                 </attributes>
             </node>
             <node id="DTL64:G" len="0.0" pos="0.272528807" type="RG">
                 <attributes>
                     <aperture shape="1" x="0.011" y="0.011"/>
-                    <rfgap TTF="1.0" ampFactor="1.2824378342445146" endCell="0" gapOffset="0.0" length="0.10264329999999999" phaseFactor="0.0" stfCoeffs="0.21254,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.21254,0.893922,-0.202031,-0.16285"/>
+                    <rfgap TTF="1.0" ampFactor="1.1447914245755781" endCell="0" gapOffset="0.0" length="0.10264329999999999" phaseFactor="0.0" stfCoeffs="0.21254,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.21254,0.893922,-0.202031,-0.16285"/>
                 </attributes>
             </node>
             <node id="DTL64:Q2" len="0.08" pos="0.3640799" type="PQ">
@@ -1230,7 +1230,7 @@
             <node id="DTL65:G" len="0.0" pos="0.456567742" type="RG">
                 <attributes>
                     <aperture shape="1" x="0.011" y="0.011"/>
-                    <rfgap TTF="1.0" ampFactor="1.2750922126894604" endCell="0" gapOffset="0.0" length="0.10313739999999999" phaseFactor="0.0" stfCoeffs="0.214669,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.214669,0.895329,-0.199506,-0.161419"/>
+                    <rfgap TTF="1.0" ampFactor="1.1382342220821275" endCell="0" gapOffset="0.0" length="0.10313739999999999" phaseFactor="0.0" stfCoeffs="0.214669,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.214669,0.895329,-0.199506,-0.161419"/>
                 </attributes>
             </node>
             <node id="BPM14" len="0.0" pos="0.5469054" type="BPM">
@@ -1251,7 +1251,7 @@
             <node id="DTL66:G" len="0.0" pos="0.64017446" type="RG">
                 <attributes>
                     <aperture shape="1" x="0.011" y="0.011"/>
-                    <rfgap TTF="1.0" ampFactor="1.2704022411277958" endCell="0" gapOffset="0.0" length="0.1045079" phaseFactor="0.0" stfCoeffs="0.216827,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.216827,0.895138,-0.199922,-0.161958"/>
+                    <rfgap TTF="1.0" ampFactor="1.134047633787608" endCell="0" gapOffset="0.0" length="0.1045079" phaseFactor="0.0" stfCoeffs="0.216827,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.216827,0.895138,-0.199922,-0.161958"/>
                 </attributes>
             </node>
             <node id="DTL66:Q2" len="0.08" pos="0.7317252000000001" type="PQ">
@@ -1263,10 +1263,10 @@
             <node id="DTL67:G" len="0.0" pos="0.8256164800000001" type="RG">
                 <attributes>
                     <aperture shape="1" x="0.011" y="0.011"/>
-                    <rfgap TTF="1.0" ampFactor="1.2605226030856527" endCell="0" gapOffset="0.0" length="0.1063342" phaseFactor="0.0" stfCoeffs="0.218981,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.218981,0.894907,-0.200412,-0.162543"/>
+                    <rfgap TTF="1.0" ampFactor="1.1252283954537523" endCell="0" gapOffset="0.0" length="0.1063342" phaseFactor="0.0" stfCoeffs="0.218981,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.218981,0.894907,-0.200412,-0.162543"/>
                 </attributes>
             </node>
-            <node id="TS13-VC" len="0.0" pos="0.9177595000000001" type="DCV">
+            <node id="TS13-VC" len="0.0" pos="0.9177595000000007" type="DCV">
                 <attributes>
                     <aperture shape="1" x="11.0" y="11.0"/>
                     <magnet bendAngle="0.0" dfltMagFld="0.0" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0.0" dipoleQuadComponent="0.0" len="1.0" pathLength="0.0" polarity="1.0"/>
@@ -1276,7 +1276,7 @@
                 </channelsuite>
                 <ps main="TS13-VC-PS"/>
             </node>
-            <node id="TS13-HC" len="0.0" pos="0.9177595000000001" type="DCH">
+            <node id="TS13-HC" len="0.0" pos="0.9177595000000007" type="DCH">
                 <attributes>
                     <aperture shape="1" x="11.0" y="11.0"/>
                     <magnet bendAngle="0.0" dfltMagFld="0.0" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0.0" dipoleQuadComponent="0.0" len="1.0" pathLength="0.0" polarity="1.0"/>
@@ -1289,7 +1289,7 @@
             <node id="DTL68:G" len="0.0" pos="1.0128905900000003" type="RG">
                 <attributes>
                     <aperture shape="1" x="0.011" y="0.011"/>
-                    <rfgap TTF="1.0" ampFactor="1.2504607171731763" endCell="0" gapOffset="0.0" length="0.10818090000000002" phaseFactor="0.0" stfCoeffs="0.221131,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.221131,0.894546,-0.20114,-0.163282"/>
+                    <rfgap TTF="1.0" ampFactor="1.1162464702484292" endCell="0" gapOffset="0.0" length="0.10818090000000002" phaseFactor="0.0" stfCoeffs="0.221131,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.221131,0.894546,-0.20114,-0.163282"/>
                 </attributes>
             </node>
             <node id="DTL68:Q2" len="0.08" pos="1.1062403" type="PQ">
@@ -1301,10 +1301,10 @@
             <node id="DTL69:G" len="0.0" pos="1.2019932500000001" type="RG">
                 <attributes>
                     <aperture shape="1" x="0.011" y="0.011"/>
-                    <rfgap TTF="1.0" ampFactor="1.2414387102561049" endCell="0" gapOffset="0.0" length="0.109991" phaseFactor="0.0" stfCoeffs="0.223278,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.223278,0.894264,-0.201721,-0.163916"/>
+                    <rfgap TTF="1.0" ampFactor="1.1081928119147997" endCell="0" gapOffset="0.0" length="0.109991" phaseFactor="0.0" stfCoeffs="0.223278,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.223278,0.894264,-0.201721,-0.163916"/>
                 </attributes>
             </node>
-            <node id="TS14-VC" len="0.0" pos="1.2959349" type="DCV">
+            <node id="TS14-VC" len="0.0" pos="1.2959349000000007" type="DCV">
                 <attributes>
                     <aperture shape="1" x="11.0" y="11.0"/>
                     <magnet bendAngle="0.0" dfltMagFld="0.0" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0.0" dipoleQuadComponent="0.0" len="1.0" pathLength="0.0" polarity="1.0"/>
@@ -1314,7 +1314,7 @@
                 </channelsuite>
                 <ps main="TS14-VC-PS"/>
             </node>
-            <node id="TS14-HC" len="0.0" pos="1.2959349" type="DCH">
+            <node id="TS14-HC" len="0.0" pos="1.2959349000000007" type="DCH">
                 <attributes>
                     <aperture shape="1" x="11.0" y="11.0"/>
                     <magnet bendAngle="0.0" dfltMagFld="0.0" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0.0" dipoleQuadComponent="0.0" len="1.0" pathLength="0.0" polarity="1.0"/>
@@ -1327,7 +1327,7 @@
             <node id="DTL70:G" len="0.0" pos="1.39292119" type="RG">
                 <attributes>
                     <aperture shape="1" x="0.011" y="0.011"/>
-                    <rfgap TTF="1.0" ampFactor="1.23209199759043" endCell="0" gapOffset="0.0" length="0.1118234" phaseFactor="0.0" stfCoeffs="0.22542,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.22542,0.893835,-0.202571,-0.164726"/>
+                    <rfgap TTF="1.0" ampFactor="1.0998492990973228" endCell="0" gapOffset="0.0" length="0.1118234" phaseFactor="0.0" stfCoeffs="0.22542,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.22542,0.893835,-0.202571,-0.164726"/>
                 </attributes>
             </node>
             <node id="DTL70:Q2" len="0.08" pos="1.4880547000000002" type="PQ">
@@ -1339,13 +1339,13 @@
             <node id="DTL71:G" len="0.0" pos="1.5856707200000002" type="RG">
                 <attributes>
                     <aperture shape="1" x="0.011" y="0.011"/>
-                    <rfgap TTF="1.0" ampFactor="1.223257725595431" endCell="0" gapOffset="0.0" length="0.11364159999999998" phaseFactor="0.0" stfCoeffs="0.227558,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.227558,0.893392,-0.203447,-0.165547"/>
+                    <rfgap TTF="1.0" ampFactor="1.0919632257515526" endCell="0" gapOffset="0.0" length="0.11364159999999998" phaseFactor="0.0" stfCoeffs="0.227558,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.227558,0.893392,-0.203447,-0.165547"/>
                 </attributes>
             </node>
             <node id="DTL72:G" len="0.0" pos="1.78023814" type="RG">
                 <attributes>
                     <aperture shape="1" x="0.011" y="0.011"/>
-                    <rfgap TTF="1.0" ampFactor="1.21466986428536" endCell="0" gapOffset="0.0" length="0.1154513" phaseFactor="0.0" stfCoeffs="0.229692,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.229692,0.892917,-0.20438,-0.166406"/>
+                    <rfgap TTF="1.0" ampFactor="1.0842971153790326" endCell="0" gapOffset="0.0" length="0.1154513" phaseFactor="0.0" stfCoeffs="0.229692,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.229692,0.892917,-0.20438,-0.166406"/>
                 </attributes>
             </node>
             <node id="DTL72:Q2" len="0.08" pos="1.8771476" type="PQ">
@@ -1357,13 +1357,13 @@
             <node id="DTL73:G" len="0.0" pos="1.9766196200000001" type="RG">
                 <attributes>
                     <aperture shape="1" x="0.011" y="0.011"/>
-                    <rfgap TTF="1.0" ampFactor="1.2058753351644913" endCell="0" gapOffset="0.0" length="0.11727880000000002" phaseFactor="0.0" stfCoeffs="0.23182,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.23182,0.892305,-0.205563,-0.167425"/>
+                    <rfgap TTF="1.0" ampFactor="1.0764465192316712" endCell="0" gapOffset="0.0" length="0.11727880000000002" phaseFactor="0.0" stfCoeffs="0.23182,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.23182,0.892305,-0.205563,-0.167425"/>
                 </attributes>
             </node>
             <node id="DTL74:G" len="0.0" pos="2.17481106" type="RG">
                 <attributes>
                     <aperture shape="1" x="0.011" y="0.011"/>
-                    <rfgap TTF="1.0" ampFactor="1.198026925451538" endCell="0" gapOffset="0.0" length="0.11907029999999999" phaseFactor="0.0" stfCoeffs="0.233945,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.233945,0.891783,-0.206581,-0.168329"/>
+                    <rfgap TTF="1.0" ampFactor="1.0694404937573547" endCell="0" gapOffset="0.0" length="0.11907029999999999" phaseFactor="0.0" stfCoeffs="0.233945,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.233945,0.891783,-0.206581,-0.168329"/>
                 </attributes>
             </node>
             <node id="DTL74:Q2" len="0.08" pos="2.2734967" type="PQ">
@@ -1375,13 +1375,13 @@
             <node id="DTL75:G" len="0.0" pos="2.37480862" type="RG">
                 <attributes>
                     <aperture shape="1" x="0.011" y="0.011"/>
-                    <rfgap TTF="1.0" ampFactor="1.1897264341450304" endCell="0" gapOffset="0.0" length="0.1208905" phaseFactor="0.0" stfCoeffs="0.236064,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.236064,0.891118,-0.20786,-0.169404"/>
+                    <rfgap TTF="1.0" ampFactor="1.0620309094377747" endCell="0" gapOffset="0.0" length="0.1208905" phaseFactor="0.0" stfCoeffs="0.236064,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.236064,0.891118,-0.20786,-0.169404"/>
                 </attributes>
             </node>
             <node id="DTL76:G" len="0.0" pos="2.5766080299999996" type="RG">
                 <attributes>
                     <aperture shape="1" x="0.011" y="0.011"/>
-                    <rfgap TTF="1.0" ampFactor="1.182327148035555" endCell="0" gapOffset="0.0" length="0.12267480000000001" phaseFactor="0.0" stfCoeffs="0.238179,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.238179,0.890555,-0.208952,-0.170351"/>
+                    <rfgap TTF="1.0" ampFactor="1.055425802305156" endCell="0" gapOffset="0.0" length="0.12267480000000001" phaseFactor="0.0" stfCoeffs="0.238179,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.238179,0.890555,-0.208952,-0.170351"/>
                 </attributes>
             </node>
             <node id="DTL76:Q2" len="0.08" pos="2.677062" type="PQ">
@@ -1393,10 +1393,10 @@
             <node id="DTL77:G" len="0.0" pos="2.7802053099999995" type="RG">
                 <attributes>
                     <aperture shape="1" x="0.011" y="0.011"/>
-                    <rfgap TTF="1.0" ampFactor="1.1746273527222015" endCell="0" gapOffset="0.0" length="0.1244781" phaseFactor="0.0" stfCoeffs="0.240289,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.240289,0.889845,-0.21031,-0.171471"/>
+                    <rfgap TTF="1.0" ampFactor="1.0485524401738002" endCell="0" gapOffset="0.0" length="0.1244781" phaseFactor="0.0" stfCoeffs="0.240289,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.240289,0.889845,-0.21031,-0.171471"/>
                 </attributes>
             </node>
-            <node id="BPM15" len="0.0" pos="2.8812661999999998" type="BPM">
+            <node id="BPM15" len="0.0" pos="2.8812662000000007" type="BPM">
                 <attributes>
                     <bpm frequency="3.5221E8" length="1.0" orientation="1"/>
                 </attributes>
@@ -1414,7 +1414,7 @@
             <node id="DTL78:G" len="0.0" pos="2.9855960599999998" type="RG">
                 <attributes>
                     <aperture shape="1" x="0.011" y="0.011"/>
-                    <rfgap TTF="1.0" ampFactor="1.16721327930934" endCell="0" gapOffset="0.0" length="0.12626969999999998" phaseFactor="0.0" stfCoeffs="0.242393,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.242393,0.889118,-0.211702,-0.172608"/>
+                    <rfgap TTF="1.0" ampFactor="1.0419341328862444" endCell="0" gapOffset="0.0" length="0.12626969999999998" phaseFactor="0.0" stfCoeffs="0.242393,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.242393,0.889118,-0.211702,-0.172608"/>
                 </attributes>
             </node>
             <node id="DTL78:Q2" len="0.08" pos="3.0878098" type="PQ">
@@ -1426,7 +1426,7 @@
             <node id="DTL79:G" len="0.0" pos="3.1927759499999997" type="RG">
                 <attributes>
                     <aperture shape="1" x="0.011" y="0.011"/>
-                    <rfgap TTF="1.0" ampFactor="1.160129507574941" endCell="0" gapOffset="0.0" length="0.1280473" phaseFactor="0.0" stfCoeffs="0.244493,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.244493,0.888367,-0.213135,-0.173768"/>
+                    <rfgap TTF="1.0" ampFactor="1.035610675390959" endCell="0" gapOffset="0.0" length="0.1280473" phaseFactor="0.0" stfCoeffs="0.244493,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.244493,0.888367,-0.213135,-0.173768"/>
                 </attributes>
             </node>
             <node id="TS15-VC" len="0.0" pos="3.2955959999999997" type="DCV">
@@ -1452,7 +1452,7 @@
             <node id="DTL80:G" len="0.0" pos="3.4017405499999995" type="RG">
                 <attributes>
                     <aperture shape="1" x="0.011" y="0.011"/>
-                    <rfgap TTF="1.0" ampFactor="1.1526111549267108" endCell="0" gapOffset="0.0" length="0.129848" phaseFactor="0.0" stfCoeffs="0.246587,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.246587,0.887469,-0.214839,-0.175108"/>
+                    <rfgap TTF="1.0" ampFactor="1.0288992813500157" endCell="0" gapOffset="0.0" length="0.129848" phaseFactor="0.0" stfCoeffs="0.246587,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.246587,0.887469,-0.214839,-0.175108"/>
                 </attributes>
             </node>
             <node id="DTL80:Q2" len="0.08" pos="3.5057051" type="PQ">
@@ -1464,7 +1464,7 @@
             <node id="DTL81:G" len="0.0" pos="3.6124850399999997" type="RG">
                 <attributes>
                     <aperture shape="1" x="0.011" y="0.011"/>
-                    <rfgap TTF="1.0" ampFactor="1.1460014584351401" endCell="0" gapOffset="0.0" length="0.1316077" phaseFactor="0.0" stfCoeffs="0.248676,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.248676,0.886677,-0.216344,-0.176307"/>
+                    <rfgap TTF="1.0" ampFactor="1.02299901573047" endCell="0" gapOffset="0.0" length="0.1316077" phaseFactor="0.0" stfCoeffs="0.248676,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.248676,0.886677,-0.216344,-0.176307"/>
                 </attributes>
             </node>
             <node id="TS16-VC" len="0.0" pos="3.7170550999999996" type="DCV">
@@ -1490,7 +1490,7 @@
             <node id="DTL82:G" len="0.0" pos="3.8250049899999996" type="RG">
                 <attributes>
                     <aperture shape="1" x="0.011" y="0.011"/>
-                    <rfgap TTF="1.0" ampFactor="1.138895805226365" endCell="0" gapOffset="0.0" length="0.1333983" phaseFactor="0.0" stfCoeffs="0.250759,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.250759,0.885739,-0.218119,-0.177682"/>
+                    <rfgap TTF="1.0" ampFactor="1.0166560253396681" endCell="0" gapOffset="0.0" length="0.1333983" phaseFactor="0.0" stfCoeffs="0.250759,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.250759,0.885739,-0.218119,-0.177682"/>
                 </attributes>
             </node>
             <node id="DTL82:Q2" len="0.08" pos="3.9307111" type="PQ">
@@ -1502,13 +1502,13 @@
             <node id="DTL83:G" len="0.0" pos="4.0392955299999995" type="RG">
                 <attributes>
                     <aperture shape="1" x="0.011" y="0.011"/>
-                    <rfgap TTF="1.0" ampFactor="1.1326693631041354" endCell="0" gapOffset="0.0" length="0.13514889999999996" phaseFactor="0.0" stfCoeffs="0.252837,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.252837,0.884912,-0.219689,-0.178918"/>
+                    <rfgap TTF="1.0" ampFactor="1.011097878693641" endCell="0" gapOffset="0.0" length="0.13514889999999996" phaseFactor="0.0" stfCoeffs="0.252837,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.252837,0.884912,-0.219689,-0.178918"/>
                 </attributes>
             </node>
             <node id="DTL84:G" len="0.0" pos="4.25535204" type="RG">
                 <attributes>
                     <aperture shape="1" x="0.011" y="0.011"/>
-                    <rfgap TTF="1.0" ampFactor="1.126012604924606" endCell="0" gapOffset="0.0" length="0.1369219" phaseFactor="0.0" stfCoeffs="0.254909,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.254909,0.883933,-0.221536,-0.180331"/>
+                    <rfgap TTF="1.0" ampFactor="1.0051556026035973" endCell="0" gapOffset="0.0" length="0.1369219" phaseFactor="0.0" stfCoeffs="0.254909,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.254909,0.883933,-0.221536,-0.180331"/>
                 </attributes>
             </node>
             <node id="DTL84:Q2" len="0.08" pos="4.3627819" type="PQ">
@@ -1520,13 +1520,13 @@
             <node id="DTL85:G" len="0.0" pos="4.473169510000001" type="RG">
                 <attributes>
                     <aperture shape="1" x="0.011" y="0.011"/>
-                    <rfgap TTF="1.0" ampFactor="1.119654251351587" endCell="0" gapOffset="0.0" length="0.13867970000000002" phaseFactor="0.0" stfCoeffs="0.256975,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.256975,0.882941,-0.223405,-0.181753"/>
+                    <rfgap TTF="1.0" ampFactor="0.9994797028052265" endCell="0" gapOffset="0.0" length="0.13867970000000002" phaseFactor="0.0" stfCoeffs="0.256975,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.256975,0.882941,-0.223405,-0.181753"/>
                 </attributes>
             </node>
             <node id="DTL86:G" len="0.0" pos="4.692743" type="RG">
                 <attributes>
                     <aperture shape="1" x="0.011" y="0.011"/>
-                    <rfgap TTF="1.0" ampFactor="1.113482250901894" endCell="0" gapOffset="0.0" length="0.1404327" phaseFactor="0.0" stfCoeffs="0.259035,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.259035,0.881928,-0.225313,-0.183195"/>
+                    <rfgap TTF="1.0" ampFactor="0.993970154506967" endCell="0" gapOffset="0.0" length="0.1404327" phaseFactor="0.0" stfCoeffs="0.259035,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.259035,0.881928,-0.225313,-0.183195"/>
                 </attributes>
             </node>
             <node id="DTL86:Q2" len="0.08" pos="4.801894300000001" type="PQ">
@@ -1538,13 +1538,13 @@
             <node id="DTL87:G" len="0.0" pos="4.9140675300000005" type="RG">
                 <attributes>
                     <aperture shape="1" x="0.011" y="0.011"/>
-                    <rfgap TTF="1.0" ampFactor="1.1073868010133432" endCell="0" gapOffset="0.0" length="0.142183" phaseFactor="0.0" stfCoeffs="0.26109,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.26109,0.880885,-0.227274,-0.184665"/>
+                    <rfgap TTF="1.0" ampFactor="0.9885289404574348" endCell="0" gapOffset="0.0" length="0.142183" phaseFactor="0.0" stfCoeffs="0.26109,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.26109,0.880885,-0.227274,-0.184665"/>
                 </attributes>
             </node>
             <node id="DTL88:G" len="0.0" pos="5.1371379600000004" type="RG">
                 <attributes>
                     <aperture shape="1" x="0.011" y="0.011"/>
-                    <rfgap TTF="1.0" ampFactor="1.1015437924953493" endCell="0" gapOffset="0.0" length="0.143925" phaseFactor="0.0" stfCoeffs="0.263138,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.263138,0.879838,-0.22924,-0.186134"/>
+                    <rfgap TTF="1.0" ampFactor="0.9833130727822098" endCell="0" gapOffset="0.0" length="0.143925" phaseFactor="0.0" stfCoeffs="0.263138,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.263138,0.879838,-0.22924,-0.186134"/>
                 </attributes>
             </node>
             <node id="DTL88:Q2" len="0.08" pos="5.2480023000000005" type="PQ">
@@ -1556,10 +1556,10 @@
             <node id="DTL89:G" len="0.0" pos="5.36194922" type="RG">
                 <attributes>
                     <aperture shape="1" x="0.011" y="0.011"/>
-                    <rfgap TTF="1.0" ampFactor="1.0958259233407863" endCell="0" gapOffset="0.0" length="0.1456636" phaseFactor="0.0" stfCoeffs="0.265181,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.265181,0.878764,-0.231254,-0.187627"/>
+                    <rfgap TTF="1.0" ampFactor="0.9782089130325522" endCell="0" gapOffset="0.0" length="0.1456636" phaseFactor="0.0" stfCoeffs="0.265181,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.265181,0.878764,-0.231254,-0.187627"/>
                 </attributes>
             </node>
-            <node id="BPM16" len="0.0" pos="5.473423700000001" type="BPM">
+            <node id="BPM16" len="0.0" pos="5.4734237" type="BPM">
                 <attributes>
                     <bpm frequency="3.5221E8" length="1.0" orientation="1"/>
                 </attributes>
@@ -1577,7 +1577,7 @@
             <node id="DTL90:G" len="0.0" pos="5.588496190000001" type="RG">
                 <attributes>
                     <aperture shape="1" x="0.011" y="0.011"/>
-                    <rfgap TTF="1.0" ampFactor="1.0902579674090138" endCell="0" gapOffset="0.0" length="0.14739760000000002" phaseFactor="0.0" stfCoeffs="0.267217,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.267217,0.877681,-0.233285,-0.189127"/>
+                    <rfgap TTF="1.0" ampFactor="0.973238576043966" endCell="0" gapOffset="0.0" length="0.14739760000000002" phaseFactor="0.0" stfCoeffs="0.267217,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.267217,0.877681,-0.233285,-0.189127"/>
                 </attributes>
             </node>
             <node id="DTL90:Q2" len="0.08" pos="5.701063500000001" type="PQ">
@@ -1589,7 +1589,7 @@
             <node id="DTL91:G" len="0.0" pos="5.816773680000001" type="RG">
                 <attributes>
                     <aperture shape="1" x="0.011" y="0.011"/>
-                    <rfgap TTF="1.0" ampFactor="1.0849600136976614" endCell="0" gapOffset="0.0" length="0.1491151" phaseFactor="0.0" stfCoeffs="0.269247,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.269247,0.876587,-0.235335,-0.190634"/>
+                    <rfgap TTF="1.0" ampFactor="0.9685092614412606" endCell="0" gapOffset="0.0" length="0.1491151" phaseFactor="0.0" stfCoeffs="0.269247,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.269247,0.876587,-0.235335,-0.190634"/>
                 </attributes>
             </node>
             <node id="TS17-VC" len="0.0" pos="5.929949200000001" type="DCV">
@@ -1615,7 +1615,7 @@
             <node id="DTL92:G" len="0.0" pos="6.046776480000001" type="RG">
                 <attributes>
                     <aperture shape="1" x="0.011" y="0.011"/>
-                    <rfgap TTF="1.0" ampFactor="1.079201189516949" endCell="0" gapOffset="0.0" length="0.1508568" phaseFactor="0.0" stfCoeffs="0.271271,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.271271,0.875334,-0.237672,-0.192318"/>
+                    <rfgap TTF="1.0" ampFactor="0.9633685424436792" endCell="0" gapOffset="0.0" length="0.1508568" phaseFactor="0.0" stfCoeffs="0.271271,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.271271,0.875334,-0.237672,-0.192318"/>
                 </attributes>
             </node>
             <node id="DTL92:Q2" len="0.08" pos="6.161035400000001" type="PQ">
@@ -1627,7 +1627,7 @@
             <node id="DTL93:G" len="0.0" pos="6.2784990500000015" type="RG">
                 <attributes>
                     <aperture shape="1" x="0.011" y="0.011"/>
-                    <rfgap TTF="1.0" ampFactor="1.0775091145752143" endCell="0" gapOffset="0.0" length="0.1520648" phaseFactor="0.0" stfCoeffs="0.273289,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.273289,0.874204,-0.239784,-0.193853"/>
+                    <rfgap TTF="1.0" ampFactor="0.9618580810152089" endCell="0" gapOffset="0.0" length="0.1520648" phaseFactor="0.0" stfCoeffs="0.273289,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.273289,0.874204,-0.239784,-0.193853"/>
                 </attributes>
             </node>
             <node id="TS18-VC" len="0.0" pos="6.393365000000001" type="DCV">
@@ -1653,7 +1653,7 @@
             <node id="DTL94:G" len="0.0" pos="6.511935640000002" type="RG">
                 <attributes>
                     <aperture shape="1" x="0.011" y="0.011"/>
-                    <rfgap TTF="1.0" ampFactor="1.0768800471892424" endCell="0" gapOffset="0.0" length="0.15187260000000002" phaseFactor="0.0" stfCoeffs="0.275292,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.275292,0.876666,-0.235307,-0.191091"/>
+                    <rfgap TTF="1.0" ampFactor="0.9612965325879005" endCell="0" gapOffset="0.0" length="0.15187260000000002" phaseFactor="0.0" stfCoeffs="0.275292,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.275292,0.876666,-0.235307,-0.191091"/>
                 </attributes>
             </node>
             <node id="DTL94:Q2" len="0.08" pos="6.6249728" type="PQ">
@@ -1665,13 +1665,13 @@
             <node id="DTL95:G" len="0.0" pos="6.744124350000001" type="RG">
                 <attributes>
                     <aperture shape="1" x="0.011" y="0.011"/>
-                    <rfgap TTF="1.0" ampFactor="1.0674010832995884" endCell="0" gapOffset="0.0" length="0.15441000000000002" phaseFactor="0.0" stfCoeffs="0.277241,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.277241,0.875173,-0.238086,-0.193064"/>
+                    <rfgap TTF="1.0" ampFactor="0.952834963313371" endCell="0" gapOffset="0.0" length="0.15441000000000002" phaseFactor="0.0" stfCoeffs="0.277241,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.277241,0.875173,-0.238086,-0.193064"/>
                 </attributes>
             </node>
             <node id="DTL96:G" len="0.0" pos="6.9782389400000016" type="RG">
                 <attributes>
                     <aperture shape="1" x="0.011" y="0.011"/>
-                    <rfgap TTF="1.0" ampFactor="1.0392916856191754" endCell="0" gapOffset="0.0" length="0.16175389999999998" phaseFactor="0.0" stfCoeffs="0.279121,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.279121,0.860346,-0.265191,-0.21035"/>
+                    <rfgap TTF="1.0" ampFactor="0.9277425989466582" endCell="0" gapOffset="0.0" length="0.16175389999999998" phaseFactor="0.0" stfCoeffs="0.279121,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.279121,0.860346,-0.265191,-0.21035"/>
                 </attributes>
             </node>
             <node id="DTL96:Q2" len="0.04" pos="7.081136700000002" type="PQ">
@@ -1734,7 +1734,7 @@
                     <rfgap TTF="1.0" ampFactor="0.9956032087593161" endCell="0" gapOffset="0.0" length="0.1638768" phaseFactor="0.0" stfCoeffs="0.286578,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.286578,0.865822,-0.255377,-0.204892"/>
                 </attributes>
             </node>
-            <node id="BPM17" len="0.0" pos="0.9715081000000001" type="BPM">
+            <node id="BPM17" len="0.0" pos="0.9715081000000012" type="BPM">
                 <attributes>
                     <bpm frequency="3.5221E8" length="1.0" orientation="1"/>
                 </attributes>
@@ -1805,7 +1805,7 @@
                     <rfgap TTF="1.0" ampFactor="0.9761986601087012" endCell="0" gapOffset="0.0" length="0.1703428" phaseFactor="0.0" stfCoeffs="0.294187,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.294187,0.860477,-0.265265,-0.211668"/>
                 </attributes>
             </node>
-            <node id="TS20-VC" len="0.0" pos="1.9632394000000002" type="DCV">
+            <node id="TS20-VC" len="0.0" pos="1.963239399999999" type="DCV">
                 <attributes>
                     <aperture shape="1" x="11.0" y="11.0"/>
                     <magnet bendAngle="0.0" dfltMagFld="0.0" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0.0" dipoleQuadComponent="0.0" len="1.0" pathLength="0.0" polarity="1.0"/>
@@ -1815,7 +1815,7 @@
                 </channelsuite>
                 <ps main="TS20-VC-PS"/>
             </node>
-            <node id="TS20-HC" len="0.0" pos="1.9632394000000002" type="DCH">
+            <node id="TS20-HC" len="0.0" pos="1.963239399999999" type="DCH">
                 <attributes>
                     <aperture shape="1" x="11.0" y="11.0"/>
                     <magnet bendAngle="0.0" dfltMagFld="0.0" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0.0" dipoleQuadComponent="0.0" len="1.0" pathLength="0.0" polarity="1.0"/>
@@ -1915,7 +1915,7 @@
                     <rfgap TTF="1.0" ampFactor="0.9325389884826303" endCell="0" gapOffset="0.0" length="0.1861413" phaseFactor="0.0" stfCoeffs="0.312751,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.312751,0.845878,-0.292084,-0.229289"/>
                 </attributes>
             </node>
-            <node id="BPM18" len="0.0" pos="4.554145600000001" type="BPM">
+            <node id="BPM18" len="0.0" pos="4.554145600000002" type="BPM">
                 <attributes>
                     <bpm frequency="3.5221E8" length="1.0" orientation="1"/>
                 </attributes>
@@ -1986,7 +1986,7 @@
                     <rfgap TTF="1.0" ampFactor="0.9165388852438234" endCell="0" gapOffset="0.0" length="0.19232339999999998" phaseFactor="0.0" stfCoeffs="0.31999,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.31999,0.839618,-0.303506,-0.236473"/>
                 </attributes>
             </node>
-            <node id="TS22-VC" len="0.0" pos="5.634189600000001" type="DCV">
+            <node id="TS22-VC" len="0.0" pos="5.634189600000003" type="DCV">
                 <attributes>
                     <aperture shape="1" x="11.0" y="11.0"/>
                     <magnet bendAngle="0.0" dfltMagFld="0.0" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0.0" dipoleQuadComponent="0.0" len="1.0" pathLength="0.0" polarity="1.0"/>
@@ -1996,7 +1996,7 @@
                 </channelsuite>
                 <ps main="TS22-VC-PS"/>
             </node>
-            <node id="TS22-HC" len="0.0" pos="5.634189600000001" type="DCH">
+            <node id="TS22-HC" len="0.0" pos="5.634189600000003" type="DCH">
                 <attributes>
                     <aperture shape="1" x="11.0" y="11.0"/>
                     <magnet bendAngle="0.0" dfltMagFld="0.0" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0.0" dipoleQuadComponent="0.0" len="1.0" pathLength="0.0" polarity="1.0"/>
@@ -2072,7 +2072,7 @@
                     <magnet bendAngle="0.0" dfltMagFld="17.2233" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0.0" dipoleQuadComponent="0.0" len="0.04" pathLength="0.0" polarity="1.0"/>
                 </attributes>
             </node>
-            <node id="LATTICE-START-4" len="0.0" pos="7.582633000000002" type="marker"/>
+            <node id="LATTICE-START-4" len="0.0" pos="7.582633000000001" type="marker"/>
             <node id="DTL127:Q1" len="0.04" pos="7.602633000000002" type="PQ">
                 <attributes>
                     <aperture shape="1" x="0.011" y="0.011"/>
@@ -2096,10 +2096,16 @@
                     <rfgap TTF="1.0" ampFactor="1.0" endCell="0" gapOffset="0.0" length="0.2074172" phaseFactor="0.0" stfCoeffs="0.333834,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.333834,0.812129,-0.352302,-0.261651"/>
                 </attributes>
             </node>
-            <node id="DTL128:Q2" len="0.08" pos="0.28741720000000004" type="PQ">
+            <node id="DTL128:Q2" len="0.0398272" pos="0.26733080000000004" type="PQ">
                 <attributes>
                     <aperture shape="1" x="0.012" y="0.012"/>
-                    <magnet bendAngle="0.0" dfltMagFld="-17.1713" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0.0" dipoleQuadComponent="0.0" len="0.08" pathLength="0.0" polarity="1.0"/>
+                    <magnet bendAngle="0.0" dfltMagFld="-17.1713" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0.0" dipoleQuadComponent="0.0" len="0.0398272" pathLength="0.0" polarity="1.0"/>
+                </attributes>
+            </node>
+            <node id="DTL129:Q1" len="0.0401728" pos="0.3073308" type="PQ">
+                <attributes>
+                    <aperture shape="1" x="0.012" y="0.012"/>
+                    <magnet bendAngle="0.0" dfltMagFld="-17.1713" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0.0" dipoleQuadComponent="0.0" len="0.0401728" pathLength="0.0" polarity="1.0"/>
                 </attributes>
             </node>
             <node id="DTL129:G" len="0.0" pos="0.43156127400000005" type="RG">
@@ -2108,7 +2114,8 @@
                     <rfgap TTF="1.0" ampFactor="0.9955968111539983" endCell="0" gapOffset="0.0" length="0.20858379999999999" phaseFactor="0.0" stfCoeffs="0.33544,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.33544,0.809351,-0.357236,-0.264205"/>
                 </attributes>
             </node>
-            <node id="BPM19" len="0.0" pos="0.5762737" type="BPM">
+            <node id="LATTICE-POINT-2" len="0.0" pos="0.5744887999999975" type="marker"/>
+            <node id="BPM19" len="0.0" pos="0.5762737000000016" type="BPM">
                 <attributes>
                     <bpm frequency="3.5221E8" length="1.0" orientation="1"/>
                 </attributes>
@@ -2141,7 +2148,7 @@
                     <rfgap TTF="1.0" ampFactor="1.0009775093249609" endCell="0" gapOffset="0.0" length="0.20831760000000005" phaseFactor="0.0" stfCoeffs="0.338797,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.338797,0.813802,-0.349453,-0.260679"/>
                 </attributes>
             </node>
-            <node id="TS23-VC" len="0.0" pos="1.1514718000000002" type="DCV">
+            <node id="TS23-VC" len="0.0" pos="1.1514717999999995" type="DCV">
                 <attributes>
                     <aperture shape="1" x="12.0" y="12.0"/>
                     <magnet bendAngle="0.0" dfltMagFld="0.0" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0.0" dipoleQuadComponent="0.0" len="1.0" pathLength="0.0" polarity="1.0"/>
@@ -2151,7 +2158,7 @@
                 </channelsuite>
                 <ps main="TS23-VC-PS"/>
             </node>
-            <node id="TS23-HC" len="0.0" pos="1.1514718000000002" type="DCH">
+            <node id="TS23-HC" len="0.0" pos="1.1514717999999995" type="DCH">
                 <attributes>
                     <aperture shape="1" x="12.0" y="12.0"/>
                     <magnet bendAngle="0.0" dfltMagFld="0.0" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0.0" dipoleQuadComponent="0.0" len="1.0" pathLength="0.0" polarity="1.0"/>
@@ -2179,7 +2186,7 @@
                     <rfgap TTF="1.0" ampFactor="0.99286395321356" endCell="0" gapOffset="0.0" length="0.21117989999999998" phaseFactor="0.0" stfCoeffs="0.342161,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.342161,0.810584,-0.355216,-0.263859"/>
                 </attributes>
             </node>
-            <node id="TS24-VC" len="0.0" pos="1.7324055" type="DCV">
+            <node id="TS24-VC" len="0.0" pos="1.7324054999999987" type="DCV">
                 <attributes>
                     <aperture shape="1" x="12.0" y="12.0"/>
                     <magnet bendAngle="0.0" dfltMagFld="0.0" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0.0" dipoleQuadComponent="0.0" len="1.0" pathLength="0.0" polarity="1.0"/>
@@ -2189,7 +2196,7 @@
                 </channelsuite>
                 <ps main="TS24-VC-PS"/>
             </node>
-            <node id="TS24-HC" len="0.0" pos="1.7324055" type="DCH">
+            <node id="TS24-HC" len="0.0" pos="1.7324054999999987" type="DCH">
                 <attributes>
                     <aperture shape="1" x="12.0" y="12.0"/>
                     <magnet bendAngle="0.0" dfltMagFld="0.0" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0.0" dipoleQuadComponent="0.0" len="1.0" pathLength="0.0" polarity="1.0"/>
@@ -2271,7 +2278,7 @@
                     <rfgap TTF="1.0" ampFactor="0.9627722603224543" endCell="0" gapOffset="0.0" length="0.22240340000000003" phaseFactor="0.0" stfCoeffs="0.355349,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.355349,0.797493,-0.37854,-0.276228"/>
                 </attributes>
             </node>
-            <node id="BPM20" len="0.0" pos="4.1125967" type="BPM">
+            <node id="BPM20" len="0.0" pos="4.112596700000001" type="BPM">
                 <attributes>
                     <bpm frequency="3.5221E8" length="1.0" orientation="1"/>
                 </attributes>
@@ -2304,7 +2311,7 @@
                     <rfgap TTF="1.0" ampFactor="0.9560126230290535" endCell="0" gapOffset="0.0" length="0.2251537" phaseFactor="0.0" stfCoeffs="0.358581,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.358581,0.794255,-0.38428,-0.27916"/>
                 </attributes>
             </node>
-            <node id="TS25-VC" len="0.0" pos="4.7215341" type="DCV">
+            <node id="TS25-VC" len="0.0" pos="4.7215340999999995" type="DCV">
                 <attributes>
                     <aperture shape="1" x="12.0" y="12.0"/>
                     <magnet bendAngle="0.0" dfltMagFld="0.0" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0.0" dipoleQuadComponent="0.0" len="1.0" pathLength="0.0" polarity="1.0"/>
@@ -2314,7 +2321,7 @@
                 </channelsuite>
                 <ps main="TS25-VC-PS"/>
             </node>
-            <node id="TS25-HC" len="0.0" pos="4.7215341" type="DCH">
+            <node id="TS25-HC" len="0.0" pos="4.7215340999999995" type="DCH">
                 <attributes>
                     <aperture shape="1" x="12.0" y="12.0"/>
                     <magnet bendAngle="0.0" dfltMagFld="0.0" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0.0" dipoleQuadComponent="0.0" len="1.0" pathLength="0.0" polarity="1.0"/>
@@ -2342,7 +2349,7 @@
                     <rfgap TTF="1.0" ampFactor="0.9490925940326758" endCell="0" gapOffset="0.0" length="0.22789330000000002" phaseFactor="0.0" stfCoeffs="0.361786,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.361786,0.790854,-0.390293,-0.282157"/>
                 </attributes>
             </node>
-            <node id="TS26-VC" len="0.0" pos="5.335938400000001" type="DCV">
+            <node id="TS26-VC" len="0.0" pos="5.3359384" type="DCV">
                 <attributes>
                     <aperture shape="1" x="12.0" y="12.0"/>
                     <magnet bendAngle="0.0" dfltMagFld="0.0" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0.0" dipoleQuadComponent="0.0" len="1.0" pathLength="0.0" polarity="1.0"/>
@@ -2352,7 +2359,7 @@
                 </channelsuite>
                 <ps main="TS26-VC-PS"/>
             </node>
-            <node id="TS26-HC" len="0.0" pos="5.335938400000001" type="DCH">
+            <node id="TS26-HC" len="0.0" pos="5.3359384" type="DCH">
                 <attributes>
                     <aperture shape="1" x="12.0" y="12.0"/>
                     <magnet bendAngle="0.0" dfltMagFld="0.0" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0.0" dipoleQuadComponent="0.0" len="1.0" pathLength="0.0" polarity="1.0"/>
@@ -2442,7 +2449,6 @@
                 </attributes>
             </node>
         </sequence>
-        <node id="LATTICE-POINT-2" len="0.0" pos="31.192894460000005" type="marker"/>
         <sequence id="DTLTank5" len="7.687851600000001" pos="31.192894460000005" type="DTLTank">
             <attributes>
                 <rfcavity amp="3.1913776313140234" ampFactor="1.0" freq="352.21" phase="-34.0" phaseOffset="0.0" qLoaded="0.0" structureMode="0.0" structureTTF="1.0"/>
@@ -2465,7 +2471,19 @@
                     <rfgap TTF="1.0" ampFactor="1.0" endCell="0" gapOffset="0.0" length="0.24336700000000003" phaseFactor="0.0" stfCoeffs="0.375651,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.375651,0.767986,-0.430244,-0.300073"/>
                 </attributes>
             </node>
-            <node id="BPM21" len="0.0" pos="0.3232218" type="BPM">
+            <node id="DTL156:G" len="0.0" pos="0.485480552" type="RG">
+                <attributes>
+                    <aperture shape="1" x="0.012" y="0.012"/>
+                    <rfgap TTF="1.0" ampFactor="0.9952002393854698" endCell="0" gapOffset="0.0" length="0.24451240000000002" phaseFactor="0.0" stfCoeffs="0.377136,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.377136,0.764925,-0.435532,-0.302192"/>
+                </attributes>
+            </node>
+            <node id="DTL156:Q2" len="0.0402959" pos="0.62802735" type="PQ">
+                <attributes>
+                    <aperture shape="1" x="0.012" y="0.012"/>
+                    <magnet bendAngle="0.0" dfltMagFld="-15.6333" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0.0" dipoleQuadComponent="0.0" len="0.0402959" pathLength="0.0" polarity="1.0"/>
+                </attributes>
+            </node>
+            <node id="BPM21" len="0.0" pos="0.6464435999999978" type="BPM">
                 <attributes>
                     <bpm frequency="3.5221E8" length="1.0" orientation="1"/>
                 </attributes>
@@ -2480,16 +2498,10 @@
                     <channel handle="phaseTBT" settable="false" signal="BPM21:PhsTBT" valid="true"/>
                 </channelsuite>
             </node>
-            <node id="DTL156:G" len="0.0" pos="0.485480552" type="RG">
+            <node id="DTL157:Q1" len="0.0397041" pos="0.66802735" type="PQ">
                 <attributes>
                     <aperture shape="1" x="0.012" y="0.012"/>
-                    <rfgap TTF="1.0" ampFactor="0.9952002393854698" endCell="0" gapOffset="0.0" length="0.24451240000000002" phaseFactor="0.0" stfCoeffs="0.377136,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.377136,0.764925,-0.435532,-0.302192"/>
-                </attributes>
-            </node>
-            <node id="DTL156:Q2" len="0.08" pos="0.6478794" type="PQ">
-                <attributes>
-                    <aperture shape="1" x="0.012" y="0.012"/>
-                    <magnet bendAngle="0.0" dfltMagFld="-15.6333" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0.0" dipoleQuadComponent="0.0" len="0.08" pathLength="0.0" polarity="1.0"/>
+                    <magnet bendAngle="0.0" dfltMagFld="-15.6333" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0.0" dipoleQuadComponent="0.0" len="0.0397041" pathLength="0.0" polarity="1.0"/>
                 </attributes>
             </node>
             <node id="DTL157:G" len="0.0" pos="0.8110939" type="RG">
@@ -2498,7 +2510,7 @@
                     <rfgap TTF="1.0" ampFactor="1.0068890734115072" endCell="0" gapOffset="0.0" length="0.2426772" phaseFactor="0.0" stfCoeffs="0.378679,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.378679,0.772934,-0.42178,-0.297034"/>
                 </attributes>
             </node>
-            <node id="TS27-VC" len="0.0" pos="0.9704329" type="DCV">
+            <node id="TS27-VC" len="0.0" pos="0.9704328999999987" type="DCV">
                 <attributes>
                     <aperture shape="1" x="12.0" y="12.0"/>
                     <magnet bendAngle="0.0" dfltMagFld="0.0" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0.0" dipoleQuadComponent="0.0" len="1.0" pathLength="0.0" polarity="1.0"/>
@@ -2508,7 +2520,7 @@
                 </channelsuite>
                 <ps main="TS27-VC-PS"/>
             </node>
-            <node id="TS27-HC" len="0.0" pos="0.9704329" type="DCH">
+            <node id="TS27-HC" len="0.0" pos="0.9704328999999987" type="DCH">
                 <attributes>
                     <aperture shape="1" x="12.0" y="12.0"/>
                     <magnet bendAngle="0.0" dfltMagFld="0.0" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0.0" dipoleQuadComponent="0.0" len="1.0" pathLength="0.0" polarity="1.0"/>
@@ -2536,7 +2548,7 @@
                     <rfgap TTF="1.0" ampFactor="1.0013022220873296" endCell="0" gapOffset="0.0" length="0.24490840000000003" phaseFactor="0.0" stfCoeffs="0.381809,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.381809,0.769635,-0.427547,-0.299612"/>
                 </attributes>
             </node>
-            <node id="TS28-VC" len="0.0" pos="1.6189461" type="DCV">
+            <node id="TS28-VC" len="0.0" pos="1.6189461000000023" type="DCV">
                 <attributes>
                     <aperture shape="1" x="12.0" y="12.0"/>
                     <magnet bendAngle="0.0" dfltMagFld="0.0" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0.0" dipoleQuadComponent="0.0" len="1.0" pathLength="0.0" polarity="1.0"/>
@@ -2546,7 +2558,7 @@
                 </channelsuite>
                 <ps main="TS28-VC-PS"/>
             </node>
-            <node id="TS28-HC" len="0.0" pos="1.6189461" type="DCH">
+            <node id="TS28-HC" len="0.0" pos="1.6189461000000023" type="DCH">
                 <attributes>
                     <aperture shape="1" x="12.0" y="12.0"/>
                     <magnet bendAngle="0.0" dfltMagFld="0.0" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0.0" dipoleQuadComponent="0.0" len="1.0" pathLength="0.0" polarity="1.0"/>
@@ -2628,7 +2640,7 @@
                     <rfgap TTF="1.0" ampFactor="0.9739487318518363" endCell="0" gapOffset="0.0" length="0.255335" phaseFactor="0.0" stfCoeffs="0.394061,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.394061,0.756047,-0.451135,-0.309558"/>
                 </attributes>
             </node>
-            <node id="BPM22" len="0.0" pos="4.2654722000000005" type="BPM">
+            <node id="BPM22" len="0.0" pos="4.265472199999998" type="BPM">
                 <attributes>
                     <bpm frequency="3.5221E8" length="1.0" orientation="1"/>
                 </attributes>
@@ -2661,7 +2673,7 @@
                     <rfgap TTF="1.0" ampFactor="0.9676048169359407" endCell="0" gapOffset="0.0" length="0.25788600000000006" phaseFactor="0.0" stfCoeffs="0.397058,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.397058,0.752642,-0.457013,-0.311897"/>
                 </attributes>
             </node>
-            <node id="TS29-VC" len="0.0" pos="4.939997000000001" type="DCV">
+            <node id="TS29-VC" len="0.0" pos="4.939996999999998" type="DCV">
                 <attributes>
                     <aperture shape="1" x="12.0" y="12.0"/>
                     <magnet bendAngle="0.0" dfltMagFld="0.0" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0.0" dipoleQuadComponent="0.0" len="1.0" pathLength="0.0" polarity="1.0"/>
@@ -2671,7 +2683,7 @@
                 </channelsuite>
                 <ps main="TS29-VC-PS"/>
             </node>
-            <node id="TS29-HC" len="0.0" pos="4.939997000000001" type="DCH">
+            <node id="TS29-HC" len="0.0" pos="4.939996999999998" type="DCH">
                 <attributes>
                     <aperture shape="1" x="12.0" y="12.0"/>
                     <magnet bendAngle="0.0" dfltMagFld="0.0" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0.0" dipoleQuadComponent="0.0" len="1.0" pathLength="0.0" polarity="1.0"/>
@@ -2699,7 +2711,7 @@
                     <rfgap TTF="1.0" ampFactor="0.9615383069448834" endCell="0" gapOffset="0.0" length="0.26041410000000004" phaseFactor="0.0" stfCoeffs="0.400029,0.0,0.0,0.0" testAmpFactor="0.0" testPhaseFactor="0.0" ttfCoeffs="0.400029,0.749258,-0.462842,-0.314165"/>
                 </attributes>
             </node>
-            <node id="TS30-VC" len="0.0" pos="5.6195899" type="DCV">
+            <node id="TS30-VC" len="0.0" pos="5.619589900000001" type="DCV">
                 <attributes>
                     <aperture shape="1" x="12.0" y="12.0"/>
                     <magnet bendAngle="0.0" dfltMagFld="0.0" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0.0" dipoleQuadComponent="0.0" len="1.0" pathLength="0.0" polarity="1.0"/>
@@ -2709,7 +2721,7 @@
                 </channelsuite>
                 <ps main="TS30-VC-PS"/>
             </node>
-            <node id="TS30-HC" len="0.0" pos="5.6195899" type="DCH">
+            <node id="TS30-HC" len="0.0" pos="5.619589900000001" type="DCH">
                 <attributes>
                     <aperture shape="1" x="12.0" y="12.0"/>
                     <magnet bendAngle="0.0" dfltMagFld="0.0" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0.0" dipoleQuadComponent="0.0" len="1.0" pathLength="0.0" polarity="1.0"/>
