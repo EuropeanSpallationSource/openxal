@@ -2,7 +2,6 @@ package edu.stanford.lcls.modelmanager.util;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 
 import xal.extension.tracewinimporter.TraceWin;
 import xal.extension.jels.ImporterHelpers;
@@ -38,7 +37,7 @@ public enum AcceleratorLoader {
 		@Override
 		public Accelerator loadAccelerator(URI uri) {
 			try {
-				Accelerator accelerator = TraceWin.loadAcceleator(uri);
+				Accelerator accelerator = new TraceWin().loadAcceleator(uri);
 				ImporterHelpers.addHardcodedInitialParameters(accelerator);				
 				return accelerator;
 			} catch (IOException e) {

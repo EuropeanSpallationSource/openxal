@@ -27,8 +27,10 @@ import javafx.stage.Window;
 import xal.smf.data.XMLDataManager;
 
 /**
+ * Singleton class to retrieve and update Open XAL default optics and update the
+ * GUI elements accordingly
  *
- * @author <juanf.estebanmuller@esss.se>
+ * @author Juan F. Esteban Müller <juanf.estebanmuller@esss.se>
  */
 public final class OpticsSwitcher {
 
@@ -62,15 +64,21 @@ public final class OpticsSwitcher {
             newDefaultPath = fileItems.get(defaultIndex);
 
             XMLDataManager.setDefaultPath(newDefaultPath);
-            
+
             refreshList(opticsListView);
-            
+
             return true;
         }
-        
+
         return false;
     }
 
+    /**
+     * This method allows to revert a setDefaultPath() call and update the
+     * ListView tree
+     *
+     * @param opticsListView
+     */
     public void revertDefaultPath(ListView<String> opticsListView) {
         XMLDataManager.setDefaultPath(prevOpticsPath);
 

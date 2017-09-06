@@ -18,125 +18,108 @@
 package xal.app.configurator;
 
 import java.io.File;
-import java.util.Optional;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.concurrent.Task;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.ChoiceBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.stage.Window;
 
 import xal.extension.tracewinimporter.TraceWin;
 
 /**
- * Class to import a TraceWin input file to Open XAL .xdxf format.
+ * Class to import a TraceWin input file to Open XAL format.
  *
- * @author <juanf.estebanmuller@esss.se>
+ * @author Juan F. Esteban Müller <juanf.estebanmuller@esss.se>
  */
 public class TraceWinImporter {
 
-    // TODO: add option to select directory and from repository.
-    /**
-     * Open file dialogs to select the TraceWin input file and Open XAL output
-     * and performs the conversion using the {@link TraceWin} extension.
-     *
-     * @param scene JavaFX scene object
-     */
-    public static void importTraceWinFile(Scene scene) {
-        String tracewinFilePath;
-        String openXALDirPath;
+    public static void importTW(String input, String outputDir, ChoiceBox<?> initialParametersChoiceBox) {
+        TraceWin traceWin = new TraceWin();
+        JavaFXLogger logger = new JavaFXLogger();
+        traceWin.setLogger(logger);
 
-        if (scene != null) {
-            Window window = scene.getWindow();
-            if (window != null) {
-
-                tracewinFilePath = openFileDialog(window);
-
-                if (tracewinFilePath != null) {
-                    OpticsSwitcher opticsSwitcher = OpticsSwitcher.getInstance();
-
-                    openXALDirPath = dirDialog(window, "Select Open XAL SMF output dir", opticsSwitcher.getOpticsLibraryPath());
-
-                    if (openXALDirPath != null) {
-                        TraceWin.main(new String[]{tracewinFilePath, openXALDirPath, "main"});
-                    }
-
-                    System.out.print("Exported");
+        traceWin.setOutputDir(outputDir);
+        traceWin.setOutputName("main");
+       
+        File fileInput = new File(input);
+        try {
+            if (fileInput.isFile()) {                
+                if (initialParametersChoiceBox.getSelectionModel().getSelectedIndex()>1){
+                    logger.log("Input parameters source not valid for this input type, changing to default.");
+                    initialParametersChoiceBox.getSelectionModel().select(0);
                 }
+                traceWin.setInputFile(fileInput);
+
+                inputParametersWindow(traceWin);
+            } else if (fileInput.isDirectory()) {               
+                if (initialParametersChoiceBox.getSelectionModel().getSelectedIndex()==1){
+                    logger.log("Input parameters source not valid for this input type, changing to default.");
+                    initialParametersChoiceBox.getSelectionModel().select(0);
+                }
+                traceWin.setInputDir(fileInput);
+            } else if (input.startsWith("http")) {               
+                if (initialParametersChoiceBox.getSelectionModel().getSelectedIndex()==1){
+                    logger.log("Input parameters source not valid for this input type, changing to default.");
+                    initialParametersChoiceBox.getSelectionModel().select(0);
+                }
+                traceWin.setInputGit(input);
+            } else {
+                throw new IOException();
             }
+        } catch (IOException e1) {
+            System.err.println("Error while trying to read input.");
+            System.exit(1);
         }
+
+        traceWin.setInitialParametersMode(initialParametersChoiceBox.getSelectionModel().getSelectedIndex());
+
+        Task importTW = new Task<Void>() {
+            @Override
+            public Void call() throws Exception {
+                traceWin.importTW();
+                return null;
+            }
+        };
+
+        // Run the import method on a new thread to prevent the GUI from freezing
+        Thread th = new Thread(importTW);
+        th.start();
     }
 
-    /**
-     * Open file dialogs to select the TraceWin input directory and Open XAL
-     * output and performs the conversion using the {@link TraceWin} extension.
-     *
-     * @param scene JavaFX scene object
-     */
-    public static void importTraceWinDir(Scene scene) {
-        String tracewinDirPath;
-        String openXALDirPath;
+    private static void inputParametersWindow(TraceWin traceWin) {
+        FXMLLoader fxmlLoader = new FXMLLoader(FXMLController.class.getResource("/fxml/InputParametersWindow.fxml"));
+        try {
+            Parent root = (Parent) fxmlLoader.load();
 
-        if (scene != null) {
-            Window window = scene.getWindow();
-            if (window != null) {
+            InputParametersWindow controller = fxmlLoader.<InputParametersWindow>getController();
+            controller.setTraceWin(traceWin);
 
-                tracewinDirPath = dirDialog(window, "Select TraceWin input dir", null);
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle("Input parameters");
+            stage.setScene(new Scene(root));
 
-                if (tracewinDirPath != null) {
-                    OpticsSwitcher opticsSwitcher = OpticsSwitcher.getInstance();
-
-                    openXALDirPath = dirDialog(window, "Select Open XAL SMF output dir", opticsSwitcher.getOpticsLibraryPath());
-
-                    if (openXALDirPath != null) {
-                        TraceWin.main(new String[]{tracewinDirPath, openXALDirPath, "main"});
-                    }
-
-                    System.out.print("Exported");
-                }
-            }
+            stage.showAndWait();
+        } catch (IOException ex) {
+            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
-
-    /**
-     * Open file dialogs to select the repository containing the TraceWin files
-     * and the directory to save the Open XAL output and then it performs the
-     * conversion using the {@link TraceWin} extension.
-     *
-     * @param scene JavaFX scene object
-     */
-    public static void importTraceWinGit(Scene scene) {
-        TextInputDialog dialog = new TextInputDialog("https://api.bitbucket.org/2.0/repositories/europeanspallationsource/ess-lattice/src/");
-        dialog.getDialogPane().setMinWidth(600);
-        dialog.setTitle("Git importer");
-        dialog.setHeaderText("Importing TraceWin files from Git");
-        dialog.setContentText("Repository address:");
-        dialog.setGraphic(null);
-
-        Optional<String> gitRepositoryOpt = dialog.showAndWait();
-
-        gitRepositoryOpt.ifPresent(gitRepository -> {
-            if (scene != null) {
-                Window window = scene.getWindow();
-                if (window != null) {
-                    OpticsSwitcher opticsSwitcher = OpticsSwitcher.getInstance();
-
-                    String openXALDirPath = dirDialog(window, "Select Open XAL SMF output dir", opticsSwitcher.getOpticsLibraryPath());
-                    if (openXALDirPath != null) {
-                        TraceWin.main(new String[]{gitRepository, openXALDirPath, "main"});
-                    }
-                }
-            }
-        }
-        );
     }
 
     /**
      * Open a file dialog to select the TraceWin input file.
      *
-     * @param window Owner window object, null if none
+     * @param scene Owner scene object, null if none
      * @return TraceWin file path
      */
-    private static String openFileDialog(Window window) {
+    public static String openFileDialog(Scene scene) {
         String tracewinFilePath = null;
 
         FileChooser chooser = new FileChooser();
@@ -146,9 +129,13 @@ public class TraceWinImporter {
                 new FileChooser.ExtensionFilter("TraceWin Input Files", "*.dat"),
                 new FileChooser.ExtensionFilter("All Files", "*.*")
         );
-
-        File choice = chooser.showOpenDialog(window);
-
+        File choice = null;
+        if (scene != null) {
+            Window window = scene.getWindow();
+            if (window != null) {
+                choice = chooser.showOpenDialog(window);
+            }
+        }
         if (choice != null && choice.exists() && choice.isFile() && choice.canRead()) {
             tracewinFilePath = choice.getPath();
         }
@@ -160,10 +147,12 @@ public class TraceWinImporter {
     /**
      * Open a file dialog to select the Open XAL SMF output file.
      *
-     * @param window Owner window object, null if none
+     * @param scene
+     * @param title
+     * @param path
      * @return Open XAL SMF file path
      */
-    private static String dirDialog(Window window, String title, String path) {
+    public static String dirDialog(Scene scene, String title, String path) {
         String openXALFilePath = null;
 
         DirectoryChooser chooser = new DirectoryChooser();
@@ -174,48 +163,18 @@ public class TraceWinImporter {
             chooser.setInitialDirectory(new File(path));
         }
 
-        File choice = chooser.showDialog(window);
+        File choice = null;
 
+        if (scene != null) {
+            Window window = scene.getWindow();
+            if (window != null) {
+                choice = chooser.showDialog(window);
+            }
+        }
         if (choice != null) {
             openXALFilePath = choice.getPath();
         }
 
         return openXALFilePath;
     }
-//    /**
-//     * Open a file dialog to select the Open XAL SMF output file.
-//     *
-//     * @param window Owner window object, null if none
-//     * @return Open XAL SMF file path
-//     */
-//    private static String saveFileDialog(Window window, String tracewinDirPath) {
-//        String openXALDirPath = null;
-//
-//        FileChooser chooser = new FileChooser();
-//
-//        chooser.setTitle("Select Open XAL SMF File");
-//        chooser.getExtensionFilters().addAll(
-//                new FileChooser.ExtensionFilter("Open XAL SMF Files", "*.xdxf"),
-//                new FileChooser.ExtensionFilter("All Files", "*.*")
-//        );
-//
-//        // The default new filename is the same as the input file name but with
-//        // .xdxf extension
-//        int pathIdx = tracewinDirPath.lastIndexOf(File.separator);
-//        int extIdx = tracewinDirPath.lastIndexOf('.');
-//        String newDirPath = tracewinDirPath.substring(0, pathIdx);
-//        String newFileName = tracewinDirPath.substring(pathIdx + 1, extIdx);
-//        newFileName = newFileName.concat(".xdxf");
-//
-//        chooser.setInitialDirectory(new File(newDirPath));
-//        chooser.setInitialFileName(newFileName);
-//
-//        File choice = chooser.showSaveDialog(window);
-//
-//        if (choice != null) {
-//            openXALDirPath = choice.getPath();
-//        }
-//
-//        return openXALDirPath;
-//    }
 }

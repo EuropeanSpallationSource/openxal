@@ -26,7 +26,7 @@ import xal.tools.data.EditContext;
 import xal.tools.data.GenericRecord;
 
 public class ImporterHelpers {
-
+    
     public static AcceleratorSeqCombo addDefaultComboSeq(Accelerator acc) {
         List<AcceleratorSeq> seqs = acc.getSequences();
         String name;
@@ -35,7 +35,7 @@ public class ImporterHelpers {
         } else {
             name = "ALL";
         }
-
+        
         AcceleratorSeqCombo comboSeq = new AcceleratorSeqCombo(name, seqs);
         acc.addComboSequence(comboSeq);
         return comboSeq;
@@ -51,22 +51,22 @@ public class ImporterHelpers {
         //loadInitialParameters(probe, "mebt-initial-state.xml");		
         return probe;
     }
-
+    
     private static EnvelopeProbe setupOpenXALProbe() {
         EnvelopeTracker envelopeTracker = new EnvelopeTracker();
-
+        
         envelopeTracker.setRfGapPhaseCalculation(true);
         envelopeTracker.setUseSpacecharge(true);
         envelopeTracker.setEmittanceGrowth(false);
         envelopeTracker.setStepSize(0.1);
         envelopeTracker.setProbeUpdatePolicy(Tracker.UPDATE_ALWAYS);
-
+        
         EnvelopeProbe envelopeProbe = new EnvelopeProbe();
         envelopeProbe.setAlgorithm(envelopeTracker);
-
+        
         return envelopeProbe;
     }
-
+    
     public static void setupInitialParameters(EnvelopeProbe probe, double bunchFrequency, double beamCurrent, double kineticEnergy, Twiss[] initialTwiss) {
         probe.setSpeciesCharge(1);
 //        probe.setSpeciesRestEnergy(9.382720813E8);    // More accurate value
@@ -76,8 +76,8 @@ public class ImporterHelpers {
         probe.setPosition(0.0);
         probe.setTime(0.0);
         probe.setBeamCurrent(beamCurrent);
-        probe.setBunchFrequency(bunchFrequency*1e6);
-
+        probe.setBunchFrequency(bunchFrequency * 1e6);
+        
         double beta = probe.getBeta();
         double gamma = probe.getGamma();
         double beta_gamma = beta * gamma;
@@ -86,10 +86,10 @@ public class ImporterHelpers {
         initialTwiss[0].setTwiss(initialTwiss[0].getAlpha(), initialTwiss[0].getBeta(), initialTwiss[0].getEmittance() / beta_gamma);
         initialTwiss[1].setTwiss(initialTwiss[1].getAlpha(), initialTwiss[1].getBeta(), initialTwiss[1].getEmittance() / beta_gamma);
         initialTwiss[2].setTwiss(initialTwiss[2].getAlpha(), initialTwiss[2].getBeta(), initialTwiss[2].getEmittance() / (beta_gamma * gamma * gamma));
-
+        
         probe.initFromTwiss(initialTwiss);
     }
-
+    
     public static List<EnvelopeProbeState> simulateInitialValues(EnvelopeProbe probe, AcceleratorSeqCombo seqCombo) throws ModelException {
         Scenario scenario = Scenario.newScenarioFor(seqCombo);//, elementMapping);		
         scenario.setProbe(probe);
@@ -97,25 +97,25 @@ public class ImporterHelpers {
         // Setting up synchronization mode
         scenario.setSynchronizationMode(Scenario.SYNC_MODE_DESIGN);
         scenario.resync();
-
+        
         scenario.run();
-
+        
         Trajectory<EnvelopeProbeState> trajectory = probe.getTrajectory();
-
+        
         List<EnvelopeProbeState> initialValues = new ArrayList<>();
-
+        
         for (AcceleratorSeq seq : seqCombo.getConstituents()) {
             EnvelopeProbeState state = trajectory.stateNearestPosition(seqCombo.getPosition(seq)).copy();
             state.setElementId(seq.getId());
             initialValues.add(state);
         }
-
+        
         probe.reset();
         System.gc();
-
+        
         return initialValues;
     }
-
+    
     private static void addEnvTrackerAdapt(EditContext editContext) {
         DataTable tblEnvTrackerAdapt = new DataTable("EnvTrackerAdapt", Arrays.asList(new DataAttribute[]{
             new DataAttribute("name", String.class, true),
@@ -133,7 +133,7 @@ public class ImporterHelpers {
         tblEnvTrackerAdapt.add(defaultRec);
         editContext.addTableToGroup(tblEnvTrackerAdapt, "modelparams");
     }
-
+    
     public static void addHardcodedInitialParameters(Accelerator accelerator) {
         double beamCurrent = 62.5e-3;
         double bunchFrequency = 352.21;
@@ -143,20 +143,20 @@ public class ImporterHelpers {
             new Twiss(-0.48130325, 0.92564505, 0.3615731 * 1e-6)};
         addInitialParameters(accelerator, beamCurrent, bunchFrequency, kineticEnergy, initialTwiss);
     }
-
+    
     public static void addInitialParameters(Accelerator accelerator, double bunchFrequency, double beamCurrent, double kineticEnergy, Twiss[] initialTwiss) {
         if (accelerator != null) {
             AcceleratorSeqCombo comboSeq = addDefaultComboSeq(accelerator);
-
+            
             EditContext editContext = new EditContext();
-
+            
             EnvelopeProbe probe = defaultProbe();
             setupInitialParameters(probe, bunchFrequency, beamCurrent, kineticEnergy, initialTwiss);
             ProbeFactory.createSchema(editContext, probe);
 
             // Adding hardcoded EnvTrackerAdapt table, which is not created in createSchema()
             addEnvTrackerAdapt(editContext);
-
+            
             accelerator.setEditContext(editContext);
             try {
                 List<EnvelopeProbeState> states = simulateInitialValues(probe, comboSeq);
@@ -168,6 +168,67 @@ public class ImporterHelpers {
                 ProbeFactory.storeInitialValues(editContext, states);
             }
         }
+    }
+    
+    public static void addAllInitialParameters(Accelerator accelerator, List<Double> bunchFrequency, List<Double> beamCurrent, List<Double> kineticEnergy, List<Twiss[]> initialTwiss) {
+        if (accelerator != null) {
+            AcceleratorSeqCombo comboSeq = addDefaultComboSeq(accelerator);
+            
+            EditContext editContext = new EditContext();
+            
+            EnvelopeProbe probe = defaultProbe();
+            
+            setupInitialParameters(probe, bunchFrequency.get(0), beamCurrent.get(0), kineticEnergy.get(0), initialTwiss.get(0));
+            
+            ProbeFactory.createSchema(editContext, probe);
+
+            // Adding hardcoded EnvTrackerAdapt table, which is not created in createSchema()
+            addEnvTrackerAdapt(editContext);
+            
+            accelerator.setEditContext(editContext);
+            int i = 0;
+            double beta;
+            double gamma;
+            double beta_gamma;
+            Twiss[] auxTwiss;
+            for (AcceleratorSeq seq : comboSeq.getConstituents()) {
+                DataTable tblTwiss = editContext.getTable("twiss");
+                DataTable tblLocation = editContext.getTable("location");
+                
+                gamma = 1 + kineticEnergy.get(i) / probe.getSpeciesRestEnergy();
+                beta = Math.sqrt(1 - 1 / gamma / gamma);
+                beta_gamma = beta * gamma;
+                
+                auxTwiss = initialTwiss.get(i);
+                // Convert from TraceWin coordinates (z,deltap/p) to Open XAL (z,z')
+                auxTwiss[0].setTwiss(auxTwiss[0].getAlpha(), auxTwiss[0].getBeta(), auxTwiss[0].getEmittance() / beta_gamma);
+                auxTwiss[1].setTwiss(auxTwiss[1].getAlpha(), auxTwiss[1].getBeta(), auxTwiss[1].getEmittance() / beta_gamma);
+                auxTwiss[2].setTwiss(auxTwiss[2].getAlpha(), auxTwiss[2].getBeta(), auxTwiss[2].getEmittance() / (beta_gamma * gamma * gamma));
+                
+                addTwissToTable(seq.getId(), auxTwiss, tblTwiss);
+                
+                GenericRecord record = new GenericRecord(tblLocation);
+                record.setValueForKey(seq.getId(), "name");
+                record.setValueForKey(kineticEnergy.get(i), "W");
+                tblLocation.add(record);
+                
+                i++;
+            }
+        }
+    }
+    
+    private static void addTwissToTable(String seq, Twiss[] twiss, DataTable tblTwiss) {
+        for (int i = 0; i < 3; i++) {
+            String axis = new String[]{"x", "y", "z"}[i];
+            GenericRecord record = new GenericRecord(tblTwiss);
+            record.setValueForKey(seq, "name");
+            record.setValueForKey(axis, "coordinate");
+            record.setValueForKey(twiss[i].getAlpha(), "alpha");
+            record.setValueForKey(twiss[i].getBeta(), "beta");
+            record.setValueForKey(twiss[i].getEmittance(), "emittance");
+            tblTwiss.add(record);
+        }
+        
     }
 
     /**
@@ -198,7 +259,7 @@ public class ImporterHelpers {
                     && "sequence".equals(attrs.getNamedItem("type").getNodeValue())) {
                 attrs.removeNamedItem("type");
             }
-
+            
             if ("xdxf".equals(parent.getNodeName())) {
                 attrs.removeNamedItem("id");
                 attrs.removeNamedItem("len");
@@ -206,11 +267,11 @@ public class ImporterHelpers {
                 attrs.removeNamedItem("type");
             }
         }
-
+        
         for (int i = 0; i < children.getLength();) {
             Node child = children.item(i);
             attrs = child.getAttributes();
-
+            
             if ("align".equals(child.getNodeName()) || "twiss".equals(child.getNodeName())) // remove twiss and align - not needed
             {
                 parent.removeChild(child);

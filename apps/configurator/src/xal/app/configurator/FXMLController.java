@@ -18,13 +18,16 @@
 package xal.app.configurator;
 
 import java.net.URL;
+import java.nio.file.Paths;
 import java.util.ResourceBundle;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
@@ -36,7 +39,6 @@ import javafx.scene.input.KeyEvent;
  */
 public class FXMLController implements Initializable {
 
-    private boolean useRBACLogin;
     private RBAC rbac;
     private OpticsSwitcher opticsSwitcher;
 
@@ -53,13 +55,19 @@ public class FXMLController implements Initializable {
     @FXML
     private Button refreshButton;
     @FXML
-    private Button importFromFileButton;
-    @FXML
-    private Button importFromDirButton;
-    @FXML
-    private Button importFromGitButton;
-    @FXML
     private Button revertButton;
+    @FXML
+    private Button importButton;
+    @FXML
+    private TextField inputTWTextField;
+    @FXML
+    private TextField outputNameTextField;
+    @FXML
+    private ChoiceBox<?> initialParametersChoiceBox;
+    @FXML
+    private Button openFileButton;
+    @FXML
+    private Button openDirButton;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -77,15 +85,14 @@ public class FXMLController implements Initializable {
             opticsPathTextField.setText("DEFAULT OPTICS NOT SET!");
         }
 
-    }
+        ObservableList list = initialParametersChoiceBox.getItems();
+        list.add("Default");
+        list.add("Manual input");
+        list.add("MEBT from .ini");
+        list.add("All from .ini");
+        initialParametersChoiceBox.setItems(FXCollections.observableList(list));
+        initialParametersChoiceBox.getSelectionModel().select(0);
 
-    @FXML
-    private void importFromFileHandler(ActionEvent event) {
-        Scene scene = importFromFileButton.getScene();
-
-        TraceWinImporter.importTraceWinFile(scene);
-
-        refreshButtonHandler(event);
     }
 
     @FXML
@@ -112,8 +119,9 @@ public class FXMLController implements Initializable {
     @FXML
     private void setDefaultButtonHandler(ActionEvent event) {
         boolean isSet = opticsSwitcher.setDefaultPath(opticsListView);
-        if (isSet)
+        if (isSet) {
             revertButton.setDisable(false);
+        }
     }
 
     @FXML
@@ -135,25 +143,35 @@ public class FXMLController implements Initializable {
     }
 
     @FXML
-    private void importFromDirHandler(ActionEvent event) {
-        Scene scene = importFromFileButton.getScene();
-
-        TraceWinImporter.importTraceWinDir(scene);
-
-        refreshButtonHandler(event);
-    }
-
-    @FXML
-    private void importFromGitHandler(ActionEvent event) {
-        TraceWinImporter.importTraceWinGit(importFromGitButton.getScene());
-
-        refreshButtonHandler(event);
-    }
-
-    @FXML
     private void revertButtonHandler(ActionEvent event) {
         opticsSwitcher.revertDefaultPath(opticsListView);
 
         revertButton.setDisable(true);
+    }
+
+    @FXML
+    private void importHandler(ActionEvent event) {
+        TraceWinImporter.importTW(inputTWTextField.getText(), 
+                Paths.get(opticsSwitcher.getOpticsLibraryPath(), outputNameTextField.getText()).toString(), 
+                initialParametersChoiceBox);//.getSelectionModel().getSelectedIndex());
+
+        refreshButtonHandler(event);
+    }
+
+    @FXML
+    private void openFileButtonHandler(ActionEvent event) {
+        String output = TraceWinImporter.openFileDialog(openFileButton.getScene());
+        if (output != null) {
+            inputTWTextField.setText(output);
+        }
+
+    }
+
+    @FXML
+    private void openDirButtonHandler(ActionEvent event) {
+        String output = TraceWinImporter.dirDialog(openDirButton.getScene(), "Select Open XAL SMF output dir", null);
+        if (output != null) {
+            inputTWTextField.setText(output);
+        }
     }
 }

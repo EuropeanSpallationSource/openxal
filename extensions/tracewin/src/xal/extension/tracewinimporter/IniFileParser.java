@@ -1,7 +1,19 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (C) 2017 European Spallation Source ERIC.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 package xal.extension.tracewinimporter;
 
@@ -24,7 +36,8 @@ import xal.tools.beam.Twiss;
  * there is no documentation about them. The format is believed to be standard
  * for different versions of TraceWin, but that can change.
  *
- * @author juanfestebanmuller
+ *
+ * @author Juan F. Esteban Müller <juanf.estebanmuller@esss.se>
  */
 public class IniFileParser {
 
@@ -76,7 +89,7 @@ public class IniFileParser {
 
             long currentOffset = 0;
 
-            // Read beam current
+            // Read bunch frequency (MHz)
             long offsetFrequency = 0x2f24;
             iniFile.skip(offsetFrequency);
             if (iniFile.read(doubleAux, 0, nBytes) == nBytes) {
@@ -86,7 +99,7 @@ public class IniFileParser {
             }
             currentOffset += offsetFrequency + nBytes;
 
-            // Read beam current
+            // Read beam current (A)
             long offsetCurrent = 0x2f34;
             iniFile.skip(offsetCurrent-currentOffset);
             if (iniFile.read(doubleAux, 0, nBytes) == nBytes) {
@@ -96,7 +109,7 @@ public class IniFileParser {
             }
             currentOffset = offsetCurrent + nBytes;
 
-            // Read kinetic energy and emittances
+            // Read kinetic energy (eV) and emittances (normalized)
             long offsetKineticEnergy = 0x2f44;
 
             iniFile.skip(offsetKineticEnergy - currentOffset);

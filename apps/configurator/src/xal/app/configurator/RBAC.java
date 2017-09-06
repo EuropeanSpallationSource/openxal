@@ -22,6 +22,11 @@ import javafx.scene.control.CheckBox;
 
 import xal.extension.application.rbac.RBACPlugin;
 
+/**
+ * Convenience class to configure the RBAC plug-in
+ * 
+ * @author Juan F. Esteban Müller <juanf.estebanmuller@esss.se>
+ */
 public class RBAC {
 
     private final CheckBox rbacCheckBox;
