@@ -9,7 +9,8 @@ import xal.smf.impl.RfGap;
  * for the start gap.
  *
  * @author Ivo List
- *
+ * @author Juan F. Esteban Müller <juanf.estebanmuller@esss.se>
+ * 
  */
 public class ESSRfGap extends RfGap {
 

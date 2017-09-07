@@ -34,6 +34,8 @@ import xal.tools.beam.PhaseMatrix;
  *
  * @author Christopher K. Allen
  * @created November 22, 2005
+ * 
+ * @author Juan F. Esteban Müller <juanf.estebanmuller@esss.se>
  */
 public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
 

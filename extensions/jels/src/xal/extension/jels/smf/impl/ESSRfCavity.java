@@ -12,6 +12,7 @@ import xal.smf.impl.RfCavity;
  *  - to fit TTF/STF using TraceWin parameters using InverseRealPolinomial
  * 
  * @author Ivo List
+ * @author Juan F. Esteban Müller <juanf.estebanmuller@esss.se>
  *
  */
 public class ESSRfCavity extends RfCavity {
