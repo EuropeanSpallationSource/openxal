@@ -4,7 +4,7 @@
  * Created on March 10, 2004
  */
 
-package xal.extension.jels.model.elem.jels;
+package xal.extension.jels.model.elem;
 
 import java.io.PrintWriter;
 

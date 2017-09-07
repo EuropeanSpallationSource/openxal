@@ -4,7 +4,7 @@
  * Created on May 20, 2004
  *
  */
-package xal.extension.jels.model.elem.jels;
+package xal.extension.jels.model.elem;
 
 import xal.extension.jels.smf.impl.ESSBend;
 import xal.model.elem.ElectromagnetSeq;

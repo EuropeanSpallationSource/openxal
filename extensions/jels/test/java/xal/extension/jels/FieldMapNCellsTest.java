@@ -6,10 +6,10 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-import xal.extension.jels.model.elem.jels.FieldMap;
-import xal.extension.jels.model.elem.jels.FieldMapExpInt;
-import xal.extension.jels.model.elem.jels.FieldMapNCells;
-import xal.extension.jels.model.elem.jels.JElsElementMapping;
+import xal.extension.jels.model.elem.FieldMap;
+import xal.extension.jels.model.elem.FieldMapExpInt;
+import xal.extension.jels.model.elem.FieldMapNCells;
+import xal.extension.jels.model.elem.JElsElementMapping;
 import xal.model.ModelException;
 import xal.model.probe.Probe;
 import xal.smf.AcceleratorSeq;

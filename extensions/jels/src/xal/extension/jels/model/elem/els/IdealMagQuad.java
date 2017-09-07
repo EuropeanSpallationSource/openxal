@@ -16,13 +16,11 @@ import java.io.PrintWriter;
 
 import xal.model.IProbe;
 import xal.model.ModelException;
-import xal.model.elem.IElectromagnet;
 import xal.model.elem.ThickElectromagnet;
-import xal.model.elem.ThickElement;
 import xal.tools.beam.PhaseMap;
 import xal.tools.beam.PhaseMatrix;
 
-
+@Deprecated
 public class IdealMagQuad extends ThickElectromagnet {
     /** string type identifier for all IdealMagQuad objects */
     public static final String s_strType = "IdealMagQuad";

@@ -1,4 +1,4 @@
-package xal.extension.jels.model.elem.jels;
+package xal.extension.jels.model.elem;
 
 import xal.extension.jels.smf.impl.ESSFieldMap;
 import xal.extension.jels.smf.impl.FieldProfile;
@@ -21,7 +21,7 @@ import xal.tools.math.GenericMatrix;
  * @author Juan F. Esteban Müller <JuanF.EstebanMuller@esss.se>
  *
  */
-public class FieldMap extends ThickElement implements IRfGap, IRfCavityCell {
+public class FieldMapExpInt extends ThickElement implements IRfGap, IRfCavityCell {
 
     private double frequency;
 
@@ -36,16 +36,16 @@ public class FieldMap extends ThickElement implements IRfGap, IRfCavityCell {
 
     private double startPosition;
     private boolean lastSlice;
-    private FieldMap firstSliceFieldmap;
+    private FieldMapExpInt firstSliceFieldmap;
 
     private int indCell;
     private double dblCavModeConst = 0.;
 
-    public FieldMap() {
+    public FieldMapExpInt() {
         this(null);
     }
 
-    public FieldMap(String strId) {
+    public FieldMapExpInt(String strId) {
         super("FieldMap", strId);
     }
 
@@ -66,7 +66,7 @@ public class FieldMap extends ThickElement implements IRfGap, IRfCavityCell {
             inverted = fm.getParent().getClass().equals(RfCavity.class) && fp.isFirstInverted();
         } else {
             try {
-                firstSliceFieldmap = (FieldMap) latticeElement.getFirstSlice().createModelingElement();
+                firstSliceFieldmap = (FieldMapExpInt) latticeElement.getFirstSlice().createModelingElement();
             } catch (ModelException e) {
             }
         }
@@ -156,50 +156,43 @@ public class FieldMap extends ThickElement implements IRfGap, IRfCavityCell {
         Tz.assignIdentity();
 
         double gammaStart;
-        double Edz;
-        double phi;
-        double dE;
-        double betaStart;
-        double energyKick;
-        double pEz_pzdz;
-        double pEx_pxdz;
-        double pBx_pydz;
-        double k;
-        double gammaEnd;
-        GenericMatrix Mtr = new GenericMatrix(2,2);
-        GenericMatrix Mz = new GenericMatrix(2,2);
-        Mtr.setElem(0,0,1);
-        Mtr.setElem(0,1,dz);
-        Mz.setElem(0,0,1);
-        Mz.setElem(0,1,dz);
 
         for (int i = i0; i < in; i++) {
-            Edz = field[i] * dz;
-            phi = phase[i];
-            dE = (i == 0 ? field[i + 1] : (i == field.length - 1 ? field[i - 1] : field[i + 1] - field[i - 1])) / 2.;
+            double Edz = field[i] * dz;
+            double phi = phase[i];
+            double dE = (i == 0 ? field[i + 1] : (i == field.length - 1 ? field[i - 1] : field[i + 1] - field[i - 1])) / 2.;
             //double dE = (-field(i+2)+8*field(i+1)-8*field(i-1)+field(i-2))/12.; // higher precision derivative
 
             gammaStart = Ek / restEnergy + 1.0;
-            betaStart = Math.sqrt(1.0 - 1.0 / (gammaStart * gammaStart));
-            energyKick = ETL * Edz * Math.cos(phi);
+            double betaStart = Math.sqrt(1.0 - 1.0 / (gammaStart * gammaStart));
+            double energyKick = ETL * Edz * Math.cos(phi);
+            //double dgamma = energyKick/Er;
 
-            pEz_pzdz = ETL * dE * Math.cos(phi);
+            double pEz_pzdz = ETL * dE * Math.cos(phi);
 
-            pEx_pxdz = -0.5 * ETL * dE * Math.cos(phi);
-            pBx_pydz = 2 * Math.PI * frequency / (2. * LightSpeed * LightSpeed) * ETL * Edz * Math.sin(phi);
+            double pEx_pxdz = -0.5 * ETL * dE * Math.cos(phi);
+            double pBx_pydz = 2 * Math.PI * frequency / (2. * LightSpeed * LightSpeed) * ETL * Edz * Math.sin(phi);
+            //double pBy_px = -pBx_py;
 
-            k = 1. / (gammaStart * Math.pow(betaStart, 2) * restEnergy);
+            double k = 1. / (gammaStart * Math.pow(betaStart, 2) * restEnergy);
 
-            gammaEnd = (Ek + energyKick) / restEnergy + 1.0;
+            double gammaEnd = (Ek + energyKick) / restEnergy + 1.0;
+            double betaEnd = Math.sqrt(1.0 - 1.0 / (gammaEnd * gammaEnd));
 
-            // First order integrator
-            Mtr.setElem(1,0,k * (pEx_pxdz + betaStart * LightSpeed * pBx_pydz));
-            Mtr.setElem(1,1,1 - k * energyKick);
-            Ttr = Mtr.times(Ttr);
-            Mz.setElem(1,0,k * pEz_pzdz / (gammaEnd * gammaEnd));
-            Mz.setElem(1,1,(1 - k * energyKick) * gammaStart * gammaStart / (gammaEnd * gammaEnd));
-            Tz = Mz.times(Tz);
-            
+            double Ay[][] = new double[][]{{0, dz}, {k * (pEx_pxdz + betaStart * LightSpeed * pBx_pydz), -k * energyKick}};
+            double Az[][] = new double[][]{{0, dz}, {k * pEz_pzdz / (gammaEnd * gammaEnd), gammaStart * energyKick * (-k * gammaStart - 2 / restEnergy) / (gammaEnd * gammaEnd)}};
+//            double Az[][] = new double[][]{{0, dz}, {k * pEz_pzdz / (gammaEnd * gammaEnd), gammaStart * energyKick * (-k * (2-betaStart*betaStart) * gammaStart - 2 / restEnergy) / (gammaEnd * gammaEnd)}};
+
+            // Following line fixes the determinant of longitudinal transfer matrix
+            //Az[0][0] = ((betaStart*gammaStart)/(betaEnd*gammaEnd) + Az[0][1]*Az[1][0]) / Az[1][1];
+            GenericMatrix Atr = new GenericMatrix(matrix22Exp(Ay));
+            Ttr = Atr.times(Ttr);
+
+            Az = matrix22Exp(Az);
+            Tz = new GenericMatrix(Az).times(Tz);
+
+//            double Az[][] = new double[][]{{1, dz}, {k * pEz_pzdz / (gammaEnd * gammaEnd), (1 - k * energyKick) * gammaStart * gammaStart / (gammaEnd * gammaEnd)}};
+//            Tz = new GenericMatrix(Az).times(Tz);
             Ek += energyKick;
         }
 
@@ -208,13 +201,60 @@ public class FieldMap extends ThickElement implements IRfGap, IRfCavityCell {
         T.setSubMatrix(2, 3, 2, 3, Ttr.getArrayCopy());
         T.setSubMatrix(4, 5, 4, 5, Tz.getArrayCopy());
 
+        //Following is a handy printout of transfer matrices useful for comparison with TW transfer matrices
+        /*PhaseMap tw = new PhaseMap(T);
+		ROpenXal2TW(probe.getGamma(), gammaStart, tw);
+		
+		System.out.printf("%E ", probe.getPosition());
+		for (int j=0; j<6; j++)
+			for (int k=0; k<6; k++)
+				System.out.printf("%E ", tw.getFirstOrder().getElem(j, k));
+		System.out.println();*/
         return new PhaseMap(T);
+    }
+
+    // Exponential of a 2x2 matrix
+    public double[][] matrix22Exp(double[][] A) {
+        double a = A[0][0], b = A[0][1], c = A[1][0], d = A[1][1];
+        double D = Math.pow((a - d), 2) + 4 * b * c;
+
+        double cosh, sinhD;
+        if (D > 0.) {
+            D = Math.sqrt(D);
+            cosh = Math.cosh(D / 2.);
+            sinhD = Math.sinh(D / 2.) / D;
+        } else if (D < 0.) {
+            D = Math.sqrt(-D);
+            cosh = Math.cos(D / 2.);
+            sinhD = Math.sin(D / 2.) / D;
+        } else {
+            cosh = 1;
+            sinhD = 0.5;
+        }
+
+        double exp = Math.exp((a + d) / 2.);
+
+        double m11 = exp * (cosh + (a - d) * sinhD);
+        double m12 = 2 * b * exp * sinhD;
+        double m21 = 2 * c * exp * sinhD;
+        double m22 = exp * (cosh + (d - a) * sinhD);
+
+        A[0][0] = m11;
+        A[0][1] = m12;
+        A[1][0] = m21;
+        A[1][1] = m22;
+
+        return A;
     }
 
     public static void ROpenXal2TW(double gamma_start, double gamma_end, PhaseMap pm) {
         PhaseMatrix r = pm.getFirstOrder();
 
         for (int i = 0; i < 6; i++) {
+//			r.setElem(i, 4, r.getElem(i,4)*gamma_start);
+//			r.setElem(i, 5, r.getElem(i,5)/gamma_start);
+//			r.setElem(4, i, r.getElem(4,i)/gamma_end);
+//			r.setElem(5, i, r.getElem(5,i)*gamma_end);
             r.setElem(i, 5, r.getElem(i, 5) / gamma_start / gamma_start);
             r.setElem(5, i, r.getElem(5, i) * gamma_end * gamma_end);
         }

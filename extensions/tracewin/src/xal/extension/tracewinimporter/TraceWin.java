@@ -33,7 +33,7 @@ import xal.extension.jels.ImporterHelpers;
 
 import xal.extension.tracewinimporter.openxalexporter.OpenXalExporter;
 import xal.extension.tracewinimporter.parser.TraceWinImporter;
-import xal.extension.jels.model.elem.jels.JElsElementMapping;
+import xal.extension.jels.model.elem.JElsElementMapping;
 import xal.extension.jels.smf.ESSAccelerator;
 import xal.extension.tracewinimporter.openxalexporter.AcceleratorExporter;
 

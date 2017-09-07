@@ -3,4 +3,4 @@
 *   Thoroughly tested and compared to TraceWin results.
 */
 
-package xal.extension.jels.model.elem.jels;
+package xal.extension.jels.model.elem;

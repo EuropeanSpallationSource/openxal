@@ -1,4 +1,4 @@
-package xal.extension.jels.model.elem.jels;
+package xal.extension.jels.model.elem;
 
 import java.io.BufferedReader;
 import java.io.File;

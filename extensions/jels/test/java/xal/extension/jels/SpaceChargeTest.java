@@ -6,7 +6,7 @@ import java.io.IOException;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import xal.extension.jels.model.elem.jels.JElsElementMapping;
+import xal.extension.jels.model.elem.JElsElementMapping;
 import xal.model.ModelException;
 import xal.model.alg.EnvelopeTracker;
 import xal.model.alg.Tracker;

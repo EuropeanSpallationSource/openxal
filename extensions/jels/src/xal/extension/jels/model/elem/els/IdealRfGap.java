@@ -31,6 +31,8 @@ import xal.tools.math.fnc.poly.RealUnivariatePolynomial;
  *@author     Christopher K. Allen
  *@created    November 22, 2005
  */
+
+@Deprecated
 public class IdealRfGap extends ThinElement implements IRfGap {
 
     

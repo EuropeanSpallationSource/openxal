@@ -8,7 +8,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import xal.extension.jels.model.elem.jels.JElsElementMapping;
+import xal.extension.jels.model.elem.JElsElementMapping;
 import xal.smf.AcceleratorSeq;
 
 @RunWith(Parameterized.class)

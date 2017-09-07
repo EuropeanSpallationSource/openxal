@@ -10,7 +10,6 @@ import xal.model.IProbe;
 import xal.model.ModelException;
 import xal.model.elem.IElectromagnet;
 import xal.model.elem.ThinElectromagnet;
-import xal.model.elem.ThinElement;
 import xal.tools.beam.PhaseMap;
 import xal.tools.beam.PhaseMatrix;
 
@@ -33,6 +32,8 @@ import xal.tools.beam.PhaseMatrix;
  *   
  * @author Christopher K. Allen
  */
+
+@Deprecated
 public class IdealMagDipoleFace2 extends ThinElectromagnet {
 
     

@@ -5,4 +5,5 @@
 *	@author Emanuele Laface
 */
 
+@Deprecated
 package xal.extension.jels.model.elem.els;

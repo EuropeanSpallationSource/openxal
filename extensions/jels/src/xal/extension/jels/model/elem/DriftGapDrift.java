@@ -1,4 +1,4 @@
-package xal.extension.jels.model.elem.jels;
+package xal.extension.jels.model.elem;
 
 import xal.extension.jels.model.elem.els.IdealDrift;
 import xal.extension.jels.smf.impl.ESSFieldMap;

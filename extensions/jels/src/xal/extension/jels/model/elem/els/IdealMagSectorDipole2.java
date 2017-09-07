@@ -12,7 +12,6 @@ import xal.model.IProbe;
 import xal.model.ModelException;
 import xal.model.elem.IElectromagnet;
 import xal.model.elem.ThickElectromagnet;
-import xal.model.elem.ThickElement;
 import xal.tools.beam.PhaseMap;
 import xal.tools.beam.PhaseMatrix;
 
@@ -49,6 +48,8 @@ import xal.tools.beam.PhaseMatrix;
  * @see xal.model.elem.IdealMagSectorDipole2
  * @see xal.model.elem.ThickDipole
  */
+
+@Deprecated
 public class IdealMagSectorDipole2 extends ThickElectromagnet {
 
 

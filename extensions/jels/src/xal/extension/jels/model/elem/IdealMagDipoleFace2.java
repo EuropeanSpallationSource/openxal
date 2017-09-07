@@ -4,7 +4,7 @@
  * Created on May 17, 2004
  *
  */
-package xal.extension.jels.model.elem.jels;
+package xal.extension.jels.model.elem;
 
 import xal.model.IProbe;
 import xal.model.ModelException;

@@ -6,7 +6,7 @@ import xal.model.elem.ThickElement;
 import xal.tools.beam.PhaseMap;
 import xal.tools.beam.PhaseMatrix;
 
-
+@Deprecated
 public class IdealDrift extends ThickElement {
 	/** Debugging flag */
 	final boolean debug = false;

@@ -10,7 +10,7 @@ import java.util.Iterator;
 import org.junit.Assert;
 import org.junit.runners.Parameterized.Parameters;
 
-import xal.extension.jels.model.elem.jels.JElsElementMapping;
+import xal.extension.jels.model.elem.JElsElementMapping;
 import xal.model.IComponent;
 import xal.model.IElement;
 import xal.model.Lattice;
@@ -171,8 +171,8 @@ public abstract class TestCommon {
                     xal.model.elem.IdealRfGap gap = (xal.model.elem.IdealRfGap) el;
                     System.out.printf("gap phase=%f E0TL=%E\n", gap.getPhase() * 180. / Math.PI, gap.getETL());
                 }
-                if (el instanceof xal.extension.jels.model.elem.jels.IdealRfGap) {
-                    xal.extension.jels.model.elem.jels.IdealRfGap gap = (xal.extension.jels.model.elem.jels.IdealRfGap) el;
+                if (el instanceof xal.extension.jels.model.elem.IdealRfGap) {
+                    xal.extension.jels.model.elem.IdealRfGap gap = (xal.extension.jels.model.elem.IdealRfGap) el;
                     System.out.printf("gap phase=%f E0TL=%E\n", Math.IEEEremainder(gap.getPhase() * 180. / Math.PI, 360), gap.getETL());
                 }
             }

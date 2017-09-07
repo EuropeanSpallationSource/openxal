@@ -28,6 +28,8 @@ import xal.tools.math.r3.R3;
  * @see xal.model.elem#IdealMagDipoleFace
  *
  */
+
+@Deprecated
 public class IdealMagWedgeDipole2 extends ElectromagnetSeq {
 
 

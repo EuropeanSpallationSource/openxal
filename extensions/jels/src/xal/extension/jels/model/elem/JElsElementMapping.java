@@ -4,7 +4,7 @@
  * Created on Oct 3, 2013
  */
 
-package xal.extension.jels.model.elem.jels;
+package xal.extension.jels.model.elem;
 
 import xal.model.IComponent;
 import xal.model.IComposite;

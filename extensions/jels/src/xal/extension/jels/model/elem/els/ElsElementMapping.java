@@ -20,6 +20,7 @@ import xal.sim.scenario.ElementMapping;
  * @author Ivo List
  *
  */
+@Deprecated
 public class ElsElementMapping extends ElementMapping {
 	protected static ElementMapping instance;	
 	private static boolean warning = false;

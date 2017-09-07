@@ -5,7 +5,7 @@ import java.net.URI;
 
 import xal.extension.tracewinimporter.TraceWin;
 import xal.extension.jels.ImporterHelpers;
-import xal.extension.jels.model.elem.jels.JElsElementMapping;
+import xal.extension.jels.model.elem.JElsElementMapping;
 import se.lu.esss.linaclego.LinacLego;
 import xal.smf.Accelerator;
 import xal.smf.data.XMLDataManager;

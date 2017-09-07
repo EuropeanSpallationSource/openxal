@@ -3,7 +3,7 @@
  *
  *  Created on October 22, 2002, 1:58 PM
  */
-package xal.extension.jels.model.elem.jels;
+package xal.extension.jels.model.elem;
 
 import java.io.PrintWriter;
 import xal.extension.jels.smf.impl.ESSRfGap;

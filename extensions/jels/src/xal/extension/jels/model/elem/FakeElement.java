@@ -8,14 +8,14 @@
  *      03/21/03 CKA    - added JavaBean
  */
 
-package xal.extension.jels.model.elem.jels;
+package xal.extension.jels.model.elem;
 
 
 
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import xal.extension.jels.model.elem.jels.TransferMapLoader.TransferMaps;
+import xal.extension.jels.model.elem.TransferMapLoader.TransferMaps;
 import xal.extension.jels.smf.impl.ESSFieldMap;
 import xal.model.IProbe;
 import xal.model.elem.ThickElement;
