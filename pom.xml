@@ -149,10 +149,9 @@
                 <artifactId>openxal.services.pvlogger</artifactId>
                 <version>${project.version}</version>
             </dependency>
-
             <dependency>
-                <groupId>se.lu.esss.ics.jels</groupId>
-                <artifactId>jels</artifactId>
+                <groupId>org.xal</groupId>
+                <artifactId>openxal.extensions.jels</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

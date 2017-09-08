@@ -27,8 +27,8 @@
     </build>
     <dependencies>
         <dependency>
-            <groupId>se.lu.esss.ics.jels</groupId>
-            <artifactId>jels</artifactId>
+            <groupId>org.xal</groupId>
+            <artifactId>openxal.extensions.jels</artifactId>
         </dependency>
     </dependencies>
 </project>

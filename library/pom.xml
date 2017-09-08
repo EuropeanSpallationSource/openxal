@@ -57,6 +57,7 @@
                     <resource><directory>../apps/bpmviewer/target</directory><includes><include>openxal.apps.bpmviewer-${project.version}.jar</include></includes></resource>
                     <resource><directory>../apps/bricks/target</directory><includes><include>openxal.apps.bricks-${project.version}.jar</include></includes></resource>
                     <resource><directory>../apps/bsmanalysis/target</directory><includes><include>openxal.apps.bsmanalysis-${project.version}.jar</include></includes></resource>
+                    <resource><directory>../apps/configurator/target</directory><includes><include>openxal.apps.configurator-${project.version}.jar</include></includes></resource>
                     <resource><directory>../apps/dbbrowser/target</directory><includes><include>openxal.apps.dbbrowser-${project.version}.jar</include></includes></resource>
                     <resource><directory>../apps/demo/target</directory><includes><include>openxal.apps.demo-${project.version}.jar</include></includes></resource>
                     <resource><directory>../apps/demobricks/target</directory><includes><include>openxal.apps.demobricks-${project.version}.jar</include></includes></resource>
@@ -182,8 +183,12 @@
             <artifactId>openxal.plugins.postgres</artifactId>
         </dependency>
         <dependency>
-            <groupId>se.lu.esss.ics.jels</groupId>
-            <artifactId>jels</artifactId>
+            <groupId>org.xal</groupId>
+            <artifactId>openxal.extensions.jels</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.xal</groupId>
+            <artifactId>openxal.extensions.tracewin</artifactId>
         </dependency>
         <dependency>
             <groupId>se.lu.esss.ics.linaclego</groupId>
