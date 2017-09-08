@@ -6,28 +6,29 @@
  * All rights reserved.
  *
  */
- 
+
 package xal.tools.apputils.pvselection;
 
-import java.util.*;
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.tree.*;
 
-import xal.smf.*;
-import xal.ca.*;
+import java.util.Collection;
+import java.util.Vector;
+import xal.ca.Channel;
+import xal.smf.Accelerator;
+import xal.smf.AcceleratorNode;
+import xal.smf.AcceleratorSeq;
 
-/** 
- * Generate sequence, device type, device, and PV tree structure 
+/**
+ * Generate sequence, device type, device, and PV tree structure
+ *
+ * TODO: Vector should not be used anymore
+ *
  * @version   0.5  28 Nov 2002
  * @author C.M. Chu
  */
 
 public class XALTreeNode extends HandleNode {
 	private static final long serialVersionUID = 0L;
-	
+
     AcceleratorSeq[] allSeqs;
 
     public XALTreeNode(){
@@ -36,36 +37,36 @@ public class XALTreeNode extends HandleNode {
 
     public XALTreeNode(Accelerator acc, String title)
     {
-	super(title);   
+	super(title);
 	allSeqs = acc.getSequences().toArray(new AcceleratorSeq[0]);
         defineSeqNodes();
     }
 
     public void setTitle(String title){
 	setUserObject(title);
-	defineSeqNodes(); 
+	defineSeqNodes();
     }
 
     public void setAccelerator(Accelerator acc){
-       allSeqs = acc.getSequences().toArray(new AcceleratorSeq[0]); 
+       allSeqs = acc.getSequences().toArray(new AcceleratorSeq[0]);
        defineSeqNodes();
     }
-  
+
     private void defineSeqNodes() {
-		// collecting all sequences
-		for (int i=0; i<allSeqs.length; i++) {
-			if( !"Bnch".equals( allSeqs[i].getType() ) ) {
-				Vector<String> typeV = new Vector<String>();
-				java.util.List<AcceleratorNode> nodes = allSeqs[i].getAllNodes();
-				for ( final AcceleratorNode node : nodes ) {
-					String type = node.getType();
-					if( !typeV.contains(type) )
-						typeV.addElement( type );
-			    }
-				add( new SeqNode( allSeqs[i].getId(), typeV, allSeqs[i] ) );
-		    }
-	    }
-    }     
+            // collecting all sequences
+            for (AcceleratorSeq allSeq : allSeqs) {
+                if (!"Bnch".equals(allSeq.getType())) {
+                    Vector<String> typeV = new Vector<>();
+                    java.util.List<AcceleratorNode> nodes = allSeq.getAllNodes();
+                    for ( final AcceleratorNode node : nodes ) {
+                        String type = node.getType();
+                        if( !typeV.contains(type) )
+                            typeV.addElement( type );
+                    }
+                    add(new SeqNode(allSeq.getId(), typeV, allSeq));
+                }
+            }
+    }
 }
 
 
@@ -77,33 +78,33 @@ class SeqNode extends HandleNode {
     private SeqNode(){}
 
     public SeqNode(String seq, Vector<String> types, AcceleratorSeq accSeq ) {
-		sid = seq;
+        sid = seq;
         defineTypeNodes( types,accSeq );
     }
 
     private void defineTypeNodes( Vector<String> types, AcceleratorSeq accSeq ) {
-		for (int j=0; j<types.size(); j++) {
-			// try vector instead of hashtable
-			java.util.List<AcceleratorNode> nodesOfType = accSeq.getAllNodesOfType( types.elementAt(j) );
-			Vector<String> devIdV = new Vector<String>();
-			Vector<AcceleratorNode> deviceV = new Vector<AcceleratorNode>();
-			for (int jj=0; jj<nodesOfType.size(); jj++) {
-				AcceleratorNode accNode = nodesOfType.get( jj );
-				if ( accNode.getStatus() ) {
-					devIdV.add( accNode.getId() );
-					deviceV.add( accNode );
-				}
-		    }
+        for (int j=0; j<types.size(); j++) {
+            // try vector instead of hashtable
+            java.util.List<AcceleratorNode> nodesOfType = accSeq.getAllNodesOfType( types.elementAt(j) );
+            Vector<String> devIdV = new Vector<>();
+            Vector<AcceleratorNode> deviceV = new Vector<>();
+            for (int jj=0; jj<nodesOfType.size(); jj++) {
+                AcceleratorNode accNode = nodesOfType.get( jj );
+                if ( accNode.getStatus() ) {
+                    devIdV.add( accNode.getId() );
+                    deviceV.add( accNode );
+                }
+            }
 
-			add( new TypeNode( types.elementAt(j), devIdV, deviceV ) );
+            add( new TypeNode( types.elementAt(j), devIdV, deviceV ) );
 
-	    }
+        }
 
     }
 
+    @Override
     public String toString()
     {
-		TreeNode parent = getParent();
 		if (parent == null)
 			return ("Device Types:");
 		else
@@ -126,10 +127,8 @@ class TypeNode extends HandleNode {
     private void defineHandleNodes( Vector<String> devIds, Vector<AcceleratorNode> devs ) {
 		for (int k=0; k<devs.size(); k++) {
 			Collection<String> handlesOfNode = devs.elementAt(k).getHandles();
-			Vector<String> handleV = new Vector<String>();
-			for ( final String handle : handlesOfNode ) {
-				handleV.addElement( handle );
-		    }
+			Vector<String> handleV = new Vector<>();
+                        handlesOfNode.forEach((element) -> handleV.addElement(element));
 
 			add( new DeviceNode( devIds.elementAt(k), handleV, devs.elementAt(k) ) );
 	    }

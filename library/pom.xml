@@ -88,6 +88,7 @@
                     <resource><directory>../apps/scalarpvviewer/target</directory><includes><include>openxal.apps.scalarpvviewer-${project.version}.jar</include></includes></resource>
                     <resource><directory>../apps/scan1d/target</directory><includes><include>openxal.apps.scan1d-${project.version}.jar</include></includes></resource>
                     <resource><directory>../apps/scan2d/target</directory><includes><include>openxal.apps.scan2d-${project.version}.jar</include></includes></resource>
+                    <resource><directory>../apps/scanner/target</directory><includes><include>openxal.apps.scanner-${project.version}.jar</include></includes></resource>
                     <resource><directory>../apps/sclmonitor/target</directory><includes><include>openxal.apps.sclmonitor-${project.version}.jar</include></includes></resource>
                     <resource><directory>../apps/scope/target</directory><includes><include>openxal.apps.scope-${project.version}.jar</include></includes></resource>
                     <resource><directory>../apps/score/target</directory><includes><include>openxal.apps.score-${project.version}.jar</include></includes></resource>

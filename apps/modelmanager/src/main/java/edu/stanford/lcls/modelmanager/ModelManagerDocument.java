@@ -158,7 +158,7 @@ public class ModelManagerDocument extends AcceleratorDocument {
 				// launch a web browser and use confluence URL as the help contents
 //            	System.out.println("launching firefox...");
         		try {
-					Desktop.getDesktop().browse(new URI("https://ess-ics.atlassian.net/wiki/display/SCA/Model+manager"));
+					Desktop.getDesktop().browse(new URI("https://confluence.esss.lu.se/display/SCA/Model+manager"));
 				} catch (IOException e) {
 					e.printStackTrace();
 				} catch (URISyntaxException e) {
