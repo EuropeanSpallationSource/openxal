@@ -20,8 +20,10 @@ package xal.app.configurator;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.util.ResourceBundle;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -63,7 +65,7 @@ public class FXMLController implements Initializable {
     @FXML
     private TextField outputNameTextField;
     @FXML
-    private ChoiceBox<?> initialParametersChoiceBox;
+    private ChoiceBox<String> initialParametersChoiceBox;
     @FXML
     private Button openFileButton;
     @FXML
@@ -85,7 +87,7 @@ public class FXMLController implements Initializable {
             opticsPathTextField.setText("DEFAULT OPTICS NOT SET!");
         }
 
-        ObservableList list = initialParametersChoiceBox.getItems();
+        ObservableList<String> list = initialParametersChoiceBox.getItems();
         list.add("Default");
         list.add("Manual input");
         list.add("MEBT from .ini");
@@ -151,11 +153,13 @@ public class FXMLController implements Initializable {
 
     @FXML
     private void importHandler(ActionEvent event) {
-        TraceWinImporter.importTW(inputTWTextField.getText(), 
-                Paths.get(opticsSwitcher.getOpticsLibraryPath(), outputNameTextField.getText()).toString(), 
-                initialParametersChoiceBox);//.getSelectionModel().getSelectedIndex());
+        JavaFXLogger logger = TraceWinImporter.importTW(inputTWTextField.getText(),
+                Paths.get(opticsSwitcher.getOpticsLibraryPath(), outputNameTextField.getText()).toString(),
+                initialParametersChoiceBox);
 
-        refreshButtonHandler(event);
+        logger.getAlert().getDialogPane().getScene().getWindow().setOnHiding(event2 -> {
+            refreshButtonHandler(event);
+        });
     }
 
     @FXML

@@ -41,7 +41,7 @@ import xal.extension.tracewinimporter.TraceWin;
  */
 public class TraceWinImporter {
 
-    public static void importTW(String input, String outputDir, ChoiceBox<?> initialParametersChoiceBox) {
+    public static JavaFXLogger importTW(String input, String outputDir, ChoiceBox<?> initialParametersChoiceBox) {
         TraceWin traceWin = new TraceWin();
         JavaFXLogger logger = new JavaFXLogger();
         traceWin.setLogger(logger);
@@ -92,6 +92,8 @@ public class TraceWinImporter {
         // Run the import method on a new thread to prevent the GUI from freezing
         Thread th = new Thread(importTW);
         th.start();
+        
+        return logger;
     }
 
     private static void inputParametersWindow(TraceWin traceWin) {

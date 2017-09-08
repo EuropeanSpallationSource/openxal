@@ -33,8 +33,12 @@ import xal.extension.tracewinimporter.ImportLogger;
  */
 public class JavaFXLogger extends ImportLogger {
 
-    TextArea textArea = null;
-    Alert alert = null;
+    private TextArea textArea = null;
+    private Alert alert = null;
+
+    public Alert getAlert() {
+        return alert;
+    }
 
     public JavaFXLogger() {
         alert = new Alert(AlertType.INFORMATION);
@@ -87,5 +91,6 @@ public class JavaFXLogger extends ImportLogger {
     @Override
     public void close() {
         alert.getDialogPane().lookupButton(ButtonType.OK).setDisable(false);
+        alert.getDialogPane().getScene().getWindow().setOnCloseRequest(event -> {});
     }
 }
