@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane id="AnchorPane" prefHeight="407.0" prefWidth="601.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xal.app.trajectorycorrection2.PopUpPlotController">
+   <children>
+      <Button fx:id="buttonClose" layoutX="534.0" layoutY="366.0" mnemonicParsing="false" onAction="#handleButtonClose" text="Close" AnchorPane.bottomAnchor="14.0" AnchorPane.rightAnchor="14.0" />
+      <LineChart fx:id="referencePlot" alternativeRowFillVisible="false" animated="false" layoutX="1.0" layoutY="14.0" onContextMenuRequested="#handlePlotProperties" prefHeight="355.0" prefWidth="600.0" verticalZeroLineVisible="false" AnchorPane.bottomAnchor="47.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
+        <xAxis>
+          <NumberAxis label="Position (m)" fx:id="xAxis" />
+        </xAxis>
+        <yAxis>
+          <NumberAxis fx:id="yAxis" label="Trajectory (mm)" lowerBound="-1.0" side="LEFT" upperBound="1.0" />
+        </yAxis>
+      </LineChart>
+   </children>
+</AnchorPane>

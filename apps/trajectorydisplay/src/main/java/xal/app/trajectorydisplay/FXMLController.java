@@ -37,7 +37,6 @@ import static java.lang.Math.round;
 import javafx.animation.AnimationTimer;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -64,11 +63,13 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import xal.ca.ConnectionException;
 import xal.ca.GetException;
+import xal.smf.AcceleratorSeqCombo;
 
 public class FXMLController implements Initializable {
     
     //Creates the Accelerator
-    public xal.smf.Accelerator accl = xal.smf.data.XMLDataManager.acceleratorWithPath("/Users/nataliamilas/projects/openxal/site/optics/design/main.xal");
+    //public xal.smf.Accelerator accl = xal.smf.data.XMLDataManager.acceleratorWithPath("/Users/nataliamilas/projects/openxal/site/optics/design/main.xal");
+    public xal.smf.Accelerator accl = xal.smf.data.XMLDataManager.loadDefaultAccelerator();
     public TrajectoryArray DisplayTraj = new TrajectoryArray();//Trajectory to be displayed on the plot
    
     //set plot update timer
@@ -152,23 +153,78 @@ public class FXMLController implements Initializable {
             k++;
         }   
         
+        menuSequence.getItems().add(new SeparatorMenuItem());
+        
+        MenuItem addCombo = new MenuItem("Add new Combo Sequence");
+        menuSequence.getItems().add(addCombo);
+        
         groupSequence.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
-        public void changed(ObservableValue<? extends Toggle> ov,Toggle old_toggle, Toggle new_toggle) {
-            if(old_toggle != new_toggle){
-                //turn off plot update timer
-                timerPlotUpdate.stop();        
+            public void changed(ObservableValue<? extends Toggle> ov,Toggle old_toggle, Toggle new_toggle) {
+                if(old_toggle != new_toggle){
+                    //turn off plot update timer
+                    timerPlotUpdate.stop();        
 
-                gridpaneCursor.setVisible(false);
+                    gridpaneCursor.setVisible(false);
 
-                HorizontalMarker.getData().clear();
-                VerticalMarker.getData().clear();
-                ChargeMarker.getData().clear();
+                    HorizontalMarker.getData().clear();
+                    VerticalMarker.getData().clear();
+                    ChargeMarker.getData().clear();
+                    
+                    axisPosition.setAutoRanging(true);
+                    axisPositionX.setAutoRanging(true);
+                    axisPositionY.setAutoRanging(true);
 
-                //turn on timer
-                timerPlotUpdate.start();
+                    //turn on timer
+                    timerPlotUpdate.start();
+                }
             }
-      }
-    });
+        });
+        
+        addCombo.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent event) {
+            
+                Stage stage; 
+                Parent root;
+                URL    url  = null;
+                String sceneFile = "/fxml/CreateComboSequence.fxml";
+                try
+                {
+                    stage = new Stage();
+                    url  = getClass().getResource(sceneFile);
+                    FXMLLoader loader = new FXMLLoader();
+                    loader.setLocation(MainApp.class.getResource(sceneFile));
+                    root = loader.load();
+                    //root.getStylesheets().add("/styles/Styles.css");
+                    stage.setScene(new Scene(root));
+                    stage.setTitle("Create a Combo Sequence");
+                    stage.initModality(Modality.APPLICATION_MODAL);
+                    stage.initOwner(labelXrms.getScene().getWindow());
+                    CreateComboSequenceController loginController = loader.getController();
+                    loginController.setProperties(accl);
+                    loginController.loggedInProperty().addListener((ObservableValue<? extends Boolean> obs, Boolean wasLoggedIn, Boolean isNowLoggedIn) -> {
+                        if (isNowLoggedIn) {
+                            if(loginController.getComboName()!=null){
+                                AcceleratorSeqCombo comboSequence = new AcceleratorSeqCombo(loginController.getComboName(),loginController.getNewComboSequence());
+                                accl.addComboSequence(comboSequence);
+                                int index = menuSequence.getItems().size()-2;
+                                RadioMenuItem addedItem = new RadioMenuItem(loginController.getComboName());
+                                addedItem.setToggleGroup(groupSequence);
+                                menuSequence.getItems().add(index, addedItem);
+                            }
+                            stage.close();
+                        }
+                    });
+                    stage.showAndWait();
+                }
+                catch ( IOException ex )
+                {
+                    System.out.println( "Exception on FXMLLoader.load()" );
+                    System.out.println( "  * url: " + url );
+                    System.out.println( "  * " + ex );
+                    System.out.println( "    ----------------------------------------\n" );
+                }   
+            }
+        });
         
         //reads a new trajectory
         try {
@@ -195,19 +251,6 @@ public class FXMLController implements Initializable {
             minVal = min(minVal,DisplayTraj.Pos.get(item));
             maxVal = max(maxVal,DisplayTraj.Pos.get(item));
         }
-        
-        axisPosition.setAutoRanging(false);
-        axisPositionX.setAutoRanging(false);
-        axisPositionY.setAutoRanging(false);
-        axisPosition.setLowerBound(round(90*minVal)/100.0);
-        axisPositionX.setLowerBound(round(90*minVal)/100.0);
-        axisPositionY.setLowerBound(round(90*minVal)/100.0);
-        axisPosition.setUpperBound(round(105*maxVal)/100.0);
-        axisPositionX.setUpperBound(round(105*maxVal)/100.0);
-        axisPositionY.setUpperBound(round(105*maxVal)/100.0);
-        axisPosition.setTickUnit(round(105*maxVal-90*minVal)/1000.0);
-        axisPositionX.setTickUnit(round(105*maxVal-90*minVal)/1000.0);
-        axisPositionY.setTickUnit(round(105*maxVal-90*minVal)/1000.0);
 
         plotHorizontal.setAnimated(false);
         plotVertical.setAnimated(false);
@@ -246,15 +289,6 @@ public class FXMLController implements Initializable {
                         maxVal = max(maxVal,DisplayTraj.Pos.get(item));
                     }
 
-                    axisPosition.setLowerBound(round(90*minVal)/100.0);
-                    axisPositionX.setLowerBound(round(90*minVal)/100.0);
-                    axisPositionY.setLowerBound(round(90*minVal)/100.0);
-                    axisPosition.setUpperBound(round(105*maxVal)/100.0);
-                    axisPositionX.setUpperBound(round(105*maxVal)/100.0);
-                    axisPositionY.setUpperBound(round(105*maxVal)/100.0);
-                    axisPosition.setTickUnit(round(105*maxVal-90*minVal)/1000.0);
-                    axisPositionX.setTickUnit(round(105*maxVal-90*minVal)/1000.0);
-                    axisPositionY.setTickUnit(round(105*maxVal-90*minVal)/1000.0);
                 }
                 
             }

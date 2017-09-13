@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.chart.LineChart?>
-<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
@@ -13,13 +12,13 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="740.0" prefWidth="1140.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xal.app.trajectorydisplay.FXMLController">
+<AnchorPane id="AnchorPane" prefHeight="755.0" prefWidth="1140.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xal.app.trajectorydisplay2.FXMLController">
    <children>
-      <VBox layoutX="4.0" layoutY="29.0" prefHeight="712.0" prefWidth="1130.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="29.0">
+      <VBox layoutX="5.0" layoutY="29.0" prefHeight="730.0" prefWidth="1130.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="30.0">
          <children>
-            <AnchorPane minHeight="26.0" prefHeight="200.0" prefWidth="200.0">
+            <AnchorPane minHeight="26.0" prefHeight="40.0">
                <children>
-                  <GridPane layoutX="430.0" prefHeight="30.0" prefWidth="270.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="430.0" AnchorPane.topAnchor="0.0">
+                  <GridPane layoutX="430.0" minHeight="30.0" prefHeight="30.0" prefWidth="270.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="430.0" AnchorPane.topAnchor="0.0">
                     <columnConstraints>
                       <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="135.0" minWidth="10.0" prefWidth="135.0" />
                       <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="135.0" minWidth="0.0" prefWidth="135.0" />
@@ -53,33 +52,13 @@
                   </GridPane>
                </children>
             </AnchorPane>
-            <LineChart id="plotHorizontal" fx:id="plotHorizontal" legendVisible="false" onContextMenuRequested="#handlePlotProperties" onMouseClicked="#handleSelectBPM" verticalZeroLineVisible="false">
-              <xAxis>
-                <NumberAxis fx:id="axisPositionX" forceZeroInRange="false" side="BOTTOM" />
-              </xAxis>
-              <yAxis>
-                <NumberAxis fx:id="axisHorizontal" animated="false" label="Horizontal (mm)" lowerBound="-40.0" maxHeight="175.0" maxWidth="68.0" prefHeight="175.0" prefWidth="68.0" side="LEFT" upperBound="10.0" />
-              </yAxis>
-            </LineChart>
-            <LineChart id="plotVertical" fx:id="plotVertical" legendVisible="false" onContextMenuRequested="#handlePlotProperties" onMouseClicked="#handleSelectBPM" verticalZeroLineVisible="false">
-              <xAxis>
-                <NumberAxis fx:id="axisPositionY" forceZeroInRange="false" side="BOTTOM" />
-              </xAxis>
-              <yAxis>
-                <NumberAxis fx:id="axisVertical" label="Vertical (mm)" maxHeight="175.0" maxWidth="68.0" prefHeight="175.0" prefWidth="68.0" side="LEFT" />
-              </yAxis>
-            </LineChart>
-            <LineChart id="plotCharge" fx:id="plotCharge" legendVisible="false" onContextMenuRequested="#handlePlotProperties" onMouseClicked="#handleSelectBPM" verticalZeroLineVisible="false">
-              <xAxis>
-                <NumberAxis fx:id="axisPosition" forceZeroInRange="false" label="Position (m)" side="BOTTOM" />
-              </xAxis>
-              <yAxis>
-                <NumberAxis fx:id="axisCharge" label="Charge (u.a.)" maxHeight="175.0" maxWidth="68.0" prefHeight="175.0" prefWidth="68.0" side="LEFT" />
-              </yAxis>
-            </LineChart>
+            <AnchorPane fx:id="anchorPaneChart" prefHeight="680.0" prefWidth="1130.0">
+               <VBox.margin>
+                  <Insets bottom="5.0" left="5.0" right="5.0" />
+               </VBox.margin></AnchorPane>
          </children>
       </VBox>
-      <MenuBar layoutX="-1.0" prefHeight="29.0" prefWidth="1140.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <MenuBar layoutX="-1.0" prefHeight="30.0" prefWidth="1140.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <menus>
           <Menu mnemonicParsing="false" text="File">
             <items>

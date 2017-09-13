@@ -34,9 +34,12 @@
              <MenuItem fx:id="exitMenu" mnemonicParsing="false" onAction="#handleMenuExit" text="Exit" />
            </items>
          </Menu>
-            <Menu mnemonicParsing="false" text="Select BPMs">
+            <Menu mnemonicParsing="false" text="Setup Corretion">
                <items>
-                  <MenuItem mnemonicParsing="false" onAction="#handleMenuSelectBPM" text="Select" />
+                  <MenuItem mnemonicParsing="false" onAction="#handleDefineCorrectionBlocks" text="Add/Edit Correction Blocks" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
+                  <MenuItem mnemonicParsing="false" text="Save Correction Blocks" />
+                  <MenuItem mnemonicParsing="false" text="Load Correction Blocks" />
                </items>
             </Menu>
          <Menu mnemonicParsing="false" text="Help">
