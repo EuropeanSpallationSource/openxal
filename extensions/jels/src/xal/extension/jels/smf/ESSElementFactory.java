@@ -1,11 +1,17 @@
 package xal.extension.jels.smf;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import xal.extension.jels.smf.impl.ESSBend;
 import xal.extension.jels.smf.impl.ESSDTLTank;
 import xal.extension.jels.smf.impl.ESSFieldMap;
 import xal.extension.jels.smf.impl.ESSRfCavity;
 import xal.extension.jels.smf.impl.ESSRfGap;
+import xal.extension.jels.smf.impl.ESSSolFieldMap;
 import xal.extension.jels.smf.impl.FieldProfile;
+import xal.extension.jels.smf.impl.FieldProfile2D;
 import xal.smf.AcceleratorNode;
 import xal.smf.ChannelSuite;
 import xal.smf.attr.ApertureBucket;
@@ -264,6 +270,33 @@ public final class ESSElementFactory {
         cavity.setLength(length);
 
         return cavity;
+    }
+
+    /**
+     * Creates the field map node with specified properties.
+     *
+     * @param name Name of the field map.
+     * @param length Length of the fieldmap.
+     * @param xmagmax Electric field intensity factor.
+     * @param fieldFile File containing the filed profile.
+     * @param aper Aperture details.
+     * @param position Position of the field map.
+     * @return ESSFieldMap object.
+     */
+    public static ESSSolFieldMap createESSSolFieldMap(String name, double length, double xmagmax,
+            String fieldFile, ApertureBucket aper, double position) {
+        ESSSolFieldMap solenoid = new ESSSolFieldMap(name + ":SFM");
+        solenoid.setLength(length);
+        solenoid.getMagBucket().setEffLength(length);
+        solenoid.setPosition(position);
+        solenoid.setFieldMapFile(fieldFile);
+        solenoid.setFieldProfileR(FieldProfile2D.getInstance(fieldFile + ".bsr"));
+        solenoid.setFieldProfileZ(FieldProfile2D.getInstance(fieldFile + ".bsz"));
+
+        solenoid.setDesignField(xmagmax);
+        solenoid.setAper(aper);
+
+        return solenoid;
     }
 
 }
