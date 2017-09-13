@@ -100,11 +100,13 @@ public abstract class TestCommon {
 		alfa z = -0.5283
 		beta z in m/rad = 0.8684
          */
-        double beta_gamma = envelopeProbe.getBeta() * envelopeProbe.getGamma();
+        double beta = envelopeProbe.getBeta();
+        double gamma = envelopeProbe.getGamma();
+        double beta_gamma = beta * gamma;
 
         envelopeProbe.initFromTwiss(new Twiss[]{new Twiss(twiss[0][0], twiss[0][1], twiss[0][2] * 1e-6 / beta_gamma),
             new Twiss(twiss[1][0], twiss[1][1], twiss[1][2] * 1e-6 / beta_gamma),
-            new Twiss(twiss[2][0], twiss[2][1], twiss[2][2] * 1e-6 / beta_gamma)});
+            new Twiss(twiss[2][0], twiss[2][1], twiss[2][2] * 1e-6 / beta_gamma / gamma / gamma)});
         envelopeProbe.setBeamCurrent(current);
         envelopeProbe.setBunchFrequency(frequency);//frequency
 
@@ -154,7 +156,7 @@ public abstract class TestCommon {
 
         scenario.run();
 
-        // Prints transfer matrices
+//        // Prints transfer matrices
 //        printTransferMatrices(scenario);
     }
 
@@ -177,9 +179,9 @@ public abstract class TestCommon {
                 }
             }
         }
-//		PrintWriter pw = new PrintWriter(System.out);
-//		pm.getFirstOrder().print(pw);
-//		pw.flush();
+//        PrintWriter pw = new PrintWriter(System.out);
+//        pm.getFirstOrder().print(pw);
+//        pw.flush();
     }
 
     public void checkTWTransferMatrix(double T[][], double errTolerance) throws ModelException {
@@ -252,8 +254,8 @@ public abstract class TestCommon {
 
         // transform cov
         for (int i = 0; i < 6; i++) {
-            centCovTw66[i][5] /= gammaTw*gammaTw;
-            centCovTw66[5][i] /= gammaTw*gammaTw;
+            centCovTw66[i][5] /= gammaTw * gammaTw;
+            centCovTw66[5][i] /= gammaTw * gammaTw;
             meanTw6[i] *= 1e-3;
         }
 
@@ -293,9 +295,13 @@ public abstract class TestCommon {
                 System.out.printf("{");
                 for (int j = 0; j < 6; j++) {
                     aux = 1;
-                    if (j==5) aux *= gammaTw*gammaTw;
-                    if (i==5) aux *= gammaTw*gammaTw;
-        
+                    if (j == 5) {
+                        aux *= gammaTw * gammaTw;
+                    }
+                    if (i == 5) {
+                        aux *= gammaTw * gammaTw;
+                    }
+
                     System.out.printf("%E,\t", aux * centCovOx.getElem(i, j));
                 }
                 System.out.printf("},\n");
@@ -305,17 +311,21 @@ public abstract class TestCommon {
                 System.out.printf("{");
                 for (int j = 0; j < 6; j++) {
                     aux = 1;
-                    if (j==5) aux *= gammaTw*gammaTw;
-                    if (i==5) aux *= gammaTw*gammaTw;
+                    if (j == 5) {
+                        aux *= gammaTw * gammaTw;
+                    }
+                    if (i == 5) {
+                        aux *= gammaTw * gammaTw;
+                    }
                     System.out.printf("%E ", aux * centCovTw.getElem(i, j));
                 }
                 System.out.printf("},\n");
             }
         }
-        
+
         if (n2 >= errTolerance) {
-            System.out.printf("TW mean = %s\n",meanTw.toString());
-            System.out.printf("OX mean = %s\n",meanOx.toString());
+            System.out.printf("TW mean = %s\n", meanTw.toString());
+            System.out.printf("OX mean = %s\n", meanOx.toString());
         }
         //pm.getFirstOrder().minus(new PhaseMatrix(new Matrix(T77))).print();
         System.out.printf("TW cov matrix diff: %E\n", n);
