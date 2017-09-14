@@ -74,7 +74,7 @@ public class SolFieldMapTest extends SingleElementTest {
         fieldMapPath = fieldMapPath.substring(0, fieldMapPath.length() - 4);
 
         ESSSolFieldMap solenoid = createESSSolFieldMap("testSolenoid", length, fieldStrength,
-                fieldMapPath, new ApertureBucket(), length / 2);
+                "",fieldMapPath, new ApertureBucket(), length / 2);
 
         AcceleratorSeq sequence = new AcceleratorSeq("SolenoidTest");
         sequence.addNode(solenoid);

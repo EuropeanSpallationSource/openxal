@@ -278,20 +278,22 @@ public final class ESSElementFactory {
      * @param name Name of the field map.
      * @param length Length of the fieldmap.
      * @param xmagmax Electric field intensity factor.
-     * @param fieldFile File containing the filed profile.
+     * @param fieldPath Path of the file containing the field profile.
+     * @param fieldFile File containing the field profile.
      * @param aper Aperture details.
      * @param position Position of the field map.
      * @return ESSFieldMap object.
      */
     public static ESSSolFieldMap createESSSolFieldMap(String name, double length, double xmagmax,
-            String fieldFile, ApertureBucket aper, double position) {
+            String fieldPath, String fieldFile, ApertureBucket aper, double position) {
         ESSSolFieldMap solenoid = new ESSSolFieldMap(name + ":SFM");
         solenoid.setLength(length);
         solenoid.getMagBucket().setEffLength(length);
-        solenoid.setPosition(position);
+        solenoid.setPosition(position + length / 2.);
         solenoid.setFieldMapFile(fieldFile);
-        solenoid.setFieldProfileR(FieldProfile2D.getInstance(fieldFile + ".bsr"));
-        solenoid.setFieldProfileZ(FieldProfile2D.getInstance(fieldFile + ".bsz"));
+
+        solenoid.setFieldProfileR(FieldProfile2D.getInstance(fieldPath + fieldFile + ".bsr"));
+        solenoid.setFieldProfileZ(FieldProfile2D.getInstance(fieldPath + fieldFile + ".bsz"));
 
         solenoid.setDesignField(xmagmax);
         solenoid.setAper(aper);

@@ -251,39 +251,43 @@ public class TraceWin {
      *
      * @param args
      */
-    public void main(String[] args) {
-        setLogger(new ImportLogger());
-
+    public static void main(String[] args) {
+        TraceWin tracewin = new TraceWin();
+        tracewin.setLogger(new ImportLogger());
+        args = new String[]{"/Users/juanfestebanmuller/git/ess-lattice/1.0_LEBT/Beam_Physics/lattice.dat",
+//        args = new String[]{"/Users/juanfestebanmuller/git/ess-lattice/3.0_MEBT/Beam_Physics/lattice.dat",
+            "/Users/juanfestebanmuller/optics/testLEBT","main"};
+        
         // Checking commandline arguments
         if (args.length < 3) {
             System.out.println("Usage: TraceWin input outputDir outputName [initialParametersMode]");
             System.exit(0);
         }
         final String input = args[0];
-        setOutputDir(args[1]);
-        setOutputName(args[2]);
+        tracewin.setOutputDir(args[1]);
+        tracewin.setOutputName(args[2]);
 
         if (args.length == 4) {
-            setInitialParametersMode(Integer.parseInt(args[3]));
+            tracewin.setInitialParametersMode(Integer.parseInt(args[3]));
         }
 
         File fileInput = new File(input);
         try {
             if (fileInput.isFile()) {
-                setInputFile(fileInput);
+                tracewin.setInputFile(fileInput);
 
                 // Hardcoded initial parameters if using a TraceWin file
-                bunchFrequency = 352.21;
-                beamCurrent = 62.5e-3;
-                kineticEnergy = 3.6217853e6;
+                tracewin.bunchFrequency = 352.21;
+                tracewin.beamCurrent = 62.5e-3;
+                tracewin.kineticEnergy = 3.6217853e6;
 
-                initialTwiss = new Twiss[]{new Twiss(-0.051805615, 0.20954703, 0.25288 * 1e-6),
+                tracewin.initialTwiss = new Twiss[]{new Twiss(-0.051805615, 0.20954703, 0.25288 * 1e-6),
                     new Twiss(-0.30984478, 0.37074849, 0.251694 * 1e-6),
                     new Twiss(-0.48130325, 0.92564505, 0.3615731 * 1e-6)};
             } else if (fileInput.isDirectory()) {
-                setInputDir(fileInput);
+                tracewin.setInputDir(fileInput);
             } else if (input.startsWith("http")) {
-                setInputGit(input);
+                tracewin.setInputGit(input);
             } else {
                 throw new IOException();
             }
@@ -292,7 +296,7 @@ public class TraceWin {
             System.exit(1);
         }
 
-        importTW();
+        tracewin.importTW();
     }
 
     public void importTW() {
