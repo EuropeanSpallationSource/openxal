@@ -1,9 +1,5 @@
 package xal.extension.jels.smf;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import xal.extension.jels.smf.impl.ESSBend;
 import xal.extension.jels.smf.impl.ESSDTLTank;
 import xal.extension.jels.smf.impl.ESSFieldMap;
@@ -281,21 +277,29 @@ public final class ESSElementFactory {
      * @param fieldPath Path of the file containing the field profile.
      * @param fieldFile File containing the field profile.
      * @param aper Aperture details.
+     * @param ps
      * @param position Position of the field map.
      * @return ESSFieldMap object.
      */
-    public static ESSSolFieldMap createESSSolFieldMap(String name, double length, double xmagmax,
-            String fieldPath, String fieldFile, ApertureBucket aper, double position) {
+    public static ESSSolFieldMap createESSSolFieldMap(String name, double length,
+            double xmagmax, String fieldPath, String fieldFile, ApertureBucket aper,
+            MagnetMainSupply ps, double position) {
         ESSSolFieldMap solenoid = new ESSSolFieldMap(name + ":SFM");
+
+        addElectromagnetChannels(name, "B", solenoid.channelSuite());
+        if (ps != null) {
+            solenoid.setMainSupplyId(ps.getId());
+        }
+
         solenoid.setLength(length);
-        solenoid.getMagBucket().setEffLength(length);
         solenoid.setPosition(position + length / 2.);
         solenoid.setFieldMapFile(fieldFile);
 
-        solenoid.setFieldProfileR(FieldProfile2D.getInstance(fieldPath + fieldFile + ".bsr"));
-        solenoid.setFieldProfileZ(FieldProfile2D.getInstance(fieldPath + fieldFile + ".bsz"));
+        solenoid.setFieldProfileR(FieldProfile2D.getInstance(fieldPath + "/" + fieldFile + ".bsr"));
+        solenoid.setFieldProfileZ(FieldProfile2D.getInstance(fieldPath + "/" + fieldFile + ".bsz"));
 
         solenoid.setDesignField(xmagmax);
+
         solenoid.setAper(aper);
 
         return solenoid;

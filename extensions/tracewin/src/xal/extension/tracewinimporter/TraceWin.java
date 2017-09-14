@@ -245,7 +245,7 @@ public class TraceWin {
      * <br>outputName file name of the accelerator files to generate
      * <br>initialParametersMode optional paramaterer to set initial parameters:
      * mode 1 is hardcoded parameters mode 0 is default (hardcoded for input
-     * file, MEBT from takes hardcoded parameters
+     * file, all sequences from hardcoded parameters (.ini)
      *
      * </p>
      *
@@ -254,10 +254,7 @@ public class TraceWin {
     public static void main(String[] args) {
         TraceWin tracewin = new TraceWin();
         tracewin.setLogger(new ImportLogger());
-        args = new String[]{"/Users/juanfestebanmuller/git/ess-lattice/1.0_LEBT/Beam_Physics/lattice.dat",
-//        args = new String[]{"/Users/juanfestebanmuller/git/ess-lattice/3.0_MEBT/Beam_Physics/lattice.dat",
-            "/Users/juanfestebanmuller/optics/testLEBT","main"};
-        
+
         // Checking commandline arguments
         if (args.length < 3) {
             System.out.println("Usage: TraceWin input outputDir outputName [initialParametersMode]");
@@ -332,7 +329,7 @@ public class TraceWin {
                 basePath = getInputDir().toURI().toString();
                 for (File inputFilei : inputFiles) {
                     if (inputFilei.isDirectory() && inputFilei.getName().substring(0, 1).matches("\\d+(\\.\\d+)?")
-                            && Integer.parseInt(inputFilei.getName().substring(0, 1)) > 2 // Load from MEBT
+                            //                            && Integer.parseInt(inputFilei.getName().substring(0, 1)) > 2 // Load from MEBT
                             && Integer.parseInt(inputFilei.getName().substring(2, 3)) == 0) { // Remove Dump
                         File traceWinFile = Paths.get(inputFilei.toString(), "Beam_Physics", "lattice.dat").toFile();
                         if (traceWinFile.exists()) {
@@ -345,8 +342,11 @@ public class TraceWin {
                 sequenceNamesArray = sequenceNames.toArray(new String[]{});
                 accelerator = loadAcceleator(sourceFileNamesArray, sequenceNamesArray, basePath);
                 if (getInitialParametersMode() == 1) {
-                    logger.log("Initial parameters mode incomatible. Changing to 'From MEBT.ini and simulated for other sequences.'");
-                    setInitialParametersMode(2);
+                    logger.log("Initial parameters mode incomatible. Changing to 'From .ini files.'");
+                    setInitialParametersMode(3);
+                }
+                if (getInitialParametersMode() == 0) {
+                    setInitialParametersMode(3);
                 }
             } else if (getInputGit() != null) {
                 GitParser gitParser = new GitParser();
@@ -356,8 +356,11 @@ public class TraceWin {
                 basePath = gitParser.getBasePath();
                 accelerator = loadAcceleator(sourceFileNamesArray, sequenceNamesArray, basePath);
                 if (getInitialParametersMode() == 1) {
-                    logger.log("Initial parameters mode incomatible. Changing to 'From MEBT.ini and simulated for other sequences.'");
-                    setInitialParametersMode(2);
+                    logger.log("Initial parameters mode incomatible. Changing to 'From .ini files.'");
+                    setInitialParametersMode(3);
+                }
+                if (getInitialParametersMode() == 0) {
+                    setInitialParametersMode(3);
                 }
             } else {
                 throw new IOException();
@@ -370,6 +373,7 @@ public class TraceWin {
 
         // Loading initial paramaters
         if (getInitialParametersMode() == 3) {
+            logger.log("Importing initial beam parameters from .ini files.");
             for (String seq : sequenceNamesArray) {
                 iniFileParser.loadTwissFromIni(basePath + "/ProjectFiles/" + seq + ".ini");
                 bunchFrequencyList.add(iniFileParser.getBunchFrequency());
@@ -380,7 +384,8 @@ public class TraceWin {
 
             ImporterHelpers.addAllInitialParameters(accelerator, bunchFrequencyList, beamCurrentList, kineticEnergyList, initialTwissList);
         } else {
-            if (getInitialParametersMode() != 1) { //For mode 2 or 0 if not single TW file
+            if (getInitialParametersMode() == 2) {
+                logger.log("Importing initial beam parameters from MEBT.ini and simulating for other sequences.");
                 // Taking initial parameters from MEBT. For the other sequences are simulated.
                 iniFileParser.loadTwissFromIni(basePath + "/ProjectFiles/MEBT.ini");
                 bunchFrequency = iniFileParser.getBunchFrequency();

@@ -29,6 +29,15 @@ public class ImporterHelpers {
 
     public static AcceleratorSeqCombo addDefaultComboSeq(Accelerator acc) {
         List<AcceleratorSeq> seqs = acc.getSequences();
+
+        // Remove LEBT and RFQ from default combo sequence, because they are not 
+        // fully supported by Open XAL model
+        if (seqs.get(1).getId().equals("RFQ")) {
+            seqs = seqs.subList(2, acc.getSequences().size());
+        } else if (seqs.get(0).getId().equals("LEBT")) {
+            seqs = seqs.subList(1, acc.getSequences().size());
+        }
+
         String name;
         if (seqs.size() >= 2) {
             name = seqs.get(0).getId() + "-" + seqs.get(seqs.size() - 1).getId();
@@ -83,11 +92,12 @@ public class ImporterHelpers {
         double beta_gamma = beta * gamma;
 
         // Convert from TraceWin coordinates (z,deltap/p) to Open XAL (z,z')
-        initialTwiss[0].setTwiss(initialTwiss[0].getAlpha(), initialTwiss[0].getBeta(), initialTwiss[0].getEmittance() / beta_gamma);
-        initialTwiss[1].setTwiss(initialTwiss[1].getAlpha(), initialTwiss[1].getBeta(), initialTwiss[1].getEmittance() / beta_gamma);
-        initialTwiss[2].setTwiss(initialTwiss[2].getAlpha(), initialTwiss[2].getBeta(), initialTwiss[2].getEmittance() / (beta_gamma * gamma * gamma));
+        Twiss[] oxalTwiss = new Twiss[]{
+            new Twiss(initialTwiss[0].getAlpha(), initialTwiss[0].getBeta(), initialTwiss[0].getEmittance() / beta_gamma),
+            new Twiss(initialTwiss[1].getAlpha(), initialTwiss[1].getBeta(), initialTwiss[1].getEmittance() / beta_gamma),
+            new Twiss(initialTwiss[2].getAlpha(), initialTwiss[2].getBeta(), initialTwiss[2].getEmittance() / (beta_gamma * gamma * gamma))};
 
-        probe.initFromTwiss(initialTwiss);
+        probe.initFromTwiss(oxalTwiss);
     }
 
     public static List<EnvelopeProbeState> simulateInitialValues(EnvelopeProbe probe, AcceleratorSeqCombo seqCombo) throws ModelException {
@@ -191,7 +201,9 @@ public class ImporterHelpers {
             double gamma;
             double beta_gamma;
             Twiss[] auxTwiss;
-            for (AcceleratorSeq seq : comboSeq.getConstituents()) {
+
+//            for (AcceleratorSeq seq : comboSeq.getConstituents()) {
+            for (AcceleratorSeq seq : accelerator.getSequences()) {
                 DataTable tblTwiss = editContext.getTable("twiss");
                 DataTable tblLocation = editContext.getTable("location");
 
@@ -201,11 +213,12 @@ public class ImporterHelpers {
 
                 auxTwiss = initialTwiss.get(i);
                 // Convert from TraceWin coordinates (z,deltap/p) to Open XAL (z,z')
-                auxTwiss[0].setTwiss(auxTwiss[0].getAlpha(), auxTwiss[0].getBeta(), auxTwiss[0].getEmittance() / beta_gamma);
-                auxTwiss[1].setTwiss(auxTwiss[1].getAlpha(), auxTwiss[1].getBeta(), auxTwiss[1].getEmittance() / beta_gamma);
-                auxTwiss[2].setTwiss(auxTwiss[2].getAlpha(), auxTwiss[2].getBeta(), auxTwiss[2].getEmittance() / (beta_gamma * gamma * gamma));
+                Twiss[] oxalTwiss = new Twiss[]{
+                    new Twiss(auxTwiss[0].getAlpha(), auxTwiss[0].getBeta(), auxTwiss[0].getEmittance() / beta_gamma),
+                    new Twiss(auxTwiss[1].getAlpha(), auxTwiss[1].getBeta(), auxTwiss[1].getEmittance() / beta_gamma),
+                    new Twiss(auxTwiss[2].getAlpha(), auxTwiss[2].getBeta(), auxTwiss[2].getEmittance() / (beta_gamma * gamma * gamma))};
 
-                addTwissToTable(seq.getId(), auxTwiss, tblTwiss);
+                addTwissToTable(seq.getId(), oxalTwiss, tblTwiss);
 
                 GenericRecord record = new GenericRecord(tblLocation);
                 record.setValueForKey(seq.getId(), "name");

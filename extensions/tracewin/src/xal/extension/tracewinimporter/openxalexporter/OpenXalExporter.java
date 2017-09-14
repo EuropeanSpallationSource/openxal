@@ -436,8 +436,9 @@ public class OpenXalExporter {
                     getFrequency(element) * 1e-6, element.getElectricIntensityFactor(), element.getRfPhase(),
                     element.getFileName(), profile, aper, currentPosition);
         } else if (element.getGeom() == 50) {
+            MagnetMainSupply ps = ElementFactory.createMainSupply(element.getName() + "-PS", acc);
             return createESSSolFieldMap(element.getName(), element.getLength(), element.getMagneticIntensityFactor(),
-                    element.getBasePath(), element.getFileName(), aper, currentPosition);
+                    element.getBasePath(), element.getFileName(), aper, ps, currentPosition);
         }
 
         return null;

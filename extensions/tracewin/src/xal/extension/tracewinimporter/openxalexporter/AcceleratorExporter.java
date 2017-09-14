@@ -35,6 +35,7 @@ import org.w3c.dom.Element;
 import xal.extension.jels.ImporterHelpers;
 import xal.extension.jels.smf.ESSAccelerator;
 import xal.extension.jels.smf.impl.ESSFieldMap;
+import xal.extension.jels.smf.impl.ESSSolFieldMap;
 import xal.smf.AcceleratorNode;
 import xal.smf.AcceleratorSeq;
 import xal.tools.data.DataAdaptor;
@@ -154,6 +155,15 @@ public class AcceleratorExporter {
             ESSFieldMap fieldMap = (ESSFieldMap) fieldMapNode;
             String destinationFile = new URL(dir.toURI().toURL(), fieldMap.getFieldMapFile() + ".edz").toString();
             fieldMap.getFieldProfile().saveFile(destinationFile);
+        }
+        // Solenoid Field Maps
+        fieldMapNodes = acc.getAllNodesOfType("SFM");
+        for (AcceleratorNode fieldMapNode : fieldMapNodes) {
+            ESSSolFieldMap fieldMap = (ESSSolFieldMap) fieldMapNode;
+            String destinationFile = new URL(dir.toURI().toURL(), fieldMap.getFieldMapFile() + ".bsz").toString();
+            fieldMap.getFieldProfileZ().saveFile(destinationFile);
+            destinationFile = new URL(dir.toURI().toURL(), fieldMap.getFieldMapFile() + ".bsr").toString();
+            fieldMap.getFieldProfileR().saveFile(destinationFile);
         }
     }
 

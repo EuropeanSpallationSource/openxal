@@ -70,11 +70,13 @@ public class SolFieldMapTest extends SingleElementTest {
 
     private static AcceleratorSeq solenoid(double length, double fieldStrength) {
 
-        String fieldMapPath = JElsDemo.class.getResource("Field_Maps/1D/sef2_545_4mm.bsz").toString();
-        fieldMapPath = fieldMapPath.substring(0, fieldMapPath.length() - 4);
+        String fieldFile= "Field_Maps/1D/sef2_545_4mm.bsz";
+        String fieldMapPath = JElsDemo.class.getResource(fieldFile).toString();
+        fieldFile = fieldFile.substring(0, fieldFile.length() - 4);
+        fieldMapPath = fieldMapPath.substring(0,fieldMapPath.indexOf(fieldFile));
 
         ESSSolFieldMap solenoid = createESSSolFieldMap("testSolenoid", length, fieldStrength,
-                "",fieldMapPath, new ApertureBucket(), length / 2);
+                fieldMapPath,fieldFile, new ApertureBucket(), null, 0);
 
         AcceleratorSeq sequence = new AcceleratorSeq("SolenoidTest");
         sequence.addNode(solenoid);

@@ -115,11 +115,15 @@ public class SolFieldMap extends ThickElectromagnet {
 
         double startStep = probe.getPosition() - startPosition;
         double stopStep = startStep + dblLen;
-
+        
+        if (startStep < 0) {
+            startStep = 0;
+        }
+        
         int i0 = (int) Math.floor(startStep / dzFieldMap) + 1;
         int in = (int) Math.floor(stopStep / dzFieldMap);
         if (in >= Nz) {
-            in = Nz-1;
+            in = Nz - 1;
         }
 
         // First part
@@ -130,7 +134,7 @@ public class SolFieldMap extends ThickElectromagnet {
         }
 
         double z0 = (i0 - 1) * dzFieldMap;
-                
+
         // Linear interpolation of the magnetic field
         double fieldZStart = fieldZ[i0 - 1][0] + (startStep - z0 + dz / 2) * (fieldZ[i0][0] - fieldZ[i0 - 1][0]) / dzFieldMap;
         double dFieldRStart = fieldR[i0 - 1][1] - fieldR[i0 - 1][0] + (startStep - z0 + dz / 2) * (fieldR[i0][1] - fieldR[i0][0] - (fieldR[i0 - 1][1] - fieldR[i0 - 1][0])) / dzFieldMap;

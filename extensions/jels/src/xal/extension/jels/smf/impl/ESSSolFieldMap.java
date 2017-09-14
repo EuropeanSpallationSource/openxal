@@ -6,7 +6,7 @@ import java.net.URISyntaxException;
 import xal.extension.jels.smf.attr.ESSSolFieldMapBucket;
 import xal.ca.ChannelFactory;
 import xal.smf.attr.AttributeBucket;
-import xal.smf.impl.Solenoid;
+import xal.smf.impl.Electromagnet;
 import xal.smf.impl.qualify.ElementTypeManager;
 import xal.tools.data.DataAdaptor;
 import xal.tools.xml.XmlDataAdaptor;
@@ -17,7 +17,7 @@ import xal.tools.xml.XmlDataAdaptor;
  * @author Juan F. Esteban Müller <juanf.estebanmuller@esss.se>
  *
  */
-public class ESSSolFieldMap extends Solenoid {
+public class ESSSolFieldMap extends Electromagnet {
 
     public static final String s_strType = "SFM";
 
@@ -39,6 +39,8 @@ public class ESSSolFieldMap extends Solenoid {
     public ESSSolFieldMap(String strId, ChannelFactory channelFactory) {
         super(strId, channelFactory);
         setSolFieldMapBucket(new ESSSolFieldMapBucket());
+        // remove MagBucket bucket
+        m_mapAttrs.remove(getMagBucket().getType());
     }
 
     @Override
@@ -87,6 +89,11 @@ public class ESSSolFieldMap extends Solenoid {
         return m_bucSolFieldMap.getXmagmax();
     }
 
+    @Override
+    public double getDfltField() {
+        return m_bucSolFieldMap.getXmagmax();
+    }
+
     /**
      * Electric field intensity factor
      */
@@ -94,6 +101,16 @@ public class ESSSolFieldMap extends Solenoid {
         m_bucSolFieldMap.setXmagmax(dblVal);
     }
 
+    @Override
+    public void setDfltField(double dblVal) {
+        m_bucSolFieldMap.setXmagmax(dblVal);
+    }
+
+    @Override
+    public double getEffLength() {
+        return m_dblLen;
+    }
+    
     /**
      * FieldMap file
      */
@@ -146,5 +163,4 @@ public class ESSSolFieldMap extends Solenoid {
             e.printStackTrace();
         }
     }
-
 }
