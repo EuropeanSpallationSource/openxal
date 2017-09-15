@@ -1,7 +1,7 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
 <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	xsi:noNamespaceSchemaLocation="http://sourceforge.net/p/xaldev/openxal/ci/master/tree/core/resources/xal/schemas/ModelConfig.xsd?format=raw"
-	subsectionCtrOrigin="false">
+               xsi:noNamespaceSchemaLocation="https://bitbucket.org/europeanspallationsource/openxal/raw/site.ess.master/core/resources/xal/schemas/model-impl.xsd"
+               subsectionCtrOrigin="false">
     <elements>
         <default type="xal.model.elem.Marker"/>
         <drift type="xal.model.elem.IdealDrift"/>
@@ -10,19 +10,16 @@
     </elements>
     
     <associations>
-		<map smf="fm" model="xal.extension.jels.model.elem.FieldMap"/>  
-   		<map smf="fm" model="xal.extension.jels.model.elem.FieldMapNCells"/>
-   			
-<!--		<map smf="fm" model="xal.extension.jels.model.elem.FakeElement"/>-->
-		<!--<map smf="fm" model="xal.extension.jels.model.elem.DriftGapDrift"/>-->
-		<map smf="dh" model="xal.extension.jels.model.elem.IdealMagWedgeDipole2"/>
-		<map smf="q" model="xal.model.elem.IdealMagQuad"/>
-		<map smf="qt" model="xal.model.elem.IdealMagQuad"/>
-		<map smf="pq" model="xal.model.elem.IdealMagQuad"/>
-		<map smf="dch" model="xal.model.elem.IdealMagSteeringDipole"/>
-		<map smf="dcv" model="xal.model.elem.IdealMagSteeringDipole"/>
-		<map smf="rfgap" model="xal.extension.jels.model.elem.IdealRfGap"/>
-		<map smf="marker" model="xal.model.elem.Marker"/>
+        <map smf="fm" model="xal.extension.jels.model.elem.FieldMap"/>  
+        <map smf="sfm" model="xal.extension.jels.model.elem.SolFieldMap"/>   			
+        <map smf="dh" model="xal.extension.jels.model.elem.IdealMagWedgeDipole2"/>
+        <map smf="q" model="xal.model.elem.IdealMagQuad"/>
+        <map smf="qt" model="xal.model.elem.IdealMagQuad"/>
+        <map smf="pq" model="xal.model.elem.IdealMagQuad"/>
+        <map smf="dch" model="xal.model.elem.IdealMagSteeringDipole"/>
+        <map smf="dcv" model="xal.model.elem.IdealMagSteeringDipole"/>
+        <map smf="rfgap" model="xal.extension.jels.model.elem.IdealRfGap"/>
+        <map smf="marker" model="xal.model.elem.Marker"/>
     </associations>
 </configuration>
 

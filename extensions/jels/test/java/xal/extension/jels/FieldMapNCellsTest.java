@@ -12,14 +12,14 @@ import xal.extension.jels.model.elem.FieldMapNCells;
 import xal.extension.jels.model.elem.JElsElementMapping;
 import xal.model.ModelException;
 import xal.model.probe.Probe;
-import xal.smf.AcceleratorSeq;
+import xal.smf.Accelerator;
 import xal.smf.data.XMLDataManager;
 
 public class FieldMapNCellsTest {
 
     @Test
     public void fieldMapNCellsTest() throws ModelException, IOException {
-        AcceleratorSeq acc = XMLDataManager.acceleratorWithUrlSpec(JElsDemo.class.getResource("lattice1/main.xal").toString());
+        Accelerator acc = XMLDataManager.acceleratorWithUrlSpec(JElsDemo.class.getResource("lattice1/main.xal").toString());
 
         for (int i = 0; i < 2; i++) {
             Probe probe = GeneralTest.loadProbeFromXML(JElsDemo.class.getResource("lattice1/probe." + i + ".xml").toString());
@@ -33,7 +33,7 @@ public class FieldMapNCellsTest {
                 }
             });
 
-            double dataOXFM[][] = GeneralTest.run(probe, acc);
+            double dataOXFM[][] = GeneralTest.run(probe, acc.getComboSequence("from-mebt"));
             //GeneralTest.saveResults("resultfm"+i, dataOXFM);
             probe.reset();
 
@@ -44,7 +44,7 @@ public class FieldMapNCellsTest {
                     super.initialize();
                 }
             });
-            double dataOXNC[][] = GeneralTest.run(probe, acc);
+            double dataOXNC[][] = GeneralTest.run(probe, acc.getComboSequence("from-mebt"));
             //GeneralTest.saveResults("resultnc"+i, dataOXNC);
             probe.reset();
 
@@ -56,7 +56,7 @@ public class FieldMapNCellsTest {
                     super.initialize();
                 }
             });
-            double dataOXEI[][] = GeneralTest.run(probe, acc);
+            double dataOXEI[][] = GeneralTest.run(probe, acc.getComboSequence("from-mebt"));
             probe.reset();
 
             System.out.printf("%s\t", probe.getComment());
