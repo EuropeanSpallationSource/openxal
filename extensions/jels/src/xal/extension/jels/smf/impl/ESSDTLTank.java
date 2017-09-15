@@ -64,36 +64,16 @@ public class ESSDTLTank extends ESSRfCavity {
         this(strId, channelFactory, 0);
     }
 
-    /**
-     * I just added this comment - didn't do any work.
-     *
-     * @param strId identifier string of the DTL
-     *
-     * @author Christopher K. Allen
-     * @since May 3, 2011
-     */
     public ESSDTLTank(final String strId) {
         this(strId, 0);
     }
 
-    /**
-     * I just added this comment - didn't do any work.
-     *
-     * @param strId identifier string of the DTL
-     * @param intReserve optional parameter for specifying memory to reserve for
-     * the DTL cells if known.
-     *
-     * @author Christopher K. Allen
-     * @since May 3, 2011
-     */
     public ESSDTLTank(final String strId, int intReserve) {
         this(strId, null, intReserve);
     }
 
     /**
      * Support the node type
-     *
-     * @return
      */
     @Override
     public String getType() {

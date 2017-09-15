@@ -29,22 +29,31 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-import xal.extension.jels.tools.math.TTFIntegrator;
+/**
+ * 2D fieldmap file reader (for solenoid)
+ *
+ * @author Juan F. Esteban Müller <JuanF.EstebanMuller@esss.se>
+ */
+public class FieldProfile2D {
 
-public class FieldProfile {
+    private double lengthR;
+    private double lengthZ;
+    private double[][] field;
+    private double norm;
 
-    private double length;
-    private double[] field;
-    private TTFIntegrator integrator;
+    public double getNorm() {
+        return norm;
+    }
 
-    private static Map<String, FieldProfile> instances = new HashMap<>();
+    private static Map<String, FieldProfile2D> instances = new HashMap<>();
 
-    public FieldProfile(double length, double[] field) {
-        this.length = length;
+    public FieldProfile2D(double lengthR, double lengthZ, double[][] fieldZ) {
+        this.lengthR = lengthR;
+        this.lengthZ = lengthZ;
         this.field = field;
     }
 
-    protected FieldProfile(String path) {
+    protected FieldProfile2D(String path) {
         try {
             loadFile(path);
         } catch (IOException e) {
@@ -60,29 +69,25 @@ public class FieldProfile {
      * @param path path to the field map file
      * @return field profile
      */
-    public static FieldProfile getInstance(String path) {
+    public static FieldProfile2D getInstance(String path) {
         if (instances.containsKey(path)) {
             return instances.get(path);
         }
-        FieldProfile fp = new FieldProfile(path);
+        FieldProfile2D fp = new FieldProfile2D(path);
         instances.put(path, fp);
         return fp;
     }
 
-    public double[] getField() {
+    public double[][] getField() {
         return field;
     }
 
-    public double getLength() {
-        return length;
+    public double getLengthR() {
+        return lengthR;
     }
 
-    public double getE0L(double frequency) {
-        if (integrator == null) {
-            integrator = new TTFIntegrator(length, field, frequency, false);
-        }
-        return integrator.getE0TL();
-
+    public double getLengthZ() {
+        return lengthZ;
     }
 
     /**
@@ -102,17 +107,28 @@ public class FieldProfile {
         String line = br.readLine();
         String[] data = line.split(" ");
 
-        int N = Integer.parseInt(data[0]) + 1;
-        length = Double.parseDouble(data[1]);
-        field = new double[N];
+        int Nz = Integer.parseInt(data[0]) + 1;
+        lengthZ = Double.parseDouble(data[1]);
+
+        // second line
+        line = br.readLine();
+        data = line.split(" ");
+
+        int Nr = Integer.parseInt(data[0]) + 1;
+        lengthR = Double.parseDouble(data[1]);
+
+        field = new double[Nz][Nr];
 
         line = br.readLine();
-        @SuppressWarnings("unused")
-        double norm = Double.parseDouble(line);
+        norm = Double.parseDouble(line);
 
-        int i = 0;
-        while ((line = br.readLine()) != null && i < N) {
-            field[i++] = Double.parseDouble(line) * 1e6;
+        for (int i = 0; i < Nz; i++) {
+            for (int j = 0; j < Nr; j++) {
+                line = br.readLine();
+                if (line != null) {
+                    field[i][j] = Double.parseDouble(line);
+                }
+            }
         }
 
         br.close();
@@ -129,16 +145,15 @@ public class FieldProfile {
         File fieldMapfile = new File(new URI(path));
         fieldMapfile.getParentFile().mkdirs();
         PrintWriter pw = new PrintWriter(new FileWriter(fieldMapfile));
-        double[] field = getField();
-        double zmax = getLength();
-        pw.printf("%d %f\n%f\n", field.length - 1, zmax, 1.0);
+        
+        double zmax = getLengthZ();
+        double rmax = getLengthR();
+        pw.printf("%d %f\n%d %f\n%f\n", field.length - 1, zmax, field[0].length - 1, rmax, norm);
         for (int i = 0; i < field.length; i++) {
-            pw.printf("%f\n", field[i] * 1e-6);
+            for (int j = 0; j < field[0].length; j++) {
+                pw.printf("%f\n", field[i][j]);
+            }
         }
         pw.close();
-    }
-
-    public boolean isFirstInverted() {
-        return TTFIntegrator.getSplitIntegrators(this, 0.)[0].getInverted();
     }
 }

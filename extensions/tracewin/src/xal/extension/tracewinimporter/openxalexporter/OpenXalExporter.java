@@ -22,6 +22,7 @@ import eu.ess.bled.devices.lattice.Quadrupole;
 import eu.ess.bled.devices.lattice.RFCavity;
 import xal.extension.jels.smf.ESSAccelerator;
 import xal.extension.jels.smf.ESSElementFactory;
+import static xal.extension.jels.smf.ESSElementFactory.createESSSolFieldMap;
 import xal.extension.jels.smf.impl.ESSDTLTank;
 import xal.extension.jels.smf.impl.ESSRfCavity;
 import xal.extension.jels.smf.impl.ESSRfGap;
@@ -180,7 +181,10 @@ public class OpenXalExporter {
                 latticeCount++;
             } else if (subsystem instanceof FieldMap) {
                 node = exportFieldMap((FieldMap) subsystem, currentPosition);
-                latticeCount++;
+                if (node != null)
+                    latticeCount++;
+                else
+                    currentPosition += ((FieldMap) subsystem).getLength();
             } else if (subsystem instanceof DTLCell) {
                 // First cell: create cavity 
                 if (((DTLCell) subsystem).getRfPhase() != 0) {
@@ -424,12 +428,20 @@ public class OpenXalExporter {
     }
 
     private AcceleratorNode exportFieldMap(final FieldMap element, double currentPosition) {
-//        FieldProfile profile = FieldProfile.getInstance(Paths.get(element.getBasePath(), element.getFileName() + ".edz").toString());
-        FieldProfile profile = FieldProfile.getInstance(element.getBasePath() + "/" + element.getFileName() + ".edz");
         ApertureBucket aper = generateApertureBucket(element);
-        return ESSElementFactory.createESSFieldMap(element.getName(), element.getLength(),
-                getFrequency(element) * 1e-6, element.getElectricIntensityFactor(), element.getRfPhase(),
-                element.getFileName(), profile, aper, currentPosition);
+
+        if (element.getGeom() == 100) {
+            FieldProfile profile = FieldProfile.getInstance(element.getBasePath() + "/" + element.getFileName() + ".edz");
+            return ESSElementFactory.createESSFieldMap(element.getName(), element.getLength(),
+                    getFrequency(element) * 1e-6, element.getElectricIntensityFactor(), element.getRfPhase(),
+                    element.getFileName(), profile, aper, currentPosition);
+        } else if (element.getGeom() == 50) {
+            MagnetMainSupply ps = ElementFactory.createMainSupply(element.getName() + "-PS", acc);
+            return createESSSolFieldMap(element.getName(), element.getLength(), element.getMagneticIntensityFactor(),
+                    element.getBasePath(), element.getFileName(), aper, ps, currentPosition);
+        }
+
+        return null;
     }
 
     private AcceleratorNode exportNCell(final NCell element, double currentPosition) {

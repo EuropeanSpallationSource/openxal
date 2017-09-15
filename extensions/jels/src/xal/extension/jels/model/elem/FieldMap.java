@@ -256,7 +256,7 @@ public class FieldMap extends ThickElement implements IRfGap, IRfCavityCell {
 
     /**
      * Since it is currently hard to track phase on the probe, this way we
-     * initialize the phase and deinitialize it when the probe pases.
+     * initialize the phase and deinitialize it when the probe passes.
      *
      */
     @Override

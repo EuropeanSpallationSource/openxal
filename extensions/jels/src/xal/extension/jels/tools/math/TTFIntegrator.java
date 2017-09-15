@@ -88,7 +88,6 @@ public class TTFIntegrator extends InverseRealPolynomial {
     /**
      * Evaluates sine transform of the field.
      *
-     * @param phi0 phase shift in TTF transform
      * @param beta energy
      * @return sine transform
      */
@@ -107,7 +106,6 @@ public class TTFIntegrator extends InverseRealPolynomial {
     /**
      * Evaluates cosine transform of the field with sync phase offset.
      *
-     * @param phi0 phase shift in TTF transform
      * @param beta energy
      * @return sine transform
      */
@@ -131,7 +129,6 @@ public class TTFIntegrator extends InverseRealPolynomial {
     /**
      * Evaluates derivative of TTF at beta (with sync phase shift).
      *
-     * @param phi0 phase shift in TTF transform
      * @param beta energy
      * @return derivative of TTF
      */
@@ -161,6 +158,8 @@ public class TTFIntegrator extends InverseRealPolynomial {
 
     /**
      * ************************ Splitting methods **************************
+     * @param fp
+     * @param frequency
      */
     public static TTFIntegrator[] getSplitIntegrators(FieldProfile fp, double frequency) {
         double[] field = fp.getField();

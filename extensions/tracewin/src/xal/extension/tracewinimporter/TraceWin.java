@@ -245,14 +245,15 @@ public class TraceWin {
      * <br>outputName file name of the accelerator files to generate
      * <br>initialParametersMode optional paramaterer to set initial parameters:
      * mode 1 is hardcoded parameters mode 0 is default (hardcoded for input
-     * file, MEBT from takes hardcoded parameters
+     * file, all sequences from hardcoded parameters (.ini)
      *
      * </p>
      *
      * @param args
      */
-    public void main(String[] args) {
-        setLogger(new ImportLogger());
+    public static void main(String[] args) {
+        TraceWin tracewin = new TraceWin();
+        tracewin.setLogger(new ImportLogger());
 
         // Checking commandline arguments
         if (args.length < 3) {
@@ -260,30 +261,30 @@ public class TraceWin {
             System.exit(0);
         }
         final String input = args[0];
-        setOutputDir(args[1]);
-        setOutputName(args[2]);
+        tracewin.setOutputDir(args[1]);
+        tracewin.setOutputName(args[2]);
 
         if (args.length == 4) {
-            setInitialParametersMode(Integer.parseInt(args[3]));
+            tracewin.setInitialParametersMode(Integer.parseInt(args[3]));
         }
 
         File fileInput = new File(input);
         try {
             if (fileInput.isFile()) {
-                setInputFile(fileInput);
+                tracewin.setInputFile(fileInput);
 
                 // Hardcoded initial parameters if using a TraceWin file
-                bunchFrequency = 352.21;
-                beamCurrent = 62.5e-3;
-                kineticEnergy = 3.6217853e6;
+                tracewin.bunchFrequency = 352.21;
+                tracewin.beamCurrent = 62.5e-3;
+                tracewin.kineticEnergy = 3.6217853e6;
 
-                initialTwiss = new Twiss[]{new Twiss(-0.051805615, 0.20954703, 0.25288 * 1e-6),
+                tracewin.initialTwiss = new Twiss[]{new Twiss(-0.051805615, 0.20954703, 0.25288 * 1e-6),
                     new Twiss(-0.30984478, 0.37074849, 0.251694 * 1e-6),
                     new Twiss(-0.48130325, 0.92564505, 0.3615731 * 1e-6)};
             } else if (fileInput.isDirectory()) {
-                setInputDir(fileInput);
+                tracewin.setInputDir(fileInput);
             } else if (input.startsWith("http")) {
-                setInputGit(input);
+                tracewin.setInputGit(input);
             } else {
                 throw new IOException();
             }
@@ -292,7 +293,7 @@ public class TraceWin {
             System.exit(1);
         }
 
-        importTW();
+        tracewin.importTW();
     }
 
     public void importTW() {
@@ -328,7 +329,7 @@ public class TraceWin {
                 basePath = getInputDir().toURI().toString();
                 for (File inputFilei : inputFiles) {
                     if (inputFilei.isDirectory() && inputFilei.getName().substring(0, 1).matches("\\d+(\\.\\d+)?")
-                            && Integer.parseInt(inputFilei.getName().substring(0, 1)) > 2 // Load from MEBT
+                            //                            && Integer.parseInt(inputFilei.getName().substring(0, 1)) > 2 // Load from MEBT
                             && Integer.parseInt(inputFilei.getName().substring(2, 3)) == 0) { // Remove Dump
                         File traceWinFile = Paths.get(inputFilei.toString(), "Beam_Physics", "lattice.dat").toFile();
                         if (traceWinFile.exists()) {
@@ -341,8 +342,11 @@ public class TraceWin {
                 sequenceNamesArray = sequenceNames.toArray(new String[]{});
                 accelerator = loadAcceleator(sourceFileNamesArray, sequenceNamesArray, basePath);
                 if (getInitialParametersMode() == 1) {
-                    logger.log("Initial parameters mode incomatible. Changing to 'From MEBT.ini and simulated for other sequences.'");
-                    setInitialParametersMode(2);
+                    logger.log("Initial parameters mode incomatible. Changing to 'From .ini files.'");
+                    setInitialParametersMode(3);
+                }
+                if (getInitialParametersMode() == 0) {
+                    setInitialParametersMode(3);
                 }
             } else if (getInputGit() != null) {
                 GitParser gitParser = new GitParser();
@@ -352,8 +356,11 @@ public class TraceWin {
                 basePath = gitParser.getBasePath();
                 accelerator = loadAcceleator(sourceFileNamesArray, sequenceNamesArray, basePath);
                 if (getInitialParametersMode() == 1) {
-                    logger.log("Initial parameters mode incomatible. Changing to 'From MEBT.ini and simulated for other sequences.'");
-                    setInitialParametersMode(2);
+                    logger.log("Initial parameters mode incomatible. Changing to 'From .ini files.'");
+                    setInitialParametersMode(3);
+                }
+                if (getInitialParametersMode() == 0) {
+                    setInitialParametersMode(3);
                 }
             } else {
                 throw new IOException();
@@ -366,6 +373,7 @@ public class TraceWin {
 
         // Loading initial paramaters
         if (getInitialParametersMode() == 3) {
+            logger.log("Importing initial beam parameters from .ini files.");
             for (String seq : sequenceNamesArray) {
                 iniFileParser.loadTwissFromIni(basePath + "/ProjectFiles/" + seq + ".ini");
                 bunchFrequencyList.add(iniFileParser.getBunchFrequency());
@@ -376,7 +384,8 @@ public class TraceWin {
 
             ImporterHelpers.addAllInitialParameters(accelerator, bunchFrequencyList, beamCurrentList, kineticEnergyList, initialTwissList);
         } else {
-            if (getInitialParametersMode() != 1) { //For mode 2 or 0 if not single TW file
+            if (getInitialParametersMode() == 2) {
+                logger.log("Importing initial beam parameters from MEBT.ini and simulating for other sequences.");
                 // Taking initial parameters from MEBT. For the other sequences are simulated.
                 iniFileParser.loadTwissFromIni(basePath + "/ProjectFiles/MEBT.ini");
                 bunchFrequency = iniFileParser.getBunchFrequency();

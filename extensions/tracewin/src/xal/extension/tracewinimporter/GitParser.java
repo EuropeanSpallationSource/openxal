@@ -73,7 +73,6 @@ public class GitParser {
                 for (int i = 0; i < json_seq_list.length(); i++) {
                     seq_name = json_seq_list.getJSONObject(i).getString("path");
                     if (seq_name.substring(0, 1).matches("\\d+(\\.\\d+)?")
-                            && Integer.parseInt(seq_name.substring(0, 1)) > 2
                             && Integer.parseInt(seq_name.substring(2, 3)) == 0) {
                         seq_url = json_seq_list.getJSONObject(i).getJSONObject("links").getJSONObject("self").getString("href");
                         sequences.add(seq_name.substring(4));

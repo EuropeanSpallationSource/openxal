@@ -1,15 +1,16 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
 <deviceMapping>
+    <device class="xal.smf.impl.PermQuadrupole" type="PQ"/>
+    <device class="xal.extension.jels.smf.impl.ESSFieldMap" type="FM"/>
+    <device class="xal.smf.impl.HDipoleCorr" type="DCH"/>
     <device class="xal.smf.AcceleratorSeq" type="sequence"/>
     <device class="xal.smf.impl.Quadrupole" type="Q"/>
-    <device class="xal.smf.impl.PermQuadrupole" type="PQ"/>
     <device class="xal.extension.jels.smf.impl.ESSBend" type="DV"/>
     <device class="xal.extension.jels.smf.impl.ESSDTLTank" type="DTLTank"/>
     <device class="xal.extension.jels.smf.impl.ESSRfCavity" type="RF"/>
     <device class="xal.extension.jels.smf.impl.ESSRfGap" type="RG"/>
-    <device class="xal.smf.impl.Marker" type="marker"/>
     <device class="xal.smf.impl.VDipoleCorr" type="DCV"/>
-    <device class="xal.extension.jels.smf.impl.ESSFieldMap" type="FM"/>
-    <device class="xal.smf.impl.HDipoleCorr" type="DCH"/>
+    <device class="xal.smf.impl.Marker" type="marker"/>
+    <device class="xal.extension.jels.smf.impl.ESSSolFieldMap" type="SFM"/>
     <device class="xal.smf.impl.BPM" type="BPM"/>
 </deviceMapping>
