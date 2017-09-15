@@ -11,14 +11,21 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="603.0" prefWidth="514.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xal.app.configurator.FXMLController">
+<AnchorPane id="AnchorPane" prefHeight="648.0" prefWidth="515.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xal.app.configurator.FXMLController">
     <children>
-      <CheckBox fx:id="rbacCheckBox" layoutX="13.0" layoutY="572.0" mnemonicParsing="false" onAction="#rbacCheckBoxAction" text="RBAC" />
-      <ListView fx:id="opticsListView" layoutX="14.0" layoutY="169.0" prefHeight="160.0" prefWidth="486.0" />
-      <Button fx:id="changeOpticsButton" layoutX="433.0" layoutY="97.0" mnemonicParsing="false" onAction="#changeOpticsButtonHandler" text="Change" />
-      <Button fx:id="setDefaultButton" layoutX="14.0" layoutY="337.0" mnemonicParsing="false" onAction="#setDefaultButtonHandler" text="Set as default Accelerator" />
       <TextField fx:id="opticsPathTextField" layoutX="14.0" layoutY="97.0" onKeyReleased="#opticsPathTextFieldKeyReleased" prefHeight="27.0" prefWidth="408.0" />
-      <Button fx:id="refreshButton" layoutX="412.0" layoutY="337.0" mnemonicParsing="false" onAction="#refreshButtonHandler" text="Refresh list" />
+      <Button fx:id="changeOpticsButton" layoutX="433.0" layoutY="97.0" mnemonicParsing="false" onAction="#changeOpticsButtonHandler" text="Change" />
+      <ListView fx:id="opticsListView" layoutX="14.0" layoutY="164.0" prefHeight="160.0" prefWidth="486.0" />
+      <Button fx:id="setDefaultButton" layoutX="14.0" layoutY="332.0" mnemonicParsing="false" onAction="#setDefaultButtonHandler" text="Set as default Accelerator" />
+      <Button fx:id="revertButton" disable="true" layoutX="215.0" layoutY="332.0" mnemonicParsing="false" onAction="#revertButtonHandler" text="Revert" />
+      <Button fx:id="refreshButton" layoutX="412.0" layoutY="332.0" mnemonicParsing="false" onAction="#refreshButtonHandler" text="Refresh list" />
+      <Button fx:id="openFileButton" layoutX="67.0" layoutY="419.0" mnemonicParsing="false" onAction="#openFileButtonHandler" text="Select TraceWin file" />
+      <Button fx:id="openDirButton" layoutX="283.0" layoutY="419.0" mnemonicParsing="false" onAction="#openDirButtonHandler" text="Select lattice directory" />
+      <TextField fx:id="inputTWTextField" layoutX="13.0" layoutY="474.0" onKeyReleased="#opticsPathTextFieldKeyReleased" prefHeight="27.0" prefWidth="486.0" text="https://api.bitbucket.org/2.0/repositories/europeanspallationsource/ess-lattice/src/" />
+      <TextField fx:id="outputNameTextField" layoutX="160.0" layoutY="511.0" onKeyReleased="#opticsPathTextFieldKeyReleased" prefHeight="27.0" prefWidth="147.0" />
+      <ChoiceBox fx:id="initialParametersChoiceBox" layoutX="130.0" layoutY="549.0" prefHeight="27.0" prefWidth="178.0" />
+      <Button fx:id="importButton" layoutX="440.0" layoutY="549.0" mnemonicParsing="false" onAction="#importHandler" text="Import" underline="true" />
+      <CheckBox fx:id="rbacCheckBox" layoutX="13.0" layoutY="615.0" mnemonicParsing="false" onAction="#rbacCheckBoxAction" text="RBAC" />
       <Label layoutX="14.0" layoutY="68.0" text="Optics path">
          <tooltip>
             <Tooltip text="The selected path should contain the directories where the optics files are stored." />
@@ -28,24 +35,18 @@
          </font>
       </Label>
       <Line endX="485.0" layoutX="14.0" layoutY="87.0" />
-      <Label accessibleHelp="The selected path should contain the directories where the optics files are stored." layoutX="14.0" layoutY="139.0" text="Optics selection (default Accelerator)" />
-      <Line endX="485.0" layoutX="13.0" layoutY="158.0" />
-      <Label accessibleHelp="The selected path should contain the directories where the optics files are stored." layoutX="14.0" layoutY="384.0" text="TraceWin Importer" />
-      <Line endX="485.0" layoutX="14.0" layoutY="404.0" />
-      <Button fx:id="importButton" layoutX="440.0" layoutY="507.0" mnemonicParsing="false" onAction="#importHandler" text="Import" />
-      <Label accessibleHelp="The selected path should contain the directories where the optics files are stored." layoutX="14.0" layoutY="545.0" text="RBAC (Role Base Access Control) Switch" />
-      <Line endX="485.0" layoutX="14.0" layoutY="563.0" />
+      <Label accessibleHelp="The selected path should contain the directories where the optics files are stored." layoutX="14.0" layoutY="134.0" text="Optics selection (default Accelerator)" />
+      <Line endX="485.0" layoutX="13.0" layoutY="153.0" />
+      <Label accessibleHelp="The selected path should contain the directories where the optics files are stored." layoutX="14.0" layoutY="372.0" text="TraceWin Importer" />
+      <Line endX="485.0" layoutX="14.0" layoutY="392.0" />
+      <Label accessibleHelp="The selected path should contain the directories where the optics files are stored." layoutX="14.0" layoutY="588.0" text="RBAC (Role Base Access Control) Switch" />
+      <Line endX="485.0" layoutX="14.0" layoutY="606.0" />
       <Label layoutX="14.0" layoutY="12.0" prefHeight="52.0" prefWidth="478.0" text="WARNING! This application is for admin use only.  DO NOT EDIT these settings without permission from software management!" textFill="FIREBRICK" wrapText="true" />
       <Line endX="485.0" layoutX="14.0" layoutY="15.0" stroke="FIREBRICK" />
       <Line endX="485.0" layoutX="14.0" layoutY="60.0" stroke="FIREBRICK" />
-      <Button fx:id="revertButton" disable="true" layoutX="215.0" layoutY="337.0" mnemonicParsing="false" onAction="#revertButtonHandler" text="Revert" />
-      <Button fx:id="openFileButton" layoutX="308.0" layoutY="469.0" mnemonicParsing="false" onAction="#openFileButtonHandler" text="Open file" />
-      <TextField fx:id="inputTWTextField" layoutX="13.0" layoutY="432.0" onKeyReleased="#opticsPathTextFieldKeyReleased" prefHeight="27.0" prefWidth="486.0" text="https://api.bitbucket.org/2.0/repositories/europeanspallationsource/ess-lattice/src/" />
-      <Label accessibleHelp="The selected path should contain the directories where the optics files are stored." layoutX="14.0" layoutY="411.0" text="TraceWin input - Full path of a TW file, directory, or bitbucket repository:" />
-      <TextField fx:id="outputNameTextField" layoutX="160.0" layoutY="469.0" onKeyReleased="#opticsPathTextFieldKeyReleased" prefHeight="27.0" prefWidth="100.0" />
-      <Label accessibleHelp="The selected path should contain the directories where the optics files are stored." layoutX="14.0" layoutY="474.0" text="Imported lattice name:" />
-      <ChoiceBox fx:id="initialParametersChoiceBox" layoutX="130.0" layoutY="507.0" prefHeight="27.0" prefWidth="178.0" />
-      <Label accessibleHelp="The selected path should contain the directories where the optics files are stored." layoutX="14.0" layoutY="513.0" text="Initial parameters:" />
-      <Button fx:id="openDirButton" layoutX="390.0" layoutY="469.0" mnemonicParsing="false" onAction="#openDirButtonHandler" text="Open directory" />
+      <Label accessibleHelp="The selected path should contain the directories where the optics files are stored." layoutX="14.0" layoutY="452.0" text="or type the path or bitbucket repository address below:" />
+      <Label accessibleHelp="The selected path should contain the directories where the optics files are stored." layoutX="14.0" layoutY="516.0" text="Imported lattice name:" />
+      <Label accessibleHelp="The selected path should contain the directories where the optics files are stored." layoutX="14.0" layoutY="555.0" text="Initial parameters:" />
+      <Label accessibleHelp="The selected path should contain the directories where the optics files are stored." layoutX="14.0" layoutY="398.0" text="You can select a TraceWin file or a directory using these buttons" />
     </children>
 </AnchorPane>
