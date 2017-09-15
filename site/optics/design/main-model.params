@@ -30,8 +30,8 @@
     <table name="beam" recordClass="xal.tools.data.GenericRecord">
         <schema>
             <attribute isPrimaryKey="true" name="name" type="java.lang.String"/>
-            <attribute defaultValue="0.0625" isPrimaryKey="false" name="current" type="java.lang.Double"/>
-            <attribute defaultValue="3.5221E8" isPrimaryKey="false" name="bunchFreq" type="java.lang.Double"/>
+            <attribute defaultValue="0.074" isPrimaryKey="false" name="current" type="java.lang.Double"/>
+            <attribute defaultValue="3.52E8" isPrimaryKey="false" name="bunchFreq" type="java.lang.Double"/>
             <attribute defaultValue="(0,0,0)" isPrimaryKey="false" name="phase" type="java.lang.String"/>
         </schema>
         <record name="default"/>
@@ -44,12 +44,18 @@
             <attribute isPrimaryKey="false" name="beta" type="java.lang.Double"/>
             <attribute isPrimaryKey="false" name="emittance" type="java.lang.Double"/>
         </schema>
-        <record alpha="-0.051805615" beta="0.20954703" coordinate="x" emittance="3.269287860499322E-5" name="MEBT"/>
-        <record alpha="-0.30984478" beta="0.37074849" coordinate="y" emittance="3.253954993516753E-5" name="MEBT"/>
-        <record alpha="-0.48130325" beta="0.92564505" coordinate="z" emittance="4.6030118341948327E-5" name="MEBT"/>
+        <record alpha="-3.228808231327488" beta="0.38607771736525104" coordinate="x" emittance="9.511387218228065E-6" name="LEBT"/>
+        <record alpha="-3.2275590186531122" beta="0.3858093272443539" coordinate="y" emittance="9.511387218228065E-6" name="LEBT"/>
+        <record alpha="-0.0" beta="109.13199284041227" coordinate="z" emittance="0.0" name="LEBT"/>
+        <record alpha="1.9691528" beta="0.22536279" coordinate="x" emittance="1.1461682084361586E-5" name="RFQ"/>
+        <record alpha="1.968493" beta="0.22505737" coordinate="y" emittance="1.1454752352058426E-5" name="RFQ"/>
+        <record alpha="0.15899949" beta="1.4449517" coordinate="z" emittance="0.0" name="RFQ"/>
+        <record alpha="-0.051805615" beta="0.20954703" coordinate="x" emittance="2.875304356347471E-6" name="MEBT"/>
+        <record alpha="-0.30984478" beta="0.37074849" coordinate="y" emittance="2.8618192607818744E-6" name="MEBT"/>
+        <record alpha="-0.48130325" beta="0.92564505" coordinate="z" emittance="4.079614268808417E-6" name="MEBT"/>
         <record alpha="1.3469831" beta="0.21307501" coordinate="x" emittance="3.3505764026982447E-6" name="DTL"/>
         <record alpha="-4.1153851" beta="0.74752686" coordinate="y" emittance="3.5245714222556286E-6" name="DTL"/>
-        <record alpha="5.872398702899226E-149" beta="-2.5689246908924516E139" coordinate="z" emittance="4.749832880796967E-6" name="DTL"/>
+        <record alpha="0.068189435" beta="0.39813124" coordinate="z" emittance="4.749832880796967E-6" name="DTL"/>
         <record alpha="-3.2450568" beta="7.4238895" coordinate="x" emittance="6.896865489329136E-7" name="SPK"/>
         <record alpha="1.107339" beta="4.3346793" coordinate="y" emittance="7.031152292316565E-7" name="SPK"/>
         <record alpha="0.16675996" beta="6.1052993" coordinate="z" emittance="7.955452335068762E-7" name="SPK"/>
@@ -75,6 +81,8 @@
             <attribute defaultValue="0" isPrimaryKey="false" name="s" type="java.lang.Double"/>
             <attribute defaultValue="0" isPrimaryKey="false" name="t" type="java.lang.Double"/>
         </schema>
+        <record W="74671.738" name="LEBT"/>
+        <record W="74622.785" name="RFQ"/>
         <record W="3621785.3" name="MEBT"/>
         <record W="3620000.0" name="DTL"/>
         <record W="8.9887822E7" name="SPK"/>
