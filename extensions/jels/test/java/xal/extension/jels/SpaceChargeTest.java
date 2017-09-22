@@ -28,7 +28,7 @@ public class SpaceChargeTest {
 	public void driftTest() throws ModelException, IOException
 	{
 		final double frequency = 4.025e8;
-		EnvelopeProbe probe = TestCommon.setupOpenXALProbe2( 3e6, frequency, 30e-3); 
+		EnvelopeProbe probe = TestCommon.setupOpenXALProbe( 3e6, frequency, 30e-3); 
 		((EnvelopeTracker)probe.getAlgorithm()).setProbeUpdatePolicy(Tracker.UPDATE_ALWAYS);
 		AcceleratorSeq sequence = DriftTest.drift(500, 0., 0.);
 		Accelerator acc = new Accelerator();
@@ -43,7 +43,7 @@ public class SpaceChargeTest {
 	{
 		for (int i : new int[]{10,20,50,100,1000}) {
 			final double frequency = 4.025e8;
-			EnvelopeProbe probe = TestCommon.setupOpenXALProbe2( 3e6, frequency, 30e-3); 
+			EnvelopeProbe probe = TestCommon.setupOpenXALProbe( 3e6, frequency, 30e-3); 
 			((EnvelopeTracker)probe.getAlgorithm()).setProbeUpdatePolicy(Tracker.UPDATE_ALWAYS);
 			((EnvelopeTracker)probe.getAlgorithm()).setStepSize(1./i);
 			double dataOX[][] = GeneralTest.run(probe, XMLDataManager.acceleratorWithUrlSpec(JElsDemo.class.getResource("test/main.xal").toString()));
@@ -56,7 +56,7 @@ public class SpaceChargeTest {
 	public void dgdTest() throws ModelException, IOException
 	{
 		final double frequency = 4.025e8;
-		EnvelopeProbe probe = TestCommon.setupOpenXALProbe2( 3e6, frequency, 30e-3); 
+		EnvelopeProbe probe = TestCommon.setupOpenXALProbe( 3e6, frequency, 30e-3); 
 		((EnvelopeTracker)probe.getAlgorithm()).setProbeUpdatePolicy(Tracker.UPDATE_ALWAYS);
 		((EnvelopeTracker)probe.getAlgorithm()).setStepSize(1./100.);
 		

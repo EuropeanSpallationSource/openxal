@@ -474,15 +474,15 @@ public class OpenXalExporter {
 
         double lambda = IElement.LightSpeed / frequency;
         double Lc0, Lc, Lcn;
-        double amp0 = 1;
-        double ampn = 1;
+        double amp0 = 1 + kE0Ti;
+        double ampn = 1 + kE0To;
         double pos0, posn;
 
         ApertureBucket apertureBucket = generateApertureBucket(element);
 
-        if (betas == 0.0) {
-            amp0 = (1 + kE0Ti) * (Ti / Ts);
-            ampn = (1 + kE0To) * (To / Ts);
+        if (betas != 0.0) {
+            amp0 *= Ti / Ts;
+            ampn *= To / Ts;
         }
         switch (m) {
             case 0:
@@ -588,7 +588,6 @@ public class OpenXalExporter {
 
         if (betas == 0.0) {
             gap.getRfGap().setTCoefficients(new double[]{});
-            gap.getRfGap().setEndCell(1);
         } else {
             gap.getRfGap().setTCoefficients(new double[]{betas, Ts, kTs, k2Ts});
             gap.getRfGap().setSCoefficients(new double[]{betas, 0, kS, k2S});

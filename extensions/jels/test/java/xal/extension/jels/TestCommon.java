@@ -56,13 +56,6 @@ public abstract class TestCommon {
 
     public static EnvelopeProbe setupOpenXALProbe(double energy, double frequency, double current) {
         return setupOpenXALProbe(energy, frequency, current,
-                new double[][]{{-0.1763, 0.2442, 0.2098e-6},
-                {-0.3247, 0.3974, 0.2091e-6},
-                {-0.5283, 0.8684, 0.2851e-6}});
-    }
-
-    public static EnvelopeProbe setupOpenXALProbe2(double energy, double frequency, double current) {
-        return setupOpenXALProbe(energy, frequency, current,
                 new double[][]{{-0.1763, 0.2442, 0.2098},
                 {-0.3247, 0.3974, 0.2091},
                 {-0.5283, 0.8684, 0.2851}});
@@ -71,7 +64,7 @@ public abstract class TestCommon {
     public static EnvelopeProbe setupOpenXALProbe(double energy, double frequency, double current, double twiss[][]) {
         // Envelope probe and tracker
         EnvelopeTracker envelopeTracker = new EnvelopeTracker();
-        envelopeTracker.setRfGapPhaseCalculation(false);
+        envelopeTracker.setRfGapPhaseCalculation(true);
         envelopeTracker.setUseSpacecharge(true);
         envelopeTracker.setEmittanceGrowth(false);
         envelopeTracker.setStepSize(0.004);
@@ -80,7 +73,7 @@ public abstract class TestCommon {
         EnvelopeProbe envelopeProbe = new EnvelopeProbe();
         envelopeProbe.setAlgorithm(envelopeTracker);
         envelopeProbe.setSpeciesCharge(SpeciesCharge);
-        envelopeProbe.setSpeciesRestEnergy(9.382720813e8);
+        envelopeProbe.setSpeciesRestEnergy(9.38272029e8);
         envelopeProbe.setKineticEnergy(energy);//energy
         envelopeProbe.setPosition(0.0);
         envelopeProbe.setTime(0.0);

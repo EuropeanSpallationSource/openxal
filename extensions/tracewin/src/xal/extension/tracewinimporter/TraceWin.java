@@ -245,7 +245,8 @@ public class TraceWin {
      * <br>outputName file name of the accelerator files to generate
      * <br>initialParametersMode optional paramaterer to set initial parameters:
      * mode 1 is hardcoded parameters mode 0 is default (hardcoded for input
-     * file, all sequences from hardcoded parameters (.ini)
+     * file, all sequences from hardcoded parameters (.ini) for directory and
+     * git repository)
      *
      * </p>
      *

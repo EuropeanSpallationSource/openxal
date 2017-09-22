@@ -43,12 +43,12 @@ public class DriftTest extends SingleElementTest {
                 // TW correlation matrix
                 TWGamma = 1.003197291;
                 TWCorrelationMatrix = new double[][]{
-                    {+8.278830e-13, +1.513708e-12, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00},
-                    {+1.513708e-12, +1.106878e-11, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00},
-                    {+0.000000e+00, +0.000000e+00, +1.265096e-12, +1.538810e-12, +0.000000e+00, +0.000000e+00},
-                    {+0.000000e+00, +0.000000e+00, +1.538810e-12, +7.267826e-12, +0.000000e+00, +0.000000e+00},
-                    {+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +3.476275e-12, +2.380509e-12},
-                    {+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +2.380509e-12, +5.280827e-12}
+                    {+8.278830e-07, +1.513708e-06, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00},
+                    {+1.513708e-06, +1.106878e-05, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00},
+                    {+0.000000e+00, +0.000000e+00, +1.265096e-06, +1.538810e-06, +0.000000e+00, +0.000000e+00},
+                    {+0.000000e+00, +0.000000e+00, +1.538810e-06, +7.267826e-06, +0.000000e+00, +0.000000e+00},
+                    {+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +3.476275e-06, +2.380509e-06},
+                    {+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +2.380509e-06, +5.280827e-06}
                 };
 
                 // ELS results
@@ -79,12 +79,12 @@ public class DriftTest extends SingleElementTest {
                 TWGamma = 3.664409209;
                 CMerrTolerance = 2e-5;
                 TWCorrelationMatrix = new double[][]{
-                    {+1.879417e-14, +3.436341e-14, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00},
-                    {+3.436341e-14, +2.512778e-13, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00},
-                    {+0.000000e+00, +0.000000e+00, +2.871956e-14, +3.493326e-14, +0.000000e+00, +0.000000e+00},
-                    {+0.000000e+00, +0.000000e+00, +3.493326e-14, +1.649904e-13, +0.000000e+00, +0.000000e+00},
-                    {+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +5.914705e-15, +5.404107e-14},
-                    {+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +5.404107e-14, +1.599526e-12},};
+                    {+1.879417e-08, +3.436341e-08, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00},
+                    {+3.436341e-08, +2.512778e-07, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00},
+                    {+0.000000e+00, +0.000000e+00, +2.871956e-08, +3.493326e-08, +0.000000e+00, +0.000000e+00},
+                    {+0.000000e+00, +0.000000e+00, +3.493326e-08, +1.649904e-07, +0.000000e+00, +0.000000e+00},
+                    {+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +5.914705e-09, +5.404107e-08},
+                    {+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +5.404107e-08, +1.599526e-06},};
 
             }
         }});
@@ -92,7 +92,7 @@ public class DriftTest extends SingleElementTest {
         // 2: space charge test, I=30mA		
         tests.add(new Object[]{new SingleElementTestData() {
             {
-                probe = setupOpenXALProbe2(3e6, frequency, 30e-3);
+                probe = setupOpenXALProbe(3e6, frequency, 30e-3);
                 elementMapping = JElsElementMapping.getInstance();
                 sequence = drift(95e-3, 0., 0.);
 
@@ -122,7 +122,7 @@ public class DriftTest extends SingleElementTest {
         // 3: space charge test, I=30mA, L = 500m
         tests.add(new Object[]{new SingleElementTestData() {
             {
-                probe = setupOpenXALProbe2(3e6, frequency, 30e-3);
+                probe = setupOpenXALProbe(3e6, frequency, 30e-3);
                 elementMapping = JElsElementMapping.getInstance();
                 sequence = drift(500, 0., 0.);
 
@@ -152,7 +152,7 @@ public class DriftTest extends SingleElementTest {
         // 4: space charge test, I=30mA, L = 500m, E=20GeV
         tests.add(new Object[]{new SingleElementTestData() {
             {
-                probe = setupOpenXALProbe2(20.e9, frequency, 30e-3);
+                probe = setupOpenXALProbe(20.e9, frequency, 30e-3);
                 elementMapping = JElsElementMapping.getInstance();
                 sequence = drift(500, 0., 0.);
 
