@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Formatter;
 import java.util.Iterator;
@@ -18,6 +19,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import xal.model.IElement;
 
 import xal.model.ModelException;
 import xal.model.probe.Probe;
@@ -44,29 +46,21 @@ public class GeneralTest {
     /**
      * Describes Openxal, Tracewin columns/functions of the results. Sets
      * allowed error on each function.
-	 *
+     *
      */
     static enum Column {
-        POSITION(0, 0, 0.),
-        GAMA_1(1, 1, 1e-2),
-        RMSX(2, 2, 2e-1),
-        RMSXp(3, 3, 1e-1),
-        RMSY(4, 4, 2e-1),
-        RMSYp(5, 5, 1e-1),
-        RMSZ(6, 6, 2e-1),
-        RMSdpp(7, 7, 1e-1),
-        RMSZp(8, 8, 1e-1),
-        CENTX(9, 12, 1e-1),
-        CENTXp(10, 13, 1e-1),
-        CENTY(11, 14, 1e-1),
-        CENTYp(12, 15, 1e-1),
-        CENTZ(13, 16, 1.),
-        CENTdpp(14, 17, 1.),
-        //CENTZp(15,18,1e-1),
-
-        BETAX(15, 24, 0.3),
-        BETAY(16, 25, 0.3);
-
+        POSITION(0, 1, 0.),
+        GAMA_1(1, 2, 1e-2),
+        RMSX(2, 9, 2e-1),
+        RMSY(3, 10, 2e-1),
+        RMSZ(4, 11, 2e-1),
+        CENTX(5, 3, 1e-1),
+        CENTXp(6, 6, 2.5e-1),
+        CENTY(7, 4, 1e-1),
+        CENTYp(8, 7, 2.5e-1),
+        CENTZ(9, 5, 1.),
+        CENTdpp(10, 8, 1.);
+        
         int openxal;
         int tracewin;
         double allowedError;
@@ -91,13 +85,13 @@ public class GeneralTest {
     @Parameters
     public static Collection<Object[]> tests() {
         List<Object[]> tests = new ArrayList<>();
-        int lattice = 2; // set to 0 to enable tests. Tests need to be redone
+        int lattice = 0;
         while (GeneralTest.class.getResource("lattice" + lattice + "/main.xal") != null) {
             int test = 0;
             AcceleratorSeq seq = loadAcceleratorSequence(GeneralTest.class.getResource("lattice" + lattice + "/main.xal").toString());
             while (GeneralTest.class.getResource("lattice" + lattice + "/probe." + test + ".xml") != null) {
                 Probe probe = loadProbeFromXML(GeneralTest.class.getResource("lattice" + lattice + "/probe." + test + ".xml").toString());
-                tests.add(new Object[]{probe, GeneralTest.class.getResource("lattice" + lattice + "/tracewin." + test + ".txt"), seq});
+                tests.add(new Object[]{probe, GeneralTest.class.getResource("lattice" + lattice + "/tracewin." + test + ".out"), seq});
                 test++;
             }
             lattice++;
@@ -123,9 +117,10 @@ public class GeneralTest {
         StringBuilder message = new StringBuilder();
         boolean ok = true;
         for (int j = 1; j < allCols.length; j++) {
-            double e = compare(dataOX[0], dataTW[0], dataOX[allCols[j].openxal], dataTW[allCols[j].tracewin]);
-            //System.out.printf("%s: %E %c %E\n",allCols[j].name(), e, e < allCols[j].allowedError ? '<' : '>', allCols[j].allowedError);
-            System.out.printf("%E\t", e);
+            double e = compare(dataOX[0], dataTW[1], dataOX[allCols[j].openxal], dataTW[allCols[j].tracewin]);
+//            System.out.printf("%s: %E %c %E\n", allCols[j].name(), e, e < allCols[j].allowedError ? '<' : '>', allCols[j].allowedError);
+//            System.out.printf("%s: %E %E\n", allCols[j].name(), dataOX[allCols[j].openxal][dataOX[allCols[j].openxal].length - 1], dataTW[allCols[j].tracewin][dataTW[allCols[j].tracewin].length - 1]);
+//            System.out.printf("%E\t", e);
             if (e >= allCols[j].allowedError) {
                 message.append(allCols[j].name()).append(" ");
                 ok = false;
@@ -171,14 +166,15 @@ public class GeneralTest {
 
         BufferedReader br = new BufferedReader(new InputStreamReader(twdata.openStream()));
         //drop headers
-        br.readLine();
-        br.readLine();
+        for (int i = 0; i < 10; i++) {
+            br.readLine();
+        }
 
-        double[][] data = new double[TWcols][nlines - 2];
+        double[][] data = new double[TWcols][nlines - 10];
 
         int i = 0;
         for (String line; (line = br.readLine()) != null; i++) {
-            String cols[] = line.split("\t", TWcols + 1);
+            String cols[] = line.split(" ", TWcols + 1);
             for (int j = 0; j < TWcols; j++) {
                 data[j][i] = Double.parseDouble(cols[j]);
             }
@@ -216,7 +212,10 @@ public class GeneralTest {
         if (accelerator == null) {
             throw new Error("Accelerator is empty. Could not load the default accelerator.");
         }
-        return accelerator;
+
+        AcceleratorSeq acceleratorSeq = accelerator.getComboSequence("MEBT-A2T");
+        
+        return acceleratorSeq;
     }
 
     /**
@@ -236,10 +235,8 @@ public class GeneralTest {
         scenario.resync();
 
         // Running simulation
-        scenario.setStartElementId("BEGIN_mebt");
-        //scenario.setStopElementId("DR16");
         scenario.run();
-        //JElsDemo.saveLattice(scenario.getLattice(), "lattice.xml");
+
         // Getting results
         Trajectory trajectory = probe.getTrajectory();
 
@@ -248,7 +245,7 @@ public class GeneralTest {
         int ns = trajectory.numStates();
 
         double[][] dataOX = new double[Column.values().length][ns];
-        //BasicGraphData myDataX = new BasicGraphData();
+
         int i = 0;
         while (iterState.hasNext()) {
             EnvelopeProbeState ps = (EnvelopeProbeState) iterState.next();
@@ -261,25 +258,18 @@ public class GeneralTest {
 
             dataOX[Column.POSITION.openxal][i] = ps.getPosition();
             dataOX[Column.GAMA_1.openxal][i] = ps.getGamma() - 1.;
-            dataOX[Column.RMSX.openxal][i] = twiss[0].getEnvelopeRadius();
-            dataOX[Column.RMSXp.openxal][i] = Math.sqrt(twiss[0].getGamma() * twiss[0].getEmittance());
-            dataOX[Column.RMSY.openxal][i] = twiss[1].getEnvelopeRadius();
-            dataOX[Column.RMSYp.openxal][i] = Math.sqrt(twiss[1].getGamma() * twiss[1].getEmittance());
-            dataOX[Column.RMSZ.openxal][i] = twiss[2].getEnvelopeRadius();// /ps.getGamma();
-            dataOX[Column.RMSdpp.openxal][i] = Math.sqrt(twiss[2].getGamma() * twiss[2].getEmittance()) * ps.getGamma() * ps.getGamma();
-            dataOX[Column.RMSZp.openxal][i] = Math.sqrt(twiss[2].getGamma() * twiss[2].getEmittance());// /ps.getGamma();
+            dataOX[Column.RMSX.openxal][i] = twiss[0].getEnvelopeRadius() * 1e3;
+            dataOX[Column.RMSY.openxal][i] = twiss[1].getEnvelopeRadius() * 1e3;
+            dataOX[Column.RMSZ.openxal][i] = twiss[2].getEnvelopeRadius() * 360 * ps.getBunchFrequency() / (beta * IElement.LightSpeed);
 
             PhaseVector mean = ps.phaseMean();
-            dataOX[Column.CENTX.openxal][i] = mean.getx();
-            dataOX[Column.CENTXp.openxal][i] = mean.getxp();
-            dataOX[Column.CENTY.openxal][i] = mean.gety();
-            dataOX[Column.CENTYp.openxal][i] = mean.getyp();
-            dataOX[Column.CENTZ.openxal][i] = mean.getz();
-            dataOX[Column.CENTdpp.openxal][i] = mean.getzp();
-            //dataOX[Column.CENTZp.openxal][i] = mean.getzp()*?;
+            dataOX[Column.CENTX.openxal][i] = mean.getx() * 1e3;
+            dataOX[Column.CENTXp.openxal][i] = mean.getxp() * 1e3;
+            dataOX[Column.CENTY.openxal][i] = mean.gety() * 1e3;
+            dataOX[Column.CENTYp.openxal][i] = mean.getyp() * 1e3;
+            dataOX[Column.CENTZ.openxal][i] = - mean.getz() * 360 * ps.getBunchFrequency() / (beta * IElement.LightSpeed) * Math.sqrt(1 + Math.pow(mean.getx(), 2) / 4 + Math.pow(mean.gety(), 2) / 4);
+            dataOX[Column.CENTdpp.openxal][i] = mean.getzp() * gamma * gamma * gamma * beta * beta * ps.getSpeciesRestEnergy() * 1e-6;
 
-            dataOX[Column.BETAX.openxal][i] = twiss[0].getBeta();
-            dataOX[Column.BETAY.openxal][i] = twiss[1].getBeta();
             i = i + 1;
         }
 
@@ -299,7 +289,7 @@ public class GeneralTest {
         int i = 0;
         while (br.readLine() != null) {
             i++;
-        };
+        }
         br.close();
         return i;
     }

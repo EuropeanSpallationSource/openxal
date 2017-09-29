@@ -174,7 +174,7 @@ public final class ESSElementFactory {
             double rfphase, String fieldFile, FieldProfile fieldProfile, ApertureBucket aper, double position) {
         ESSFieldMap fm = new ESSFieldMap(name + ":FM");
         fm.setLength(length);
-        fm.setPosition(length / 2.);
+        fm.setPosition(length / 2);
         fm.setFieldMapFile(fieldFile);
         fm.setFieldProfile(fieldProfile);
         fm.setXelmax(xelmax);

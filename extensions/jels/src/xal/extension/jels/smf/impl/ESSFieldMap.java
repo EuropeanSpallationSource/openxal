@@ -117,6 +117,14 @@ public class ESSFieldMap extends RfGap {
     }
 
     /**
+     * Position + gapOffset where cavity RF phase is given (m) relative to
+     * element's start
+     */
+    public void setPhasePosition(double dblVal) {
+        m_bucFieldMap.setPhasePosition(dblVal);
+    }
+
+    /**
      * Electric field intensity factor
      */
     public void setXelmax(double dblVal) {

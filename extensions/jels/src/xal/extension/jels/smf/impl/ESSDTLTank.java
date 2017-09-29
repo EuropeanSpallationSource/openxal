@@ -79,5 +79,4 @@ public class ESSDTLTank extends ESSRfCavity {
     public String getType() {
         return s_strType;
     }
-;
 }

@@ -1,6 +1,8 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
 <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-               xsi:noNamespaceSchemaLocation="https://bitbucket.org/europeanspallationsource/openxal/raw/site.ess.master/core/resources/xal/schemas/model-impl.xsd">
+               xsi:noNamespaceSchemaLocation="https://bitbucket.org/europeanspallationsource/openxal/raw/site.ess.master/core/resources/xal/schemas/model-impl.xsd"
+               subsectionCtrOrigin="false">
+               
     <elements>
         <default type="xal.model.elem.Marker"/>
         <drift type="xal.model.elem.IdealDrift"/>
@@ -22,4 +24,3 @@
         <map smf="DTLTank" model="xal.model.elem.IdealRfCavity"/>
     </associations>
 </configuration>
-

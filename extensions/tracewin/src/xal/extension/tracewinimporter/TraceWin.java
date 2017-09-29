@@ -243,7 +243,7 @@ public class TraceWin {
      * <br>
      * outputDir directory where export Open XAL files
      * <br>outputName file name of the accelerator files to generate
-     * <br>initialParametersMode optional paramaterer to set initial parameters:
+     * <br>initialParametersMode optional parameter to set initial parameters:
      * mode 1 is hardcoded parameters mode 0 is default (hardcoded for input
      * file, all sequences from hardcoded parameters (.ini) for directory and
      * git repository)
@@ -252,7 +252,7 @@ public class TraceWin {
      *
      * @param args
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) {      
         TraceWin tracewin = new TraceWin();
         tracewin.setLogger(new ImportLogger());
 

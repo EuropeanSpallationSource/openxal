@@ -19,10 +19,11 @@ public class FieldMapNCellsTest {
 
     @Test
     public void fieldMapNCellsTest() throws ModelException, IOException {
-        Accelerator acc = XMLDataManager.acceleratorWithUrlSpec(JElsDemo.class.getResource("lattice1/main.xal").toString());
-
-        for (int i = 0; i < 2; i++) {
-            Probe probe = GeneralTest.loadProbeFromXML(JElsDemo.class.getResource("lattice1/probe." + i + ".xml").toString());
+        Accelerator acc = XMLDataManager.acceleratorWithUrlSpec(JElsDemo.class.getResource("lattice0/main.xal").toString());
+        
+        int[] tests = {0,7,8};
+        for (int i = 0; i < tests.length; i++) {
+            Probe probe = GeneralTest.loadProbeFromXML(JElsDemo.class.getResource("lattice0/probe." + tests[i] + ".xml").toString());
             probe.initialize();
 
             acc.getAccelerator().setElementMapping(new JElsElementMapping() {
@@ -33,7 +34,7 @@ public class FieldMapNCellsTest {
                 }
             });
 
-            double dataOXFM[][] = GeneralTest.run(probe, acc.getComboSequence("from-mebt"));
+            double dataOXFM[][] = GeneralTest.run(probe, acc.getComboSequence("MEBT-A2T"));
             //GeneralTest.saveResults("resultfm"+i, dataOXFM);
             probe.reset();
 
@@ -44,7 +45,7 @@ public class FieldMapNCellsTest {
                     super.initialize();
                 }
             });
-            double dataOXNC[][] = GeneralTest.run(probe, acc.getComboSequence("from-mebt"));
+            double dataOXNC[][] = GeneralTest.run(probe, acc.getComboSequence("MEBT-A2T"));
             //GeneralTest.saveResults("resultnc"+i, dataOXNC);
             probe.reset();
 
@@ -56,7 +57,7 @@ public class FieldMapNCellsTest {
                     super.initialize();
                 }
             });
-            double dataOXEI[][] = GeneralTest.run(probe, acc.getComboSequence("from-mebt"));
+            double dataOXEI[][] = GeneralTest.run(probe, acc.getComboSequence("MEBT-A2T"));
             probe.reset();
 
             System.out.printf("%s\t", probe.getComment());
@@ -66,7 +67,7 @@ public class FieldMapNCellsTest {
                 double e = GeneralTest.compare(dataOXFM[0], dataOXNC[0], dataOXFM[j], dataOXNC[j]);
                 //System.out.printf("%s: %E %c %E\n",allCols[j].name(), e, e < allCols[j].allowedError ? '<' : '>', allCols[j].allowedError);
                 System.out.printf("%E\t", e);
-                if (e >= 0.055) {
+                if (e >= 0.07) {
                     message.append(j).append(" ");
                     ok = false;
                 }
