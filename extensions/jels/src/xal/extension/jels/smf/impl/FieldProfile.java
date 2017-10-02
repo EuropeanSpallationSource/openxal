@@ -96,6 +96,11 @@ public class FieldProfile {
      * @throws URISyntaxException
      */
     private void loadFile(String path) throws IOException, URISyntaxException {
+        
+        if (!(new File(new URL(path).getFile()).exists())) {
+            throw new Error("Field map " + new File(new URL(path).getFile()) + " not found");
+        }
+        
         BufferedReader br = new BufferedReader(new InputStreamReader(new URL(path).openStream()));
 
         // first line

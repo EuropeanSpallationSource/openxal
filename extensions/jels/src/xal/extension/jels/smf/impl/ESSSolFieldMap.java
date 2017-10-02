@@ -157,8 +157,11 @@ public class ESSSolFieldMap extends Electromagnet {
     public void update(DataAdaptor adaptor) throws NumberFormatException {
         super.update(adaptor);
         try {
-            setFieldProfileR(FieldProfile2D.getInstance(new URI(((XmlDataAdaptor) adaptor).document().getDocumentURI()).resolve(getFieldMapFile() + ".bsr").toString()));
-            setFieldProfileZ(FieldProfile2D.getInstance(new URI(((XmlDataAdaptor) adaptor).document().getDocumentURI()).resolve(getFieldMapFile() + ".bsz").toString()));
+            URI fieldProfileRURI = new URI(((XmlDataAdaptor) adaptor).document().getDocumentURI()).resolve(getFieldMapFile() + ".bsr");
+            URI fieldProfileZURI = new URI(((XmlDataAdaptor) adaptor).document().getDocumentURI()).resolve(getFieldMapFile() + ".bsz");
+                        
+            setFieldProfileR(FieldProfile2D.getInstance(fieldProfileRURI.toString()));
+            setFieldProfileZ(FieldProfile2D.getInstance(fieldProfileZURI.toString()));
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }

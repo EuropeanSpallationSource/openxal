@@ -101,6 +101,11 @@ public class FieldProfile2D {
      * @throws URISyntaxException
      */
     private void loadFile(String path) throws IOException, URISyntaxException {
+
+        if (!(new File(new URL(path).getFile()).exists())) {
+            throw new Error("Field map " + new File(new URL(path).getFile()) + " not found");
+        }
+
         BufferedReader br = new BufferedReader(new InputStreamReader(new URL(path).openStream()));
 
         // first line
@@ -145,7 +150,7 @@ public class FieldProfile2D {
         File fieldMapfile = new File(new URI(path));
         fieldMapfile.getParentFile().mkdirs();
         PrintWriter pw = new PrintWriter(new FileWriter(fieldMapfile));
-        
+
         double zmax = getLengthZ();
         double rmax = getLengthR();
         pw.printf("%d %f\n%d %f\n%f\n", field.length - 1, zmax, field[0].length - 1, rmax, norm);
