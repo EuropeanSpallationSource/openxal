@@ -105,4 +105,19 @@
         </schema>
         <record name="default"/>
     </table>
+    <table name="CentroidCoordinates" recordClass="xal.tools.data.GenericRecord">
+        <schema>
+            <attribute isPrimaryKey="true" name="name" type="java.lang.String"/>
+            <attribute isPrimaryKey="true" name="coordinates" type="java.lang.String"/>
+        </schema>
+        <record coordinates="(3.089105810585379E-6,2.9505510932353388E-5,-4.045033168338097E-6,-3.472358772726465E-5,-0.005374024748164865,0.0,1.0)" name="LEBT"/>
+        <record coordinates="(2.9715612E-7,-4.1005964E-5,5.1619119E-7,-3.004407E-5,-0.0058376543,0.0,1.0)" name="RFQ"/>
+        <record coordinates="(0.0,0.0,0.0,0.0,0.0,0.0,1.0)" name="MEBT"/>
+        <record coordinates="(0.0,0.0,0.0,0.0,0.0,0.0,1.0)" name="DTL"/>
+        <record coordinates="(0.0,0.0,0.0,0.0,0.0,0.0,1.0)" name="SPK"/>
+        <record coordinates="(0.0,0.0,0.0,0.0,0.0,0.0,1.0)" name="MBL"/>
+        <record coordinates="(0.0,0.0,0.0,0.0,0.0,0.0,1.0)" name="HBL"/>
+        <record coordinates="(0.0,0.0,0.0,0.0,0.0,0.0,1.0)" name="HEBT"/>
+        <record coordinates="(0.0,0.0,0.0,0.0,0.0,0.0,1.0)" name="A2T"/>
+    </table>
 </tablegroup>

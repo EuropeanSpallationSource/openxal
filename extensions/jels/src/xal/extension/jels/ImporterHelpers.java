@@ -19,6 +19,8 @@ import xal.sim.scenario.Scenario;
 import xal.smf.Accelerator;
 import xal.smf.AcceleratorSeq;
 import xal.smf.AcceleratorSeqCombo;
+import xal.tools.beam.CovarianceMatrix;
+import xal.tools.beam.PhaseVector;
 import xal.tools.beam.Twiss;
 import xal.tools.data.DataAttribute;
 import xal.tools.data.DataTable;
@@ -76,7 +78,7 @@ public class ImporterHelpers {
         return envelopeProbe;
     }
 
-    public static void setupInitialParameters(EnvelopeProbe probe, double bunchFrequency, double beamCurrent, double kineticEnergy, Twiss[] initialTwiss) {
+    public static void setupInitialParameters(EnvelopeProbe probe, double bunchFrequency, double beamCurrent, double kineticEnergy, PhaseVector vecCent, Twiss[] initialTwiss) {
         probe.setSpeciesCharge(1);
 //        probe.setSpeciesRestEnergy(9.382720813E8);    // More accurate value
         probe.setSpeciesRestEnergy(9.38272029E8); // TraceWin value
@@ -92,12 +94,19 @@ public class ImporterHelpers {
         double beta_gamma = beta * gamma;
 
         // Convert from TraceWin coordinates (z,deltap/p) to Open XAL (z,z')
-        Twiss[] oxalTwiss = new Twiss[]{
-            new Twiss(initialTwiss[0].getAlpha(), initialTwiss[0].getBeta(), initialTwiss[0].getEmittance() / beta_gamma),
-            new Twiss(initialTwiss[1].getAlpha(), initialTwiss[1].getBeta(), initialTwiss[1].getEmittance() / beta_gamma),
-            new Twiss(initialTwiss[2].getAlpha(), initialTwiss[2].getBeta(), initialTwiss[2].getEmittance() / (beta_gamma * gamma * gamma))};
+        Twiss oxalTwissX = new Twiss(initialTwiss[0].getAlpha(), initialTwiss[0].getBeta(), initialTwiss[0].getEmittance() / beta_gamma);
+        Twiss oxalTwissY = new Twiss(initialTwiss[1].getAlpha(), initialTwiss[1].getBeta(), initialTwiss[1].getEmittance() / beta_gamma);
+        Twiss oxalTwissZ = new Twiss(initialTwiss[2].getAlpha(), initialTwiss[2].getBeta(), initialTwiss[2].getEmittance() / (beta_gamma * gamma * gamma));
 
-        probe.initFromTwiss(oxalTwiss);
+//        probe.initFromTwiss(oxalTwiss);
+        CovarianceMatrix matCov;
+        if (vecCent != null) {
+            matCov = CovarianceMatrix.buildCovariance(oxalTwissX, oxalTwissY, oxalTwissZ, vecCent);
+        } else {
+            matCov = CovarianceMatrix.buildCovariance(oxalTwissX, oxalTwissY, oxalTwissZ);
+        }
+
+        probe.setCovariance(matCov);
     }
 
     public static List<EnvelopeProbeState> simulateInitialValues(EnvelopeProbe probe, AcceleratorSeqCombo seqCombo) throws ModelException {
@@ -151,26 +160,36 @@ public class ImporterHelpers {
         Twiss[] initialTwiss = new Twiss[]{new Twiss(-0.051805615, 0.20954703, 0.25288 * 1e-6),
             new Twiss(-0.30984478, 0.37074849, 0.251694 * 1e-6),
             new Twiss(-0.48130325, 0.92564505, 0.3615731 * 1e-6)};
-        addInitialParameters(accelerator, beamCurrent, bunchFrequency, kineticEnergy, initialTwiss);
+        addInitialParameters(accelerator, beamCurrent, bunchFrequency, kineticEnergy, null, initialTwiss);
     }
 
-    public static void addInitialParameters(Accelerator accelerator, double bunchFrequency, double beamCurrent, double kineticEnergy, Twiss[] initialTwiss) {
+    public static void addInitialParameters(Accelerator accelerator, double bunchFrequency, double beamCurrent, double kineticEnergy, PhaseVector initialCentroid, Twiss[] initialTwiss) {
         if (accelerator != null) {
             AcceleratorSeqCombo comboSeq = addDefaultComboSeq(accelerator);
 
             EditContext editContext = new EditContext();
 
             EnvelopeProbe probe = defaultProbe();
-            setupInitialParameters(probe, bunchFrequency, beamCurrent, kineticEnergy, initialTwiss);
+            setupInitialParameters(probe, bunchFrequency, beamCurrent, kineticEnergy, initialCentroid, initialTwiss);
             ProbeFactory.createSchema(editContext, probe);
 
             // Adding hardcoded EnvTrackerAdapt table, which is not created in createSchema()
             addEnvTrackerAdapt(editContext);
 
+            // Creating schema for Centroid position
+            DataTable tblCentroid = addCentroidSchema(editContext);
+
             accelerator.setEditContext(editContext);
             try {
                 List<EnvelopeProbeState> states = simulateInitialValues(probe, comboSeq);
                 ProbeFactory.storeInitialValues(editContext, states);
+
+                if (initialCentroid != null) {
+                    for (EnvelopeProbeState state : states) {
+                        addCentroidToTable(state.getElementId(), state.phaseMean(), tblCentroid);
+                    }
+                }
+
             } catch (ModelException e) {
                 System.err.println("Unable to simulate initial states on sequences. Only setting the first sequence.");
                 List<EnvelopeProbeState> states = Arrays.asList(probe.cloneCurrentProbeState());
@@ -180,7 +199,7 @@ public class ImporterHelpers {
         }
     }
 
-    public static void addAllInitialParameters(Accelerator accelerator, List<Double> bunchFrequency, List<Double> beamCurrent, List<Double> kineticEnergy, List<Twiss[]> initialTwiss) {
+    public static void addAllInitialParameters(Accelerator accelerator, List<Double> bunchFrequency, List<Double> beamCurrent, List<Double> kineticEnergy, List<PhaseVector> initialCentroid, List<Twiss[]> initialTwiss) {
         if (accelerator != null) {
             AcceleratorSeqCombo comboSeq = addDefaultComboSeq(accelerator);
 
@@ -188,24 +207,25 @@ public class ImporterHelpers {
 
             EnvelopeProbe probe = defaultProbe();
 
-            setupInitialParameters(probe, bunchFrequency.get(0), beamCurrent.get(0), kineticEnergy.get(0), initialTwiss.get(0));
+            setupInitialParameters(probe, bunchFrequency.get(0), beamCurrent.get(0), kineticEnergy.get(0), initialCentroid.get(0), initialTwiss.get(0));
 
             ProbeFactory.createSchema(editContext, probe);
 
             // Adding hardcoded EnvTrackerAdapt table, which is not created in createSchema()
             addEnvTrackerAdapt(editContext);
-
-            accelerator.setEditContext(editContext);
             int i = 0;
             double beta;
             double gamma;
             double beta_gamma;
             Twiss[] auxTwiss;
 
-//            for (AcceleratorSeq seq : comboSeq.getConstituents()) {
+            // Creating schema for Centroid position
+            DataTable tblCentroid = addCentroidSchema(editContext);
+
+            DataTable tblTwiss = editContext.getTable("twiss");
+            DataTable tblLocation = editContext.getTable("location");
+            GenericRecord record = null;
             for (AcceleratorSeq seq : accelerator.getSequences()) {
-                DataTable tblTwiss = editContext.getTable("twiss");
-                DataTable tblLocation = editContext.getTable("location");
 
                 gamma = 1 + kineticEnergy.get(i) / probe.getSpeciesRestEnergy();
                 beta = Math.sqrt(1 - 1 / gamma / gamma);
@@ -220,14 +240,33 @@ public class ImporterHelpers {
 
                 addTwissToTable(seq.getId(), oxalTwiss, tblTwiss);
 
-                GenericRecord record = new GenericRecord(tblLocation);
+                // Adding centroid coordinates
+                addCentroidToTable(seq.getId(), initialCentroid.get(i), tblCentroid);
+
+                record = new GenericRecord(tblLocation);
                 record.setValueForKey(seq.getId(), "name");
                 record.setValueForKey(kineticEnergy.get(i), "W");
                 tblLocation.add(record);
 
                 i++;
             }
+
+            accelerator.setEditContext(editContext);
         }
+    }
+
+    /*
+     * Adds a centroid table to the context
+     */
+    private static DataTable addCentroidSchema(EditContext editContext) {
+        DataTable tblCentroid = new DataTable("CentroidCoordinates", Arrays.asList(new DataAttribute[]{
+            new DataAttribute("name", String.class, true),
+            new DataAttribute("coordinates", String.class, true)
+        }));
+
+        editContext.addTableToGroup(tblCentroid, "modelparams");
+        
+        return tblCentroid;
     }
 
     private static void addTwissToTable(String seq, Twiss[] twiss, DataTable tblTwiss) {
@@ -242,6 +281,16 @@ public class ImporterHelpers {
             tblTwiss.add(record);
         }
 
+    }
+
+    /*
+     * Adds a centroid record for a given sequence to the "CentroidCoordinates" table
+     */
+    private static void addCentroidToTable(String seqName, PhaseVector initialCentroid, DataTable tblCentroid) {
+        GenericRecord record = new GenericRecord(tblCentroid);
+        record.setValueForKey(seqName, "name");
+        record.setValueForKey("(" + initialCentroid.printString() + ")", "coordinates");
+        tblCentroid.add(record);
     }
 
     /**

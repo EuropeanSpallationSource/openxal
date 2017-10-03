@@ -25,12 +25,13 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import xal.tools.beam.PhaseVector;
 import xal.tools.beam.Twiss;
 
 /**
  * This class parses initial parameters from TraceWin project files (.ini). In
- * particular, it retrieves the beam current, initial kinetic energy and the Twiss parameters
- * for the 3 planes.
+ * particular, it retrieves the beam current, initial kinetic energy and the
+ * Twiss parameters for the 3 planes.
  * <br><br>
  * NOTE: the position in the .ini files was found by reverse engineering, as
  * there is no documentation about them. The format is believed to be standard
@@ -42,6 +43,7 @@ import xal.tools.beam.Twiss;
 public class IniFileParser {
 
     private double kineticEnergy;       // in eV
+    private PhaseVector initialCentroid = null;
     private Twiss[] initialTwiss = null;
     private double beamCurrent = 0;         // in A
     private double bunchFrequency = 0;  // in MHz
@@ -49,13 +51,17 @@ public class IniFileParser {
     public double getBunchFrequency() {
         return bunchFrequency;
     }
-    
+
     public double getBeamCurrent() {
         return beamCurrent;
     }
 
     public double getKineticEnergy() {
         return kineticEnergy;
+    }
+
+    public PhaseVector getInitialCentroid() {
+        return initialCentroid;
     }
 
     public Twiss[] getInitialTwiss() {
@@ -80,6 +86,12 @@ public class IniFileParser {
         double betaX = 0;
         double betaY = 0;
         double betaZ = 0;
+        double centerX = 0;
+        double centerpX = 0;
+        double centerY = 0;
+        double centerpY = 0;
+        double centerZ = 0;
+        double centerpZ = 0;
 
         try {
             iniFile = new BufferedInputStream(new URL(iniFilePath).openStream());
@@ -101,7 +113,7 @@ public class IniFileParser {
 
             // Read beam current (A)
             long offsetCurrent = 0x2f34;
-            iniFile.skip(offsetCurrent-currentOffset);
+            iniFile.skip(offsetCurrent - currentOffset);
             if (iniFile.read(doubleAux, 0, nBytes) == nBytes) {
                 beamCurrent = ByteBuffer.wrap(doubleAux).order(ByteOrder.LITTLE_ENDIAN).getDouble();
             } else {
@@ -138,6 +150,43 @@ public class IniFileParser {
             }
 
             currentOffset = offsetKineticEnergy + 7 * nBytes;
+
+            // Now move to the area where beam centroid parameters are stored
+            long offsetCenterX = 0x3024;
+
+            iniFile.skip(offsetCenterX - currentOffset);
+            if (iniFile.read(doubleAux, 0, nBytes) == nBytes) {
+                centerX = ByteBuffer.wrap(doubleAux).order(ByteOrder.LITTLE_ENDIAN).getDouble();
+            } else {
+                throw new IOException();
+            }
+            if (iniFile.read(doubleAux, 0, nBytes) == nBytes) {
+                centerY = ByteBuffer.wrap(doubleAux).order(ByteOrder.LITTLE_ENDIAN).getDouble();
+            } else {
+                throw new IOException();
+            }
+            if (iniFile.read(doubleAux, 0, nBytes) == nBytes) {
+                centerpX = ByteBuffer.wrap(doubleAux).order(ByteOrder.LITTLE_ENDIAN).getDouble();
+            } else {
+                throw new IOException();
+            }
+            if (iniFile.read(doubleAux, 0, nBytes) == nBytes) {
+                centerpY = ByteBuffer.wrap(doubleAux).order(ByteOrder.LITTLE_ENDIAN).getDouble();
+            } else {
+                throw new IOException();
+            }
+            if (iniFile.read(doubleAux, 0, nBytes) == nBytes) {
+                centerZ = ByteBuffer.wrap(doubleAux).order(ByteOrder.LITTLE_ENDIAN).getDouble();
+            } else {
+                throw new IOException();
+            }
+            if (iniFile.read(doubleAux, 0, nBytes) == nBytes) {
+                centerpZ = ByteBuffer.wrap(doubleAux).order(ByteOrder.LITTLE_ENDIAN).getDouble();
+            } else {
+                throw new IOException();
+            }
+
+            currentOffset = offsetCenterX + 6 * nBytes;
 
             // Now move to the area where alpha and beta parameters are stored
             long offsetAlphaX = 0x30dc;
@@ -192,6 +241,7 @@ public class IniFileParser {
         initialTwiss = new Twiss[]{new Twiss(alphaX, betaX, emittanceX),
             new Twiss(alphaY, betaY, emittanceY),
             new Twiss(alphaZ, betaZ, emittanceZ)};
-    }
 
+        initialCentroid = new PhaseVector(centerX, centerpX, centerY, centerpY, centerZ, centerpZ);
+    }
 }

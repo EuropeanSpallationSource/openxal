@@ -39,6 +39,7 @@ import xal.extension.tracewinimporter.openxalexporter.AcceleratorExporter;
 
 import xal.sim.scenario.ElementMapping;
 import xal.smf.Accelerator;
+import xal.tools.beam.PhaseVector;
 import xal.tools.beam.Twiss;
 
 /**
@@ -95,9 +96,19 @@ public class TraceWin {
     }
     double beamCurrent;
     double kineticEnergy;
+    PhaseVector  initialCentroid;
     Twiss[] initialTwiss;
     int initialParametersMode = 0;
 
+
+    public PhaseVector getInitialCentroids() {
+        return initialCentroid;
+    }
+
+    public void setInitialCentroid(PhaseVector initialCentroid) {
+        this.initialCentroid = initialCentroid;
+    }
+    
     private ImportLogger logger;
 
     private String outputDir;
@@ -252,7 +263,7 @@ public class TraceWin {
      *
      * @param args
      */
-    public static void main(String[] args) {      
+    public static void main(String[] args) {
         TraceWin tracewin = new TraceWin();
         tracewin.setLogger(new ImportLogger());
 
@@ -278,6 +289,8 @@ public class TraceWin {
                 tracewin.bunchFrequency = 352.21;
                 tracewin.beamCurrent = 62.5e-3;
                 tracewin.kineticEnergy = 3.6217853e6;
+                
+                tracewin.initialCentroid = null;
 
                 tracewin.initialTwiss = new Twiss[]{new Twiss(-0.051805615, 0.20954703, 0.25288 * 1e-6),
                     new Twiss(-0.30984478, 0.37074849, 0.251694 * 1e-6),
@@ -314,6 +327,7 @@ public class TraceWin {
         List<Double> bunchFrequencyList = new ArrayList<>();
         List<Double> beamCurrentList = new ArrayList<>();
         List<Double> kineticEnergyList = new ArrayList<>();
+        List<PhaseVector> initialCentroidList = new ArrayList<>();
         List<Twiss[]> initialTwissList = new ArrayList<>();
 
         try {
@@ -380,10 +394,11 @@ public class TraceWin {
                 bunchFrequencyList.add(iniFileParser.getBunchFrequency());
                 beamCurrentList.add(iniFileParser.getBeamCurrent());
                 kineticEnergyList.add(iniFileParser.getKineticEnergy());
+                initialCentroidList.add(iniFileParser.getInitialCentroid());
                 initialTwissList.add(iniFileParser.getInitialTwiss());
             }
 
-            ImporterHelpers.addAllInitialParameters(accelerator, bunchFrequencyList, beamCurrentList, kineticEnergyList, initialTwissList);
+            ImporterHelpers.addAllInitialParameters(accelerator, bunchFrequencyList, beamCurrentList, kineticEnergyList, initialCentroidList, initialTwissList);
         } else {
             if (getInitialParametersMode() == 2) {
                 logger.log("Importing initial beam parameters from MEBT.ini and simulating for other sequences.");
@@ -392,10 +407,11 @@ public class TraceWin {
                 bunchFrequency = iniFileParser.getBunchFrequency();
                 beamCurrent = iniFileParser.getBeamCurrent();
                 kineticEnergy = iniFileParser.getKineticEnergy();
+                initialCentroid = iniFileParser.getInitialCentroid();
                 initialTwiss = iniFileParser.getInitialTwiss();
             }
             try {
-                ImporterHelpers.addInitialParameters(accelerator, bunchFrequency, beamCurrent, kineticEnergy, initialTwiss);
+                ImporterHelpers.addInitialParameters(accelerator, bunchFrequency, beamCurrent, kineticEnergy, initialCentroid, initialTwiss);
             } catch (Exception ex) {
                 logger.log("Problem with input parameters. Output probably corrupted (*-model.params).");
             }
