@@ -207,7 +207,8 @@ public class ImporterHelpers {
 
             EnvelopeProbe probe = defaultProbe();
 
-            setupInitialParameters(probe, bunchFrequency.get(0), beamCurrent.get(0), kineticEnergy.get(0), initialCentroid.get(0), initialTwiss.get(0));
+            // TODO: beam current taken from MEBT. In future, each sequence should have its own current
+            setupInitialParameters(probe, bunchFrequency.get(0), beamCurrent.get(2), kineticEnergy.get(0), initialCentroid.get(0), initialTwiss.get(0));
 
             ProbeFactory.createSchema(editContext, probe);
 

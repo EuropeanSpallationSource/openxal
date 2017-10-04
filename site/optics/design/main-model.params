@@ -30,7 +30,7 @@
     <table name="beam" recordClass="xal.tools.data.GenericRecord">
         <schema>
             <attribute isPrimaryKey="true" name="name" type="java.lang.String"/>
-            <attribute defaultValue="0.074" isPrimaryKey="false" name="current" type="java.lang.Double"/>
+            <attribute defaultValue="0.0625" isPrimaryKey="false" name="current" type="java.lang.Double"/>
             <attribute defaultValue="3.52E8" isPrimaryKey="false" name="bunchFreq" type="java.lang.Double"/>
             <attribute defaultValue="(0,0,0)" isPrimaryKey="false" name="phase" type="java.lang.String"/>
         </schema>
