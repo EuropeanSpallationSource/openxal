@@ -38,6 +38,7 @@ import javax.swing.JOptionPane;
 
 import xal.extension.application.platform.MacAdaptor;
 import xal.extension.application.rbac.AuthenticationPane;
+import xal.extension.application.rbac.RBACPlugin;
 import xal.extension.service.ServiceDirectory;
 import xal.rbac.AccessDeniedException;
 import xal.rbac.Credentials;
@@ -103,7 +104,7 @@ abstract public class Application {
     /* RBAC service */
     private RBACLogin rbacLogin;
     private RBACSubject rbacSubject;
-
+    private boolean useRBACLogin;
 	
 	/** static initializer */
 	static {
@@ -1055,7 +1056,9 @@ abstract public class Application {
      *         otherwise
      */
     private boolean rbacLogout() {
-        if (rbacSubject != null) {
+        useRBACLogin = RBACPlugin.useRBACLogin();
+        
+        if (rbacSubject != null && useRBACLogin) {
             final int option = JOptionPane.showConfirmDialog(getActiveWindow(), "Would you like to logout?", "Logout",
                     JOptionPane.YES_NO_OPTION);
             if (option == JOptionPane.YES_OPTION) {

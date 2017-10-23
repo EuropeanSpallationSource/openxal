@@ -19,26 +19,6 @@
         </schema>
         <record name="default"/>
     </table>
-    <table name="EnvTrackerAdapt">
-        <schema>
-            <attribute isPrimaryKey="true" name="name" type="java.lang.String" />
-            <attribute isPrimaryKey="false" name="errortol" type="java.lang.Double" defaultValue="1.0E-5"/>
-            <attribute isPrimaryKey="false" name="initstep" type="java.lang.Double" defaultValue="0.01"/>
-            <attribute isPrimaryKey="false" name="maxstep" type="java.lang.Double" defaultValue="0.0"/>
-            <attribute isPrimaryKey="false" name="norm" type="java.lang.Integer" defaultValue="0"/>
-            <attribute isPrimaryKey="false" name="order" type="java.lang.Integer" defaultValue="2"/>
-            <attribute isPrimaryKey="false" name="slack" type="java.lang.Double" defaultValue="0.05"/>
-            <attribute isPrimaryKey="false" name="maxiter" type="java.lang.Integer" defaultValue="50"/>
-            <attribute isPrimaryKey="false" name="maxstepdriftpmq" type="java.lang.Double" defaultValue="0.0"/>
-        </schema>
-        <record name="default" />
-    </table>
-    <table name="ParticleTracker">
-        <schema>
-            <attribute isPrimaryKey="true"  name="name" type="java.lang.String" />
-        </schema>
-        <record name="default" />
-    </table>
     <table name="species" recordClass="xal.tools.data.GenericRecord">
         <schema>
             <attribute isPrimaryKey="true" name="name" type="java.lang.String"/>
@@ -51,10 +31,10 @@
         <schema>
             <attribute isPrimaryKey="true" name="name" type="java.lang.String"/>
             <attribute defaultValue="0.0625" isPrimaryKey="false" name="current" type="java.lang.Double"/>
-            <attribute defaultValue="3.5221E8" isPrimaryKey="false" name="bunchFreq" type="java.lang.Double"/>
+            <attribute defaultValue="3.52E8" isPrimaryKey="false" name="bunchFreq" type="java.lang.Double"/>
             <attribute defaultValue="(0,0,0)" isPrimaryKey="false" name="phase" type="java.lang.String"/>
         </schema>
-        <record bunchFreq="3.5221E8" current="0.0625" name="default"/>
+        <record name="default"/>
     </table>
     <table name="twiss" recordClass="xal.tools.data.GenericRecord">
         <schema>
@@ -64,27 +44,33 @@
             <attribute isPrimaryKey="false" name="beta" type="java.lang.Double"/>
             <attribute isPrimaryKey="false" name="emittance" type="java.lang.Double"/>
         </schema>
-        <record alpha="-0.051805615" beta="0.20954703" coordinate="x" emittance="2.8753043563474503E-6" name="MEBT"/>
-        <record alpha="-0.30984478000000004" beta="0.37074849" coordinate="y" emittance="2.861819260781853E-6" name="MEBT"/>
-        <record alpha="-0.48130325" beta="0.92564505" coordinate="z" emittance="4.1111701580514565E-6" name="MEBT"/>
-        <record alpha="0.8874330914605384" beta="0.22902703618646908" coordinate="x" emittance="2.8753043563474393E-6" name="DTL"/>
-        <record alpha="-2.639434561191475" beta="0.9928033789836356" coordinate="y" emittance="2.8618192607817676E-6" name="DTL"/>
-        <record alpha="-0.1897954541018201" beta="0.39398907012485324" coordinate="z" emittance="4.111170158051492E-6" name="DTL"/>
-        <record alpha="-4.539432230773611" beta="9.899528770916794" coordinate="x" emittance="5.645845006188208E-7" name="SPOKE"/>
-        <record alpha="1.2723587679956492" beta="5.279025617089026" coordinate="y" emittance="5.619366153857344E-7" name="SPOKE"/>
-        <record alpha="0.05569393873176456" beta="5.625311031442222" coordinate="z" emittance="8.072546982786139E-7" name="SPOKE"/>
-        <record alpha="-5.5155423465500535" beta="32.08267569283826" coordinate="x" emittance="3.524430805657867E-7" name="MB"/>
-        <record alpha="-0.45332901441033546" beta="10.903675764734377" coordinate="y" emittance="3.507901325526393E-7" name="MB"/>
-        <record alpha="0.9837147643081837" beta="13.17093232234994" coordinate="z" emittance="5.039304698422745E-7" name="MB"/>
-        <record alpha="-4.6588417448297355" beta="29.572569738801114" coordinate="x" emittance="2.0081809094750172E-7" name="HB"/>
-        <record alpha="-0.5424862624072871" beta="9.614196733408635" coordinate="y" emittance="1.9987625981858608E-7" name="HB"/>
-        <record alpha="0.7177333447576048" beta="21.928949380380242" coordinate="z" emittance="2.871338962352107E-7" name="HB"/>
-        <record alpha="-2.0814180173025134" beta="58.557778314408544" coordinate="x" emittance="8.553336757020742E-8" name="CONT"/>
-        <record alpha="0.4300933838035958" beta="33.24966177856085" coordinate="y" emittance="8.513221851160607E-8" name="CONT"/>
-        <record alpha="-0.1168937154089379" beta="89.62720570124463" coordinate="z" emittance="1.2229739349019E-7" name="CONT"/>
-        <record alpha="-0.45558839803971335" beta="18.081215812757232" coordinate="x" emittance="8.55333675702013E-8" name="DOG-A2T"/>
-        <record alpha="1.0369585953298726" beta="25.72439171430221" coordinate="y" emittance="8.519621516089666E-8" name="DOG-A2T"/>
-        <record alpha="-30.280027258535313" beta="3321.151287049208" coordinate="z" emittance="1.2234195070981663E-7" name="DOG-A2T"/>
+        <record alpha="-3.228808231327488" beta="0.38607771736525104" coordinate="x" emittance="9.511387218228065E-6" name="LEBT"/>
+        <record alpha="-3.2275590186531122" beta="0.3858093272443539" coordinate="y" emittance="9.511387218228065E-6" name="LEBT"/>
+        <record alpha="-0.0" beta="109.13199284041227" coordinate="z" emittance="0.0" name="LEBT"/>
+        <record alpha="1.9691528" beta="0.22536279" coordinate="x" emittance="1.1461682084361586E-5" name="RFQ"/>
+        <record alpha="1.968493" beta="0.22505737" coordinate="y" emittance="1.1454752352058426E-5" name="RFQ"/>
+        <record alpha="0.15899949" beta="1.4449517" coordinate="z" emittance="0.0" name="RFQ"/>
+        <record alpha="-0.051805615" beta="0.20954703" coordinate="x" emittance="2.875304356347471E-6" name="MEBT"/>
+        <record alpha="-0.30984478" beta="0.37074849" coordinate="y" emittance="2.8618192607818744E-6" name="MEBT"/>
+        <record alpha="-0.48130325" beta="0.92564505" coordinate="z" emittance="4.079614268808417E-6" name="MEBT"/>
+        <record alpha="1.3469831" beta="0.21307501" coordinate="x" emittance="3.3505764026982447E-6" name="DTL"/>
+        <record alpha="-4.1153851" beta="0.74752686" coordinate="y" emittance="3.5245714222556286E-6" name="DTL"/>
+        <record alpha="0.068189435" beta="0.39813124" coordinate="z" emittance="4.749832880796967E-6" name="DTL"/>
+        <record alpha="-3.2450568" beta="7.4238895" coordinate="x" emittance="6.896865489329136E-7" name="SPK"/>
+        <record alpha="1.107339" beta="4.3346793" coordinate="y" emittance="7.031152292316565E-7" name="SPK"/>
+        <record alpha="0.16675996" beta="6.1052993" coordinate="z" emittance="7.955452335068762E-7" name="SPK"/>
+        <record alpha="-2.5890862" beta="17.004103" coordinate="x" emittance="4.801139060879474E-7" name="MBL"/>
+        <record alpha="-0.062235924" beta="8.6565595" coordinate="y" emittance="4.6831929576589205E-7" name="MBL"/>
+        <record alpha="0.4751011" beta="11.241424" coordinate="z" emittance="4.076613485404133E-7" name="MBL"/>
+        <record alpha="-3.0734314" beta="23.38107" coordinate="x" emittance="2.89074875401202E-7" name="HBL"/>
+        <record alpha="-0.31094597" beta="8.6641293" coordinate="y" emittance="2.766821332931291E-7" name="HBL"/>
+        <record alpha="0.23650126" beta="16.442068" coordinate="z" emittance="1.4098819356593027E-7" name="HBL"/>
+        <record alpha="-1.9731683" beta="51.903226" coordinate="x" emittance="1.1898073740848976E-7" name="HEBT"/>
+        <record alpha="0.51930644" beta="28.878755" coordinate="y" emittance="1.2308738056798241E-7" name="HEBT"/>
+        <record alpha="0.1073404" beta="49.078583" coordinate="z" emittance="1.5944555327594865E-8" name="HEBT"/>
+        <record alpha="-1.0191976" beta="27.823781" coordinate="x" emittance="1.133272393585098E-7" name="A2T"/>
+        <record alpha="0.70355989" beta="12.514001" coordinate="y" emittance="1.2133546201187885E-7" name="A2T"/>
+        <record alpha="-17.169904" beta="1830.4725" coordinate="z" emittance="2.3296320600362807E-8" name="A2T"/>
     </table>
     <table name="location" recordClass="xal.tools.data.GenericRecord">
         <schema>
@@ -95,12 +81,43 @@
             <attribute defaultValue="0" isPrimaryKey="false" name="s" type="java.lang.Double"/>
             <attribute defaultValue="0" isPrimaryKey="false" name="t" type="java.lang.Double"/>
         </schema>
-        <record W="3621785.3" name="MEBT" species="PROTON"/>
-        <record W="3621785.3" name="DTL"/>
-        <record W="8.981834339473161E7" name="SPOKE"/>
-        <record W="2.1653264640863213E8" name="MB"/>
-        <record W="5.704823158879594E8" name="HB"/>
-        <record W="1.9901189622583835E9" name="CONT"/>
-        <record W="1.9901189622583835E9" name="DOG-A2T"/>
+        <record W="74671.738" name="LEBT"/>
+        <record W="74622.785" name="RFQ"/>
+        <record W="3621785.3" name="MEBT"/>
+        <record W="3620000.0" name="DTL"/>
+        <record W="8.9887822E7" name="SPK"/>
+        <record W="2.1654179E8" name="MBL"/>
+        <record W="5.7096562E8" name="HBL"/>
+        <record W="1.9911104E9" name="HEBT"/>
+        <record W="1.9911105E9" name="A2T"/>
+    </table>
+    <table name="EnvTrackerAdapt" recordClass="xal.tools.data.GenericRecord">
+        <schema>
+            <attribute isPrimaryKey="true" name="name" type="java.lang.String"/>
+            <attribute defaultValue="0.01" isPrimaryKey="false" name="initstep" type="java.lang.Double"/>
+            <attribute defaultValue="0.0" isPrimaryKey="false" name="maxstep" type="java.lang.Double"/>
+            <attribute defaultValue="0.0" isPrimaryKey="false" name="maxstepdriftpmq" type="java.lang.Double"/>
+            <attribute defaultValue="1.0E-5" isPrimaryKey="false" name="errortol" type="java.lang.Double"/>
+            <attribute defaultValue="0.05" isPrimaryKey="false" name="slack" type="java.lang.Double"/>
+            <attribute defaultValue="0" isPrimaryKey="false" name="norm" type="java.lang.Integer"/>
+            <attribute defaultValue="50" isPrimaryKey="false" name="maxiter" type="java.lang.Integer"/>
+            <attribute defaultValue="2" isPrimaryKey="false" name="order" type="java.lang.Integer"/>
+        </schema>
+        <record name="default"/>
+    </table>
+    <table name="CentroidCoordinates" recordClass="xal.tools.data.GenericRecord">
+        <schema>
+            <attribute isPrimaryKey="true" name="name" type="java.lang.String"/>
+            <attribute isPrimaryKey="true" name="coordinates" type="java.lang.String"/>
+        </schema>
+        <record coordinates="(3.089105810585379E-6,2.9505510932353388E-5,-4.045033168338097E-6,-3.472358772726465E-5,-0.005374024748164865,0.0,1.0)" name="LEBT"/>
+        <record coordinates="(2.9715612E-7,-4.1005964E-5,5.1619119E-7,-3.004407E-5,-0.0058376543,0.0,1.0)" name="RFQ"/>
+        <record coordinates="(0.0,0.0,0.0,0.0,0.0,0.0,1.0)" name="MEBT"/>
+        <record coordinates="(0.0,0.0,0.0,0.0,0.0,0.0,1.0)" name="DTL"/>
+        <record coordinates="(0.0,0.0,0.0,0.0,0.0,0.0,1.0)" name="SPK"/>
+        <record coordinates="(0.0,0.0,0.0,0.0,0.0,0.0,1.0)" name="MBL"/>
+        <record coordinates="(0.0,0.0,0.0,0.0,0.0,0.0,1.0)" name="HBL"/>
+        <record coordinates="(0.0,0.0,0.0,0.0,0.0,0.0,1.0)" name="HEBT"/>
+        <record coordinates="(0.0,0.0,0.0,0.0,0.0,0.0,1.0)" name="A2T"/>
     </table>
 </tablegroup>

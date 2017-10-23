@@ -14,8 +14,8 @@ import java.util.Map.Entry;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import se.lu.esss.ics.jels.ImporterHelpers;
-import se.lu.esss.ics.jels.smf.impl.ESSFieldMap;
+import xal.extension.jels.ImporterHelpers;
+import xal.extension.jels.smf.impl.ESSFieldMap;
 import xal.smf.Accelerator;
 import xal.smf.AcceleratorNode;
 import xal.smf.AcceleratorSeq;

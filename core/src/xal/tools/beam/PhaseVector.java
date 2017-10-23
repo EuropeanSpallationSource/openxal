@@ -921,7 +921,7 @@ public class PhaseVector extends BaseVector<PhaseVector> implements java.io.Seri
      */
     public String printString() {
         String strVec = "";
-        for (int i=0; i<5; i++)
+        for (int i=0; i<6; i++)
             strVec = strVec + this.getElem(i) + ",";
         strVec = strVec + this.getElem(6);
         return strVec;
