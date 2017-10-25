@@ -30,8 +30,8 @@ public class ESSFieldMapBucket extends AttributeBucket {
         "xelmax", 
         "phase",
         "freq",                                              
-        //"ampFactor",
-        //"phaseOffset",
+        "ampFactor",
+        "phaseOffset",
         //"structureMode",
         //"qLoaded",
         //"structureTTF"  	
@@ -54,6 +54,10 @@ public class ESSFieldMapBucket extends AttributeBucket {
     
     /** Design cavity resonant frequency (MHz) */
     private Attribute   m_attFreq;
+    
+    private Attribute   m_attAmpFactor;
+    
+    private Attribute   m_attPhaseOffset;
     
     /** FieldMap file */
     private Attribute   m_attFieldMapFile;
@@ -80,6 +84,8 @@ public class ESSFieldMapBucket extends AttributeBucket {
         m_attXelmax = new Attribute(1.);
         m_attPhase = new Attribute(0.);
         m_attFreq = new Attribute(0.);
+        m_attAmpFactor = new Attribute(1.);
+        m_attPhaseOffset = new Attribute(0.);
         m_attFieldMapFile = new Attribute("");
         m_attPhasePosition = new Attribute(0.);
         m_attGapOffset = new Attribute(0.);
@@ -87,9 +93,11 @@ public class ESSFieldMapBucket extends AttributeBucket {
         super.registerAttribute(c_arrNames[0], m_attXelmax);
         super.registerAttribute(c_arrNames[1], m_attPhase);
         super.registerAttribute(c_arrNames[2], m_attFreq);
-        super.registerAttribute(c_arrNames[3], m_attFieldMapFile);
-        super.registerAttribute(c_arrNames[4], m_attPhasePosition);
-        super.registerAttribute(c_arrNames[5], m_attGapOffset);
+        super.registerAttribute(c_arrNames[3], m_attAmpFactor);
+        super.registerAttribute(c_arrNames[4], m_attPhaseOffset);
+        super.registerAttribute(c_arrNames[5], m_attFieldMapFile);
+        super.registerAttribute(c_arrNames[6], m_attPhasePosition);
+        super.registerAttribute(c_arrNames[7], m_attGapOffset);
     }
     
     /** Electric field intensity factor */ 
@@ -100,6 +108,10 @@ public class ESSFieldMapBucket extends AttributeBucket {
     
     /** Design cavity resonant frequency (MHz) */
     public double   getFrequency()  { return m_attFreq.getDouble(); }
+    
+    public double   getAmpFactor()  { return m_attAmpFactor.getDouble(); }
+    
+    public double   getPhaseOffset()  { return m_attPhaseOffset.getDouble(); }
     
     /** FieldMap file */
     public String   getFieldMapFile()  { return m_attFieldMapFile.getString(); }
@@ -119,6 +131,10 @@ public class ESSFieldMapBucket extends AttributeBucket {
     
     /** Design cavity resonant frequency (MHz) */
     public void setFrequency(double dblVal)  { m_attFreq.set(dblVal); }
+    
+    public void setAmpFactor(double dblVal)  { m_attAmpFactor.set(dblVal); }
+    
+    public void setPhaseOffset(double dblVal)  { m_attPhaseOffset.set(dblVal); }
     
     /** FieldMap file */
     public void setFieldMapFile(String strVal)  { m_attFieldMapFile.set(strVal); }

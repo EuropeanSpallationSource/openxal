@@ -64,7 +64,7 @@ public class ESSFieldMap extends RfGap {
         return m_bucFieldMap;
     }
 
-    public void setFieldMapBucket(ESSFieldMapBucket buc) {
+    public final void setFieldMapBucket(ESSFieldMapBucket buc) {
         m_bucFieldMap = buc;
         super.addBucket(buc);
     }
@@ -72,6 +72,7 @@ public class ESSFieldMap extends RfGap {
     /**
      * Override AcceleratorNode implementation to check for a ESSFieldMapBucket
      */
+    @Override
     public void addBucket(AttributeBucket buc) {
         if (buc.getClass().equals(ESSFieldMapBucket.class)) {
             setFieldMapBucket((ESSFieldMapBucket) buc);
@@ -99,6 +100,10 @@ public class ESSFieldMap extends RfGap {
      */
     public double getFrequency() {
         return m_bucFieldMap.getFrequency();
+    }
+
+    public double getAmpFactor() {
+        return m_bucFieldMap.getAmpFactor();
     }
 
     /**
@@ -145,6 +150,10 @@ public class ESSFieldMap extends RfGap {
         m_bucFieldMap.setFrequency(dblVal);
     }
 
+    public void setAmpFactor(double dblVal) {
+        m_bucFieldMap.setAmpFactor(dblVal);
+    }
+
     /**
      * FieldMap file
      */
@@ -180,39 +189,23 @@ public class ESSFieldMap extends RfGap {
     }
 
     @Override
-    public double getDesignPropertyValue(String propertyName) {
-        final Property property = Property.valueOf(propertyName);		// throws IllegalArgumentException if no matching property
-        try {
-            if (getParent() instanceof RfCavity) {
-                RfCavity cavity = (RfCavity) getParent();
-                switch (property) {
-                    case ETL:
-                        return cavity.getDfltCavAmp() * getXelmax() / (fieldProfile.getE0L(cavity.getCavFreq()) / fieldProfile.getLength());
-                    case PHASE:
-                        return cavity.getDfltCavPhase();
-                    case FREQUENCY:
-                        return cavity.getCavFreq();
-                    case FIELD:
-                        return getXelmax();
-                    default:
-                        throw new IllegalArgumentException("Unsupported FieldMap design value property: " + propertyName);
-                }
-            }
+    public double toGapAmpFromCavityAmp(final double cavityAmp) {
+        return cavityAmp * getFieldMapBucket().getAmpFactor();
+    }
 
-            switch (property) {
-                case ETL:
-                    return getXelmax() * 1e-6;
-                case PHASE:
-                    return getPhase();
-                case FREQUENCY:
-                    return getFrequency();
-                case FIELD:
-                    return getXelmax() * 1e-6;
-                default:
-                    throw new IllegalArgumentException("Unsupported FieldMap design value property: " + propertyName);
-            }
+    @Override
+    public double toGapPhaseFromCavityPhase(final double cavityPhase) {
+        return cavityPhase + getFieldMapBucket().getPhaseOffset();
+    }
+
+    @Override
+    public double toE0TLFromGapField(final double field) {
+        final RfCavity cavity = (RfCavity) this.getParent();
+
+        try {
+            return field * getXelmax() / (fieldProfile.getE0L(cavity.getCavFreq()) / fieldProfile.getLength());
         } catch (IllegalArgumentException exception) {
-            return super.getDesignPropertyValue(propertyName);
+            return 0;
         }
     }
 }
