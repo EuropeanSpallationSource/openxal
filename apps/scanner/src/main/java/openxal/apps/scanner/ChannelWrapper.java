@@ -164,7 +164,7 @@ public class ChannelWrapper {
     public double[] getScanPoints() {
         if (scanPoints==null)
             updateScanRange(min.get(),max.get());
-        return scanPoints;
+        return scanPoints.clone();
     }
 
     public String setInstance() {
