@@ -86,12 +86,12 @@ public class ScannerDocument {
 
 
     // Save/restore parameters..
-    private final String scanner_SR = "ScannerData";
-    private final String scanPVs_SR = "scan_PVs";
-    private final String measurePVs_SR = "measure_PVs";
-    private final String measurements_SR = "measurements";
-    private final String constraints_SR = "constraints";
-    private final String currentMeas_SR = "currentMeasurement";
+    private static final String SCANNER_SR = "ScannerData";
+    private static final String SCANPVS_SR = "scan_PVs";
+    private static final String MEASUREPVS_SR = "measure_PVs";
+    private static final String MEASUREMENTS_SR = "measurements";
+    private static final String CONSTRAINTS_SR = "constraints";
+    private static final String CURRENTMEAS_SR = "currentMeasurement";
     private XmlDataAdaptor da;
     private DataAdaptor currentMeasAdaptor;
 
@@ -169,14 +169,14 @@ public class ScannerDocument {
     public void saveDocumentAs(URL url) {
         defaultUrl = url;
         da = XmlDataAdaptor.newEmptyDocumentAdaptor();
-        DataAdaptor scannerAdaptor =  da.createChild(scanner_SR);
+        DataAdaptor scannerAdaptor =  da.createChild(SCANNER_SR);
         currentMeasAdaptor = null;
         scannerAdaptor.setValue("title", url.getFile());
         scannerAdaptor.setValue("date", new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date()));
 
 
         // Store information about all measurements done..
-        DataAdaptor measurementsScanner = scannerAdaptor.createChild(measurements_SR);
+        DataAdaptor measurementsScanner = scannerAdaptor.createChild(MEASUREMENTS_SR);
         dataSets.entrySet().forEach(measurement -> {
             // convenience variables..
             List<Channel> pvW = allPVw.get(measurement.getKey());
@@ -204,7 +204,7 @@ public class ScannerDocument {
         // Store information about current measurement setup..
 
         // Store list of variables to read & write.. ChannelWrapper objects
-        DataAdaptor scanpvScanner = scannerAdaptor.createChild(scanPVs_SR);
+        DataAdaptor scanpvScanner = scannerAdaptor.createChild(SCANPVS_SR);
         pvWriteables.forEach((pv) -> {
             DataAdaptor scan_PV_name =  scanpvScanner.createChild("PV");
             scan_PV_name.setValue("name", pv.getChannelName() );
@@ -214,13 +214,13 @@ public class ScannerDocument {
             scan_PV_name.setValue("instance", pv.instanceProperty().get() );
         });
 
-        DataAdaptor measpvScanner = scannerAdaptor.createChild(measurePVs_SR);
+        DataAdaptor measpvScanner = scannerAdaptor.createChild(MEASUREPVS_SR);
         pvReadbacks.forEach((pv) -> {
             DataAdaptor meas_PV_name =  measpvScanner.createChild("PV");
             meas_PV_name.setValue("name", pv.getChannel().getId() );
         });
 
-        DataAdaptor constraintsAdaptor = scannerAdaptor.createChild(constraints_SR);
+        DataAdaptor constraintsAdaptor = scannerAdaptor.createChild(CONSTRAINTS_SR);
         constraints.forEach(constraint -> {
             if (! constraint.isEmpty())
                 constraintsAdaptor.createChild("constraint").setValue("value", constraint);
@@ -231,7 +231,7 @@ public class ScannerDocument {
 
     public void saveCurrentMeas(int nmeas) {
         if (currentMeasAdaptor==null) {
-            currentMeasAdaptor=da.childAdaptor(scanner_SR).createChild(currentMeas_SR);
+            currentMeasAdaptor=da.childAdaptor(SCANNER_SR).createChild(CURRENTMEAS_SR);
         }
         currentMeasAdaptor.createChild("step").setValue("values", currentMeasurement[nmeas]);
         da.writeToUrl( defaultUrl );
@@ -245,13 +245,13 @@ public class ScannerDocument {
      */
     public void loadDocument(URL url) {
         DataAdaptor readAdp = XmlDataAdaptor.adaptorForUrl( url, false );
-        DataAdaptor scannerAdaptor =  readAdp.childAdaptor(scanner_SR);
+        DataAdaptor scannerAdaptor =  readAdp.childAdaptor(SCANNER_SR);
 
         Accelerator acc = Model.getInstance().getAccelerator();
 
         // Load list of variables to read & write.. ChannelWrapper objects
         // There is probably an issue since these variables are not read into MainFunctions.PVlist
-        DataAdaptor scanpvScanner = scannerAdaptor.childAdaptor(scanPVs_SR);
+        DataAdaptor scanpvScanner = scannerAdaptor.childAdaptor(SCANPVS_SR);
         pvWriteables.clear();
         scanpvScanner.childAdaptors().forEach( (childAdaptor) -> {
             String name = childAdaptor.stringValue("name");
@@ -272,7 +272,7 @@ public class ScannerDocument {
             pvWriteables.add(cWrap);
         });
 
-        DataAdaptor readpvScanner = scannerAdaptor.childAdaptor(measurePVs_SR);
+        DataAdaptor readpvScanner = scannerAdaptor.childAdaptor(MEASUREPVS_SR);
         pvReadbacks.clear();
         readpvScanner.childAdaptors().forEach( (childAdaptor) -> {
             String name = childAdaptor.stringValue("name");
@@ -284,7 +284,7 @@ public class ScannerDocument {
             pvReadbacks.add(cWrap);
         });
 
-        DataAdaptor constraintsAdaptor = scannerAdaptor.childAdaptor(constraints_SR);
+        DataAdaptor constraintsAdaptor = scannerAdaptor.childAdaptor(CONSTRAINTS_SR);
         for(int i = 0; i<constraints.size();i++)
             constraints.set(i, "");
         for (int i = 0; i<constraintsAdaptor.childAdaptors().size();i++) {
@@ -294,8 +294,8 @@ public class ScannerDocument {
 
 
         // Load earlier measurements..
-        if ( scannerAdaptor.childAdaptor(measurements_SR) != null) {
-            DataAdaptor measurementsScanner = scannerAdaptor.childAdaptor(measurements_SR);
+        if ( scannerAdaptor.childAdaptor(MEASUREMENTS_SR) != null) {
+            DataAdaptor measurementsScanner = scannerAdaptor.childAdaptor(MEASUREMENTS_SR);
             measurementsScanner.childAdaptors().forEach( (measAdaptor) -> {
                 List<Channel> pvW = new ArrayList<>();
                 List<Channel> pvR = new ArrayList<>();
@@ -324,8 +324,8 @@ public class ScannerDocument {
             });
         }
 
-        if ( scannerAdaptor.childAdaptor(currentMeas_SR) != null) {
-            currentMeasAdaptor = scannerAdaptor.childAdaptor(currentMeas_SR);
+        if ( scannerAdaptor.childAdaptor(CURRENTMEAS_SR) != null) {
+            currentMeasAdaptor = scannerAdaptor.childAdaptor(CURRENTMEAS_SR);
             // Need to calculate nmeas (or ncombos if you want)
             nCombosDone=currentMeasAdaptor.childAdaptors().size();
             int nVars = pvWriteables.size() + pvReadbacks.size();
