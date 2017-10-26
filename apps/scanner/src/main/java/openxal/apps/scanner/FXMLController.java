@@ -171,8 +171,8 @@ public class FXMLController implements Initializable {
 
     private static ObservableList<String> measurements;
 
-    public static ObservableList<ChannelWrapper> PvScannablelist;
-    public static ObservableList<ChannelWrapper> PvReadablelist;
+    public static ObservableList<ChannelWrapper> pvScannablelist;
+    public static ObservableList<ChannelWrapper> pvReadablelist;
     public static ObservableList<ChannelWrapper> PVscanList;
     public static ObservableList<ChannelWrapper> PVreadList;
 
@@ -225,10 +225,10 @@ public class FXMLController implements Initializable {
             MainFunctions.mainDocument.loadDocument(new File("scanner.xml").toURI().toURL());
             PVscanList.clear();
             MainFunctions.mainDocument.pvWriteables.forEach(cWrapper -> PVscanList.add(cWrapper));
-            PvScannablelist.clear();
-            PvReadablelist.clear();
-            MainFunctions.mainDocument.pvWriteables.forEach(cWrapper -> PvScannablelist.add(cWrapper));
-            MainFunctions.mainDocument.pvReadbacks.forEach(cWrapper -> PvReadablelist.add(cWrapper));
+            pvScannablelist.clear();
+            pvReadablelist.clear();
+            MainFunctions.mainDocument.pvWriteables.forEach(cWrapper -> pvScannablelist.add(cWrapper));
+            MainFunctions.mainDocument.pvReadbacks.forEach(cWrapper -> pvReadablelist.add(cWrapper));
 
             constraintsList.setItems(MainFunctions.mainDocument.constraints);
             MainFunctions.isCombosUpdated.set(false);
@@ -378,38 +378,38 @@ public class FXMLController implements Initializable {
 
         // Initialize the list of scan variables..
         // TODO: A variable cannot be both read and written to..
-        PvScannablelist = FXCollections.observableArrayList();
-        PvReadablelist = FXCollections.observableArrayList();
+        pvScannablelist = FXCollections.observableArrayList();
+        pvReadablelist = FXCollections.observableArrayList();
         PVscanList = FXCollections.observableArrayList();
-        scanTable.setItems(PvScannablelist);
-        readTable.setItems(PvReadablelist);
+        scanTable.setItems(pvScannablelist);
+        readTable.setItems(pvReadablelist);
 
         scanColumnPV.setCellValueFactory(new PropertyValueFactory<>("channelName"));
         readColumnPV.setCellValueFactory(new PropertyValueFactory<>("channelName"));
 
         readColumnSelect.setCellFactory(CheckBoxTableCell.forTableColumn((Integer param) -> {
-            if (PvReadablelist.get(param).getIsRead()) {
-                MainFunctions.actionScanAddPV(PvReadablelist.get(param), true, false);
+            if (pvReadablelist.get(param).getIsRead()) {
+                MainFunctions.actionScanAddPV(pvReadablelist.get(param), true, false);
                 if (MainFunctions.checkSufficientParams()) {
                     tabConfigure.setDisable(false);
                     tabRun.setDisable(false);
                 }
             } else {
-                MainFunctions.actionScanRemovePV(PvReadablelist.get(param), true, false);
+                MainFunctions.actionScanRemovePV(pvReadablelist.get(param), true, false);
                 if (!MainFunctions.checkSufficientParams()) {
                     tabConfigure.setDisable(true);
                     tabRun.setDisable(true);
                 }
             }
-            return PvReadablelist.get(param).isReadProperty();
+            return pvReadablelist.get(param).isReadProperty();
         }));
         readColumnSelect.setCellValueFactory((CellDataFeatures<ChannelWrapper, Boolean> param) -> param.getValue().isReadProperty());
 
         scanColumnSelect.setCellFactory(CheckBoxTableCell.forTableColumn((Integer param) -> {
-            if (PvScannablelist.get(param).getIsScanned()) {
-                PvScannablelist.get(param).setInstance();
-                if (MainFunctions.actionScanAddPV(PvScannablelist.get(param), false, true)) {
-                    PVscanList.add(PvScannablelist.get(param));
+            if (pvScannablelist.get(param).getIsScanned()) {
+                pvScannablelist.get(param).setInstance();
+                if (MainFunctions.actionScanAddPV(pvScannablelist.get(param), false, true)) {
+                    PVscanList.add(pvScannablelist.get(param));
                     MainFunctions.isCombosUpdated.set(false);
                 }
                 if (MainFunctions.checkSufficientParams()) {
@@ -418,8 +418,8 @@ public class FXMLController implements Initializable {
                 }
             }
             else {
-                MainFunctions.actionScanRemovePV(PvScannablelist.get(param), false, true);
-                if(PVscanList.remove(PvScannablelist.get(param))) {
+                MainFunctions.actionScanRemovePV(pvScannablelist.get(param), false, true);
+                if(PVscanList.remove(pvScannablelist.get(param))) {
                     clearAllConstraints();
                     MainFunctions.isCombosUpdated.set(false);
                 }
@@ -428,11 +428,11 @@ public class FXMLController implements Initializable {
                     tabRun.setDisable(true);
                 }
             }
-            return PvScannablelist.get(param).isScannedProperty();
+            return pvScannablelist.get(param).isScannedProperty();
         }));
         scanColumnSelect.setCellValueFactory((CellDataFeatures<ChannelWrapper, Boolean> param) -> param.getValue().isScannedProperty());
 
-        
+
         // Initialize the configurations list
 
         // Initialize the list of measurements
