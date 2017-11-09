@@ -100,7 +100,7 @@
             </dependency>
             <dependency>
                 <groupId>org.xal</groupId>
-                <artifactId>openxal.plugins.ess-rbac</artifactId>
+                <artifactId>openxal.plugins.essrbac</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -176,7 +176,7 @@
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-api</artifactId>
+                <artifactId>slf4j-jdk14</artifactId>
                 <version>[1.6.1,)</version>
             </dependency>
         </dependencies>
