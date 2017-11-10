@@ -50,7 +50,7 @@ public class FieldProfile2D {
     public FieldProfile2D(double lengthR, double lengthZ, double[][] fieldZ) {
         this.lengthR = lengthR;
         this.lengthZ = lengthZ;
-        this.field = field;
+        this.field = fieldZ;
     }
 
     protected FieldProfile2D(String path) {

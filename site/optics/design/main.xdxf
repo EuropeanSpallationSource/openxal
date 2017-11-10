@@ -1,5 +1,5 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
-<xdxf date="10.04.2017" system="ESS" ver="" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://bitbucket.org/europeanspallationsource/openxal/raw/site.ess.master/core/resources/xal/schemas/xdxf.xsd">
+<xdxf date="10.25.2017" system="ESS" ver="" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://bitbucket.org/europeanspallationsource/openxal/raw/site.ess.master/core/resources/xal/schemas/xdxf.xsd">
     <comboseq id="MEBT-A2T">
         <sequence id="MEBT"/>
         <sequence id="DTL"/>
@@ -416,7 +416,7 @@
             </channelsuite>
             <ps main="ST5-HC-PS"/>
         </node>
-        <node id="QP4" len="0.08" pos="1.5120000000000005" type="Q">
+        <node id="QP4" len="0.08" pos="1.5120000000000002" type="Q">
             <attributes>
                 <aperture shape="1" x="0.0184" y="0.0184"/>
                 <magnet bendAngle="0.0" dfltMagFld="5.0" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0.0" dipoleQuadComponent="0.0" len="0.08" pathLength="0.0" polarity="1.0"/>
@@ -426,7 +426,7 @@
             </channelsuite>
             <ps main="QP4-PS"/>
         </node>
-        <node id="ST6-VC" len="0.08" pos="1.5120000000000005" type="DCV">
+        <node id="ST6-VC" len="0.08" pos="1.5120000000000002" type="DCV">
             <attributes>
                 <magnet bendAngle="0.0" dfltMagFld="0.0" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0.0" dipoleQuadComponent="0.0" len="0.08" pathLength="0.0" polarity="1.0"/>
             </attributes>
@@ -435,7 +435,7 @@
             </channelsuite>
             <ps main="ST6-VC-PS"/>
         </node>
-        <node id="ST6-HC" len="0.08" pos="1.5120000000000005" type="DCH">
+        <node id="ST6-HC" len="0.08" pos="1.5120000000000002" type="DCH">
             <attributes>
                 <magnet bendAngle="0.0" dfltMagFld="0.0" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0.0" dipoleQuadComponent="0.0" len="0.08" pathLength="0.0" polarity="1.0"/>
             </attributes>
@@ -3350,7 +3350,7 @@
             <node id="FM3:FM" len="0.988" pos="0.494" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.028" y="0.028"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/Spoke_W_coupler" freq="352.21" gapOffset="0.0" phase="-1.10293" phasePosition="0.0" xelmax="0.974792"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/Spoke_W_coupler" freq="352.21" gapOffset="0.0" phase="-1.10293" phaseOffset="0.0" phasePosition="0.0" xelmax="0.974792"/>
                 </attributes>
             </node>
         </sequence>
@@ -3367,7 +3367,7 @@
             <node id="FM4:FM" len="0.988" pos="0.494" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.028" y="0.028"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/Spoke_W_coupler" freq="352.21" gapOffset="0.0" phase="16.4006" phasePosition="0.0" xelmax="0.886384"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/Spoke_W_coupler" freq="352.21" gapOffset="0.0" phase="16.4006" phaseOffset="0.0" phasePosition="0.0" xelmax="0.886384"/>
                 </attributes>
             </node>
         </sequence>
@@ -3440,7 +3440,7 @@
             <node id="FM5:FM" len="0.988" pos="0.494" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.028" y="0.028"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/Spoke_W_coupler" freq="352.21" gapOffset="0.0" phase="35.0838" phasePosition="0.0" xelmax="0.914239"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/Spoke_W_coupler" freq="352.21" gapOffset="0.0" phase="35.0838" phaseOffset="0.0" phasePosition="0.0" xelmax="0.914239"/>
                 </attributes>
             </node>
         </sequence>
@@ -3457,7 +3457,7 @@
             <node id="FM6:FM" len="0.988" pos="0.494" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.028" y="0.028"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/Spoke_W_coupler" freq="352.21" gapOffset="0.0" phase="43.2861" phasePosition="0.0" xelmax="0.923621"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/Spoke_W_coupler" freq="352.21" gapOffset="0.0" phase="43.2861" phaseOffset="0.0" phasePosition="0.0" xelmax="0.923621"/>
                 </attributes>
             </node>
         </sequence>
@@ -3530,7 +3530,7 @@
             <node id="FM7:FM" len="0.988" pos="0.494" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.028" y="0.028"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/Spoke_W_coupler" freq="352.21" gapOffset="0.0" phase="47.5973" phasePosition="0.0" xelmax="1.02375"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/Spoke_W_coupler" freq="352.21" gapOffset="0.0" phase="47.5973" phaseOffset="0.0" phasePosition="0.0" xelmax="1.02375"/>
                 </attributes>
             </node>
         </sequence>
@@ -3547,7 +3547,7 @@
             <node id="FM8:FM" len="0.988" pos="0.494" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.028" y="0.028"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/Spoke_W_coupler" freq="352.21" gapOffset="0.0" phase="57.5917" phasePosition="0.0" xelmax="1.01803"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/Spoke_W_coupler" freq="352.21" gapOffset="0.0" phase="57.5917" phaseOffset="0.0" phasePosition="0.0" xelmax="1.01803"/>
                 </attributes>
             </node>
         </sequence>
@@ -3621,7 +3621,7 @@
             <node id="FM9:FM" len="0.988" pos="0.494" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.028" y="0.028"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/Spoke_W_coupler" freq="352.21" gapOffset="0.0" phase="67.924" phasePosition="0.0" xelmax="1.00639"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/Spoke_W_coupler" freq="352.21" gapOffset="0.0" phase="67.924" phaseOffset="0.0" phasePosition="0.0" xelmax="1.00639"/>
                 </attributes>
             </node>
         </sequence>
@@ -3638,7 +3638,7 @@
             <node id="FM10:FM" len="0.988" pos="0.494" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.028" y="0.028"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/Spoke_W_coupler" freq="352.21" gapOffset="0.0" phase="80.9363" phasePosition="0.0" xelmax="0.975257"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/Spoke_W_coupler" freq="352.21" gapOffset="0.0" phase="80.9363" phaseOffset="0.0" phasePosition="0.0" xelmax="0.975257"/>
                 </attributes>
             </node>
         </sequence>
@@ -3711,7 +3711,7 @@
             <node id="FM11:FM" len="0.988" pos="0.494" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.028" y="0.028"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/Spoke_W_coupler" freq="352.21" gapOffset="0.0" phase="85.389" phasePosition="0.0" xelmax="0.997051"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/Spoke_W_coupler" freq="352.21" gapOffset="0.0" phase="85.389" phaseOffset="0.0" phasePosition="0.0" xelmax="0.997051"/>
                 </attributes>
             </node>
         </sequence>
@@ -3728,7 +3728,7 @@
             <node id="FM12:FM" len="0.988" pos="0.494" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.028" y="0.028"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/Spoke_W_coupler" freq="352.21" gapOffset="0.0" phase="92.58" phasePosition="0.0" xelmax="0.997051"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/Spoke_W_coupler" freq="352.21" gapOffset="0.0" phase="92.58" phaseOffset="0.0" phasePosition="0.0" xelmax="0.997051"/>
                 </attributes>
             </node>
         </sequence>
@@ -3801,7 +3801,7 @@
             <node id="FM13:FM" len="0.988" pos="0.494" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.028" y="0.028"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/Spoke_W_coupler" freq="352.21" gapOffset="0.0" phase="99.357" phasePosition="0.0" xelmax="0.997051"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/Spoke_W_coupler" freq="352.21" gapOffset="0.0" phase="99.357" phaseOffset="0.0" phasePosition="0.0" xelmax="0.997051"/>
                 </attributes>
             </node>
         </sequence>
@@ -3818,7 +3818,7 @@
             <node id="FM14:FM" len="0.988" pos="0.494" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.028" y="0.028"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/Spoke_W_coupler" freq="352.21" gapOffset="0.0" phase="105.744" phasePosition="0.0" xelmax="0.997051"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/Spoke_W_coupler" freq="352.21" gapOffset="0.0" phase="105.744" phaseOffset="0.0" phasePosition="0.0" xelmax="0.997051"/>
                 </attributes>
             </node>
         </sequence>
@@ -3892,7 +3892,7 @@
             <node id="FM15:FM" len="0.988" pos="0.494" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.028" y="0.028"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/Spoke_W_coupler" freq="352.21" gapOffset="0.0" phase="111.764" phasePosition="0.0" xelmax="0.997051"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/Spoke_W_coupler" freq="352.21" gapOffset="0.0" phase="111.764" phaseOffset="0.0" phasePosition="0.0" xelmax="0.997051"/>
                 </attributes>
             </node>
         </sequence>
@@ -3909,7 +3909,7 @@
             <node id="FM16:FM" len="0.988" pos="0.494" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.028" y="0.028"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/Spoke_W_coupler" freq="352.21" gapOffset="0.0" phase="116.655" phasePosition="0.0" xelmax="0.997051"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/Spoke_W_coupler" freq="352.21" gapOffset="0.0" phase="116.655" phaseOffset="0.0" phasePosition="0.0" xelmax="0.997051"/>
                 </attributes>
             </node>
         </sequence>
@@ -3981,7 +3981,7 @@
             <node id="FM17:FM" len="0.988" pos="0.494" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.028" y="0.028"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/Spoke_W_coupler" freq="352.21" gapOffset="0.0" phase="121.197" phasePosition="0.0" xelmax="0.997051"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/Spoke_W_coupler" freq="352.21" gapOffset="0.0" phase="121.197" phaseOffset="0.0" phasePosition="0.0" xelmax="0.997051"/>
                 </attributes>
             </node>
         </sequence>
@@ -3998,7 +3998,7 @@
             <node id="FM18:FM" len="0.988" pos="0.494" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.028" y="0.028"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/Spoke_W_coupler" freq="352.21" gapOffset="0.0" phase="125.417" phasePosition="0.0" xelmax="0.997051"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/Spoke_W_coupler" freq="352.21" gapOffset="0.0" phase="125.417" phaseOffset="0.0" phasePosition="0.0" xelmax="0.997051"/>
                 </attributes>
             </node>
         </sequence>
@@ -4070,7 +4070,7 @@
             <node id="FM19:FM" len="0.988" pos="0.494" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.028" y="0.028"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/Spoke_W_coupler" freq="352.21" gapOffset="0.0" phase="129.338" phasePosition="0.0" xelmax="0.997051"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/Spoke_W_coupler" freq="352.21" gapOffset="0.0" phase="129.338" phaseOffset="0.0" phasePosition="0.0" xelmax="0.997051"/>
                 </attributes>
             </node>
         </sequence>
@@ -4087,7 +4087,7 @@
             <node id="FM20:FM" len="0.988" pos="0.494" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.028" y="0.028"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/Spoke_W_coupler" freq="352.21" gapOffset="0.0" phase="132.982" phasePosition="0.0" xelmax="0.997051"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/Spoke_W_coupler" freq="352.21" gapOffset="0.0" phase="132.982" phaseOffset="0.0" phasePosition="0.0" xelmax="0.997051"/>
                 </attributes>
             </node>
         </sequence>
@@ -4160,7 +4160,7 @@
             <node id="FM21:FM" len="0.988" pos="0.494" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.028" y="0.028"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/Spoke_W_coupler" freq="352.21" gapOffset="0.0" phase="136.371" phasePosition="0.0" xelmax="0.997051"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/Spoke_W_coupler" freq="352.21" gapOffset="0.0" phase="136.371" phaseOffset="0.0" phasePosition="0.0" xelmax="0.997051"/>
                 </attributes>
             </node>
         </sequence>
@@ -4177,7 +4177,7 @@
             <node id="FM22:FM" len="0.988" pos="0.494" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.028" y="0.028"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/Spoke_W_coupler" freq="352.21" gapOffset="0.0" phase="139.523" phasePosition="0.0" xelmax="0.997051"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/Spoke_W_coupler" freq="352.21" gapOffset="0.0" phase="139.523" phaseOffset="0.0" phasePosition="0.0" xelmax="0.997051"/>
                 </attributes>
             </node>
         </sequence>
@@ -4249,7 +4249,7 @@
             <node id="FM23:FM" len="0.988" pos="0.494" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.028" y="0.028"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/Spoke_W_coupler" freq="352.21" gapOffset="0.0" phase="142.456" phasePosition="0.0" xelmax="0.997051"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/Spoke_W_coupler" freq="352.21" gapOffset="0.0" phase="142.456" phaseOffset="0.0" phasePosition="0.0" xelmax="0.997051"/>
                 </attributes>
             </node>
         </sequence>
@@ -4266,7 +4266,7 @@
             <node id="FM24:FM" len="0.988" pos="0.494" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.028" y="0.028"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/Spoke_W_coupler" freq="352.21" gapOffset="0.0" phase="144.814" phasePosition="0.0" xelmax="0.997051"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/Spoke_W_coupler" freq="352.21" gapOffset="0.0" phase="144.814" phaseOffset="0.0" phasePosition="0.0" xelmax="0.997051"/>
                 </attributes>
             </node>
         </sequence>
@@ -4338,7 +4338,7 @@
             <node id="FM25:FM" len="0.988" pos="0.494" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.028" y="0.028"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/Spoke_W_coupler" freq="352.21" gapOffset="0.0" phase="146.953" phasePosition="0.0" xelmax="0.973405"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/Spoke_W_coupler" freq="352.21" gapOffset="0.0" phase="146.953" phaseOffset="0.0" phasePosition="0.0" xelmax="0.973405"/>
                 </attributes>
             </node>
         </sequence>
@@ -4355,7 +4355,7 @@
             <node id="FM26:FM" len="0.988" pos="0.494" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.028" y="0.028"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/Spoke_W_coupler" freq="352.21" gapOffset="0.0" phase="148.853" phasePosition="0.0" xelmax="0.973405"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/Spoke_W_coupler" freq="352.21" gapOffset="0.0" phase="148.853" phaseOffset="0.0" phasePosition="0.0" xelmax="0.973405"/>
                 </attributes>
             </node>
         </sequence>
@@ -4428,7 +4428,7 @@
             <node id="FM27:FM" len="0.988" pos="0.494" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.028" y="0.028"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/Spoke_W_coupler" freq="352.21" gapOffset="0.0" phase="153.086" phasePosition="0.0" xelmax="0.990154"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/Spoke_W_coupler" freq="352.21" gapOffset="0.0" phase="153.086" phaseOffset="0.0" phasePosition="0.0" xelmax="0.990154"/>
                 </attributes>
             </node>
         </sequence>
@@ -4445,7 +4445,7 @@
             <node id="FM28:FM" len="0.988" pos="0.494" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.028" y="0.028"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/Spoke_W_coupler" freq="352.21" gapOffset="0.0" phase="162.49" phasePosition="0.0" xelmax="0.990154"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/Spoke_W_coupler" freq="352.21" gapOffset="0.0" phase="162.49" phaseOffset="0.0" phasePosition="0.0" xelmax="0.990154"/>
                 </attributes>
             </node>
         </sequence>
@@ -4523,7 +4523,7 @@
             <node id="FM29:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.0679" y="0.0679"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="44.1898" phasePosition="0.0" xelmax="0.481223"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="44.1898" phaseOffset="0.0" phasePosition="0.0" xelmax="0.481223"/>
                 </attributes>
             </node>
         </sequence>
@@ -4540,7 +4540,7 @@
             <node id="FM30:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.0679" y="0.0679"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="51.3968" phasePosition="0.0" xelmax="0.481223"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="51.3968" phaseOffset="0.0" phasePosition="0.0" xelmax="0.481223"/>
                 </attributes>
             </node>
         </sequence>
@@ -4557,7 +4557,7 @@
             <node id="FM31:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.0679" y="0.0679"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="58.7378" phasePosition="0.0" xelmax="0.481223"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="58.7378" phaseOffset="0.0" phasePosition="0.0" xelmax="0.481223"/>
                 </attributes>
             </node>
         </sequence>
@@ -4574,7 +4574,7 @@
             <node id="FM32:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.0679" y="0.0679"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="66.2028" phasePosition="0.0" xelmax="0.481223"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="66.2028" phaseOffset="0.0" phasePosition="0.0" xelmax="0.481223"/>
                 </attributes>
             </node>
         </sequence>
@@ -4647,7 +4647,7 @@
             <node id="FM33:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.0679" y="0.0679"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="71.4974" phasePosition="0.0" xelmax="0.538676"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="71.4974" phaseOffset="0.0" phasePosition="0.0" xelmax="0.538676"/>
                 </attributes>
             </node>
         </sequence>
@@ -4664,7 +4664,7 @@
             <node id="FM34:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.0679" y="0.0679"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="79.9984" phasePosition="0.0" xelmax="0.538676"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="79.9984" phaseOffset="0.0" phasePosition="0.0" xelmax="0.538676"/>
                 </attributes>
             </node>
         </sequence>
@@ -4681,7 +4681,7 @@
             <node id="FM35:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.0679" y="0.0679"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="88.5934" phasePosition="0.0" xelmax="0.538676"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="88.5934" phaseOffset="0.0" phasePosition="0.0" xelmax="0.538676"/>
                 </attributes>
             </node>
         </sequence>
@@ -4698,7 +4698,7 @@
             <node id="FM36:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.0679" y="0.0679"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="97.2594" phasePosition="0.0" xelmax="0.538676"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="97.2594" phaseOffset="0.0" phasePosition="0.0" xelmax="0.538676"/>
                 </attributes>
             </node>
         </sequence>
@@ -4772,7 +4772,7 @@
             <node id="FM37:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.0679" y="0.0679"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="106.844" phasePosition="0.0" xelmax="0.641173"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="106.844" phaseOffset="0.0" phasePosition="0.0" xelmax="0.641173"/>
                 </attributes>
             </node>
         </sequence>
@@ -4789,7 +4789,7 @@
             <node id="FM38:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.0679" y="0.0679"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="117.097" phasePosition="0.0" xelmax="0.641173"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="117.097" phaseOffset="0.0" phasePosition="0.0" xelmax="0.641173"/>
                 </attributes>
             </node>
         </sequence>
@@ -4806,7 +4806,7 @@
             <node id="FM39:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.0679" y="0.0679"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="127.335" phasePosition="0.0" xelmax="0.641173"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="127.335" phaseOffset="0.0" phasePosition="0.0" xelmax="0.641173"/>
                 </attributes>
             </node>
         </sequence>
@@ -4823,7 +4823,7 @@
             <node id="FM40:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.0679" y="0.0679"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="137.518" phasePosition="0.0" xelmax="0.641173"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="137.518" phaseOffset="0.0" phasePosition="0.0" xelmax="0.641173"/>
                 </attributes>
             </node>
         </sequence>
@@ -4896,7 +4896,7 @@
             <node id="FM41:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.0679" y="0.0679"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="147.199" phasePosition="0.0" xelmax="0.74481"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="147.199" phaseOffset="0.0" phasePosition="0.0" xelmax="0.74481"/>
                 </attributes>
             </node>
         </sequence>
@@ -4913,7 +4913,7 @@
             <node id="FM42:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.0679" y="0.0679"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="157.786" phasePosition="0.0" xelmax="0.74481"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="157.786" phaseOffset="0.0" phasePosition="0.0" xelmax="0.74481"/>
                 </attributes>
             </node>
         </sequence>
@@ -4930,7 +4930,7 @@
             <node id="FM43:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.0679" y="0.0679"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="168.117" phasePosition="0.0" xelmax="0.74481"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="168.117" phaseOffset="0.0" phasePosition="0.0" xelmax="0.74481"/>
                 </attributes>
             </node>
         </sequence>
@@ -4947,7 +4947,7 @@
             <node id="FM44:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.0679" y="0.0679"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="178.157" phasePosition="0.0" xelmax="0.74481"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="178.157" phaseOffset="0.0" phasePosition="0.0" xelmax="0.74481"/>
                 </attributes>
             </node>
         </sequence>
@@ -5020,7 +5020,7 @@
             <node id="FM45:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.0679" y="0.0679"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="-171.897" phasePosition="0.0" xelmax="0.853052"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="-171.897" phaseOffset="0.0" phasePosition="0.0" xelmax="0.853052"/>
                 </attributes>
             </node>
         </sequence>
@@ -5037,7 +5037,7 @@
             <node id="FM46:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.0679" y="0.0679"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="-161.18" phasePosition="0.0" xelmax="0.853052"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="-161.18" phaseOffset="0.0" phasePosition="0.0" xelmax="0.853052"/>
                 </attributes>
             </node>
         </sequence>
@@ -5055,7 +5055,7 @@
             <node id="FM47:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.0679" y="0.0679"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="-150.926" phasePosition="0.0" xelmax="0.853052"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="-150.926" phaseOffset="0.0" phasePosition="0.0" xelmax="0.853052"/>
                 </attributes>
             </node>
         </sequence>
@@ -5072,7 +5072,7 @@
             <node id="FM48:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.0679" y="0.0679"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="-141.144" phasePosition="0.0" xelmax="0.853052"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="-141.144" phaseOffset="0.0" phasePosition="0.0" xelmax="0.853052"/>
                 </attributes>
             </node>
         </sequence>
@@ -5145,7 +5145,7 @@
             <node id="FM49:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.0679" y="0.0679"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="-131.549" phasePosition="0.0" xelmax="1.00155"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="-131.549" phaseOffset="0.0" phasePosition="0.0" xelmax="1.00155"/>
                 </attributes>
             </node>
         </sequence>
@@ -5162,7 +5162,7 @@
             <node id="FM50:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.0679" y="0.0679"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="-121.373" phasePosition="0.0" xelmax="1.00155"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="-121.373" phaseOffset="0.0" phasePosition="0.0" xelmax="1.00155"/>
                 </attributes>
             </node>
         </sequence>
@@ -5179,7 +5179,7 @@
             <node id="FM51:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.0679" y="0.0679"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="-111.826" phasePosition="0.0" xelmax="1.00155"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="-111.826" phaseOffset="0.0" phasePosition="0.0" xelmax="1.00155"/>
                 </attributes>
             </node>
         </sequence>
@@ -5196,7 +5196,7 @@
             <node id="FM52:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.0679" y="0.0679"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="-102.879" phasePosition="0.0" xelmax="1.00155"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="-102.879" phaseOffset="0.0" phasePosition="0.0" xelmax="1.00155"/>
                 </attributes>
             </node>
         </sequence>
@@ -5269,7 +5269,7 @@
             <node id="FM53:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.0679" y="0.0679"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="-94.5017" phasePosition="0.0" xelmax="1.00155"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="-94.5017" phaseOffset="0.0" phasePosition="0.0" xelmax="1.00155"/>
                 </attributes>
             </node>
         </sequence>
@@ -5286,7 +5286,7 @@
             <node id="FM54:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.0679" y="0.0679"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="-86.6582" phasePosition="0.0" xelmax="1.00155"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="-86.6582" phaseOffset="0.0" phasePosition="0.0" xelmax="1.00155"/>
                 </attributes>
             </node>
         </sequence>
@@ -5303,7 +5303,7 @@
             <node id="FM55:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.0679" y="0.0679"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="-79.3139" phasePosition="0.0" xelmax="1.00155"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="-79.3139" phaseOffset="0.0" phasePosition="0.0" xelmax="1.00155"/>
                 </attributes>
             </node>
         </sequence>
@@ -5321,7 +5321,7 @@
             <node id="FM56:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.0679" y="0.0679"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="-72.4343" phasePosition="0.0" xelmax="1.00155"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="-72.4343" phaseOffset="0.0" phasePosition="0.0" xelmax="1.00155"/>
                 </attributes>
             </node>
         </sequence>
@@ -5393,7 +5393,7 @@
             <node id="FM57:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.0679" y="0.0679"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="-65.9858" phasePosition="0.0" xelmax="1.00155"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="-65.9858" phaseOffset="0.0" phasePosition="0.0" xelmax="1.00155"/>
                 </attributes>
             </node>
         </sequence>
@@ -5410,7 +5410,7 @@
             <node id="FM58:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.0679" y="0.0679"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="-59.9366" phasePosition="0.0" xelmax="1.00155"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="-59.9366" phaseOffset="0.0" phasePosition="0.0" xelmax="1.00155"/>
                 </attributes>
             </node>
         </sequence>
@@ -5427,7 +5427,7 @@
             <node id="FM59:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.0679" y="0.0679"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="-54.2564" phasePosition="0.0" xelmax="1.00155"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="-54.2564" phaseOffset="0.0" phasePosition="0.0" xelmax="1.00155"/>
                 </attributes>
             </node>
         </sequence>
@@ -5444,7 +5444,7 @@
             <node id="FM60:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.0679" y="0.0679"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="-48.7679" phasePosition="0.0" xelmax="1.00155"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="-48.7679" phaseOffset="0.0" phasePosition="0.0" xelmax="1.00155"/>
                 </attributes>
             </node>
         </sequence>
@@ -5516,7 +5516,7 @@
             <node id="FM61:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.0679" y="0.0679"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="-43.0603" phasePosition="0.0" xelmax="1.00155"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="-43.0603" phaseOffset="0.0" phasePosition="0.0" xelmax="1.00155"/>
                 </attributes>
             </node>
         </sequence>
@@ -5533,7 +5533,7 @@
             <node id="FM62:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.0679" y="0.0679"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="-38.1712" phasePosition="0.0" xelmax="1.00155"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="-38.1712" phaseOffset="0.0" phasePosition="0.0" xelmax="1.00155"/>
                 </attributes>
             </node>
         </sequence>
@@ -5550,7 +5550,7 @@
             <node id="FM63:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.0679" y="0.0679"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="-33.5486" phasePosition="0.0" xelmax="1.00155"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="-33.5486" phaseOffset="0.0" phasePosition="0.0" xelmax="1.00155"/>
                 </attributes>
             </node>
         </sequence>
@@ -5567,7 +5567,7 @@
             <node id="FM64:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.0679" y="0.0679"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="-29.1727" phasePosition="0.0" xelmax="1.00155"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/MB_W_coupler" freq="704.42" gapOffset="0.0" phase="-29.1727" phaseOffset="0.0" phasePosition="0.0" xelmax="1.00155"/>
                 </attributes>
             </node>
         </sequence>
@@ -5646,7 +5646,7 @@
             <node id="FM65:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="66.7114" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="66.7114" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -5663,7 +5663,7 @@
             <node id="FM66:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="71.1864" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="71.1864" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -5680,7 +5680,7 @@
             <node id="FM67:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="75.5594" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="75.5594" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -5697,7 +5697,7 @@
             <node id="FM68:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="79.8264" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="79.8264" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -5770,7 +5770,7 @@
             <node id="FM69:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="82.621" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="82.621" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -5787,7 +5787,7 @@
             <node id="FM70:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="86.672" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="86.672" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -5804,7 +5804,7 @@
             <node id="FM71:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="90.612" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="90.612" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -5821,7 +5821,7 @@
             <node id="FM72:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="94.443" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="94.443" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -5895,7 +5895,7 @@
             <node id="FM73:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="98.164" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="98.164" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -5912,7 +5912,7 @@
             <node id="FM74:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="101.776" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="101.776" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -5929,7 +5929,7 @@
             <node id="FM75:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="105.28" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="105.28" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -5946,7 +5946,7 @@
             <node id="FM76:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="108.678" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="108.678" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -6018,7 +6018,7 @@
             <node id="FM77:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="111.972" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="111.972" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -6035,7 +6035,7 @@
             <node id="FM78:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="115.164" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="115.164" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -6052,7 +6052,7 @@
             <node id="FM79:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="118.255" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="118.255" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -6069,7 +6069,7 @@
             <node id="FM80:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="121.249" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="121.249" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -6142,7 +6142,7 @@
             <node id="FM81:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="124.147" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="124.147" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -6159,7 +6159,7 @@
             <node id="FM82:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="126.953" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="126.953" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -6176,7 +6176,7 @@
             <node id="FM83:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="129.669" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="129.669" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -6193,7 +6193,7 @@
             <node id="FM84:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="132.298" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="132.298" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -6265,7 +6265,7 @@
             <node id="FM85:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="134.842" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="134.842" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -6282,7 +6282,7 @@
             <node id="FM86:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="137.304" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="137.304" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -6299,7 +6299,7 @@
             <node id="FM87:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="139.688" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="139.688" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -6316,7 +6316,7 @@
             <node id="FM88:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="141.995" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="141.995" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -6388,7 +6388,7 @@
             <node id="FM89:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="144.228" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="144.228" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -6406,7 +6406,7 @@
             <node id="FM90:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="146.39" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="146.39" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -6423,7 +6423,7 @@
             <node id="FM91:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="148.483" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="148.483" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -6440,7 +6440,7 @@
             <node id="FM92:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="150.51" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="150.51" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -6512,7 +6512,7 @@
             <node id="FM93:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="152.473" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="152.473" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -6529,7 +6529,7 @@
             <node id="FM94:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="154.375" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="154.375" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -6546,7 +6546,7 @@
             <node id="FM95:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="156.218" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="156.218" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -6563,7 +6563,7 @@
             <node id="FM96:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="158.004" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="158.004" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -6635,7 +6635,7 @@
             <node id="FM97:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="159.734" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="159.734" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -6652,7 +6652,7 @@
             <node id="FM98:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="161.412" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="161.412" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -6670,7 +6670,7 @@
             <node id="FM99:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="163.039" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="163.039" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -6687,7 +6687,7 @@
             <node id="FM100:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="164.617" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="164.617" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -6759,7 +6759,7 @@
             <node id="FM101:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="166.148" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="166.148" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -6776,7 +6776,7 @@
             <node id="FM102:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="167.633" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="167.633" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -6793,7 +6793,7 @@
             <node id="FM103:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="169.074" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="169.074" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -6810,7 +6810,7 @@
             <node id="FM104:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="170.474" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="170.474" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -6882,7 +6882,7 @@
             <node id="FM105:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="171.833" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="171.833" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -6899,7 +6899,7 @@
             <node id="FM106:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="173.153" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="173.153" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -6916,7 +6916,7 @@
             <node id="FM107:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="174.435" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="174.435" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -6934,7 +6934,7 @@
             <node id="FM108:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="175.68" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="175.68" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -7006,7 +7006,7 @@
             <node id="FM109:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="176.891" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="176.891" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -7023,7 +7023,7 @@
             <node id="FM110:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="178.069" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="178.069" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -7040,7 +7040,7 @@
             <node id="FM111:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="179.213" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="179.213" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -7057,7 +7057,7 @@
             <node id="FM112:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-179.673" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-179.673" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -7129,7 +7129,7 @@
             <node id="FM113:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-178.59" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-178.59" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -7146,7 +7146,7 @@
             <node id="FM114:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-177.536" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-177.536" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -7163,7 +7163,7 @@
             <node id="FM115:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-176.51" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-176.51" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -7180,7 +7180,7 @@
             <node id="FM116:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-175.511" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-175.511" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -7253,7 +7253,7 @@
             <node id="FM117:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-174.538" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-174.538" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -7270,7 +7270,7 @@
             <node id="FM118:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-173.591" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-173.591" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -7287,7 +7287,7 @@
             <node id="FM119:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-172.668" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-172.668" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -7304,7 +7304,7 @@
             <node id="FM120:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-171.768" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-171.768" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -7376,7 +7376,7 @@
             <node id="FM121:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-170.892" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-170.892" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -7393,7 +7393,7 @@
             <node id="FM122:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-170.037" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-170.037" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -7410,7 +7410,7 @@
             <node id="FM123:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-169.204" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-169.204" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -7427,7 +7427,7 @@
             <node id="FM124:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-168.391" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-168.391" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -7500,7 +7500,7 @@
             <node id="FM125:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-167.598" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-167.598" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -7517,7 +7517,7 @@
             <node id="FM126:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-166.824" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-166.824" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -7534,7 +7534,7 @@
             <node id="FM127:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-166.069" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-166.069" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -7551,7 +7551,7 @@
             <node id="FM128:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-165.332" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-165.332" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -7623,7 +7623,7 @@
             <node id="FM129:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-164.613" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-164.613" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -7640,7 +7640,7 @@
             <node id="FM130:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-163.91" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-163.91" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -7657,7 +7657,7 @@
             <node id="FM131:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-163.223" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-163.223" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -7674,7 +7674,7 @@
             <node id="FM132:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-162.553" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-162.553" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -7747,7 +7747,7 @@
             <node id="FM133:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-161.898" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-161.898" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -7764,7 +7764,7 @@
             <node id="FM134:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-161.258" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-161.258" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -7781,7 +7781,7 @@
             <node id="FM135:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-160.632" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-160.632" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -7798,7 +7798,7 @@
             <node id="FM136:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-160.02" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-160.02" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -7870,7 +7870,7 @@
             <node id="FM137:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-159.422" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-159.422" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -7887,7 +7887,7 @@
             <node id="FM138:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-158.836" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-158.836" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -7904,7 +7904,7 @@
             <node id="FM139:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-158.264" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-158.264" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -7921,7 +7921,7 @@
             <node id="FM140:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-157.704" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-157.704" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -7993,7 +7993,7 @@
             <node id="FM141:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-157.156" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-157.156" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -8011,7 +8011,7 @@
             <node id="FM142:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-156.62" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-156.62" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -8028,7 +8028,7 @@
             <node id="FM143:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-156.095" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-156.095" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -8045,7 +8045,7 @@
             <node id="FM144:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-155.581" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-155.581" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -8117,7 +8117,7 @@
             <node id="FM145:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-155.078" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-155.078" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -8134,7 +8134,7 @@
             <node id="FM146:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-154.585" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-154.585" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -8151,7 +8151,7 @@
             <node id="FM147:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-154.102" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-154.102" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
@@ -8168,7 +8168,7 @@
             <node id="FM148:FM" len="1.5" pos="0.75" type="FM">
                 <attributes>
                     <aperture shape="1" x="0.08" y="0.08"/>
-                    <fieldmap fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-153.629" phasePosition="0.0" xelmax="0.99941"/>
+                    <fieldmap ampFactor="1.0" fieldMapFile="Field_Maps/1D/HB_W_coupler" freq="704.42" gapOffset="0.0" phase="-153.629" phaseOffset="0.0" phasePosition="0.0" xelmax="0.99941"/>
                 </attributes>
             </node>
         </sequence>
