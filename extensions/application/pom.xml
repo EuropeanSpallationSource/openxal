@@ -30,7 +30,7 @@
         </dependency>
         <dependency>
             <groupId>org.xal</groupId>
-            <artifactId>openxal.plugins.ess-rbac</artifactId>
+            <artifactId>openxal.plugins.essrbac</artifactId>
         </dependency>
     </dependencies>
 </project>
