@@ -145,9 +145,9 @@ public class PVTree extends SplitPane {
                     if (chan!=null)
                         try {
                             if (chan.writeAccess())
-                                FXMLController.PvScannablelist.add(new ChannelWrapper(chan));
+                                FXMLController.pvScannablelist.add(new ChannelWrapper(chan));
                             else
-                                FXMLController.PvReadablelist.add(new ChannelWrapper(chan));
+                                FXMLController.pvReadablelist.add(new ChannelWrapper(chan));
                         } catch (ConnectionException ex) {
                             Logger.getLogger(PVTree.class.getName()).log(Level.SEVERE, "Failed to check channel access", ex);
                         }
