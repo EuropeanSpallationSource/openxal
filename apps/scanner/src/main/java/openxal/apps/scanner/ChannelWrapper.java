@@ -60,7 +60,7 @@ public class ChannelWrapper {
     private final SimpleStringProperty instance;
     private double[] scanPoints;
     // This is probably not the best way to do this.
-    public static int instanceCount = 0;
+    private static int instanceCount = 0;
 
     ChannelWrapper(Channel c) {
         m_channel = c;
