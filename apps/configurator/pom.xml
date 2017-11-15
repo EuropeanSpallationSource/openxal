@@ -132,7 +132,7 @@
     <dependencies>
         <dependency>
             <groupId>org.xal</groupId>
-            <artifactId>openxal.plugins.ess-rbac</artifactId>
+            <artifactId>openxal.plugins.essrbac</artifactId>
             <version>1.1.1-SNAPSHOT</version>
         </dependency>
         <dependency>
