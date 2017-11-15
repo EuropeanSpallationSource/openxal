@@ -39,12 +39,14 @@ pipeline {
     post {
         failure {
             slackSend (color: 'danger', message: "FAILED: <${env.BUILD_URL}|${env.JOB_NAME} [${env.BUILD_NUMBER}]>")
+            slackSend (color: 'danger', message: "FAILED: <${env.BUILD_URL}|${env.JOB_NAME} [${env.BUILD_NUMBER}]>", channel: "#physicsapplications")
             step([$class: 'Mailer',
                     recipients: 'emanuele.laface@esss.se; yngve.levinsen@esss.se; JuanF.EstebanMuller@esss.se',
                     sendToIndividuals: true])
         }
         success {
             slackSend (color: 'good', message: "SUCCESSFUL: <${env.BUILD_URL}|${env.JOB_NAME} [${env.BUILD_NUMBER}]>")
+            slackSend (color: 'good', message: "SUCCESSFUL: <${env.BUILD_URL}|${env.JOB_NAME} [${env.BUILD_NUMBER}]>", channel: "#physicsapplications")
         }
     }
 }
