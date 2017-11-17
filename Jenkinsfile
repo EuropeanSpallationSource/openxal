@@ -31,7 +31,7 @@ pipeline {
             }
             steps {
                 timestamps {
-                    sh 'mvn deploy'
+                    sh 'mvn deploy -pl dist'
                 }
             }
         }
