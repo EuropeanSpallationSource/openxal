@@ -31,10 +31,8 @@ pipeline {
             }
             steps {
                 timestamps {
-                    dir ('dist') {
-                        withCredentials([usernamePassword(credentialsId: 'artifactory', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                            sh 'mvn deploy -pl dist -Dartifactory.username=${USERNAME} -Dartifactory.password=${PASSWORD}'
-                        }
+                    withCredentials([usernamePassword(credentialsId: 'artifactory', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                        sh 'mvn deploy -pl dist -Dartifactory.username=${USERNAME} -Dartifactory.password=${PASSWORD}'
                     }
                 }
             }

@@ -35,6 +35,7 @@
                 <groupId>org.jfrog.buildinfo</groupId>
                 <artifactId>artifactory-maven-plugin</artifactId>
                 <version>2.6.1</version>
+                <inherited>false</inherited>
                 <executions>
                     <execution>
                         <id>build-info</id>
@@ -43,9 +44,9 @@
                         </goals>
                         <configuration>
                             <publisher>
-                                <contextUrl>{{ARTIFACTORY_URL|artifactory.url}}</contextUrl>
-                                <username>{{ARTIFACTORY_USERNAME|artifactory.username}}</username>
-                                <password>{{ARTIFACTORY_PASSWORD|artifactory.password}}</password>
+                                <contextUrl>${artifactory.url}</contextUrl>
+                                <username>${artifactory.username}</username>
+                                <password>${artifactory.password}</password>
                                 <repoKey>OpenXAL</repoKey>
                                 <snapshotRepoKey>OpenXAL</snapshotRepoKey>
                             </publisher>
