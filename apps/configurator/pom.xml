@@ -5,11 +5,11 @@
     <parent>
         <groupId>org.xal</groupId>
         <artifactId>openxal.apps</artifactId>
-        <version>1.1.1-SNAPSHOT</version>
+        <version>1.1.1</version>
     </parent>
 
     <artifactId>openxal.apps.configurator</artifactId>
-    <version>1.1.1-SNAPSHOT</version>
+    <version>1.1.1</version>
 
     <name>openxal.apps.configurator</name>
 
@@ -52,13 +52,10 @@
         <dependency>
             <groupId>org.xal</groupId>
             <artifactId>openxal.plugins.essrbac</artifactId>
-            <version>1.1.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.xal</groupId>
             <artifactId>openxal.extensions.tracewin</artifactId>
-            <version>1.1.1-SNAPSHOT</version>
-            <type>jar</type>
         </dependency>
     </dependencies>
 </project>
