@@ -21,7 +21,9 @@ pipeline {
         stage('SonarQube analysis') {
             steps {
                 timestamps {
-                    sh 'mvn sonar:sonar'
+                    withCredentials([string(credentialsId: 'sonarqube', variable: 'TOKEN')]) {
+                        sh 'mvn -Dsonar.login=${TOKEN} sonar:sonar'
+                    }
                 }
             }
         }
