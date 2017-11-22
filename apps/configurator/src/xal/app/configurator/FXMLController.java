@@ -132,6 +132,8 @@ public class FXMLController implements Initializable {
         } else {
             setDefaultButton.setDisable(false);
         }
+        // Refresh the optics path in case it was automatically changed...
+        opticsPathTextField.setText(opticsSwitcher.getOpticsLibraryPath());
     }
 
     @FXML
