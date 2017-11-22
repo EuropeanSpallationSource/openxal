@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+
+usage() {
+    echo "Usage:"
+    echo "  $0 <appName>"
+    echo "Usually this is what you want: '$0 launcher'"
+    echo "Available applications:"
+    for f in dist/target/openxal-*/apps/openxal.apps.*.jar
+    do
+        b=$(basename $f)
+        f1="${f##*openxal.apps.}"
+        f2="${f1%-1*}"
+        echo "  $f2"
+    done
+}
+
+openxal_version() {
+    OPENXAL_VERSION=$(mvn -q \
+    -Dexec.executable="echo" \
+    -Dexec.args='${project.version}' \
+    --non-recursive \
+    org.codehaus.mojo:exec-maven-plugin:1.3.1:exec)
+    echo "OpenXAL version ${OPENXAL_VERSION}"
+}
+compile_instructions() {
+    echo "-- ERROR --"
+    echo "It does not look like $1 was successfully compiled, or it does not exist"
+    echo "Please run mvn before starting an application:"
+    echo " mvn package -Dmaven.javadoc.skip=true"
+    echo "-- END ERROR --"
+}
+
+execute() {
+    openxal_version
+    echo "Executing $1"
+    JAR_FILE=dist/target/openxal-${OPENXAL_VERSION}-dist/openxal-${OPENXAL_VERSION}/apps/openxal.apps.launcher-${OPENXAL_VERSION}.jar
+    if [ -f $JAR_FILE ]
+    then
+        java -DuseDefaultAccelerator=true -jar $JAR_FILE
+    else
+        compile_instructions $@
+    fi
+}
+
+if [ $# -ne 1 ]
+then
+    usage
+else
+    execute $@
+fi
