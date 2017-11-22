@@ -21,7 +21,9 @@ pipeline {
         stage('SonarQube analysis') {
             steps {
                 timestamps {
-                    sh 'mvn sonar:sonar'
+                    withCredentials([string(credentialsId: 'sonarqube', variable: 'TOKEN')]) {
+                        sh 'mvn -Dsonar.login=${TOKEN} sonar:sonar'
+                    }
                 }
             }
         }
@@ -31,7 +33,9 @@ pipeline {
             }
             steps {
                 timestamps {
-                    sh 'mvn deploy'
+                    withCredentials([usernamePassword(credentialsId: 'artifactory', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                        sh 'mvn deploy -pl dist -Dartifactory.username=${USERNAME} -Dartifactory.password=${PASSWORD}'
+                    }
                 }
             }
         }
@@ -41,7 +45,7 @@ pipeline {
             slackSend (color: 'danger', message: "FAILED: <${env.BUILD_URL}|${env.JOB_NAME} [${env.BUILD_NUMBER}]>")
             slackSend (color: 'danger', message: "FAILED: <${env.BUILD_URL}|${env.JOB_NAME} [${env.BUILD_NUMBER}]>", channel: "#physicsapplications")
             step([$class: 'Mailer',
-                    recipients: 'emanuele.laface@esss.se; yngve.levinsen@esss.se; JuanF.EstebanMuller@esss.se',
+                    recipients: 'emanuele.laface@esss.se, yngve.levinsen@esss.se, JuanF.EstebanMuller@esss.se',
                     sendToIndividuals: true])
         }
         success {

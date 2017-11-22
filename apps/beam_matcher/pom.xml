@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.xal</groupId>
         <artifactId>openxal.apps</artifactId>
-        <version>1.1.1-SNAPSHOT</version>
+        <version>1.1.2-SNAPSHOT</version>
     </parent>
 
     <artifactId>openxal.apps.beam_matcher</artifactId>
@@ -29,7 +29,7 @@
                             <mainClass>xal.app.beam_matcher.Main</mainClass>
                         </manifest>
                         <manifestEntries>
-                            <Class-Path>openxal.library-${project.version}.jar</Class-Path>
+                            <Class-Path>../lib/openxal.library-${project.version}.jar</Class-Path>
                         </manifestEntries>
                     </archive>
                 </configuration>
