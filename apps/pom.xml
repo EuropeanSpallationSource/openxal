@@ -54,8 +54,8 @@
         <module>virtualaccelerator</module>
         <module>wirescan</module>
         <module>xyzcorrelator</module>
-    <module>trajectorycorrection</module>
-    <module>trajectorydisplay</module>
+        <module>trajectorycorrection2</module>
+        <module>trajectorydisplay2</module>
   </modules>
 
   <dependencies>
