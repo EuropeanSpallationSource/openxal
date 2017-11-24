@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.ResourceBundle;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -49,6 +48,8 @@ public class CorrectionElementSelectionController implements Initializable {
     
     /**
      * Initializes the controller class.
+     * @param url
+     * @param rb
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -125,35 +126,35 @@ public class CorrectionElementSelectionController implements Initializable {
         for(xal.smf.AcceleratorSeq Seq: seqItem){ 
             seqName = new Text(Seq.toString());
             seqName.setFont(Font.font("System",FontWeight.BOLD,16));
-            gridPaneBPM.setConstraints(seqName,col,row);
+            GridPane.setConstraints(seqName,col,row);
             gridPaneBPM.add(seqName,col,row);
             seqName = new Text(Seq.toString());
             seqName.setFont(Font.font("System",FontWeight.BOLD,16));
-            gridPaneHC.setConstraints(seqName,col,row);
+            GridPane.setConstraints(seqName,col,row);
             gridPaneHC.add(seqName,col,row);
             seqName = new Text(Seq.toString());
             seqName.setFont(Font.font("System",FontWeight.BOLD,16));
-            gridPaneVC.setConstraints(seqName,col,row);
+            GridPane.setConstraints(seqName,col,row);
             gridPaneVC.add(seqName,col,row);
             row++;
             checkBoxItem = new CheckBox("ALL IN");
-            gridPaneBPM.setConstraints(checkBoxItem,col,row);
+            GridPane.setConstraints(checkBoxItem,col,row);
             gridPaneBPM.add(checkBoxItem,col,row);
             checkBoxItem = new CheckBox("ALL IN");
-            gridPaneHC.setConstraints(checkBoxItem,col,row);
+            GridPane.setConstraints(checkBoxItem,col,row);
             gridPaneHC.add(checkBoxItem,col,row);
             checkBoxItem = new CheckBox("ALL IN");
-            gridPaneVC.setConstraints(checkBoxItem,col,row);
+            GridPane.setConstraints(checkBoxItem,col,row);
             gridPaneVC.add(checkBoxItem,col,row);
             row++;
             checkBoxItem = new CheckBox("ALL OUT");
-            gridPaneBPM.setConstraints(checkBoxItem,col,row);
+            GridPane.setConstraints(checkBoxItem,col,row);
             gridPaneBPM.add(checkBoxItem,col,row);
             checkBoxItem = new CheckBox("ALL OUT");
-            gridPaneHC.setConstraints(checkBoxItem,col,row);
+            GridPane.setConstraints(checkBoxItem,col,row);
             gridPaneHC.add(checkBoxItem,col,row);
             checkBoxItem = new CheckBox("ALL OUT");
-            gridPaneVC.setConstraints(checkBoxItem,col,row);
+            GridPane.setConstraints(checkBoxItem,col,row);
             gridPaneVC.add(checkBoxItem,col,row);
             BPM = Seq.getAllNodesOfType("BPM");
             HC = Seq.getAllNodesOfType("DCH");
@@ -161,21 +162,21 @@ public class CorrectionElementSelectionController implements Initializable {
             for(xal.smf.impl.BPM item: BPM){
                 row++;
                 checkBoxItem = new CheckBox(item.toString());
-                gridPaneBPM.setConstraints(checkBoxItem,col,row);
+                GridPane.setConstraints(checkBoxItem,col,row);
                 gridPaneBPM.add(checkBoxItem,col,row);
             }
             row = row - BPM.size();
             for(xal.smf.impl.HDipoleCorr item: HC){
                 row++;
                 checkBoxItem = new CheckBox(item.toString());
-                gridPaneHC.setConstraints(checkBoxItem,col,row);
+                GridPane.setConstraints(checkBoxItem,col,row);
                 gridPaneHC.add(checkBoxItem,col,row);
             }
             row = row - HC.size();
             for(xal.smf.impl.VDipoleCorr item: VC){
                 row++;
                 checkBoxItem = new CheckBox(item.toString());
-                gridPaneVC.setConstraints(checkBoxItem,col,row);
+                GridPane.setConstraints(checkBoxItem,col,row);
                 gridPaneVC.add(checkBoxItem,col,row);
             }
             col++;
@@ -187,64 +188,46 @@ public class CorrectionElementSelectionController implements Initializable {
         for(int i=0; i<seqItem.size(); i++){
             selectedNode = (CheckBox) getNodeFromGridPane(gridPaneBPM,i,1);
             final Node seqBPMAllIn = selectedNode;
-            selectedNode.selectedProperty().addListener(new ChangeListener<Boolean>() {
-                @Override
-                public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                    if(newValue){
-                        toggleGridAllIn(seqBPMAllIn,gridPaneBPM);
-                    }
+            selectedNode.selectedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
+                if(newValue){
+                    toggleGridAllIn(seqBPMAllIn,gridPaneBPM);
                 }
             });
             selectedNode = (CheckBox) getNodeFromGridPane(gridPaneHC,i,1);
             final Node seqHCAllIn = selectedNode;
-            selectedNode.selectedProperty().addListener(new ChangeListener<Boolean>() {
-                @Override
-                public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                    if(newValue){
-                        toggleGridAllIn(seqHCAllIn,gridPaneHC);
-                    }
+            selectedNode.selectedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
+                if(newValue){
+                    toggleGridAllIn(seqHCAllIn,gridPaneHC);
                 }
             });
             selectedNode = (CheckBox) getNodeFromGridPane(gridPaneVC,i,1);
             final Node seqVCAllIn = selectedNode;
-            selectedNode.selectedProperty().addListener(new ChangeListener<Boolean>() {
-                @Override
-                public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                    if(newValue){
-                        toggleGridAllIn(seqVCAllIn,gridPaneVC);
-                    }
+            selectedNode.selectedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
+                if(newValue){
+                    toggleGridAllIn(seqVCAllIn,gridPaneVC);
                 }
             });
             
             // Add listeners to all checkbox of the first row ("ALL OUT" CheckBoxes)
             selectedNode = (CheckBox) getNodeFromGridPane(gridPaneBPM,i,2);
             final Node seqBPMAllOut = selectedNode;
-            selectedNode.selectedProperty().addListener(new ChangeListener<Boolean>() {
-                @Override
-                public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                    if(newValue){
-                        toggleGridAllOut(seqBPMAllOut,gridPaneBPM);
-                    }
+            selectedNode.selectedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
+                if(newValue){
+                    toggleGridAllOut(seqBPMAllOut,gridPaneBPM);
                 }
             });
             selectedNode = (CheckBox) getNodeFromGridPane(gridPaneHC,i,2);
             final Node seqHCAllOut = selectedNode;
-            selectedNode.selectedProperty().addListener(new ChangeListener<Boolean>() {
-                @Override
-                public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                    if(newValue){
-                        toggleGridAllOut(seqHCAllOut,gridPaneHC);
-                    }
+            selectedNode.selectedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
+                if(newValue){
+                    toggleGridAllOut(seqHCAllOut,gridPaneHC);
                 }
             });
             selectedNode = (CheckBox) getNodeFromGridPane(gridPaneVC,i,2);
             final Node seqVCAllOut = selectedNode;
-            selectedNode.selectedProperty().addListener(new ChangeListener<Boolean>() {
-                @Override
-                public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                    if(newValue){
-                        toggleGridAllOut(seqVCAllOut,gridPaneVC);
-                    }
+            selectedNode.selectedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
+                if(newValue){
+                    toggleGridAllOut(seqVCAllOut,gridPaneVC);
                 }
             });
         }
@@ -254,9 +237,9 @@ public class CorrectionElementSelectionController implements Initializable {
     public void enterElementstoEdit(CorrectionBlock editBlock){
         int seqIndex = 0;
         CheckBox selectedNode;
-        ObservableList<xal.smf.impl.BPM> BPM = FXCollections.observableArrayList();;
-        ObservableList<xal.smf.impl.HDipoleCorr> HC = FXCollections.observableArrayList();;
-        ObservableList<xal.smf.impl.VDipoleCorr> VC = FXCollections.observableArrayList();;
+        ObservableList<xal.smf.impl.BPM> BPM = FXCollections.observableArrayList();
+        ObservableList<xal.smf.impl.HDipoleCorr> HC = FXCollections.observableArrayList();
+        ObservableList<xal.smf.impl.VDipoleCorr> VC = FXCollections.observableArrayList();
         
         for(xal.smf.AcceleratorSeq Seq: seqItem){ 
             BPM.addAll(Seq.getAllNodesOfType("BPM"));
@@ -299,8 +282,8 @@ public class CorrectionElementSelectionController implements Initializable {
     
     private void toggleGridAllIn(Node selectedNode, GridPane selectedGrid){
         CheckBox checkNode;
-        int index = (int) selectedGrid.getColumnIndex(selectedNode);
-        switch (selectedGrid.getId().toString()){
+        int index = (int) GridPane.getColumnIndex(selectedNode);
+        switch (selectedGrid.getId()){
             case "gridPaneBPM":
                 List<xal.smf.impl.BPM> BPM = seqItem.get(index).getAllNodesOfType("BPM");
                 checkNode = (CheckBox) getNodeFromGridPane(selectedGrid,index,2);
@@ -334,7 +317,7 @@ public class CorrectionElementSelectionController implements Initializable {
     
     private void toggleGridAllOut(Node selectedNode, GridPane selectedGrid){
         CheckBox checkNode;
-        int index = (int) selectedGrid.getColumnIndex(selectedNode);
+        int index = (int) GridPane.getColumnIndex(selectedNode);
         switch (selectedGrid.getId()){
             case "gridPaneBPM":
                 List<xal.smf.impl.BPM> BPM = seqItem.get(index).getAllNodesOfType("BPM");
@@ -396,8 +379,13 @@ public class CorrectionElementSelectionController implements Initializable {
                     VCSelection.add(VC.get(j-3));
                 }
             }
-
         }
+        
+        //sort the lists
+        BPMSelection.sort((bpm1,bpm2)-> Double.compare(bpm1.getParent().getPosition()+bpm1.getPosition(), bpm2.getParent().getPosition()+bpm2.getPosition()));
+        HCSelection.sort((hc1,hc2)-> Double.compare(hc1.getParent().getPosition()+hc1.getPosition(), hc2.getParent().getPosition()+hc2.getPosition()));
+        VCSelection.sort((vc1,vc2)-> Double.compare(vc1.getParent().getPosition()+vc1.getPosition(), vc2.getParent().getPosition()+vc2.getPosition()));
+        
         setChangedSelectionList(true);
         setLoggedIn(true);
     }

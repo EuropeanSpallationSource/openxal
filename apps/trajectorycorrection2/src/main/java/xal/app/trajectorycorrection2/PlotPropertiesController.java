@@ -26,7 +26,6 @@ package xal.app.trajectorycorrection2;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
@@ -157,31 +156,33 @@ public class PlotPropertiesController{
         textXMax.setText(String.valueOf(xMax));
         textXMin.setText(String.valueOf(xMin));
         
-    }
+    }    
 
     @FXML
-    private void handleSetAutoscale(MouseEvent event) {
-        
+    private void handleSetAutoscaleX(MouseEvent event) {
         if(checkBoxX.isSelected()){
             textXMax.setDisable(true);
             textXMin.setDisable(true);
-            this.setxAutoscale(true);
+            this.xAutoscale = true;
         } else {
             textXMax.setDisable(false);
             textXMin.setDisable(false);
-            this.setxAutoscale(false);
+            this.xAutoscale = false;
         }
+    }
+
+    @FXML
+    private void handleSetAutoscaleY(MouseEvent event) {
         
         if(checkBoxY.isSelected()){
             textYMax.setDisable(true);
             textYMin.setDisable(true);
-            this.setyAutoscale(true);
+            this.yAutoscale = true;
         } else {
             textYMax.setDisable(false);
             textYMin.setDisable(false);
-            this.setyAutoscale(false);
+            this.yAutoscale = false;
         }
-        
     }
     
 }

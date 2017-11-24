@@ -1,47 +1,41 @@
 /*
- * FXMLControler.java
+ * Copyright (C) 2017 European Spallation Source ERIC
  *
- * Created by Natalia Milas on 07.07.2017
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
  *
- * Copyright (c) 2017 European Spallation Source ERIC
- * Tunavägen 20
- * Lund, Sweden
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 package xal.app.trajectorycorrection2;
-
-/**
- * Main Controller Application
- * @author nataliamilas
- * 06-2017
- */
-
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.application.HostServices;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
+import javafx.css.PseudoClass;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -52,6 +46,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -66,76 +61,27 @@ import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
-import javafx.scene.control.cell.TextFieldListCell;
-import javafx.scene.input.ClipboardContent;
+import javafx.scene.control.ToolBar;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.ContextMenuEvent;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.Dragboard;
-import javafx.scene.input.TransferMode;
+import javafx.scene.layout.AnchorPane;
 import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.ca.PutException;
+import xal.rbac.AccessDeniedException;
+import xal.rbac.Credentials;
+import xal.rbac.RBACException;
+import xal.rbac.RBACLogin;
+import xal.rbac.RBACSubject;
+import xal.smf.Accelerator;
+import xal.tools.data.DataAdaptor;
+import xal.tools.xml.XmlDataAdaptor;
 
 public class FXMLController implements Initializable {
-   
-    //Creates the Accelerator
-    public xal.smf.Accelerator accl = xal.smf.data.XMLDataManager.acceleratorWithPath("/Users/nataliamilas/projects/openxal/site/optics/design/main.xal");
-    //public xal.smf.Accelerator accl = xal.smf.data.XMLDataManager.loadDefaultAccelerator();
-    public TrajectoryArray DisplayTraj = new TrajectoryArray();//Trajectory to be displayed on the plot
-    public Map<String,CorrectionBlock> CorrectionElements = new HashMap<String,CorrectionBlock>();  //List of defined Blocks
-    public Map<String,CorrectionBlock> CorrectionElementsSelected = new HashMap<String,CorrectionBlock>();  //List selected blocks (can be used in correction)
-    public CorrectionMatrix CorrectTraj;//Stores values for the trajectory correction part (1-to-1 correction)
-    public List<CorrectionSVD> CorrectSVDMatrix;//Stores values for the trajectory correction part (SVD correction)
-    private boolean progressSVD = false;//progress bar
-    private final HashMap<String,String> refTrajData = new HashMap();// holds info about reference trajectories
-    private final ObjectProperty<ListCell<String>> dragSource = new SimpleObjectProperty<>();
-    private ObservableList<String> selected = FXCollections.observableArrayList();
-    private ObservableList<String> defined = FXCollections.observableArrayList();
-    
+ 
+    //Menu
     @FXML
     private MenuItem exitMenu;
-    @FXML
-    private ToggleGroup group1;
-    @FXML
-    private ToggleGroup groupSVD;
-    @FXML
-    private RadioButton radioButtonHor;
-    @FXML
-    private RadioButton radioButtonVer;
-    @FXML
-    private RadioButton radioButtonHorVer;
-    @FXML
-    private Button buttonPairBPMCorrector;
-    @FXML
-    private Button buttonMeasureResponse1to1;
-    @FXML
-    private Button buttonCorrect1to1;
-    @FXML
-    private TextField textFieldCorrFactor1to1;
-    @FXML
-    private RadioButton radioButtonHorSVD;
-    @FXML
-    private RadioButton radioButtonVerSVD;
-    @FXML
-    private RadioButton radioButtonHorVerSVD;
-    @FXML
-    private Button buttonMeasureResponseSVD;
-    @FXML
-    private TextField textFieldCorrFactorSVD;
-    @FXML
-    private TextField textFieldSingularValCut;
-    @FXML
-    private Button buttonCorrectSVD;
-    @FXML
-    private Button buttonCalcCorrectSVD;
-    @FXML
-    private TextArea textArea1to1;
-    @FXML
-    private TextArea textAreaSVD;
-    @FXML
-    private ProgressBar progressBarCorrection;
-    @FXML
-    private Label labelProgressCorrection;
     @FXML
     private MenuItem menuItemLoad;
     @FXML
@@ -144,159 +90,300 @@ public class FXMLController implements Initializable {
     private MenuItem menuItemDelete;
     @FXML
     private MenuItem menuItemPlot;
+    
+    //radio buttons & groups   
+    @FXML
+    private ToggleGroup groupCorrection;
+    @FXML
+    private RadioButton radiobuttonCorrectSVD;    
+    @FXML
+    private RadioButton radiobuttonCorrect1to1;
+    @FXML
+    private ToggleGroup groupCorrectionPlane;
+    @FXML
+    private RadioButton radioButtonVertical;    
+    @FXML
+    private RadioButton radioButtonHorizontal;
+    @FXML
+    private RadioButton radioButtonHorVer;
+    
+    //Buttons
+    @FXML
+    private Button buttonPairBPMCorrector;
+    @FXML
+    private Button buttonMeasureResponse1to1;
+    @FXML
+    private Button buttonMeasureResponseSVD;
+    @FXML
+    private Button buttonCalcCorrectSVD;
     @FXML
     private Button buttonPlotRefTraj;
     @FXML
-    private ComboBox<String> comboBoxRefTrajectory;
+    private Button buttonSVDfromModel;
     @FXML
-    private ListView<String> listViewBlockDefinition;
+    private Button buttonVerifyMatrixSVD;
     @FXML
-    private ListView<String> listViewBlockSelection;
+    private Button button1to1fromModel;
+    @FXML
+    private Button buttonVerifyResponse1to1;
+    @FXML
+    private Button buttonCorrectTrajectory;
+    
+    //Text field & labels
+    @FXML
+    private TextField textFieldSingularValCut;
+    @FXML
+    private TextArea textArea1to1;
+    @FXML
+    private TextArea textAreaSVD;
+    @FXML
+    private Label labelProgressCorrection;
+    @FXML
+    private TextField textFieldCorrectionFactor;
+    
+    //progess bar
+    @FXML
+    private ProgressBar progressBarCorrection;
+    
    
+    //others
+    @FXML
+    private ComboBox<File> comboBoxRefTrajectory;
+    @FXML
+    private ListView<CorrectionBlock> listViewBlockDefinition;
+    @FXML
+    private ListView<CorrectionBlock> listViewBlockSelection;
+    
+    //Variables
+    public Accelerator accl = xal.smf.data.XMLDataManager.loadDefaultAccelerator();
+    public TrajectoryArray DisplayTraj = new TrajectoryArray();//Trajectory to be displayed on the plot
+    public ObservableList<CorrectionBlock> CorrectionElements = FXCollections.observableArrayList();  //List of defined Blocks
+    public ObservableList<CorrectionBlock> CorrectionElementsSelected = FXCollections.observableArrayList();  //List selected blocks (can be used in correction)
+    private final ObservableList<File> refTrajData = FXCollections.observableArrayList();// holds info about reference trajectories
+    private final PseudoClass oneOk = PseudoClass.getPseudoClass("oneOk");
+    private final PseudoClass noneOk = PseudoClass.getPseudoClass("noneOk");
+    private final PseudoClass allOk = PseudoClass.getPseudoClass("allOk");
+    private boolean abortFlag = false;
+    private double trajectoryLimit = 0.5;
+    private double steererLimit = 0.002;
+    @FXML
+    private ToggleGroup groupModel;
+    @FXML
+    private AnchorPane mainAnchor1;
+    @FXML
+    private ToolBar bottomBar;
+    @FXML
+    private Label labelExpert;
+    @FXML
+    private Button buttonAbort;
+    @FXML
+    private Button buttonCheckPair;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        
+               
         //Set elements not visible at start
         labelProgressCorrection.setVisible(false);
-        progressBarCorrection.setVisible(false);
-        buttonCorrect1to1.setDisable(true); 
-        buttonMeasureResponse1to1.setDisable(true);
-        
-        //Load reference and zero trajectories
-        refTrajData.put("Zero","/Users/nataliamilas/NetBeansProjects/TrajectoryCorrection/ZeroTrajectory.csv");
-        refTrajData.put("Golden","/Users/nataliamilas/NetBeansProjects/TrajectoryCorrection/GoldenTrajectory.csv");
-        
-        //Fill the initial BPMList (first sequece by desfault)
+        progressBarCorrection.setVisible(false);        
+               
+        //Fill the initial BPMList (first sequece by default)
         List<xal.smf.AcceleratorSeq> seqItem = accl.getSequences();
         
         //Defines the MEBT correction block
         CorrectionBlock correctionMEBT = new CorrectionBlock();
+        CorrectionSVD test = new CorrectionSVD();
         correctionMEBT.setBlockBPM(seqItem.get(0).getAllNodesOfType("BPM"));
         correctionMEBT.setBlockHC(seqItem.get(0).getAllNodesOfType("DCH"));
         correctionMEBT.setBlockVC(seqItem.get(0).getAllNodesOfType("DCV"));
-        correctionMEBT.setBlockName("blockMEBT");
-        CorrectionElements.put("blockMEBT",correctionMEBT);
+        correctionMEBT.setblockName("blockMEBT");
+        correctionMEBT.setOk1to1(true);
+        correctionMEBT.setOkSVD(true);
+        correctionMEBT.initializeSVDCorrection(accl);
+        correctionMEBT.initialize1to1Correction(accl);
+        CorrectionElements.add(correctionMEBT);
         
         //Defines the DTL correction block
         correctionMEBT = new CorrectionBlock();
         correctionMEBT.setBlockBPM(seqItem.get(1).getAllNodesOfType("BPM"));
         correctionMEBT.setBlockHC(seqItem.get(1).getAllNodesOfType("DCH"));
         correctionMEBT.setBlockVC(seqItem.get(1).getAllNodesOfType("DCV"));
-        correctionMEBT.setBlockName("blockDTL");
-        CorrectionElements.put("blockDTL",correctionMEBT);
+        correctionMEBT.setblockName("blockDTL");
+        correctionMEBT.setOk1to1(false);
+        correctionMEBT.setOkSVD(false);
+        correctionMEBT.initializeSVDCorrection(accl);
+        correctionMEBT.initialize1to1Correction(accl);
+        CorrectionElements.add(correctionMEBT);
         
         //Defines the SPK correction block
         correctionMEBT = new CorrectionBlock();
         correctionMEBT.setBlockBPM(seqItem.get(2).getAllNodesOfType("BPM"));
         correctionMEBT.setBlockHC(seqItem.get(2).getAllNodesOfType("DCH"));
         correctionMEBT.setBlockVC(seqItem.get(2).getAllNodesOfType("DCV"));
-        correctionMEBT.setBlockName("blockSPK");
-        CorrectionElements.put("blockSPK",correctionMEBT);
+        correctionMEBT.setblockName("blockSPK");
+        correctionMEBT.setOk1to1(true);
+        correctionMEBT.setOkSVD(false);
+        correctionMEBT.initializeSVDCorrection(accl);
+        correctionMEBT.initialize1to1Correction(accl);
+        CorrectionElements.add(correctionMEBT);
          
-        //Populate list with some blocks
-        for(String item: CorrectionElements.keySet()){
-            defined.add(CorrectionElements.get(item).getBlockName());
-        }
-        listViewBlockDefinition.setItems(defined);
-        listViewBlockDefinition.setCellFactory(TextFieldListCell.forListView());
-        listViewBlockDefinition.setEditable(true);
-        listViewBlockDefinition.setOnEditCommit(new EventHandler<ListView.EditEvent<String>>() {
-            @Override
-            public void handle(ListView.EditEvent<String> t) {
-                    String oldName = listViewBlockDefinition.getItems().get(t.getIndex());
-                    listViewBlockDefinition.getItems().set(t.getIndex(), t.getNewValue());
-                    defined.set(t.getIndex(), t.getNewValue());
-                    CorrectionElements.put(t.getNewValue(), CorrectionElements.remove(oldName));
-                    CorrectionElements.get(t.getNewValue()).setBlockName(t.getNewValue());
+        //set css id for listview
+        listViewBlockDefinition.setId("listBlockDefinition");
+        listViewBlockSelection.setId("listBlockSelection");
+       
+        //Sort elements
+        CorrectionElements.sort((ele1,ele2)-> Double.compare(ele1.getBlockBPM().get(0).getParent().getPosition()+ele1.getBlockBPM().get(0).getPosition(),ele2.getBlockBPM().get(0).getParent().getPosition()+ele2.getBlockBPM().get(0).getPosition()));
+        CorrectionElementsSelected.sort((ele1,ele2)-> Double.compare(ele1.getBlockBPM().get(0).getParent().getPosition()+ele1.getBlockBPM().get(0).getPosition(),ele2.getBlockBPM().get(0).getParent().getPosition()+ele2.getBlockBPM().get(0).getPosition()));
+
+        
+        listViewBlockDefinition.setItems(CorrectionElements);        
+        listViewBlockDefinition.setCellFactory(listview -> { 
+            return new ListCell<CorrectionBlock>() {
+                @Override
+                public void updateItem(CorrectionBlock item, boolean empty) {
+                    super.updateItem(item, empty);
+                    textProperty().unbind();
+                    if(item != null)
+                        textProperty().bind(item.blockNameProperty());
+                    else
+                        setText(null);
+                    }
+                };
             }
-
+        );           
+        
+        listViewBlockDefinition.setEditable(true);
+       
+        listViewBlockDefinition.setOnEditCommit((ListView.EditEvent<CorrectionBlock> t) -> {
+            Alert alert = new Alert(AlertType.INFORMATION);  
+            alert.setTitle("Information Dialog");
+            alert.setHeaderText(null);
+            alert.setContentText("A Block with this name already exists!");
+            CorrectionElements.forEach(block -> {
+                if(block.getblockName().equals(t.getNewValue().getblockName()))                                            
+                    alert.show();                
+            });
+            CorrectionElementsSelected.forEach(block -> {
+                if(block.getblockName().equals(t.getNewValue().getblockName()))                       
+                    alert.show();
+            });                          
         });
         
-        listViewBlockSelection.setItems(selected);
-                
-        listViewBlockSelection.setCellFactory(lv -> {
-            ListCell<String> cell = new ListCell<String>(){
-                 @Override
-                 public void updateItem(String item , boolean empty) {
-                     super.updateItem(item, empty);
-                     setText(item);
-                 }
-            };
-
-            cell.setOnDragDetected(event -> {
-                if (! cell.isEmpty()) {
-                    Dragboard db = cell.startDragAndDrop(TransferMode.MOVE);
-                    ClipboardContent cc = new ClipboardContent();
-                    cc.putString(cell.getItem());
-                    db.setContent(cc);
-                    dragSource.set(cell);
-                }
-                event.consume();
-            });
-
-            cell.setOnDragOver(event -> {
-                if (event.getGestureSource() != cell &&
-                        event.getDragboard().hasString()) {
-                    event.acceptTransferModes(TransferMode.MOVE);
-                }
-                event.consume();
-            });
-
-            cell.setOnDragEntered((DragEvent event) -> {
-                if (event.getGestureSource() != cell &&
-                        event.getDragboard().hasString()) {
-                    cell.setOpacity(0.3);
-                }
-            });
-
-            cell.setOnDragExited((DragEvent event) -> {
-                if (event.getGestureSource() != cell &&
-                        event.getDragboard().hasString()) {
-                    cell.setOpacity(1.0);
-                }
-            });
-            
-            cell.setOnDragDone(DragEvent::consume);
-
-            cell.setOnDragDropped(event -> {               
-                Dragboard db = event.getDragboard();
-                boolean success = false;
-
-                if (db.hasString()) {
-                    int draggedIdx = selected.indexOf(db.getString());
-                    int thisIdx = selected.indexOf(cell.getItem());
-
-                    selected.set(draggedIdx, cell.getItem());
-                    if(thisIdx > selected.size()){
-                        selected.set(selected.size(), db.getString());
+        listViewBlockSelection.setItems(CorrectionElementsSelected);       
+        listViewBlockSelection.setCellFactory(lv -> new ListCell<CorrectionBlock>() {
+            @Override
+            protected void updateItem(CorrectionBlock item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item==null) {
+                    setText(null);
+                    pseudoClassStateChanged(oneOk, false);
+                    pseudoClassStateChanged(noneOk, false);
+                    pseudoClassStateChanged(allOk, false);
+                } else {
+                    if (item.isOkSVD() && item.isOk1to1()) {
+                        setText(item.getblockName());
+                        pseudoClassStateChanged(oneOk, false);
+                        pseudoClassStateChanged(noneOk, false);
+                        pseudoClassStateChanged(allOk, true);
+                    } else if (item.isOkSVD() || item.isOk1to1()) {
+                        setText(item.getblockName());
+                        pseudoClassStateChanged(oneOk, true);
+                        pseudoClassStateChanged(noneOk, false);
+                        pseudoClassStateChanged(allOk, false);
                     } else {
-                        selected.set(thisIdx, db.getString());
-                    }                    
-                    listViewBlockSelection.setItems(selected);
-
-                    success = true;
+                        setText(item.getblockName());
+                        pseudoClassStateChanged(oneOk, false);
+                        pseudoClassStateChanged(noneOk, true);
+                        pseudoClassStateChanged(allOk, false);
+                    }
                 }
-                event.setDropCompleted(success);
-
-                event.consume();
-                
-            });
-
-            return cell ;
+            }        
+        });
+        
+        listViewBlockSelection.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends CorrectionBlock> observable, CorrectionBlock oldValue, CorrectionBlock newValue) -> {
+            List<xal.smf.impl.BPM> BPMList = new ArrayList<>();
+            int maxBPM = 0;
+            BPMList.addAll(accl.getAllNodesOfType("BPM"));
+            try {
+                DisplayTraj.readBPMListTrajectory(BPMList);
+            } catch (ConnectionException | GetException ex) {
+                Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+            if (CorrectionElementsSelected.contains(newValue)){
+                if (newValue.isOk1to1()){
+                    buttonCheckPair.setDisable(false);
+                    buttonMeasureResponse1to1.setDisable(false);
+                    button1to1fromModel.setDisable(false);
+                    buttonVerifyResponse1to1.setDisable(false);
+                } else {
+                    buttonCheckPair.setDisable(false);
+                    buttonMeasureResponse1to1.setDisable(true);
+                    button1to1fromModel.setDisable(true);
+                    buttonVerifyResponse1to1.setDisable(true);
+                }
+                if (newValue.isOkSVD()){                    
+                    buttonSVDfromModel.setDisable(false);
+                    buttonVerifyMatrixSVD.setDisable(false);
+                    buttonCalcCorrectSVD.setDisable(false);
+                    if (Math.abs(DisplayTraj.getXmax())<trajectoryLimit && Math.abs(DisplayTraj.getYmax())<trajectoryLimit){
+                        buttonMeasureResponseSVD.setDisable(true);
+                    } else {
+                        buttonMeasureResponseSVD.setDisable(false);
+                    }                       
+                } else {
+                    if (Math.abs(DisplayTraj.getXmax())<trajectoryLimit && Math.abs(DisplayTraj.getYmax())<trajectoryLimit){
+                        buttonMeasureResponseSVD.setDisable(true);
+                    } else {
+                        buttonMeasureResponseSVD.setDisable(false);
+                    }  
+                    buttonSVDfromModel.setDisable(false);
+                    buttonVerifyMatrixSVD.setDisable(true);
+                    buttonCalcCorrectSVD.setDisable(true);
+                }
+            }
+            else {
+                buttonCheckPair.setDisable(true);
+                buttonMeasureResponse1to1.setDisable(true);
+                button1to1fromModel.setDisable(true);
+                buttonVerifyResponse1to1.setDisable(true);
+                buttonMeasureResponseSVD.setDisable(true);
+                buttonSVDfromModel.setDisable(true);
+                buttonVerifyMatrixSVD.setDisable(true);
+                buttonCalcCorrectSVD.setDisable(true);
+            }
         });
 
-        //populate the ComboBox element
-        refTrajData.keySet().forEach(item -> comboBoxRefTrajectory.getItems().add(item));
-        comboBoxRefTrajectory.setValue("Zero");
+        //Load reference and zero trajectories
+        comboBoxRefTrajectory.setCellFactory((ListView<File> fileName) -> {
+            ListCell cell = new ListCell<File>() {
+                @Override
+                protected void updateItem(File item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText("");
+                    } else {
+                        setText(item.getName());
+                    }
+                }
+            };
+            return cell;
+        });   
         
+        refTrajData.add(new File("/Users/nataliamilas/NetBeansProjects/TrajectoryCorrection/ZeroTrajectory.xml"));
+        refTrajData.add(new File("/Users/nataliamilas/NetBeansProjects/TrajectoryCorrection/GoldenTrajectory.xml"));
+        //populate the ComboBox element
+        comboBoxRefTrajectory.setItems(refTrajData);
+        comboBoxRefTrajectory.setValue(refTrajData.get(0));
         
         //read new reference trajectory file
         try {
-            DisplayTraj.readReferenceTrajectoryFromFile(accl, accl.getAllNodesOfType("BPM"), (String) refTrajData.get(comboBoxRefTrajectory.getValue()));
+            DisplayTraj.readReferenceTrajectoryFromFile(accl, comboBoxRefTrajectory.getValue());
         } catch (IOException ex) {
             Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-        }        
+        }    
+        
+        //load configuration file (config.xml)
+        
         
     }
 
@@ -308,16 +395,22 @@ public class FXMLController implements Initializable {
         fileChooser.setTitle("Save Trajectory File");
 
         //Set extension filter
-        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("CVS files (*.cvs)", "*.cvs");
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("XML files (*.xml)", "*.xml");
         fileChooser.getExtensionFilters().add(extFilter);
-
+       
         //Show save file dialog
         File selectedFile = fileChooser.showSaveDialog(null);
         if (selectedFile != null) {
-            refTrajData.put(selectedFile.getName(),selectedFile.getAbsolutePath());
-            comboBoxRefTrajectory.getItems().add(selectedFile.getName());
-            //Save Trajecotry of the whole machine
-            DisplayTraj.saveTrajectory(accl,selectedFile.getAbsolutePath());
+            if (!refTrajData.contains(selectedFile)){                
+                refTrajData.add(selectedFile);
+            }
+            comboBoxRefTrajectory.setValue(selectedFile);
+            try {
+                //Save Trajectory of the whole machine
+                DisplayTraj.saveTrajectory(accl,selectedFile);
+            } catch (ConnectionException ex) {
+                Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
     
@@ -328,30 +421,29 @@ public class FXMLController implements Initializable {
         fileChooser.setTitle("Load Trajectory File");
 
         //Set extension filter
-        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("CSV files (*.csv)", "*.csv");
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("XML files (*.xml)", "*.xml");
         fileChooser.getExtensionFilters().add(extFilter);
 
         //Show save file dialog
         File selectedFile = fileChooser.showOpenDialog(null);
         if (selectedFile != null) {
-            refTrajData.put(selectedFile.getName(),selectedFile.getAbsolutePath());
-            comboBoxRefTrajectory.getItems().add(selectedFile.getName());
+            refTrajData.add(selectedFile);
+            comboBoxRefTrajectory.setValue(selectedFile);
         }
     }
 
     //handles table context menu for deleting a entry (doesn;t allow deleting the zero orbit)
     @FXML
     public void handleTrajectoryMenuDelete(ActionEvent event) {
-        if ("Zero".equals(comboBoxRefTrajectory.getValue())) {
+        if (refTrajData.get(0).equals(comboBoxRefTrajectory.getValue())) {
             Alert alert = new Alert(AlertType.INFORMATION);
             alert.setTitle("Information Dialog");
             alert.setHeaderText(null);
-            alert.setContentText("You have to select one reference trajecotry file. If you the actual trajectory please select the Zero file.");
+            alert.setContentText("You cannot delete the Zero file. Please select another one.");
             alert.show();
         } else {
             refTrajData.remove(comboBoxRefTrajectory.getValue());
-            comboBoxRefTrajectory.getItems().remove(0);
-            comboBoxRefTrajectory.setValue("Zero"); 
+            comboBoxRefTrajectory.setValue(refTrajData.get(0)); 
         }
     }
                   
@@ -386,21 +478,15 @@ public class FXMLController implements Initializable {
             });
             //setup a BPM list to show
             final List<xal.smf.impl.BPM> BPMList = new ArrayList<>();
-            if(CorrectionElementsSelected.size()>0){
-                CorrectionElementsSelected.keySet().forEach(item -> BPMList.addAll(CorrectionElementsSelected.get(item).getBlockBPM()));
-            } else {
-                BPMList.addAll(accl.getAllNodesOfType("BPM"));
-            }
+            BPMList.addAll(accl.getAllNodesOfType("BPM"));            
             try {
                 DisplayTraj.readBPMListTrajectory(BPMList);
-            } catch (ConnectionException ex) {
-                Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (GetException ex) {
+            } catch (ConnectionException | GetException ex) {
                 Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
             }
             //read new reference trajectory file
             try {
-                DisplayTraj.readReferenceTrajectoryFromFile(accl, BPMList, (String) refTrajData.get(comboBoxRefTrajectory.getValue()));
+                DisplayTraj.readReferenceTrajectoryFromFile(accl, comboBoxRefTrajectory.getValue());
             } catch (IOException ex) {
                 Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -417,51 +503,31 @@ public class FXMLController implements Initializable {
         }
         
     }  
-    
+       
     @FXML
-    private void handlePairBPMCorrector(ActionEvent event) {
-        List<xal.smf.impl.BPM> BPMList = new ArrayList<>();
-        List<xal.smf.impl.HDipoleCorr> HCList = new ArrayList<>();
-        List<xal.smf.impl.VDipoleCorr> VCList = new ArrayList<>();
-                
-        for(String item: CorrectionElementsSelected.keySet()){ 
-             BPMList.addAll(CorrectionElementsSelected.get(item).getBlockBPM());
-             HCList.addAll(CorrectionElementsSelected.get(item).getBlockHC());
-             VCList.addAll(CorrectionElementsSelected.get(item).getBlockVC());
-        }
+    private void handleCheckPairs(ActionEvent event) {
+        int blockIndex = listViewBlockSelection.getSelectionModel().getSelectedIndex();
         
-        // Create pairs of BPMs and Corrector for the 1-to-1 correction scheme
-        CorrectTraj = new CorrectionMatrix();
-        try {
-            CorrectTraj.getPairs(accl,BPMList,HCList,VCList);
-        } catch (ConnectionException ex) {
-            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (GetException ex) {
-            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+        if(listViewBlockSelection.getSelectionModel().getSelectedItem()!=null){
+            CorrectionElementsSelected.get(blockIndex).check1to1CorrectionPairs(listViewBlockDefinition.getScene().getWindow(),accl);
+            //print pairs to text area
+            textArea1to1.clear();
+            textArea1to1.setText("Horizontal pairs: \n");            
+            CorrectionElementsSelected.get(blockIndex).getCorrection1to1().getHC().keySet().stream().forEach(bpm ->textArea1to1.setText(textArea1to1.getText()+bpm.toString()+" : "+CorrectionElementsSelected.get(blockIndex).getCorrection1to1().getHC().get(bpm).toString()+"\n"));   
+            textArea1to1.setText(textArea1to1.getText()+"Vertical pairs: \n");
+            CorrectionElementsSelected.get(blockIndex).getCorrection1to1().getVC().keySet().stream().forEach(bpm ->textArea1to1.setText(textArea1to1.getText()+bpm.toString()+" : "+CorrectionElementsSelected.get(blockIndex).getCorrection1to1().getVC().get(bpm).toString()+"\n"));  
+            
         }
-        //print pairs to text area
-        textArea1to1.clear();
-        textArea1to1.setText("Horizontal pairs: \n");
-        for(xal.smf.impl.BPM item : BPMList){
-            for(xal.smf.impl.BPM bpm : CorrectTraj.HC.keySet()){
-                if(item == bpm){
-                    textArea1to1.setText(textArea1to1.getText()+bpm.toString()+" : "+CorrectTraj.HC.get(bpm).toString()+"\n");   
-                }
-            }
+        listViewBlockSelection.refresh();
+        if (CorrectionElementsSelected.get(blockIndex).isOk1to1()){
+            button1to1fromModel.setDisable(false);
+            buttonMeasureResponse1to1.setDisable(false);
+            buttonVerifyResponse1to1.setDisable(false);
+        } else {
+            button1to1fromModel.setDisable(false);
+            buttonMeasureResponse1to1.setDisable(false);
+            buttonVerifyResponse1to1.setDisable(true);
         }
-        textArea1to1.setText(textArea1to1.getText()+"Vertical pairs: \n");
-        for(xal.smf.impl.BPM item : BPMList){
-            for(xal.smf.impl.BPM bpm : CorrectTraj.VC.keySet()){
-                if(item == bpm){
-                    textArea1to1.setText(textArea1to1.getText()+bpm.toString()+" : "+CorrectTraj.VC.get(bpm).toString()+"\n");     
-                }
-            }
-        }
-
-        buttonMeasureResponse1to1.setDisable(false);
-        
     }
     
     @FXML
@@ -478,7 +544,8 @@ public class FXMLController implements Initializable {
             if ( resultval<= 0.0 || resultval > 0.01){
                resultval=0.002;
             }   
-        }    
+        }   
+        int blockIndex = listViewBlockSelection.getSelectionModel().getSelectedIndex();
  
         final double Dk = resultval;
         Task<Void> task;
@@ -488,32 +555,36 @@ public class FXMLController implements Initializable {
             protected Void call() throws Exception {
                 
                 int progress = 0;
-                int total = CorrectTraj.HC.size() + CorrectTraj.VC.size();
+                int total = CorrectionElementsSelected.get(blockIndex).getCorrection1to1().getHC().size() + CorrectionElementsSelected.get(blockIndex).getCorrection1to1().getVC().size();
                 //make horizontal calibration for each BPM
-                for(xal.smf.impl.BPM bpm : CorrectTraj.HC.keySet()){
-                    CorrectTraj.getHCalibration(bpm, Dk);
+                for(xal.smf.impl.BPM bpm : CorrectionElementsSelected.get(blockIndex).getCorrection1to1().getHC().keySet()){
+                    CorrectionElementsSelected.get(blockIndex).getCorrection1to1().getHCalibration(bpm, Dk);
                     //update progressbar
                     progress++;
                     updateProgress(progress,total);
-                    System.out.print("Measure: "+bpm.toString()+" and "+CorrectTraj.HC.get(bpm).toString()+"\n");
+                    //System.out.print("Measure: "+bpm.toString()+" and "+CorrectTraj.HC.get(bpm).toString()+"\n");
                 }
                 
                 //make vertical calibration for each BPM
-                for(xal.smf.impl.BPM bpm : CorrectTraj.VC.keySet()){
-                    CorrectTraj.getVCalibration(bpm, Dk);
+                for(xal.smf.impl.BPM bpm : CorrectionElementsSelected.get(blockIndex).getCorrection1to1().getVC().keySet()){
+                    CorrectionElementsSelected.get(blockIndex).getCorrection1to1().getVCalibration(bpm, Dk);
                     //update progressbar
                     progress++;
                     updateProgress(progress,total);
-                    System.out.print("Measure: "+bpm.toString()+" and "+CorrectTraj.VC.get(bpm).toString()+"\n");
+                    //System.out.print("Measure: "+bpm.toString()+" and "+CorrectTraj.VC.get(bpm).toString()+"\n");
                 }
                 
-                //Enable CORRECT button
-                buttonCorrect1to1.setDisable(false); 
-                
+                CorrectionElementsSelected.get(blockIndex).setOk1to1(true);
                 //when the scan finishes set the label and progress bar to zero
                 labelProgressCorrection.setVisible(false);
                 progressBarCorrection.setVisible(false);
                 updateProgress(0,total);
+                textArea1to1.setText("RESPONSE MEASUREMENT: Finished!");
+                listViewBlockSelection.refresh();
+                buttonCheckPair.setDisable(false);
+                buttonMeasureResponse1to1.setDisable(false);
+                button1to1fromModel.setDisable(false);
+                buttonVerifyResponse1to1.setDisable(false);
                 
                 return null;
             };
@@ -532,8 +603,7 @@ public class FXMLController implements Initializable {
         
     }
     
-    @FXML
-    private void handleButtonCorrect1to1(ActionEvent event) {
+    private void correct1to1() {
         
         Task<Void> task;
         task = new Task<Void>() {
@@ -543,54 +613,63 @@ public class FXMLController implements Initializable {
                
                 double DeltaK = 0.0;
                 double val = 0.0;
-                double correctFactor = Double.parseDouble(textFieldCorrFactor1to1.getText())/100;
+                double correctFactor = Double.parseDouble(textFieldCorrectionFactor.getText())/100;
                 int total = 0;
                 int step = 0;
+                CorrectionMatrix CorrectTraj = new CorrectionMatrix();
                 
-                if (radioButtonHor.isSelected()){
-                    total = CorrectTraj.HC.size();
-                } else if (radioButtonVer.isSelected()){
-                    total = CorrectTraj.VC.size();
-                } else if (radioButtonHorVer.isSelected()){
-                    total = CorrectTraj.VC.size()+CorrectTraj.HC.size();
-                }
-                
-                List<xal.smf.impl.BPM> BPMList = new ArrayList<>();
-                for(String item: CorrectionElementsSelected.keySet()){ 
-                    BPMList.addAll(CorrectionElementsSelected.get(item).getBlockBPM());
-                }
-                                
-                //correct trajectory
-                for(xal.smf.impl.BPM item : BPMList){
-                    if(radioButtonHor.isSelected() || radioButtonHorVer.isSelected()){
-                        if(CorrectTraj.HC.containsKey(item)){
-                            val = CorrectTraj.HC.get(item).getField();                        
-                            DeltaK = correctFactor*CorrectTraj.calcHCorrection(item,DisplayTraj.XRef.get(item));
-                            val = val + DeltaK;
-                            CorrectTraj.HC.get(item).setField(val);
-                            Thread.sleep(2000);
-                            step++;
-                            updateProgress(step,total);
-                        }
-                    }
-                    if(radioButtonHorVer.isSelected() || radioButtonVer.isSelected()){
-                        if(CorrectTraj.VC.containsKey(item)){
-                            val = CorrectTraj.VC.get(item).getField();                        
-                            DeltaK = correctFactor*CorrectTraj.calcVCorrection(item,DisplayTraj.YRef.get(item));
-                            val = val + DeltaK;
-                            CorrectTraj.VC.get(item).setField(val);
-                            Thread.sleep(2000);
-                            step++;
-                            updateProgress(step,total);
-                        }
+                for(CorrectionBlock block: CorrectionElementsSelected){
+                    CorrectTraj = block.getCorrection1to1();
+
+                    if (radioButtonHorizontal.isSelected()){
+                        total += CorrectTraj.getHC().size();
+                    } else if (radioButtonVertical.isSelected()){
+                        total += CorrectTraj.getVC().size();
+                    } else if (radioButtonHorVer.isSelected()){
+                        total += CorrectTraj.getVC().size()+CorrectTraj.getHC().size();
                     }
                 }
                 
+                
+                for(CorrectionBlock block: CorrectionElementsSelected){
+                    CorrectTraj = block.getCorrection1to1();
+                    
+                    List<xal.smf.impl.BPM> BPMList = block.getBlockBPM();
+                    
+                    //reads ref trajectory
+                    DisplayTraj.readReferenceTrajectoryFromFile(accl, comboBoxRefTrajectory.getValue());
+
+                    //correct trajectory
+                    for(xal.smf.impl.BPM item : BPMList){
+                        if(radioButtonHorizontal.isSelected() || radioButtonHorVer.isSelected()){
+                            if(CorrectTraj.HC.containsKey(item) && !abortFlag){
+                                val = CorrectTraj.HC.get(item).getField();                        
+                                DeltaK = correctFactor*CorrectTraj.calcHCorrection(item,DisplayTraj.XRef.get(item));
+                                val = val + DeltaK;
+                                CorrectTraj.HC.get(item).setField(val);
+                                Thread.sleep(2000);
+                                step++;
+                                updateProgress(step,total);
+                            }
+                        }
+                        if(radioButtonHorVer.isSelected() || radioButtonVertical.isSelected()){
+                            if(CorrectTraj.VC.containsKey(item) && !abortFlag){
+                                val = CorrectTraj.VC.get(item).getField();                        
+                                DeltaK = correctFactor*CorrectTraj.calcVCorrection(item,DisplayTraj.YRef.get(item));
+                                val = val + DeltaK;
+                                CorrectTraj.VC.get(item).setField(val);
+                                Thread.sleep(2000);
+                                step++;
+                                updateProgress(step,total);
+                            }
+                        }
+                    }
+                }
                 //when the scan finishes set the label and progress bar to zero
                 labelProgressCorrection.setVisible(false);
                 progressBarCorrection.setVisible(false);
                 updateProgress(0,total);
-                
+
                 return null;
             };
             
@@ -610,85 +689,96 @@ public class FXMLController implements Initializable {
     @FXML
     private void handleMeasureResponseSVD(ActionEvent event) {
         
-        TextInputDialog dialog = new TextInputDialog("0.002");
-        dialog.setTitle("Set Field Variation");
-        dialog.setHeaderText(null);
-        dialog.setContentText("Enter Corrector strength (T.m) step:");
-        Optional<String> result = dialog.showAndWait();
-        double resultval=0.002;
-        if (result.isPresent()){
-            resultval = Double.parseDouble(result.get());
-            if ( resultval<= 0.0 || resultval > 0.01){
-               resultval=0.002;
-            }   
-        }    
- 
-        final double Dk = resultval;
+        int blockIndex = listViewBlockSelection.getSelectionModel().getSelectedIndex();
         
-        //print knobs
-        textAreaSVD.clear();
+        if(!listViewBlockSelection.getSelectionModel().getSelectedItem().getblockName().isEmpty()){
         
-        
-        CorrectSVDMatrix = new ArrayList<>();
-        int i =0;
-        for(String item: CorrectionElementsSelected.keySet()){ 
-            CorrectSVDMatrix.add(new CorrectionSVD()); 
-            CorrectSVDMatrix.get(i).defineKnobs(accl,CorrectionElementsSelected.get(item).getBlockBPM(),CorrectionElementsSelected.get(item).getBlockHC(),CorrectionElementsSelected.get(item).getBlockVC());
-            textAreaSVD.setText(textAreaSVD.getText()+CorrectionElementsSelected.get(item).getBlockName()+"\n");
+            TextInputDialog dialog = new TextInputDialog("0.002");
+            dialog.setTitle("Set Field Variation");
+            dialog.setHeaderText(null);
+            dialog.setContentText("Enter Corrector strength (T.m) step:");
+            Optional<String> result = dialog.showAndWait();
+            double resultval=0.002;
+            if (result.isPresent()){
+                resultval = Double.parseDouble(result.get());
+                if ( resultval<= 0.0 || resultval > 0.01){
+                   resultval=0.002;
+                }   
+            }    
+
+            final double Dk = resultval;
+
+            //print knobs
+            textAreaSVD.clear();
+
+            //CorrectionElementsSelected.get(blockName).initializeSVDCorrection(accl);
+            textAreaSVD.setText(textAreaSVD.getText()+CorrectionElementsSelected.get(blockIndex).getblockName()+"\n");
             textAreaSVD.setText(textAreaSVD.getText()+"Horizontal Correctors: \n");
-            for(xal.smf.impl.HDipoleCorr hcorr : CorrectSVDMatrix.get(i).HC){
-                textAreaSVD.setText(textAreaSVD.getText()+hcorr.toString()+"; ");               
-            }
+            CorrectionElementsSelected.get(blockIndex).getBlockHC().forEach(hcorr -> textAreaSVD.setText(textAreaSVD.getText()+hcorr.toString()+"; "));               
             textAreaSVD.setText(textAreaSVD.getText()+"\n");
             textAreaSVD.setText(textAreaSVD.getText()+"Vertical correctors: \n");
-            for(xal.smf.impl.VDipoleCorr vcorr : CorrectSVDMatrix.get(i).VC){
-                textAreaSVD.setText(textAreaSVD.getText()+vcorr.toString()+"; ");     
-            }
+            CorrectionElementsSelected.get(blockIndex).getBlockVC().forEach(vcorr -> textAreaSVD.setText(textAreaSVD.getText()+vcorr.toString()+"; "));     
             textAreaSVD.setText(textAreaSVD.getText()+"\n");
-            i++;
-        }
+           
         
-        Task<Void> task;
-        task = new Task<Void>() {
-            
-            @Override
-            protected Void call() throws Exception {
-                
-                progressSVD = true;
-                int progress = 0;
-                
-                for(CorrectionSVD item: CorrectSVDMatrix){ 
-                    item.measureTRMHorizontal(Dk);
+
+            Task<Void> task;
+            task = new Task<Void>() {
+
+                @Override
+                protected Void call() throws Exception {
+
+                    int progress = 0;
+                    CorrectionElementsSelected.get(blockIndex).getCorrectionSVD().measureTRMHorizontal(Dk);
+                    updateProgress(1,2);
+                    CorrectionElementsSelected.get(blockIndex).getCorrectionSVD().measureTRMVertical(Dk);
+                    CorrectionElementsSelected.get(blockIndex).setOkSVD(true);
                     progress++;
-                    updateProgress(progress,CorrectSVDMatrix.size()*2);
-                    item.measureTRMVertical(Dk);
-                    progress++;
-                    updateProgress(progress,CorrectSVDMatrix.size()*2);
-                }
-                
-                //Enable SVD calculation button
-                buttonCalcCorrectSVD.setDisable(false); 
-                
-                //when the scan finishes set the label and progress bar to zero
-                labelProgressCorrection.setVisible(false);
-                progressBarCorrection.setVisible(false);
-                updateProgress(0,CorrectSVDMatrix.size()*2);
-                
-                progressSVD = false;
-                
-                return null;
+                    updateProgress(2,2);
+
+                    //when the scan finishes set the label and progress bar to zero
+                    labelProgressCorrection.setVisible(false);
+                    progressBarCorrection.setVisible(false);
+                    updateProgress(0,2);
+                    textAreaSVD.setText("RESPONSE MEASUREMENT: Finished!");
+                    buttonVerifyMatrixSVD.setDisable(false);
+                    buttonCalcCorrectSVD.setDisable(false);
+                    listViewBlockSelection.refresh();                    
+                    
+                    try {
+                        DisplayTraj.readBPMListTrajectory(accl.getAllNodesOfType("BPM"));
+                    } catch (ConnectionException | GetException ex) {
+                        Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    buttonSVDfromModel.setDisable(false);
+                    buttonVerifyMatrixSVD.setDisable(false);
+                    buttonCalcCorrectSVD.setDisable(false);
+                    if (Math.abs(DisplayTraj.getXmax())<trajectoryLimit && Math.abs(DisplayTraj.getYmax())<trajectoryLimit){
+                        buttonMeasureResponseSVD.setDisable(true);
+                    } else {
+                        buttonMeasureResponseSVD.setDisable(false);
+                    }         
+
+                    return null;
+                };
+
             };
-            
-        };
- 
-        Thread calibrate = new Thread(task);
-        calibrate.setDaemon(true); // thread will not prevent application shutdown  
-        progressBarCorrection.progressProperty().bind(task.progressProperty());
-        if (result.isPresent()){
-            labelProgressCorrection.setVisible(true);
-            progressBarCorrection.setVisible(true);
-            labelProgressCorrection.setText("Measuring response matrix...");
-            calibrate.start();
+
+            Thread calibrate = new Thread(task);
+            calibrate.setDaemon(true); // thread will not prevent application shutdown  
+            progressBarCorrection.progressProperty().bind(task.progressProperty());
+            if (result.isPresent()){
+                labelProgressCorrection.setVisible(true);
+                progressBarCorrection.setVisible(true);
+                labelProgressCorrection.setText("Measuring response matrix...");
+                calibrate.start();
+            }
+        } else {
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle("Information Dialog");
+            alert.setHeaderText(null);
+            alert.setContentText("Please select a correction block in the Selected column to measure.");
+            alert.show();
         }
         
     }
@@ -700,55 +790,71 @@ public class FXMLController implements Initializable {
         double[] kickV;
         double[] singVal;
         double svCut;
+        int total = 0;
         double correctionFactor;
         int i = 0;
         
-        svCut = Double.parseDouble(textFieldSingularValCut.getText());       
+        correctionFactor = Double.parseDouble(textFieldCorrectionFactor.getText())/100;
         
         textAreaSVD.clear();
         
-        for(CorrectionSVD matrix: CorrectSVDMatrix){
+        for(CorrectionBlock block: CorrectionElementsSelected){
+            CorrectionSVD matrix = new CorrectionSVD();
+            matrix = block.getCorrectionSVD();
             //reads a new trajectory
             try {
                 DisplayTraj.readBPMListTrajectory(matrix.BPM);
+                DisplayTraj.readReferenceTrajectoryFromFile(accl, comboBoxRefTrajectory.getValue());
             } catch (ConnectionException | GetException ex) {
                 Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
             }
-            kickH = matrix.calculateHCorrection(DisplayTraj, svCut);
-            kickV = matrix.calculateVCorrection(DisplayTraj, svCut);
+            kickH = matrix.calculateHCorrection(DisplayTraj);
+            kickV = matrix.calculateVCorrection(DisplayTraj);
 
             textAreaSVD.setText(textAreaSVD.getText()+"Horizontal Corrector strenghts \n");
             i = 0;
             for(xal.smf.impl.HDipoleCorr hcorr: matrix.HC){
-                textAreaSVD.setText(textAreaSVD.getText()+hcorr.toString()+" : "+String.format("%.3f",kickH[i])+"\n");
+                textAreaSVD.setText(textAreaSVD.getText()+hcorr.toString()+" : "+String.format("%.3f",correctionFactor*kickH[i])+"\n");
                 i++;
             }
             textAreaSVD.setText(textAreaSVD.getText()+"Vertical Corrector strenghts \n");
             i = 0;
             for(xal.smf.impl.VDipoleCorr vcorr: matrix.VC){
-                textAreaSVD.setText(textAreaSVD.getText()+vcorr.toString()+" : "+String.format("%.3f",kickV[i])+"\n");
+                textAreaSVD.setText(textAreaSVD.getText()+vcorr.toString()+" : "+String.format("%.3f",correctionFactor*kickV[i])+"\n");
                 i++;
             }
 
             singVal = matrix.getSigularValuesH();
             textAreaSVD.setText(textAreaSVD.getText()+"Horizontal Singular Values \n");
             for(int j = 0; j<singVal.length; j++){
-                textAreaSVD.setText(textAreaSVD.getText()+String.format("%.3f", singVal[j])+"\n");
+                textAreaSVD.setText(textAreaSVD.getText()+String.format("%.3f", singVal[j])+";");
             }
-            singVal = matrix.getSigularValuesV();
+            textAreaSVD.setText(textAreaSVD.getText()+"\n");
+            for(int j =0; j<singVal.length; j++){
+                if (singVal[j]>matrix.getCutSVD()){
+                    total +=1;
+                }
+            }
+            textAreaSVD.setText(textAreaSVD.getText()+"Number of horizontal singular values used: "+total+"\n");
+            total = 0;
+            singVal = matrix.getSigularValuesV();           
             textAreaSVD.setText(textAreaSVD.getText()+"Vertical Singular Values \n");
             for(int j = 0; j<singVal.length; j++){
-                textAreaSVD.setText(textAreaSVD.getText()+String.format("%.3f", singVal[j])+"\n");
+                textAreaSVD.setText(textAreaSVD.getText()+String.format("%.3f", singVal[j])+";");
             }
+            textAreaSVD.setText(textAreaSVD.getText()+"\n");
+            for(int j =0; j<singVal.length; j++){
+                if (singVal[j]>matrix.getCutSVD()){
+                    total +=1;
+                }
+            }
+            textAreaSVD.setText(textAreaSVD.getText()+"Number of vertical singular values used: "+total+"\n");
+
         }
-        
-        //Enable SVD correction button
-        buttonCorrectSVD.setDisable(false);
         
     }
     
-    @FXML
-    private void handleCorrectSVD(ActionEvent event) {
+    private void correctSVD() {
         
         double[] kickH;
         double[] kickV;
@@ -759,60 +865,67 @@ public class FXMLController implements Initializable {
         int i = 0;
         int j = 0;
         
-        svCut = Double.parseDouble(textFieldSingularValCut.getText());
-        correctionFactor = Double.parseDouble(textFieldCorrFactorSVD.getText())/100;
+        correctionFactor = Double.parseDouble(textFieldCorrectionFactor.getText())/100;
         
-        for(CorrectionSVD matrix: CorrectSVDMatrix){
+        for(CorrectionBlock block: CorrectionElementsSelected){
+            CorrectionSVD matrix = new CorrectionSVD();            
+            matrix = block.getCorrectionSVD();
             //reads a new trajectory
             try {
                 DisplayTraj.readBPMListTrajectory(matrix.BPM);
+                try {
+                    DisplayTraj.readReferenceTrajectoryFromFile(accl, comboBoxRefTrajectory.getValue());
+                } catch (IOException ex) {
+                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                }
             } catch (ConnectionException | GetException ex) {
                 Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
             }
-            kickH = matrix.calculateHCorrection(DisplayTraj, svCut);
-            kickV = matrix.calculateVCorrection(DisplayTraj, svCut);
+            kickH = matrix.calculateHCorrection(DisplayTraj);
+            kickV = matrix.calculateVCorrection(DisplayTraj);
 
-        
-            double aux = 0;
-            i = 0;
-            if(radioButtonHorSVD.isSelected() || radioButtonHorVerSVD.isSelected()){
-                for(xal.smf.impl.HDipoleCorr hcorr: matrix.HC){
-                    try {
-                        aux = hcorr.getField();
-                    } catch (ConnectionException ex) {
-                        Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-                    } catch (GetException ex) {
-                        Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                    aux = aux + correctionFactor*kickH[i];
-                    i++;
-                    try {
-                        hcorr.setField(aux);
-                    } catch (ConnectionException ex) {
-                        Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-                    } catch (PutException ex) {
-                        Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+            //Check steerer values
+            double maxkickH = Math.abs(Arrays.stream(kickH).map(n -> Math.abs(n)).max().orElse(0.0));
+            double maxkickV = Math.abs(Arrays.stream(kickV).map(n -> Math.abs(n)).max().orElse(0.0));
+                       
+            if(maxkickH<steererLimit && maxkickV<steererLimit){
+                double aux = 0;
+                i = 0;
+                if(radioButtonHorizontal.isSelected() || radioButtonHorVer.isSelected()){
+                    for(xal.smf.impl.HDipoleCorr hcorr: matrix.HC){
+                        if(!abortFlag){
+                            try {
+                                aux = hcorr.getField();
+                            } catch (ConnectionException | GetException ex) {
+                                Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                            aux = aux + correctionFactor*kickH[i];
+                            i++;
+                            try {
+                                hcorr.setField(aux);
+                            } catch (ConnectionException | PutException ex) {
+                                Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        }
                     }
                 }
-            }
-            j = 0;
-            if(radioButtonVerSVD.isSelected() || radioButtonHorVerSVD.isSelected()){
-                for(xal.smf.impl.VDipoleCorr vcorr: matrix.VC){
-                    try {
-                        aux = vcorr.getField();
-                    } catch (ConnectionException ex) {
-                        Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-                    } catch (GetException ex) {
-                        Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                    aux = aux + correctionFactor*kickV[j];
-                    j++;
-                    try {
-                        vcorr.setField(aux);
-                    } catch (ConnectionException ex) {
-                        Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-                    } catch (PutException ex) {
-                        Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                j = 0;
+                if(radioButtonVertical.isSelected() || radioButtonHorVer.isSelected()){
+                    for(xal.smf.impl.VDipoleCorr vcorr: matrix.VC){
+                        if(!abortFlag){
+                            try {
+                                aux = vcorr.getField();
+                            } catch (ConnectionException | GetException ex) {
+                                Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                            aux = aux + correctionFactor*kickV[j];
+                            j++;
+                            try {
+                                vcorr.setField(aux);
+                            } catch (ConnectionException | PutException ex) {
+                                Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        }
                     }
                 }
             }
@@ -824,129 +937,196 @@ public class FXMLController implements Initializable {
     private void handleContextMenu(ContextMenuEvent event) {
         
         final MenuItem addBlock = new MenuItem("Add Block");
+        final MenuItem loadBlock = new MenuItem("Load Block");
         final MenuItem editBlock = new MenuItem("Edit Selected Block");
         final MenuItem deleteBlock = new MenuItem("Remove Selected Block");
-        final ContextMenu menu = new ContextMenu(addBlock, new SeparatorMenuItem(), editBlock, deleteBlock); 
+        final MenuItem saveBlock = new MenuItem("Save Selected Block");
+        final ContextMenu menu;
+        final CorrectionBlock blockItem = listViewBlockDefinition.getSelectionModel().getSelectedItem();
+
+        if (blockItem == null){
+            menu = new ContextMenu(addBlock, loadBlock);
+        } else {
+            menu = new ContextMenu(addBlock, loadBlock, new SeparatorMenuItem(), editBlock, deleteBlock, saveBlock); 
+        }
  
-        addBlock.setOnAction(new EventHandler<ActionEvent>() {
-            @Override public void handle(ActionEvent event) {
-                Stage stage; 
-                Parent root;
-                URL    url  = null;
-                String sceneFile = "/fxml/CorrectionElementSelection.fxml";
-                try
-                {
-                    stage = new Stage();
-                    url  = getClass().getResource(sceneFile);
-                    FXMLLoader loader = new FXMLLoader();
-                    loader.setLocation(MainApp.class.getResource(sceneFile));
-                    root = loader.load();
-                    root.getStylesheets().add("/styles/Styles.css");
-                    stage.setScene(new Scene(root));
-                    stage.setTitle("Elements for Correction: Block Definition");
-                    stage.initModality(Modality.APPLICATION_MODAL);
-                    stage.initOwner(listViewBlockDefinition.getScene().getWindow());
-                    CorrectionElementSelectionController loginController = loader.getController();
-                    loginController.loggedInProperty().addListener((obs, wasLoggedIn, isNowLoggedIn) -> {
-                        if (isNowLoggedIn) {
-                            if(loginController.getChangedSelectionList()){
-                                CorrectionBlock newBlock = new CorrectionBlock();
-                                newBlock.setBlockBPM(loginController.getBPMSelectionList());
-                                newBlock.setBlockHC(loginController.getHCSelectionList());
-                                newBlock.setBlockVC(loginController.getVCSelectionList());
-                                for(int i=0; i<(defined.size()+selected.size()); i++){
-                                    if(!selected.contains("newBlock"+i) && !defined.contains("newBlock"+i)){
-                                        newBlock.setBlockName("newBlock"+i);
-                                        break;
-                                    }
-                                }
-                                CorrectionElements.put(newBlock.getBlockName(),newBlock);
-                                defined.add(newBlock.getBlockName());
-                            }        
-                            stage.close();
+        addBlock.setOnAction((ActionEvent event1) -> {
+            Stage stage;
+            Parent root;
+            URL    url  = null;
+            String sceneFile = "/fxml/CorrectionElementSelection.fxml";
+            try
+            {
+                stage = new Stage();
+                url  = getClass().getResource(sceneFile);
+                FXMLLoader loader = new FXMLLoader();
+                loader.setLocation(MainApp.class.getResource(sceneFile));
+                root = loader.load();
+                root.getStylesheets().add("/styles/Styles.css");
+                stage.setScene(new Scene(root));
+                stage.setTitle("Elements for Correction: Block Definition");
+                stage.initModality(Modality.APPLICATION_MODAL);
+                stage.initOwner(listViewBlockDefinition.getScene().getWindow());
+                CorrectionElementSelectionController loginController = loader.getController();
+                loginController.loggedInProperty().addListener((obs, wasLoggedIn, isNowLoggedIn) -> {
+                    if (isNowLoggedIn) {
+                        if(loginController.getChangedSelectionList()){
+                            CorrectionBlock newBlock = new CorrectionBlock();
+                            newBlock.setBlockBPM(loginController.getBPMSelectionList());
+                            newBlock.setBlockHC(loginController.getHCSelectionList());
+                            newBlock.setBlockVC(loginController.getVCSelectionList());
+                            newBlock.setOk1to1(false);
+                            newBlock.setOkSVD(false);
+                            CorrectionElements.forEach(block -> {
+                                if (block.getblockName().equals(newBlock.getblockName()))
+                                    newBlock.setblockName(newBlock.getblockName()+"_new");
+                            
+                            });
+                            CorrectionElementsSelected.forEach(block -> {
+                                if (block.getblockName().equals(newBlock.getblockName()))
+                                    newBlock.setblockName(newBlock.getblockName()+"_new");
+                            
+                            });                             
+                            newBlock.initialize1to1Correction(accl);
+                            newBlock.initializeSVDCorrection(accl);
+                            CorrectionElements.add(newBlock);                            
+                            CorrectionElements.sort((ele1,ele2)-> Double.compare(ele1.getBlockBPM().get(0).getParent().getPosition()+ele1.getBlockBPM().get(0).getPosition(),ele2.getBlockBPM().get(0).getParent().getPosition()+ele2.getBlockBPM().get(0).getPosition()));
                         }
-                    });
-                    loginController.populateElementGrid(accl);
-                    stage.showAndWait();
-                }
-                catch ( IOException ex )
-                {
-                    System.out.println( "Exception on FXMLLoader.load()" );
-                    System.out.println( "  * url: " + url );
-                    System.out.println( "  * " + ex );
-                    System.out.println( "    ----------------------------------------\n" );
-                    try {
-                        throw ex;
-                    } catch (IOException ex1) {
-                        Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex1);
+                        stage.close();
                     }
+                });
+                loginController.populateElementGrid(accl);
+                stage.showAndWait();
+            }
+            catch ( IOException ex )
+            {
+                System.out.println( "Exception on FXMLLoader.load()" );
+                System.out.println( "  * url: " + url );
+                System.out.println( "  * " + ex );
+                System.out.println( "    ----------------------------------------\n" );
+                try {
+                    throw ex;
+                } catch (IOException ex1) {
+                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex1);
                 }
             }
         });
         
-        editBlock.setOnAction(new EventHandler<ActionEvent>() {
-            @Override public void handle(ActionEvent event) {
-            Stage stage; 
-                Parent root;
-                URL    url  = null;
-                String sceneFile = "/fxml/CorrectionElementSelection.fxml";
-                try
-                {
-                    stage = new Stage();
-                    url  = getClass().getResource(sceneFile);
-                    FXMLLoader loader = new FXMLLoader();
-                    loader.setLocation(MainApp.class.getResource(sceneFile));
-                    root = loader.load();
-                    root.getStylesheets().add("/styles/Styles.css");
-                    stage.setScene(new Scene(root));
-                    stage.setTitle("Elements for Correction: Block Definition");
-                    stage.initModality(Modality.APPLICATION_MODAL);
-                    stage.initOwner(listViewBlockDefinition.getScene().getWindow());
-                    CorrectionElementSelectionController loginController = loader.getController();
-                    loginController.loggedInProperty().addListener((obs, wasLoggedIn, isNowLoggedIn) -> {
-                        if (isNowLoggedIn) {
-                            if(loginController.getChangedSelectionList()){
-                                CorrectionElements.get(listViewBlockDefinition.getSelectionModel().getSelectedItem()).setBlockBPM(loginController.getBPMSelectionList());
-                                CorrectionElements.get(listViewBlockDefinition.getSelectionModel().getSelectedItem()).setBlockHC(loginController.getHCSelectionList());
-                                CorrectionElements.get(listViewBlockDefinition.getSelectionModel().getSelectedItem()).setBlockVC(loginController.getVCSelectionList());
-                            }
-                            stage.close();
+        editBlock.setOnAction((ActionEvent event1) -> {
+            Stage stage;
+            Parent root;
+            URL    url  = null;
+            String sceneFile = "/fxml/CorrectionElementSelection.fxml";
+            try
+            {
+                stage = new Stage();
+                url  = getClass().getResource(sceneFile);
+                FXMLLoader loader = new FXMLLoader();
+                loader.setLocation(MainApp.class.getResource(sceneFile));
+                root = loader.load();
+                root.getStylesheets().add("/styles/Styles.css");
+                stage.setScene(new Scene(root));
+                stage.setTitle("Elements for Correction: Block Definition");
+                stage.initModality(Modality.APPLICATION_MODAL);
+                stage.initOwner(listViewBlockDefinition.getScene().getWindow());
+                CorrectionElementSelectionController loginController = loader.getController();
+                loginController.loggedInProperty().addListener((obs, wasLoggedIn, isNowLoggedIn) -> {
+                    if (isNowLoggedIn) {
+                        if(loginController.getChangedSelectionList()){
+                            CorrectionElements.get(listViewBlockDefinition.getSelectionModel().getSelectedIndex()).setBlockBPM(loginController.getBPMSelectionList());
+                            CorrectionElements.get(listViewBlockDefinition.getSelectionModel().getSelectedIndex()).setBlockHC(loginController.getHCSelectionList());
+                            CorrectionElements.get(listViewBlockDefinition.getSelectionModel().getSelectedIndex()).setBlockVC(loginController.getVCSelectionList());
+                            CorrectionElements.get(listViewBlockDefinition.getSelectionModel().getSelectedIndex()).setOk1to1(false);
+                            CorrectionElements.get(listViewBlockDefinition.getSelectionModel().getSelectedIndex()).setOkSVD(false);
+                            CorrectionElements.get(listViewBlockDefinition.getSelectionModel().getSelectedIndex()).initialize1to1Correction(accl);
+                            CorrectionElements.get(listViewBlockDefinition.getSelectionModel().getSelectedIndex()).initializeSVDCorrection(accl);
+                            CorrectionElements.sort((ele1,ele2)-> Double.compare(ele1.getBlockBPM().get(0).getParent().getPosition()+ele1.getBlockBPM().get(0).getPosition(),ele2.getBlockBPM().get(0).getParent().getPosition()+ele2.getBlockBPM().get(0).getPosition()));                                
                         }
-                    });
-                    loginController.populateElementGrid(accl);
-                    loginController.enterElementstoEdit(CorrectionElements.get(listViewBlockDefinition.getSelectionModel().getSelectedItem()));
-                    stage.showAndWait();
-                }
-                catch ( IOException ex )
-                {
-                    System.out.println( "Exception on FXMLLoader.load()" );
-                    System.out.println( "  * url: " + url );
-                    System.out.println( "  * " + ex );
-                    System.out.println( "    ----------------------------------------\n" );
-                    try {
-                        throw ex;
-                    } catch (IOException ex1) {
-                        Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex1);
+                        stage.close();
                     }
+                });
+                loginController.populateElementGrid(accl);
+                loginController.enterElementstoEdit(CorrectionElements.get(listViewBlockDefinition.getSelectionModel().getSelectedIndex()));
+                stage.showAndWait();
+            }
+            catch ( IOException ex )
+            {
+                System.out.println( "Exception on FXMLLoader.load()" );
+                System.out.println( "  * url: " + url );
+                System.out.println( "  * " + ex );
+                System.out.println( "    ----------------------------------------\n" );
+                try {
+                    throw ex;
+                } catch (IOException ex1) {
+                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex1);
                 }
             }
         });
         
-        deleteBlock.setOnAction(new EventHandler<ActionEvent>() {
-            @Override public void handle(ActionEvent event) {
-                int index = listViewBlockDefinition.getSelectionModel().getSelectedIndex();
-                String removeName = listViewBlockDefinition.getSelectionModel().getSelectedItem();
-                if(removeName != null){
-                    CorrectionElements.remove(removeName);
-                    defined.remove(removeName);
-                    //defined.sorted();
-                    listViewBlockDefinition.getItems().remove(removeName);
-                    listViewBlockDefinition.getSelectionModel().clearSelection();
-                }
-               
+        deleteBlock.setOnAction((ActionEvent event1) -> {
+            int index = listViewBlockDefinition.getSelectionModel().getSelectedIndex();
+            CorrectionBlock removeName = listViewBlockDefinition.getSelectionModel().getSelectedItem();
+            if(removeName != null){
+                CorrectionElements.remove(removeName);                
+                listViewBlockDefinition.getSelectionModel().clearSelection();
             }
         });
         
+        loadBlock.setOnAction((ActionEvent event1) -> {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Load new correction block");
+            
+            //Set extension filter
+            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("XML files (*.xml)", "*.xml");
+            fileChooser.getExtensionFilters().add(extFilter);
+            
+            //Show save file dialog
+            File selectedFile = fileChooser.showOpenDialog(null);
+            if (selectedFile != null) {
+                CorrectionBlock newBlock = new CorrectionBlock();                
+                newBlock.loadBlock(selectedFile.getAbsoluteFile(), accl);
+                CorrectionElements.forEach(block -> {
+                    if (block.getblockName().equals(newBlock.getblockName()))
+                        newBlock.setblockName(newBlock.getblockName()+"_new");
+
+                });
+                CorrectionElementsSelected.forEach(block -> {
+                    if (block.getblockName().equals(newBlock.getblockName()))
+                        newBlock.setblockName(newBlock.getblockName()+"_new");
+
+                });         
+                CorrectionElements.add(newBlock);
+                CorrectionElements.sort((ele1,ele2)-> Double.compare(ele1.getBlockBPM().get(0).getParent().getPosition()+ele1.getBlockBPM().get(0).getPosition(),ele2.getBlockBPM().get(0).getParent().getPosition()+ele2.getBlockBPM().get(0).getPosition()));                                                         
+            }
+        });
+        
+        saveBlock.setOnAction((ActionEvent event1) -> {
+            CorrectionBlock newBlock = new CorrectionBlock();
+            newBlock = listViewBlockDefinition.getSelectionModel().getSelectedItem();
+            
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Save correction block");
+            fileChooser.setInitialFileName(newBlock.getblockName());
+            
+            //Set extension filter
+            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("XML files (*.xml)", "*.xml");
+            fileChooser.getExtensionFilters().add(extFilter);
+            
+            //Show save file dialog
+            File selectedFile = fileChooser.showSaveDialog(null);
+            if (selectedFile != null) {
+                XmlDataAdaptor da = XmlDataAdaptor.newEmptyDocumentAdaptor();
+                DataAdaptor trajectoryAdaptor =  da.createChild("CorrectionData");
+                trajectoryAdaptor.setValue("title", selectedFile.getAbsolutePath());
+                trajectoryAdaptor.setValue("date", new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date()));
+                newBlock.saveBlock(trajectoryAdaptor);
+                try {
+                    da.writeTo(selectedFile.getAbsoluteFile());
+                } catch (IOException ex) {
+                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                }                
+            }
+        });
         
         menu.show(listViewBlockDefinition.getScene().getWindow(), event.getScreenX(), event.getScreenY());
         
@@ -955,32 +1135,475 @@ public class FXMLController implements Initializable {
 
     @FXML
     private void handleRemoveSelectedBlock(ActionEvent event) {
-        String removeName = listViewBlockSelection.getSelectionModel().getSelectedItem();
+        CorrectionBlock removeName = listViewBlockSelection.getSelectionModel().getSelectedItem();
         if(removeName != null){
-            CorrectionElements.put(removeName,CorrectionElementsSelected.get(removeName));
-            defined.add(removeName);
-            //defined.sorted();
-            CorrectionElementsSelected.remove(removeName);
-            selected.remove(removeName);
-            //selected.sorted();
+            CorrectionElements.add(removeName);
+            CorrectionElements.sort((ele1,ele2)-> Double.compare(ele1.getBlockBPM().get(0).getParent().getPosition()+ele1.getBlockBPM().get(0).getPosition(),ele2.getBlockBPM().get(0).getParent().getPosition()+ele2.getBlockBPM().get(0).getPosition()));                                
+            CorrectionElementsSelected.remove(removeName);            
             listViewBlockSelection.getSelectionModel().clearSelection();
         }
     }
     
     @FXML
     private void handleSelectedBlock(ActionEvent event) {
-        String includeName = listViewBlockDefinition.getSelectionModel().getSelectedItem();
+        CorrectionBlock includeName = listViewBlockDefinition.getSelectionModel().getSelectedItem();
         if(includeName != null){            
-            CorrectionElementsSelected.put(includeName, CorrectionElements.get(includeName));
-            selected.add(includeName);
-            //selected.sorted();
-            CorrectionElements.remove(includeName);
-            defined.remove(includeName);
-            //defined.sorted();
+            CorrectionElementsSelected.add(includeName);            
+            CorrectionElementsSelected.sort((ele1,ele2)-> Double.compare(ele1.getBlockBPM().get(0).getParent().getPosition()+ele1.getBlockBPM().get(0).getPosition(),ele2.getBlockBPM().get(0).getParent().getPosition()+ele2.getBlockBPM().get(0).getPosition()));                                
+            CorrectionElements.remove(includeName);            
             listViewBlockDefinition.getSelectionModel().clearSelection();
         }
    
     }
 
-  
+    @FXML
+    private void handleChooseRefTrajectory(ActionEvent event) {
+        //read new reference trajectory file
+        try {
+            DisplayTraj.readReferenceTrajectoryFromFile(accl, comboBoxRefTrajectory.getValue());
+        } catch (IOException ex) {
+            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+        }        
+    }
+
+    @FXML
+    private void handleCorrectTrajectory(ActionEvent event) {
+        boolean correctSVD = true;
+        boolean correct1to1 = true;
+        
+        //enable Abort button
+        //buttonAbort.setDisable(false);
+        
+        //check trajectory
+        final List<xal.smf.impl.BPM> BPMList = new ArrayList<>();
+        final int maxBPM = 0;
+        BPMList.addAll(accl.getAllNodesOfType("BPM"));            
+        try {
+            DisplayTraj.readBPMListTrajectory(BPMList);
+        } catch (ConnectionException | GetException ex) {
+            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+        }          
+
+        for(CorrectionBlock blockName: CorrectionElementsSelected){
+            if(!blockName.isOkSVD() || Math.abs(DisplayTraj.getXmax())>trajectoryLimit || Math.abs(DisplayTraj.getYmax())>trajectoryLimit){                
+                correctSVD = false;                
+            }
+            if(!blockName.isOk1to1()){
+                correct1to1 = false;
+            }
+        }
+               
+        if(radiobuttonCorrectSVD.isSelected() && correctSVD){
+            correctSVD();
+        } else if (radiobuttonCorrect1to1.isSelected() && correct1to1){
+            correct1to1();
+        } else {
+            Alert alert = new Alert(AlertType.WARNING);
+            alert.setTitle("Warning Dialog");
+            alert.setHeaderText(null);
+            alert.setContentText("One (or more) reponse matrix is not ready for correction or the trajectory limit is exceeded! Please measure the reponse before correcting the trajectory.");
+            alert.show();
+        }
+        
+        //disable Abort button
+        //buttonAbort.setDisable(true);
+        abortFlag = false;
+        
+    }
+
+    @FXML
+    private void handleMeasureResponseSVDfromModel(ActionEvent event) {
+        CorrectionBlock blockName = listViewBlockSelection.getSelectionModel().getSelectedItem();
+        
+        if(blockName != null){
+            
+            TextInputDialog dialog = new TextInputDialog("0.002");
+            dialog.setTitle("Set Field Variation");
+            dialog.setHeaderText(null);
+            dialog.setContentText("Enter Corrector strength (T.m) step:");
+            Optional<String> result = dialog.showAndWait();
+            double resultval=0.002;
+            if (result.isPresent()){
+                resultval = Double.parseDouble(result.get());
+                if ( resultval<= 0.0 || resultval > 0.01){
+                   resultval=0.002;
+                }   
+            }    
+
+            final double Dk = resultval;
+
+            //print knobs
+            textAreaSVD.clear();
+
+            //CorrectionElementsSelected.get(blockName).initializeSVDCorrection(accl);
+            textAreaSVD.setText(textAreaSVD.getText()+blockName.getblockName()+"\n");
+            textAreaSVD.setText(textAreaSVD.getText()+"Horizontal Correctors: \n");
+            blockName.getBlockHC().forEach(hcorr -> textAreaSVD.setText(textAreaSVD.getText()+hcorr.toString()+"; "));               
+            textAreaSVD.setText(textAreaSVD.getText()+"\n");
+            textAreaSVD.setText(textAreaSVD.getText()+"Vertical correctors: \n");
+            blockName.getBlockVC().forEach(vcorr -> textAreaSVD.setText(textAreaSVD.getText()+vcorr.toString()+"; "));     
+            textAreaSVD.setText(textAreaSVD.getText()+"\n");
+                        
+            Task<Void> task;
+            task = new Task<Void>() {
+
+                @Override
+                protected Void call() throws Exception {
+
+                    int progress = 0;
+                    blockName.getCorrectionSVD().calculateTRMHorizontal(Dk);
+                    updateProgress(1,2);
+                    blockName.getCorrectionSVD().calculateTRMVertical(Dk);
+                    blockName.setOkSVD(true);
+                    progress++;
+                    updateProgress(2,2);
+
+                    //when the scan finishes set the label and progress bar to zero
+                    labelProgressCorrection.setVisible(false);
+                    progressBarCorrection.setVisible(false);
+                    updateProgress(0,2);
+                    buttonVerifyMatrixSVD.setDisable(false);
+                    buttonCalcCorrectSVD.setDisable(false);
+                    listViewBlockSelection.refresh();
+                    textAreaSVD.setText("RESPONSE CALCULATION: Finished!");
+                    try {
+                        DisplayTraj.readBPMListTrajectory(accl.getAllNodesOfType("BPM"));
+                    } catch (ConnectionException | GetException ex) {
+                        Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    buttonSVDfromModel.setDisable(false);
+                    buttonVerifyMatrixSVD.setDisable(false);
+                    buttonCalcCorrectSVD.setDisable(false);
+                    if (Math.abs(DisplayTraj.getXmax())<trajectoryLimit && Math.abs(DisplayTraj.getYmax())<trajectoryLimit){
+                        buttonMeasureResponseSVD.setDisable(true);
+                    } else {
+                        buttonMeasureResponseSVD.setDisable(false);
+                    }    
+
+                    return null;
+                };
+
+            };
+
+            Thread calibrate = new Thread(task);
+            calibrate.setDaemon(true); // thread will not prevent application shutdown  
+            progressBarCorrection.progressProperty().bind(task.progressProperty());
+            if (result.isPresent()){
+                labelProgressCorrection.setVisible(true);
+                progressBarCorrection.setVisible(true);
+                labelProgressCorrection.setText("Calculating response matrix...");
+                calibrate.start();
+            }            
+        } else {
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle("Information Dialog");
+            alert.setHeaderText(null);
+            alert.setContentText("Please select a correction block in the Selected column to measure.");
+            alert.show();
+        }
+        
+    }
+
+    @FXML
+    private void handleMeasureResponse1to1fromModel(ActionEvent event) {
+        
+        TextInputDialog dialog = new TextInputDialog("0.002");
+        dialog.setTitle("Set Field Variation");
+        dialog.setHeaderText(null);
+        dialog.setContentText("Enter Corrector strength (T.m) step:");
+        Optional<String> result = dialog.showAndWait();
+        double resultval=0.002;
+        if (result.isPresent()){
+            resultval = Double.parseDouble(result.get());
+            if ( resultval<= 0.0 || resultval > 0.01){
+               resultval=0.002;
+            }   
+        }   
+        int blockIndex = listViewBlockSelection.getSelectionModel().getSelectedIndex();
+ 
+        final double Dk = resultval;
+        Task<Void> task;
+        task = new Task<Void>() {
+            
+            @Override
+            protected Void call() throws Exception {
+                
+                int progress = 0;
+                int total = CorrectionElementsSelected.get(blockIndex).getCorrection1to1().getHC().size() + CorrectionElementsSelected.get(blockIndex).getCorrection1to1().getVC().size();
+                //make horizontal calibration for each BPM
+                for(xal.smf.impl.BPM bpm : CorrectionElementsSelected.get(blockIndex).getCorrection1to1().getHC().keySet()){
+                    CorrectionElementsSelected.get(blockIndex).getCorrection1to1().simulHCalibration(bpm, Dk);
+                    //update progressbar
+                    progress++;
+                    updateProgress(progress,total);
+                    //System.out.print("Measure: "+bpm.toString()+" and "+CorrectTraj.HC.get(bpm).toString()+"\n");
+                }
+                
+                //make vertical calibration for each BPM
+                for(xal.smf.impl.BPM bpm : CorrectionElementsSelected.get(blockIndex).getCorrection1to1().getVC().keySet()){
+                    CorrectionElementsSelected.get(blockIndex).getCorrection1to1().simulVCalibration(bpm, Dk);
+                    //update progressbar
+                    progress++;
+                    updateProgress(progress,total);
+                    //System.out.print("Measure: "+bpm.toString()+" and "+CorrectTraj.VC.get(bpm).toString()+"\n");
+                }
+                
+                CorrectionElementsSelected.get(blockIndex).setOk1to1(true);
+                //when the scan finishes set the label and progress bar to zero
+                labelProgressCorrection.setVisible(false);
+                progressBarCorrection.setVisible(false);
+                updateProgress(0,total);
+                textArea1to1.setText("RESPONSE CALCULATION: Finished!");
+                listViewBlockSelection.refresh();
+                buttonCheckPair.setDisable(false);
+                buttonMeasureResponse1to1.setDisable(false);
+                button1to1fromModel.setDisable(false);
+                buttonVerifyResponse1to1.setDisable(false);
+                
+                return null;
+            };
+            
+        };
+ 
+        Thread calibrate = new Thread(task);
+        calibrate.setDaemon(true); // thread will not prevent application shutdown  
+        if (result.isPresent()){
+            labelProgressCorrection.setVisible(true);
+            progressBarCorrection.setVisible(true);
+            labelProgressCorrection.setText("Aquiring BPM responses");
+            progressBarCorrection.progressProperty().bind(task.progressProperty());
+            calibrate.start();
+        }
+                
+    }
+    
+    @FXML
+    private void handleVerifySVDResponse(ActionEvent event) {
+        Stage stage; 
+        Parent root;
+        URL    url  = null;
+        String sceneFile = "/fxml/PlotVerifyResponse.fxml";
+        CorrectionBlock blockName = listViewBlockSelection.getSelectionModel().getSelectedItem();
+        
+        try
+        {
+            stage = new Stage();
+            url  = getClass().getResource(sceneFile);
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(MainApp.class.getResource(sceneFile));
+            root = loader.load();
+            root.getStylesheets().add("/styles/Styles.css");
+            stage.setScene(new Scene(root));
+            stage.setTitle("Verify SVD reponse for each corrector");
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initOwner(comboBoxRefTrajectory.getScene().getWindow());
+            VerifyResponseController loginController = loader.getController();
+            loginController.setCorrectionSVD(blockName.getCorrectionSVD());
+            loginController.loggedInProperty().addListener((obs, wasLoggedIn, isNowLoggedIn) -> {
+                if (isNowLoggedIn) {
+                    stage.close();
+                }
+            });            
+            stage.showAndWait();
+        }
+        catch ( IOException ex )
+        {
+            System.out.println( "Exception on FXMLLoader.load()" );
+            System.out.println( "  * url: " + url );
+            System.out.println( "  * " + ex );
+            System.out.println( "    ----------------------------------------\n" );
+            //throw ex;
+        }
+    }
+    
+    @FXML
+    private void handleVerify1to1Response(ActionEvent event) {
+        Stage stage; 
+        Parent root;
+        URL    url  = null;
+        String sceneFile = "/fxml/PlotVerifyResponse.fxml";
+        CorrectionBlock blockName = listViewBlockSelection.getSelectionModel().getSelectedItem();
+        
+        try
+        {
+            stage = new Stage();
+            url  = getClass().getResource(sceneFile);
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(MainApp.class.getResource(sceneFile));
+            root = loader.load();
+            root.getStylesheets().add("/styles/Styles.css");
+            stage.setScene(new Scene(root));
+            stage.setTitle("Verify BPM response");
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initOwner(comboBoxRefTrajectory.getScene().getWindow());
+            VerifyResponseController loginController = loader.getController();
+            loginController.setCorrection1to1(blockName.getCorrection1to1());
+            loginController.loggedInProperty().addListener((obs, wasLoggedIn, isNowLoggedIn) -> {
+                if (isNowLoggedIn) {
+                    stage.close();
+                }
+            });            
+            stage.showAndWait();
+        }
+        catch ( IOException ex )
+        {
+            System.out.println( "Exception on FXMLLoader.load()" );
+            System.out.println( "  * url: " + url );
+            System.out.println( "  * " + ex );
+            System.out.println( "    ----------------------------------------\n" );
+            //throw ex;
+        }
+    }
+        
+    @FXML
+    private void handleSetSVDCutValue(ActionEvent event) {
+        CorrectionBlock selectedName = listViewBlockSelection.getSelectionModel().getSelectedItem();
+        if(selectedName != null){
+            selectedName.getCorrectionSVD().setCutSVD(Double.parseDouble(textFieldSingularValCut.getText()));
+        }      
+    }
+
+    @FXML
+    private void handleSetTrajectoryLimit(ActionEvent event) {
+        /* RBAC service */
+        boolean userData = authenticateWithRBAC();
+        
+        if (userData){       
+            TextInputDialog dialog = new TextInputDialog(String.format("%.4f", trajectoryLimit));
+            dialog.setTitle("Set Trajecotry Maximum Value for SVD");
+            dialog.setHeaderText("Be sure you are allowed to change this quantity!");
+            dialog.setGraphic(new ImageView(this.getClass().getResource("/pictures/warning.png").toString()));
+            dialog.setContentText("Maximum trajectory displacement (mm):");
+            Optional<String> result = dialog.showAndWait();
+            result.ifPresent(name -> trajectoryLimit = Double.parseDouble(name));
+            bottomBar.setStyle("-fx-background-color: #ff0000;");
+            labelExpert.setVisible(true);
+            labelExpert.setText("Trajectory Limit Modified");
+        }
+    }
+
+    @FXML
+    private void handleSetSteererLimit(ActionEvent event) {
+        /* RBAC service */
+        boolean userData = authenticateWithRBAC();
+        
+        if (userData){           
+            TextInputDialog dialog = new TextInputDialog(String.format("%.4f", steererLimit ));
+            dialog.setTitle("Set Steerer Maximum Value");
+            dialog.setHeaderText("Be sure you are allowed to change this quantity!");
+            dialog.setContentText("Maximum steerer strength (T.m) :");
+            dialog.setGraphic(new ImageView(this.getClass().getResource("/pictures/warning.png").toString()));
+            Optional<String> result = dialog.showAndWait();
+            result.ifPresent(name -> steererLimit = Double.parseDouble(name));
+            bottomBar.setStyle("-fx-background-color: #ff0000;");
+            labelExpert.setVisible(true);
+            labelExpert.setText("Trajectory Limit Modified");
+        }
+    }
+    
+    /**
+     * Convention method for authenticating user.
+     * 
+     * <p>
+     * If RBACPlugin couldn't be loaded the application will not use RBAC !!!
+     * @return true if authentication successful, false if not.
+     */
+    private boolean authenticateWithRBAC(){
+      
+        RBACLogin rbacLogin;
+        RBACSubject rbacSubject;
+        //RBAC authentication
+        try {
+            rbacLogin = RBACLogin.newRBACLogin();
+        } catch (RuntimeException e) {
+            System.err.println("RBAC plugin not found. Continuing without RBAC.");
+            return true;
+        }        
+        
+        try {
+                // Try to use the local token.
+                rbacSubject = rbacLogin.authenticate(null, null);
+                System.out.println("Already logged in.");
+                if (rbacSubject != null) return true;
+        } catch (AccessDeniedException | RBACException e) {
+                // Fall to authentication pane
+        }
+
+        try {
+        	System.out.println("Starting authentication.");
+        	
+            final Credentials credentials = AuthenticationPaneFX.getCredentials();
+            if(credentials == null){
+                // User pressed cancel
+            	System.out.println("Exiting...");            	
+                return false;
+            }           
+            rbacSubject = rbacLogin.authenticate(credentials.getUsername(),credentials.getPassword(),credentials.getPreferredRole(),credentials.getIP());
+            System.out.printf("Authentication successful with username %s.\n", credentials.getUsername());
+            return (rbacSubject != null);
+        } catch (AccessDeniedException e) {
+            System.err.printf("Access denied during authentication: %s\n",e.getMessage());
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("Access denied");
+            alert.setHeaderText("Access denied during authentication");
+            alert.setContentText(e.getMessage());
+            alert.showAndWait();            
+            return false;
+        } catch (RBACException e) {
+            System.err.printf("Error while trying to authenticate: %s\n",e.getMessage());
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("Access denied");
+            alert.setHeaderText("Error while trying to authenticate");
+            alert.setContentText(e.getMessage());
+            alert.showAndWait();    
+            return false; 
+        }
+    }
+
+    @FXML
+    private void handleOpenTrajDisplayApp(ActionEvent event) {
+        
+        try {
+            Process processCompile = Runtime.getRuntime().exec("java -jar /Users/nataliamilas/NetBeansProjects/openxal/apps/trajectorydisplay2/target/openxal.apps.trajectorydisplay2-1.0.11-SNAPSHOT.jar");
+        } catch (IOException ex) {
+            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }
+
+    @FXML
+    private void handleLoadDefaultAccelerator(ActionEvent event) {
+        accl = xal.smf.data.XMLDataManager.loadDefaultAccelerator();
+    }
+
+    @FXML
+    private void handleLoadAccelerator(ActionEvent event) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Load Accelerator");
+
+        //Set extension filter
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("XAL files (*.xal)", "*.xal");
+        fileChooser.getExtensionFilters().add(extFilter);
+
+        //Show save file dialog
+        File selectedFile = fileChooser.showOpenDialog(null);
+        if (selectedFile != null) {
+            accl = xal.smf.data.XMLDataManager.acceleratorWithPath(selectedFile.getAbsolutePath());
+        }
+    }
+
+    @FXML
+    private void openHelpURL(ActionEvent event) {
+        final Hyperlink hyperlink = new Hyperlink("https://confluence.esss.lu.se/display/BPCRS/User+documentation+for+Trajectory+Correction+application");
+        HostServices hostServices = (HostServices)this.mainAnchor1.getScene().getWindow().getProperties().get("hostServices");
+        hostServices.showDocument(hyperlink.getText());
+    }
+
+    @FXML
+    private void handleAbortRequest(ActionEvent event) {        
+        textArea1to1.setText("Correction aborted by the user!");
+        textAreaSVD.setText("Correction aborted by the user!");
+        abortFlag = true;
+    }    
+
 }

@@ -2,10 +2,36 @@
     -fx-font-weight: bold;
 }
 
-.default-color0.chart-series-line { -fx-stroke: red; }
-.default-color1.chart-series-line { -fx-stroke: blue; }
-.default-color2.chart-series-line { -fx-stroke: green; } 
+.list-cell:filled:selected:focused:allOk, .list-cell:filled:selected:allOk {
+    -fx-background-color: #24ff24;
+    -fx-text-fill: white;    
+    -fx-font-weight: bolder;
+}
 
-.default-color0.chart-line-symbol { -fx-background-color: red, white; }
-.default-color1.chart-line-symbol { -fx-background-color: blue, white; }
-.default-color2.chart-line-symbol { -fx-background-color: green, white; }
+.list-cell:filled:selected:focused:noneOk, .list-cell:filled:selected:noneOk {
+    -fx-background-color: #ff0000;
+    -fx-text-fill: white;
+}
+
+.list-cell:filled:selected:focused:oneOk, .list-cell:filled:selected:oneOk {
+    -fx-background-color: #ffa500;
+    -fx-text-fill: white;    
+}
+
+.list-cell:filled:hover {
+    -fx-background-color: #0093ff;
+    -fx-text-fill: white;
+}
+
+.list-cell:oneOk { 
+    -fx-text-fill: #ffa500;
+}
+
+.list-cell:noneOk {
+    -fx-text-fill: #ff0000;
+}
+
+.list-cell:allOk {
+    -fx-text-fill: #24ff24;
+    -fx-font-weight: bolder;
+}

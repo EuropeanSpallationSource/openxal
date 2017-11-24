@@ -13,10 +13,12 @@ public class MainApp extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("/fxml/TrajectoryDisplay.fxml"));
-        
+
         Scene scene = new Scene(root);
         scene.getStylesheets().add("/styles/Styles.css");
         
+        stage.getProperties().put("hostServices", this.getHostServices());
+
         stage.setTitle("Trajectory Display");
         stage.setScene(scene);
         stage.show();

@@ -53,6 +53,7 @@ public class SingularValueDecomposition implements java.io.Serializable {
    /** Construct the singular value decomposition
     * Arg     Rectangular matrix
     * return  Structure to access U, S and V.
+    * @param Arg
     */
 
    public SingularValueDecomposition (Matrix Arg) {

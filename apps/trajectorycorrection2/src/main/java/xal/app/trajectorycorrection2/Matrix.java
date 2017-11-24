@@ -169,6 +169,7 @@ public class Matrix {
    }
 
    /** Make a deep copy of a matrix
+     * @return matrix copy
    */
 
    public Matrix copy () {
@@ -183,6 +184,7 @@ public class Matrix {
    }
 
    /** Clone the Matrix object.
+    * @return copy
    */
 
    public Object clone () {

@@ -1,30 +1,47 @@
 /*
- * CorrectionMatrix.java
+ * Copyright (C) 2017 European Spallation Source ERIC
  *
- * Created by Natalia Milas on 07.07.2017
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
  *
- * Copyright (c) 2017 European Spallation Source ERIC
- * Tunavägen 20
- * Lund, Sweden
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 package xal.app.trajectorycorrection2;
 
 
 import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.Window;
 import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.ca.PutException;
 import xal.extension.fit.LinearFit;
+import xal.model.ModelException;
+import xal.smf.AcceleratorSeq;
+import xal.smf.impl.BPM;
+import xal.smf.impl.HDipoleCorr;
+import xal.smf.impl.VDipoleCorr;
 
 /**
  * Class that measures and calculates the corrector kick for the 1-to-1 correction
@@ -42,20 +59,49 @@ public class CorrectionMatrix {
     HashMap<xal.smf.impl.BPM,xal.smf.impl.HDipoleCorr> HC = new HashMap();
     HashMap<xal.smf.impl.BPM,xal.smf.impl.VDipoleCorr> VC = new HashMap();
    
+    public HashMap<BPM, double[]> getVertParam() {
+        return VertParam;
+    }
+
+    public void setVertParam(HashMap<BPM, double[]> VertParam) {
+        this.VertParam = VertParam;
+    }
+
+    public HashMap<BPM, double[]> getHorParam() {
+        return HorParam;
+    }
+
+    public void setHorParam(HashMap<BPM, double[]> HorParam) {
+        this.HorParam = HorParam;
+    }
+
+    public HashMap<BPM, HDipoleCorr> getHC() {
+        return HC;
+    }
+
+    public void setHC(HashMap<BPM, HDipoleCorr> HC) {
+        this.HC = HC;
+    }
+
+    public HashMap<BPM, VDipoleCorr> getVC() {
+        return VC;
+    }
+
+    public void setVC(HashMap<BPM, VDipoleCorr> VC) {
+        this.VC = VC;
+    }
     
-   public void getPairs(xal.smf.Accelerator accl, List<xal.smf.impl.BPM> BPMList, List<xal.smf.impl.HDipoleCorr> HCList, List<xal.smf.impl.VDipoleCorr> VCList) throws ConnectionException, GetException, IOException{
-         
-        //Get list of BPM and correctors
-        //List<xal.smf.impl.HDipoleCorr> HCList = accl.getAllNodesOfType("DCH");
-        //List<xal.smf.impl.VDipoleCorr> VCList = accl.getAllNodesOfType("DCV");
+   public void setPairs(xal.smf.Accelerator accl, List<xal.smf.impl.BPM> BPMList, List<xal.smf.impl.HDipoleCorr> HCList, List<xal.smf.impl.VDipoleCorr> VCList) throws ConnectionException, GetException, IOException{
+                
+        //Get list of BPM and correctors    
         List<xal.smf.impl.BPM> allBPMs = accl.getAllNodesOfType("BPM");   
         xal.smf.AcceleratorSeq parentSequence;
-        
+
         //Populate the Corrector maps
         double fim = 0.0;
         double ini = 0.0;
         double posCorrector=0.0;
-        
+
         //finds initial position for search
         int bpmIndex = 0;
         if(BPMList.get(0) == allBPMs.get(0)){
@@ -69,7 +115,7 @@ public class CorrectionMatrix {
                 bpmIndex++;
             }
         }
-                 
+
         //Start search
         for(xal.smf.impl.BPM bpm : BPMList){
             parentSequence = bpm.getParent();
@@ -96,11 +142,60 @@ public class CorrectionMatrix {
             }
             parentSequence = bpm.getParent();
             ini = bpm.getPosition()+parentSequence.getPosition();
-        }
+        }  
           
-   }
+    }
    
-   public void getHCalibration(xal.smf.impl.BPM bpmKey, double Dk) throws ConnectionException, GetException, PutException, InterruptedException{
+    public Boolean checkPairs(Window owner,xal.smf.Accelerator accl, List<xal.smf.impl.BPM> BPMList, List<xal.smf.impl.HDipoleCorr> HCList, List<xal.smf.impl.VDipoleCorr> VCList) throws ConnectionException, GetException, IOException{
+        Stage stage; 
+        Parent root;
+        URL    url  = null;
+        BooleanProperty changedPairs = new SimpleBooleanProperty();
+        String sceneFile = "/fxml/PairBPMandCorrector.fxml";
+        
+        changedPairs.setValue(false);
+        
+        try
+        {
+            stage = new Stage();
+            url  = getClass().getResource(sceneFile);
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(MainApp.class.getResource(sceneFile));
+            root = loader.load();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Pair BPM and Corrector");
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initOwner(owner);
+            PairBPMandCorrectorController loginController = loader.getController();
+            loginController.setAllVariables(accl, BPMList, HCList, VCList);
+            loginController.setInitialPairs(HC, VC);
+            loginController.createGui();
+            loginController.loggedInProperty().addListener((obs, wasLoggedIn, isNowLoggedIn) -> {
+                if (isNowLoggedIn) {                    
+                    if(loginController.isPairChanged()){                        
+                        this.setHC(loginController.updateHPairs());                        
+                        this.setVC(loginController.updateVPairs());                        
+                    }  
+                    changedPairs.set(!loginController.isPairChanged());
+                    stage.close();
+                }
+            });           
+            stage.showAndWait();            
+        }
+        catch ( IOException ex )
+        {
+            System.out.println( "Exception on FXMLLoader.load()" );
+            System.out.println( "  * url: " + url );
+            System.out.println( "  * " + ex );
+            System.out.println( "    ----------------------------------------\n" );
+            throw ex;
+        }
+        
+        return changedPairs.getValue();
+        
+    }
+   
+    public void getHCalibration(xal.smf.impl.BPM bpmKey, double Dk) throws ConnectionException, GetException, PutException, InterruptedException{
        /* make +Dk and -Dk increments in the corrector strength and 
         * calculate the offset and slope
         */
@@ -138,7 +233,7 @@ public class CorrectionMatrix {
         HorParam.put(bpmKey, fitresult); 
     }
    
-   public void getVCalibration(xal.smf.impl.BPM bpmKey, double Dk) throws ConnectionException, GetException, PutException, InterruptedException{
+    public void getVCalibration(xal.smf.impl.BPM bpmKey, double Dk) throws ConnectionException, GetException, PutException, InterruptedException{
        /* make +Dk and -Dk increments in the corrector strength and 
         * calculate the offset and slope
         */
@@ -175,26 +270,168 @@ public class CorrectionMatrix {
         fitresult[1] = result.getSlope();
         VertParam.put(bpmKey, fitresult);
         
-   }
+    }
+    
+    public void simulHCalibration(xal.smf.impl.BPM bpmKey, double Dk) throws ConnectionException, GetException, PutException, InterruptedException{
+       /* make +Dk and -Dk increments in the corrector strength and 
+        * simulate the offset and slope
+        */
+
+        double HC_val = 0.0;
+        double BPM_val = 0.0;
+        double corrector_auxval = 0.0;
+        double bpm_auxval = 0.0;
+        double[] fitresult = new double[2];
+        LinearFit result;
+        RunSimulationService simulService;
+        HashMap<xal.smf.impl.BPM, Double> trajectory= new HashMap();
+        List<xal.smf.impl.BPM> BPMList = new ArrayList<>();;
+
+        //restart the array before linear fit
+        result= new LinearFit();
+        
+        //setup simulation parameters
+        if (bpmKey.getParent()!=HC.get(bpmKey).getParent()){
+            xal.smf.Accelerator accl = bpmKey.getAccelerator();
+            List<AcceleratorSeq> newCombo = new ArrayList<>();
+            newCombo.add(HC.get(bpmKey).getParent());
+            newCombo.add(bpmKey.getParent());
+            xal.smf.AcceleratorSeqCombo Sequence = new xal.smf.AcceleratorSeqCombo("calcMatrix",newCombo); 
+            simulService = new RunSimulationService(Sequence);
+        } else { 
+            xal.smf.AcceleratorSeq Sequence = bpmKey.getParent();
+            simulService = new RunSimulationService(Sequence);
+        }
+        simulService.setSynchronizationMode("DESIGN");
+        
+        HC.keySet().forEach(bpm -> BPMList.add(bpm));
+        BPMList.sort((bpm1,bpm2) -> Double.compare(bpm1.getPosition()+bpm1.getParent().getPosition(),bpm2.getPosition()+bpm2.getParent().getPosition()));
+        
+        //measure response 
+        HC_val = HC.get(bpmKey).getDfltField();        
+        try {
+            trajectory = simulService.runTrajectorySimulation(BPMList,"X");
+        } catch (InstantiationException | ModelException ex) {
+            Logger.getLogger(CorrectionSVD.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        BPM_val = 1000*trajectory.get(bpmKey);
+        result.addSample(0.0, 0.0);
+        //positive step
+        corrector_auxval = HC_val + Dk;
+        HC.get(bpmKey).setDfltField(corrector_auxval);
+        try {
+            trajectory = simulService.runTrajectorySimulation(BPMList,"X");
+        } catch (InstantiationException | ModelException ex) {
+            Logger.getLogger(CorrectionSVD.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        bpm_auxval = 1000*trajectory.get(bpmKey)- BPM_val;
+        result.addSample(Dk, bpm_auxval);
+        //negative step
+        corrector_auxval = HC_val - Dk;
+        HC.get(bpmKey).setDfltField(corrector_auxval);
+        try {
+            trajectory = simulService.runTrajectorySimulation(BPMList,"X");
+        } catch (InstantiationException | ModelException ex) {
+            Logger.getLogger(CorrectionSVD.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        bpm_auxval = 1000*trajectory.get(bpmKey)- BPM_val;
+        result.addSample(-Dk, bpm_auxval);
+        //restore the original field
+        HC.get(bpmKey).setDfltField(HC_val);        
+        //calculate parameters from line fit 
+        fitresult[0] = result.getIntercept();
+        fitresult[1] = result.getSlope();
+        HorParam.put(bpmKey, fitresult); 
+    }
    
-   public double calcHCorrection(xal.smf.impl.BPM item, double pos) throws ConnectionException, GetException{
+    public void simulVCalibration(xal.smf.impl.BPM bpmKey, double Dk) throws ConnectionException, GetException, PutException, InterruptedException{
+       /* make +Dk and -Dk increments in the corrector strength and 
+        * simulate the offset and slope
+        */
+       
+        double VC_val = 0.0;
+        double BPM_val = 0.0;
+        double corrector_auxval = 0.0;
+        double bpm_auxval = 0.0;
+        double[] fitresult = new double[2];
+        LinearFit result;
+        RunSimulationService simulService;
+        HashMap<xal.smf.impl.BPM, Double> trajectory= new HashMap();
+        List<xal.smf.impl.BPM> BPMList = new ArrayList<>();
+        
+        //restart the array before linear fit
+        result= new LinearFit();
+        
+        //setup simulation parameters
+        if (bpmKey.getParent()!=HC.get(bpmKey).getParent()){
+            List<AcceleratorSeq> newCombo = new ArrayList<>();
+            newCombo.add(HC.get(bpmKey).getParent());
+            newCombo.add(bpmKey.getParent());
+            xal.smf.AcceleratorSeqCombo Sequence = new xal.smf.AcceleratorSeqCombo("calcMatrix",newCombo); 
+            simulService = new RunSimulationService(Sequence);
+        } else { 
+            xal.smf.AcceleratorSeq Sequence = bpmKey.getParent();
+            simulService = new RunSimulationService(Sequence);
+        }
+        simulService.setSynchronizationMode("DESIGN");
+        
+        HC.keySet().forEach(bpm -> BPMList.add(bpm));
+        BPMList.sort((bpm1,bpm2) -> Double.compare(bpm1.getPosition()+bpm1.getParent().getPosition(),bpm2.getPosition()+bpm2.getParent().getPosition()));
+                
+        //measure response 
+        VC_val = VC.get(bpmKey).getDfltField();        
+        try {
+            trajectory = simulService.runTrajectorySimulation(BPMList,"Y");
+        } catch (InstantiationException | ModelException ex) {
+            Logger.getLogger(CorrectionSVD.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        BPM_val = 1000*trajectory.get(bpmKey);
+        result.addSample(0.0, 0.0);
+        //positive delta
+        corrector_auxval = VC_val + Dk;
+        VC.get(bpmKey).setDfltField(corrector_auxval);
+        try {
+            trajectory = simulService.runTrajectorySimulation(BPMList,"Y");
+        } catch (InstantiationException | ModelException ex) {
+            Logger.getLogger(CorrectionSVD.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        bpm_auxval = 1000*trajectory.get(bpmKey)- BPM_val;
+        result.addSample(Dk, bpm_auxval);
+        corrector_auxval = VC_val - Dk;
+        VC.get(bpmKey).setDfltField(corrector_auxval);
+        try {
+            trajectory = simulService.runTrajectorySimulation(BPMList,"Y");
+        } catch (InstantiationException | ModelException ex) {
+            Logger.getLogger(CorrectionSVD.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        bpm_auxval = 1000*trajectory.get(bpmKey)- BPM_val;
+        result.addSample(-Dk, bpm_auxval);
+        //restore the original field
+        VC.get(bpmKey).setDfltField(VC_val);        
+        //calculate parameters from line fit 
+        fitresult[0] = result.getIntercept();
+        fitresult[1] = result.getSlope();
+        VertParam.put(bpmKey, fitresult);
+        
+    }
+    
+   
+    public double calcHCorrection(xal.smf.impl.BPM item, double pos) throws ConnectionException, GetException{
        double strength = 0.0;
        
        //calculate horizontal corrector strength
        strength=-((item.getXAvg()-pos)-HorParam.get(item)[0])/HorParam.get(item)[1];
             
        return strength;
-   }
+    }
    
-   public double calcVCorrection(xal.smf.impl.BPM item, double pos) throws ConnectionException, GetException{
+    public double calcVCorrection(xal.smf.impl.BPM item, double pos) throws ConnectionException, GetException{
        double strength = 0.0;
               
        //calculate vertical corrector strength
        strength=-((item.getYAvg()-pos)-VertParam.get(item)[0])/VertParam.get(item)[1];
             
        return strength;
-   }
-   
-
-    
+    }
+  
 }
