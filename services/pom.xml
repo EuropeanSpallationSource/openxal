@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.xal</groupId>
         <artifactId>openxal</artifactId>
-        <version>1.0.11-SNAPSHOT</version>
+        <version>1.1.2-SNAPSHOT</version>
     </parent>
 
     <artifactId>openxal.services</artifactId>
@@ -13,7 +13,6 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>meme</module>
         <module>pvlogger</module>
         <module>worker</module>
     </modules>

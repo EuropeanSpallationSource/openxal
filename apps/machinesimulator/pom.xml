@@ -5,12 +5,12 @@
     <parent>
         <groupId>org.xal</groupId>
         <artifactId>openxal.apps</artifactId>
-        <version>1.0.11-SNAPSHOT</version>
+        <version>1.1.2-SNAPSHOT</version>
     </parent>
 
     <groupId>org.xal</groupId>
     <artifactId>openxal.apps.machinesimulator</artifactId>
-    <version>1.0.11-SNAPSHOT</version>
+    <version>1.1.2-SNAPSHOT</version>
 
     <build>
         <sourceDirectory>src</sourceDirectory>
@@ -31,7 +31,7 @@
                             <mainClass>xal.app.machinesimulator.Main</mainClass>
                         </manifest>
                         <manifestEntries>
-                                <Class-Path>openxal.library-${project.version}.jar</Class-Path>
+                                <Class-Path>../lib/openxal.library-${project.version}.jar</Class-Path>
                         </manifestEntries>
                     </archive>
                 </configuration>

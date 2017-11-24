@@ -31,7 +31,7 @@ public class PermQuadrupole extends PermanentMagnet {
     public static final String VERTICAL_TYPE = "PMQV";
 
     // instance variables
-    protected String type;
+    protected String type = "PQ";
 
 
 	// static initializer
@@ -108,7 +108,10 @@ public class PermQuadrupole extends PermanentMagnet {
      * @return One of HORIZONTAL or VERTICAL
      */
     public int getOrientation() {
-        return ( type.equalsIgnoreCase(HORIZONTAL_TYPE) ) ? HORIZONTAL : VERTICAL;
+        if (type.equalsIgnoreCase(s_strType))
+            return NO_ORIENTATION;
+        else
+            return ( type.equalsIgnoreCase(HORIZONTAL_TYPE) ) ? HORIZONTAL : VERTICAL;
     }
 
     

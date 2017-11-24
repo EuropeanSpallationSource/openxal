@@ -5,11 +5,11 @@
     <parent>
         <groupId>org.xal</groupId>
         <artifactId>openxal</artifactId>
-        <version>1.0.11-SNAPSHOT</version>
+        <version>1.1.2-SNAPSHOT</version>
     </parent>
 
     <artifactId>openxal.extensions</artifactId>
-    <version>1.0.11-SNAPSHOT</version>
+    <version>1.1.2-SNAPSHOT</version>
 
     <packaging>pom</packaging>
 
@@ -29,7 +29,7 @@
         <module>wirescan</module>
         <module>jels</module>
         <module>linaclego</module>
-        <module>traceWin</module>
+        <module>tracewin</module>
         <module>../services/pvlogger/extension</module>
         <module>../services/worker/extension</module>
         <module>zplot</module>

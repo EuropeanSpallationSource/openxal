@@ -1,23 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>org.xal</groupId>
         <artifactId>openxal</artifactId>
-        <version>1.0.11-SNAPSHOT</version>
+        <version>1.1.2-SNAPSHOT</version>
     </parent>
 
     <artifactId>openxal.apps</artifactId>
 
     <packaging>pom</packaging>
-
+    
+    <build>
+        <plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-dependency-plugin</artifactId>
+              <executions>
+                <execution>             
+                  <id>copy-artifact</id>
+                  <phase>package</phase>
+                  <goals>
+                    <goal>copy</goal>
+                  </goals>
+                  <configuration>
+                    <artifactItems>
+                        <artifactItem>
+                          <groupId>${project.groupId}</groupId>
+                          <artifactId>${project.artifactId}</artifactId>
+                          <version>${project.version}</version>
+                          <type>${project.packaging}</type>
+                        </artifactItem>
+                    </artifactItems>
+                    <outputDirectory>${project.parent.basedir}/target/dist</outputDirectory>
+                  </configuration>
+                </execution>
+              </executions>
+            </plugin>
+        </plugins>
+    </build>
+    
     <modules>
         <module>arraypvviewer</module>
         <module>beam_matcher</module>
         <module>bpmviewer</module>
         <module>bricks</module>
         <module>bsmanalysis</module>
+        <module>configurator</module>
         <module>dbbrowser</module>
         <module>diagtiming</module>
         <module>ema</module>
@@ -33,7 +64,6 @@
         <module>machinesimulator</module>
         <module>magnetcycling</module>
         <module>modelbrowser</module>
-        <module>modelmanager</module>
         <module>mtv</module>
         <module>opticseditor</module>
         <module>opticsswitcher</module>
@@ -44,6 +74,7 @@
         <module>rfphaseshaker</module>
         <module>saddam</module>
         <module>scalarpvviewer</module>
+        <module>scanner</module>
         <module>scan1d</module>
         <module>scan2d</module>
         <module>sclmonitor</module>
@@ -58,7 +89,7 @@
         <module>trajectorydisplay2</module>
   </modules>
 
-  <dependencies>
+    <dependencies>
         <dependency>
             <groupId>org.xal</groupId>
             <artifactId>openxal.extensions.widgets</artifactId>
@@ -122,8 +153,13 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>se.lu.esss.ics.jels</groupId>
-            <artifactId>jels</artifactId>
+            <groupId>org.xal</groupId>
+            <artifactId>openxal.extensions.jels</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.xal</groupId>
+            <artifactId>openxal.extensions.tracewin</artifactId>
             <scope>runtime</scope>
         </dependency>
     </dependencies>
