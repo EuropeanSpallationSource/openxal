@@ -192,9 +192,9 @@ public class FXMLController implements Initializable {
         //Defines the MEBT correction block
         CorrectionBlock correctionMEBT = new CorrectionBlock();
         CorrectionSVD test = new CorrectionSVD();
-        correctionMEBT.setBlockBPM(seqItem.get(0).getAllNodesOfType("BPM"));
-        correctionMEBT.setBlockHC(seqItem.get(0).getAllNodesOfType("DCH"));
-        correctionMEBT.setBlockVC(seqItem.get(0).getAllNodesOfType("DCV"));
+        correctionMEBT.setBlockBPM(accl.getSequence("MEBT").getAllNodesOfType("BPM"));
+        correctionMEBT.setBlockHC(accl.getSequence("MEBT").getAllNodesOfType("DCH"));
+        correctionMEBT.setBlockVC(accl.getSequence("MEBT").getAllNodesOfType("DCV"));
         correctionMEBT.setblockName("blockMEBT");
         correctionMEBT.setOk1to1(true);
         correctionMEBT.setOkSVD(true);
@@ -204,9 +204,9 @@ public class FXMLController implements Initializable {
         
         //Defines the DTL correction block
         correctionMEBT = new CorrectionBlock();
-        correctionMEBT.setBlockBPM(seqItem.get(1).getAllNodesOfType("BPM"));
-        correctionMEBT.setBlockHC(seqItem.get(1).getAllNodesOfType("DCH"));
-        correctionMEBT.setBlockVC(seqItem.get(1).getAllNodesOfType("DCV"));
+        correctionMEBT.setBlockBPM(accl.getSequence("DTL").getAllNodesOfType("BPM"));
+        correctionMEBT.setBlockHC(accl.getSequence("DTL").getAllNodesOfType("DCH"));
+        correctionMEBT.setBlockVC(accl.getSequence("DTL").getAllNodesOfType("DCV"));
         correctionMEBT.setblockName("blockDTL");
         correctionMEBT.setOk1to1(false);
         correctionMEBT.setOkSVD(false);
@@ -216,9 +216,9 @@ public class FXMLController implements Initializable {
         
         //Defines the SPK correction block
         correctionMEBT = new CorrectionBlock();
-        correctionMEBT.setBlockBPM(seqItem.get(2).getAllNodesOfType("BPM"));
-        correctionMEBT.setBlockHC(seqItem.get(2).getAllNodesOfType("DCH"));
-        correctionMEBT.setBlockVC(seqItem.get(2).getAllNodesOfType("DCV"));
+        correctionMEBT.setBlockBPM(accl.getSequence("SPK").getAllNodesOfType("BPM"));
+        correctionMEBT.setBlockHC(accl.getSequence("SPK").getAllNodesOfType("DCH"));
+        correctionMEBT.setBlockVC(accl.getSequence("SPK").getAllNodesOfType("DCV"));
         correctionMEBT.setblockName("blockSPK");
         correctionMEBT.setOk1to1(true);
         correctionMEBT.setOkSVD(false);
