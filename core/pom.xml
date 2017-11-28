@@ -14,9 +14,8 @@
     <build>
         <sourceDirectory>src</sourceDirectory>
         <resources><resource><directory>resources</directory></resource></resources>
-        <testSourceDirectory>test/src</testSourceDirectory>
-        <testResources><testResource><directory>test/resources</directory></testResource></testResources>
-        
+        <!-- No tests will be rune in this project, tests are run in test/pom.xml -->
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
