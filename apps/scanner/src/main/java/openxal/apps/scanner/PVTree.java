@@ -34,11 +34,9 @@ package openxal.apps.scanner;
 
 import java.io.IOException;
 import javafx.fxml.FXMLLoader;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Map;
-import java.util.ResourceBundle;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -70,7 +68,6 @@ public class PVTree extends SplitPane {
 
     private static final Comparator<? super AcceleratorNode> NODE_COMPARATOR_ALPHABETICALLY = (n1, n2) -> String.CASE_INSENSITIVE_ORDER.compare(StringUtils.defaultString(n1.getId()), StringUtils.defaultString(n2.getId()));
     private static final Comparator<? super AcceleratorNode> NODE_COMPARATOR_BY_POSITION = (n1, n2) -> (int) ( n1.getPosition() - n2.getPosition() );
-    private static final String NO_SELECTION = "<no-selection>";
     private static final Comparator<? super AcceleratorSeq> SEQUENCE_COMPARATOR_ALPHABETICALLY = (s1, s2) -> String.CASE_INSENSITIVE_ORDER.compare(StringUtils.defaultString(s1.getId()), StringUtils.defaultString(s2.getId()));
     private static final Comparator<? super AcceleratorSeq> SEQUENCE_COMPARATOR_BY_POSITION = (s1, s2) -> (int) ( s1.getPosition() - s2.getPosition() );
 
@@ -78,11 +75,6 @@ public class PVTree extends SplitPane {
     private final Map<String, CheckMenuItem> typeMap = new TreeMap<>();
     private final ObservableList<HandleWrapper> epicsChannels = FXCollections.observableArrayList();
 
-    @FXML // ResourceBundle that was given to the FXMLLoader
-    private ResourceBundle resources;
-
-    @FXML // URL location of the FXML file that was given to the FXMLLoader
-    private URL location;
 
     @FXML // fx:id="elementSearch"
     private TextField elementSearch; // Value injected by FXMLLoader

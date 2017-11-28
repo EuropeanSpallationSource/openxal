@@ -189,12 +189,13 @@ public class FXMLController implements Initializable {
             stage.show();
         }
         catch (IOException e) {
-            Logger.getLogger(MainFunctions.class.getName()).log(Level.SEVERE, "Error opening Add PV window", e);
+            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, "Error opening Add PV window", e);
         }
     }
 
     @FXML
     private void handleScanRemovePV(ActionEvent event) {
+            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, "Functionality not yet implemented");
     }
 
     @FXML
