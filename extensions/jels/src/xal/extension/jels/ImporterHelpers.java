@@ -304,9 +304,6 @@ public class ImporterHelpers {
         NamedNodeMap attrs = parent.getAttributes();
         if (attrs != null) {
             // unneeded attributes 
-            if (attrs.getNamedItem("s") != null) {
-                attrs.removeNamedItem("s");
-            }
             if (attrs.getNamedItem("pid") != null) {
                 attrs.removeNamedItem("pid");
             }
@@ -324,6 +321,7 @@ public class ImporterHelpers {
             }
 
             if ("xdxf".equals(parent.getNodeName())) {
+                attrs.removeNamedItem("s");
                 attrs.removeNamedItem("id");
                 attrs.removeNamedItem("len");
                 attrs.removeNamedItem("pos");
