@@ -14,7 +14,19 @@ pipeline {
         stage('Build') {
             steps {
                 timestamps {
-                    sh 'mvn -Dmaven.test.failure.ignore clean install'
+                    sh 'mvn -DskipTests -Dmaven.javadoc.skip=true -Dmaven.test.failure.ignore clean install'
+                }
+            }
+        }
+        stage('Test') {
+            steps {
+                timestamps {
+                    sh 'mvn test'
+                }
+            }
+            post {
+                always {
+                  junit '**/target/surefire-reports/*.xml'
                 }
             }
         }
