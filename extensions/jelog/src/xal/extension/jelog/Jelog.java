@@ -227,15 +227,15 @@ public class Jelog {
                             requiredAttributes = line.substring(line.indexOf("=") + 2).trim().split(",[\\s]*");
                         } else if (line.startsWith("Locked Attributes")) {
                             lockedAttributes = line.substring(line.indexOf("=") + 2).trim().split(",[\\s]*");
-                        } else if (line.startsWith("Options ")) {
-                            String optionName = line.substring("Options ".length(), line.indexOf("=") - 1);
+                        } else if (line.startsWith("Options ") || line.startsWith("ROptions ")) {
+                            String optionName = line.substring(line.indexOf("Options") + "Options ".length(), line.indexOf("=") - 1);
                             String[] options = line.substring(line.indexOf("=") + 2).trim().replaceAll("\\{(.)\\}", "").split(",[\\s]*");
                             if (!attributesMap.containsKey(optionName)) {
                                 attributesMap.put(optionName, LogbookAttribute.newEmpty());
                             }
                             attributesMap.get(optionName).setOptions(options);
-                        } else if (line.startsWith("MOptions ") || line.startsWith("ROptions ")) {
-                            String optionName = line.substring(line.indexOf("Options") + "Options ".length(), line.indexOf("=") - 1);
+                        } else if (line.startsWith("MOptions ")) {
+                            String optionName = line.substring("MOptions ".length(), line.indexOf("=") - 1);
                             String[] options = line.substring(line.indexOf("=") + 2).trim().replaceAll("\\{(.)\\}", "").split(",[\\s]*");
                             if (!attributesMap.containsKey(optionName)) {
                                 attributesMap.put(optionName, LogbookAttribute.newEmpty());
@@ -308,7 +308,7 @@ public class Jelog {
 //            String disciplines, String deviceGroups, String special, String encoding,
 //            WritableImage[] screenshots, Attachment[] attachments, String logbook,
 //            String elogUrl, String uname, String upwd) throws IOException {
-    public static int submit(HashMap<String, String> fields, String body, String encoding,
+        public static int submit(HashMap<String, String> fields, String body, String encoding,
             WritableImage[] screenshots, Attachment[] attachments, String logbook,
             String elogUrl, String uname, String upwd) throws IOException {
 

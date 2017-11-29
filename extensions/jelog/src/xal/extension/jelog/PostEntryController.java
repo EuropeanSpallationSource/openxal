@@ -272,7 +272,7 @@ public class PostEntryController implements Initializable {
             if (gridPane.getChildren().get(i + 1).getClass() == TextField.class) {
                 option = ((TextField) gridPane.getChildren().get(i + 1)).getText();
             } else if (gridPane.getChildren().get(i + 1).getClass() == ComboBox.class) {
-                option = ((ComboBox<String>) gridPane.getChildren().get(i + 1)).getSelectionModel().getSelectedItem().replaceAll(" ", "+");
+                option = ((ComboBox<String>) gridPane.getChildren().get(i + 1)).getSelectionModel().getSelectedItem();
             } else if (gridPane.getChildren().get(i + 1).getClass() == TilePane.class) {
                 option = getCheckedItems((TilePane) gridPane.getChildren().get(i + 1));
             }
