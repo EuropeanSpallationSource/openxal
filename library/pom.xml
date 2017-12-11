@@ -42,6 +42,10 @@
             <name>EPICS Repository</name>
             <url>http://epics.sourceforge.net/maven2/</url>
         </repository>
+        <repository>
+            <id>project</id>
+            <url>file:${project.parent.basedir}/apps/pta/lib</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -139,6 +143,11 @@
         <dependency>
             <groupId>org.gillius</groupId>
             <artifactId>jfxutils</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.cosylab</groupId>
+            <artifactId>cf-gui</artifactId>
             <version>1.0</version>
         </dependency>
     </dependencies>
