@@ -774,7 +774,7 @@ public class CourantSnyderView extends JPanel implements IDocView, IConfigView, 
             EnvelopeProbe   prbRecon = this.pnlFxdPtCltr.createEnvelopeProbe(seqRecon, matRecon);
             
             PVLoggerDataSource  pvlMachState = new PVLoggerDataSource(lngPvLogId);
-            modRecon = pvlMachState.setModelSource(seqRecon, modRecon);
+            pvlMachState.setModelSource(seqRecon, modRecon);
             modRecon.setProbe(prbRecon);
             
             modRecon.resync();
