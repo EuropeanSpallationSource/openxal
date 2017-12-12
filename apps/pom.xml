@@ -71,6 +71,7 @@
         <module>pta</module>
         <module>pvhistogram</module>
         <module>pvlogger</module>
+        <module>quadshaker</module>
         <module>rfphaseshaker</module>
         <module>saddam</module>
         <module>scalarpvviewer</module>
@@ -83,6 +84,7 @@
         <module>timestamptest</module>
         <module>ttffactory</module>
         <module>virtualaccelerator</module>
+        <module>wireanalysis</module>
         <module>wirescan</module>
         <module>xyzcorrelator</module>
     </modules>

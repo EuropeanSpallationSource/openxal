@@ -583,7 +583,7 @@ public class ControlFace extends JPanel {
 			model.setProbe(tempprobe);
 			model.setSynchronizationMode(Scenario.SYNC_MODE_DESIGN);
 			plds.updatePVLoggerId((pvloggerid.longValue()));
-			model = plds.setModelSource(seq,model);
+			plds.setModelSource(seq,model);
             model.resync();
             model.run();
         } catch(Exception e){}
@@ -698,7 +698,7 @@ public class ControlFace extends JPanel {
 			localmodel.setProbe(localprobe);
 			localmodel.setSynchronizationMode(Scenario.SYNC_MODE_DESIGN);
 			plds.updatePVLoggerId(( doc.masterpvloggermap.get((String) datatable.getValueAt(s,0))).intValue());
-			localmodel = plds.setModelSource(seq, localmodel);
+			plds.setModelSource(seq, localmodel);
             localmodel.setStartNode((String)datatable.getValueAt(s,1));
             localmodel.resync();
             localmodel.run();
@@ -785,7 +785,7 @@ public class ControlFace extends JPanel {
 			solvermodel.setProbe(solverprobe);
 			solvermodel.setSynchronizationMode(Scenario.SYNC_MODE_DESIGN);
 			plds.updatePVLoggerId(( doc.masterpvloggermap.get((String) datatable.getValueAt(s,0))).intValue());
-			solvermodel = plds.setModelSource(seq, solvermodel);
+			plds.setModelSource(seq, solvermodel);
             solvermodel.setStartNode((String)datatable.getValueAt(s,1));
 			
 			for(int i = 0;i<magnettable.getRowCount();i++){  //This routine assigns user-specifiec magnet values
@@ -834,7 +834,7 @@ public class ControlFace extends JPanel {
 			solvermodel.setProbe(solverprobe);
 			solvermodel.setSynchronizationMode(Scenario.SYNC_MODE_DESIGN);
 			plds.updatePVLoggerId(pvloggerid.intValue());
-			solvermodel = plds.setModelSource(seq, solvermodel);
+			plds.setModelSource(seq, solvermodel);
             solvermodel.setStartNode((String)datatable.getValueAt(s,1));
 			
 			for(int i = 0;i<magnettable.getRowCount();i++){  //This routine assigns user-specifiec magnet values
