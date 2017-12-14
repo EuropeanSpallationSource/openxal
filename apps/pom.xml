@@ -12,35 +12,6 @@
 
     <packaging>pom</packaging>
     
-    <build>
-        <plugins>
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-dependency-plugin</artifactId>
-              <executions>
-                <execution>             
-                  <id>copy-artifact</id>
-                  <phase>package</phase>
-                  <goals>
-                    <goal>copy</goal>
-                  </goals>
-                  <configuration>
-                    <artifactItems>
-                        <artifactItem>
-                          <groupId>${project.groupId}</groupId>
-                          <artifactId>${project.artifactId}</artifactId>
-                          <version>${project.version}</version>
-                          <type>${project.packaging}</type>
-                        </artifactItem>
-                    </artifactItems>
-                    <outputDirectory>${project.parent.basedir}/target/dist</outputDirectory>
-                  </configuration>
-                </execution>
-              </executions>
-            </plugin>
-        </plugins>
-    </build>
-    
     <modules>
         <module>arraypvviewer</module>
         <module>beam_matcher</module>
@@ -87,6 +58,8 @@
         <module>wireanalysis</module>
         <module>wirescan</module>
         <module>xyzcorrelator</module>
+        <!-- This is to collect all applications and their dependencies -->
+        <module>assembly</module>
     </modules>
 
     <dependencies>
