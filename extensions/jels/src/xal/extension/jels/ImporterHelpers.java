@@ -3,6 +3,7 @@ package xal.extension.jels;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
 
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -90,12 +91,12 @@ public class ImporterHelpers {
 
         double beta = probe.getBeta();
         double gamma = probe.getGamma();
-        double beta_gamma = beta * gamma;
+        double betaGamma = beta * gamma;
 
         // Convert from TraceWin coordinates (z,deltap/p) to Open XAL (z,z')
-        Twiss oxalTwissX = new Twiss(initialTwiss[0].getAlpha(), initialTwiss[0].getBeta(), initialTwiss[0].getEmittance() / beta_gamma);
-        Twiss oxalTwissY = new Twiss(initialTwiss[1].getAlpha(), initialTwiss[1].getBeta(), initialTwiss[1].getEmittance() / beta_gamma);
-        Twiss oxalTwissZ = new Twiss(initialTwiss[2].getAlpha(), initialTwiss[2].getBeta(), initialTwiss[2].getEmittance() / (beta_gamma * gamma * gamma));
+        Twiss oxalTwissX = new Twiss(initialTwiss[0].getAlpha(), initialTwiss[0].getBeta(), initialTwiss[0].getEmittance() / betaGamma);
+        Twiss oxalTwissY = new Twiss(initialTwiss[1].getAlpha(), initialTwiss[1].getBeta(), initialTwiss[1].getEmittance() / betaGamma);
+        Twiss oxalTwissZ = new Twiss(initialTwiss[2].getAlpha(), initialTwiss[2].getBeta(), initialTwiss[2].getEmittance() / (betaGamma * gamma * gamma));
 
         CovarianceMatrix matCov;
         if (vecCent != null) {
@@ -188,7 +189,7 @@ public class ImporterHelpers {
                 }
 
             } catch (ModelException e) {
-                LOGGER.warning("Unable to simulate initial states on sequences. Only setting the first sequence.");
+                LOGGER.log(Level.WARNING, "Unable to simulate initial states on sequences. Only setting the first sequence.", e);
                 List<EnvelopeProbeState> states = Arrays.asList(probe.cloneCurrentProbeState());
                 states.get(0).setElementId(comboSeq.getConstituents().get(0).getId());
                 ProbeFactory.storeInitialValues(editContext, states);

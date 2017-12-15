@@ -3,6 +3,8 @@ package xal.extension.jels.matcher;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xal.extension.solver.Objective;
 import xal.extension.solver.Trial;
@@ -13,6 +15,8 @@ import xal.model.probe.traj.Trajectory;
 import xal.tools.beam.Twiss;
 
 public class PhaseAdvEvaluator extends OnlineModelEvaluator {
+
+    private static final Logger LOGGER = Logger.getLogger(PhaseAdvEvaluator.class.getName());
 
     public PhaseAdvEvaluator(Matcher matcher) {
         super(matcher);
@@ -105,7 +109,7 @@ public class PhaseAdvEvaluator extends OnlineModelEvaluator {
         try {
             scenario.run();
         } catch (ModelException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error evaluationg the phase advance.", e);
         }
 
         Trajectory<EnvelopeProbeState> trajectory = probe.getTrajectory();

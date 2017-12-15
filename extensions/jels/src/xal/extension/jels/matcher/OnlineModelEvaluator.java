@@ -7,6 +7,8 @@ import java.util.Formatter;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 import xal.extension.solver.Evaluator;
 import xal.extension.solver.Objective;
@@ -20,8 +22,6 @@ import xal.sim.sync.SynchronizationException;
 import xal.tools.beam.Twiss;
 
 public abstract class OnlineModelEvaluator implements Evaluator {
-//	protected InitialBeamParameters initialParameters;
-//	protected EnvelopeProbe probe; // = setupOpenXALProbe(); // OpenXAL probe & algorithm
 
     protected Matcher matcher;
 
@@ -31,13 +31,15 @@ public abstract class OnlineModelEvaluator implements Evaluator {
 
     protected List<EvaluationListener> evaluationListeners = new ArrayList<>();
 
+    private static final Logger LOGGER = Logger.getLogger(OnlineModelEvaluator.class.getName());
+
     public OnlineModelEvaluator(Matcher matcher) {
         this.matcher = matcher;
 
         try {
             scenario = Scenario.newScenarioFor(matcher.getAccelerator());
         } catch (ModelException e1) {
-            e1.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Model exception.", e1);
         }
 
         // Setting up synchronization mode
@@ -45,8 +47,7 @@ public abstract class OnlineModelEvaluator implements Evaluator {
         try {
             scenario.resync();
         } catch (SynchronizationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Synchronization Exception.", e);
         }
     }
 
@@ -58,10 +59,9 @@ public abstract class OnlineModelEvaluator implements Evaluator {
         try {
             scenario.run();
         } catch (ModelException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Model exception.", e);
         }
 
-        //saveLattice(scenario.getLattice(),file);
         try {
             Formatter f1 = new Formatter(file + ".dat", "UTF8", Locale.ENGLISH);
             Formatter f2 = new Formatter(file + ".phi.dat", "UTF8", Locale.ENGLISH);
@@ -85,7 +85,7 @@ public abstract class OnlineModelEvaluator implements Evaluator {
                 }
                 pos0 = ps.getPosition();
 
-                f1.format("%E %E %E %E %E %E %E %E %E\n", ps.getPosition(), ps.getGamma() - 1,
+                f1.format("%E %E %E %E %E %E %E %E %E%n", ps.getPosition(), ps.getGamma() - 1,
                         t2[0].getEnvelopeRadius(),
                         Math.sqrt(t2[0].getGamma() * t2[0].getEmittance()),
                         t2[1].getEnvelopeRadius(),
@@ -96,7 +96,7 @@ public abstract class OnlineModelEvaluator implements Evaluator {
 
                 if (ps.getElementId().toUpperCase().startsWith("LATTICE-POINT")) {
                     if (phil != null) {
-                        f2.format("%E %E %E %E\n", ps.getPosition(),
+                        f2.format("%E %E %E %E%n", ps.getPosition(),
                                 (phix[0] - phil[0]) / (ps.getPosition() - posl) * 180. / Math.PI,
                                 (phix[1] - phil[1]) / (ps.getPosition() - posl) * 180. / Math.PI,
                                 (phix[2] - phil[2]) / (ps.getPosition() - posl) * 180. / Math.PI);
@@ -112,7 +112,7 @@ public abstract class OnlineModelEvaluator implements Evaluator {
             f1.close();
             f2.close();
         } catch (FileNotFoundException | UnsupportedEncodingException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Problem writing the file.", e);
         }
     }
 

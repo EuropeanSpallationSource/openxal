@@ -48,7 +48,7 @@ public class JElsDemo {
         int argspos = 0;
 
         // Option -a
-        if (args.length > argspos && args[argspos].equals("-a")) {
+        if (args.length > argspos && "-a".equals(args[argspos])) {
             adaptiveTracker = true;
             argspos++;
         }
@@ -112,7 +112,6 @@ public class JElsDemo {
         EnvelopeProbeState ps = trajectory.stateAtPosition(0);
         Iterator<EnvelopeProbeState> iterState = trajectory.stateIterator();
 
-        //BasicGraphData myDataX = new BasicGraphData();
         int i = 0;
         while (iterState.hasNext()) {
             ps = iterState.next();
@@ -121,7 +120,7 @@ public class JElsDemo {
 
             PhaseVector mean = ps.phaseMean();
 
-            System.out.printf("%E %E %E %E %E %E %E %E %E %E %E %E %E %E %E %E %E %E %s\n", ps.getPosition(), ps.getGamma() - 1,
+            System.out.printf("%E %E %E %E %E %E %E %E %E %E %E %E %E %E %E %E %E %E %s%n", ps.getPosition(), ps.getGamma() - 1,
                     twiss[0].getEnvelopeRadius(),
                     Math.sqrt(twiss[0].getGamma() * twiss[0].getEmittance()),
                     twiss[1].getEnvelopeRadius(),
@@ -156,7 +155,7 @@ public class JElsDemo {
             EnvelopeProbe probe = (EnvelopeProbe) ProbeXmlParser.parse(file);
             return probe;
         } catch (ParsingException e1) {
-            LOGGER.log(Level.SEVERE, "Couldn''t load the probe from xml. {0}", e1.getMessage());
+            LOGGER.log(Level.SEVERE, "Couldn't load the probe from xml.", e1);
         }
         return null;
     }
@@ -166,7 +165,7 @@ public class JElsDemo {
             //probe.setSaveTwissFlag(true);
             ProbeXmlWriter.writeXml(probe, file);
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Couldn''t load the probe from xml. {0}", e.getMessage());
+            LOGGER.log(Level.SEVERE, "Couldn't save the probe to xml.", e);
         }
     }
 
@@ -175,12 +174,12 @@ public class JElsDemo {
         try {
             LatticeXmlWriter.writeXml(lattice, file);
         } catch (IOException e1) {
-            LOGGER.log(Level.SEVERE, "Couldn''t load the probe from xml. {0}", e1.getMessage());
+            LOGGER.log(Level.SEVERE, "Couldn't save the lattice to xml.", e1);
         }
     }
 
     private static Accelerator loadAccelerator() {
-        LOGGER.info("Loading accelerator from: " + XMLDataManager.defaultPath());
+        LOGGER.log(Level.INFO, "Loading accelerator from: {0}", XMLDataManager.defaultPath());
         /* Loading SMF model */
         Accelerator accelerator = XMLDataManager.loadDefaultAccelerator();
 

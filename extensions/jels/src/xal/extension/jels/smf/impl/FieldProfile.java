@@ -74,6 +74,10 @@ public class FieldProfile {
         return fp;
     }
 
+    public double getNorm() {
+        return norm;
+    }
+
     public double[] getField() {
         return field;
     }
@@ -105,7 +109,7 @@ public class FieldProfile {
         try {
             br = new BufferedReader(new InputStreamReader(new URL(path).openStream()));
         } catch (IOException e) {
-            throw new Error("Field map " + new File(new URL(path).getFile()) + " not found");
+            LOGGER.log(Level.INFO, "Field map " + new File(new URL(path).getFile()) + " not found.", e);
         }
 
         // first line
@@ -138,9 +142,8 @@ public class FieldProfile {
         File fieldMapfile = new File(new URI(path));
         fieldMapfile.getParentFile().mkdirs();
         PrintWriter pw = new PrintWriter(new FileWriter(fieldMapfile));
-        double[] field = getField();
-        double zmax = getLength();
-        pw.printf("%d %f%n%f%n", field.length - 1, zmax, 1.0);
+
+        pw.printf("%d %f%n%f%n", field.length - 1, length, 1.0);
         for (int i = 0; i < field.length; i++) {
             pw.printf("%f%n", field[i] * 1e-6);
         }
