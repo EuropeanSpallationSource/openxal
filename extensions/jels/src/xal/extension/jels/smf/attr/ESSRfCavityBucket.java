@@ -16,9 +16,9 @@ public class ESSRfCavityBucket extends RfCavityBucket {
     /*
      *  Constants
      */
-    public final static String c_strType = "rfcavity";
+    public static final String c_strType = "rfcavity";
 
-    final static String[] c_arrNames = {"TTF_startCoefs",
+    static final String[] c_arrNames = {"TTF_startCoefs",
         "TTFPrime_startCoefs",
         "STF_startCoefs",
         "STFPrime_startCoefs",};
@@ -58,7 +58,9 @@ public class ESSRfCavityBucket extends RfCavityBucket {
         return c_strType;
     }
 
-    /** Override virtual to provide type signature */
+    /**
+     * Override virtual to provide type signature
+     */
     @Override
     public String[] getAttrNames() {
         String[] attrs = super.getAttrNames();

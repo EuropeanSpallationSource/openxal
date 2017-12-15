@@ -17,6 +17,8 @@
  */
 package xal.extension.jels.model.elem;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import xal.extension.jels.smf.impl.ESSFieldMap;
 import xal.extension.jels.smf.impl.FieldProfile;
 import xal.model.IElement;
@@ -40,16 +42,18 @@ import xal.tools.math.GenericMatrix;
  */
 public class FieldMap extends ThickElement implements IRfGap, IRfCavityCell {
 
+    private static final Logger LOGGER = Logger.getLogger(FieldMap.class.getName());
+
     private double frequency;
 
-    private double field[];
+    private double[] field;
     private double totalLength;
     private double ETL;
     private boolean inverted;
 
     private double phi0;
     private double phipos;
-    private double phase[];
+    private double[] phase;
 
     private double startPosition;
     private boolean lastSlice;
@@ -85,6 +89,7 @@ public class FieldMap extends ThickElement implements IRfGap, IRfCavityCell {
             try {
                 firstSliceFieldmap = (FieldMap) latticeElement.getFirstSlice().createModelingElement();
             } catch (ModelException e) {
+                LOGGER.log(Level.INFO, "Couldn't load the first slice element.", e);
             }
         }
 
@@ -99,26 +104,24 @@ public class FieldMap extends ThickElement implements IRfGap, IRfCavityCell {
      * smaller parts of the element.
      *
      * @param beta energy at the start of the element
-     * @param E0 energy at the start of the element
-     * @param Er particles rest energy
+     * @param initialEnergy energy at the start of the element
+     * @param restMass particles rest energy
      */
-    private double[] initPhase(double E0, double Er, double phi0) {
-        double[] phase = new double[field.length];
+    private void initPhase(double initialEnergy, double restMass, double phi0) {
+        phase = new double[field.length];
 
         double phi = phi0;
         double dz = totalLength / field.length;
-        double DE = 0.;
+        double energyGain = 0.;
 
         for (int i = 0; i < field.length; i++) {
             phase[i] = phi;
 
-            DE += ETL * field[i] * Math.cos(phi) * dz;
-            double gamma = (E0 + DE) / Er + 1.0;
+            energyGain += ETL * field[i] * Math.cos(phi) * dz;
+            double gamma = (initialEnergy + energyGain) / restMass + 1.0;
             double beta = Math.sqrt(1.0 - 1.0 / (gamma * gamma));
             phi += 2 * Math.PI * frequency * dz / (beta * LightSpeed);
         }
-
-        return phase;
     }
 
     @Override
@@ -132,14 +135,14 @@ public class FieldMap extends ThickElement implements IRfGap, IRfCavityCell {
         int i0 = (int) Math.round(p0 / totalLength * field.length);
         int in = (int) Math.round((p0 + dblLen) / totalLength * field.length);
 
-        double DE = 0;
+        double energyGain = 0;
         double dz = totalLength / field.length;
 
         for (int i = i0; i < Math.min(in, field.length - 1); i++) {
-            DE += ETL * field[i] * Math.cos(phase[i]) * dz;
+            energyGain += ETL * field[i] * Math.cos(phase[i]) * dz;
         }
-        //System.out.println(p0 + " "+ energyKick);
-        return DE;
+
+        return energyGain;
     }
 
     /**
@@ -147,6 +150,9 @@ public class FieldMap extends ThickElement implements IRfGap, IRfCavityCell {
      * (i.e from probe.getPosition, and for dblLength). It does so by
      * numerically integrating equations of motion and calculating matrix
      * exponent of them, to get the transfer matrix.
+     *
+     * @return
+     * @throws xal.model.ModelException
      */
     @Override
     public PhaseMap transferMap(IProbe probe, double dblLen)
@@ -166,11 +172,11 @@ public class FieldMap extends ThickElement implements IRfGap, IRfCavityCell {
         double Ek = probe.getKineticEnergy();
         double restEnergy = probe.getSpeciesRestEnergy();
 
-        GenericMatrix Ttr = new GenericMatrix(2, 2);
-        Ttr.assignIdentity();
+        GenericMatrix transversalTransferMatrix = new GenericMatrix(2, 2);
+        transversalTransferMatrix.assignIdentity();
 
-        GenericMatrix Tz = new GenericMatrix(2, 2);
-        Tz.assignIdentity();
+        GenericMatrix longitudinalTransferMatrix = new GenericMatrix(2, 2);
+        longitudinalTransferMatrix.assignIdentity();
 
         double gammaStart;
         double Edz;
@@ -183,18 +189,17 @@ public class FieldMap extends ThickElement implements IRfGap, IRfCavityCell {
         double pBx_pydz;
         double k;
         double gammaEnd;
-        GenericMatrix Mtr = new GenericMatrix(2,2);
-        GenericMatrix Mz = new GenericMatrix(2,2);
-        Mtr.setElem(0,0,1);
-        Mtr.setElem(0,1,dz);
-        Mz.setElem(0,0,1);
-        Mz.setElem(0,1,dz);
+        GenericMatrix Mtr = new GenericMatrix(2, 2);
+        GenericMatrix Mz = new GenericMatrix(2, 2);
+        Mtr.setElem(0, 0, 1);
+        Mtr.setElem(0, 1, dz);
+        Mz.setElem(0, 0, 1);
+        Mz.setElem(0, 1, dz);
 
         for (int i = i0; i < in; i++) {
             Edz = field[i] * dz;
             phi = phase[i];
             dE = (i == 0 ? field[i + 1] : (i == field.length - 1 ? field[i - 1] : field[i + 1] - field[i - 1])) / 2.;
-            //double dE = (-field(i+2)+8*field(i+1)-8*field(i-1)+field(i-2))/12.; // higher precision derivative
 
             gammaStart = Ek / restEnergy + 1.0;
             betaStart = Math.sqrt(1.0 - 1.0 / (gammaStart * gammaStart));
@@ -210,30 +215,30 @@ public class FieldMap extends ThickElement implements IRfGap, IRfCavityCell {
             gammaEnd = (Ek + energyKick) / restEnergy + 1.0;
 
             // First order integrator
-            Mtr.setElem(1,0,k * (pEx_pxdz + betaStart * LightSpeed * pBx_pydz));
-            Mtr.setElem(1,1,1 - k * energyKick);
-            Ttr = Mtr.times(Ttr);
-            Mz.setElem(1,0,k * pEz_pzdz / (gammaEnd * gammaEnd));
-            Mz.setElem(1,1,(1 - k * energyKick) * gammaStart * gammaStart / (gammaEnd * gammaEnd));
-            Tz = Mz.times(Tz);
-            
+            Mtr.setElem(1, 0, k * (pEx_pxdz + betaStart * LightSpeed * pBx_pydz));
+            Mtr.setElem(1, 1, 1 - k * energyKick);
+            transversalTransferMatrix = Mtr.times(transversalTransferMatrix);
+            Mz.setElem(1, 0, k * pEz_pzdz / (gammaEnd * gammaEnd));
+            Mz.setElem(1, 1, (1 - k * energyKick) * gammaStart * gammaStart / (gammaEnd * gammaEnd));
+            longitudinalTransferMatrix = Mz.times(longitudinalTransferMatrix);
+
             Ek += energyKick;
         }
 
         PhaseMatrix T = PhaseMatrix.identity();
-        T.setSubMatrix(0, 1, 0, 1, Ttr.getArrayCopy());
-        T.setSubMatrix(2, 3, 2, 3, Ttr.getArrayCopy());
-        T.setSubMatrix(4, 5, 4, 5, Tz.getArrayCopy());
+        T.setSubMatrix(0, 1, 0, 1, transversalTransferMatrix.getArrayCopy());
+        T.setSubMatrix(2, 3, 2, 3, transversalTransferMatrix.getArrayCopy());
+        T.setSubMatrix(4, 5, 4, 5, longitudinalTransferMatrix.getArrayCopy());
 
         return new PhaseMap(T);
     }
 
-    public static void ROpenXal2TW(double gamma_start, double gamma_end, PhaseMap pm) {
+    public static void ROpenXal2TW(double gammaStart, double gammaEnd, PhaseMap pm) {
         PhaseMatrix r = pm.getFirstOrder();
 
         for (int i = 0; i < 6; i++) {
-            r.setElem(i, 5, r.getElem(i, 5) / gamma_start / gamma_start);
-            r.setElem(5, i, r.getElem(5, i) * gamma_end * gamma_end);
+            r.setElem(i, 5, r.getElem(i, 5) / gammaStart / gammaStart);
+            r.setElem(5, i, r.getElem(5, i) * gammaEnd * gammaEnd);
         }
         pm.setLinearPart(r);
     }
@@ -250,14 +255,15 @@ public class FieldMap extends ThickElement implements IRfGap, IRfCavityCell {
         int in = (int) Math.round((p0 + dblLen) / totalLength * field.length);
 
         in = Math.min(in, field.length - 1);
-        double dt = (phase[in] - phase[i0]) / (2 * Math.PI * frequency);
-        return dt;
+        
+        return (phase[in] - phase[i0]) / (2 * Math.PI * frequency);
     }
 
     /**
      * Since it is currently hard to track phase on the probe, this way we
      * initialize the phase and deinitialize it when the probe passes.
      *
+     * @throws xal.model.ModelException
      */
     @Override
     public void propagate(IProbe probe) throws ModelException {
@@ -268,14 +274,13 @@ public class FieldMap extends ThickElement implements IRfGap, IRfCavityCell {
 
             if (indCell == 0) {
                 double phim = phipos / (probe.getBeta() * IElement.LightSpeed / (2 * Math.PI * frequency));
-                //phim = ti.getSyncPhase(probe.getBeta());
 
                 phi00 = Math.IEEEremainder(phi0 - phim - (inverted ? Math.PI : 0.), 2 * Math.PI);
             } else {
                 phi00 = probe.getLongitinalPhase() + dblCavModeConst * Math.PI * indCell;
             }
 
-            phase = initPhase(probe.getKineticEnergy(), probe.getSpeciesRestEnergy(), phi00);
+            initPhase(probe.getKineticEnergy(), probe.getSpeciesRestEnergy(), phi00);
         }
         super.propagate(probe);
         if (lastSlice) {
@@ -289,21 +294,6 @@ public class FieldMap extends ThickElement implements IRfGap, IRfCavityCell {
             return firstSliceFieldmap.longitudinalPhaseAdvance(probe, dblLen);
         }
 
-        /*double dphi2 = 0.;		
-		
-		if (firstInRFCavity && startPosition == probe.getPosition()) { // WORKAROUND to set the initial phase 
-			double phi0 = phase[0];
-	        double phi = probe.getLongitinalPhase();
-	        dphi2 += -phi + phi0; 
-		}
-		
-		double p0 = probe.getPosition() - startPosition;
-		int i0 = (int)Math.round(p0/totalLength*field.length);
-		int in = (int)Math.round((p0+dblLen)/totalLength*field.length);
-		if (in >= field.length) in = field.length;
-		
-		double deltaPhi = phase[in-1] - phase[i0];
-		return deltaPhi + dphi2;*/
         double p0 = probe.getPosition() - startPosition;
         int in = (int) Math.round((p0 + dblLen) / totalLength * field.length);
         if (in >= field.length) {
@@ -330,7 +320,6 @@ public class FieldMap extends ThickElement implements IRfGap, IRfCavityCell {
     @Override
     public void setFrequency(double dblFreq) {
         frequency = dblFreq;
-
     }
 
     @Override
@@ -350,7 +339,8 @@ public class FieldMap extends ThickElement implements IRfGap, IRfCavityCell {
 
     @Override
     public double getE0() {
-        return 1; // We ignore cavity amplitude
+        // We ignore cavity amplitude
+        return 1;
     }
 
     @Override
@@ -380,7 +370,8 @@ public class FieldMap extends ThickElement implements IRfGap, IRfCavityCell {
 
     @Override
     public boolean isEndCell() {
-        return false; // this is ignored
+        // this is ignored
+        return false;
     }
 
     @Override

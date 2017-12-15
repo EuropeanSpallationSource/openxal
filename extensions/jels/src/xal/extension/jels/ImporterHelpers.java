@@ -3,6 +3,7 @@ package xal.extension.jels;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
 
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -26,17 +27,20 @@ import xal.tools.data.DataAttribute;
 import xal.tools.data.DataTable;
 import xal.tools.data.EditContext;
 import xal.tools.data.GenericRecord;
+import java.util.logging.Logger;
 
 public class ImporterHelpers {
+
+    private static final Logger LOGGER = Logger.getLogger(ImporterHelpers.class.getName());
 
     public static AcceleratorSeqCombo addDefaultComboSeq(Accelerator acc) {
         List<AcceleratorSeq> seqs = acc.getSequences();
 
         // Remove LEBT and RFQ from default combo sequence, because they are not 
         // fully supported by Open XAL model
-        if (seqs.get(1).getId().equals("RFQ")) {
+        if ("RFQ".equals(seqs.get(1).getId())) {
             seqs = seqs.subList(2, acc.getSequences().size());
-        } else if (seqs.get(0).getId().equals("LEBT")) {
+        } else if ("LEBT".equals(seqs.get(0).getId())) {
             seqs = seqs.subList(1, acc.getSequences().size());
         }
 
@@ -52,15 +56,8 @@ public class ImporterHelpers {
         return comboSeq;
     }
 
-    // TODO remove hardcoded probe initialisation
     public static EnvelopeProbe defaultProbe() {
-        EnvelopeProbe probe = setupOpenXALProbe(); // OpenXAL probe & algorithm
-        //EnvelopeProbe probe = setupElsProbe(); // ELS probe & algorithm
-
-        // Setup of initial parameters
-        //setupInitialParameters(probe);
-        //loadInitialParameters(probe, "mebt-initial-state.xml");		
-        return probe;
+        return setupOpenXALProbe();
     }
 
     private static EnvelopeProbe setupOpenXALProbe() {
@@ -80,10 +77,13 @@ public class ImporterHelpers {
 
     public static void setupInitialParameters(EnvelopeProbe probe, double bunchFrequency, double beamCurrent, double kineticEnergy, PhaseVector vecCent, Twiss[] initialTwiss) {
         probe.setSpeciesCharge(1);
-//        probe.setSpeciesRestEnergy(9.382720813E8);    // More accurate value
-        probe.setSpeciesRestEnergy(9.38272029E8); // TraceWin value
+        // More accurate value
+//        probe.setSpeciesRestEnergy(9.382720813E8);   
+        // TraceWin value
+        probe.setSpeciesRestEnergy(9.38272029E8);
         probe.setSpeciesName("PROTON");
-        probe.setKineticEnergy(kineticEnergy); //energy in eV
+        //energy in eV
+        probe.setKineticEnergy(kineticEnergy);
         probe.setPosition(0.0);
         probe.setTime(0.0);
         probe.setBeamCurrent(beamCurrent);
@@ -91,14 +91,13 @@ public class ImporterHelpers {
 
         double beta = probe.getBeta();
         double gamma = probe.getGamma();
-        double beta_gamma = beta * gamma;
+        double betaGamma = beta * gamma;
 
         // Convert from TraceWin coordinates (z,deltap/p) to Open XAL (z,z')
-        Twiss oxalTwissX = new Twiss(initialTwiss[0].getAlpha(), initialTwiss[0].getBeta(), initialTwiss[0].getEmittance() / beta_gamma);
-        Twiss oxalTwissY = new Twiss(initialTwiss[1].getAlpha(), initialTwiss[1].getBeta(), initialTwiss[1].getEmittance() / beta_gamma);
-        Twiss oxalTwissZ = new Twiss(initialTwiss[2].getAlpha(), initialTwiss[2].getBeta(), initialTwiss[2].getEmittance() / (beta_gamma * gamma * gamma));
+        Twiss oxalTwissX = new Twiss(initialTwiss[0].getAlpha(), initialTwiss[0].getBeta(), initialTwiss[0].getEmittance() / betaGamma);
+        Twiss oxalTwissY = new Twiss(initialTwiss[1].getAlpha(), initialTwiss[1].getBeta(), initialTwiss[1].getEmittance() / betaGamma);
+        Twiss oxalTwissZ = new Twiss(initialTwiss[2].getAlpha(), initialTwiss[2].getBeta(), initialTwiss[2].getEmittance() / (betaGamma * gamma * gamma));
 
-//        probe.initFromTwiss(oxalTwiss);
         CovarianceMatrix matCov;
         if (vecCent != null) {
             matCov = CovarianceMatrix.buildCovariance(oxalTwissX, oxalTwissY, oxalTwissZ, vecCent);
@@ -110,7 +109,7 @@ public class ImporterHelpers {
     }
 
     public static List<EnvelopeProbeState> simulateInitialValues(EnvelopeProbe probe, AcceleratorSeqCombo seqCombo) throws ModelException {
-        Scenario scenario = Scenario.newScenarioFor(seqCombo);//, elementMapping);		
+        Scenario scenario = Scenario.newScenarioFor(seqCombo);
         scenario.setProbe(probe);
 
         // Setting up synchronization mode
@@ -130,7 +129,6 @@ public class ImporterHelpers {
         }
 
         probe.reset();
-        System.gc();
 
         return initialValues;
     }
@@ -191,7 +189,7 @@ public class ImporterHelpers {
                 }
 
             } catch (ModelException e) {
-                System.err.println("Unable to simulate initial states on sequences. Only setting the first sequence.");
+                LOGGER.log(Level.WARNING, "Unable to simulate initial states on sequences. Only setting the first sequence.", e);
                 List<EnvelopeProbeState> states = Arrays.asList(probe.cloneCurrentProbeState());
                 states.get(0).setElementId(comboSeq.getConstituents().get(0).getId());
                 ProbeFactory.storeInitialValues(editContext, states);
@@ -201,7 +199,7 @@ public class ImporterHelpers {
 
     public static void addAllInitialParameters(Accelerator accelerator, List<Double> bunchFrequency, List<Double> beamCurrent, List<Double> kineticEnergy, List<PhaseVector> initialCentroid, List<Twiss[]> initialTwiss) {
         if (accelerator != null) {
-            AcceleratorSeqCombo comboSeq = addDefaultComboSeq(accelerator);
+            addDefaultComboSeq(accelerator);
 
             EditContext editContext = new EditContext();
 
@@ -217,7 +215,7 @@ public class ImporterHelpers {
             int i = 0;
             double beta;
             double gamma;
-            double beta_gamma;
+            double betaGamma;
             Twiss[] auxTwiss;
 
             // Creating schema for Centroid position
@@ -230,14 +228,14 @@ public class ImporterHelpers {
 
                 gamma = 1 + kineticEnergy.get(i) / probe.getSpeciesRestEnergy();
                 beta = Math.sqrt(1 - 1 / gamma / gamma);
-                beta_gamma = beta * gamma;
+                betaGamma = beta * gamma;
 
                 auxTwiss = initialTwiss.get(i);
                 // Convert from TraceWin coordinates (z,deltap/p) to Open XAL (z,z')
                 Twiss[] oxalTwiss = new Twiss[]{
-                    new Twiss(auxTwiss[0].getAlpha(), auxTwiss[0].getBeta(), auxTwiss[0].getEmittance() / beta_gamma),
-                    new Twiss(auxTwiss[1].getAlpha(), auxTwiss[1].getBeta(), auxTwiss[1].getEmittance() / beta_gamma),
-                    new Twiss(auxTwiss[2].getAlpha(), auxTwiss[2].getBeta(), auxTwiss[2].getEmittance() / (beta_gamma * gamma * gamma))};
+                    new Twiss(auxTwiss[0].getAlpha(), auxTwiss[0].getBeta(), auxTwiss[0].getEmittance() / betaGamma),
+                    new Twiss(auxTwiss[1].getAlpha(), auxTwiss[1].getBeta(), auxTwiss[1].getEmittance() / betaGamma),
+                    new Twiss(auxTwiss[2].getAlpha(), auxTwiss[2].getBeta(), auxTwiss[2].getEmittance() / (betaGamma * gamma * gamma))};
 
                 addTwissToTable(seq.getId(), oxalTwiss, tblTwiss);
 
@@ -266,7 +264,7 @@ public class ImporterHelpers {
         }));
 
         editContext.addTableToGroup(tblCentroid, "modelparams");
-        
+
         return tblCentroid;
     }
 
@@ -332,14 +330,13 @@ public class ImporterHelpers {
         for (int i = 0; i < children.getLength();) {
             Node child = children.item(i);
             attrs = child.getAttributes();
-
-            if ("align".equals(child.getNodeName()) || "twiss".equals(child.getNodeName())) // remove twiss and align - not needed
-            {
+            // remove twiss and align - not needed
+            if ("align".equals(child.getNodeName()) || "twiss".equals(child.getNodeName())) {
                 parent.removeChild(child);
             } else if ("channelsuite".equals(child.getNodeName()) && !child.hasChildNodes()) {
                 parent.removeChild(child);
-            } else if ("aperture".equals(child.getNodeName()) && "0.0".equals(attrs.getNamedItem("x").getNodeValue())) // remove empty apertures
-            {
+                // remove empty apertures
+            } else if ("aperture".equals(child.getNodeName()) && "0.0".equals(attrs.getNamedItem("x").getNodeValue())) {
                 parent.removeChild(child);
             } else {
                 xmlCleanup(child);

@@ -62,18 +62,18 @@ public final class ESSElementFactory {
      * @param alpha Bend angle in degrees.
      * @param k beta*gamma*Er/(e0*c).
      * @param rho Curvature radius in meter.
-     * @param entry_angle Entry angle in degrees.
-     * @param exit_angle Exit angle in degrees.
+     * @param entryAngle Entry angle in degrees.
+     * @param exitAngle Exit angle in degrees.
      * @param quadComp Quadrupole component error of the dipole.
      * @param aper Aperture details.
      * @param ps Power supply for magnet. Can be null.
      * @param position Position of the magnet in the accelerator.
      * @return Bend object.
      */
-    public static ESSBend createESSBend(String name, double alpha, double k, double rho, double entry_angle,
-            double exit_angle, double quadComp, ApertureBucket aper, MagnetMainSupply ps, int orientation, double gap, double position) {
+    public static ESSBend createESSBend(String name, double alpha, double k, double rho, double entryAngle,
+            double exitAngle, double quadComp, ApertureBucket aper, MagnetMainSupply ps, int orientation, double gap, double position) {
 
-        return createESSBend(name, alpha, k, rho, entry_angle, exit_angle, 0.45, 2.8, 0.45, 2.8, quadComp, aper, ps, orientation,
+        return createESSBend(name, alpha, k, rho, entryAngle, exitAngle, 0.45, 2.8, 0.45, 2.8, quadComp, aper, ps, orientation,
                 gap, position);
     }
 
@@ -84,8 +84,8 @@ public final class ESSElementFactory {
      * @param alpha Bend angle in degrees.
      * @param k beta*gamma*Er/(e0*c).
      * @param rho Curvature radius in meter.
-     * @param entry_angle Entry angle in degrees.
-     * @param exit_angle Exit angle in degrees.
+     * @param entryAngle Entry angle in degrees.
+     * @param exitAngle Exit angle in degrees.
      * @param enterK1 First upstream edge face Fringe-field factor.
      * @param enterK2 Second upstream edge face Fringe-field factor.
      * @param exitK1 First downstream edge face Fringe-field factor.
@@ -96,8 +96,8 @@ public final class ESSElementFactory {
      * @param position Position of the magnet in the accelerator.
      * @return Bend object.
      */
-    public static ESSBend createESSBend(String name, double alpha, double k, double rho, double entry_angle,
-            double exit_angle, double enterK1, double enterK2, double exitK1, double exitK2, double quadComp,
+    public static ESSBend createESSBend(String name, double alpha, double k, double rho, double entryAngle,
+            double exitAngle, double enterK1, double enterK2, double exitK1, double exitK2, double quadComp,
             ApertureBucket aper, MagnetMainSupply ps, int orientation, double gap, double position) {
 
         // calculations
@@ -114,9 +114,9 @@ public final class ESSElementFactory {
         bend.setLength(len);
         bend.getMagBucket().setPathLength(len);
 
-        bend.getMagBucket().setDipoleEntrRotAngle(-entry_angle);
+        bend.getMagBucket().setDipoleEntrRotAngle(-entryAngle);
         bend.getMagBucket().setBendAngle(alpha);
-        bend.getMagBucket().setDipoleExitRotAngle(-exit_angle);
+        bend.getMagBucket().setDipoleExitRotAngle(-exitAngle);
         bend.setDfltField(B0);
         bend.getMagBucket().setDipoleQuadComponent(quadComp);
 
@@ -201,9 +201,9 @@ public final class ESSElementFactory {
      * @param position Position of the cavity.
      * @return RfCavity object.
      */
-    public static ESSRfCavity createESSRfCavity(String name, double length, AcceleratorNode node, double Phis, double amplitude,
+    public static ESSRfCavity createESSRfCavity(String name, double length, AcceleratorNode node, double phiS, double amplitude,
             double frequency, double position) {
-        return createESSRfCavity(name, length, new AcceleratorNode[]{node}, Phis, amplitude, frequency, position);
+        return createESSRfCavity(name, length, new AcceleratorNode[]{node}, phiS, amplitude, frequency, position);
     }
 
     /**
@@ -219,7 +219,7 @@ public final class ESSElementFactory {
      * @param position Position of the cavity.
      * @return RfCavity object.
      */
-    public static ESSRfCavity createESSRfCavity(String name, double length, AcceleratorNode[] nodes, double Phis, double amplitude,
+    public static ESSRfCavity createESSRfCavity(String name, double length, AcceleratorNode[] nodes, double phiS, double amplitude,
             double frequency, double position) {
 
         ESSRfCavity cavity = new ESSRfCavity(name);
@@ -228,7 +228,7 @@ public final class ESSElementFactory {
             cavity.addNode(gap);
         }
 
-        cavity.getRfField().setPhase(Phis);
+        cavity.getRfField().setPhase(phiS);
         cavity.getRfField().setAmplitude(amplitude);
         cavity.getRfField().setFrequency(frequency);
         cavity.setPosition(position);
@@ -250,7 +250,7 @@ public final class ESSElementFactory {
      * @param position Position of the cavity.
      * @return RfCavity object.
      */
-    public static ESSDTLTank createESSDTLTank(String name, double length, AcceleratorNode[] nodes, double Phis, double amplitude,
+    public static ESSDTLTank createESSDTLTank(String name, double length, AcceleratorNode[] nodes, double phiS, double amplitude,
             double frequency, double position) {
 
         ESSDTLTank cavity = new ESSDTLTank(name);
@@ -259,7 +259,7 @@ public final class ESSElementFactory {
             cavity.addNode(gap);
         }
 
-        cavity.getRfField().setPhase(Phis);
+        cavity.getRfField().setPhase(phiS);
         cavity.getRfField().setAmplitude(amplitude);
         cavity.getRfField().setFrequency(frequency);
         cavity.setPosition(position);
@@ -304,5 +304,4 @@ public final class ESSElementFactory {
 
         return solenoid;
     }
-
 }
