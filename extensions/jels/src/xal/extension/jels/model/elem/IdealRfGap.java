@@ -292,8 +292,7 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
     }
 
     protected double computeBetaFromGamma(double gamma) {
-        double beta = Math.sqrt(Math.pow(gamma, 2) - 1.0) / gamma;
-        return beta;
+        return Math.sqrt(Math.pow(gamma, 2) - 1.0) / gamma;
     }
 
     /**
@@ -323,22 +322,22 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
         PhaseMatrix matPhi = new PhaseMatrix();
         double lambda = LightSpeed / getFrequency();
 
-        double Phis;
+        double phiS;
         if (isFirstGap() || !probe.getAlgorithm().getRfGapPhaseCalculation()) {
-            Phis = getPhase();
-            Phis += structureMode * Math.PI * indCell;
+            phiS = getPhase();
+            phiS += structureMode * Math.PI * indCell;
         } else {
-            Phis = probe.getLongitinalPhase();
-            Phis += structureMode * Math.PI * indCell;
-            setPhase(Phis);
+            phiS = probe.getLongitinalPhase();
+            phiS += structureMode * Math.PI * indCell;
+            setPhase(phiS);
         }
 
         if (getETL() == 0) {
             matPhi = PhaseMatrix.identity();
         } else {
             double mass = probe.getSpeciesRestEnergy();
-            double gamma_start = probe.getGamma();
-            double beta_start = probe.getBeta();
+            double gammaStart = probe.getGamma();
+            double betaStart = probe.getBeta();
 
             double gammaEnd;
             double betaEnd;
@@ -359,38 +358,38 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
 
             if (TTFFit.getCoef(0) != 0) {
                 E0TL = getE0() * getCellLength();
-                gammaMiddle = gamma_start + E0TL / mass * Math.cos(Phis) / 2;
+                gammaMiddle = gammaStart + E0TL / mass * Math.cos(phiS) / 2;
                 betaMiddle = computeBetaFromGamma(gammaMiddle);
 
                 E0TL_scaled = E0TL * TTFFit.evaluateAt(betaMiddle);
                 double kToverT = -betaMiddle * TTFFit.derivativeAt(betaMiddle) / TTFFit.evaluateAt(betaMiddle);
 
-                energyGain = E0TL_scaled * Math.cos(Phis);
-                gammaEnd = gamma_start + energyGain / mass;
+                energyGain = E0TL_scaled * Math.cos(phiS);
+                gammaEnd = gammaStart + energyGain / mass;
                 betaEnd = computeBetaFromGamma(gammaEnd);
-                gammaAvg = (gammaEnd + gamma_start) / 2;
+                gammaAvg = (gammaEnd + gammaStart) / 2;
                 betaAvg = computeBetaFromGamma(gammaAvg);
 
-                deltaPhi = E0TL_scaled / mass * Math.sin(Phis) / (Math.pow(gammaAvg, 3) * Math.pow(betaAvg, 2)) * (kToverT);
-                kx = 1 - E0TL_scaled / (2 * mass) * Math.cos(Phis) / (Math.pow(betaAvg, 2) * Math.pow(gammaAvg, 3)) * (Math.pow(gammaAvg, 2) + kToverT);
-                ky = 1 - E0TL_scaled / (2 * mass) * Math.cos(Phis) / (Math.pow(betaAvg, 2) * Math.pow(gammaAvg, 3)) * (Math.pow(gammaAvg, 2) - kToverT);
+                deltaPhi = E0TL_scaled / mass * Math.sin(phiS) / (Math.pow(gammaAvg, 3) * Math.pow(betaAvg, 2)) * (kToverT);
+                kx = 1 - E0TL_scaled / (2 * mass) * Math.cos(phiS) / (Math.pow(betaAvg, 2) * Math.pow(gammaAvg, 3)) * (Math.pow(gammaAvg, 2) + kToverT);
+                ky = 1 - E0TL_scaled / (2 * mass) * Math.cos(phiS) / (Math.pow(betaAvg, 2) * Math.pow(gammaAvg, 3)) * (Math.pow(gammaAvg, 2) - kToverT);
             } else {
                 E0TL_scaled = getETL();
-                energyGain = E0TL_scaled * Math.cos(Phis);
-                gammaEnd = gamma_start + energyGain / mass;
+                energyGain = E0TL_scaled * Math.cos(phiS);
+                gammaEnd = gammaStart + energyGain / mass;
                 betaEnd = computeBetaFromGamma(gammaEnd);
 
-                gammaAvg = (gammaEnd + gamma_start) / 2;
+                gammaAvg = (gammaEnd + gammaStart) / 2;
                 betaAvg = computeBetaFromGamma(gammaAvg);
 
-                kx = 1 - E0TL_scaled / (2 * mass) * Math.cos(Phis) / (Math.pow(betaAvg, 2) * gammaAvg);
+                kx = 1 - E0TL_scaled / (2 * mass) * Math.cos(phiS) / (Math.pow(betaAvg, 2) * gammaAvg);
                 ky = kx;
             }
 
-            kxy = -Math.PI * E0TL_scaled / mass * Math.sin(Phis) / (Math.pow(gammaAvg * betaAvg, 2) * lambda);
-            kz = 2 * Math.PI * E0TL_scaled / mass * Math.sin(Phis) / (Math.pow(betaAvg, 2) * lambda);
+            kxy = -Math.PI * E0TL_scaled / mass * Math.sin(phiS) / (Math.pow(gammaAvg * betaAvg, 2) * lambda);
+            kz = 2 * Math.PI * E0TL_scaled / mass * Math.sin(phiS) / (Math.pow(betaAvg, 2) * lambda);
 
-            symplecticityFactor = Math.sqrt((beta_start * gamma_start) / (betaEnd * gammaEnd * kx * ky));
+            symplecticityFactor = Math.sqrt((betaStart * gammaStart) / (betaEnd * gammaEnd * kx * ky));
 
             matPhi.setElem(0, 0, kx * symplecticityFactor);
             matPhi.setElem(1, 0, kxy / (betaEnd * gammaEnd));
@@ -402,7 +401,7 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
 
             matPhi.setElem(4, 4, 1);
             matPhi.setElem(5, 4, kz / (betaEnd * Math.pow(gammaEnd, 3)));
-            matPhi.setElem(5, 5, (beta_start * Math.pow(gamma_start, 3)) / (betaEnd * Math.pow(gammaEnd, 3)));
+            matPhi.setElem(5, 5, (betaStart * Math.pow(gammaStart, 3)) / (betaEnd * Math.pow(gammaEnd, 3)));
         }
 
         matPhi.setElem(6, 6, 1);
@@ -444,8 +443,8 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
         cellLength = rfgap.getGapLength();
         gapOffset = rfgap.getGapOffset();
 
-        if (rfgap.getSFit().getCoef(0) != 0) {
-            TTFFit = new MeanFieldPolynomial(rfgap.getTTFFit(), rfgap.getTTFPrimeFit(), rfgap.getSFit(), rfgap.getSPrimeFit());
+        if (rfgap.getTTFPrimeFit().getCoef(0) != 0) {
+            TTFFit = new MeanFieldPolynomial(rfgap.getTTFFit(), rfgap.getTTFPrimeFit());
         } else {
             TTFFit = rfgap.getTTFFit();
         }

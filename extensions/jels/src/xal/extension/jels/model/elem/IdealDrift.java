@@ -8,11 +8,6 @@ import xal.tools.beam.PhaseMatrix;
 
 public class IdealDrift extends ThickElement {
 
-    /**
-     * Debugging flag
-     */
-    final boolean debug = false;
-
     /*
      *  Global Attributes
      */

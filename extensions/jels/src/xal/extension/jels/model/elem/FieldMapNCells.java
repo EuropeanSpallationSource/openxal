@@ -41,48 +41,48 @@ import xal.tools.beam.PhaseMap;
  *
  */
 public class FieldMapNCells extends ThickElement implements IRfGap, IRfCavityCell {
-    
+
     private static final Logger LOGGER = Logger.getLogger(FieldMapNCells.class.getName());
-    
+
     private double frequency;
-    
+
     private IdealRfGap[] gaps;
     private TTFIntegrator[] splitIntgrs;
-    
+
     private double phi0;
     private double phipos;
     private boolean inverted;
-    
+
     private Double startPosition;
     private Double sliceStartPosition;
     private double sliceLength;
-    
+
     private FieldMapNCells firstSliceElement;
-    
+
     private int indCell;
     private double dblCavModeConst;
-    
+
     private double k0;
-    
+
     public FieldMapNCells() {
         this(null);
     }
-    
+
     public FieldMapNCells(String strId) {
         super("RfGapWithTTFIntegrator", strId, 3);
     }
-    
+
     @Override
     public void initializeFrom(LatticeElement latticeElement) {
         super.initializeFrom(latticeElement);
         sliceLength = latticeElement.getLength();
-        
+
         if (latticeElement.isFirstSlice()) {
             final ESSFieldMap fm = (ESSFieldMap) latticeElement.getHardwareNode();
             FieldProfile fp = fm.getFieldProfile();
-            
+
             phipos = fm.getPhasePosition();
-            
+
             if (fm.getParent() instanceof RfCavity) {
                 //WORKAROUND difference between ESS and SNS lattice
                 inverted = fm.getParent().getClass().equals(RfCavity.class) && fp.isFirstInverted();
@@ -97,7 +97,7 @@ public class FieldMapNCells extends ThickElement implements IRfGap, IRfCavityCel
              */
             splitIntgrs = TTFIntegrator.getSplitIntegrators(fp, frequency);
             gaps = new IdealRfGap[splitIntgrs.length];
-            
+
             for (int i = 0; i < splitIntgrs.length; i++) {
                 gaps[i] = new IdealRfGap();
                 gaps[i].setFrequency(frequency);
@@ -105,15 +105,15 @@ public class FieldMapNCells extends ThickElement implements IRfGap, IRfCavityCel
                 gaps[i].setCellLength(1);
                 gaps[i].setStructureMode(1);
             }
-            
+
         }
         try {
             firstSliceElement = (FieldMapNCells) latticeElement.getFirstSlice().createModelingElement();
         } catch (ModelException e) {
-            LOGGER.log(Level.INFO, "Couldn''t load the first slice element. {0}", e.getMessage());
+            LOGGER.log(Level.INFO, "Couldn't load the first slice element.", e);
         }
     }
-    
+
     @Override
     public void propagate(IProbe probe) throws ModelException {
         if (sliceStartPosition == null) {
@@ -121,15 +121,22 @@ public class FieldMapNCells extends ThickElement implements IRfGap, IRfCavityCel
         }
         firstSliceElement.propagate(probe, sliceStartPosition, sliceStartPosition + sliceLength);
     }
-    
+
+    /**
+     *
+     * @param probe
+     * @param sliceStartPosition
+     * @param sliceEndPosition
+     * @throws ModelException
+     */
     public void propagate(IProbe probe, double sliceStartPosition, double sliceEndPosition) throws ModelException {
         if (startPosition == null) {
             startPosition = probe.getPosition();
         }
-        
+
         double cellPos = startPosition;
         double pos = probe.getPosition();
-        
+
         for (int i = 0; i < splitIntgrs.length; i++) {
             if (cellPos + splitIntgrs[i].getLength() < pos) {
                 cellPos += splitIntgrs[i].getLength();
@@ -162,10 +169,10 @@ public class FieldMapNCells extends ThickElement implements IRfGap, IRfCavityCel
                     gaps[i].setCavityCellIndex(i + indCell);
                     gaps[i].setFirstGap(i == 0 && indCell == 0);
                     gaps[i].setE0(splitIntgrs[i].getE0TL() * k0);
-                    
+
                     gaps[i].propagate(probe);
                 }
-                
+
                 if (pos >= sliceEndPosition) {
                     break;
                 }
@@ -181,97 +188,97 @@ public class FieldMapNCells extends ThickElement implements IRfGap, IRfCavityCel
             cellPos += splitIntgrs[i].getLength();
         }
     }
-    
+
     @Override
     public void setETL(double dblETL) {
         k0 = dblETL;
     }
-    
+
     @Override
     public void setE0(double E) {
         // We ignore this value. gap amplitude
     }
-    
+
     @Override
     public void setPhase(double dblPhase) {
         phi0 = dblPhase;
     }
-    
+
     @Override
     public void setFrequency(double dblFreq) {
         frequency = dblFreq;
-        
+
     }
-    
+
     @Override
     public double getETL() {
         return k0;
     }
-    
+
     @Override
     public double getPhase() {
         return phi0;
     }
-    
+
     @Override
     public double getFrequency() {
         return frequency;
     }
-    
+
     @Override
     public double getE0() {
         // We ignore cavity amplitude
         return 1;
     }
-    
+
     @Override
     public boolean isFirstGap() {
         return indCell == 0;
     }
-    
+
     @Override
     public void setCavityCellIndex(int indCell) {
         this.indCell = indCell;
     }
-    
+
     @Override
     public void setCavityModeConstant(double dblCavModeConst) {
         this.dblCavModeConst = dblCavModeConst;
     }
-    
+
     @Override
     public int getCavityCellIndex() {
         return indCell;
     }
-    
+
     @Override
     public double getCavityModeConstant() {
         return dblCavModeConst;
     }
-    
+
     @Override
     public boolean isEndCell() {
         // this is ignored
         return false;
     }
-    
+
     @Override
     public boolean isFirstCell() {
         return indCell == 0;
     }
-    
+
     @Override
     public double energyGain(IProbe probe, double dblLen) {
         // not used
         return 0;
     }
-    
+
     @Override
     public PhaseMap transferMap(IProbe probe, double dblLen) throws ModelException {
         // not used
         return null;
     }
-    
+
     @Override
     public double elapsedTime(IProbe probe, double dblLen) {
         // not used

@@ -11,6 +11,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xal.model.IProbe;
 import xal.tools.beam.PhaseMatrix;
@@ -32,6 +34,8 @@ import xal.tools.beam.PhaseMatrix;
 public class TransferMapLoader {
 
     private static Map<URI, TransferMapLoader> loaders = new HashMap<>();
+    
+    private static final Logger LOGGER = Logger.getLogger(TransferMapLoader.class.getName());
 
     private URI tmFile;
     protected List<TransferMaps> tms = new ArrayList<>();
@@ -55,8 +59,8 @@ public class TransferMapLoader {
         }
 
         public TransferMaps(double[] positions, PhaseMatrix[] transferMaps) {
-            this.positions = positions;
-            this.transferMaps = transferMaps;
+            this.positions = positions.clone();
+            this.transferMaps = transferMaps.clone();
         }
 
         public PhaseMatrix transferMap(IProbe p, double l) {
@@ -125,7 +129,7 @@ public class TransferMapLoader {
 
         @Override
         public boolean equals(Object arg0) {
-            if (arg0.getClass().isInstance(TransferMaps.class)) {
+            if (arg0 != null && arg0.getClass().isInstance(TransferMaps.class)) {
                 return (position == ((TransferMaps) arg0).position);
             } else {
                 return false;
@@ -228,7 +232,7 @@ public class TransferMapLoader {
             }
             br.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.INFO, "Error accessing the file.", e);
         }
 
         try {
@@ -251,7 +255,7 @@ public class TransferMapLoader {
             }
             br.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.INFO, "Error accessing the file.", e);
         }
     }
 
@@ -353,7 +357,7 @@ public class TransferMapLoader {
             }
             br.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.INFO, "Error accessing the file.", e);
         }
     }
 }

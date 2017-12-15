@@ -309,9 +309,7 @@ public class IdealMagDipoleFace2 extends ThinElectromagnet {
         double L0 = this.getDesignPathLength();
         double theta0 = this.getDesignBendingAngle();
 
-        double h0 = theta0 / L0;
-
-        return h0;
+        return theta0 / L0;
     }
 
 

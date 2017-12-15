@@ -344,9 +344,7 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
         double L0 = this.getDesignPathLength();
         double theta0 = this.getDesignBendingAngle();
 
-        double R0 = L0 / theta0;
-
-        return R0;
+        return L0 / theta0;
     }
 
     /**
@@ -519,9 +517,7 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
         } else if (ratio < -1) {
             ratio = -1;
         }
-        double theta = Math.acos(ratio);
-
-        return theta;
+        return Math.acos(ratio);
     }
 
 

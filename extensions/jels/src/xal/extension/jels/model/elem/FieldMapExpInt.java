@@ -89,7 +89,7 @@ public class FieldMapExpInt extends ThickElement implements IRfGap, IRfCavityCel
             try {
                 firstSliceFieldmap = (FieldMapExpInt) latticeElement.getFirstSlice().createModelingElement();
             } catch (ModelException e) {
-                LOGGER.log(Level.INFO, "Couldn''t load the first slice element. {0}", e.getMessage());
+                LOGGER.log(Level.INFO, "Couldn't load the first slice element.", e);
             }
         }
 
@@ -104,21 +104,21 @@ public class FieldMapExpInt extends ThickElement implements IRfGap, IRfCavityCel
      * smaller parts of the element.
      *
      * @param beta energy at the start of the element
-     * @param E0 energy at the start of the element
-     * @param Er particles rest energy
+     * @param initialEnergy energy at the start of the element
+     * @param restMass particles rest energy
      */
-    private void initPhase(double E0, double Er, double phi0) {
+    private void initPhase(double initialEnergy, double restMass, double phi0) {
         phase = new double[field.length];
 
         double phi = phi0;
         double dz = totalLength / field.length;
-        double DE = 0.;
+        double energyGain = 0.;
 
         for (int i = 0; i < field.length; i++) {
             phase[i] = phi;
 
-            DE += ETL * field[i] * Math.cos(phi) * dz;
-            double gamma = (E0 + DE) / Er + 1.0;
+            energyGain += ETL * field[i] * Math.cos(phi) * dz;
+            double gamma = (initialEnergy + energyGain) / restMass + 1.0;
             double beta = Math.sqrt(1.0 - 1.0 / (gamma * gamma));
             phi += 2 * Math.PI * frequency * dz / (beta * LightSpeed);
         }
@@ -135,14 +135,14 @@ public class FieldMapExpInt extends ThickElement implements IRfGap, IRfCavityCel
         int i0 = (int) Math.round(p0 / totalLength * field.length);
         int in = (int) Math.round((p0 + dblLen) / totalLength * field.length);
 
-        double dE = 0;
+        double energyGain = 0;
         double dz = totalLength / field.length;
 
         for (int i = i0; i < Math.min(in, field.length - 1); i++) {
-            dE += ETL * field[i] * Math.cos(phase[i]) * dz;
+            energyGain += ETL * field[i] * Math.cos(phase[i]) * dz;
         }
 
-        return dE;
+        return energyGain;
     }
 
     /**
@@ -277,13 +277,14 @@ public class FieldMapExpInt extends ThickElement implements IRfGap, IRfCavityCel
         int in = (int) Math.round((p0 + dblLen) / totalLength * field.length);
 
         in = Math.min(in, field.length - 1);
-        double dt = (phase[in] - phase[i0]) / (2 * Math.PI * frequency);
-        return dt;
+
+        return (phase[in] - phase[i0]) / (2 * Math.PI * frequency);
     }
 
     /**
      * Since it is currently hard to track phase on the probe, this way we
      * initialize the phase and deinitialize it when the probe passes.
+     * @throws xal.model.ModelException
      */
     @Override
     public void propagate(IProbe probe) throws ModelException {

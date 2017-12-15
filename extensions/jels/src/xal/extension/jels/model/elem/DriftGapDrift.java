@@ -48,8 +48,8 @@ public class DriftGapDrift extends ElementSeq {
         }
 
         /*
-	     * Old implementation of IdealRfGap is used. Middle phase is calculated when the energy at the
-	     * entrance into the gap is known. Also TTF integrator is supplied with the necessary offset.
+         * Old implementation of IdealRfGap is used. Middle phase is calculated when the energy at the
+         * entrance into the gap is known. Also TTF integrator is supplied with the necessary offset.
          */
         gap = new IdealRfGap(fm.getId(), intgr.getE0TL() * fm.getXelmax(), 0, fm.getFrequency() * 1e6) {
             @Override

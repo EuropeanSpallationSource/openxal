@@ -11,6 +11,7 @@ package xal.extension.jels.model.elem;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import xal.extension.jels.model.elem.TransferMapLoader.TransferMaps;
@@ -125,7 +126,7 @@ public class FakeElement extends ThickElement {
             tmFile = new URI(fm.getFieldMapFile()).resolve("ess.tm");
             this.transferMaps = TransferMapLoader.getInstance(tmFile).prepare(start, getLength());
         } catch (URISyntaxException e) {
-            LOGGER.severe(e.getMessage());
+            LOGGER.log(Level.SEVERE,"Error in the fieldmap file path.", e);
         }
     }
 }
