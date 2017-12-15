@@ -46,8 +46,10 @@ public class MeanFieldPolynomial extends InverseRealPolynomial {
         }
     }
 
+    // TODO: return coefficients of all polynomials
     @Override
     public double getCoef(int iOrder) {
-        return TTF.getCoef(iOrder); // TODO: return coefficients of all polynomials
+
+        return TTF.getCoef(iOrder);
     }
 }

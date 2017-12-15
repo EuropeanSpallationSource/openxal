@@ -41,7 +41,7 @@ public class MinimiseOscillationsEvaluator extends OnlineModelEvaluator {
 
         for (Objective o : objectives) {
             MinimizeOscillationsObjective moo = (MinimizeOscillationsObjective) o;
-            List<EnvelopeProbeState> ps = trajectory.statesInPositionRange(moo.seq.getPosition(), moo.seq.getPosition() + moo.seq.getLength());
+            List<EnvelopeProbeState> ps = trajectory.statesInPositionRange(moo.getSeq().getPosition(), moo.getSeq().getPosition() + moo.getSeq().getLength());
 
             double minx = 1e100, maxx = -1e100;
             double miny = 1e100, maxy = -1e100;
@@ -89,7 +89,11 @@ public class MinimiseOscillationsEvaluator extends OnlineModelEvaluator {
 
     public static class MinimizeOscillationsObjective extends Objective {
 
-        public AcceleratorSeq seq;
+        private AcceleratorSeq seq;
+
+        public AcceleratorSeq getSeq() {
+            return seq;
+        }
 
         public MinimizeOscillationsObjective(AcceleratorSeq seq) {
             super(seq.getId());
