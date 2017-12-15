@@ -128,7 +128,8 @@ public class FieldProfile2D {
 
         field = new double[nPointsZ][nPointsR];
 
-        br.readLine();
+        line = br.readLine();
+        norm = Double.parseDouble(line);
 
         for (int i = 0; i < nPointsZ; i++) {
             for (int j = 0; j < nPointsR; j++) {

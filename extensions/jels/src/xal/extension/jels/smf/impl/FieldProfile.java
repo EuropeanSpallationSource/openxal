@@ -36,6 +36,7 @@ import xal.extension.jels.tools.math.TTFIntegrator;
 public class FieldProfile {
 
     private double length;
+    private double norm;
     private double[] field;
     private TTFIntegrator integrator;
 
@@ -115,7 +116,8 @@ public class FieldProfile {
         length = Double.parseDouble(data[1]);
         field = new double[nPoints];
 
-        br.readLine();
+        line = br.readLine();
+        norm = Double.parseDouble(line);
 
         int i = 0;
         while ((line = br.readLine()) != null && i < nPoints) {
