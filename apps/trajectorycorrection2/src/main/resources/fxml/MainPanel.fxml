@@ -32,6 +32,9 @@
        <menus>
          <Menu mnemonicParsing="false" text="File">
            <items>
+                  <MenuItem mnemonicParsing="false" onAction="#handleSaveAppState" text="Save App State" />
+                  <MenuItem mnemonicParsing="false" onAction="#handleLoadAppState" text="Load App State" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
              <MenuItem fx:id="exitMenu" mnemonicParsing="false" onAction="#handleMenuExit" text="Exit" />
            </items>
          </Menu>
@@ -114,7 +117,7 @@
                      <children>
                        <TabPane prefHeight="240.0" prefWidth="517.0" tabClosingPolicy="UNAVAILABLE">
                          <tabs>
-                           <Tab text="SVD correction">
+                           <Tab fx:id="tabSVD" text="SVD correction">
                              <content>
                                <AnchorPane minHeight="241.0" minWidth="252.0" prefHeight="240.0" prefWidth="517.0">
                                       <children>
@@ -131,10 +134,10 @@
                                             </rowConstraints>
                                             <children>
                                                <Button fx:id="buttonMeasureResponseSVD" disable="true" mnemonicParsing="false" onAction="#handleMeasureResponseSVD" prefWidth="180.0" text="Measure Response Matrix" />
-                                               <Button fx:id="buttonSVDfromModel" disable="true" mnemonicParsing="false" onAction="#handleMeasureResponseSVDfromModel" prefWidth="180.0" text="Matrix from Model" GridPane.rowIndex="1" />
+                                               <Button fx:id="buttonSVDfromModel" mnemonicParsing="false" onAction="#handleMeasureResponseSVDfromModel" prefWidth="180.0" text="Matrix from Model" GridPane.rowIndex="1" />
                                                <Button fx:id="buttonCalcCorrectSVD" disable="true" mnemonicParsing="false" onAction="#handleCalculateCorrectionSVD" prefWidth="180.0" text="Prepare Correction" GridPane.rowIndex="3" />
                                                 <Button fx:id="buttonVerifyMatrixSVD" disable="true" mnemonicParsing="false" onAction="#handleVerifySVDResponse" prefWidth="180.0" text="Verify Response Matrix" GridPane.rowIndex="2" />
-                                                <GridPane prefHeight="36.0" prefWidth="186.0" GridPane.rowIndex="4">
+                                                <GridPane prefHeight="36.0" prefWidth="178.0" GridPane.rowIndex="4">
                                                   <columnConstraints>
                                                     <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="146.0" minWidth="10.0" prefWidth="146.0" />
                                                     <ColumnConstraints hgrow="SOMETIMES" maxWidth="95.0" minWidth="10.0" prefWidth="54.0" />
@@ -144,7 +147,7 @@
                                                   </rowConstraints>
                                                    <children>
                                                      <Label contentDisplay="RIGHT" prefHeight="17.0" prefWidth="116.0" text="singular value cut:" />
-                                                     <TextField fx:id="textFieldSingularValCut" onAction="#handleSetSVDCutValue" text="0" GridPane.columnIndex="1" />
+                                                     <TextField fx:id="textFieldSingularValCut" onAction="#handleSetSVDCutValue" prefHeight="27.0" prefWidth="67.0" text="0" GridPane.columnIndex="1" />
                                                    </children>
                                                 </GridPane>
                                             </children>
@@ -154,7 +157,7 @@
                                     </AnchorPane>
                              </content>
                            </Tab>
-                           <Tab text="1-to-1 correction">
+                           <Tab fx:id="tab1to1" text="1-to-1 correction">
                              <content>
                                <AnchorPane minHeight="240.0" minWidth="250.0" prefHeight="240.0" prefWidth="525.0">
                                       <children>
@@ -169,10 +172,10 @@
                                                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                            </rowConstraints>
                                             <children>
-                                               <Button fx:id="buttonMeasureResponse1to1" disable="true" mnemonicParsing="false" onAction="#handleMeasureResponse1to1" prefWidth="180.0" text="Measure Response" GridPane.rowIndex="1" />
-                                               <Button fx:id="button1to1fromModel" disable="true" mnemonicParsing="false" onAction="#handleMeasureResponse1to1fromModel" prefWidth="180.0" text="Response from Model" GridPane.rowIndex="2" />
+                                               <Button fx:id="buttonMeasureResponse1to1" mnemonicParsing="false" onAction="#handleMeasureResponse1to1" prefWidth="180.0" text="Measure Response" GridPane.rowIndex="1" />
+                                               <Button fx:id="button1to1fromModel" mnemonicParsing="false" onAction="#handleMeasureResponse1to1fromModel" prefWidth="180.0" text="Response from Model" GridPane.rowIndex="2" />
                                                 <Button fx:id="buttonVerifyResponse1to1" disable="true" mnemonicParsing="false" onAction="#handleVerify1to1Response" prefWidth="180.0" text="Verify Response" GridPane.rowIndex="3" />
-                                                <Button fx:id="buttonCheckPair" disable="true" mnemonicParsing="false" onAction="#handleCheckPairs" prefHeight="27.0" prefWidth="180.0" text="Check/Modify Pairs" />
+                                                <Button fx:id="buttonCheckPair" mnemonicParsing="false" onAction="#handleCheckPairs" prefHeight="27.0" prefWidth="180.0" text="Check/Modify Pairs" />
                                             </children>
                                          </GridPane>
                                           <TextArea fx:id="textArea1to1" editable="false" layoutX="422.0" layoutY="167.0" prefHeight="180.0" prefWidth="489.0" AnchorPane.leftAnchor="230.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0" />
@@ -185,7 +188,7 @@
                         <Separator prefWidth="500.0" />
                         <AnchorPane prefHeight="154.0" prefWidth="517.0">
                            <children>
-                             <GridPane AnchorPane.leftAnchor="22.0" AnchorPane.topAnchor="110.0">
+                             <GridPane layoutX="249.0" layoutY="34.0" AnchorPane.leftAnchor="300.0" AnchorPane.topAnchor="30.0">
                                <columnConstraints>
                                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="136.0" minWidth="10.0" prefWidth="133.0" />
                                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="96.0" minWidth="10.0" prefWidth="67.0" />
@@ -198,27 +201,28 @@
                                    <TextField fx:id="textFieldCorrectionFactor" promptText="Percentage of correction to be applied." text="100" GridPane.columnIndex="1" />
                                 </children>
                              </GridPane>
-                             <Button fx:id="buttonCorrectTrajectory" layoutX="352.0" layoutY="23.0" mnemonicParsing="false" onAction="#handleCorrectTrajectory" prefHeight="50.0" prefWidth="130.0" text="CORRECT!" AnchorPane.bottomAnchor="80.0" AnchorPane.rightAnchor="33.0" AnchorPane.topAnchor="23.0" />
+                             <Button fx:id="buttonCorrectTrajectory" layoutX="403.0" layoutY="114.0" mnemonicParsing="false" onAction="#handleCorrectTrajectory" prefHeight="30.0" prefWidth="100.0" text="CORRECT!" AnchorPane.bottomAnchor="15.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="110.0" />
                               <Label layoutX="4.0" layoutY="5.0" text="Apply correction">
                                  <font>
                                     <Font size="18.0" />
                                  </font>
                               </Label>
-                              <RadioButton fx:id="radiobuttonCorrectSVD" layoutX="179.0" layoutY="8.0" mnemonicParsing="false" selected="true" text="SVD">
+                              <RadioButton fx:id="radiobuttonCorrectSVD" layoutX="22.0" layoutY="60.0" mnemonicParsing="false" selected="true" text="SVD" AnchorPane.leftAnchor="22.0" AnchorPane.topAnchor="60.0">
                                  <toggleGroup>
                                     <ToggleGroup fx:id="groupCorrection" />
                                  </toggleGroup>
                               </RadioButton>
-                              <RadioButton fx:id="radiobuttonCorrect1to1" layoutX="249.0" layoutY="8.0" mnemonicParsing="false" text="1-to-1" toggleGroup="$groupCorrection" />
-                             <Label layoutX="14.0" layoutY="37.0" text="Select correction plane:" AnchorPane.leftAnchor="22.0" AnchorPane.topAnchor="40.0" />
-                             <RadioButton fx:id="radioButtonHorizontal" layoutX="22.0" layoutY="62.0" mnemonicParsing="false" selected="true" text="Horizontal" AnchorPane.leftAnchor="22.0" AnchorPane.topAnchor="70.0">
+                              <RadioButton fx:id="radiobuttonCorrect1to1" layoutX="22.0" layoutY="86.0" mnemonicParsing="false" text="1-to-1" toggleGroup="$groupCorrection" AnchorPane.leftAnchor="22.0" AnchorPane.topAnchor="85.0" />
+                             <Label layoutX="14.0" layoutY="37.0" text="Correction method" AnchorPane.leftAnchor="22.0" AnchorPane.topAnchor="35.0" />
+                             <RadioButton fx:id="radioButtonHorizontal" layoutX="169.0" layoutY="60.0" mnemonicParsing="false" selected="true" text="Horizontal" AnchorPane.leftAnchor="165.0" AnchorPane.topAnchor="60.0">
                                  <toggleGroup>
                                     <ToggleGroup fx:id="groupCorrectionPlane" />
                                  </toggleGroup>
                               </RadioButton>
-                             <RadioButton fx:id="radioButtonVertical" layoutX="112.0" layoutY="62.0" mnemonicParsing="false" text="Vertical" toggleGroup="$groupCorrectionPlane" AnchorPane.leftAnchor="122.0" AnchorPane.topAnchor="70.0" />
-                             <RadioButton fx:id="radioButtonHorVer" layoutX="202.0" layoutY="62.0" mnemonicParsing="false" text="Hor. + Vert." toggleGroup="$groupCorrectionPlane" AnchorPane.leftAnchor="222.0" AnchorPane.topAnchor="70.0" />
-                              <Button fx:id="buttonAbort" layoutX="354.0" layoutY="88.0" mnemonicParsing="false" onAction="#handleAbortRequest" prefHeight="30.0" prefWidth="130.0" style="-fx-background-color: #ff0000;" text="Abort" textFill="WHITE" />
+                             <RadioButton fx:id="radioButtonVertical" layoutX="169.0" layoutY="77.0" mnemonicParsing="false" text="Vertical" toggleGroup="$groupCorrectionPlane" AnchorPane.leftAnchor="165.0" AnchorPane.topAnchor="85.0" />
+                             <RadioButton fx:id="radioButtonHorVer" layoutX="164.0" layoutY="105.0" mnemonicParsing="false" text="Hor. + Vert." toggleGroup="$groupCorrectionPlane" AnchorPane.leftAnchor="165.0" AnchorPane.topAnchor="110.0" />
+                              <Button fx:id="buttonAbort" layoutX="296.0" layoutY="114.0" mnemonicParsing="false" onAction="#handleAbortRequest" prefHeight="30.0" prefWidth="100.0" text="Abort!" AnchorPane.bottomAnchor="15.0" AnchorPane.rightAnchor="120.0" AnchorPane.topAnchor="110.0" />
+                              <Label layoutX="168.0" layoutY="40.0" text="Correction plane" AnchorPane.leftAnchor="165.0" AnchorPane.topAnchor="35.0" />
                            </children>
                         </AnchorPane>
                      </children>

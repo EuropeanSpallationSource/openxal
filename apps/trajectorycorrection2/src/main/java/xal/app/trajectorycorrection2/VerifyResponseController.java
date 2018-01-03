@@ -83,11 +83,11 @@ public class VerifyResponseController{
         //set BPM
         if (comboBoxPlane.getValue().equals("Horizontal")){
             Correction1to1.HC.keySet().forEach(bpm -> BPMList.add(bpm));
-            BPMList.sort((bpm1,bpm2)-> Double.compare(bpm1.getParent().getPosition()+bpm1.getPosition(), bpm2.getParent().getPosition()+bpm2.getPosition()));
+            BPMList.sort((bpm1,bpm2)-> Double.compare(bpm1.getSDisplay(), bpm2.getSDisplay()));
             BPMList.forEach(bpm -> comboBoxCorrector.getItems().add(bpm.toString()));
         } else if (comboBoxPlane.getValue().equals("Vertical")){
             Correction1to1.VC.keySet().forEach(bpm -> BPMList.add(bpm));
-            BPMList.sort((bpm1,bpm2)-> Double.compare(bpm1.getParent().getPosition()+bpm1.getPosition(), bpm2.getParent().getPosition()+bpm2.getPosition()));
+            BPMList.sort((bpm1,bpm2)-> Double.compare(bpm1.getSDisplay(), bpm2.getSDisplay()));
             BPMList.forEach(bpm -> comboBoxCorrector.getItems().add(bpm.toString()));
         }
         comboBoxCorrector.setValue(comboBoxCorrector.getItems().get(0));
@@ -234,18 +234,18 @@ public class VerifyResponseController{
                 List<BPM> BPMList = new ArrayList<>();
                 CorrectionSVD.BPM.forEach(bpm -> BPMList.add(bpm));                
 
-                double dist = Math.abs(plotXvalue-(BPMList.get(0).getPosition()+BPMList.get(0).getParent().getPosition()));
+                double dist = Math.abs(plotXvalue-(BPMList.get(0).getSDisplay()));
                 BPM closestBPM=BPMList.get(0);
                 int index = 0;
 
                 for(BPM bpm: BPMList){
-                    if(dist > Math.abs(plotXvalue-(bpm.getPosition()+bpm.getParent().getPosition()))){
-                        dist = Math.abs(plotXvalue-(bpm.getPosition()+bpm.getParent().getPosition()));
+                    if(dist > Math.abs(plotXvalue-(bpm.getSDisplay()))){
+                        dist = Math.abs(plotXvalue-(bpm.getSDisplay()));
                         closestBPM = bpm;
                         index++;
                     }
                 }
-                plot.setDomainCrosshairValue(closestBPM.getPosition()+closestBPM.getParent().getPosition());
+                plot.setDomainCrosshairValue(closestBPM.getSDisplay());
                 double annotationX = 0.9*plot.getDomainAxis().getUpperBound();
                 double annotationY = 0.9*plot.getRangeAxis().getUpperBound();                 
                 annotation.setText(closestBPM.toString());
@@ -381,9 +381,9 @@ public class VerifyResponseController{
         for(xal.smf.impl.BPM item : CorrectionSVD.BPM){
             bpmIndex = CorrectionSVD.BPM.indexOf(item);
             if(plane.equals("Horizontal")){
-                response.add(item.getParent().getPosition()+item.getPosition(),CorrectionSVD.TRMhorizontal.get(bpmIndex, correctorIndex));   
+                response.add(item.getSDisplay(),CorrectionSVD.TRMhorizontal.get(bpmIndex, correctorIndex));   
             } else if (plane.equals("Vertical")){
-                response.add(item.getParent().getPosition()+item.getPosition(),CorrectionSVD.TRMvertical.get(bpmIndex, correctorIndex));                
+                response.add(item.getSDisplay(),CorrectionSVD.TRMvertical.get(bpmIndex, correctorIndex));                
             } 
         }
         
@@ -407,7 +407,7 @@ public class VerifyResponseController{
                 CorrectionSVD.HC.forEach(hc -> comboBoxCorrector.getItems().add(hc.toString()));
             } else if (dataType.equals("1to1")){
                 Correction1to1.HC.keySet().forEach(bpm -> BPMList.add(bpm));
-                BPMList.sort((bpm1,bpm2)-> Double.compare(bpm1.getParent().getPosition()+bpm1.getPosition(), bpm2.getParent().getPosition()+bpm2.getPosition()));
+                BPMList.sort((bpm1,bpm2)-> Double.compare(bpm1.getSDisplay(), bpm2.getSDisplay()));
                 BPMList.forEach(bpm -> comboBoxCorrector.getItems().add(bpm.toString()));
             }
         } else if (comboBoxPlane.getValue().equals("Vertical")){
@@ -415,7 +415,7 @@ public class VerifyResponseController{
                 CorrectionSVD.VC.forEach(vc -> comboBoxCorrector.getItems().add(vc.toString()));
             } else if (dataType.equals("1to1")){
                 Correction1to1.VC.keySet().forEach(bpm -> BPMList.add(bpm));
-                BPMList.sort((bpm1,bpm2)-> Double.compare(bpm1.getParent().getPosition()+bpm1.getPosition(), bpm2.getParent().getPosition()+bpm2.getPosition()));
+                BPMList.sort((bpm1,bpm2)-> Double.compare(bpm1.getSDisplay(), bpm2.getSDisplay()));
                 BPMList.forEach(bpm -> comboBoxCorrector.getItems().add(bpm.toString()));
             }
         }

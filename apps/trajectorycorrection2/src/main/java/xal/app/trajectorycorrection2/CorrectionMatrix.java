@@ -21,10 +21,13 @@ package xal.app.trajectorycorrection2;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXMLLoader;
@@ -38,10 +41,13 @@ import xal.ca.GetException;
 import xal.ca.PutException;
 import xal.extension.fit.LinearFit;
 import xal.model.ModelException;
+import xal.smf.AcceleratorNode;
 import xal.smf.AcceleratorSeq;
+import xal.smf.AcceleratorSeqCombo;
 import xal.smf.impl.BPM;
 import xal.smf.impl.HDipoleCorr;
 import xal.smf.impl.VDipoleCorr;
+import xal.tools.math.r3.R3;
 
 /**
  * Class that measures and calculates the corrector kick for the 1-to-1 correction
@@ -95,53 +101,95 @@ public class CorrectionMatrix {
                 
         //Get list of BPM and correctors    
         List<xal.smf.impl.BPM> allBPMs = accl.getAllNodesOfType("BPM");   
-        xal.smf.AcceleratorSeq parentSequence;
-
-        //Populate the Corrector maps
-        double fim = 0.0;
-        double ini = 0.0;
-        double posCorrector=0.0;
-
-        //finds initial position for search
-        int bpmIndex = 0;
-        if(BPMList.get(0) == allBPMs.get(0)){
-                ini = 0.0;
-        } else { 
-            for(xal.smf.impl.BPM item: allBPMs){
-                if(BPMList.get(0) == item){
-                    parentSequence = allBPMs.get(bpmIndex-1).getParent();
-                    ini = allBPMs.get(bpmIndex-1).getPosition()+parentSequence.getPosition();
-                }
-                bpmIndex++;
+        RunSimulationService simulService; 
+        AcceleratorSeq iniSeq;
+        AcceleratorSeq finalSeq;
+        HashMap<xal.smf.AcceleratorNode, R3> phase= new HashMap();        
+        
+        //remove elements from LEBT and RFQ
+        for(xal.smf.impl.HDipoleCorr hc : HCList){
+            if(hc.getPrimaryAncestor().toString().equals("LEBT") || hc.getPrimaryAncestor().toString().equals("RFQ")){
+                HCList.remove(hc);
             }
         }
-
-        //Start search
+        
+        for(xal.smf.impl.VDipoleCorr vc : VCList){
+            if(vc.getPrimaryAncestor().toString().equals("LEBT") || vc.getPrimaryAncestor().toString().equals("RFQ")){
+                VCList.remove(vc);
+            }
+        }
+        
         for(xal.smf.impl.BPM bpm : BPMList){
-            parentSequence = bpm.getParent();
-            fim = bpm.getPosition()+parentSequence.getPosition();
-            //search for horizontal corrector
-            for(xal.smf.impl.HDipoleCorr hcor : HCList){
-                parentSequence = hcor.getParent();
-                posCorrector = hcor.getPosition()+parentSequence.getPosition();
-                if(posCorrector>ini && posCorrector<fim){
-                    HC.put(bpm, hcor);
-                    HorParam.put(bpm,new double[2]);
-                    break;
-                }
+            if(bpm.getPrimaryAncestor().toString().equals("LEBT") || bpm.getPrimaryAncestor().toString().equals("RFQ")){
+                BPMList.remove(bpm);
+            }
+        }
+                       
+        
+        //Run Simulation to get phase advance
+        if (VCList.get(0).getSDisplay()<HCList.get(0).getSDisplay()){                        
+            iniSeq = VCList.get(0).getPrimaryAncestor();            
+        } else { 
+            iniSeq = HCList.get(0).getPrimaryAncestor(); 
+        }
+        finalSeq = BPMList.get(BPMList.size()-1).getPrimaryAncestor();
+        if(iniSeq != finalSeq){
+            List<AcceleratorSeq> newCombo = new ArrayList<>();             
+            for(int i=accl.getAllSeqs().indexOf(iniSeq); i<=accl.getAllSeqs().indexOf(finalSeq); i++){
+                newCombo.add(accl.getAllSeqs().get(i));
+            }
+            AcceleratorSeqCombo Sequence = new xal.smf.AcceleratorSeqCombo("calcMatrix",newCombo);
+            simulService = new RunSimulationService(Sequence); 
+            simulService.setSynchronizationMode("DESIGN");
+        } else {
+           simulService = new RunSimulationService(iniSeq);
+           simulService.setSynchronizationMode("DESIGN");
+        }                     
+        
+        List<xal.smf.AcceleratorNode> elements = Stream.of(HCList,VCList,BPMList).flatMap(Collection::stream).collect(Collectors.toList());
+        try {
+            phase = simulService.runTwissSimulation(elements);
+        } catch (InstantiationException | ModelException ex) {
+            Logger.getLogger(PairBPMandCorrectorController.class.getName()).log(Level.SEVERE, null, ex);
+        }               
+        
+        //finds initial position for search
+        AcceleratorNode bpmIni = BPMList.get(0).getPrimaryAncestor();
+        for(xal.smf.impl.BPM item: allBPMs){
+            if(BPMList.get(0) == item && allBPMs.indexOf(item)>0){
+                bpmIni = allBPMs.get(allBPMs.indexOf(item)-1);
+            } 
+        }
+        
+        //Start search
+        for(xal.smf.impl.BPM bpm: BPMList){
+        //search for horizontal corrector
+            for(xal.smf.impl.HDipoleCorr hcor: HCList){
+                if((hcor.getSDisplay()>bpmIni.getSDisplay()) && (hcor.getSDisplay()<bpm.getSDisplay())){
+                    if(HC.containsKey(bpm)){
+                        if (Math.abs(phase.get(bpm).getx()-phase.get(hcor).getx()-0.5)<Math.abs(phase.get(bpm).getx()-phase.get(HC.get(bpm)).getx()-0.5)){
+                           HC.put(bpm, hcor);
+                        }
+                    } else {
+                        HC.put(bpm, hcor);
+                        HorParam.put(bpm,new double[2]);
+                    }
+                }            
             }
             //search for vertical corrector
-            for(xal.smf.impl.VDipoleCorr vcor : VCList){
-                parentSequence = vcor.getParent();
-                posCorrector = vcor.getPosition()+parentSequence.getPosition();
-                if(posCorrector>ini && posCorrector<fim){
-                    VC.put(bpm, vcor);
-                    VertParam.put(bpm,new double[2]);
-                    break;
-                }
+            for(xal.smf.impl.VDipoleCorr vcor: VCList){                
+                if(vcor.getSDisplay()>bpmIni.getSDisplay() && vcor.getSDisplay()<bpm.getSDisplay()){
+                    if(VC.containsKey(bpm)){
+                        if (Math.abs(phase.get(bpm).gety()-phase.get(vcor).gety()-0.5)<Math.abs(phase.get(bpm).gety()-phase.get(VC.get(bpm)).gety()-0.5)){
+                            VC.put(bpm, vcor);
+                        }
+                    } else {
+                        VC.put(bpm, vcor);
+                        VertParam.put(bpm,new double[2]);
+                    }                    
+                }            
             }
-            parentSequence = bpm.getParent();
-            ini = bpm.getPosition()+parentSequence.getPosition();
+            bpmIni = bpm;
         }  
           
     }
@@ -291,21 +339,21 @@ public class CorrectionMatrix {
         result= new LinearFit();
         
         //setup simulation parameters
-        if (bpmKey.getParent()!=HC.get(bpmKey).getParent()){
+        if (bpmKey.getPrimaryAncestor()!=HC.get(bpmKey).getPrimaryAncestor()){
             xal.smf.Accelerator accl = bpmKey.getAccelerator();
             List<AcceleratorSeq> newCombo = new ArrayList<>();
-            newCombo.add(HC.get(bpmKey).getParent());
-            newCombo.add(bpmKey.getParent());
+            newCombo.add(HC.get(bpmKey).getPrimaryAncestor());
+            newCombo.add(bpmKey.getPrimaryAncestor());
             xal.smf.AcceleratorSeqCombo Sequence = new xal.smf.AcceleratorSeqCombo("calcMatrix",newCombo); 
             simulService = new RunSimulationService(Sequence);
         } else { 
-            xal.smf.AcceleratorSeq Sequence = bpmKey.getParent();
+            xal.smf.AcceleratorSeq Sequence = bpmKey.getPrimaryAncestor();
             simulService = new RunSimulationService(Sequence);
         }
         simulService.setSynchronizationMode("DESIGN");
         
         HC.keySet().forEach(bpm -> BPMList.add(bpm));
-        BPMList.sort((bpm1,bpm2) -> Double.compare(bpm1.getPosition()+bpm1.getParent().getPosition(),bpm2.getPosition()+bpm2.getParent().getPosition()));
+        BPMList.sort((bpm1,bpm2) -> Double.compare(bpm1.getSDisplay(), bpm2.getSDisplay()));
         
         //measure response 
         HC_val = HC.get(bpmKey).getDfltField();        
@@ -363,20 +411,20 @@ public class CorrectionMatrix {
         result= new LinearFit();
         
         //setup simulation parameters
-        if (bpmKey.getParent()!=HC.get(bpmKey).getParent()){
+        if (bpmKey.getPrimaryAncestor()!=VC.get(bpmKey).getPrimaryAncestor()){
             List<AcceleratorSeq> newCombo = new ArrayList<>();
-            newCombo.add(HC.get(bpmKey).getParent());
-            newCombo.add(bpmKey.getParent());
+            newCombo.add(VC.get(bpmKey).getPrimaryAncestor());
+            newCombo.add(bpmKey.getPrimaryAncestor());
             xal.smf.AcceleratorSeqCombo Sequence = new xal.smf.AcceleratorSeqCombo("calcMatrix",newCombo); 
             simulService = new RunSimulationService(Sequence);
         } else { 
-            xal.smf.AcceleratorSeq Sequence = bpmKey.getParent();
+            xal.smf.AcceleratorSeq Sequence = bpmKey.getPrimaryAncestor();
             simulService = new RunSimulationService(Sequence);
         }
         simulService.setSynchronizationMode("DESIGN");
         
-        HC.keySet().forEach(bpm -> BPMList.add(bpm));
-        BPMList.sort((bpm1,bpm2) -> Double.compare(bpm1.getPosition()+bpm1.getParent().getPosition(),bpm2.getPosition()+bpm2.getParent().getPosition()));
+        VC.keySet().forEach(bpm -> BPMList.add(bpm));
+        BPMList.sort((bpm1,bpm2) -> Double.compare(bpm1.getSDisplay(),bpm2.getSDisplay()));
                 
         //measure response 
         VC_val = VC.get(bpmKey).getDfltField();        

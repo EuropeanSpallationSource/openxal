@@ -18,12 +18,14 @@
 package xal.app.trajectorycorrection2;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import xal.model.ModelException;
 import xal.model.alg.EnvTrackerAdapt;
+import xal.model.alg.EnvelopeTracker;
 import xal.model.probe.Probe;
 import xal.model.probe.traj.EnvelopeProbeState;
 import xal.model.probe.traj.Trajectory;
@@ -99,15 +101,12 @@ public class RunSimulationService{
     
     public HashMap<xal.smf.AcceleratorNode, R3> runTwissSimulation(List<xal.smf.AcceleratorNode> objList) throws InstantiationException, ModelException{
                
-        EnvTrackerAdapt envelopeTracker = AlgorithmFactory.createEnvTrackerAdapt(sequence);
+        EnvelopeTracker envelopeTracker = AlgorithmFactory.createEnvelopeTracker(sequence);
 
-        envelopeTracker.setMaxIterations(1000);
-        envelopeTracker.setAccuracyOrder(1);
-        envelopeTracker.setErrorTolerance(0.001);
         envelopeTracker.setUseSpacecharge(false);
 
         Probe<?> probe = ProbeFactory.getEnvelopeProbe(sequence, envelopeTracker);
-        Scenario model = Scenario.newScenarioFor(sequence);
+        Scenario model = Scenario.newScenarioFor(sequence); 
         
         model.setProbe(probe);
         model.setSynchronizationMode(synchronizationMode.get());
@@ -127,37 +126,47 @@ public class RunSimulationService{
         //initialize arrays
         List<Double> phi_x = new ArrayList<>();
         List<Double> phi_y = new ArrayList<>();
-        List<Double> position = new ArrayList<>();
 
         //append position zero        
-        double gamma = stateElement.get(0).getGamma();
+        double beta_v = stateElement.get(0).getBeta();
         double betax1=stateElement.get(0).getCovarianceMatrix().computeTwiss()[0].getBeta();
-        double betay1=stateElement.get(0).getCovarianceMatrix().computeTwiss()[1].getBeta();
+        double betay1=stateElement.get(0).getCovarianceMatrix().computeTwiss()[1].getBeta();        
         //add initial condition
-        position.add(stateElement.get(0).getPosition());
-        phi_y.add(stateElement.get(0).getResponseMatrixNoSpaceCharge().projectR4x4().getElem(0,1)*Math.sqrt(Math.sqrt(gamma*gamma-1)/(betax0*betax1)));
-        phi_x.add(stateElement.get(0).getResponseMatrixNoSpaceCharge().projectR4x4().getElem(2,3)*Math.sqrt(Math.sqrt(gamma*gamma-1)/(betay0*betay1)));
+        phi_y.add(stateElement.get(0).getResponseMatrixNoSpaceCharge().projectR4x4().getElem(0,1)*Math.sqrt(beta_v/(betax0*betax1)));
+        phi_x.add(stateElement.get(0).getResponseMatrixNoSpaceCharge().projectR4x4().getElem(2,3)*Math.sqrt(beta_v/(betay0*betay1)));
 
         //append other positions (remove repetitions)
         for(int i=1; i<stateElement.size();i++){
-            //position.add(stateElement.get(i).getPosition());
-            gamma = stateElement.get(i).getGamma();
-            betax1=stateElement.get(i).getCovarianceMatrix().computeTwiss()[0].getBeta();
-            betay1=stateElement.get(i).getCovarianceMatrix().computeTwiss()[1].getBeta();
-            phi_y.add(stateElement.get(i).getResponseMatrixNoSpaceCharge().projectR4x4().getElem(0,1)*Math.sqrt(Math.sqrt(gamma*gamma-1)/(betax0*betax1)));
-            phi_x.add(stateElement.get(i).getResponseMatrixNoSpaceCharge().projectR4x4().getElem(2,3)*Math.sqrt(Math.sqrt(gamma*gamma-1)/(betay0*betay1)));  
-            System.out.print(stateElement.get(i).getResponseMatrixNoSpaceCharge().projectR4x4()+"\n");
-        }      
+            beta_v = stateElement.get(0).getBeta();
+            betax1 = stateElement.get(i).getCovarianceMatrix().computeTwiss()[0].getBeta();
+            betay1 = stateElement.get(i).getCovarianceMatrix().computeTwiss()[1].getBeta();
+            phi_y.add(stateElement.get(i).getResponseMatrixNoSpaceCharge().projectR4x4().getElem(0,1)*Math.sqrt(beta_v/(betax0*betax1)));
+            phi_x.add(stateElement.get(i).getResponseMatrixNoSpaceCharge().projectR4x4().getElem(2,3)*Math.sqrt(beta_v/(betay0*betay1)));                          
+        }                     
         
         //normalize to the maximum value
-        //double max_x = phi_x.stream().max(Comparator.naturalOrder()).get();
-        //double max_y = phi_y.stream().max(Comparator.naturalOrder()).get();
+        double max_x = Collections.max(phi_x, new Comparator<Double>() {
+            @Override
+            public int compare(Double x, Double y) {
+                return Math.abs(x) < Math.abs(y) ? -1 : 1;
+            }
+        });
+        double max_y = Collections.max(phi_y, new Comparator<Double>() {
+            @Override
+            public int compare(Double x, Double y) {
+                return Math.abs(x) < Math.abs(y) ? -1 : 1;
+            }
+        });
+                
+        for(int i=0; i<phi_x.size(); i++){
+            if (max_x!=0){
+                phi_x.set(i, phi_x.get(i)/max_x);
+            }
+            if (max_y!=0){
+                phi_y.set(i, phi_y.get(i)/max_y);
+            }
+        }              
         
-        //for(int i=0; i<phi_x.size(); i++){
-        //    phi_x.set(i, phi_x.get(i)/max_x);
-        //    phi_y.set(i, phi_y.get(i)/max_y);
-        //}
-
         // Find zero crossings
         List<Integer> i_0_x = new ArrayList<>();
         List<Integer> i_0_y = new ArrayList<>();
@@ -170,64 +179,97 @@ public class RunSimulationService{
             if (phi_y.get(i-1)*phi_y.get(i)<0) {
                 i_0_y.add(i);
             }
-        }              
+        }    
         
-        // Divide data into half periods (this part depends on the last period) 
+        if(i_0_x.get(i_0_x.size()-1)!=phi_x.size()-1){
+            i_0_x.add(phi_x.size());
+        }
+        
+        if(i_0_y.get(i_0_y.size()-1)!=phi_y.size()-1){
+            i_0_y.add(phi_y.size());
+        }
+       
+        // Divide data into half periods 
         List<List<Double>> x_180 = new ArrayList<>();
         List<List<Double>> y_180 = new ArrayList<>();
+        List<Double> maxx_180 = new ArrayList<>();
+        List<Double> maxy_180 = new ArrayList<>();
         if(i_0_x.size()>1){
-            for(int k=0; k<i_0_x.size(); k++){
+            for(int k=0; k<i_0_x.size()-1; k++){
+                maxx_180.add(Collections.max(phi_x.subList(i_0_x.get(k),i_0_x.get(k+1)), new Comparator<Double>() {
+                     @Override
+                     public int compare(Double x, Double y) {
+                         return Math.abs(x) < Math.abs(y) ? -1 : 1;
+                     }
+                }));
                 x_180.add(phi_x.subList(i_0_x.get(k),i_0_x.get(k+1)));
-            }
+            }                    
         } else {
+            maxx_180.add(Collections.max(phi_x, new Comparator<Double>() {
+                @Override
+                public int compare(Double x, Double y) {
+                    return Math.abs(x) < Math.abs(y) ? -1 : 1;
+                }
+            }));
             x_180.add(phi_x);
         }
         
         if(i_0_y.size()>1){
-            for(int k=0; k<i_0_y.size(); k++){
-               y_180.add(phi_y.subList(i_0_y.get(k),i_0_y.get(k+1)));
-            }
+            for(int k=0; k<i_0_y.size()-1; k++){
+                maxy_180.add(Collections.max(phi_y.subList(i_0_y.get(k),i_0_y.get(k+1)), new Comparator<Double>() {
+                     @Override
+                     public int compare(Double x, Double y) {
+                         return Math.abs(x) < Math.abs(y) ? -1 : 1;
+                     }
+                }));
+                y_180.add(phi_y.subList(i_0_y.get(k),i_0_y.get(k+1)));
+            }               
         } else {
+            maxy_180.add(Collections.max(phi_y, new Comparator<Double>() {
+                    @Override
+                    public int compare(Double x, Double y) {
+                        return Math.abs(x) < Math.abs(y) ? -1 : 1;
+                    }
+            })); 
             y_180.add(phi_y);
         }
      
-        //Normalize in each half period
-        //x_180.forEach(subList ->{           
-        //    subList.stream().max(Comparator.naturalOrder()).get();            
-        //    for(int i=0; i<subList.size(); i++){
-        //        subList.set(i, subList.get(i)/max_x);
-        //    }
-        //});
-        //y_180.forEach(subList ->{           
-        //    subList.stream().max(Comparator.naturalOrder()).get();            
-        //    for(int i=0; i<subList.size(); i++){
-        //        subList.set(i, subList.get(i)/max_y);
-        //    }
-        //});
-
+        //Normalize in each half period and calculate absolute value
+        x_180.forEach(subList ->{           
+            for(int i=0; i<subList.size(); i++){
+                if (maxx_180.get(x_180.indexOf(subList))!=0){
+                    subList.set(i, Math.abs(subList.get(i)/maxx_180.get(x_180.indexOf(subList))));
+                }
+            }
+        });
+        y_180.forEach(subList ->{           
+            for(int i=0; i<subList.size(); i++){
+                if (maxy_180.get(y_180.indexOf(subList))!=0){
+                    subList.set(i, Math.abs(subList.get(i)/maxy_180.get(y_180.indexOf(subList))));
+                }
+            }
+        });       
+        
         // Phase in [2*pi], taking care the arcsin quadrant issue
         List<Integer> index = new ArrayList<>();
         List<Double> phsx = new ArrayList<>();
         List<Double> phsy = new ArrayList<>();
         List<Double> phs_k = new ArrayList<>();              
-        
+                
         x_180.forEach(subList -> {            
-            subList.forEach(item -> phs_k.add(Math.asin(item)/(2*Math.PI)));
+            subList.forEach(item -> phs_k.add(Math.asin(item)/(2.0*Math.PI)));
+            index.add(0, 0); 
             for(int i=1; i<phs_k.size(); i++){
                 if (phs_k.get(i)<phs_k.get(i-1) && (phs_k.get(i-1)-phs_k.get(i)>1e-10)){
-                    index.add(0, i);  
+                    index.set(0, i);  
                     break;
-                } else {
-                    index.add(0, 0); 
                 }
             }
-            if (x_180.indexOf(subList)==(x_180.size()-1)){
+            if (x_180.indexOf(subList)==(x_180.size()-1)){                
                 for(int i=index.get(0)+1; i<phs_k.size(); i++){
                     if (phs_k.get(i)>phs_k.get(i-1) && (phs_k.get(i)-phs_k.get(i-1)>1e-10)){
                         index.add(1, i);
                         break;
-                    } else {
-                        index.add(1, phs_k.size());
                     }
                 }
             }
@@ -243,29 +285,27 @@ public class RunSimulationService{
                     phs_k.set(i, 0.5-phs_k.get(i));
                 }
             }
-            phs_k.forEach(phase -> phsx.add(phase));
+            phs_k.forEach(phase -> phsx.add(phase+0.5*x_180.indexOf(subList)));
             index.clear();
             phs_k.clear();
         });
 
+        
         y_180.forEach(subList -> {            
             subList.forEach(item -> phs_k.add(Math.asin(item)/(2*Math.PI)));
+            index.add(0, 0);
             for(int i=1; i<phs_k.size(); i++){
                 if (phs_k.get(i)<phs_k.get(i-1) && (phs_k.get(i-1)-phs_k.get(i)>1e-10)){
-                    index.add(0, i);  
+                    index.set(0, i);  
                     break;
-                } else {
-                    index.add(0, 0); 
                 }
             }
-            if (y_180.indexOf(subList)==(y_180.size()-1)){
+            if (y_180.indexOf(subList)==(y_180.size()-1)){                
                 for(int i=index.get(0)+1; i<phs_k.size(); i++){
                     if (phs_k.get(i)>phs_k.get(i-1) && (phs_k.get(i)-phs_k.get(i-1)>1e-10)){
                         index.add(1, i);
                         break;
-                    } else {
-                        index.add(1, phs_k.size());
-                    }
+                    } 
                 }
             }
             if (index.size()>1){
@@ -280,25 +320,20 @@ public class RunSimulationService{
                     phs_k.set(i, 0.5-phs_k.get(i));
                 }
             }
-            phs_k.forEach(phase -> phsy.add(phase));
+            phs_k.forEach(phase -> phsy.add(phase+0.5*y_180.indexOf(subList)));
             index.clear();
             phs_k.clear();
-        });
-               
-        HashMap<xal.smf.AcceleratorNode, R3> betatronPhase = new HashMap();                
-        xal.smf.AcceleratorNode nodeId;
+        });               
         
-        System.out.print(phsx+"\n");
-        System.out.print(phsy+"\n");
+        HashMap<xal.smf.AcceleratorNode, R3> betatronPhase = new HashMap();                
         
         for(int i=1; i<trajectory.numStates();i++){
             if (objList.contains(sequence.getNodeWithId(stateElement.get(i).getHardwareNodeId()))){
                 betatronPhase.put(sequence.getNodeWithId(stateElement.get(i).getHardwareNodeId()),new R3(phsx.get(i),phsy.get(i),0.0));
+                //System.out.print(stateElement.get(i).getHardwareNodeId()+":"+sequence.getNodeWithId(stateElement.get(i).getHardwareNodeId()).getSDisplay()+","+phsx.get(i)+","+phsy.get(i)+"\n");
             }
         };
-        
-        System.out.print(betatronPhase);
-        
+                
         return betatronPhase;
 
             

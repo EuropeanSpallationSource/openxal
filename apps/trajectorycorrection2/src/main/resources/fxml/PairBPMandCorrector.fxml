@@ -59,7 +59,8 @@
       </TabPane>
       <ToolBar layoutY="344.0" nodeOrientation="RIGHT_TO_LEFT" prefHeight="49.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
         <items>
-            <Button mnemonicParsing="false" onAction="#handleOK" prefWidth="61.0" text="OK" />
+            <Button mnemonicParsing="false" onAction="#handleCancel" prefWidth="61.0" text="OK" />
+            <Button mnemonicParsing="false" onAction="#handleOK" text="Modify" />
             <Button mnemonicParsing="false" onAction="#handleCancel" prefWidth="61.0" text="Cancel" />
         </items>
       </ToolBar>

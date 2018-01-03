@@ -99,7 +99,7 @@ public class TrajectoryArray {
         Pos.clear();
 
         for(xal.smf.impl.BPM item:BPM){
-            Pos.put(item, item.getPosition()+item.getParent().getPosition());
+            Pos.put(item, item.getSDisplay());
             X.put(item, item.getXAvg());
             Y.put(item, item.getYAvg());
             if(XRef.containsKey(item)){
@@ -129,7 +129,7 @@ public class TrajectoryArray {
         Pos.clear();
 
         for(xal.smf.impl.BPM item:BPMList){
-            Pos.put(item, item.getPosition()+item.getParent().getPosition());
+            Pos.put(item, item.getSDisplay());
             X.put(item, item.getXAvg());
             Y.put(item, item.getYAvg());
             if(XRef.containsKey(item)){
@@ -229,7 +229,7 @@ public class TrajectoryArray {
         YRef.clear();
         
         for(xal.smf.impl.BPM bpm: BPMList){            
-            posS[k] = bpm.getPosition();
+            posS[k] = bpm.getSDisplay();
             try {
                 posX[k] = bpm.getXAvg();
                 posY[k] = bpm.getYAvg();

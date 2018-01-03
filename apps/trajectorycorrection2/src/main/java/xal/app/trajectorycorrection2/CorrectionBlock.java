@@ -450,6 +450,177 @@ public class CorrectionBlock {
         
     }
     
+    public void loadBlock(DataAdaptor readAdp, Accelerator accl){
+        String[] bpmNames;
+        String[] hcNames;
+        String[] vcNames;
+        List<Integer> validBPMs = new ArrayList<Integer>();
+        List<Integer> validHC = new ArrayList<Integer>();
+        List<Integer> validVC = new ArrayList<Integer>();
+        List<xal.smf.impl.BPM> listBPM = new ArrayList<>();
+        List<xal.smf.impl.HDipoleCorr> listHC = new ArrayList<>();
+        List<xal.smf.impl.VDipoleCorr> listVC = new ArrayList<>();   
+        List<xal.smf.impl.BPM> existsBPM = accl.getAllNodesOfType("BPM");
+        List<xal.smf.impl.HDipoleCorr> existsHC = accl.getAllNodesOfType("DCH");
+        List<xal.smf.impl.VDipoleCorr> existsVC = accl.getAllNodesOfType("DCV");      
+        
+        try {                        
+            this.setblockName(readAdp.stringValue("name"));
+            DataAdaptor blockInputData = readAdp.childAdaptor(inputData);
+            DataAdaptor blockFlags = blockInputData.childAdaptor("flags");
+            this.setOkSVD(blockFlags.booleanValue("okSVD"));
+            this.setOk1to1(blockFlags.booleanValue("ok1to1"));
+            DataAdaptor blockBPMData = blockInputData.childAdaptor("BPM");           
+            bpmNames = blockBPMData.stringValue("data").split(",");            
+            for(int i=0; i<bpmNames.length; i+=1){                
+                if(existsBPM.contains((xal.smf.impl.BPM) accl.getNode(bpmNames[i]))){
+                    listBPM.add((xal.smf.impl.BPM) accl.getNode(bpmNames[i]));
+                }    
+            }
+            this.setBlockBPM(listBPM);
+            DataAdaptor blockHCData = blockInputData.childAdaptor("HCorrector");
+            hcNames = blockHCData.stringValue("data").split(",");
+            for(int i=0; i<hcNames.length; i+=1){
+                if(existsHC.contains((xal.smf.impl.HDipoleCorr) accl.getNode(hcNames[i]))){
+                    listHC.add((xal.smf.impl.HDipoleCorr) accl.getNode(hcNames[i]));
+                }
+            }
+            this.setBlockHC(listHC);
+            DataAdaptor blockVCData = blockInputData.childAdaptor("VCorrector");
+            vcNames = blockVCData.stringValue("data").split(",");
+            for(int i=0; i<vcNames.length; i+=1){
+                if(existsVC.contains((xal.smf.impl.VDipoleCorr) accl.getNode(vcNames[i]))){
+                    listVC.add((xal.smf.impl.VDipoleCorr) accl.getNode(vcNames[i]));
+                }
+            }
+            this.setBlockVC(listVC);
+            
+            if(this.isOkSVD()){
+                this.CorrectionMatrixSVD = new CorrectionSVD();
+                DataAdaptor blockSVDData = readAdp.childAdaptor(blockSVD);
+                DataAdaptor blockSVDCut = blockSVDData.childAdaptor("SVDcut");                
+                this.CorrectionMatrixSVD.setCutSVD(blockSVDCut.doubleValue("value"));
+                blockBPMData = blockSVDData.childAdaptor("BPM");           
+                bpmNames = blockBPMData.stringValue("data").split(",");
+                listBPM.clear();
+                for(int i=0; i<bpmNames.length; i+=1){
+                    if(existsBPM.contains((xal.smf.impl.BPM) accl.getNode(bpmNames[i]))){
+                        listBPM.add((xal.smf.impl.BPM) accl.getNode(bpmNames[i]));
+                        validBPMs.add(i);
+                    } 
+                }
+                this.CorrectionMatrixSVD.setBPM(listBPM);
+                blockHCData = blockSVDData.childAdaptor("HCorrector");
+                hcNames = blockHCData.stringValue("data").split(",");
+                listHC.clear();                
+                for(int i=0; i<hcNames.length; i+=1){
+                    if(existsHC.contains((xal.smf.impl.HDipoleCorr) accl.getNode(hcNames[i]))){
+                        listHC.add((xal.smf.impl.HDipoleCorr) accl.getNode(hcNames[i]));
+                        validHC.add(i);
+                    }
+                }
+                this.CorrectionMatrixSVD.setHC(listHC);
+                blockVCData = blockSVDData.childAdaptor("VCorrector");
+                vcNames = blockVCData.stringValue("data").split(",");
+                listVC.clear();              
+                for(int i=0; i<vcNames.length; i+=1){
+                    if(existsVC.contains((xal.smf.impl.VDipoleCorr) accl.getNode(vcNames[i]))){
+                        listVC.add((xal.smf.impl.VDipoleCorr) accl.getNode(vcNames[i]));
+                        validVC.add(i);                        
+                    }
+                }
+                this.CorrectionMatrixSVD.setVC(listVC);
+                DataAdaptor blockMatrix = blockSVDData.childAdaptor("matrix");
+                blockMatrix.childAdaptors().forEach((DataAdaptor childAdaptor) -> {
+                    int rows = childAdaptor.intValue("row");
+                    int columns = childAdaptor.intValue("column");
+                    double[] elements = childAdaptor.doubleArray("values");
+                    Matrix response = new Matrix(elements,rows);
+                    if (childAdaptor.stringValue("plane").equals("horizontal")){
+                        if(rows==listBPM.size() && columns==listHC.size()){
+                            this.CorrectionMatrixSVD.setTRMhorizontal(response);
+                            this.CorrectionMatrixSVD.setM(rows);
+                            this.CorrectionMatrixSVD.setNh(columns);
+                        } else {                          
+                            this.CorrectionMatrixSVD.setTRMhorizontal(response.getMatrix(validBPMs.stream().mapToInt(i->i).toArray(),validHC.stream().mapToInt(i->i).toArray()));
+                            this.CorrectionMatrixSVD.setM(listBPM.size());
+                            this.CorrectionMatrixSVD.setNh(listHC.size());
+                        }
+                    } else if (childAdaptor.stringValue("plane").equals("vertical")){
+                        if(rows==listBPM.size() && columns==listVC.size()){
+                            this.CorrectionMatrixSVD.setTRMvertical(response);
+                            this.CorrectionMatrixSVD.setM(rows);
+                            this.CorrectionMatrixSVD.setNv(columns);
+                        } else {
+                            this.CorrectionMatrixSVD.setTRMvertical(response.getMatrix(validBPMs.stream().mapToInt(i->i).toArray(),validVC.stream().mapToInt(i->i).toArray()));
+                            this.CorrectionMatrixSVD.setM(listBPM.size());
+                            this.CorrectionMatrixSVD.setNh(listVC.size());
+                        }
+                    }  
+                });           
+            } else {
+                this.initializeSVDCorrection(accl);
+            }
+            if(this.isOk1to1()){
+                this.Correction1to1 = new CorrectionMatrix();
+                DataAdaptor block1to1Data = readAdp.childAdaptor(block1to1);
+                block1to1Data.childAdaptors().forEach((childAdaptor) -> {
+                    HashMap<xal.smf.impl.BPM, double[]> Param = new HashMap();
+                    HashMap<xal.smf.impl.BPM,xal.smf.impl.HDipoleCorr> HCpair = new HashMap();
+                    HashMap<xal.smf.impl.BPM,xal.smf.impl.VDipoleCorr> VCpair = new HashMap();  
+                    double[] elements1to1 = new double[2];
+                    String[] bpmNames1to1;
+                    String[] hcNames1to1;
+                    String[] vcNames1to1;
+                    String[] coeff;
+                    DataAdaptor blockBPMData1to1;
+                    DataAdaptor blockCorrData1to1;
+                    if (childAdaptor.stringValue("plane").equals("horizontal")){
+                        blockBPMData1to1 = childAdaptor.childAdaptor("BPM");           
+                        bpmNames1to1 = blockBPMData1to1.stringValue("data").split(",");
+                        blockCorrData1to1 = childAdaptor.childAdaptor("corrector");
+                        hcNames1to1 = blockCorrData1to1.stringValue("data").split(",");
+                        DataAdaptor blockCoeff = childAdaptor.childAdaptor("coefficients");
+                        coeff = blockCoeff.stringValue("coeff").split(",");
+                        for(int j=0; j<bpmNames1to1.length; j+=1){
+                            if(existsBPM.contains((xal.smf.impl.BPM) accl.getNode(bpmNames1to1[j])) && existsHC.contains((xal.smf.impl.HDipoleCorr) accl.getNode(hcNames1to1[j]))){
+                                HCpair.put((xal.smf.impl.BPM) accl.getNode(bpmNames1to1[j]),(xal.smf.impl.HDipoleCorr) accl.getNode(hcNames1to1[j]));
+                                elements1to1[0] = Double.parseDouble(coeff[j].split(":")[0]);
+                                elements1to1[1] = Double.parseDouble(coeff[j].split(":")[1]);
+                                Param.put((xal.smf.impl.BPM) accl.getNode(bpmNames1to1[j]), elements1to1.clone());
+                            }
+                        }                        
+                        this.Correction1to1.setHC(HCpair);
+                        this.Correction1to1.setHorParam(Param);
+                        
+                    } else if (childAdaptor.stringValue("plane").equals("vertical")) {
+                        blockBPMData1to1 = childAdaptor.childAdaptor("BPM");           
+                        bpmNames1to1 = blockBPMData1to1.stringValue("data").split(",");
+                        blockCorrData1to1 = childAdaptor.childAdaptor("corrector");
+                        vcNames1to1 = blockCorrData1to1.stringValue("data").split(",");
+                        DataAdaptor blockCoeff = childAdaptor.childAdaptor("coefficients");
+                        coeff = blockCoeff.stringValue("coeff").split(",");
+                        for(int j=0; j<bpmNames1to1.length; j+=1){
+                            if(existsBPM.contains((xal.smf.impl.BPM) accl.getNode(bpmNames1to1[j])) && existsVC.contains((xal.smf.impl.VDipoleCorr) accl.getNode(vcNames1to1[j]))){
+                                VCpair.put((xal.smf.impl.BPM) accl.getNode(bpmNames1to1[j]),(xal.smf.impl.VDipoleCorr) accl.getNode(vcNames1to1[j]));
+                                elements1to1[0] = Double.parseDouble(coeff[j].split(":")[0]);
+                                elements1to1[1] = Double.parseDouble(coeff[j].split(":")[1]);
+                                Param.put((xal.smf.impl.BPM) accl.getNode(bpmNames1to1[j]), elements1to1.clone());
+                            }
+                        }
+                        this.Correction1to1.setVC(VCpair);
+                        this.Correction1to1.setVertParam(Param);
+                    }
+                });
+            } else {
+                this.initialize1to1Correction(accl);
+            }
+        } catch (XmlDataAdaptor.ParseException | XmlDataAdaptor.ResourceNotFoundException ex) {
+            Logger.getLogger(CorrectionBlock.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }
+    
     public void initializeSVDCorrection(xal.smf.Accelerator accl){
         this.CorrectionMatrixSVD = new CorrectionSVD();
         this.CorrectionMatrixSVD.defineKnobs(accl, blockBPM, blockHC, blockVC);

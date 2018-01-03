@@ -99,7 +99,7 @@ public class TrajectoryArray {
         Pos.clear();
 
         for(xal.smf.impl.BPM item:BPM){
-            Pos.put(item, item.getPosition()+item.getParent().getPosition());
+            Pos.put(item, item.getSDisplay());
             X.put(item, item.getXAvg());
             Y.put(item, item.getYAvg());
             if(XRef.containsKey(item)){
@@ -129,7 +129,7 @@ public class TrajectoryArray {
         Pos.clear();
 
         for(xal.smf.impl.BPM item:BPMList){
-            Pos.put(item, item.getPosition()+item.getParent().getPosition());
+            Pos.put(item, item.getSDisplay());
             X.put(item, item.getXAvg());
             Y.put(item, item.getYAvg());
             if(XRef.containsKey(item)){
@@ -229,7 +229,7 @@ public class TrajectoryArray {
         YRef.clear();
         
         for(xal.smf.impl.BPM bpm: BPMList){            
-            posS[k] = bpm.getPosition();
+            posS[k] = bpm.getSDisplay();
             try {
                 posX[k] = bpm.getXAvg();
                 posY[k] = bpm.getYAvg();
@@ -264,6 +264,50 @@ public class TrajectoryArray {
                        
     }
 
+    public void saveTrajectory(xal.smf.Accelerator accl, File filename, DataAdaptor da) throws ConnectionException{
+        //Saves the data into the file and set as reference        
+        DataAdaptor trajectoryAdaptor =  da.createChild("ReferenceTrajectory");
+        trajectoryAdaptor.setValue("title", filename);
+        List<xal.smf.impl.BPM> BPMList = accl.getAllNodesOfType("BPM"); 
+        String BPMnames = "";
+        double[] posS = new double[BPMList.size()];
+        double[] posX = new double[BPMList.size()];
+        double[] posY = new double[BPMList.size()];
+        int k = 0;
+        
+        XRef.clear();
+        YRef.clear();
+        
+        for(xal.smf.impl.BPM bpm: BPMList){            
+            posS[k] = bpm.getSDisplay();
+            try {
+                posX[k] = bpm.getXAvg();
+                posY[k] = bpm.getYAvg();
+                XRef.put(bpm,posX[k]);
+                YRef.put(bpm,posY[k]);
+            } catch (GetException ex) {
+                Logger.getLogger(TrajectoryArray.class.getName()).log(Level.SEVERE, null, ex);
+            }            
+            k++;
+            if(k<BPMList.size()){
+                BPMnames+=bpm.toString()+",";
+            } else {
+                BPMnames+=bpm.toString();        
+            }
+        }        
+        
+        DataAdaptor trajData =  trajectoryAdaptor.createChild("TrajectoryData");
+        DataAdaptor BPMData =  trajData.createChild("BPM");
+        BPMData.setValue("data", BPMnames);
+        DataAdaptor PosData =  trajData.createChild("Position");
+        PosData.setValue("data", posS);
+        DataAdaptor XData =  trajData.createChild("Horizontal");
+        XData.setValue("data", posX);
+        DataAdaptor YData =  trajData.createChild("Vertical");
+        YData.setValue("data", posY);                
+                       
+    }    
+    
     /** Resets the trajectory to zero
     */
 

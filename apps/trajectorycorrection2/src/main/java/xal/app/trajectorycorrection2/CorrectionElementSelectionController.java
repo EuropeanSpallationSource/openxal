@@ -122,8 +122,20 @@ public class CorrectionElementSelectionController implements Initializable {
         Text seqName;
         CheckBox checkBoxItem;
         
+        seqItem.remove(accl.getSequence("LEBT"));
+        seqItem.remove(accl.getSequence("RFQ"));
         
-        for(xal.smf.AcceleratorSeq Seq: seqItem){ 
+        
+        //seqItem.forEach(Seq -> {   
+        //    if(Seq.toString().equals("LEBT")){
+        //        seqItem.remove(Seq);
+        //    }
+        //    if(Seq.toString().equals("RFQ")){
+        //        seqItem.remove(Seq);
+        //    }
+        //});
+        
+        for(xal.smf.AcceleratorSeq Seq: seqItem){             
             seqName = new Text(Seq.toString());
             seqName.setFont(Font.font("System",FontWeight.BOLD,16));
             GridPane.setConstraints(seqName,col,row);
@@ -382,9 +394,9 @@ public class CorrectionElementSelectionController implements Initializable {
         }
         
         //sort the lists
-        BPMSelection.sort((bpm1,bpm2)-> Double.compare(bpm1.getParent().getPosition()+bpm1.getPosition(), bpm2.getParent().getPosition()+bpm2.getPosition()));
-        HCSelection.sort((hc1,hc2)-> Double.compare(hc1.getParent().getPosition()+hc1.getPosition(), hc2.getParent().getPosition()+hc2.getPosition()));
-        VCSelection.sort((vc1,vc2)-> Double.compare(vc1.getParent().getPosition()+vc1.getPosition(), vc2.getParent().getPosition()+vc2.getPosition()));
+        BPMSelection.sort((bpm1,bpm2)-> Double.compare(bpm1.getSDisplay(), bpm2.getSDisplay()));
+        HCSelection.sort((hc1,hc2)-> Double.compare(hc1.getSDisplay(), hc2.getSDisplay()));
+        VCSelection.sort((vc1,vc2)-> Double.compare(vc1.getSDisplay(), vc2.getSDisplay()));
         
         setChangedSelectionList(true);
         setLoggedIn(true);

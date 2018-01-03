@@ -26,7 +26,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -35,6 +34,8 @@ import javafx.animation.AnimationTimer;
 import javafx.application.HostServices;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -46,6 +47,8 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
@@ -82,7 +85,7 @@ public class FXMLController implements Initializable {
     //public xal.smf.Accelerator accl = xal.smf.data.XMLDataManager.acceleratorWithPath("/Users/nataliamilas/projects/openxal/site/optics/design/main.xal");
     public xal.smf.Accelerator accl = xal.smf.data.XMLDataManager.loadDefaultAccelerator();
     public TrajectoryArray DisplayTraj = new TrajectoryArray();//Trajectory to be displayed on the plot
-    private final HashMap<String,File> refTrajData = new HashMap();// holds info about reference trajectories
+    private final ObservableList<File> refTrajData = FXCollections.observableArrayList();// holds info about reference trajectories
 
     //set plot update timer
     private AnimationTimer timerPlotUpdate;
@@ -123,7 +126,7 @@ public class FXMLController implements Initializable {
     @FXML
     private AnchorPane mainAnchor1;
     @FXML
-    private ComboBox<String> comboBoxRefTrajectory;
+    private ComboBox<File> comboBoxRefTrajectory;
 
 
     @Override
@@ -131,6 +134,11 @@ public class FXMLController implements Initializable {
         //Populate the Accelerator Menu with the sequences of the machine
         List<xal.smf.AcceleratorSeq> seqItem = accl.getSequences();
         int k = 0;
+        
+        //remove LEBT and RFQ
+        seqItem.remove(accl.getSequence("LEBT"));
+        seqItem.remove(accl.getSequence("RFQ"));
+        
         for(xal.smf.AcceleratorSeq item: seqItem){ //AddSequences
             menuSequence.getItems().add(new RadioMenuItem(item.toString()));
             RadioMenuItem addedItem = (RadioMenuItem) menuSequence.getItems().get(k);
@@ -207,26 +215,35 @@ public class FXMLController implements Initializable {
             }
         });
 
+       //Load reference and zero trajectories
+        comboBoxRefTrajectory.setCellFactory((ListView<File> fileName) -> {
+            ListCell cell = new ListCell<File>() {
+                @Override
+                protected void updateItem(File item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText("");
+                    } else {
+                        setText(item.getName());
+                    }
+                }
+            };
+            return cell;
+        });    
         
         //Load reference and zero trajectories
-        refTrajData.put("Zero",new File("/Users/nataliamilas/NetBeansProjects/TrajectoryCorrection/ZeroTrajectory.xml"));
-        refTrajData.put("Golden",new File("/Users/nataliamilas/NetBeansProjects/TrajectoryCorrection/GoldenTrajectory.xml"));
+         refTrajData.add(new File("/Users/nataliamilas/NetBeansProjects/TrajectoryCorrection/ZeroTrajectory.xml"));
+        refTrajData.add(new File("/Users/nataliamilas/NetBeansProjects/TrajectoryCorrection/GoldenTrajectory.xml"));
         //populate the ComboBox element
-        refTrajData.keySet().forEach(item -> comboBoxRefTrajectory.getItems().add(item));
-        comboBoxRefTrajectory.setValue("Zero");
+        comboBoxRefTrajectory.setItems(refTrajData);
+        comboBoxRefTrajectory.setValue(refTrajData.get(0));
         
-        //reads a new trajectory and the reference
+        //read new reference trajectory file
         try {
-            RadioMenuItem getSeqName = (RadioMenuItem) groupSequence.getSelectedToggle();
-            DisplayTraj.readTrajectory(accl, getSeqName.getText());          
-            try {
-                DisplayTraj.readReferenceTrajectoryFromFile(accl,refTrajData.get(comboBoxRefTrajectory.getValue()));
-            } catch (IOException ex) {
-                Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        } catch (ConnectionException | GetException ex) {
+            DisplayTraj.readReferenceTrajectoryFromFile(accl, comboBoxRefTrajectory.getSelectionModel().getSelectedItem());
+        } catch (IOException ex) {
             Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-        }        
+        }    
 
         //Create legend names
         String nameHor ="x_rms = "+String.format("%.3f",DisplayTraj.getXrms())+" mm";
@@ -298,13 +315,13 @@ public class FXMLController implements Initializable {
                     BPM = accl.getAllNodesOfType("BPM");
                 }
 
-                double dist = Math.abs(plotXvalue-(BPM.get(0).getPosition()+BPM.get(0).getParent().getPosition()));
+                double dist = Math.abs(plotXvalue-(BPM.get(0).getSDisplay()));
                 xal.smf.impl.BPM closestBPM=BPM.get(0);
                 int index = 0;
 
                 for(xal.smf.impl.BPM bpm: BPM){
-                    if(dist > Math.abs(plotXvalue-(bpm.getPosition()+bpm.getParent().getPosition()))){
-                        dist = Math.abs(plotXvalue-(bpm.getPosition()+bpm.getParent().getPosition()));
+                    if(dist > Math.abs(plotXvalue-(bpm.getSDisplay()))){
+                        dist = Math.abs(plotXvalue-(bpm.getSDisplay()));
                         closestBPM = bpm;
                         index++;
                     }
@@ -317,9 +334,9 @@ public class FXMLController implements Initializable {
                     chartVertical.setRangeCrosshairValue(DisplayTraj.YDiff.get(closestBPM));
                     chartCharge.setRangeCrosshairValue(closestBPM.getAmpAvg());
                     chartHorizontal.setRangeCrosshairValue(DisplayTraj.XDiff.get(closestBPM));
-                    chartHorizontal.setDomainCrosshairValue(closestBPM.getPosition()+closestBPM.getParent().getPosition());
-                    chartVertical.setDomainCrosshairValue(closestBPM.getPosition()+closestBPM.getParent().getPosition());
-                    chartCharge.setDomainCrosshairValue(closestBPM.getPosition()+closestBPM.getParent().getPosition());
+                    chartHorizontal.setDomainCrosshairValue(closestBPM.getSDisplay());
+                    chartVertical.setDomainCrosshairValue(closestBPM.getSDisplay());
+                    chartCharge.setDomainCrosshairValue(closestBPM.getSDisplay());
 
                 } catch (ConnectionException | GetException ex) {
                     Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
@@ -462,7 +479,7 @@ public class FXMLController implements Initializable {
                     
                     //read new reference trajectory file
                     try {
-                        DisplayTraj.readReferenceTrajectoryFromFile(accl,refTrajData.get(comboBoxRefTrajectory.getValue()));
+                        DisplayTraj.readReferenceTrajectoryFromFile(accl, comboBoxRefTrajectory.getSelectionModel().getSelectedItem());
                     } catch (IOException ex) {
                         Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                     }    
@@ -689,19 +706,16 @@ public class FXMLController implements Initializable {
         //Show save file dialog
         File selectedFile = fileChooser.showSaveDialog(null);
         if (selectedFile != null) {
-            if (refTrajData.containsKey(selectedFile.getName().replace(".xml", ""))){
-                refTrajData.replace(selectedFile.getName().replace(".xml", ""),selectedFile);
-            } else {
-                refTrajData.put(selectedFile.getName().replace(".xml", ""),selectedFile);
-            }
-            comboBoxRefTrajectory.getItems().add(selectedFile.getName().replace(".xml", ""));
-            comboBoxRefTrajectory.setValue(selectedFile.getName().replace(".xml", ""));
-            //save trajectory    
+            if (!refTrajData.contains(selectedFile)){                
+                refTrajData.add(selectedFile);
+            }            
             try {
+                //Save Trajectory of the whole machine
                 DisplayTraj.saveTrajectory(accl,selectedFile);
+                comboBoxRefTrajectory.setValue(selectedFile);
             } catch (ConnectionException ex) {
                 Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-            }                         
+            }
         }
     }
     
@@ -718,15 +732,8 @@ public class FXMLController implements Initializable {
         //Show save file dialog
         File selectedFile = fileChooser.showOpenDialog(null);
         if (selectedFile != null) {
-            refTrajData.put(selectedFile.getName().replace(".xml", ""),selectedFile);
-            comboBoxRefTrajectory.getItems().add(selectedFile.getName().replace(".xml", ""));
-            comboBoxRefTrajectory.setValue(selectedFile.getName().replace(".xml", ""));
-            //read new reference trajectory file
-            try {               
-                DisplayTraj.readReferenceTrajectoryFromFile(accl,selectedFile);
-            } catch (IOException ex) {
-                Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-            }                
+            refTrajData.add(selectedFile);
+            comboBoxRefTrajectory.setValue(selectedFile);
         }
     }
 
@@ -741,7 +748,7 @@ public class FXMLController implements Initializable {
     private void handleChooseRefTrajectory(ActionEvent event) {
         //read new reference trajectory file
         try {
-            DisplayTraj.readReferenceTrajectoryFromFile(accl,refTrajData.get(comboBoxRefTrajectory.getValue()));
+            DisplayTraj.readReferenceTrajectoryFromFile(accl,comboBoxRefTrajectory.getSelectionModel().getSelectedItem());
         } catch (IOException ex) {
             Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
         }    

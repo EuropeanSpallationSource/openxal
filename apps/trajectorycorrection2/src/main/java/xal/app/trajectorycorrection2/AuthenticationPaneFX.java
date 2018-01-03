@@ -52,7 +52,7 @@ public class AuthenticationPaneFX extends Dialog{
         dialog.setTitle("Login Dialog");
         dialog.setHeaderText("Authenticate user:");
         // Set the icon (must be included in the project).
-        dialog.setGraphic(new ImageView(this.getClass().getResource("/pictures/login.png").toString()));
+        dialog.setGraphic(new ImageView(this.getClass().getResource("/pictures/lock.png").toString()));
 
         // Set the button types.
         ButtonType loginButtonType = new ButtonType("Login", ButtonData.OK_DONE);

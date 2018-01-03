@@ -115,8 +115,7 @@ public class PopUpPlotController{
             valMaxY = max(valMaxY,Traj.YRef.get(item));
             valMinY = min(valMinY,Traj.YRef.get(item));
             valMaxX = max(valMaxX,Traj.Pos.get(item));
-            valMinX = min(valMinX,Traj.Pos.get(item));
-            
+            valMinX = min(valMinX,Traj.Pos.get(item));            
         }
                        
         Data.addSeries(horizontalSeries);
@@ -170,18 +169,18 @@ public class PopUpPlotController{
                 List<BPM> BPMList = new ArrayList<>();
                 Traj.Pos.keySet().forEach(bpm -> BPMList.add(bpm));                
 
-                double dist = Math.abs(plotXvalue-(BPMList.get(0).getPosition()+BPMList.get(0).getParent().getPosition()));
+                double dist = Math.abs(plotXvalue-(BPMList.get(0).getSDisplay()));
                 BPM closestBPM=BPMList.get(0);
                 int index = 0;
 
                 for(BPM bpm: BPMList){
-                    if(dist > Math.abs(plotXvalue-(bpm.getPosition()+bpm.getParent().getPosition()))){
-                        dist = Math.abs(plotXvalue-(bpm.getPosition()+bpm.getParent().getPosition()));
+                    if(dist > Math.abs(plotXvalue-(bpm.getSDisplay()))){
+                        dist = Math.abs(plotXvalue-(bpm.getSDisplay()));
                         closestBPM = bpm;
                         index++;
                     }
                 }
-                plot.setDomainCrosshairValue(closestBPM.getPosition()+closestBPM.getParent().getPosition());
+                plot.setDomainCrosshairValue(closestBPM.getSDisplay());
                 double annotationX = 0.9*plot.getDomainAxis().getUpperBound();
                 double annotationY = 0.9*plot.getRangeAxis().getUpperBound();                 
                 annotation.setText(closestBPM.toString());

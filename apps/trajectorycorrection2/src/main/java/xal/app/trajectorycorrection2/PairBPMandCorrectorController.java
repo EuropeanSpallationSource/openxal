@@ -84,10 +84,11 @@ public class PairBPMandCorrectorController {
         RunSimulationService simulService;                              
         AcceleratorSeq iniSeq;
         AcceleratorSeq finalSeq;
-                       
-        BPMList.sort((bpm1,bpm2)-> Double.compare(bpm1.getPosition()+bpm1.getParent().getPosition(),bpm2.getPosition()+bpm2.getParent().getPosition()));
-        HCList.sort((hc1,hc2)-> Double.compare(hc1.getPosition()+hc1.getParent().getPosition(),hc2.getPosition()+hc2.getParent().getPosition()));
-        VCList.sort((vc1,vc2)-> Double.compare(vc1.getPosition()+vc1.getParent().getPosition(),vc2.getPosition()+vc2.getParent().getPosition()));
+                               
+        BPMList.sort((bpm1,bpm2)-> Double.compare(bpm1.getSDisplay(),bpm2.getSDisplay()));
+        HCList.sort((hc1,hc2)-> Double.compare(hc1.getSDisplay(),hc2.getSDisplay()));
+        VCList.sort((vc1,vc2)-> Double.compare(vc1.getSDisplay(),vc2.getSDisplay()));
+        
         
         comboBoxBPMH.getItems().addAll(BPMList);
         comboBoxBPMV.getItems().addAll(BPMList);
@@ -95,14 +96,12 @@ public class PairBPMandCorrectorController {
         comboBoxVC.getItems().addAll(VCList);
         
         //Run Simulation to get phase advance
-        //setup simulation parameters
-        
-        if (VCList.get(0).getPosition()<HCList.get(0).getPosition()){                        
-            iniSeq = VCList.get(0).getParent();            
+        if (VCList.get(0).getSDisplay()<HCList.get(0).getSDisplay()){                        
+            iniSeq = VCList.get(0).getPrimaryAncestor();            
         } else { 
-            iniSeq = HCList.get(0).getParent(); 
+            iniSeq = HCList.get(0).getPrimaryAncestor(); 
         }
-        finalSeq = BPMList.get(BPMList.size()-1).getParent();
+        finalSeq = BPMList.get(BPMList.size()-1).getPrimaryAncestor();
         if(iniSeq != finalSeq){
             List<AcceleratorSeq> newCombo = new ArrayList<>();             
             for(int i=accl.getAllSeqs().indexOf(iniSeq); i<=accl.getAllSeqs().indexOf(finalSeq); i++){
@@ -131,20 +130,21 @@ public class PairBPMandCorrectorController {
             dataH.add(new Pair(bpm,HC.get(bpm),(phase.get(bpm).getx()-phase.get(HC.get(bpm)).getx())));            
         });
         
-        dataH.sort((pair1,pair2)-> Double.compare(pair1.bpm.getPosition()+pair1.bpm.getParent().getPosition(),pair2.bpm.getPosition()+pair2.bpm.getParent().getPosition()));
+        dataH.sort((pair1,pair2)-> Double.compare(pair1.bpm.getSDisplay(),pair2.bpm.getSDisplay()));
                 
         VC.keySet().stream().forEach(bpm -> {
             dataV.add(new Pair(bpm,VC.get(bpm),(phase.get(bpm).gety()-phase.get(VC.get(bpm)).gety())));
         });       
         
-        dataV.sort((pair1,pair2)-> Double.compare(pair1.bpm.getPosition()+pair1.bpm.getParent().getPosition(),pair2.bpm.getPosition()+pair2.bpm.getParent().getPosition()));
+        dataV.sort((pair1,pair2)-> Double.compare(pair1.bpm.getSDisplay(),pair2.bpm.getSDisplay()));
+
     }
     
     public HashMap<xal.smf.impl.BPM,xal.smf.impl.HDipoleCorr> updateHPairs(){
         
         HashMap<xal.smf.impl.BPM,xal.smf.impl.HDipoleCorr> HC = new HashMap(); 
         
-        dataH.sort((pair1,pair2)-> Double.compare(pair1.bpm.getPosition()+pair1.bpm.getParent().getPosition(),pair2.bpm.getPosition()+pair2.bpm.getParent().getPosition()));
+        dataH.sort((pair1,pair2)-> Double.compare(pair1.bpm.getSDisplay(),pair2.bpm.getSDisplay()));
         
         HC.clear();
         dataH.forEach(pair -> {
@@ -158,7 +158,7 @@ public class PairBPMandCorrectorController {
         
         HashMap<xal.smf.impl.BPM,xal.smf.impl.VDipoleCorr> VC = new HashMap();
         
-        dataV.sort((pair1,pair2)-> Double.compare(pair1.bpm.getPosition()+pair1.bpm.getParent().getPosition(),pair2.bpm.getPosition()+pair2.bpm.getParent().getPosition()));
+        dataV.sort((pair1,pair2)-> Double.compare(pair1.bpm.getSDisplay(),pair2.bpm.getSDisplay()));
         
         dataV.forEach(pair -> {
             VC.put(pair.bpm,(xal.smf.impl.VDipoleCorr) pair.corrector);            
@@ -194,7 +194,6 @@ public class PairBPMandCorrectorController {
         BPMColV.setPrefWidth(210);
         TableColumn<Pair, String> CorrectorColV = new TableColumn("Corrector");
         CorrectorColV.setCellValueFactory(cellData -> cellData.getValue().correctorNameProperty());
-        //CorrectorColV.setCellFactory(ComboBoxTableCell.forTableColumn(blockVC.toString().substring(1,blockVC.toString().length()-1).split(", ")));
         CorrectorColV.setPrefWidth(210);
         TableColumn<Pair, String> PhaseColV = new TableColumn("Phase (1/2\u03c0)");
         PhaseColV.setCellValueFactory(cellData -> cellData.getValue().phaseNameProperty());
@@ -296,8 +295,8 @@ public class PairBPMandCorrectorController {
             dataH.remove(pairVal);
             comboBoxBPMH.getItems().add(pairVal.bpm);
             comboBoxHC.getItems().add((xal.smf.impl.HDipoleCorr) pairVal.corrector);
-            comboBoxBPMH.getItems().sort((bpm1,bpm2)-> Double.compare(bpm1.getPosition()+bpm1.getParent().getPosition(),bpm2.getPosition()+bpm2.getParent().getPosition()));
-            comboBoxHC.getItems().sort((hc1,hc2)-> Double.compare(hc1.getPosition()+hc1.getParent().getPosition(),hc2.getPosition()+hc2.getParent().getPosition()));
+            comboBoxBPMH.getItems().sort((bpm1,bpm2)-> Double.compare(bpm1.getSDisplay(),bpm2.getSDisplay()));
+            comboBoxHC.getItems().sort((hc1,hc2)-> Double.compare(hc1.getSDisplay(),hc2.getSDisplay()));
         }
         
     }
@@ -311,8 +310,8 @@ public class PairBPMandCorrectorController {
             dataV.remove(pairVal);     
             comboBoxBPMV.getItems().add(pairVal.bpm);
             comboBoxVC.getItems().add((xal.smf.impl.VDipoleCorr) pairVal.corrector);
-            comboBoxBPMV.getItems().sort((bpm1,bpm2)-> Double.compare(bpm1.getPosition()+bpm1.getParent().getPosition(),bpm2.getPosition()+bpm2.getParent().getPosition()));
-            comboBoxVC.getItems().sort((vc1,vc2)-> Double.compare(vc1.getPosition()+vc1.getParent().getPosition(),vc2.getPosition()+vc2.getParent().getPosition()));
+            comboBoxBPMV.getItems().sort((bpm1,bpm2)-> Double.compare(bpm1.getSDisplay(),bpm2.getSDisplay()));
+            comboBoxVC.getItems().sort((vc1,vc2)-> Double.compare(vc1.getSDisplay(),vc2.getSDisplay()));
         }
     }
 
@@ -322,7 +321,7 @@ public class PairBPMandCorrectorController {
         final xal.smf.impl.BPM bpmVal = comboBoxBPMH.getSelectionModel().getSelectedItem();
         
         dataH.add(new Pair(bpmVal,hcVal,(phase.get(bpmVal).getx()-phase.get(hcVal).getx())));
-        dataH.sort((pair1,pair2)-> Double.compare(pair1.bpm.getPosition()+pair1.bpm.getParent().getPosition(),pair2.bpm.getPosition()+pair2.bpm.getParent().getPosition()));
+        dataH.sort((pair1,pair2)-> Double.compare(pair1.bpm.getSDisplay(),pair2.bpm.getSDisplay()));
         comboBoxBPMH.getItems().remove(bpmVal);
         comboBoxHC.getItems().remove(hcVal);
         
@@ -334,7 +333,7 @@ public class PairBPMandCorrectorController {
         final xal.smf.impl.BPM bpmVal = comboBoxBPMV.getSelectionModel().getSelectedItem();
         
         dataV.add(new Pair(bpmVal,vcVal,(phase.get(bpmVal).getx()-phase.get(vcVal).getx())));
-        dataV.sort((pair1,pair2)-> Double.compare(pair1.bpm.getPosition()+pair1.bpm.getParent().getPosition(),pair2.bpm.getPosition()+pair2.bpm.getParent().getPosition()));
+        dataV.sort((pair1,pair2)-> Double.compare(pair1.bpm.getSDisplay(),pair2.bpm.getSDisplay()));
         comboBoxBPMV.getItems().remove(bpmVal);
         comboBoxVC.getItems().remove(vcVal);
     }    

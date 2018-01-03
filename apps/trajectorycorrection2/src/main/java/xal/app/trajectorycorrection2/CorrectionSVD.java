@@ -133,13 +133,30 @@ public class CorrectionSVD {
         //Get list of BPM and correctors
         BPM = BPMList;   
         List<xal.smf.impl.BPM> allBPMs = accl.getAllNodesOfType("BPM");   
-        xal.smf.AcceleratorSeq parentSequence;
         
         if(HCList.size()<1){
             HCList = accl.getAllNodesOfType("DCH");
         }
         if(VCList.size()<1){
             VCList = accl.getAllNodesOfType("DCV");
+        }
+        
+        for(xal.smf.impl.HDipoleCorr hc : HCList){
+            if(hc.getPrimaryAncestor().toString().equals("LEBT") || hc.getPrimaryAncestor().toString().equals("RFQ")){
+                HCList.remove(hc);
+            }
+        }
+        
+        for(xal.smf.impl.VDipoleCorr vc : VCList){
+            if(vc.getPrimaryAncestor().toString().equals("LEBT") || vc.getPrimaryAncestor().toString().equals("RFQ")){
+                VCList.remove(vc);
+            }
+        }
+        
+        for(xal.smf.impl.BPM bpm : BPMList){
+            if(bpm.getPrimaryAncestor().toString().equals("LEBT") || bpm.getPrimaryAncestor().toString().equals("RFQ")){
+                BPMList.remove(bpm);
+            }
         }
         
         //Populate the Corrector maps
@@ -154,8 +171,7 @@ public class CorrectionSVD {
         } else { 
             for(xal.smf.impl.BPM item: allBPMs){
                 if(BPMList.get(0) == item){
-                    parentSequence = allBPMs.get(bpmIndex-1).getParent();
-                    ini = allBPMs.get(bpmIndex-1).getPosition()+parentSequence.getPosition();
+                    ini = allBPMs.get(bpmIndex-1).getSDisplay();
                 }
                 bpmIndex++;
             }
@@ -163,26 +179,22 @@ public class CorrectionSVD {
                  
         //Start search
         for(xal.smf.impl.BPM bpm : BPMList){
-            parentSequence = bpm.getParent();
-            fim = bpm.getPosition()+parentSequence.getPosition();
+            fim = bpm.getSDisplay();
             //search for horizontal corrector
             for(xal.smf.impl.HDipoleCorr hcor : HCList){
-                parentSequence = hcor.getParent();
-                posCorrector = hcor.getPosition()+parentSequence.getPosition();
+                posCorrector = hcor.getSDisplay();
                 if(posCorrector>ini && posCorrector<fim){
                     HC.add(hcor);
                 }
             }
             //search for vertical corrector
             for(xal.smf.impl.VDipoleCorr vcor : VCList){
-                parentSequence = vcor.getParent();
-                posCorrector = vcor.getPosition()+parentSequence.getPosition();
+                posCorrector = vcor.getSDisplay();
                 if(posCorrector>ini && posCorrector<fim){
                     VC.add(vcor);
                 }
             }
-            parentSequence = bpm.getParent();
-            ini = bpm.getPosition()+parentSequence.getPosition();
+            ini = fim;
         }
  
         nh = HC.size();
@@ -241,16 +253,16 @@ public class CorrectionSVD {
         AcceleratorSeq finalSeq;
 
         //setup simulation parameters
-        if(BPM.get(0).getParent().getPosition()<=HC.get(0).getParent().getPosition()){
-            iniSeq = BPM.get(0).getParent();
+        if(BPM.get(0).getSDisplay()<=HC.get(0).getSDisplay()){
+            iniSeq = BPM.get(0).getPrimaryAncestor();
         } else {
-            iniSeq = HC.get(0).getParent();
+            iniSeq = HC.get(0).getPrimaryAncestor();
         }
         
-        if(BPM.get(BPM.size()-1).getParent().getPosition()>=HC.get(HC.size()-1).getParent().getPosition()){
-            finalSeq = BPM.get(0).getParent();
+        if(BPM.get(BPM.size()-1).getSDisplay()>=HC.get(HC.size()-1).getSDisplay()){
+            finalSeq = BPM.get(0).getPrimaryAncestor();
         } else {
-            finalSeq = HC.get(0).getParent();
+            finalSeq = HC.get(0).getPrimaryAncestor();
         }
         
         if (iniSeq != finalSeq){
@@ -261,7 +273,7 @@ public class CorrectionSVD {
             AcceleratorSeqCombo Sequence = new xal.smf.AcceleratorSeqCombo("calcMatrix",newCombo); 
             simulService = new RunSimulationService(Sequence);
         } else { 
-            xal.smf.AcceleratorSeq Sequence = BPM.get(0).getParent();
+            xal.smf.AcceleratorSeq Sequence = BPM.get(0).getPrimaryAncestor();
             simulService = new RunSimulationService(Sequence);
         }
         simulService.setSynchronizationMode("DESIGN");  
@@ -341,16 +353,16 @@ public class CorrectionSVD {
         AcceleratorSeq finalSeq;
 
         //setup simulation parameters
-        if(BPM.get(0).getParent().getPosition()<=VC.get(0).getParent().getPosition()){
-            iniSeq = BPM.get(0).getParent();
+        if(BPM.get(0).getSDisplay()<=VC.get(0).getSDisplay()){
+            iniSeq = BPM.get(0).getPrimaryAncestor();
         } else {
-            iniSeq = VC.get(0).getParent();
+            iniSeq = VC.get(0).getPrimaryAncestor();
         }
         
-        if(BPM.get(BPM.size()-1).getParent().getPosition()>=VC.get(VC.size()-1).getParent().getPosition()){
-            finalSeq = BPM.get(0).getParent();
+        if(BPM.get(BPM.size()-1).getSDisplay()>=VC.get(VC.size()-1).getSDisplay()){
+            finalSeq = BPM.get(0).getPrimaryAncestor();
         } else {
-            finalSeq = VC.get(0).getParent();
+            finalSeq = VC.get(0).getPrimaryAncestor();
         }
         
         if (iniSeq != finalSeq){
@@ -361,7 +373,7 @@ public class CorrectionSVD {
             AcceleratorSeqCombo Sequence = new xal.smf.AcceleratorSeqCombo("calcMatrix",newCombo); 
             simulService = new RunSimulationService(Sequence);
         } else { 
-            xal.smf.AcceleratorSeq Sequence = BPM.get(0).getParent();
+            xal.smf.AcceleratorSeq Sequence = BPM.get(0).getPrimaryAncestor();
             simulService = new RunSimulationService(Sequence);
         }
         simulService.setSynchronizationMode("DESIGN");  
