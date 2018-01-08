@@ -328,9 +328,6 @@ public class PVTree extends SplitPane {
         boolean idSearch = StringUtils.isEmpty(searchPattern) || StringUtils.contains(StringUtils.upperCase(node.getId()), StringUtils.upperCase(searchPattern));
         boolean typeSearch = typeMap.get(node.getType()).isSelected();
 
-        // This function is called many times from populateTreeWithSequences so maybe this is too verbose to print
-        Logger.getLogger(PVTree.class.getName()).log(Level.FINEST, "PV Tree widget filtering result {0}, {1} - {2}", new Object[]{  node, typeSearch, idSearch });
-
         return typeSearch && idSearch;
 
     }
@@ -370,6 +367,5 @@ public class PVTree extends SplitPane {
 
                 }
         });
-        Logger.getLogger(PVTree.class.getName()).log(Level.FINEST, "PV Tree widget populated with sequences");
     }
 }
