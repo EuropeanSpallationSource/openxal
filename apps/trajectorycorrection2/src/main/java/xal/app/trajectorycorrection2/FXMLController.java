@@ -1631,7 +1631,7 @@ public class FXMLController implements Initializable {
             appstateAdaptor.setValue("date", new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date()));
             DataAdaptor generalAdaptor = appstateAdaptor.createChild("GeneralData");
             generalAdaptor.setValue("Trajectory_Limit", trajectoryLimit);
-            generalAdaptor.setValue("Steerer_Limit", steererLimit);                     
+            generalAdaptor.setValue("Steerer_Limit", steererLimit);
             DataAdaptor refTrajectoryAdaptor =  appstateAdaptor.createChild("ReferenceTrajectoryData");            
             refTrajData.forEach(file -> {
                 if(!file.getName().contains("Zero")){
