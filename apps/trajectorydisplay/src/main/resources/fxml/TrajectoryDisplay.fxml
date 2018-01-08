@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" fx:id="mainAnchor1" prefHeight="755.0" prefWidth="1140.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xal.app.trajectorydisplay.FXMLController">
+   <children>
+      <MenuBar layoutX="-1.0" prefHeight="30.0" prefWidth="1140.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <menus>
+          <Menu mnemonicParsing="false" text="File">
+            <items>
+              <MenuItem fx:id="menuExit" mnemonicParsing="false" onAction="#handleExitMenu" text="Exit" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Accelerator">
+               <items>
+                  <MenuItem mnemonicParsing="false" onAction="#handleLoadDefaultAccelerator" text="Load Default Accelerator" />
+                  <MenuItem mnemonicParsing="false" onAction="#handleLoadAccelerator" text="Load Accelerator ..." />
+                  <SeparatorMenuItem mnemonicParsing="false" />
+                  <Menu fx:id="menuSequence" mnemonicParsing="false" text="Sequence" />
+               </items>
+          </Menu>
+            <Menu mnemonicParsing="false" text="Reference Trajectory">
+              <items>
+                <MenuItem mnemonicParsing="false" onAction="#handleTrajectoryMenuLoad" text="Load trajectory" />
+                  <MenuItem mnemonicParsing="false" onAction="#handleTrajectoryMenuSave" text="Save current trajectory" />
+              </items>
+            </Menu>
+          <Menu mnemonicParsing="false" text="Help">
+            <items>
+              <MenuItem mnemonicParsing="false" onAction="#openHelpURL" text="About" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+      <VBox layoutX="5.0" layoutY="29.0" prefHeight="730.0" prefWidth="1130.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="30.0">
+         <children>
+            <AnchorPane maxHeight="41.0" minHeight="41.0" prefHeight="76.0" prefWidth="1130.0" VBox.vgrow="NEVER">
+               <children>
+                  <Label layoutX="106.0" layoutY="12.0" prefHeight="17.0" prefWidth="184.0" text="Show trajectory difference to:" AnchorPane.bottomAnchor="12.0" AnchorPane.leftAnchor="106.0" AnchorPane.topAnchor="12.0" />
+                  <ComboBox fx:id="comboBoxRefTrajectory" layoutX="311.0" layoutY="7.0" onAction="#handleChooseRefTrajectory" prefHeight="27.0" prefWidth="508.0" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="311.0" AnchorPane.topAnchor="7.0" />
+               </children>
+            </AnchorPane>
+            <Separator prefWidth="200.0" VBox.vgrow="NEVER" />
+            <AnchorPane minHeight="26.0" prefHeight="40.0">
+               <children>
+                  <GridPane layoutX="430.0" minHeight="30.0" prefHeight="30.0" prefWidth="270.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="430.0" AnchorPane.topAnchor="0.0">
+                    <columnConstraints>
+                      <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="135.0" minWidth="10.0" prefWidth="135.0" />
+                      <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="135.0" minWidth="0.0" prefWidth="135.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                     <children>
+                        <Label fx:id="labelXrms" alignment="CENTER" contentDisplay="CENTER" prefHeight="17.0" prefWidth="117.0" text="x_rms = 0.003 mm" textFill="RED" GridPane.halignment="CENTER">
+                           <font>
+                              <Font name="System Bold" size="13.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="labelYrms" alignment="CENTER" prefHeight="17.0" prefWidth="117.0" text="y_rms = 0.004 mm" textFill="#006ddb" GridPane.columnIndex="1" GridPane.halignment="CENTER" />
+                     </children>
+                  </GridPane>
+                  <GridPane fx:id="gridpaneCursor" prefHeight="30.0" prefWidth="396.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="735.0" AnchorPane.topAnchor="0.0">
+                    <columnConstraints>
+                        <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" maxWidth="127.0" minWidth="10.0" prefWidth="57.0" />
+                      <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="119.0" minWidth="10.0" prefWidth="64.0" />
+                      <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="275.0" minWidth="10.0" prefWidth="274.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                     <children>
+                        <Label fx:id="labelCoordinates" contentDisplay="CENTER" prefHeight="17.0" prefWidth="271.0" text="x = 00.00 mm; y = 00.00 mm; c = 00.0" GridPane.columnIndex="2" />
+                        <Label fx:id="labelBPM" alignment="CENTER" prefHeight="17.0" prefWidth="59.0" text="BPM120" GridPane.columnIndex="1" />
+                        <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" prefHeight="17.0" prefWidth="81.0" text="Cursor:" />
+                     </children>
+                  </GridPane>
+               </children>
+            </AnchorPane>
+            <AnchorPane fx:id="anchorPaneChart" prefHeight="680.0" prefWidth="1130.0">
+               <VBox.margin>
+                  <Insets bottom="5.0" left="5.0" right="5.0" />
+               </VBox.margin></AnchorPane>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>

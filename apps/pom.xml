@@ -58,8 +58,8 @@
         <module>wireanalysis</module>
         <module>wirescan</module>
         <module>xyzcorrelator</module>
-        <module>trajectorycorrection2</module>
-        <module>trajectorydisplay2</module>
+        <module>trajectorycorrection</module>
+        <module>trajectorydisplay</module>
         <!-- This is to collect all applications and their dependencies -->
         <module>assembly</module>
     </modules>
