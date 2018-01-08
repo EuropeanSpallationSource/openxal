@@ -28,6 +28,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * 2D fieldmap file reader (for solenoid)
@@ -41,6 +43,8 @@ public class FieldProfile2D {
     private double[][] field;
     private double norm;
 
+    private static final Logger LOGGER = Logger.getLogger(FieldProfile2D.class.getName());
+
     public double getNorm() {
         return norm;
     }
@@ -50,16 +54,16 @@ public class FieldProfile2D {
     public FieldProfile2D(double lengthR, double lengthZ, double[][] fieldZ) {
         this.lengthR = lengthR;
         this.lengthZ = lengthZ;
-        this.field = fieldZ;
+        this.field = fieldZ.clone();
     }
 
     protected FieldProfile2D(String path) {
         try {
             loadFile(path);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "An error occurred trying to get the field profile.", e);
         } catch (URISyntaxException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Fieldmap file path incorrect.", e);
         }
     }
 
@@ -101,34 +105,34 @@ public class FieldProfile2D {
      * @throws URISyntaxException
      */
     private void loadFile(String path) throws IOException, URISyntaxException {
-        BufferedReader br;
+        BufferedReader br = null;
         try {
             br = new BufferedReader(new InputStreamReader(new URL(path).openStream()));
         } catch (IOException e) {
-            throw new Error("Field map " + new File(new URL(path).getFile()) + " not found");
+            LOGGER.log(Level.SEVERE, "Field map " + new File(new URL(path).getFile()) + " not found.", e);
         }
 
         // first line
         String line = br.readLine();
         String[] data = line.split(" ");
 
-        int Nz = Integer.parseInt(data[0]) + 1;
+        int nPointsZ = Integer.parseInt(data[0]) + 1;
         lengthZ = Double.parseDouble(data[1]);
 
         // second line
         line = br.readLine();
         data = line.split(" ");
 
-        int Nr = Integer.parseInt(data[0]) + 1;
+        int nPointsR = Integer.parseInt(data[0]) + 1;
         lengthR = Double.parseDouble(data[1]);
 
-        field = new double[Nz][Nr];
+        field = new double[nPointsZ][nPointsR];
 
         line = br.readLine();
         norm = Double.parseDouble(line);
 
-        for (int i = 0; i < Nz; i++) {
-            for (int j = 0; j < Nr; j++) {
+        for (int i = 0; i < nPointsZ; i++) {
+            for (int j = 0; j < nPointsR; j++) {
                 line = br.readLine();
                 if (line != null) {
                     field[i][j] = Double.parseDouble(line);
@@ -153,10 +157,10 @@ public class FieldProfile2D {
 
         double zmax = getLengthZ();
         double rmax = getLengthR();
-        pw.printf("%d %f\n%d %f\n%f\n", field.length - 1, zmax, field[0].length - 1, rmax, norm);
+        pw.printf("%d %f%n%d %f%n%f%n", field.length - 1, zmax, field[0].length - 1, rmax, norm);
         for (int i = 0; i < field.length; i++) {
             for (int j = 0; j < field[0].length; j++) {
-                pw.printf("%f\n", field[i][j]);
+                pw.printf("%f%n", field[i][j]);
             }
         }
         pw.close();

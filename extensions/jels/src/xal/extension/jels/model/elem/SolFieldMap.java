@@ -17,6 +17,8 @@
  */
 package xal.extension.jels.model.elem;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import xal.extension.jels.smf.impl.ESSSolFieldMap;
 import xal.extension.jels.smf.impl.FieldProfile2D;
 import xal.model.IProbe;
@@ -34,17 +36,16 @@ import xal.tools.beam.PhaseMatrix;
  */
 public class SolFieldMap extends ThickElectromagnet {
 
-    private double frequency;
-
-    private double fieldR[][];
-    private double fieldZ[][];
+    private double[][] fieldR;
+    private double[][] fieldZ;
     private double lengthZ;
     private double lengthR;
     private double norm;
 
     private double startPosition;
-    private boolean lastSlice;
     private SolFieldMap firstSliceFieldmap;
+
+    private static final Logger LOGGER = Logger.getLogger(SolFieldMap.class.getName());
 
     public SolFieldMap() {
         this(null);
@@ -73,11 +74,8 @@ public class SolFieldMap extends ThickElectromagnet {
             try {
                 firstSliceFieldmap = (SolFieldMap) latticeElement.getFirstSlice().createModelingElement();
             } catch (ModelException e) {
+                LOGGER.log(Level.INFO, "Couldn''t load the first slice of the fieldmap{0}", e.getMessage());
             }
-        }
-
-        if (latticeElement.isLastSlice()) {
-            lastSlice = true;
         }
     }
 
@@ -94,6 +92,9 @@ public class SolFieldMap extends ThickElectromagnet {
      * for the integration. It performs a linear interpolation on the fieldmap
      * if the step used for space charge calculation is smaller than the
      * distance between the points from the input file.
+     *
+     * @return The calculated transfer matrix
+     * @throws xal.model.ModelException
      */
     @Override
     public PhaseMap transferMap(IProbe probe, double dblLen)
@@ -101,48 +102,51 @@ public class SolFieldMap extends ThickElectromagnet {
         if (firstSliceFieldmap != null) {
             return firstSliceFieldmap.transferMap(probe, dblLen);
         }
-        int Nz = fieldZ.length - 1;
-        int Nr = fieldR[0].length - 1;
+        int nPointsZ = fieldZ.length - 1;
+        int nPointsR = fieldR[0].length - 1;
 
-        double dz;
-        double dr = lengthR / Nr;
-        double dzFieldMap = lengthZ / Nz;
+        double spacingZ;
+        double spacingR = lengthR / nPointsR;
+        double dzFieldMap = lengthZ / nPointsZ;
 
         double[] Bz0;
         double[] dBr_dr;
 
-        PhaseMatrix T;
+        PhaseMatrix transferMatrix;
 
         double startStep = probe.getPosition() - startPosition;
         double stopStep = startStep + dblLen;
-        
+
         if (startStep < 0) {
             startStep = 0;
         }
-        
+
         int i0 = (int) Math.floor(startStep / dzFieldMap) + 1;
         int in = (int) Math.floor(stopStep / dzFieldMap);
-        if (in >= Nz) {
-            in = Nz - 1;
+        if (in >= nPointsZ) {
+            in = nPointsZ - 1;
         }
 
         // First part
-        if (in < i0) { // Small step in between two points
-            dz = stopStep - startStep;
+        // Small step in between two points
+        if (in < i0) {
+            spacingZ = stopStep - startStep;
         } else {
-            dz = i0 * dzFieldMap - startStep;
+            spacingZ = i0 * dzFieldMap - startStep;
         }
 
         double z0 = (i0 - 1) * dzFieldMap;
 
         // Linear interpolation of the magnetic field
-        double fieldZStart = fieldZ[i0 - 1][0] + (startStep - z0 + dz / 2) * (fieldZ[i0][0] - fieldZ[i0 - 1][0]) / dzFieldMap;
-        double dFieldRStart = fieldR[i0 - 1][1] - fieldR[i0 - 1][0] + (startStep - z0 + dz / 2) * (fieldR[i0][1] - fieldR[i0][0] - (fieldR[i0 - 1][1] - fieldR[i0 - 1][0])) / dzFieldMap;
+        double fieldZStart = fieldZ[i0 - 1][0] + (startStep - z0 + spacingZ / 2)
+                * (fieldZ[i0][0] - fieldZ[i0 - 1][0]) / dzFieldMap;
+        double dFieldRStart = fieldR[i0 - 1][1] - fieldR[i0 - 1][0] + (startStep - z0 + spacingZ / 2)
+                * (fieldR[i0][1] - fieldR[i0][0] - (fieldR[i0 - 1][1] - fieldR[i0 - 1][0])) / dzFieldMap;
 
         Bz0 = new double[]{getMagField() * fieldZStart / norm};
-        dBr_dr = new double[]{getMagField() * dFieldRStart / dr / norm};
+        dBr_dr = new double[]{getMagField() * dFieldRStart / spacingR / norm};
 
-        T = fieldMapIntegrator(probe, dz, Bz0, dBr_dr);
+        transferMatrix = fieldMapIntegrator(probe, spacingZ, Bz0, dBr_dr);
 
         // Central part
         if (in > i0) {
@@ -151,22 +155,25 @@ public class SolFieldMap extends ThickElectromagnet {
 
             for (int i = 0; i < in - i0; i++) {
                 Bz0[i] = getMagField() * 0.5 * (fieldZ[i0 + i][0] + fieldZ[i0 + i + 1][0]) / norm;
-                dBr_dr[i] = getMagField() * 0.5 * ((fieldR[i0 + i][1] - fieldR[i0 + i][0]) + (fieldR[i0 + i + 1][1] - fieldR[i0 + i + 1][0])) / dr / norm;
+                dBr_dr[i] = getMagField() * 0.5 * ((fieldR[i0 + i][1] - fieldR[i0 + i][0])
+                        + (fieldR[i0 + i + 1][1] - fieldR[i0 + i + 1][0])) / spacingR / norm;
             }
 
-            T = fieldMapIntegrator(probe, dzFieldMap, Bz0, dBr_dr).times(T);
+            transferMatrix = fieldMapIntegrator(probe, dzFieldMap, Bz0, dBr_dr).times(transferMatrix);
         }
 
         // Last part
         if (in >= i0 && stopStep > in * dzFieldMap) {
-            dz = stopStep - in * dzFieldMap;
+            spacingZ = stopStep - in * dzFieldMap;
 
             Bz0 = new double[]{getMagField() * 0.5 * (fieldZ[in][0] + fieldZ[in + 1][0]) / norm};
-            dBr_dr = new double[]{getMagField() * 0.5 * ((fieldR[in][1] - fieldR[in][0]) + (fieldR[in + 1][1] - fieldR[in + 1][0])) / dr / norm};
+            dBr_dr = new double[]{getMagField() * 0.5
+                * ((fieldR[in][1] - fieldR[in][0]) + (fieldR[in + 1][1] - fieldR[in + 1][0]))
+                / spacingR / norm};
 
-            T = fieldMapIntegrator(probe, dz, Bz0, dBr_dr).times(T);
+            transferMatrix = fieldMapIntegrator(probe, spacingZ, Bz0, dBr_dr).times(transferMatrix);
         }
-        return new PhaseMap(T);
+        return new PhaseMap(transferMatrix);
     }
 
     // First order integrator
@@ -175,30 +182,30 @@ public class SolFieldMap extends ThickElectromagnet {
         double beta;
         double k;
 
-        double Ek = probe.getKineticEnergy();
+        double kineticEnergy = probe.getKineticEnergy();
         double restEnergy = probe.getSpeciesRestEnergy();
 
-        PhaseMatrix T = PhaseMatrix.identity();
-        PhaseMatrix Tstep = PhaseMatrix.identity();
+        PhaseMatrix transferMatrix = PhaseMatrix.identity();
+        PhaseMatrix transferMatrixStep = PhaseMatrix.identity();
 
-        Tstep.setElem(0, 1, dz);
-        Tstep.setElem(2, 3, dz);
-        Tstep.setElem(4, 5, dz);
+        transferMatrixStep.setElem(0, 1, dz);
+        transferMatrixStep.setElem(2, 3, dz);
+        transferMatrixStep.setElem(4, 5, dz);
 
-        gamma = Ek / restEnergy + 1.0;
+        gamma = kineticEnergy / restEnergy + 1.0;
         beta = Math.sqrt(1.0 - 1.0 / (gamma * gamma));
         k = dz * LightSpeed / (gamma * beta * restEnergy);
 
         for (int i = 0; i < Bz0.length; i++) {
-            Tstep.setElem(1, 2, -k * dBr_dr[i]);
-            Tstep.setElem(1, 3, k * Bz0[i]);
+            transferMatrixStep.setElem(1, 2, -k * dBr_dr[i]);
+            transferMatrixStep.setElem(1, 3, k * Bz0[i]);
 
-            Tstep.setElem(3, 0, k * dBr_dr[i]);
-            Tstep.setElem(3, 1, -k * Bz0[i]);
+            transferMatrixStep.setElem(3, 0, k * dBr_dr[i]);
+            transferMatrixStep.setElem(3, 1, -k * Bz0[i]);
 
-            T = Tstep.times(T);
+            transferMatrix = transferMatrixStep.times(transferMatrix);
         }
-        return T;
+        return transferMatrix;
     }
 
     @Override

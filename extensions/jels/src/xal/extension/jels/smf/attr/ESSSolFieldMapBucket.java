@@ -11,7 +11,7 @@ import xal.smf.attr.AttributeBucket;
 public class ESSSolFieldMapBucket extends AttributeBucket {
 
     private static final long serialVersionUID = 1;
-    
+
     public final static String c_strType = "solfieldmap";
 
     final static String[] c_arrNames = {
@@ -32,9 +32,9 @@ public class ESSSolFieldMapBucket extends AttributeBucket {
      */
     private Attribute m_attFieldMapFile;
 
-
     /**
      * Override virtual to provide type signature
+     * @return Type
      */
     @Override
     public String getType() {
@@ -57,28 +57,28 @@ public class ESSSolFieldMapBucket extends AttributeBucket {
     }
 
     /**
-     * Magnetic field intensity factor
+     * @return Magnetic field intensity factor
      */
     public double getXmagmax() {
         return m_attXmagmax.getDouble();
     }
 
     /**
-     * FieldMap file
+     * @return FieldMap file
      */
     public String getFieldMapFile() {
         return m_attFieldMapFile.getString();
     }
 
     /**
-     * Magnetic field intensity factor
+     * @param dblVal Magnetic field intensity factor
      */
     public void setXmagmax(double dblVal) {
         m_attXmagmax.set(dblVal);
     }
 
     /**
-     * FieldMap file
+     * @param strVal FieldMap file path
      */
     public void setFieldMapFile(String strVal) {
         m_attFieldMapFile.set(strVal);

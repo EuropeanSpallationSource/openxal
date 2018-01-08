@@ -28,7 +28,6 @@
         <module>widgets</module>
         <module>wirescan</module>
         <module>jels</module>
-        <module>linaclego</module>
         <module>tracewin</module>
         <module>../services/pvlogger/extension</module>
         <module>../services/worker/extension</module>

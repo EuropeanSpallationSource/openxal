@@ -2,6 +2,8 @@ package xal.extension.jels.smf.impl;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xal.extension.jels.smf.attr.ESSFieldMapBucket;
 import xal.ca.ChannelFactory;
@@ -22,11 +24,15 @@ public class ESSFieldMap extends RfGap {
 
     public static final String s_strType = "FM";
 
+    private static final Logger LOGGER = Logger.getLogger(ESSFieldMap.class.getName());
+
     /*
      *  Local Attributes
      */
-    protected ESSFieldMapBucket m_bucFieldMap;           // FieldMap parameters
-    protected FieldProfile fieldProfile; // field profile
+    // FieldMap parameters
+    protected ESSFieldMapBucket m_bucFieldMap;
+    // field profile     
+    protected FieldProfile fieldProfile;
 
     static {
         registerType();
@@ -71,6 +77,8 @@ public class ESSFieldMap extends RfGap {
 
     /**
      * Override AcceleratorNode implementation to check for a ESSFieldMapBucket
+     *
+     * @param buc
      */
     @Override
     public void addBucket(AttributeBucket buc) {
@@ -82,21 +90,21 @@ public class ESSFieldMap extends RfGap {
     }
 
     /**
-     * Electric field intensity factor
+     * @return Electric field intensity factor
      */
     public double getXelmax() {
         return m_bucFieldMap.getXelmax();
     }
 
     /**
-     * Default (design) cavity RF phase (deg)
+     * @return Default (design) cavity RF phase (deg)
      */
     public double getPhase() {
         return m_bucFieldMap.getPhase();
     }
 
     /**
-     * Design cavity resonant frequency (MHz)
+     * @return Design cavity resonant frequency (MHz)
      */
     public double getFrequency() {
         return m_bucFieldMap.getFrequency();
@@ -107,69 +115,73 @@ public class ESSFieldMap extends RfGap {
     }
 
     /**
-     * FieldMap file
+     * @return FieldMap file
      */
     public String getFieldMapFile() {
         return m_bucFieldMap.getFieldMapFile();
     }
 
     /**
-     * Position + gapOffset where cavity RF phase is given (m) relative to
-     * element's start
+     * @return Position + gapOffset where cavity RF phase is given (m) relative
+     * to element's start
      */
     public double getPhasePosition() {
         return m_bucFieldMap.getPhasePosition() + m_bucFieldMap.getGapOffset();
     }
 
     /**
-     * Position + gapOffset where cavity RF phase is given (m) relative to
-     * element's start
+     * @param dblVal Position + gapOffset where cavity RF phase is given (m)
+     * relative to element's start
      */
     public void setPhasePosition(double dblVal) {
         m_bucFieldMap.setPhasePosition(dblVal);
     }
 
     /**
-     * Electric field intensity factor
+     * @param dblVal Electric field intensity factor
      */
     public void setXelmax(double dblVal) {
         m_bucFieldMap.setXelmax(dblVal);
     }
 
     /**
-     * Default (design) cavity RF phase (deg)
+     * @param dblVal Default (design) cavity RF phase (deg)
      */
     public void setPhase(double dblVal) {
         m_bucFieldMap.setPhase(dblVal);
     }
 
     /**
-     * Design cavity resonant frequency (MHz)
+     * @param dblVal Design cavity resonant frequency (MHz)
      */
     public void setFrequency(double dblVal) {
         m_bucFieldMap.setFrequency(dblVal);
     }
 
+    /**
+     *
+     * @param dblVal
+     */
     public void setAmpFactor(double dblVal) {
         m_bucFieldMap.setAmpFactor(dblVal);
     }
 
     /**
-     * FieldMap file
+     * @param strVal FieldMap file
      */
     public void setFieldMapFile(String strVal) {
         m_bucFieldMap.setFieldMapFile(strVal);
     }
 
     /**
-     * Field profile
+     * @return Field profile
      */
     public FieldProfile getFieldProfile() {
         return fieldProfile;
     }
 
     /**
-     * Field profile
+     * @param fieldProfile Field profile
      */
     public void setFieldProfile(FieldProfile fieldProfile) {
         this.fieldProfile = fieldProfile;
@@ -177,14 +189,16 @@ public class ESSFieldMap extends RfGap {
 
     /**
      * Loads the field profile if necessary
+     *
+     * @param adaptor
      */
     @Override
-    public void update(DataAdaptor adaptor) throws NumberFormatException {
+    public void update(DataAdaptor adaptor) {
         super.update(adaptor);
         try {
             fieldProfile = FieldProfile.getInstance(new URI(((XmlDataAdaptor) adaptor).document().getDocumentURI()).resolve(getFieldMapFile() + ".edz").toString());
         } catch (URISyntaxException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "An error occurred trying to update the field profile.", e);
         }
     }
 
@@ -205,6 +219,7 @@ public class ESSFieldMap extends RfGap {
         try {
             return field * getXelmax() / (fieldProfile.getE0L(cavity.getCavFreq()) / fieldProfile.getLength());
         } catch (IllegalArgumentException exception) {
+            LOGGER.log(Level.INFO, "An error occurred when calculating the E0TL.", exception);
             return 0;
         }
     }

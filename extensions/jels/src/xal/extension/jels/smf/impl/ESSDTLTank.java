@@ -52,6 +52,10 @@ public class ESSDTLTank extends ESSRfCavity {
 
     /**
      * Primary Constructor
+     *
+     * @param strId
+     * @param channelFactory
+     * @param intReserve
      */
     public ESSDTLTank(final String strId, final ChannelFactory channelFactory, final int intReserve) {
         super(strId, channelFactory, intReserve);
@@ -59,6 +63,9 @@ public class ESSDTLTank extends ESSRfCavity {
 
     /**
      * Constructor
+     *
+     * @param strId
+     * @param channelFactory
      */
     public ESSDTLTank(final String strId, final ChannelFactory channelFactory) {
         this(strId, channelFactory, 0);
@@ -74,6 +81,8 @@ public class ESSDTLTank extends ESSRfCavity {
 
     /**
      * Support the node type
+     *
+     * @return type field
      */
     @Override
     public String getType() {

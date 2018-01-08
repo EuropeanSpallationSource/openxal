@@ -10,7 +10,6 @@ import xal.smf.impl.RfGap;
  *
  * @author Ivo List
  * @author Juan F. Esteban Müller <juanf.estebanmuller@esss.se>
- * 
  */
 public class ESSRfGap extends RfGap {
 
@@ -24,6 +23,8 @@ public class ESSRfGap extends RfGap {
 
     /**
      * return a polynomial fit of the transit time factor as a function of beta
+     *
+     * @return
      */
     @Override
     public InverseRealPolynomial getTTFFit() {
@@ -50,21 +51,35 @@ public class ESSRfGap extends RfGap {
 
     /**
      * return a polynomial fit of the TTF-prime factor as a function of beta
+     *
+     * @return
      */
     @Override
     public InverseRealPolynomial getTTFPrimeFit() {
-        ESSRfCavity rfCav = (ESSRfCavity) this.getParent();
-        if (isFirstGap()) {
-            return rfCav.getTTFPrimeFitStart();
-        } else if (isEndCell()) {
-            return rfCav.getTTFPrimeFitEnd();
-        } else {
-            return rfCav.getTTFPrimeFit();
+        double[] arrCoeffs = this.m_bucRfGap.getTpCoefficients();
+
+        // Defaults to the RF cavity transit time factor if none is
+        //  defined for this gap.
+        if (arrCoeffs == null || arrCoeffs.length == 0) {
+            ESSRfCavity rfCav = (ESSRfCavity) this.getParent();
+            if (isFirstGap()) {
+                return rfCav.getTTFPrimeFitStart();
+            } else if (isEndCell()) {
+                return rfCav.getTTFPrimeFitEnd();
+            } else {
+                return rfCav.getTTFPrimeFit();
+            }
         }
+
+        // A set of coefficients is defined for this fit.
+        //  Create the fitting function and return it.
+        return new InverseRealPolynomial(arrCoeffs);
     }
 
     /**
      * return a polynomial fit of the S factor as a function of beta
+     *
+     * @return
      */
     @Override
     public InverseRealPolynomial getSFit() {
@@ -91,17 +106,28 @@ public class ESSRfGap extends RfGap {
 
     /**
      * return a polynomial fit of the S-prime factor as a function of beta
+     *
+     * @return
      */
     @Override
     public InverseRealPolynomial getSPrimeFit() {
-        ESSRfCavity rfCav = (ESSRfCavity) this.getParent();
-        if (isFirstGap()) {
-            return rfCav.getSTFPrimeFitStart();
-        } else if (isEndCell()) {
-            return rfCav.getSTFPrimeFitEnd();
-        } else {
-            return rfCav.getSTFPrimeFit();
-        }
-    }
+        double[] arrCoeffs = this.m_bucRfGap.getSpCoefficients();
 
+        // Defaults to the RF cavity transit time prime factor if none is
+        //  defined for this gap.
+        if (arrCoeffs == null || arrCoeffs.length == 0) {
+            ESSRfCavity rfCav = (ESSRfCavity) this.getParent();
+            if (isFirstGap()) {
+                return rfCav.getSTFPrimeFitStart();
+            } else if (isEndCell()) {
+                return rfCav.getSTFPrimeFitEnd();
+            } else {
+                return rfCav.getSTFPrimeFit();
+            }
+        }
+
+        // A set of coefficients is defined for this fit.
+        //  Create the fitting function and return it.
+        return new InverseRealPolynomial(arrCoeffs);
+    }
 }

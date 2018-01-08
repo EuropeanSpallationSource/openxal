@@ -16,19 +16,19 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 package xal.extension.jels.tools.math;
+
 /**
  * @author Ivo List
  * @author Juan F. Esteban Müller <juanf.estebanmuller@esss.se>
-*/
+ */
 public class MeanFieldPolynomial extends InverseRealPolynomial {
 
-    private InverseRealPolynomial TTF, TTFPrime, STF, STFPrime;
+    private final InverseRealPolynomial TTF;
+    private final InverseRealPolynomial TTFPrime;
 
-    public MeanFieldPolynomial(InverseRealPolynomial TTF, InverseRealPolynomial TTFPrime, InverseRealPolynomial STF, InverseRealPolynomial STFPrime) {
+    public MeanFieldPolynomial(InverseRealPolynomial TTF, InverseRealPolynomial TTFPrime) {
         this.TTF = TTF;
         this.TTFPrime = TTFPrime;
-        this.STF = STF;
-        this.STFPrime = STFPrime;
     }
 
     @Override
@@ -46,8 +46,10 @@ public class MeanFieldPolynomial extends InverseRealPolynomial {
         }
     }
 
+    // TODO: return coefficients of all polynomials
     @Override
     public double getCoef(int iOrder) {
-        return TTF.getCoef(iOrder); // TODO: return coefficients of all polynomials
+
+        return TTF.getCoef(iOrder);
     }
 }

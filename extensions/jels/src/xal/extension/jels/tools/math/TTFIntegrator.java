@@ -13,7 +13,7 @@ import xal.model.IElement;
  */
 public class TTFIntegrator extends InverseRealPolynomial {
 
-    private int N;
+    private int length;
     private double zmax;
     private double[] field;
     private double e0tl;
@@ -30,9 +30,9 @@ public class TTFIntegrator extends InverseRealPolynomial {
      * Constructs new TTFIntegrator
      */
     public TTFIntegrator(double zmax, double[] field, double frequency, boolean inverted) {
-        this.N = field.length;
+        this.length = field.length;
         this.zmax = zmax;
-        this.field = field;
+        this.field = field.clone();
         this.frequency = frequency;
         this.inverted = inverted;
         initalizeE0TL();
@@ -50,10 +50,10 @@ public class TTFIntegrator extends InverseRealPolynomial {
      */
     public void initalizeE0TL() {
         double v = 0.;
-        for (int k = 0; k < N; k++) {
+        for (int k = 0; k < length; k++) {
             v += Math.abs(field[k]);
         }
-        e0tl = v * zmax / N;;
+        e0tl = v * zmax / length;
     }
 
     /**
@@ -76,13 +76,13 @@ public class TTFIntegrator extends InverseRealPolynomial {
     public double evaluateEzCos(double beta) {
         double phi = 0;
         double dz = getLength() / field.length;
-        double DE = 0.;
+        double dE = 0.;
 
         for (int i = 0; i < field.length; i++) {
-            DE += field[i] * Math.cos(phi) * dz;
+            dE += field[i] * Math.cos(phi) * dz;
             phi += 2 * Math.PI * frequency * dz / (beta * IElement.LightSpeed);
         }
-        return DE / e0tl;
+        return dE / e0tl;
     }
 
     /**
@@ -94,13 +94,13 @@ public class TTFIntegrator extends InverseRealPolynomial {
     public double evaluateEzSin(double beta) {
         double phi = 0;
         double dz = getLength() / field.length;
-        double DS = 0.;
+        double dS = 0.;
 
         for (int i = 0; i < field.length; i++) {
-            DS += field[i] * Math.sin(phi) * dz;
+            dS += field[i] * Math.sin(phi) * dz;
             phi += 2 * Math.PI * frequency * dz / (beta * IElement.LightSpeed);
         }
-        return DS / e0tl;
+        return dS / e0tl;
     }
 
     /**
@@ -116,14 +116,16 @@ public class TTFIntegrator extends InverseRealPolynomial {
 
         double dz = getLength() / field.length;
         double dphi = 2 * Math.PI * frequency * dz / (beta * IElement.LightSpeed);
-        double DC = 0., DS = 0.;
+        double dC = 0.;
+        double dS = 0.;
 
         for (int i = 0; i < field.length; i++) {
-            DC += field[i] * Math.cos(i * dphi);
-            DS += field[i] * Math.sin(i * dphi);
+            dC += field[i] * Math.cos(i * dphi);
+            dS += field[i] * Math.sin(i * dphi);
         }
         cos0Beta = beta;
-        return ezCos0 = Math.sqrt(DC * DC + DS * DS) * dz / e0tl;
+        ezCos0 = Math.sqrt(dC * dC + dS * dS) * dz / e0tl;
+        return ezCos0;
     }
 
     /**
@@ -138,28 +140,34 @@ public class TTFIntegrator extends InverseRealPolynomial {
             return ezzSin;
         }
         double dz = getLength() / field.length;
-        double DZS = 0., DZC = 0.;
-        double DC = 0., DS = 0.;
+        double dzS = 0.;
+        double dzC = 0.;
+        double dC = 0.;
+        double dS = 0.;
         double dphi = 2 * Math.PI * frequency * dz / (beta * IElement.LightSpeed);
 
         for (int i = 0; i < field.length; i++) {
             double phi = i * dphi;
             double a = field[i] * Math.cos(phi);
             double b = field[i] * Math.sin(phi);
-            DC += a;
-            DS += b;
-            DZS += b * i;
-            DZC += a * i;
+            dC += a;
+            dS += b;
+            dzS += b * i;
+            dzC += a * i;
         }
-        double DZ = (DZS * DC - DZC * DS) * dz * dz / Math.sqrt(DC * DC + DS * DS);
+        double DZ = (dzS * dC - dzC * dS) * dz * dz / Math.sqrt(dC * dC + dS * dS);
         ezzSinBeta = beta;
-        return ezzSin = DZ / e0tl * 2 * Math.PI * frequency / beta / beta / IElement.LightSpeed;
+        ezzSin = DZ / e0tl * 2 * Math.PI * frequency / beta / beta / IElement.LightSpeed;
+        return ezzSin;
     }
 
     /**
-     * ************************ Splitting methods **************************
+     * ************************ Splitting methods
+     *
+     **************************
      * @param fp
      * @param frequency
+     * @return
      */
     public static TTFIntegrator[] getSplitIntegrators(FieldProfile fp, double frequency) {
         double[] field = fp.getField();
@@ -170,7 +178,8 @@ public class TTFIntegrator extends InverseRealPolynomial {
         {
             int i = 0;
             while (i < field.length - 1 && field[i] * field[i + 1] <= 0) {
-                i++; // staggering zero at the beginning
+                // staggering zero at the beginning
+                i++;
             }
             for (; i < field.length - 1; i++) {
                 if (field[i] * field[i + 1] <= 0.) {
@@ -178,7 +187,8 @@ public class TTFIntegrator extends InverseRealPolynomial {
                         invert = true;
                     }
                     while (i < field.length - 2 && field[i + 1] * field[i + 2] <= 0) {
-                        i++; // staggering zero
+                        // staggering zero
+                        i++;
                     }
                     if (i >= field.length - 2) {
                         break;
@@ -214,7 +224,10 @@ public class TTFIntegrator extends InverseRealPolynomial {
     }
 
     /**
-     * *************** TTF function methods ***********************************
+     * *************** TTF function methods
+     *
+     ***********************************
+     * @return coefficient
      */
     @Override
     public double getCoef(int iOrder) {

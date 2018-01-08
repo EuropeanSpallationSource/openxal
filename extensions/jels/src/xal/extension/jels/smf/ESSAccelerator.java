@@ -66,8 +66,6 @@ public class ESSAccelerator extends Accelerator {
         super.write(adaptor);
         // write out power supplies
         DataAdaptor powerSuppliesAdaptor = adaptor.createChild("powersupplies");
-        getMagnetMainSupplies().forEach((mps) -> {
-            mps.write(powerSuppliesAdaptor.createChild("ps"));
-        });
+        getMagnetMainSupplies().forEach(mps -> mps.write(powerSuppliesAdaptor.createChild("ps")));
     }
 }

@@ -22,7 +22,6 @@ import eu.ess.bled.devices.lattice.Quadrupole;
 import eu.ess.bled.devices.lattice.RFCavity;
 import xal.extension.jels.smf.ESSAccelerator;
 import xal.extension.jels.smf.ESSElementFactory;
-import static xal.extension.jels.smf.ESSElementFactory.createESSSolFieldMap;
 import xal.extension.jels.smf.impl.ESSDTLTank;
 import xal.extension.jels.smf.impl.ESSRfCavity;
 import xal.extension.jels.smf.impl.ESSRfGap;
@@ -97,7 +96,29 @@ public class OpenXalExporter {
         }
 
         acc.setLength(seq.getLength());
+
+        addSDisplayPositions(acc);
+
         return acc;
+    }
+
+    /**
+     * This method adds the SDisplay property that tells the absolute position
+     * of a node inside the accelerator.
+     *
+     * @param accelerator
+     */
+    private void addSDisplayPositions(ESSAccelerator accelerator) {
+        AcceleratorNode node = null;
+        for (AcceleratorNode element : accelerator.getAllInclusiveNodes()) {
+            double position = 0;
+            node = element;
+            while (node.hasParent()) {
+                position += node.getPosition();
+                node = node.getParent();
+            }
+            element.setSDisplay(position);
+        }
     }
 
     /**
@@ -181,10 +202,11 @@ public class OpenXalExporter {
                 latticeCount++;
             } else if (subsystem instanceof FieldMap) {
                 node = exportFieldMap((FieldMap) subsystem, currentPosition);
-                if (node != null)
+                if (node != null) {
                     latticeCount++;
-                else
+                } else {
                     currentPosition += ((FieldMap) subsystem).getLength();
+                }
             } else if (subsystem instanceof DTLCell) {
                 // First cell: create cavity 
                 if (((DTLCell) subsystem).getRfPhase() != 0) {
@@ -437,7 +459,7 @@ public class OpenXalExporter {
                     element.getFileName(), profile, aper, currentPosition);
         } else if (element.getGeom() == 50) {
             MagnetMainSupply ps = ElementFactory.createMainSupply(element.getName() + "-PS", acc);
-            return createESSSolFieldMap(element.getName(), element.getLength(), element.getMagneticIntensityFactor(),
+            return ESSElementFactory.createESSSolFieldMap(element.getName(), element.getLength(), element.getMagneticIntensityFactor(),
                     element.getBasePath(), element.getFileName(), aper, ps, currentPosition);
         }
 
