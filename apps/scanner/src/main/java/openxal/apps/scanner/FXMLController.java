@@ -187,6 +187,7 @@ public class FXMLController implements Initializable {
             stage.setTitle("Add PV");
             stage.setScene(new Scene(root));
             stage.show();
+            Logger.getLogger(FXMLController.class.getName()).log(Level.FINER, "Add PV Window opened");
         }
         catch (IOException e) {
             Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, "Error opening Add PV window", e);
@@ -203,6 +204,7 @@ public class FXMLController implements Initializable {
         System.out.println("Save document..");
         try {
             MainFunctions.mainDocument.saveDocumentAs(new File("scanner.xml").toURI().toURL());
+            Logger.getLogger(FXMLController.class.getName()).log(Level.INFO, "Document saved");
         } catch (MalformedURLException ex) {
             Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -242,6 +244,7 @@ public class FXMLController implements Initializable {
                 plotMeasurement();
                 restartButton.setVisible(true);
             }
+            Logger.getLogger(FXMLController.class.getName()).log(Level.INFO, "Document loaded");
 
         } catch (MalformedURLException ex) {
             Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);

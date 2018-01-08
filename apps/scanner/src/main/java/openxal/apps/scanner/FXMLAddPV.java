@@ -34,6 +34,8 @@ package openxal.apps.scanner;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.fxml.Initializable;
 
 /**
@@ -50,6 +52,7 @@ public class FXMLAddPV implements Initializable  {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        Logger.getLogger(FXMLAddPV.class.getName()).log(Level.FINEST, "Add PV Window initialized");
     }
 
 }
