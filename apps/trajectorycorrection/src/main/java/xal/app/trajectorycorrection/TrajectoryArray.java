@@ -29,6 +29,7 @@ package xal.app.trajectorycorrection;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -172,7 +173,7 @@ public class TrajectoryArray {
     @throws java.io.FileNotFoundException
     */
 
-    public void readReferenceTrajectoryFromFile(xal.smf.Accelerator accl, File filename) throws FileNotFoundException, IOException{
+    public void readReferenceTrajectoryFromURL(xal.smf.Accelerator accl, URL filename) throws FileNotFoundException, IOException{
         DataAdaptor readAdp = null;
         String[] bpmNames;
         double[] posS;
@@ -184,7 +185,7 @@ public class TrajectoryArray {
         XRef.clear();
         YRef.clear();
 
-        readAdp = XmlDataAdaptor.adaptorForFile(filename, false);
+        readAdp = XmlDataAdaptor.adaptorForUrl(filename, false);
         DataAdaptor header = readAdp.childAdaptor("ReferenceTrajectory");
         DataAdaptor trajData =  header.childAdaptor("TrajectoryData");
         DataAdaptor BPMData =  trajData.childAdaptor("BPM");
@@ -264,7 +265,7 @@ public class TrajectoryArray {
                        
     }
 
-    public void saveTrajectory(xal.smf.Accelerator accl, File filename, DataAdaptor da) throws ConnectionException{
+    public void saveTrajectory(xal.smf.Accelerator accl, URL filename, DataAdaptor da) throws ConnectionException{
         //Saves the data into the file and set as reference        
         DataAdaptor trajectoryAdaptor =  da.createChild("ReferenceTrajectory");
         trajectoryAdaptor.setValue("title", filename);
