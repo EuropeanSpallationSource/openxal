@@ -31,6 +31,7 @@
  */
 package openxal.apps.scanner;
 
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -181,5 +182,22 @@ public class ChannelWrapper {
         instanceCount+=1;
         instance.set(shortName);
         return instance.get();
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 67 * hash + Objects.hashCode(this.m_id);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other.getClass() == this.getClass()) {
+            if (((ChannelWrapper)other).getChannelName() == null ? this.getChannelName() == null : ((ChannelWrapper)other).getChannelName().equals(this.getChannelName())) {
+                return true;
+            }
+        }
+        return false;
     }
 }

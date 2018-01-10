@@ -61,6 +61,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import org.apache.commons.lang3.StringUtils;
 import xal.ca.Channel;
+import xal.ca.ChannelFactory;
 import xal.ca.ConnectionException;
 import xal.smf.Accelerator;
 import xal.smf.AcceleratorNode;
@@ -94,6 +95,7 @@ public class PVTree extends SplitPane {
 
     @FXML // fx:id="manualTextField"
     private TextField manualTextField; // Value injected by FXMLLoader
+    private Channel manualChannel;
 
     @FXML // fx:id="pvCheckManualButton"
     private Button pvCheckManualButton; // Value injected by FXMLLoader
@@ -164,33 +166,55 @@ public class PVTree extends SplitPane {
         Logger.getLogger(PVTree.class.getName()).log(Level.FINER, "PV Tree Widget initialized");
     }
 
+    private void addOneChannel(Channel channel) {
+        ChannelWrapper newChannelWrapper = new ChannelWrapper(channel);
+        try {
+            if (channel.writeAccess())
+            {
+                if (!FXMLController.pvScannablelist.contains(newChannelWrapper))
+                    FXMLController.pvScannablelist.add(newChannelWrapper);
+                else
+                    Logger.getLogger(PVTree.class.getName()).log(Level.INFO, "Channel {0} has already been added", channel.getId());
+            }
+            else
+            {
+                if (!FXMLController.pvReadablelist.contains(newChannelWrapper))
+                    FXMLController.pvReadablelist.add(newChannelWrapper);
+                else
+                    Logger.getLogger(PVTree.class.getName()).log(Level.INFO, "Channel {0} has already been added", channel.getId());
+            }
+        } catch (ConnectionException ex) {
+            Logger.getLogger(PVTree.class.getName()).log(Level.SEVERE, "Failed to check channel access", ex);
+        }
+    }
+
     @FXML
     void addSelectedPV(ActionEvent event) {
         Logger.getLogger(PVTree.class.getName()).log(Level.INFO, "Adding selected channels");
         int count = FXMLController.pvScannablelist.size() + FXMLController.pvReadablelist.size();
 
-        epicsTable.getSelectionModel().getSelectedItems().forEach((HandleWrapper hw) -> {
-            elementTree.getSelectionModel().getSelectedItems().forEach( value -> {
-                AcceleratorNode node = value.getValue();
-                if (node.getType().equals(hw.getElementClass())) {
-                    Channel chan = node.findChannel(hw.getHandle());
-                    if (chan!=null)
-                        try {
+        if (epicsTable.getSelectionModel().getSelectedItems().size()>0) {
+            epicsTable.getSelectionModel().getSelectedItems().forEach((HandleWrapper hw) -> {
+                elementTree.getSelectionModel().getSelectedItems().forEach( value -> {
+                    AcceleratorNode node = value.getValue();
+                    if (node.getType().equals(hw.getElementClass())) {
+                        Channel chan = node.findChannel(hw.getHandle());
+                        if (chan!=null) {
                             chan.connectAndWait();
                             if (chan.isConnected()) {
-                                if (chan.writeAccess())
-                                    FXMLController.pvScannablelist.add(new ChannelWrapper(chan));
-                                else
-                                    FXMLController.pvReadablelist.add(new ChannelWrapper(chan));
+                                addOneChannel(chan);
                             } else {
                                 Logger.getLogger(PVTree.class.getName()).log(Level.WARNING, "Could not connect to {0}, not adding", chan.getId());
                             }
-                        } catch (ConnectionException ex) {
-                            Logger.getLogger(PVTree.class.getName()).log(Level.SEVERE, "Failed to check channel access", ex);
                         }
-                }
+                    }
+                    });
                 });
-            });
+        } else if (manualChannel.isConnected()) {
+            addOneChannel(manualChannel);
+        } else {
+            Logger.getLogger(PVTree.class.getName()).log(Level.WARNING, "Nothing to add");
+        }
         Logger.getLogger(PVTree.class.getName()).log(Level.INFO, "Added {0} channels.", FXMLController.pvScannablelist.size() + FXMLController.pvReadablelist.size() - count);
 
     }
@@ -227,18 +251,32 @@ public class PVTree extends SplitPane {
         // This function is called when button "Check" is clicked under the manual PV entry
         // the Add button should be enabled if the PV is found
         // Ideally we want an area where information about the button is added (units, current value, r or r/w etc)
-        Logger.getLogger(PVTree.class.getName()).log(Level.FINER, "Checking {0}", manualTextField.getText());
-        Logger.getLogger(PVTree.class.getName()).log(Level.WARNING, "Not yet implemented: Entering manual PV");
-        // If the EPICS pv exist:
-        pvAddButton.setDisable(false);
+        Logger.getLogger(PVTree.class.getName()).log(Level.FINER, "Trying to connect to channel {0}", manualTextField.getText());
+        ChannelFactory cFact = ChannelFactory.defaultFactory();
+        manualChannel = cFact.getChannel(manualTextField.getText());
+        try {
+            manualChannel.connectAndWait();
+            if (manualChannel.isConnected()) {
+                pvAddButton.setDisable(false);
+                Logger.getLogger(PVTree.class.getName()).log(Level.FINER, "Connected to channel {0}", manualTextField.getText());
+            } else {
+                Logger.getLogger(PVTree.class.getName()).log(Level.WARNING, "Did not manage to connect to channel {0}", manualTextField.getText());
+            }
+
+        } catch (Exception exception) {
+            Logger.getLogger(PVTree.class.getName()).log(Level.WARNING, "Exception raised when trying to connect to channel {0}", manualTextField.getText());
+        }
     }
 
     void enteringManualPV(String oldText, String newText) {
         // This function is called when something is written in the text field for manual entry.
         // Any selection in the element tree should be deselected, and the "Add" button should be disabled
-        epicsTable.getSelectionModel().clearSelection();
-        epicsChannels.clear();
-        elementTree.getSelectionModel().clearSelection();
+        if (newText.length()>0)
+        {
+            epicsTable.getSelectionModel().clearSelection();
+            epicsChannels.clear();
+            elementTree.getSelectionModel().clearSelection();
+        }
         pvAddButton.setDisable(true);
 
     }
@@ -283,6 +321,9 @@ public class PVTree extends SplitPane {
         if (oldValue == newValue)
             return;
         if ( newValue != null ) {
+            // Clear manual text entry (we add EITHER manual entry OR selected entries)
+            manualTextField.clear();
+
             Logger.getLogger(PVTree.class.getName()).log(Level.FINEST, "Epics table updating...");
             epicsChannels.clear();
 
