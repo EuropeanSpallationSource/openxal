@@ -339,7 +339,7 @@ public class ShakeAnalysis {
 		} else {
 			long pvLogID = (long) pvLoggerIdTextField.getValue();
 			PVLoggerDataSource plds = new PVLoggerDataSource(pvLogID);
-			scenario = plds.setModelSource(accSeq, scenario);
+			plds.setModelSource(accSeq, scenario);
 			orbitCorrector.setPVLoggerID(pvLogID);
 		}
         

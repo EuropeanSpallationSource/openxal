@@ -28,29 +28,34 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xal.extension.jels.tools.math.TTFIntegrator;
 
 public class FieldProfile {
 
     private double length;
+    private double norm;
     private double[] field;
     private TTFIntegrator integrator;
+
+    private static final Logger LOGGER = Logger.getLogger(FieldProfile.class.getName());
 
     private static Map<String, FieldProfile> instances = new HashMap<>();
 
     public FieldProfile(double length, double[] field) {
         this.length = length;
-        this.field = field;
+        this.field = field.clone();
     }
 
     protected FieldProfile(String path) {
         try {
             loadFile(path);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "An error occurred trying to get the field profile.", e);
         } catch (URISyntaxException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Fieldmap file path incorrect.", e);
         }
     }
 
@@ -67,6 +72,10 @@ public class FieldProfile {
         FieldProfile fp = new FieldProfile(path);
         instances.put(path, fp);
         return fp;
+    }
+
+    public double getNorm() {
+        return norm;
     }
 
     public double[] getField() {
@@ -96,27 +105,26 @@ public class FieldProfile {
      * @throws URISyntaxException
      */
     private void loadFile(String path) throws IOException, URISyntaxException {
-        BufferedReader br;
+        BufferedReader br = null;
         try {
             br = new BufferedReader(new InputStreamReader(new URL(path).openStream()));
         } catch (IOException e) {
-            throw new Error("Field map " + new File(new URL(path).getFile()) + " not found");
+            LOGGER.log(Level.INFO, "Field map " + new File(new URL(path).getFile()) + " not found.", e);
         }
-        
+
         // first line
         String line = br.readLine();
         String[] data = line.split(" ");
 
-        int N = Integer.parseInt(data[0]) + 1;
+        int nPoints = Integer.parseInt(data[0]) + 1;
         length = Double.parseDouble(data[1]);
-        field = new double[N];
+        field = new double[nPoints];
 
         line = br.readLine();
-        @SuppressWarnings("unused")
-        double norm = Double.parseDouble(line);
+        norm = Double.parseDouble(line);
 
         int i = 0;
-        while ((line = br.readLine()) != null && i < N) {
+        while ((line = br.readLine()) != null && i < nPoints) {
             field[i++] = Double.parseDouble(line) * 1e6;
         }
 
@@ -134,11 +142,10 @@ public class FieldProfile {
         File fieldMapfile = new File(new URI(path));
         fieldMapfile.getParentFile().mkdirs();
         PrintWriter pw = new PrintWriter(new FileWriter(fieldMapfile));
-        double[] field = getField();
-        double zmax = getLength();
-        pw.printf("%d %f\n%f\n", field.length - 1, zmax, 1.0);
+
+        pw.printf("%d %f%n%f%n", field.length - 1, length, 1.0);
         for (int i = 0; i < field.length; i++) {
-            pw.printf("%f\n", field[i] * 1e-6);
+            pw.printf("%f%n", field[i] * 1e-6);
         }
         pw.close();
     }

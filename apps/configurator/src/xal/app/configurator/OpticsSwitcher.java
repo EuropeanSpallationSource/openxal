@@ -91,14 +91,21 @@ public final class OpticsSwitcher {
         opticsLibraryPath = opticsPath;
     }
 
+    public String getDefaultOpticsLibraryPath() {
+        String opticsPath;
+        if (getDefaultPath() != null) {
+            opticsPath = new File(getDefaultPath()).getParentFile().getParent();
+        } else {
+            opticsPath = null;
+        }
+
+        return opticsPath;
+    }
+
     public String getOpticsLibraryPath() {
         String opticsPath;
         if (opticsLibraryPath == null) {
-            if (getDefaultPath() != null) {
-                opticsPath = new File(getDefaultPath()).getParentFile().getParent();
-            } else {
-                opticsPath = null;
-            }
+            opticsPath = getDefaultOpticsLibraryPath();
         } else {
             opticsPath = opticsLibraryPath;
         }
@@ -146,7 +153,12 @@ public final class OpticsSwitcher {
 
         int indexDefault = -1;
 
-        File defaultOptics = new File(getOpticsLibraryPath());
+        String libraryPath = getOpticsLibraryPath();
+        if (libraryPath.startsWith("~")) {
+            libraryPath = libraryPath.replace("~", System.getProperty("user.home"));
+        }
+
+        File defaultOptics = new File(libraryPath);
         String defaultPath = getDefaultPath();
 
         if (defaultOptics.exists()) {
@@ -176,6 +188,8 @@ public final class OpticsSwitcher {
                     }
                 }
             }
+        } else {
+            opticsLibraryPath = getDefaultOpticsLibraryPath();
         }
 
         opticsListView.setItems(opticsItems);

@@ -17,6 +17,8 @@
  */
 package xal.extension.jels.model.elem;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import xal.extension.jels.smf.impl.ESSFieldMap;
 import xal.extension.jels.smf.impl.FieldProfile;
 import xal.extension.jels.tools.math.TTFIntegrator;
@@ -39,6 +41,8 @@ import xal.tools.beam.PhaseMap;
  *
  */
 public class FieldMapNCells extends ThickElement implements IRfGap, IRfCavityCell {
+
+    private static final Logger LOGGER = Logger.getLogger(FieldMapNCells.class.getName());
 
     private double frequency;
 
@@ -88,8 +92,8 @@ public class FieldMapNCells extends ThickElement implements IRfGap, IRfCavityCel
             }
 
             /*
-		     * Old implementation of IdealRfGap is used. First gap phase is calculated when the energy at the
-		     * entrance into the gap is known. Also TTF integrator is supplied with the necessary offset.
+             * Old implementation of IdealRfGap is used. First gap phase is calculated when the energy at the
+             * entrance into the gap is known. Also TTF integrator is supplied with the necessary offset.
              */
             splitIntgrs = TTFIntegrator.getSplitIntegrators(fp, frequency);
             gaps = new IdealRfGap[splitIntgrs.length];
@@ -106,9 +110,11 @@ public class FieldMapNCells extends ThickElement implements IRfGap, IRfCavityCel
         try {
             firstSliceElement = (FieldMapNCells) latticeElement.getFirstSlice().createModelingElement();
         } catch (ModelException e) {
+            LOGGER.log(Level.INFO, "Couldn't load the first slice element.", e);
         }
     }
 
+    @Override
     public void propagate(IProbe probe) throws ModelException {
         if (sliceStartPosition == null) {
             sliceStartPosition = probe.getPosition();
@@ -116,6 +122,13 @@ public class FieldMapNCells extends ThickElement implements IRfGap, IRfCavityCel
         firstSliceElement.propagate(probe, sliceStartPosition, sliceStartPosition + sliceLength);
     }
 
+    /**
+     *
+     * @param probe
+     * @param sliceStartPosition
+     * @param sliceEndPosition
+     * @throws ModelException
+     */
     public void propagate(IProbe probe, double sliceStartPosition, double sliceEndPosition) throws ModelException {
         if (startPosition == null) {
             startPosition = probe.getPosition();
@@ -124,17 +137,13 @@ public class FieldMapNCells extends ThickElement implements IRfGap, IRfCavityCel
         double cellPos = startPosition;
         double pos = probe.getPosition();
 
-        //if (sliceStartPosition > pos || pos > sliceEndPosition) 
-        //	throw new ModelException("Bad slicing");
-        //System.out.println("#"+"propagate: " + sliceStartPosition + " " + sliceEndPosition);
         for (int i = 0; i < splitIntgrs.length; i++) {
             if (cellPos + splitIntgrs[i].getLength() < pos) {
                 cellPos += splitIntgrs[i].getLength();
                 continue;
-            }  // invariant: cellPos + splitIntgrs[i].getLength() >= pos && cellPos < pos
-
+            }
             // initialize the cell
-            double phim = splitIntgrs[i].getSyncPhase(probe.getBeta()); // phis = phim + phi
+            double phim = splitIntgrs[i].getSyncPhase(probe.getBeta());
             if (phim < 0) {
                 phim += 2 * Math.PI;
             }
@@ -153,7 +162,6 @@ public class FieldMapNCells extends ThickElement implements IRfGap, IRfCavityCel
                 boolean doGap = (plen == l1 - (pos - cellPos));
                 new IdealRfCavityDrift("", plen, frequency, 0).propagate(probe);
                 pos += plen;
-                //System.out.println("#"+i+":drift1 "+l1+" for "+plen);
 
                 // the gap
                 if (doGap) {
@@ -163,7 +171,6 @@ public class FieldMapNCells extends ThickElement implements IRfGap, IRfCavityCel
                     gaps[i].setE0(splitIntgrs[i].getE0TL() * k0);
 
                     gaps[i].propagate(probe);
-                    //System.out.println("#"+i+":gap");
                 }
 
                 if (pos >= sliceEndPosition) {
@@ -174,7 +181,6 @@ public class FieldMapNCells extends ThickElement implements IRfGap, IRfCavityCel
             // after gap
             double plen2 = Math.min(l2 - (pos - cellPos - l1), sliceEndPosition - pos);
             new IdealRfCavityDrift("", plen2, frequency, 0).propagate(probe);
-            //System.out.println("#"+i+":drift2 "+l2+" for "+plen2);
             pos += plen2;
             if (pos >= sliceEndPosition) {
                 break;
@@ -221,7 +227,8 @@ public class FieldMapNCells extends ThickElement implements IRfGap, IRfCavityCel
 
     @Override
     public double getE0() {
-        return 1; // We ignore cavity amplitude
+        // We ignore cavity amplitude
+        return 1;
     }
 
     @Override
@@ -251,7 +258,8 @@ public class FieldMapNCells extends ThickElement implements IRfGap, IRfCavityCel
 
     @Override
     public boolean isEndCell() {
-        return false; // this is ignored
+        // this is ignored
+        return false;
     }
 
     @Override
@@ -261,17 +269,19 @@ public class FieldMapNCells extends ThickElement implements IRfGap, IRfCavityCel
 
     @Override
     public double energyGain(IProbe probe, double dblLen) {
-        return 0; // not used
+        // not used
+        return 0;
     }
 
     @Override
     public PhaseMap transferMap(IProbe probe, double dblLen) throws ModelException {
-        return null; // not used
+        // not used
+        return null;
     }
 
     @Override
     public double elapsedTime(IProbe probe, double dblLen) {
-        return 0; // not used
+        // not used
+        return 0;
     }
-
 }

@@ -667,7 +667,7 @@ public class ModelFace extends JPanel{
                     tempscenario.setProbe(tempprobe);
                     tempscenario.setSynchronizationMode(Scenario.SYNC_MODE_DESIGN);
                     PVLoggerDataSource plds = new PVLoggerDataSource(pvloggerid.intValue());
-                    tempscenario = plds.setModelSource(seq, tempscenario);
+                    plds.setModelSource(seq, tempscenario);
                     tempscenario.resync();
                     tempscenario.run();
                     plds.closeConnection();
@@ -970,7 +970,7 @@ public class ModelFace extends JPanel{
 			tempscenario.setProbe(tempprobe);
 			tempscenario.setSynchronizationMode(Scenario.SYNC_MODE_DESIGN);
 			PVLoggerDataSource plds = new PVLoggerDataSource(pvloggerid.intValue());
-			tempscenario = plds.setModelSource(seq, tempscenario);
+			plds.setModelSource(seq, tempscenario);
 			tempscenario.resync();
 			tempscenario.run();
 			plds.closeConnection();
@@ -1062,7 +1062,7 @@ public class ModelFace extends JPanel{
 			solvermodel.setSynchronizationMode(Scenario.SYNC_MODE_DESIGN);
 			solvermodel.setStartNode((String)elementList.getSelectedItem());
 			PVLoggerDataSource plds = new PVLoggerDataSource(pvloggerid.intValue());
-			solvermodel = plds.setModelSource(seq, solvermodel);
+			plds.setModelSource(seq, solvermodel);
 			solvermodel.resync();
 			solvermodel.run();
 			plds.closeConnection();
@@ -1116,7 +1116,7 @@ public class ModelFace extends JPanel{
 			solvermodel.setSynchronizationMode(Scenario.SYNC_MODE_DESIGN);
 			solvermodel.setStartNode((String)elementList.getSelectedItem());
 			PVLoggerDataSource plds = new PVLoggerDataSource(pvloggerid.intValue());
-			solvermodel = plds.setModelSource(seq, solvermodel);
+			plds.setModelSource(seq, solvermodel);
 			solvermodel.resync();
 			plds.closeConnection();
 		}
@@ -1177,7 +1177,7 @@ public class ModelFace extends JPanel{
 			tempscenario.setProbe(tempprobe);
 			tempscenario.setStartNode((String)elementList.getSelectedItem());
 			PVLoggerDataSource plds = new PVLoggerDataSource(pvloggerid.intValue());
-			tempscenario = plds.setModelSource(seq, tempscenario);
+			plds.setModelSource(seq, tempscenario);
 			tempscenario.resync();
 			tempscenario.run();
 			plds.closeConnection();

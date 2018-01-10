@@ -2,6 +2,8 @@ package xal.extension.jels.smf.impl;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xal.extension.jels.smf.attr.ESSSolFieldMapBucket;
 import xal.ca.ChannelFactory;
@@ -21,12 +23,17 @@ public class ESSSolFieldMap extends Electromagnet {
 
     public static final String s_strType = "SFM";
 
+    private static final Logger LOGGER = Logger.getLogger(ESSSolFieldMap.class.getName());
+    
     /*
      *  Local Attributes
      */
-    protected ESSSolFieldMapBucket m_bucSolFieldMap;           // FieldMap parameters
-    protected FieldProfile2D fieldProfileR; // radial component of the field profile
-    protected FieldProfile2D fieldProfileZ; // longitudianl component of the field profile
+    // FieldMap parameters
+    protected ESSSolFieldMapBucket m_bucSolFieldMap;
+    // radial component of the field profile  
+    protected FieldProfile2D fieldProfileR;
+    // longitudianl component of the field profile
+    protected FieldProfile2D fieldProfileZ;
 
     static {
         registerType();
@@ -110,7 +117,7 @@ public class ESSSolFieldMap extends Electromagnet {
     public double getEffLength() {
         return m_dblLen;
     }
-    
+
     /**
      * FieldMap file
      */
@@ -154,16 +161,16 @@ public class ESSSolFieldMap extends Electromagnet {
      * Loads the field profile if necessary
      */
     @Override
-    public void update(DataAdaptor adaptor) throws NumberFormatException {
+    public void update(DataAdaptor adaptor) {
         super.update(adaptor);
         try {
             URI fieldProfileRURI = new URI(((XmlDataAdaptor) adaptor).document().getDocumentURI()).resolve(getFieldMapFile() + ".bsr");
             URI fieldProfileZURI = new URI(((XmlDataAdaptor) adaptor).document().getDocumentURI()).resolve(getFieldMapFile() + ".bsz");
-                        
+
             setFieldProfileR(FieldProfile2D.getInstance(fieldProfileRURI.toString()));
             setFieldProfileZ(FieldProfile2D.getInstance(fieldProfileZURI.toString()));
         } catch (URISyntaxException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "An error occurred trying to update the field profile.", e);
         }
     }
 }

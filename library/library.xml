@@ -1,0 +1,20 @@
+<assembly>
+    <id>library</id>
+    <!-- Define formats for distribution files -->
+    <formats>
+        <format>jar</format>
+    </formats>
+    
+    <includeBaseDirectory>false</includeBaseDirectory>
+    
+    <!-- Include all dependencies -->
+    <fileSets>
+        <fileSet>
+            <directory>${basedir}/../apps/assembly/target/openxal.apps.assembly-${project.version}/lib/</directory>
+            <outputDirectory>.</outputDirectory>
+            <includes>
+                <include>**</include>
+            </includes>
+        </fileSet>
+    </fileSets>
+</assembly>
