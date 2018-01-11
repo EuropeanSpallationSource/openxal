@@ -14,6 +14,40 @@
 
     <packaging>pom</packaging>
 
+    <modules>
+        <module>core</module>
+        <module>test</module>
+        <module>plugins</module>
+        <module>extensions</module>
+        <module>services</module>
+        <module>library</module>
+        <module>3rd-party-libs</module>
+        <module>apps</module>
+        <module>dist</module>
+    </modules>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.10.4</version>
+                <configuration>
+                    <isOffline>true</isOffline>
+                    <additionalparam>-Xdoclint:none</additionalparam>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>aggregate</id>
+                        <goals>
+                            <goal>aggregate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -50,6 +84,18 @@
             <dependency>
                 <groupId>org.xal</groupId>
                 <artifactId>openxal.core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.xal</groupId>
+                <artifactId>openxal.library</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.xal</groupId>
+                <artifactId>openxal.3rd-party-libs</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -181,38 +227,5 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-
-    <modules>
-        <module>core</module>
-        <module>test</module>
-        <module>plugins</module>
-        <module>extensions</module>
-        <module>services</module>
-        <module>apps</module>
-        <module>library</module>
-        <module>dist</module>
-    </modules>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.10.4</version>
-                <configuration>
-                    <isOffline>true</isOffline>
-                    <additionalparam>-Xdoclint:none</additionalparam>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>aggregate</id>
-                        <goals>
-                            <goal>aggregate</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
 
 </project>
