@@ -44,7 +44,7 @@
         </repository>
         <repository>
             <id>project</id>
-            <url>file:${project.parent.basedir}/apps/pta/lib</url>
+            <url>file://${project.basedir}/../apps/pta/lib</url>
         </repository>
     </repositories>
 
