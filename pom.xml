@@ -21,7 +21,7 @@
         <module>extensions</module>
         <module>services</module>
         <module>library</module>
-        <module>3rd-party-libs</module>
+        <module>third-party-libs</module>
         <module>apps</module>
         <module>dist</module>
     </modules>
@@ -95,7 +95,7 @@
 
             <dependency>
                 <groupId>org.xal</groupId>
-                <artifactId>openxal.3rd-party-libs</artifactId>
+                <artifactId>openxal.third-party-libs</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

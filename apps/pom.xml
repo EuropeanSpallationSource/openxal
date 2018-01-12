@@ -61,7 +61,7 @@
     </modules>
     
     <!-- Build executable jar for all applications and copy the jar to the target/dist folder -->
-    <!-- The property main-class should be defined in the application's pom.xml -->
+    <!-- The property mainClass should be defined in the application's pom.xml -->
     <build>
         <plugins>
             <plugin>
@@ -74,7 +74,7 @@
                             <mainClass>${mainClass}</mainClass>
                         </manifest>
                         <manifestEntries>
-                            <Class-Path>../lib/openxal.library-${project.version}.jar ../lib/openxal.3rd-party-libs-${project.version}.jar</Class-Path>
+                            <Class-Path>../lib/openxal.library-${project.version}.jar ../lib/openxal.third-party-libs-${project.version}.jar</Class-Path>
                         </manifestEntries>
                     </archive>
                 </configuration>
@@ -113,10 +113,10 @@
             <groupId>org.xal</groupId>
             <artifactId>openxal.library</artifactId>
         </dependency>
-        <!-- openxal.3rd-party-libs is for external libraries needed by some applications -->
+        <!-- openxal.third-party-libs is for external libraries needed by some applications -->
         <dependency>
             <groupId>org.xal</groupId>
-            <artifactId>openxal.3rd-party-libs</artifactId>
+            <artifactId>openxal.third-party-libs</artifactId>
         </dependency>
     </dependencies>
 </project>

@@ -18,12 +18,12 @@
                 <include>openxal.library-${project.version}.jar</include>
             </includes>
         </fileSet>
-        <!-- 3rd party libraries jar -->
+        <!-- Third party libraries jar -->
         <fileSet>
-            <directory>${basedir}/../3rd-party-libs/target</directory>
+            <directory>${basedir}/../third-party-libs/target</directory>
             <outputDirectory>lib</outputDirectory>
             <includes>
-                <include>openxal.3rd-party-libs-${project.version}.jar</include>
+                <include>openxal.third-party-libs-${project.version}.jar</include>
             </includes>
         </fileSet>
         <!-- Open XAL optics files -->
