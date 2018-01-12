@@ -45,7 +45,7 @@ public class Main extends ApplicationAdaptor {
     /** The main method of the application. */
     static public void main(String[] args) {
         try {
-            System.out.println("Starting application...");
+            Logger.getLogger(Main.class.getName()).log(Level.INFO, "Starting application..." );
 
             // set command-line option(s) for opening existing document(s)
             setOptions( args );

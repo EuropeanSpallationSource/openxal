@@ -25,6 +25,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -808,7 +810,7 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
                         putSetPVs();
 
                         // continuously loop through the next 3 steps
-                        System.out.println( "Setup to synchronize the online model periodically..." );
+                        Logger.getLogger(VADocument.class.getName()).log(Level.INFO, "Setup to synchronize the online model periodically...");
                         MODEL_SYNC_TIMER.setEventHandler( getOnlineModelSynchronizer() );
                     }
 
@@ -890,7 +892,7 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
     /** handle this document being closed */
     @Override
     public void willClose() {
-        System.out.println( "Document will be closed" );
+        Logger.getLogger(VADocument.class.getName()).log(Level.INFO, "Document will be closed");
         destroyServer();
     }
 
@@ -1621,7 +1623,7 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 
             // get all the wire scanners
             wss = getSelectedSequence().getAllNodesWithQualifier( QualifierFactory.qualifierWithStatusAndType( true, ProfileMonitor.PROFILE_MONITOR_TYPE ) );
-            System.out.println( wss );
+            Logger.getLogger(VADocument.class.getName()).log(Level.FINEST, wss.toString());
 
             // should create a new map for "set" <-> "readback" PV mapping
             configureReadbacks();
