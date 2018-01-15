@@ -9,51 +9,17 @@
 
     <groupId>org.xal</groupId>
     <artifactId>openxal.apps.scanner</artifactId>
-    <version>1.1.2-SNAPSHOT</version>
+
     <packaging>jar</packaging>
 
     <name>openxal.apps.scanner</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <mainClass>openxal.apps.scanner.MainApp</mainClass>
+        <mainClass>xal.app.scanner.MainApp</mainClass>
     </properties>
 
     <organization>
-        <!-- Used as the 'Vendor' for JNLP generation -->
-        <name>Your Organisation</name>
+        <name>European Spallation Source ERIC</name>        
     </organization>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>2.4</version>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <mainClass>openxal.apps.scanner.MainApp</mainClass>
-                        </manifest>
-                        <manifestEntries>
-                            <Class-Path>../lib/openxal.library-${project.version}.jar</Class-Path>
-                        </manifestEntries>
-                    </archive>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>3.5</version>
-        </dependency>
-        <dependency>
-          <groupId>org.gillius</groupId>
-          <artifactId>jfxutils</artifactId>
-          <version>1.0</version>
-        </dependency>
-    </dependencies>
-
 </project>

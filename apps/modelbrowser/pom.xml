@@ -9,7 +9,6 @@
     </parent>
 
     <artifactId>openxal.apps.modelbrowser</artifactId>
-    <version>1.1.2-SNAPSHOT</version>
 
     <name>openxal.apps.modelbrowser</name>
 
@@ -19,52 +18,6 @@
     </properties>
 
     <organization>
-        <!-- Used as the 'Vendor' for JNLP generation -->
         <name>European Spallation Source ERIC</name>
     </organization>
-
-    <build>
-        <sourceDirectory>src/main/java</sourceDirectory>
-        <resources>
-            <resource>
-                <filtering>false</filtering>
-                <directory>src/main/resources</directory>
-                <includes>
-                    <include>**/*.fxml</include>
-                    <include>**/*.png</include>
-                    <include>**/*.css</include>
-                    <include>xal/**</include>
-                </includes>
-            </resource>
-        </resources>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>2.4</version>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <mainClass>xal.app.modelbrowser.MainApp</mainClass>
-                        </manifest>
-                        <manifestEntries>
-                            <Class-Path>../lib/openxal.library-${project.version}.jar</Class-Path>
-                        </manifestEntries>
-                    </archive>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>3.5</version>
-        </dependency>
-        <dependency>
-            <groupId>org.epics</groupId>
-            <artifactId>jca</artifactId>
-            <version>2.3.6</version>
-        </dependency>
-    </dependencies>
 </project>
