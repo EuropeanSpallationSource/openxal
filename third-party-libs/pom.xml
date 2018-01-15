@@ -9,7 +9,6 @@
     </parent>
 
     <artifactId>openxal.third-party-libs</artifactId>
-    <version>1.1.2-SNAPSHOT</version>
         
     <packaging>jar</packaging>
 

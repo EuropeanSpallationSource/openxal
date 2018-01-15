@@ -9,11 +9,7 @@
     </parent>
 
     <artifactId>openxal.extensions.wirescan</artifactId>
-
-    <build>
-        <sourceDirectory>src</sourceDirectory>
-    </build>
-
+    
     <dependencies>
         <dependency>
             <groupId>org.xal</groupId>

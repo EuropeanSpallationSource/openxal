@@ -9,7 +9,7 @@
 
     <groupId>org.xal</groupId>
     <artifactId>openxal.apps.scanner</artifactId>
-    <version>1.1.2-SNAPSHOT</version>
+
     <packaging>jar</packaging>
 
     <name>openxal.apps.scanner</name>

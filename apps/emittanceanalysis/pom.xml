@@ -9,7 +9,6 @@
     </parent>
 
     <artifactId>openxal.apps.emittanceanalysis</artifactId>
-    <version>1.1.2-SNAPSHOT</version>
 
     <properties>
         <mainClass>xal.app.emittanceanalysis.EmittanceMain</mainClass>

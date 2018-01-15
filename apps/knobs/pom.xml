@@ -9,7 +9,6 @@
     </parent>
 
     <artifactId>openxal.apps.knobs</artifactId>
-    <version>1.1.2-SNAPSHOT</version>
 
     <properties>
         <mainClass>xal.app.knobs.Main</mainClass>

@@ -9,7 +9,6 @@
     </parent>
 
     <artifactId>openxal.apps.scan1d</artifactId>
-    <version>1.1.2-SNAPSHOT</version>
 
     <properties>
         <mainClass>xal.app.scan1d.MainScan1D</mainClass>
