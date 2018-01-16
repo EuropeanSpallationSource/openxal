@@ -63,7 +63,7 @@ public class ChannelWrapper {
     // This is probably not the best way to do this.
     private static int instanceCount = 0;
 
-    ChannelWrapper(Channel c) {
+    public ChannelWrapper(Channel c) {
         m_channel = c;
         m_channel.connectAndWait();
         initialValue = new SimpleDoubleProperty(0.0);
