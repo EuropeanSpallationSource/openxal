@@ -1,0 +1,9 @@
+dependencies {
+  compile 'org.jfree:jfreechart:1.0.19'
+}
+
+//task packageTests(type: Jar) {
+//  from sourceSets.test.output
+//  classifier = 'tests'
+//}
+//artifacts.archives packageTests

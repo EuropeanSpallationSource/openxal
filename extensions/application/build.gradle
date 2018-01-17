@@ -1,0 +1,11 @@
+dependencies {
+  compile project(':extensions:bricks')
+  compile project(':extensions:service')
+  compile project(':plugins:essrbac')
+}
+
+//task packageTests(type: Jar) {
+//  from sourceSets.test.output
+//  classifier = 'tests'
+//}
+//artifacts.archives packageTests

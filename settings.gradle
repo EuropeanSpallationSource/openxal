@@ -1,0 +1,97 @@
+rootProject.name = 'openxal'
+
+include ':core'
+//include ':openxal.core.test'
+
+// Build all plugins
+include ':plugins:jca'
+include ':plugins:mysql'
+include ':plugins:postgres'
+include ':plugins:essrbac'
+
+
+// Build all extensions
+include ':extensions:service'
+include ':extensions:widgets'
+include ':extensions:bricks'
+include ':extensions:application'
+include ':extensions:pvlogger'
+project(':extensions:pvlogger').projectDir = "$rootDir/services/pvlogger/extension" as File
+// Renaming to avoid two projects with the same name
+project(':extensions:pvlogger').name = "extension.pvlogger"
+include ':extensions:worker'
+project(':extensions:worker').projectDir = "$rootDir/services/worker/extension" as File
+// Renaming to avoid two projects with the same name
+project(':extensions:worker').name = "extension.worker"
+include ':extensions:extlatgen'
+include ':extensions:solver'
+include ':extensions:fit'
+include ':extensions:logbook'
+include ':extensions:orbit'
+include ':extensions:recordselector'
+include ':extensions:scan'
+include ':extensions:jels'
+include ':extensions:tracewin'
+include ':extensions:twissobserver'
+include ':extensions:wirescan'
+include ':extensions:zplot'
+
+
+// Build all services
+include ':services:pvlogger'
+include ':services:worker'
+
+
+// Build Open XAL library
+include ':library'
+
+
+// Build all apps
+//include ':apps:arraypvviewer'
+//include ':apps:beam_matcher'
+//include ':apps:bpmviewer'
+//include ':apps:bricks'
+//include ':apps:bsmanalysis'
+include ':apps:configurator'
+//include ':apps:dbbrowser'
+//include ':apps:diagtiming'
+//include ':apps:ema'
+//include ':apps:emittanceanalysis'
+//include ':apps:energymanager'
+//include ':apps:experimentautomator'
+//include ':apps:extlatgenerator'
+//include ':apps:injdumpwizard'
+//include ':apps:knobs'
+//include ':apps:labbook'
+include ':apps:launcher'
+//include ':apps:machinerecorder'
+//include ':apps:machinesimulator'
+//include ':apps:magnetcycling'
+//include ':apps:modelbrowser'
+//include ':apps:mtv'
+//include ':apps:opticseditor'
+//include ':apps:opticsswitcher'
+//include ':apps:orbitcorrect'
+//include ':apps:pasta'
+//include ':apps:pta'
+//include ':apps:pvhistogram'
+//include ':apps:pvlogger'
+//include ':apps:quadshaker'
+//include ':apps:rfphaseshaker'
+//include ':apps:saddam'
+//include ':apps:scalarpvviewer'
+//include ':apps:scanner'
+//include ':apps:scan1d'
+//include ':apps:scan2d'
+//include ':apps:sclmonitor'
+//include ':apps:scope'
+//include ':apps:score'
+//include ':apps:timestamptest'
+//include ':apps:ttffactory'
+//include ':apps:virtualaccelerator'
+//include ':apps:wireanalysis'
+//include ':apps:wirescan'
+//include ':apps:xyzcorrelator'
+//include ':apps:assembly'
+
+//include ':openxal.dist'

@@ -27,3 +27,7 @@ nbactions.xml
 
 # IntelliJ
 .idea
+
+# Gradle
+.gradle
+.nb-gradle

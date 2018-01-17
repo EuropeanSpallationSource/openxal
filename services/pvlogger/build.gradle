@@ -1,0 +1,15 @@
+dependencies {
+    compile project(':extensions:extension.pvlogger')
+    compile project(':extensions:recordselector')
+    runtime project(':plugins:postgres')
+    runtime project(':plugins:jca')
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.mockito:mockito-all:1.10.19'
+}
+
+//packaging tests
+//task packageTests(type: Jar) {
+//  from sourceSets.test.output
+//  classifier = 'tests'
+//}
+//artifacts.archives packageTests

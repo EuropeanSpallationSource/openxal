@@ -1,0 +1,6 @@
+mainClassName = "xal.app.configurator.MainApp"
+jar {
+    manifest {
+        attributes 'Main-Class' : mainClassName
+    }
+}

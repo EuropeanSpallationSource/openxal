@@ -1,0 +1,11 @@
+dependencies {
+  compile project(':extensions:solver')
+  compile project(':extensions:widgets')
+  runtime project(':plugins:jca')
+}
+
+//task packageTests(type: Jar) {
+//  from sourceSets.test.output
+//  classifier = 'tests'
+//}
+//artifacts.archives packageTests

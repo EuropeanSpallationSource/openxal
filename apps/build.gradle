@@ -1,0 +1,15 @@
+subprojects{
+    apply plugin: 'application'
+
+    dependencies {
+        compile (project(':library')) {
+            transitive = false
+        }
+    }
+
+    jar {
+        manifest {
+            attributes 'Class-Path': '../lib/library-'+version+'.jar'
+        }
+    }
+}

@@ -1,0 +1,42 @@
+allprojects  {
+    apply plugin: 'maven'
+
+    group = 'org.xal'
+    version = '1.1.2-SNAPSHOT'
+}
+
+subprojects {
+    apply plugin: 'java'
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+    tasks.withType(JavaCompile) {
+  	options.encoding = 'UTF-8'
+    }
+
+    task packageSources(type: Jar) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+
+    }
+    
+    artifacts.archives packageSources
+    
+    repositories {
+        jcenter()
+
+        mavenLocal()
+    
+        maven { url "https://artifactory.esss.lu.se/artifactory/ext-release-local" }
+        maven { url "https://artifactory.esss.lu.se/artifactory/ext-snapshot-local" }
+        maven { url "https://artifactory.esss.lu.se/artifactory/libs-release-local" }
+        maven { url "https://artifactory.esss.lu.se/artifactory/libs-snapshot-local" }
+        maven { url "http://repo.maven.apache.org/maven2" }
+        maven { url "file:/Users/juanfestebanmuller/git/openxal-gradle/openxal 2/apps/pta/lib" }
+    }
+
+  
+    dependencies {
+        testCompile group: 'junit', name: 'junit', version:'4.12'
+        testCompile group: 'org.mockito', name: 'mockito-all', version:'1.10.19'
+    }  
+}

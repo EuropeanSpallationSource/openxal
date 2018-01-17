@@ -1,0 +1,45 @@
+
+plugins {
+    id 'com.github.johnrengelman.shadow' version '2.0.2'
+}
+apply plugin: 'com.github.johnrengelman.shadow'
+
+dependencies {
+    compile project(':core')
+
+    compile project(':plugins:jca')
+    compile project(':plugins:mysql')
+    compile project(':plugins:postgres')
+    compile project(':plugins:essrbac')
+
+    compile project(':extensions:service')
+    compile project(':extensions:widgets')
+    compile project(':extensions:bricks')
+    compile project(':extensions:application')
+    compile project(':extensions:extension.pvlogger')
+    compile project(':extensions:extension.worker')
+    compile project(':extensions:extlatgen')
+    compile project(':extensions:solver')
+    compile project(':extensions:fit')
+    compile project(':extensions:logbook')
+    compile project(':extensions:orbit')
+    compile project(':extensions:recordselector')
+    compile project(':extensions:scan')
+    compile project(':extensions:jels')
+    compile project(':extensions:tracewin')
+    compile project(':extensions:twissobserver')
+    compile project(':extensions:wirescan')
+    compile project(':extensions:zplot')
+
+    compile project(':services:pvlogger')
+    compile project(':services:worker')
+}
+
+// Disable the 'jar' task
+jar.enabled = false
+// and run shadowJar when the build task is triggered
+build.dependsOn(shadowJar)
+// change the shadowJar artifact name to default artifact name
+shadowJar {
+    classifier = null
+}
