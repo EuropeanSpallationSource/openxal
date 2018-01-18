@@ -1,19 +1,19 @@
 /*
- * TrajectoryArray.java
+ * Copyright (C) 2017 European Spallation Source ERIC
  *
- * Created by Natalia Milas on 07.07.2017
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
  *
- * Copyright (c) 2017 European Spallation Source ERIC
- * Tunavägen 20
- * Lund, Sweden
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
 package xal.app.trajectorycorrection;
@@ -54,6 +54,7 @@ public class TrajectoryArray {
         @serial internal array storage.
     */
 
+    HashMap<xal.smf.impl.BPM, Boolean> channelConnection = new HashMap();
     HashMap<xal.smf.impl.BPM, Double> Pos = new HashMap();
     HashMap<xal.smf.impl.BPM, Double> X = new HashMap();
     HashMap<xal.smf.impl.BPM, Double> Y = new HashMap();
@@ -61,17 +62,99 @@ public class TrajectoryArray {
     HashMap<xal.smf.impl.BPM, Double> YDiff = new HashMap();
     HashMap<xal.smf.impl.BPM, Double> XRef = new HashMap();
     HashMap<xal.smf.impl.BPM, Double> YRef = new HashMap();
+    HashMap<xal.smf.impl.BPM, Double> AvgAmpl = new HashMap();
 
     /** Number of BPMs in the sequence.
         @serial number of BPMs.
     */
-    protected int BPMnum = 98;
+    protected int BPMnum;
 
 
 /* ------------------------
  Constructors
 * ------------------------ */
 
+    /** Initializes BPMs in the machine and try to connect
+    @param accl   accelerator.    
+    */
+    
+    public void initBPMs(xal.smf.Accelerator accl){
+        
+        List<xal.smf.impl.BPM> BPMList = accl.getAllNodesOfType("BPM");
+        
+        //initial value for connection always false
+        BPMList.forEach(bpm->{
+            channelConnection.put(bpm,false);              
+            X.put(bpm, 0.0);
+            Y.put(bpm, 0.0);
+            XDiff.put(bpm, 0.0);
+            YDiff.put(bpm, 0.0);
+            AvgAmpl.put(bpm,0.0);
+            Pos.put(bpm, bpm.getSDisplay());
+        });
+        
+        
+        BPMList.parallelStream().forEach(bpm -> {
+             if (!(bpm.getChannel("yAvg").isConnected() && bpm.getChannel("xAvg").isConnected() && bpm.getChannel("amplitudeAvg").isConnected())){
+                channelConnection.replace(bpm, (bpm.getChannel("yAvg").connectAndWait(1.0) && bpm.getChannel("xAvg").connectAndWait(1.0) && bpm.getChannel("amplitudeAvg").connectAndWait(1.0)));              
+            } else {
+                channelConnection.replace(bpm, true);
+            }
+        });
+        
+        BPMnum = BPMList.size();
+                        
+    }
+    
+    /** Tests and initializes BPMs in the given sequence
+    @param Sequence  accelerator sequence.    
+    */
+    
+    public void connectCheckBPMs(xal.smf.AcceleratorSeq Sequence){
+        
+        List<xal.smf.impl.BPM> BPMList = Sequence.getAllNodesOfType("BPM");
+        
+        BPMList.parallelStream().forEach(bpm -> {
+            if (!(bpm.getChannel("yAvg").isConnected() && bpm.getChannel("xAvg").isConnected() && bpm.getChannel("amplitudeAvg").isConnected())){
+                channelConnection.replace(bpm, (bpm.getChannel("yAvg").connectAndWait(1.0) && bpm.getChannel("xAvg").connectAndWait(1.0) && bpm.getChannel("amplitudeAvg").connectAndWait(1.0)));              
+            } else {
+                channelConnection.replace(bpm, true);
+            }
+        });
+    }
+    
+    /** Tests and initializes BPMs in the given combo sequence
+    @param ComboSequence  accelerator sequence.    
+    */ 
+    
+    public void connectCheckBPMs(xal.smf.AcceleratorSeqCombo ComboSequence){
+        
+        List<xal.smf.impl.BPM> BPMList = ComboSequence.getAllNodesOfType("BPM");
+        
+        BPMList.parallelStream().forEach(bpm -> {
+             if (!(bpm.getChannel("yAvg").isConnected() && bpm.getChannel("xAvg").isConnected() && bpm.getChannel("amplitudeAvg").isConnected())){
+                channelConnection.replace(bpm, (bpm.getChannel("yAvg").connectAndWait(1.0) && bpm.getChannel("xAvg").connectAndWait(1.0) && bpm.getChannel("amplitudeAvg").connectAndWait(1.0)));              
+            } else {
+                channelConnection.replace(bpm, true);
+            }
+        });
+    }
+    
+    /** Tests and initializes BPMs in the given combo sequence
+    @param BPMList  List of BPMs
+    */ 
+    
+    public void connectCheckBPMs(List<xal.smf.impl.BPM> BPMList){
+                
+        BPMList.parallelStream().forEach(bpm -> {
+             if (!(bpm.getChannel("yAvg").isConnected() && bpm.getChannel("xAvg").isConnected() && bpm.getChannel("amplitudeAvg").isConnected())){
+                channelConnection.replace(bpm, (bpm.getChannel("yAvg").connectAndWait(1.0) && bpm.getChannel("xAvg").connectAndWait(1.0) && bpm.getChannel("amplitudeAvg").connectAndWait(1.0)));              
+            } else {
+                channelConnection.replace(bpm, true);
+            }
+        });
+    }
+    
     /** Reads the trajectory for a given sequence and accelerator (xml file)
     @param accl   accelerator.
     @param Seq    name of the sequence.
@@ -81,16 +164,16 @@ public class TrajectoryArray {
 
     public void readTrajectory(xal.smf.Accelerator accl, String Seq) throws ConnectionException, GetException{
 
-        List<xal.smf.impl.BPM> BPM = new ArrayList<>();
+        List<xal.smf.impl.BPM> BPMList = new ArrayList<>();
         String Sequence = accl.getSequences().toString();
         String ComboSequence = accl.getComboSequences().toString();
 
         if(Sequence.contains(Seq)){
-            BPM = accl.getSequence(Seq).getAllNodesOfType("BPM");
+            BPMList = accl.getSequence(Seq).getAllNodesOfType("BPM");
         } else if (ComboSequence.contains(Seq)){
-            BPM = accl.getComboSequence(Seq).getAllNodesOfType("BPM");
+            BPMList = accl.getComboSequence(Seq).getAllNodesOfType("BPM");
         } else {
-            BPM = accl.getAllNodesOfType("BPM");
+            BPMList = accl.getAllNodesOfType("BPM");
         }
 
         X.clear();
@@ -98,21 +181,31 @@ public class TrajectoryArray {
         XDiff.clear();
         YDiff.clear();
         Pos.clear();
+        AvgAmpl.clear();
 
-        for(xal.smf.impl.BPM item:BPM){
+        for(xal.smf.impl.BPM item:BPMList){
             Pos.put(item, item.getSDisplay());
-            X.put(item, item.getXAvg());
-            Y.put(item, item.getYAvg());
-            if(XRef.containsKey(item)){
-                XDiff.put(item, X.get(item) - XRef.get(item));
-                YDiff.put(item, Y.get(item) - YRef.get(item));
+            if (channelConnection.get(item)){  
+                X.put(item, item.getXAvg());
+                Y.put(item, item.getYAvg());
+                AvgAmpl.put(item,item.getAmpAvg());
+                if(XRef.containsKey(item)){
+                    XDiff.put(item, X.get(item) - XRef.get(item));
+                    YDiff.put(item, Y.get(item) - YRef.get(item));
+                } else {
+                    XDiff.put(item,X.get(item));
+                    YDiff.put(item,Y.get(item));
+                }
             } else {
-                XDiff.put(item,X.get(item));
-                YDiff.put(item,Y.get(item));
+                X.put(item, 0.0);
+                Y.put(item, 0.0);
+                XDiff.put(item, 0.0);
+                YDiff.put(item, 0.0);
+                AvgAmpl.put(item,0.0);
             }
         }
 
-        BPMnum = BPM.size();
+        BPMnum = BPMList.size();
 
     }
 
@@ -121,18 +214,81 @@ public class TrajectoryArray {
     @throws xal.ca.ConnectionException
     @throws xal.ca.GetException
     */
-    public void readBPMListTrajectory(List<xal.smf.impl.BPM> BPMList) throws ConnectionException, GetException{
+    public void readTrajectory(List<xal.smf.impl.BPM> BPMList) throws ConnectionException, GetException{
 
         X.clear();
         Y.clear();
         XDiff.clear();
         YDiff.clear();
         Pos.clear();
+        AvgAmpl.clear();
 
         for(xal.smf.impl.BPM item:BPMList){
             Pos.put(item, item.getSDisplay());
-            X.put(item, item.getXAvg());
-            Y.put(item, item.getYAvg());
+            if (channelConnection.get(item)){                
+                X.put(item, item.getXAvg());
+                Y.put(item, item.getYAvg());
+                AvgAmpl.put(item,item.getAmpAvg());
+                if(XRef.containsKey(item)){
+                    XDiff.put(item, X.get(item) - XRef.get(item));
+                    YDiff.put(item, Y.get(item) - YRef.get(item));
+                } else {
+                    XDiff.put(item,X.get(item));
+                    YDiff.put(item,Y.get(item));
+                }
+            } else {
+                X.put(item, 0.0);
+                Y.put(item, 0.0);
+                XDiff.put(item, 0.0);
+                YDiff.put(item, 0.0);
+                AvgAmpl.put(item,0.0);
+            }
+        }
+
+        BPMnum = BPMList.size();
+
+    }
+    
+    /** Load a trajectory from URL
+    @param accl     accelerator.
+    @param filename name of the file (full path).
+    @throws java.io.FileNotFoundException
+    */
+
+    public void loadTrajectory(List<xal.smf.impl.BPM> BPMList, URL filename) throws FileNotFoundException, IOException{
+        DataAdaptor readAdp = null;
+        String[] bpmNames;
+        double[] posS;
+        double[] posX;
+        double[] posY;
+        List<String> listBPMname = new ArrayList<>();
+
+        X.clear();
+        Y.clear();
+        XDiff.clear();
+        YDiff.clear();
+        Pos.clear();
+        AvgAmpl.clear();
+
+        readAdp = XmlDataAdaptor.adaptorForUrl(filename, false);
+        DataAdaptor header = readAdp.childAdaptor("ReferenceTrajectory");
+        DataAdaptor trajData =  header.childAdaptor("TrajectoryData");
+        DataAdaptor BPMData =  trajData.childAdaptor("BPM");
+        bpmNames = BPMData.stringValue("data").split(",");
+        for(int k=0; k<bpmNames.length ; k+=1){
+            listBPMname.add(bpmNames[k]);
+        }
+        DataAdaptor PosData =  trajData.childAdaptor("Position");
+        posS = PosData.doubleArray("data");
+        DataAdaptor XData =  trajData.childAdaptor("Horizontal");
+        posX = XData.doubleArray("data");
+        DataAdaptor YData =  trajData.childAdaptor("Vertical");
+        posY = YData.doubleArray("data");
+        
+        BPMList.forEach(item -> {            
+            Pos.put(item,posS[listBPMname.indexOf(item.toString())]);
+            X.put(item,posX[listBPMname.indexOf(item.toString())]);
+            Y.put(item,posY[listBPMname.indexOf(item.toString())]); 
             if(XRef.containsKey(item)){
                 XDiff.put(item, X.get(item) - XRef.get(item));
                 YDiff.put(item, Y.get(item) - YRef.get(item));
@@ -140,10 +296,61 @@ public class TrajectoryArray {
                 XDiff.put(item,X.get(item));
                 YDiff.put(item,Y.get(item));
             }
+            AvgAmpl.put(item,0.0);
+        });
+        
+    }
+    
+    /** Loads a trajectory from file
+    @param accl     accelerator.
+    @param filename name of the file (full path).
+    @throws java.io.FileNotFoundException
+    */
+
+    public void loadTrajectory(List<xal.smf.impl.BPM> BPMList, File filename) throws FileNotFoundException, IOException{
+        DataAdaptor readAdp = null;
+        String[] bpmNames;
+        double[] posS;
+        double[] posX;
+        double[] posY;
+        List<String> listBPMname = new ArrayList<>();
+
+        X.clear();
+        Y.clear();
+        XDiff.clear();
+        YDiff.clear();
+        Pos.clear();
+        AvgAmpl.clear();
+
+        readAdp = XmlDataAdaptor.adaptorForFile(filename, false);
+        DataAdaptor header = readAdp.childAdaptor("ReferenceTrajectory");
+        DataAdaptor trajData =  header.childAdaptor("TrajectoryData");
+        DataAdaptor BPMData =  trajData.childAdaptor("BPM");
+        bpmNames = BPMData.stringValue("data").split(",");
+        for(int k=0; k<bpmNames.length ; k+=1){
+            listBPMname.add(bpmNames[k]);
         }
-
-        BPMnum = BPMList.size();
-
+        DataAdaptor PosData =  trajData.childAdaptor("Position");
+        posS = PosData.doubleArray("data");
+        DataAdaptor XData =  trajData.childAdaptor("Horizontal");
+        posX = XData.doubleArray("data");
+        DataAdaptor YData =  trajData.childAdaptor("Vertical");
+        posY = YData.doubleArray("data");
+        
+        BPMList.forEach(item -> {            
+            Pos.put(item,posS[listBPMname.indexOf(item.toString())]);
+            X.put(item,posX[listBPMname.indexOf(item.toString())]);
+            Y.put(item,posY[listBPMname.indexOf(item.toString())]); 
+            if(XRef.containsKey(item)){
+                XDiff.put(item, X.get(item) - XRef.get(item));
+                YDiff.put(item, Y.get(item) - YRef.get(item));
+            } else {
+                XDiff.put(item,X.get(item));
+                YDiff.put(item,Y.get(item));
+            }
+            AvgAmpl.put(item,0.0);    
+        });
+        
     }
 
     /** Set the current trajectory at a given sequence as reference
@@ -161,19 +368,24 @@ public class TrajectoryArray {
         YRef.clear();
 
         for(xal.smf.impl.BPM item:BPM){
-            XRef.put(item, item.getXAvg());
-            YRef.put(item, item.getYAvg());
+            if (channelConnection.get(item)){   
+                XRef.put(item, item.getXAvg());
+                YRef.put(item, item.getYAvg());
+            } else {
+                XRef.put(item, 0.0);
+                YRef.put(item, 0.0);
+            }
         }
 
     }   
 
-    /** Reads the reference trajectory from file
+    /** Reads the reference trajectory from URL
     @param accl     accelerator.
     @param filename name of the file (full path).
     @throws java.io.FileNotFoundException
     */
 
-    public void readReferenceTrajectoryFromURL(xal.smf.Accelerator accl, URL filename) throws FileNotFoundException, IOException{
+    public void readReferenceTrajectory(xal.smf.Accelerator accl, URL filename) throws FileNotFoundException, IOException{
         DataAdaptor readAdp = null;
         String[] bpmNames;
         double[] posS;
@@ -206,6 +418,46 @@ public class TrajectoryArray {
         });
         
     }
+    
+    /** Reads the reference trajectory from file
+    @param accl     accelerator.
+    @param filename name of the file (full path).
+    @throws java.io.FileNotFoundException
+    */
+
+    public void readReferenceTrajectory(xal.smf.Accelerator accl, File filename) throws FileNotFoundException, IOException{
+        DataAdaptor readAdp = null;
+        String[] bpmNames;
+        double[] posS;
+        double[] posX;
+        double[] posY;
+        List<String> listBPMname = new ArrayList<>();
+        List<xal.smf.impl.BPM> BPMList = accl.getAllNodesOfType("BPM");
+
+        XRef.clear();
+        YRef.clear();
+
+        readAdp = XmlDataAdaptor.adaptorForFile(filename, false);
+        DataAdaptor header = readAdp.childAdaptor("ReferenceTrajectory");
+        DataAdaptor trajData =  header.childAdaptor("TrajectoryData");
+        DataAdaptor BPMData =  trajData.childAdaptor("BPM");
+        bpmNames = BPMData.stringValue("data").split(",");
+        for(int k=0; k<bpmNames.length ; k+=1){
+            listBPMname.add(bpmNames[k]);
+        }
+        DataAdaptor PosData =  trajData.childAdaptor("Position");
+        posS = PosData.doubleArray("data");
+        DataAdaptor XData =  trajData.childAdaptor("Horizontal");
+        posX = XData.doubleArray("data");
+        DataAdaptor YData =  trajData.childAdaptor("Vertical");
+        posY = YData.doubleArray("data");
+        
+        BPMList.forEach(item -> {            
+            XRef.put(item,posX[listBPMname.indexOf(item.toString())]);
+            YRef.put(item,posY[listBPMname.indexOf(item.toString())]);           
+        });
+        
+    }
 
     /** Saves the trajectory to file (saves the full machine)
     @param accl   accelerator.
@@ -213,7 +465,7 @@ public class TrajectoryArray {
     @throws xal.ca.ConnectionException
     */
 
-    public void saveTrajectory(xal.smf.Accelerator accl, File filename) throws ConnectionException{
+    public void saveTrajectory(xal.smf.Accelerator accl, File filename) throws ConnectionException, GetException{
         //Saves the data into the file and set as reference
         XmlDataAdaptor da = XmlDataAdaptor.newEmptyDocumentAdaptor();
         DataAdaptor trajectoryAdaptor =  da.createChild("ReferenceTrajectory");
@@ -231,14 +483,17 @@ public class TrajectoryArray {
         
         for(xal.smf.impl.BPM bpm: BPMList){            
             posS[k] = bpm.getSDisplay();
-            try {
+            if (channelConnection.get(bpm)){
                 posX[k] = bpm.getXAvg();
                 posY[k] = bpm.getYAvg();
                 XRef.put(bpm,posX[k]);
                 YRef.put(bpm,posY[k]);
-            } catch (GetException ex) {
-                Logger.getLogger(TrajectoryArray.class.getName()).log(Level.SEVERE, null, ex);
-            }            
+            } else {
+                posX[k] = 0.0;
+                posY[k] = 0.0;
+                XRef.put(bpm,0.0);
+                YRef.put(bpm,0.0);
+            }         
             k++;
             if(k<BPMList.size()){
                 BPMnames+=bpm.toString()+",";
@@ -264,11 +519,19 @@ public class TrajectoryArray {
         }
                        
     }
+    
+     /** Saves the trajectory to file (saves the full machine)
+    @param accl   accelerator.
+    @param filename name of the file (full path).
+    @throws xal.ca.ConnectionException
+    */
 
-    public void saveTrajectory(xal.smf.Accelerator accl, URL filename, DataAdaptor da) throws ConnectionException{
-        //Saves the data into the file and set as reference        
+    public void saveTrajectory(xal.smf.Accelerator accl, URL filename) throws ConnectionException, GetException{
+        //Saves the data into the file and set as reference
+        XmlDataAdaptor da = XmlDataAdaptor.newEmptyDocumentAdaptor();
         DataAdaptor trajectoryAdaptor =  da.createChild("ReferenceTrajectory");
-        trajectoryAdaptor.setValue("title", filename);
+        trajectoryAdaptor.setValue("title", filename.getPath());
+        trajectoryAdaptor.setValue("date", new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date()));
         List<xal.smf.impl.BPM> BPMList = accl.getAllNodesOfType("BPM"); 
         String BPMnames = "";
         double[] posS = new double[BPMList.size()];
@@ -281,14 +544,113 @@ public class TrajectoryArray {
         
         for(xal.smf.impl.BPM bpm: BPMList){            
             posS[k] = bpm.getSDisplay();
-            try {
+            if (channelConnection.get(bpm)){
                 posX[k] = bpm.getXAvg();
                 posY[k] = bpm.getYAvg();
                 XRef.put(bpm,posX[k]);
                 YRef.put(bpm,posY[k]);
-            } catch (GetException ex) {
-                Logger.getLogger(TrajectoryArray.class.getName()).log(Level.SEVERE, null, ex);
-            }            
+            } else {
+                posX[k] = 0.0;
+                posY[k] = 0.0;
+                XRef.put(bpm,0.0);
+                YRef.put(bpm,0.0);
+            }                
+            k++;
+            if(k<BPMList.size()){
+                BPMnames+=bpm.toString()+",";
+            } else {
+                BPMnames+=bpm.toString();        
+            }
+        }        
+        
+        DataAdaptor trajData =  trajectoryAdaptor.createChild("TrajectoryData");
+        DataAdaptor BPMData =  trajData.createChild("BPM");
+        BPMData.setValue("data", BPMnames);
+        DataAdaptor PosData =  trajData.createChild("Position");
+        PosData.setValue("data", posS);
+        DataAdaptor XData =  trajData.createChild("Horizontal");
+        XData.setValue("data", posX);
+        DataAdaptor YData =  trajData.createChild("Vertical");
+        YData.setValue("data", posY);
+        
+        da.writeToUrl(filename);
+                       
+    }
+
+    public void saveTrajectory(xal.smf.Accelerator accl, URL filename, DataAdaptor da) throws ConnectionException, GetException{
+        //Saves the data into the file and set as reference        
+        DataAdaptor trajectoryAdaptor =  da.createChild("ReferenceTrajectory");
+        trajectoryAdaptor.setValue("title", filename.getFile());
+        List<xal.smf.impl.BPM> BPMList = accl.getAllNodesOfType("BPM"); 
+        String BPMnames = "";
+        double[] posS = new double[BPMList.size()];
+        double[] posX = new double[BPMList.size()];
+        double[] posY = new double[BPMList.size()];
+        int k = 0;
+        
+        XRef.clear();
+        YRef.clear();
+        
+        for(xal.smf.impl.BPM bpm: BPMList){            
+            posS[k] = bpm.getSDisplay();
+            if (channelConnection.get(bpm)){
+                posX[k] = bpm.getXAvg();
+                posY[k] = bpm.getYAvg();
+                XRef.put(bpm,posX[k]);
+                YRef.put(bpm,posY[k]);
+            } else {
+                posX[k] = 0.0;
+                posY[k] = 0.0;
+                XRef.put(bpm,0.0);
+                YRef.put(bpm,0.0);
+            }                 
+            k++;
+            if(k<BPMList.size()){
+                BPMnames+=bpm.toString()+",";
+            } else {
+                BPMnames+=bpm.toString();        
+            }
+        }        
+        
+        DataAdaptor trajData =  trajectoryAdaptor.createChild("TrajectoryData");
+        DataAdaptor BPMData =  trajData.createChild("BPM");
+        BPMData.setValue("data", BPMnames);
+        DataAdaptor PosData =  trajData.createChild("Position");
+        PosData.setValue("data", posS);
+        DataAdaptor XData =  trajData.createChild("Horizontal");
+        XData.setValue("data", posX);
+        DataAdaptor YData =  trajData.createChild("Vertical");
+        YData.setValue("data", posY);                
+                       
+    }    
+    
+    public void saveTrajectory(xal.smf.Accelerator accl, File filename, DataAdaptor da) throws ConnectionException, GetException{
+        //Saves the data into the file and set as reference        
+        DataAdaptor trajectoryAdaptor =  da.createChild("ReferenceTrajectory");
+        trajectoryAdaptor.setValue("title", filename.getAbsolutePath());
+        List<xal.smf.impl.BPM> BPMList = accl.getAllNodesOfType("BPM"); 
+        String BPMnames = "";
+        double[] posS = new double[BPMList.size()];
+        double[] posX = new double[BPMList.size()];
+        double[] posY = new double[BPMList.size()];
+        int k = 0;
+        
+        XRef.clear();
+        YRef.clear();
+        
+        for(xal.smf.impl.BPM bpm: BPMList){            
+            posS[k] = bpm.getSDisplay();
+            if (channelConnection.get(bpm)){
+                posX[k] = bpm.getXAvg();
+                posY[k] = bpm.getYAvg();
+                XRef.put(bpm,posX[k]);
+                YRef.put(bpm,posY[k]);
+            } else {
+                posX[k] = 0.0;
+                posY[k] = 0.0;
+                XRef.put(bpm,0.0);
+                YRef.put(bpm,0.0);
+            }                
             k++;
             if(k<BPMList.size()){
                 BPMnames+=bpm.toString()+",";

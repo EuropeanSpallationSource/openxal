@@ -32,10 +32,13 @@
                   <Menu fx:id="menuSequence" mnemonicParsing="false" text="Sequence" />
                </items>
           </Menu>
-            <Menu mnemonicParsing="false" text="Reference Trajectory">
+            <Menu mnemonicParsing="false" text="Trajectory">
               <items>
-                <MenuItem mnemonicParsing="false" onAction="#handleTrajectoryMenuLoad" text="Load trajectory" />
-                  <MenuItem mnemonicParsing="false" onAction="#handleTrajectoryMenuSave" text="Save current trajectory" />
+                  <MenuItem mnemonicParsing="false" onAction="#handleMenuLiveTrajectory" text="Display Live Trajectory" />
+                  <MenuItem mnemonicParsing="false" onAction="#handleMenuTrajectoryfromFile" text="Display Trajectory from File" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
+                <MenuItem mnemonicParsing="false" onAction="#handleTrajectoryMenuLoad" text="Load Reference Trajectory" />
+                  <MenuItem mnemonicParsing="false" onAction="#handleTrajectoryMenuSave" text="Save Current Trajectory" />
               </items>
             </Menu>
           <Menu mnemonicParsing="false" text="Help">
@@ -88,6 +91,7 @@
                         <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" prefHeight="17.0" prefWidth="81.0" text="Cursor:" />
                      </children>
                   </GridPane>
+                  <Label fx:id="labelTrajectoryStatus" layoutX="20.0" layoutY="5.0" AnchorPane.leftAnchor="5.0" />
                </children>
             </AnchorPane>
             <AnchorPane fx:id="anchorPaneChart" prefHeight="680.0" prefWidth="1130.0">

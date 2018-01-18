@@ -58,6 +58,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
@@ -181,6 +182,23 @@ public class FXMLController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
+        //initialize and connect BPMs
+        DisplayTraj.initBPMs(accl);
+        
+        //initalize horizontal correctors 
+        accl.getAllNodesOfType("DCH").parallelStream().forEach(hc -> {
+            if (!(hc.getChannel("fieldSet").isConnected())){
+                hc.getChannel("fieldSet").connectAndWait(1.0);
+            } 
+        });
+        
+        //initalize vertical correctors 
+        accl.getAllNodesOfType("DCV").parallelStream().forEach(hv -> {
+            if (!(hv.getChannel("fieldSet").isConnected())){
+                hv.getChannel("fieldSet").connectAndWait(1.0);
+            } 
+        });
+        
         //Set elements not visible at start
         labelProgressCorrection.setVisible(false);
         progressBarCorrection.setVisible(false);
@@ -268,6 +286,7 @@ public class FXMLController implements Initializable {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setText(null);
+                    setGraphic(null);
                 } else {
                     setText(item.getblockName());
                     if (item.isOkSVD() && item.isOk1to1()) {
@@ -284,7 +303,7 @@ public class FXMLController implements Initializable {
             int maxBPM = 0;
             BPMList.addAll(accl.getAllNodesOfType("BPM"));
             try {
-                DisplayTraj.readBPMListTrajectory(BPMList);
+                DisplayTraj.readTrajectory(BPMList);
             } catch (ConnectionException | GetException ex) {
                 Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -349,7 +368,7 @@ public class FXMLController implements Initializable {
         });
 
         //Load reference and zero trajectories
-        refTrajData.add(this.getClass().getResource("/xal/app/trajectorycorrection/resources/ZeroTrajectory.xml"));
+        refTrajData.add(this.getClass().getResource("/zerotrajectory/ZeroTrajectory.xml"));
 
         //populate the ComboBox element
         comboBoxRefTrajectory.setItems(refTrajData);
@@ -357,7 +376,7 @@ public class FXMLController implements Initializable {
 
         //read new reference trajectory file
         try {
-            DisplayTraj.readReferenceTrajectoryFromURL(accl, comboBoxRefTrajectory.getSelectionModel().getSelectedItem());
+            DisplayTraj.readReferenceTrajectory(accl, comboBoxRefTrajectory.getSelectionModel().getSelectedItem());
         } catch (IOException ex) {
             Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -377,21 +396,23 @@ public class FXMLController implements Initializable {
 
         //Show save file dialog
         File selectedFile = fileChooser.showSaveDialog(null);
-        if (selectedFile != null) {
-            if (!refTrajData.contains(selectedFile)) {
-                try {
-                    refTrajData.add(new URL(selectedFile.toString()));
-                } catch (MalformedURLException ex) {
-                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-                }
+        URL urlselectedfile = null;
+        try {
+            urlselectedfile = selectedFile.toURI().toURL();
+        } catch (MalformedURLException ex) {
+            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        if (urlselectedfile  != null) {
+            if (!refTrajData.contains(urlselectedfile)) {
+                refTrajData.add(urlselectedfile);                
             }
             try {
                 //Save Trajectory of the whole machine
-                DisplayTraj.saveTrajectory(accl, selectedFile);
-                comboBoxRefTrajectory.setValue(new URL(selectedFile.toString()));
+                DisplayTraj.saveTrajectory(accl, urlselectedfile);
+                comboBoxRefTrajectory.setValue(urlselectedfile);
             } catch (ConnectionException ex) {
                 Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (MalformedURLException ex) {
+            } catch (GetException ex) {
                 Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
@@ -411,8 +432,8 @@ public class FXMLController implements Initializable {
         File selectedFile = fileChooser.showOpenDialog(null);
         if (selectedFile != null) {
             try {
-                refTrajData.add(new URL(selectedFile.toString()));
-                comboBoxRefTrajectory.setValue(new URL(selectedFile.toString()));
+                refTrajData.add(selectedFile.toURI().toURL());
+                comboBoxRefTrajectory.setValue(selectedFile.toURI().toURL());
             } catch (MalformedURLException ex) {
                 Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -461,13 +482,13 @@ public class FXMLController implements Initializable {
             final List<xal.smf.impl.BPM> BPMList = new ArrayList<>();
             BPMList.addAll(accl.getAllNodesOfType("BPM"));
             try {
-                DisplayTraj.readBPMListTrajectory(BPMList);
+                DisplayTraj.readTrajectory(BPMList);
             } catch (ConnectionException | GetException ex) {
                 Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
             }
             //read new reference trajectory file
             try {
-                DisplayTraj.readReferenceTrajectoryFromURL(accl, comboBoxRefTrajectory.getSelectionModel().getSelectedItem());
+                DisplayTraj.readReferenceTrajectory(accl, comboBoxRefTrajectory.getSelectionModel().getSelectedItem());
             } catch (IOException ex) {
                 Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -628,7 +649,7 @@ public class FXMLController implements Initializable {
                     List<xal.smf.impl.BPM> BPMList = block.getBlockBPM();
 
                     //reads ref trajectory
-                    DisplayTraj.readReferenceTrajectoryFromURL(accl, comboBoxRefTrajectory.getSelectionModel().getSelectedItem());
+                    DisplayTraj.readReferenceTrajectory(accl, comboBoxRefTrajectory.getSelectionModel().getSelectedItem());
                     labelProgressCorrection.setText("Correcting Trajectory: " + block.getblockName());
                     //correct trajectory
                     for (xal.smf.impl.BPM item : BPMList) {
@@ -740,7 +761,7 @@ public class FXMLController implements Initializable {
                         }
                     });
                     try {
-                        DisplayTraj.readBPMListTrajectory(accl.getAllNodesOfType("BPM"));
+                        DisplayTraj.readTrajectory(accl.getAllNodesOfType("BPM"));
                     } catch (ConnectionException | GetException ex) {
                         Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -798,8 +819,8 @@ public class FXMLController implements Initializable {
             matrix = block.getCorrectionSVD();
             //reads a new trajectory
             try {
-                DisplayTraj.readBPMListTrajectory(matrix.BPM);
-                DisplayTraj.readReferenceTrajectoryFromURL(accl, comboBoxRefTrajectory.getSelectionModel().getSelectedItem());
+                DisplayTraj.readTrajectory(matrix.BPM);
+                DisplayTraj.readReferenceTrajectory(accl, comboBoxRefTrajectory.getSelectionModel().getSelectedItem());
             } catch (ConnectionException | GetException ex) {
                 Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -871,9 +892,9 @@ public class FXMLController implements Initializable {
             labelProgressCorrection.setText("Correcting Trajectory: " + block.getblockName());
             //reads a new trajectory
             try {
-                DisplayTraj.readBPMListTrajectory(matrix.BPM);
+                DisplayTraj.readTrajectory(matrix.BPM);
                 try {
-                    DisplayTraj.readReferenceTrajectoryFromURL(accl, comboBoxRefTrajectory.getValue());
+                    DisplayTraj.readReferenceTrajectory(accl, comboBoxRefTrajectory.getValue());
                 } catch (IOException ex) {
                     Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -1160,7 +1181,7 @@ public class FXMLController implements Initializable {
     private void handleChooseRefTrajectory(ActionEvent event) {
         //read new reference trajectory file
         try {
-            DisplayTraj.readReferenceTrajectoryFromURL(accl, comboBoxRefTrajectory.getSelectionModel().getSelectedItem());
+            DisplayTraj.readReferenceTrajectory(accl, comboBoxRefTrajectory.getSelectionModel().getSelectedItem());
         } catch (IOException ex) {
             Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -1178,7 +1199,7 @@ public class FXMLController implements Initializable {
         final int maxBPM = 0;
         BPMList.addAll(accl.getAllNodesOfType("BPM"));
         try {
-            DisplayTraj.readBPMListTrajectory(BPMList);
+            DisplayTraj.readTrajectory(BPMList);
         } catch (ConnectionException | GetException ex) {
             Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -1252,9 +1273,16 @@ public class FXMLController implements Initializable {
                 protected Void call() throws Exception {
 
                     int progress = 0;
-                    blockName.getCorrectionSVD().calculateTRMHorizontal(Dk);
+                    RadioMenuItem modelSync = (RadioMenuItem) groupModel.getSelectedToggle();
+                    String synchronizationMode = null;
+                    if (modelSync != null){
+                        synchronizationMode = modelSync.getText().substring(6);
+                    } else {
+                        synchronizationMode = "DESIGN";
+                    }
+                    blockName.getCorrectionSVD().calculateTRMHorizontal(Dk,synchronizationMode);
                     updateProgress(1, 2);
-                    blockName.getCorrectionSVD().calculateTRMVertical(Dk);
+                    blockName.getCorrectionSVD().calculateTRMVertical(Dk,synchronizationMode);
                     blockName.setOkSVD(true);
                     progress++;
                     updateProgress(2, 2);
@@ -1265,7 +1293,7 @@ public class FXMLController implements Initializable {
                     updateProgress(0, 2);
                     textAreaSVD.setText("RESPONSE CALCULATION: Finished!");
                     try {
-                        DisplayTraj.readBPMListTrajectory(accl.getAllNodesOfType("BPM"));
+                        DisplayTraj.readTrajectory(accl.getAllNodesOfType("BPM"));
                     } catch (ConnectionException | GetException ex) {
                         Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -1336,9 +1364,16 @@ public class FXMLController implements Initializable {
 
                 int progress = 0;
                 int total = CorrectionElementsSelected.get(blockIndex).getCorrection1to1().getHC().size() + CorrectionElementsSelected.get(blockIndex).getCorrection1to1().getVC().size();
+                RadioMenuItem modelSync = (RadioMenuItem) groupModel.getSelectedToggle();
+                String synchronizationMode = null;
+                if (modelSync != null){
+                    synchronizationMode = modelSync.getText().substring(6);
+                } else {
+                    synchronizationMode = "DESIGN";
+                }
                 //make horizontal calibration for each BPM
                 for (xal.smf.impl.BPM bpm : CorrectionElementsSelected.get(blockIndex).getCorrection1to1().getHC().keySet()) {
-                    CorrectionElementsSelected.get(blockIndex).getCorrection1to1().simulHCalibration(bpm, Dk);
+                    CorrectionElementsSelected.get(blockIndex).getCorrection1to1().simulHCalibration(bpm, Dk, synchronizationMode);
                     //update progressbar
                     progress++;
                     updateProgress(progress, total);
@@ -1346,7 +1381,7 @@ public class FXMLController implements Initializable {
 
                 //make vertical calibration for each BPM
                 for (xal.smf.impl.BPM bpm : CorrectionElementsSelected.get(blockIndex).getCorrection1to1().getVC().keySet()) {
-                    CorrectionElementsSelected.get(blockIndex).getCorrection1to1().simulVCalibration(bpm, Dk);
+                    CorrectionElementsSelected.get(blockIndex).getCorrection1to1().simulVCalibration(bpm, Dk, synchronizationMode);
                     //update progressbar
                     progress++;
                     updateProgress(progress, total);
@@ -1640,6 +1675,8 @@ public class FXMLController implements Initializable {
                         DisplayTraj.saveTrajectory(accl, file, refTrajectoryAdaptor);
                     } catch (ConnectionException ex) {
                         Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (GetException ex) {
+                        Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
             });
@@ -1685,9 +1722,23 @@ public class FXMLController implements Initializable {
                 trajectoryAdaptor.childAdaptors().forEach(trajFileAdaptor -> {
                     try {
                         refTrajData.add(new URL(trajFileAdaptor.stringValue("title")));
-                    } catch (MalformedURLException ex) {
-                        Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                     }
+                    catch (MalformedURLException ex){
+                        File file = new File(trajFileAdaptor.stringValue("title"));
+                        if (file.exists()) {
+                            try {
+                                refTrajData.add(file.toURI().toURL());
+                            } catch (MalformedURLException ex1) {
+                                Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex1);
+                            }
+                        }
+                        else {
+                            Alert alert = new Alert(AlertType.INFORMATION);
+                            alert.setTitle("Error Dialog");
+                            alert.setHeaderText(null);
+                            alert.setContentText("Reference trajectory file doesn't exist.");
+                        }
+                    }                    
                 });
                 XmlDataAdaptor blockAdaptor = (XmlDataAdaptor) headerAdaptor.childAdaptor("CorrectionBlockData");
                 blockAdaptor.childAdaptors().forEach(chilblockAdaptor -> {

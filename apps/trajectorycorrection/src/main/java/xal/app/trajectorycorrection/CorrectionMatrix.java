@@ -320,7 +320,7 @@ public class CorrectionMatrix {
         
     }
     
-    public void simulHCalibration(xal.smf.impl.BPM bpmKey, double Dk) throws ConnectionException, GetException, PutException, InterruptedException{
+    public void simulHCalibration(xal.smf.impl.BPM bpmKey, double Dk, String synchronizationMode) throws ConnectionException, GetException, PutException, InterruptedException{
        /* make +Dk and -Dk increments in the corrector strength and 
         * simulate the offset and slope
         */
@@ -350,7 +350,7 @@ public class CorrectionMatrix {
             xal.smf.AcceleratorSeq Sequence = bpmKey.getPrimaryAncestor();
             simulService = new RunSimulationService(Sequence);
         }
-        simulService.setSynchronizationMode("DESIGN");
+        simulService.setSynchronizationMode(synchronizationMode);
         
         HC.keySet().forEach(bpm -> BPMList.add(bpm));
         BPMList.sort((bpm1,bpm2) -> Double.compare(bpm1.getSDisplay(), bpm2.getSDisplay()));
@@ -392,7 +392,7 @@ public class CorrectionMatrix {
         HorParam.put(bpmKey, fitresult); 
     }
    
-    public void simulVCalibration(xal.smf.impl.BPM bpmKey, double Dk) throws ConnectionException, GetException, PutException, InterruptedException{
+    public void simulVCalibration(xal.smf.impl.BPM bpmKey, double Dk, String synchronizationMode) throws ConnectionException, GetException, PutException, InterruptedException{
        /* make +Dk and -Dk increments in the corrector strength and 
         * simulate the offset and slope
         */
@@ -421,7 +421,7 @@ public class CorrectionMatrix {
             xal.smf.AcceleratorSeq Sequence = bpmKey.getPrimaryAncestor();
             simulService = new RunSimulationService(Sequence);
         }
-        simulService.setSynchronizationMode("DESIGN");
+        simulService.setSynchronizationMode(synchronizationMode);
         
         VC.keySet().forEach(bpm -> BPMList.add(bpm));
         BPMList.sort((bpm1,bpm2) -> Double.compare(bpm1.getSDisplay(),bpm2.getSDisplay()));

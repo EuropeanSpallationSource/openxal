@@ -174,6 +174,9 @@ public class CorrectionElementSelectionController implements Initializable {
             for(xal.smf.impl.BPM item: BPM){
                 row++;
                 checkBoxItem = new CheckBox(item.toString());
+                if(!(item.getChannel("xAvg").isConnected() && item.getChannel("yAvg").isConnected())){
+                    checkBoxItem.setDisable(true);
+                }
                 GridPane.setConstraints(checkBoxItem,col,row);
                 gridPaneBPM.add(checkBoxItem,col,row);
             }
@@ -181,6 +184,9 @@ public class CorrectionElementSelectionController implements Initializable {
             for(xal.smf.impl.HDipoleCorr item: HC){
                 row++;
                 checkBoxItem = new CheckBox(item.toString());
+                if(!item.getChannel("fieldSet").isConnected()){
+                    checkBoxItem.setDisable(true);
+                }
                 GridPane.setConstraints(checkBoxItem,col,row);
                 gridPaneHC.add(checkBoxItem,col,row);
             }
@@ -188,6 +194,9 @@ public class CorrectionElementSelectionController implements Initializable {
             for(xal.smf.impl.VDipoleCorr item: VC){
                 row++;
                 checkBoxItem = new CheckBox(item.toString());
+                if(!item.getChannel("fieldSet").isConnected()){
+                    checkBoxItem.setDisable(true);
+                }
                 GridPane.setConstraints(checkBoxItem,col,row);
                 gridPaneVC.add(checkBoxItem,col,row);
             }

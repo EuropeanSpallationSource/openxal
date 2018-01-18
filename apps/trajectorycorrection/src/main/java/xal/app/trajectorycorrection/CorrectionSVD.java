@@ -226,7 +226,7 @@ public class CorrectionSVD {
             corrector_auxval = HC_val + Dk;
             hcorr.setField(corrector_auxval);
             Thread.sleep(2000);
-            BPMval.readBPMListTrajectory(BPM);
+            BPMval.readTrajectory(BPM);
             hcorr.setField(HC_val);
             Thread.sleep(2000);
             for(xal.smf.impl.BPM bpm: BPM){
@@ -239,7 +239,7 @@ public class CorrectionSVD {
     }
     
      //calculate Horizontal Trajectory Response Matrix 
-    public void calculateTRMHorizontal(Double Dk) throws ConnectionException, GetException, PutException, InterruptedException{
+    public void calculateTRMHorizontal(Double Dk, String synchronizationMode) throws ConnectionException, GetException, PutException, InterruptedException{
         
         double HC_val = 0.0;
         double corrector_auxval = 0.0;
@@ -276,7 +276,7 @@ public class CorrectionSVD {
             xal.smf.AcceleratorSeq Sequence = BPM.get(0).getPrimaryAncestor();
             simulService = new RunSimulationService(Sequence);
         }
-        simulService.setSynchronizationMode("DESIGN");  
+        simulService.setSynchronizationMode(synchronizationMode);  
         
         
         try {
@@ -326,7 +326,7 @@ public class CorrectionSVD {
             corrector_auxval = VC_val + Dk;
             vcorr.setField(corrector_auxval);
             Thread.sleep(2000);
-            BPMval.readBPMListTrajectory(BPM);
+            BPMval.readTrajectory(BPM);
             vcorr.setField(VC_val);
             Thread.sleep(2000);
             for(xal.smf.impl.BPM bpm: BPM){
@@ -339,7 +339,7 @@ public class CorrectionSVD {
     }
     
     //calcualte Vertical Trajectory Response Matrix
-    public void calculateTRMVertical( Double Dk) throws ConnectionException, GetException, PutException, InterruptedException{
+    public void calculateTRMVertical( Double Dk, String synchronizationMode) throws ConnectionException, GetException, PutException, InterruptedException{
         
         double VC_val = 0.0;
         double corrector_auxval = 0.0;
@@ -376,7 +376,7 @@ public class CorrectionSVD {
             xal.smf.AcceleratorSeq Sequence = BPM.get(0).getPrimaryAncestor();
             simulService = new RunSimulationService(Sequence);
         }
-        simulService.setSynchronizationMode("DESIGN");  
+        simulService.setSynchronizationMode(synchronizationMode);  
         
         try {
             //get initial position
