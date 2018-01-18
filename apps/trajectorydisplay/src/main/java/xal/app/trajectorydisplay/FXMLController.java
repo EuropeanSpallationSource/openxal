@@ -489,7 +489,11 @@ public class FXMLController implements Initializable {
                         File selectedFile = new File(labelTrajectoryStatus.getText().substring(13));
                         if(selectedFile != null){
                             try {
-                                DisplayTraj.loadTrajectory(accl.getSequence(getSeqName.getText()).getAllNodesOfType("BPM"),selectedFile);
+                                if(accl.getSequence(getSeqName.getText())!= null){
+                                    DisplayTraj.loadTrajectory(accl.getSequence(getSeqName.getText()).getAllNodesOfType("BPM"),selectedFile);
+                                } else if (accl.getComboSequence(getSeqName.getText())!= null){
+                                    DisplayTraj.loadTrajectory(accl.getComboSequence(getSeqName.getText()).getAllNodesOfType("BPM"),selectedFile);
+                                }                                
                             } catch (IOException ex) {
                                 Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                             }
@@ -835,7 +839,11 @@ public class FXMLController implements Initializable {
             labelTrajectoryStatus.setText("Trajectory : " + selectedFile.getPath());            
             if (getSeqName!= null){
                 try {
-                    DisplayTraj.loadTrajectory(accl.getSequence(getSeqName.getText()).getAllNodesOfType("BPM"),selectedFile);
+                    if(accl.getSequence(getSeqName.getText())!= null){
+                        DisplayTraj.loadTrajectory(accl.getSequence(getSeqName.getText()).getAllNodesOfType("BPM"),selectedFile);
+                    } else if (accl.getComboSequence(getSeqName.getText())!= null){
+                        DisplayTraj.loadTrajectory(accl.getComboSequence(getSeqName.getText()).getAllNodesOfType("BPM"),selectedFile);
+                    }   
                 } catch (IOException ex) {
                     Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                 }
