@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.RadioMenuItem?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="mainAnchor1" prefHeight="503.0" prefWidth="930.0" stylesheets="@../styles/Styles.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xal.app.trajectorycorrection.FXMLController">
+    <children>
+     <MenuBar prefHeight="29.0" prefWidth="930.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+       <menus>
+         <Menu mnemonicParsing="false" text="File">
+           <items>
+                  <MenuItem mnemonicParsing="false" onAction="#handleSaveAppState" text="Save App State" />
+                  <MenuItem mnemonicParsing="false" onAction="#handleLoadAppState" text="Load App State" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
+             <MenuItem fx:id="exitMenu" mnemonicParsing="false" onAction="#handleMenuExit" text="Exit" />
+           </items>
+         </Menu>
+            <Menu mnemonicParsing="false" text="Accelerator">
+              <items>
+                <MenuItem mnemonicParsing="false" onAction="#handleLoadDefaultAccelerator" text="Load Default Accelerator" />
+                  <MenuItem mnemonicParsing="false" onAction="#handleLoadAccelerator" text="Load Accelerator ..." />
+              </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="Mode">
+               <items>
+                  <RadioMenuItem mnemonicParsing="false" text="Model LIVE">
+                     <toggleGroup>
+                        <ToggleGroup fx:id="groupModel" />
+                     </toggleGroup>
+                  </RadioMenuItem>
+                  <RadioMenuItem mnemonicParsing="false" selected="true" text="Model DESIGN" toggleGroup="$groupModel" />
+               </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="Reference Trajectory">
+              <items>
+                <MenuItem fx:id="menuItemLoad" mnemonicParsing="false" onAction="#handleTrajectoryMenuLoad" text="Load Trajectory" />
+                  <MenuItem fx:id="menuItemSave" mnemonicParsing="false" onAction="#handleTrajectoryMenuSave" text="Save Trajectory" />
+                  <MenuItem fx:id="menuItemDelete" mnemonicParsing="false" onAction="#handleTrajectoryMenuDelete" text="Delete Trajectory" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
+                  <MenuItem fx:id="menuItemPlot" mnemonicParsing="false" onAction="#handleTrajectoryShow" text="Plot Trajectory" />
+              </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="Trajectory Display">
+              <items>
+                <MenuItem mnemonicParsing="false" onAction="#handleOpenTrajDisplayApp" text="Open Trajectory Display App." />
+              </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="Expert Pannel">
+              <items>
+                  <MenuItem mnemonicParsing="false" onAction="#handleSetTrajectoryLimit" text="Set Trajectory Limit" />
+                  <MenuItem mnemonicParsing="false" onAction="#handleSetSteererLimit" text="Set Steerer Limit" />
+              </items>
+            </Menu>
+         <Menu mnemonicParsing="false" text="Help">
+           <items>
+             <MenuItem mnemonicParsing="false" onAction="#openHelpURL" text="About" />
+           </items>
+         </Menu>
+       </menus>
+     </MenuBar>
+      <VBox layoutY="-44.0" prefHeight="438.0" prefWidth="930.0" AnchorPane.bottomAnchor="37.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="29.0">
+        <children>
+            <AnchorPane prefHeight="50.0" prefWidth="930.0">
+               <children>
+                  <Label layoutY="2.0" text="Reference Trajectory:" AnchorPane.bottomAnchor="6.0" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="2.0">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Label>
+                  <ComboBox fx:id="comboBoxRefTrajectory" layoutX="214.0" layoutY="1.0" onAction="#handleChooseRefTrajectory" prefHeight="27.0" prefWidth="490.0" styleClass="combo-box" AnchorPane.bottomAnchor="6.0" AnchorPane.leftAnchor="230.0" AnchorPane.topAnchor="6.0" />
+                  <Button fx:id="buttonPlotRefTraj" layoutX="719.0" layoutY="1.0" mnemonicParsing="false" onAction="#handleTrajectoryShow" prefHeight="27.0" prefWidth="144.0" text="Plot Ref. Trajectory" AnchorPane.bottomAnchor="6.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="6.0" />
+               </children>
+            </AnchorPane>
+           <Separator prefWidth="200.0" />
+            <HBox prefHeight="407.0" prefWidth="930.0" VBox.vgrow="ALWAYS">
+               <children>
+                  <AnchorPane prefHeight="405.0" prefWidth="409.0">
+                     <children>
+                        <ListView fx:id="listViewBlockDefinition" layoutY="64.0" onContextMenuRequested="#handleContextMenu" prefHeight="338.0" prefWidth="180.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="6.0" AnchorPane.topAnchor="62.0" />
+                        <ListView fx:id="listViewBlockSelection" layoutX="202.0" layoutY="131.0" prefHeight="200.0" prefWidth="180.0" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="6.0" AnchorPane.topAnchor="62.0" />
+                        <Button layoutX="189.0" layoutY="90.0" mnemonicParsing="false" onAction="#handleSelectedBlock" text="&gt;" AnchorPane.leftAnchor="189.0" AnchorPane.rightAnchor="192.0" AnchorPane.topAnchor="90.0" />
+                        <Button layoutX="189.0" layoutY="127.0" mnemonicParsing="false" onAction="#handleRemoveSelectedBlock" text="&lt;" AnchorPane.leftAnchor="189.0" AnchorPane.rightAnchor="192.0" AnchorPane.topAnchor="127.0" />
+                        <Label layoutX="126.0" layoutY="4.0" text="Correction Blocks">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="47.0" layoutY="39.0" text="Defined Blocks:" />
+                        <Label layoutX="281.0" layoutY="39.0" text="Selected:" />
+                     </children>
+                  </AnchorPane>
+                  <Separator orientation="VERTICAL" prefHeight="405.0" prefWidth="3.0" />
+                  <VBox prefHeight="200.0" prefWidth="518.0">
+                     <children>
+                       <TabPane prefHeight="240.0" prefWidth="517.0" tabClosingPolicy="UNAVAILABLE">
+                         <tabs>
+                           <Tab fx:id="tabSVD" text="SVD correction">
+                             <content>
+                               <AnchorPane minHeight="241.0" minWidth="252.0" prefHeight="240.0" prefWidth="517.0">
+                                      <children>
+                                         <GridPane layoutX="14.0" layoutY="22.0" prefHeight="180.0" prefWidth="200.0" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="14.0">
+                                            <columnConstraints>
+                                               <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                            </columnConstraints>
+                                            <rowConstraints>
+                                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                            </rowConstraints>
+                                            <children>
+                                               <Button fx:id="buttonMeasureResponseSVD" disable="true" mnemonicParsing="false" onAction="#handleMeasureResponseSVD" prefWidth="180.0" text="Measure Response Matrix" />
+                                               <Button fx:id="buttonSVDfromModel" mnemonicParsing="false" onAction="#handleMeasureResponseSVDfromModel" prefWidth="180.0" text="Matrix from Model" GridPane.rowIndex="1" />
+                                               <Button fx:id="buttonCalcCorrectSVD" disable="true" mnemonicParsing="false" onAction="#handleCalculateCorrectionSVD" prefWidth="180.0" text="Prepare Correction" GridPane.rowIndex="3" />
+                                                <Button fx:id="buttonVerifyMatrixSVD" disable="true" mnemonicParsing="false" onAction="#handleVerifySVDResponse" prefWidth="180.0" text="Verify Response Matrix" GridPane.rowIndex="2" />
+                                                <GridPane prefHeight="36.0" prefWidth="178.0" GridPane.rowIndex="4">
+                                                  <columnConstraints>
+                                                    <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="146.0" minWidth="10.0" prefWidth="146.0" />
+                                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="95.0" minWidth="10.0" prefWidth="54.0" />
+                                                  </columnConstraints>
+                                                  <rowConstraints>
+                                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                  </rowConstraints>
+                                                   <children>
+                                                     <Label contentDisplay="RIGHT" prefHeight="17.0" prefWidth="116.0" text="singular value cut:" />
+                                                     <TextField fx:id="textFieldSingularValCut" onAction="#handleSetSVDCutValue" prefHeight="27.0" prefWidth="67.0" text="0" GridPane.columnIndex="1" />
+                                                   </children>
+                                                </GridPane>
+                                            </children>
+                                         </GridPane>
+                                          <TextArea fx:id="textAreaSVD" editable="false" layoutX="14.0" layoutY="59.0" prefHeight="180.0" prefWidth="273.0" AnchorPane.leftAnchor="230.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0" />
+                                      </children>
+                                    </AnchorPane>
+                             </content>
+                           </Tab>
+                           <Tab fx:id="tab1to1" text="1-to-1 correction">
+                             <content>
+                               <AnchorPane minHeight="240.0" minWidth="250.0" prefHeight="240.0" prefWidth="525.0">
+                                      <children>
+                                         <GridPane layoutX="14.0" layoutY="22.0" prefHeight="180.0" prefWidth="200.0" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="14.0">
+                                           <columnConstraints>
+                                             <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                           </columnConstraints>
+                                           <rowConstraints>
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                           </rowConstraints>
+                                            <children>
+                                               <Button fx:id="buttonMeasureResponse1to1" mnemonicParsing="false" onAction="#handleMeasureResponse1to1" prefWidth="180.0" text="Measure Response" GridPane.rowIndex="1" />
+                                               <Button fx:id="button1to1fromModel" mnemonicParsing="false" onAction="#handleMeasureResponse1to1fromModel" prefWidth="180.0" text="Response from Model" GridPane.rowIndex="2" />
+                                                <Button fx:id="buttonVerifyResponse1to1" disable="true" mnemonicParsing="false" onAction="#handleVerify1to1Response" prefWidth="180.0" text="Verify Response" GridPane.rowIndex="3" />
+                                                <Button fx:id="buttonCheckPair" mnemonicParsing="false" onAction="#handleCheckPairs" prefHeight="27.0" prefWidth="180.0" text="Check/Modify Pairs" />
+                                            </children>
+                                         </GridPane>
+                                          <TextArea fx:id="textArea1to1" editable="false" layoutX="422.0" layoutY="167.0" prefHeight="180.0" prefWidth="489.0" AnchorPane.leftAnchor="230.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0" />
+                                      </children>
+                                   </AnchorPane>
+                             </content>
+                           </Tab>
+                         </tabs>
+                       </TabPane>
+                        <Separator prefWidth="500.0" />
+                        <AnchorPane prefHeight="154.0" prefWidth="517.0">
+                           <children>
+                             <GridPane layoutX="249.0" layoutY="34.0" AnchorPane.leftAnchor="300.0" AnchorPane.topAnchor="30.0">
+                               <columnConstraints>
+                                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="136.0" minWidth="10.0" prefWidth="133.0" />
+                                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="96.0" minWidth="10.0" prefWidth="67.0" />
+                               </columnConstraints>
+                               <rowConstraints>
+                                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                               </rowConstraints>
+                                <children>
+                                   <Label text="Correction factor (%)" />
+                                   <TextField fx:id="textFieldCorrectionFactor" promptText="Percentage of correction to be applied." text="100" GridPane.columnIndex="1" />
+                                </children>
+                             </GridPane>
+                             <Button fx:id="buttonCorrectTrajectory" layoutX="403.0" layoutY="114.0" mnemonicParsing="false" onAction="#handleCorrectTrajectory" prefHeight="30.0" prefWidth="100.0" text="CORRECT!" AnchorPane.bottomAnchor="15.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="110.0" />
+                              <Label layoutX="4.0" layoutY="5.0" text="Apply correction">
+                                 <font>
+                                    <Font size="18.0" />
+                                 </font>
+                              </Label>
+                              <RadioButton fx:id="radiobuttonCorrectSVD" layoutX="22.0" layoutY="60.0" mnemonicParsing="false" selected="true" text="SVD" AnchorPane.leftAnchor="22.0" AnchorPane.topAnchor="60.0">
+                                 <toggleGroup>
+                                    <ToggleGroup fx:id="groupCorrection" />
+                                 </toggleGroup>
+                              </RadioButton>
+                              <RadioButton fx:id="radiobuttonCorrect1to1" layoutX="22.0" layoutY="86.0" mnemonicParsing="false" text="1-to-1" toggleGroup="$groupCorrection" AnchorPane.leftAnchor="22.0" AnchorPane.topAnchor="85.0" />
+                             <Label layoutX="14.0" layoutY="37.0" text="Correction method" AnchorPane.leftAnchor="22.0" AnchorPane.topAnchor="35.0" />
+                             <RadioButton fx:id="radioButtonHorizontal" layoutX="169.0" layoutY="60.0" mnemonicParsing="false" selected="true" text="Horizontal" AnchorPane.leftAnchor="165.0" AnchorPane.topAnchor="60.0">
+                                 <toggleGroup>
+                                    <ToggleGroup fx:id="groupCorrectionPlane" />
+                                 </toggleGroup>
+                              </RadioButton>
+                             <RadioButton fx:id="radioButtonVertical" layoutX="169.0" layoutY="77.0" mnemonicParsing="false" text="Vertical" toggleGroup="$groupCorrectionPlane" AnchorPane.leftAnchor="165.0" AnchorPane.topAnchor="85.0" />
+                             <RadioButton fx:id="radioButtonHorVer" layoutX="164.0" layoutY="105.0" mnemonicParsing="false" text="Hor. + Vert." toggleGroup="$groupCorrectionPlane" AnchorPane.leftAnchor="165.0" AnchorPane.topAnchor="110.0" />
+                              <Button fx:id="buttonAbort" layoutX="296.0" layoutY="114.0" mnemonicParsing="false" onAction="#handleAbortRequest" prefHeight="30.0" prefWidth="100.0" text="Abort!" AnchorPane.bottomAnchor="15.0" AnchorPane.rightAnchor="120.0" AnchorPane.topAnchor="110.0" />
+                              <Label layoutX="168.0" layoutY="40.0" text="Correction plane" AnchorPane.leftAnchor="165.0" AnchorPane.topAnchor="35.0" />
+                           </children>
+                        </AnchorPane>
+                     </children>
+                  </VBox>
+               </children>
+            </HBox>
+        </children>
+    </VBox>
+      <Separator layoutY="468.0" prefWidth="930.0" AnchorPane.bottomAnchor="32.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+      <ToolBar fx:id="bottomBar" layoutY="470.0" prefHeight="18.0" prefWidth="930.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+         <items>
+            <ProgressBar fx:id="progressBarCorrection" prefHeight="20.0" prefWidth="257.0" progress="0.0" visible="false" />
+            <Label fx:id="labelProgressCorrection" contentDisplay="CENTER" prefHeight="17.0" prefWidth="308.0" text="Aquiring BPM response" visible="false" />
+            <Label fx:id="labelExpert" alignment="CENTER_RIGHT" prefHeight="17.0" prefWidth="338.0" text="Label" textAlignment="RIGHT" visible="false">
+               <font>
+                  <Font name="System Bold" size="13.0" />
+               </font>
+            </Label>
+         </items>
+      </ToolBar>
+    </children>
+</AnchorPane>
