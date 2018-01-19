@@ -11,6 +11,7 @@
     <artifactId>openxal.extensions.jelog</artifactId>
     <version>1.1.1-SNAPSHOT</version>
 
+    <packaging>jar</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
@@ -18,22 +19,18 @@
     <organization>
         <name>European Spallation Source ERIC</name>
     </organization>
-    
-    <build>
-        <sourceDirectory>src</sourceDirectory>
-        <resources>
-            <resource>
-                <directory>resources</directory>
-                <targetPath>resources</targetPath>
-            </resource>
-        </resources>
-    </build>
          
     <dependencies>
         <dependency>
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
             <version>1.10.3</version>
+        </dependency>
+        <dependency>
+            <groupId>se.esss</groupId>
+            <artifactId>jelog</artifactId>
+            <version>1.0</version>
+            <type>jar</type>
         </dependency>
     </dependencies>
 </project>
