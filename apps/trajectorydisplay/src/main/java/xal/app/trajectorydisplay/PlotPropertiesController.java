@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 European Spallation Source ERIC
+ * Copyright (C) 2018 European Spallation Source ERIC
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -15,7 +15,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-
 package xal.app.trajectorydisplay;
 
 import javafx.beans.property.BooleanProperty;
@@ -29,11 +28,10 @@ import org.jfree.chart.plot.XYPlot;
 
 /**
  * Secondary Controller that creates a window to modify the axis of a plot
- * @author nataliamilas
- * 06-2017
+ *
+ * @author nataliamilas 06-2017
  */
-
-public class PlotPropertiesController{
+public class PlotPropertiesController {
 
     private final BooleanProperty loggedIn = new SimpleBooleanProperty();
     private double yMax;
@@ -74,7 +72,7 @@ public class PlotPropertiesController{
     private TextField textPMax;
 
     public BooleanProperty loggedInProperty() {
-        return loggedIn ;
+        return loggedIn;
     }
 
     public final boolean isLoggedIn() {
@@ -182,7 +180,7 @@ public class PlotPropertiesController{
     }
 
     @FXML
-    public void handleButtonOK(){
+    public void handleButtonOK() {
         this.xMax = Double.parseDouble(textXMax.getText());
         this.xMin = Double.parseDouble(textXMin.getText());
         this.xAutoscale = checkBoxX.isSelected();
@@ -200,11 +198,11 @@ public class PlotPropertiesController{
     }
 
     @FXML
-    public void handleButtonCancel(){
+    public void handleButtonCancel() {
         setLoggedIn(true);
     }
 
-    public void setPlotProperties(CombinedDomainXYPlot Combinedplot){
+    public void setPlotProperties(CombinedDomainXYPlot Combinedplot) {
 
         XYPlot plot = (XYPlot) Combinedplot.getSubplots().get(0);
         this.xAutoscale = plot.getRangeAxis().isAutoRange();
@@ -222,25 +220,25 @@ public class PlotPropertiesController{
         this.pMax = plot.getDomainAxis().getUpperBound();
         this.pMin = plot.getDomainAxis().getLowerBound();
 
-        if(this.xAutoscale){
+        if (this.xAutoscale) {
             textXMax.setDisable(true);
             textXMin.setDisable(true);
             checkBoxX.setSelected(true);
         }
 
-        if(this.yAutoscale){
+        if (this.yAutoscale) {
             textYMax.setDisable(true);
             textYMin.setDisable(true);
             checkBoxY.setSelected(true);
         }
 
-        if(this.cAutoscale){
+        if (this.cAutoscale) {
             textCMax.setDisable(true);
             textCMin.setDisable(true);
             checkBoxC.setSelected(true);
         }
 
-        if(this.pAutoscale){
+        if (this.pAutoscale) {
             textPMax.setDisable(true);
             textPMin.setDisable(true);
             checkBoxP.setSelected(true);
@@ -260,7 +258,7 @@ public class PlotPropertiesController{
     @FXML
     private void handleSetAutoscale(ActionEvent event) {
 
-        if(checkBoxX.isSelected()){
+        if (checkBoxX.isSelected()) {
             textXMax.setDisable(true);
             textXMin.setDisable(true);
             this.setxAutoscale(true);
@@ -270,7 +268,7 @@ public class PlotPropertiesController{
             this.setxAutoscale(false);
         }
 
-        if(checkBoxY.isSelected()){
+        if (checkBoxY.isSelected()) {
             textYMax.setDisable(true);
             textYMin.setDisable(true);
             this.setyAutoscale(true);
@@ -280,7 +278,7 @@ public class PlotPropertiesController{
             this.setyAutoscale(false);
         }
 
-        if(checkBoxC.isSelected()){
+        if (checkBoxC.isSelected()) {
             textCMax.setDisable(true);
             textCMin.setDisable(true);
             this.setyAutoscale(true);
@@ -290,7 +288,7 @@ public class PlotPropertiesController{
             this.setyAutoscale(false);
         }
 
-        if(checkBoxP.isSelected()){
+        if (checkBoxP.isSelected()) {
             textPMax.setDisable(true);
             textPMin.setDisable(true);
             this.setyAutoscale(true);

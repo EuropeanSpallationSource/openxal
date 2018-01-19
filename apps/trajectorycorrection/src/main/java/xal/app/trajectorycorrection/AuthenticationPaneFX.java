@@ -1,7 +1,19 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (C) 2018 European Spallation Source ERIC
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 package xal.app.trajectorycorrection;
 
@@ -26,11 +38,11 @@ import xal.rbac.Credentials;
  *
  * @author nataliamilas
  */
-public class AuthenticationPaneFX extends Dialog{
-    
+public class AuthenticationPaneFX extends Dialog {
+
     private TextField tfUsername;
     private PasswordField pfPassword;
-           
+
     /**
      * Constructs a new authentication pane.
      */
@@ -40,12 +52,11 @@ public class AuthenticationPaneFX extends Dialog{
 
     /**
      * Creates a dialog that contains this pane.
-     * 
-     * @param parent
-     *            the parent of this dialog
+     *
+     * @param parent the parent of this dialog
      * @return the dialog
-     * @throws HeadlessException
-     *             if <code>GraphicsEnvironment.isHeadless</code> returns <code>true</code>
+     * @throws HeadlessException if <code>GraphicsEnvironment.isHeadless</code>
+     * returns <code>true</code>
      */
     public Dialog createDialog(Component parent) throws HeadlessException {
         Dialog<Pair<String, String>> dialog = new Dialog<>();
@@ -57,11 +68,11 @@ public class AuthenticationPaneFX extends Dialog{
         // Set the button types.
         ButtonType loginButtonType = new ButtonType("Login", ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(loginButtonType, ButtonType.CANCEL);
-        
+
         // Enable/Disable login button depending on whether a username was entered.
         Node loginButton = dialog.getDialogPane().lookupButton(loginButtonType);
         loginButton.setDisable(true);
-        
+
         tfUsername = new TextField();
         tfUsername.setPromptText("Username");
         pfPassword = new PasswordField();
@@ -76,16 +87,15 @@ public class AuthenticationPaneFX extends Dialog{
         grid.add(new Label("Username:"), 0, 0);
         grid.add(tfUsername, 1, 0);
         grid.add(new Label("Password:"), 0, 1);
-        grid.add(pfPassword, 1, 1);  
+        grid.add(pfPassword, 1, 1);
 
-        
         dialog.getDialogPane().setContent(grid);
-        
+
         // Do some validation (using the Java 8 lambda syntax).
         tfUsername.textProperty().addListener((observable, oldValue, newValue) -> {
             loginButton.setDisable(newValue.trim().isEmpty());
         });
-        
+
         // Request focus on the username field by default.
         Platform.runLater(() -> tfUsername.requestFocus());
 
@@ -96,28 +106,28 @@ public class AuthenticationPaneFX extends Dialog{
             }
             return null;
         });
-               
+
         return dialog;
     }
 
     /**
      * Returns the credentials if the OK button was pressed or null otherwise.
-     * 
+     *
      * @return the credentials
      */
     public static Credentials getCredentials() {
         AuthenticationPaneFX pane = new AuthenticationPaneFX();
         Dialog dlg = pane.createDialog((Component) null);
         Credentials loginResult;
-        
+
         Optional<Pair<String, String>> result = dlg.showAndWait();
-        if(result.isPresent()){
+        if (result.isPresent()) {
             loginResult = new Credentials(result.get().getKey(), result.get().getValue().toCharArray());
             return loginResult;
         } else {
             return null;
         }
-       
+
     }
-    
+
 }
