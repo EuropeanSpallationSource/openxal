@@ -28,6 +28,8 @@ import se.esss.jelog.Attachment;
 import se.esss.jelog.PostEntryController;
 
 /**
+ * Class to submit new entries using a dialog. Useful for logging data together
+ * with some files or images attached directly from an Open XAL application.
  *
  * @author Juan F. Esteban Müller <juanf.estebanmuller@esss.se>
  */
