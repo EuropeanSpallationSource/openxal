@@ -31,7 +31,6 @@
         <module>tracewin</module>
         <module>../services/pvlogger/extension</module>
         <module>../services/worker/extension</module>
-        <module>zplot</module>
     </modules>
 
     <dependencies>
