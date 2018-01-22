@@ -114,6 +114,10 @@
         </dependency>
         <dependency>
             <groupId>org.xal</groupId>
+            <artifactId>openxal.extensions.jelog</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.xal</groupId>
             <artifactId>openxal.extensions.tracewin</artifactId>
         </dependency>
     </dependencies>
