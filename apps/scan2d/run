@@ -1,2 +1,0 @@
-#!/bin/sh
-mvn exec:java -Dexec.mainClass=xal.app.scan2d.MainScan2D

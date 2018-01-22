@@ -24,7 +24,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="546.0" prefWidth="1096.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="openxal.apps.scanner.FXMLController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="546.0" prefWidth="1096.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xal.app.scanner.FXMLController">
    <children>
       <SplitPane dividerPositions="0.5" orientation="VERTICAL" prefHeight="533.0" prefWidth="1096.0" VBox.vgrow="ALWAYS">
         <items>
@@ -105,14 +105,14 @@
                                     </Button>
                                     <TableView fx:id="scanTable" editable="true" layoutY="57.0" prefHeight="196.0" prefWidth="428.0">
                                       <columns>
-                                        <TableColumn fx:id="scanColumnPV" editable="false" prefWidth="360.0" text="Scannable channels" />
-                                        <TableColumn fx:id="scanColumnSelect" prefWidth="67.0" sortable="false" text="Scan" />
+                                        <TableColumn fx:id="scanColumnPV" editable="false" prefWidth="370.0" text="Scannable channels" />
+                                        <TableColumn fx:id="scanColumnSelect" prefWidth="56.0" sortable="false" text="Scan" />
                                       </columns>
                                     </TableView>
                                     <TableView fx:id="readTable" editable="true" layoutY="253.0" prefHeight="394.0" prefWidth="428.0">
                                        <columns>
                                           <TableColumn fx:id="readColumnPV" editable="false" prefWidth="370.0" text="Readable channels" />
-                                          <TableColumn fx:id="readColumnSelect" prefWidth="57.0" sortable="false" text="Read" />
+                                          <TableColumn fx:id="readColumnSelect" prefWidth="56.0" sortable="false" text="Read" />
                                        </columns>
                                     </TableView>
                                  </children>

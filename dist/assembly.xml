@@ -1,0 +1,46 @@
+<assembly>
+    <id>dist</id>
+    <!-- Define formats for distribution files -->
+    <formats>
+        <format>tar.gz</format>
+        <format>dir</format>
+    </formats>
+    
+    <includeBaseDirectory>false</includeBaseDirectory>
+    
+    <!-- Files to include -->
+    <fileSets>
+        <!-- Open XAL library jar -->
+        <fileSet>
+            <directory>${basedir}/../library/target</directory>
+            <outputDirectory>lib</outputDirectory>
+            <includes>
+                <include>openxal.library-${project.version}.jar</include>
+            </includes>
+        </fileSet>
+        <!-- Third party libraries jar -->
+        <fileSet>
+            <directory>${basedir}/../third-party-libs/target</directory>
+            <outputDirectory>lib</outputDirectory>
+            <includes>
+                <include>openxal.third-party-libs-${project.version}.jar</include>
+            </includes>
+        </fileSet>
+        <!-- Open XAL optics files -->
+        <fileSet>
+            <directory>../site/optics</directory>
+            <outputDirectory>optics</outputDirectory>
+            <includes>
+                <include>**</include>
+            </includes>
+        </fileSet>
+        <!-- Open XAL applications -->
+        <fileSet>
+            <directory>${basedir}/../apps/target/dist/</directory>
+            <outputDirectory>apps</outputDirectory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+        </fileSet>
+    </fileSets>
+</assembly>
