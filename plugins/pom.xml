@@ -5,11 +5,10 @@
     <parent>
         <groupId>org.xal</groupId>
         <artifactId>openxal</artifactId>
-        <version>1.0.10-SNAPSHOT</version>
+        <version>1.1.2-SNAPSHOT</version>
     </parent>
 
     <artifactId>openxal.plugins</artifactId>
-    <version>1.0.10-SNAPSHOT</version>
 
     <packaging>pom</packaging>
 
@@ -18,8 +17,7 @@
         <module>mysql</module>
         <module>postgres</module>
         <module>pvaccess</module>
-        <module>ess-rbac</module>
-        <module>dummy-rbac</module>
+        <module>essrbac</module>
     </modules>
 
     <dependencies>

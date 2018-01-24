@@ -5,31 +5,12 @@
     <parent>
         <groupId>org.xal</groupId>
         <artifactId>openxal.extensions</artifactId>
-        <version>1.0.10-SNAPSHOT</version>
+        <version>1.1.2-SNAPSHOT</version>
     </parent>
 
-    <groupId>se.lu.esss.ics.jels</groupId>
-    <artifactId>jels</artifactId>
-    <version>1.0.10-SNAPSHOT</version>
+    <artifactId>openxal.extensions.jels</artifactId>
+    
     <packaging>jar</packaging>
-
-    <name>ESS JElS</name>
-    <url>http://europeanspallationsource.se/</url>
-
-    <build>
-        <sourceDirectory>src</sourceDirectory>
-        <testSourceDirectory>test/java</testSourceDirectory>
-        <resources>
-            <resource>
-                <directory>resources</directory>
-            </resource>
-        </resources>
-        <testResources>
-            <testResource>
-                <directory>test/resources</directory>
-            </testResource>
-        </testResources>
-    </build>
 
     <dependencies>
         <dependency>

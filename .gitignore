@@ -13,3 +13,17 @@ bin/
 log/
 target/
 dependency-reduced-pom.xml
+
+# Vim
+.*.swp
+.*.un~
+*.iml
+.*.swo
+
+# Netbeans
+nb-configuration.xml
+nbactions.xml
+*.versionsBackup
+
+# IntelliJ
+.idea

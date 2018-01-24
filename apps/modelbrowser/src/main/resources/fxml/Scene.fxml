@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Accordion?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckMenuItem?>
+<?import javafx.scene.control.ContextMenu?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.RadioMenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.control.TreeView?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox id="DocumentWindow" styleClass="theme-presets" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xal.app.modelbrowser.FXMLController">
+   <children>
+      <SplitPane dividerPositions="0.5" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" orientation="VERTICAL" prefHeight="800.0" prefWidth="1024.0" VBox.vgrow="ALWAYS">
+         <items>
+            <GridPane hgap="12.0" SplitPane.resizableWithParent="false">
+              <columnConstraints>
+                <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0" />
+              </columnConstraints>
+              <rowConstraints>
+                  <RowConstraints fillHeight="false" maxHeight="1.7976931348623157E308" vgrow="NEVER" />
+                <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <padding>
+                  <Insets bottom="12.0" left="12.0" right="12.0" top="12.0" />
+               </padding>
+               <children>
+                  <HBox id="HBox" alignment="CENTER_LEFT" styleClass="panel-header">
+                     <children>
+                        <Label text="Model" HBox.hgrow="NEVER">
+                           <padding>
+                              <Insets right="6.0" />
+                           </padding>
+                        </Label>
+                        <TextField fx:id="modelSearchField" onKeyPressed="#modelDetectClearSearchField" HBox.hgrow="ALWAYS" />
+                        <StackPane fx:id="modelSearchIcon" onMouseClicked="#modelClearSearchField" HBox.hgrow="NEVER" />
+                        <MenuButton fx:id="modelSearchMenuButton" contentDisplay="RIGHT" mnemonicParsing="false" styleClass="theme-presets" text=" " HBox.hgrow="NEVER">
+                          <items>
+                              <RadioMenuItem fx:id="modelSortAlphabetically" mnemonicParsing="false" onAction="#modelSortChanged" text="Sort Alphabetically">
+                                 <toggleGroup>
+                                    <ToggleGroup fx:id="modelSortGroup" />
+                                 </toggleGroup>
+                              </RadioMenuItem>
+                              <RadioMenuItem mnemonicParsing="false" onAction="#modelSortChanged" selected="true" text="Sort by Position" toggleGroup="$modelSortGroup" />
+                              <SeparatorMenuItem mnemonicParsing="false" />
+                              <MenuItem mnemonicParsing="false" onAction="#modelSelectAllTypes" text="Select All Types" />
+                              <MenuItem mnemonicParsing="false" onAction="#modelUnselectAllTypes" text="Unselect All Types" />
+                              <SeparatorMenuItem mnemonicParsing="false" />
+                          </items>
+                           <graphic>
+                              <Region prefHeight="10.0" prefWidth="10.0" styleClass="cog-shape" />
+                           </graphic>
+                        </MenuButton>
+                     </children>
+                  </HBox>
+                  <StackPane GridPane.rowIndex="1">
+                     <children>
+                        <TreeView fx:id="modelTree" showRoot="false" />
+                     </children>
+                     <styleClass>
+                        <String fx:value="SBKIT-hierarchy-panel" />
+                        <String fx:value="theme-presets" />
+                     </styleClass>
+                  </StackPane>
+                  <HBox id="HBox" alignment="CENTER_LEFT" styleClass="panel-header" GridPane.columnIndex="1">
+                     <children>
+                        <Label text="Inspector" HBox.hgrow="NEVER" />
+                        <TextField fx:id="inspectorSearchField" onKeyPressed="#inspectorDetectClearSearchField" HBox.hgrow="ALWAYS" />
+                        <StackPane fx:id="inspectorSearchIcon" onMouseClicked="#inspectorClearSearchField" HBox.hgrow="NEVER" />
+                        <MenuButton contentDisplay="RIGHT" mnemonicParsing="false" styleClass="theme-presets" text=" " HBox.hgrow="NEVER">
+                           <items>
+                              <CheckMenuItem fx:id="inspectorShowTableHeaders" mnemonicParsing="false" onAction="#updateTableHeaders" text="Show Table Headers" />
+                              <SeparatorMenuItem mnemonicParsing="false" />
+                              <MenuItem mnemonicParsing="false" onAction="#reloadSelectedNode" text="Reload" />
+                           </items>
+                           <graphic>
+                              <Region prefHeight="10.0" prefWidth="10.0" styleClass="cog-shape" />
+                           </graphic>
+                        </MenuButton>
+                     </children>
+                  </HBox>
+                  <Accordion fx:id="inspectorAccordion" styleClass="SBKIT-inspector-panel" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                    <panes>
+                      <TitledPane fx:id="attributesTitledPane" contentDisplay="RIGHT" text="Attributes:">
+                           <content>
+                              <StackPane style="-fx-padding: 0;">
+                                 <children>
+                                    <TableView fx:id="attributesTable">
+                                      <columns>
+                                        <TableColumn fx:id="attributesNameColumn" editable="false" minWidth="60.0" prefWidth="190.0" sortable="false" text="Name" />
+                                        <TableColumn fx:id="attributesValueColumn" editable="false" prefWidth="135.0" sortable="false" text="Value" />
+                                      </columns>
+                                       <columnResizePolicy>
+                                          <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                                       </columnResizePolicy>
+                                    </TableView>
+                                 </children>
+                                 <styleClass>
+                                    <String fx:value="SBKIT-property-panel" />
+                                    <String fx:value="theme-presets" />
+                                 </styleClass>
+                              </StackPane>
+                           </content>
+                           <graphic>
+                              <Label contentDisplay="RIGHT" graphicTextGap="1.0" styleClass="secondary-section-title" text="&lt;no-selection&gt;" />
+                           </graphic>
+                      </TitledPane>
+                      <TitledPane fx:id="epicsTitledPane" contentDisplay="RIGHT" text="EPICS:">
+                           <content>
+                              <StackPane style="-fx-padding: 0;">
+                                 <children>
+                                    <TableView fx:id="epicsTable">
+                                       <columns>
+                                          <TableColumn fx:id="epicsNameColumn" editable="false" minWidth="60.0" prefWidth="190.0" sortable="false" text="Name" />
+                                          <TableColumn fx:id="epicsValueColumn" editable="false" prefWidth="135.0" sortable="false" text="Value" />
+                                       </columns>
+                                       <columnResizePolicy>
+                                          <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                                       </columnResizePolicy>
+                                    </TableView>
+                                 </children>
+                                 <styleClass>
+                                    <String fx:value="SBKIT-property-panel" />
+                                    <String fx:value="theme-presets" />
+                                 </styleClass>
+                              </StackPane>
+                           </content>
+                           <graphic>
+                              <Label contentDisplay="RIGHT" graphicTextGap="1.0" styleClass="secondary-section-title" text="&lt;no-selection&gt;" />
+                           </graphic>
+                      </TitledPane>
+                      <TitledPane fx:id="propertiesTitledPane" contentDisplay="RIGHT" text="Properties">
+                           <content>
+                              <StackPane style="-fx-padding: 0;">
+                                 <styleClass>
+                                    <String fx:value="SBKIT-property-panel" />
+                                    <String fx:value="theme-presets" />
+                                 </styleClass>
+                                 <children>
+                                    <TableView fx:id="propertiesTable">
+                                       <columns>
+                                          <TableColumn fx:id="propertiesNameColumn" editable="false" minWidth="60.0" prefWidth="190.0" sortable="false" text="Name" />
+                                          <TableColumn fx:id="propertiesValueColumn" editable="false" prefWidth="135.0" sortable="false" text="Value" />
+                                       </columns>
+                                       <columnResizePolicy>
+                                          <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                                       </columnResizePolicy>
+                                    </TableView>
+                                 </children>
+                              </StackPane>
+                           </content>
+                           <graphic>
+                              <Label contentDisplay="RIGHT" graphicTextGap="1.0" styleClass="secondary-section-title" text="&lt;no-selection&gt;" />
+                           </graphic>
+                      </TitledPane>
+                    </panes>
+                  </Accordion>
+                  <HBox alignment="CENTER_LEFT" styleClass="panel-header" GridPane.columnIndex="2">
+                     <children>
+                        <Label minWidth="105.0" text="Simulation" HBox.hgrow="NEVER" />
+                        <StackPane HBox.hgrow="ALWAYS" />
+                        <Button fx:id="runSimulationButton" contentDisplay="RIGHT" disable="true" minHeight="16.0" minWidth="54.0" mnemonicParsing="false" onAction="#runSimulation" styleClass="menu-button" text="RUN  " HBox.hgrow="NEVER">
+                           <graphic>
+                              <Region styleClass="run-shape" />
+                           </graphic>
+                           <font>
+                              <Font size="8.0" />
+                           </font>
+                           <contextMenu>
+                              <ContextMenu fx:id="runSimulationMenu">
+                                <items>
+                                    <MenuItem mnemonicParsing="false" onAction="#runSimulationLive" text="Run in LIVE Mode" />
+                                  <MenuItem mnemonicParsing="false" onAction="#runSimulationDesign" text="Run in DESIGN Mode" />
+                                </items>
+                              </ContextMenu>
+                           </contextMenu>
+                        </Button>
+                     </children>
+                     <GridPane.margin>
+                        <Insets />
+                     </GridPane.margin>
+                     <padding>
+                        <Insets right="8.0" />
+                     </padding>
+                  </HBox>
+                  <TitledPane fx:id="probeTitledPane" animated="false" collapsible="false" contentDisplay="RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="SBKIT-inspector-panel" text="Probe:" GridPane.columnIndex="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
+                     <graphic>
+                        <Label contentDisplay="RIGHT" styleClass="secondary-section-title" text="&lt;no-selection&gt;" />
+                     </graphic>
+                     <content>
+                        <StackPane style="-fx-padding: 0;">
+                           <children>
+                              <TableView fx:id="probeTable">
+                                <columns>
+                                  <TableColumn fx:id="probeNameColumn" editable="false" minWidth="60.0" prefWidth="150.0" sortable="false" text="Name" />
+                                  <TableColumn fx:id="probeValueColumn" prefWidth="135.0" sortable="false" text="Value" />
+                                </columns>
+                                 <columnResizePolicy>
+                                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                                 </columnResizePolicy>
+                              </TableView>
+                           </children>
+                           <styleClass>
+                              <String fx:value="SBKIT-property-panel" />
+                              <String fx:value="theme-presets" />
+                           </styleClass>
+                        </StackPane>
+                     </content>
+                  </TitledPane>
+               </children>
+            </GridPane>
+            <StackPane>
+               <children>
+                  <LineChart fx:id="chart" animated="false" title="&lt;no-selection&gt;">
+                    <xAxis>
+                      <NumberAxis animated="false" label="Position [m]" side="BOTTOM" tickLabelFill="WHITE" />
+                    </xAxis>
+                    <yAxis>
+                      <NumberAxis animated="false" label="σ [m]" side="LEFT" tickLabelFill="WHITE" />
+                    </yAxis>
+                  </LineChart>
+                  <ProgressIndicator fx:id="runProgress" maxHeight="50.0" maxWidth="50.0" progress="0.0" visible="false" StackPane.alignment="CENTER">
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                     <StackPane.margin>
+                        <Insets />
+                     </StackPane.margin>
+                  </ProgressIndicator>
+               </children>
+            </StackPane>
+         </items>
+      </SplitPane>
+   </children>
+   <stylesheets>
+      <URL value="@../styles/DocumentWindow.css" />
+      <URL value="@../styles/ThemeDark.css" />
+      <URL value="@../styles/Styles.css" />
+   </stylesheets>
+</VBox>
