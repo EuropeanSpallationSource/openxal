@@ -3,17 +3,19 @@ package xal.plugin.pvaccess;
 import xal.ca.ChannelTimeRecord;
 
 /**
- * ChannelTimeRecord implementation that also provides easy access to other data received 
- * from the Channel, like alarm and limits values, units, the type of value field and number
- * of elements in value array.
+ * ChannelTimeRecord implementation that also provides easy access to other data
+ * received from the Channel, like alarm and limits values, units, the type of
+ * value field and number of elements in value array.
+ *
  * @author <a href="mailto:blaz.kranjc@cosylab.com">Blaz Kranjc</a>
  */
 public class PvAccessChannelRecord extends ChannelTimeRecord {
-    
+
     private final PvAccessDataAdapter adaptor;
 
     /**
      * Constructor.
+     *
      * @param adaptor Data adaptor received from the channel.
      */
     public PvAccessChannelRecord(PvAccessDataAdapter adaptor) {
@@ -85,5 +87,5 @@ public class PvAccessChannelRecord extends ChannelTimeRecord {
     public Number getLowerWarningLimit() {
         return adaptor.getLowerWarningLimit();
     }
-    
+
 }

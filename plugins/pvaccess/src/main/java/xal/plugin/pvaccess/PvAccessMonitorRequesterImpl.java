@@ -17,16 +17,16 @@ import xal.ca.MonitorException;
 
 /**
  * MonitorRequester implementation.
- * 
+ *
  * @author <a href="mailto:blaz.kranjc@cosylab.com">Blaz Kranjc</a>
  */
 public class PvAccessMonitorRequesterImpl extends Monitor implements MonitorRequester {
-    
+
     private final String defaultField;
     private final EventSinkAdapter listener;
     private org.epics.pvdata.monitor.Monitor monitor;
     private boolean isFirst;
-    
+
     public PvAccessMonitorRequesterImpl(EventSinkAdapter listener, Channel channel, int maskEvent, String defaultField) throws ConnectionException {
         super(channel, maskEvent);
         this.listener = listener;
@@ -81,14 +81,16 @@ public class PvAccessMonitorRequesterImpl extends Monitor implements MonitorRequ
             if (alarmField != null) {
                 isAlarmChanged = changed.get(alarmField.getFieldOffset());
             }
-            
-            if (isFirst ||
-                    ((m_intMaskEvent&VALUE) > 0 && isValueChanged) ||
-                    ((m_intMaskEvent&ALARM) > 0 && isAlarmChanged)) {
-                if (isFirst) isFirst = false;
+
+            if (isFirst
+                    || ((m_intMaskEvent & VALUE) > 0 && isValueChanged)
+                    || ((m_intMaskEvent & ALARM) > 0 && isAlarmChanged)) {
+                if (isFirst) {
+                    isFirst = false;
+                }
                 listener.eventValue(pvs, getChannel());
             }
-            
+
             monitor.release(element);
         }
     }
@@ -106,16 +108,20 @@ public class PvAccessMonitorRequesterImpl extends Monitor implements MonitorRequ
      */
     @Override
     public void clear() {
-        if (monitor != null)
+        if (monitor != null) {
             unlisten(monitor);
+        }
     }
 
     /**
-     * This method is not used as the monitor should begin automatically, based on the
-     * current usage of the interface in OpenXal.
+     * This method is not used as the monitor should begin automatically, based
+     * on the current usage of the interface in OpenXal.
+     *
+     * @deprecated
      */
     @Deprecated
     @Override
-    protected void begin() throws MonitorException { }
+    protected void begin() throws MonitorException {
+    }
 
 }

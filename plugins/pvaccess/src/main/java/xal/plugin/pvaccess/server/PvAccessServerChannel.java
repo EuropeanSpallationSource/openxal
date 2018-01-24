@@ -40,71 +40,75 @@ import xal.ca.IServerChannel;
 
 /**
  * Server side channel implementation that uses pva protocol.
- * 
- * Unlike client channel implementation this implementation does not support "PV.FLD" notation for PV names.
+ *
+ * Unlike client channel implementation this implementation does not support
+ * "PV.FLD" notation for PV names.
+ *
  * @author <a href="mailto:blaz.kranjc@cosylab.com">Blaz Kranjc</a>
  */
 class PvAccessServerChannel extends Channel implements IServerChannel {
 
-    /** size for array PVs */
-   public static final int DEFAULT_ARRAY_SIZE = 1024;
+    /**
+     * size for array PVs
+     */
+    public static final int DEFAULT_ARRAY_SIZE = 1024;
 
-   private static final PVDatabase MASTER_DATABASE = PVDatabaseFactory.getMaster();
-   
-   private final PVRecord record;
-   
-   // Names of the standard fields
-   static final String VALUE_FIELD_NAME = "value";
-   static final String DISPLAY_FIELD_NAME = "display";
-   static final String CONTROL_FIELD_NAME = "control";
-   static final String ALARM_LIMIT_FIELD_NAME = "valueAlarm";
+    private static final PVDatabase MASTER_DATABASE = PVDatabaseFactory.getMaster();
 
-   private final int size;
+    private final PVRecord record;
 
-   // Keep a reference to the context manager instance to ensure that it does not get
-   // garbage collected while a channel still exists
-   @SuppressWarnings("unused") 
-   private final ContextManager contextManager = ContextManager.getInstance();
+    // Names of the standard fields
+    static final String VALUE_FIELD_NAME = "value";
+    static final String DISPLAY_FIELD_NAME = "display";
+    static final String CONTROL_FIELD_NAME = "control";
+    static final String ALARM_LIMIT_FIELD_NAME = "valueAlarm";
 
-   PvAccessServerChannel( final String signalName ) {
-       super(signalName);
+    private final int size;
 
-       if ( signalName.length() > 0 ) {
-           size = signalName.matches(".*(TBT|A)") ? DEFAULT_ARRAY_SIZE : 1;
-           record = RecordFactory.createRecord(signalName, size);
-           connectionFlag = true;
-           MASTER_DATABASE.addRecord(record);
-       } else { 
-           throw new IllegalArgumentException("Cannot create a channel with an empty name");
-       }
-   }
-   
-   private PVStructure getPvStructure() {
-       return record.getPVRecordStructure().getPVStructure();
-   }
+    // Keep a reference to the context manager instance to ensure that it does not get
+    // garbage collected while a channel still exists
+    @SuppressWarnings("unused")
+    private final ContextManager contextManager = ContextManager.getInstance();
 
-   @Override
-   public boolean connectAndWait(double timeout) {
-       // We are locally connected
-       return isConnected();
-   }
+    PvAccessServerChannel(final String signalName) {
+        super(signalName);
 
-   @Override
-   public void requestConnection() {
-       if (connectionProxy != null) {
-           connectionProxy.connectionMade(this);
-       }
-   }
+        if (signalName.length() > 0) {
+            size = signalName.matches(".*(TBT|A)") ? DEFAULT_ARRAY_SIZE : 1;
+            record = RecordFactory.createRecord(signalName, size);
+            connectionFlag = true;
+            MASTER_DATABASE.addRecord(record);
+        } else {
+            throw new IllegalArgumentException("Cannot create a channel with an empty name");
+        }
+    }
 
-   @Override
-   public void disconnect() {
-       // Nothing to do here
-   }
+    private PVStructure getPvStructure() {
+        return record.getPVRecordStructure().getPVStructure();
+    }
 
-   @Override
-   public Class<?> elementType() throws ConnectionException {
-       return new PvAccessDataAdapter(getPvStructure()).getValueType();
-   }
+    @Override
+    public boolean connectAndWait(double timeout) {
+        // We are locally connected
+        return isConnected();
+    }
+
+    @Override
+    public void requestConnection() {
+        if (connectionProxy != null) {
+            connectionProxy.connectionMade(this);
+        }
+    }
+
+    @Override
+    public void disconnect() {
+        // Nothing to do here
+    }
+
+    @Override
+    public Class<?> elementType() throws ConnectionException {
+        return new PvAccessDataAdapter(getPvStructure()).getValueType();
+    }
 
     @Override
     public int elementCount() throws ConnectionException {
@@ -129,7 +133,7 @@ class PvAccessServerChannel extends Channel implements IServerChannel {
     public String getUnits() {
         return new PvAccessDataAdapter(getPvStructure()).getUnits();
     }
-    
+
     @Override
     public void setUnits(String units) {
         PVString unitField = getPvStructure().getStructureField(DISPLAY_FIELD_NAME).getStringField("units");
@@ -142,7 +146,7 @@ class PvAccessServerChannel extends Channel implements IServerChannel {
     @Deprecated
     @Override
     public String[] getOperationLimitPVs() {
-        return constructLimitPVs( "LOPR", "HOPR" );
+        return constructLimitPVs("LOPR", "HOPR");
     }
 
     /**
@@ -151,7 +155,7 @@ class PvAccessServerChannel extends Channel implements IServerChannel {
     @Deprecated
     @Override
     public String[] getWarningLimitPVs() {
-        return constructLimitPVs( "LOW", "HIGH" );
+        return constructLimitPVs("LOW", "HIGH");
     }
 
     /**
@@ -160,7 +164,7 @@ class PvAccessServerChannel extends Channel implements IServerChannel {
     @Deprecated
     @Override
     public String[] getAlarmLimitPVs() {
-        return constructLimitPVs( "LOLO", "HIHI" );
+        return constructLimitPVs("LOLO", "HIHI");
     }
 
     /**
@@ -169,7 +173,7 @@ class PvAccessServerChannel extends Channel implements IServerChannel {
     @Deprecated
     @Override
     public String[] getDriveLimitPVs() {
-        return constructLimitPVs( "DRVL", "DRVH" );
+        return constructLimitPVs("DRVL", "DRVH");
     }
 
     private String[] constructLimitPVs(final String lowerSuffix, final String upperSuffix) {
@@ -181,7 +185,7 @@ class PvAccessServerChannel extends Channel implements IServerChannel {
 
     @Override
     public Number rawUpperDisplayLimit() throws ConnectionException, GetException {
-        return new PvAccessDataAdapter(getPvStructure() ).getUpperDisplayLimit();
+        return new PvAccessDataAdapter(getPvStructure()).getUpperDisplayLimit();
     }
 
     @Override
@@ -262,11 +266,10 @@ class PvAccessServerChannel extends Channel implements IServerChannel {
 
     @Override
     public void getRawValueTimeCallback(IEventSinkValTime listener, boolean attemptConnection)
-            throws ConnectionException, GetException {        
+            throws ConnectionException, GetException {
         listener.eventValue(getRawTimeRecord(), this);
     }
 
-    
     @Override
     public Monitor addMonitorValTime(final IEventSinkValTime listener, final int intMaskFire) throws ConnectionException,
             MonitorException {
@@ -284,7 +287,7 @@ class PvAccessServerChannel extends Channel implements IServerChannel {
             MonitorException {
         return addMonitor(EventSinkAdapter.getAdapter(listener, VALUE_FIELD_NAME), intMaskFire);
     }
-    
+
     private Monitor addMonitor(final EventSinkAdapter listener, int intMaskFire) throws ConnectionException {
         Monitor monitor = new PvAccessMonitorRequesterImpl(listener, this, intMaskFire, VALUE_FIELD_NAME);
         PVStructure structure = CreateRequest.create().createRequest("field()");
@@ -320,9 +323,9 @@ class PvAccessServerChannel extends Channel implements IServerChannel {
     @Override
     public void putRawValCallback(double newVal, PutListener listener) throws ConnectionException, PutException {
         if (size == 1) {
-            getPvStructure().getDoubleField("value").put(newVal);
+            getPvStructure().getDoubleField(VALUE_FIELD_NAME).put(newVal);
         } else {
-            PVDoubleArray valueField = (PVDoubleArray) getPvStructure().getScalarArrayField("value", ScalarType.pvDouble);
+            PVDoubleArray valueField = (PVDoubleArray) getPvStructure().getScalarArrayField(VALUE_FIELD_NAME, ScalarType.pvDouble);
             valueField.put(0, 1, new double[]{newVal}, 0);
         }
     }
@@ -336,7 +339,7 @@ class PvAccessServerChannel extends Channel implements IServerChannel {
     public void putRawValCallback(short[] newVal, PutListener listener) throws ConnectionException, PutException {
         double[] arr = new double[newVal.length];
         for (int i = 0; i < newVal.length; i++) {
-            arr[i] = (double)newVal[i];
+            arr[i] = (double) newVal[i];
         }
         putRawValCallback(arr, listener);
     }
@@ -345,7 +348,7 @@ class PvAccessServerChannel extends Channel implements IServerChannel {
     public void putRawValCallback(int[] newVal, PutListener listener) throws ConnectionException, PutException {
         double[] arr = new double[newVal.length];
         for (int i = 0; i < newVal.length; i++) {
-            arr[i] = (double)newVal[i];
+            arr[i] = (double) newVal[i];
         }
         putRawValCallback(arr, listener);
     }
@@ -354,7 +357,7 @@ class PvAccessServerChannel extends Channel implements IServerChannel {
     public void putRawValCallback(float[] newVal, PutListener listener) throws ConnectionException, PutException {
         double[] arr = new double[newVal.length];
         for (int i = 0; i < newVal.length; i++) {
-            arr[i] = (double)newVal[i];
+            arr[i] = (double) newVal[i];
         }
         putRawValCallback(arr, listener);
     }
@@ -366,13 +369,13 @@ class PvAccessServerChannel extends Channel implements IServerChannel {
         }
 
         if (size == 1) {
-            getPvStructure().getDoubleField("value").put(newVal[0]);
+            getPvStructure().getDoubleField(VALUE_FIELD_NAME).put(newVal[0]);
         } else {
-            PVDoubleArray valueField = (PVDoubleArray) getPvStructure().getScalarArrayField("value", ScalarType.pvDouble);
+            PVDoubleArray valueField = (PVDoubleArray) getPvStructure().getScalarArrayField(VALUE_FIELD_NAME, ScalarType.pvDouble);
             valueField.put(0, newVal.length, newVal, 0);
         }
     }
-    
+
     @Override
     public void setLowerAlarmLimit(Number lowerAlarmLimit) {
         getPvStructure().getStructureField(ALARM_LIMIT_FIELD_NAME).getDoubleField("lowAlarmLimit").
@@ -409,7 +412,7 @@ class PvAccessServerChannel extends Channel implements IServerChannel {
     }
 
     @Override
-    public void setUpperDispLimit(Number upperDispLimit) { 
+    public void setUpperDispLimit(Number upperDispLimit) {
         getPvStructure().getStructureField(DISPLAY_FIELD_NAME).getDoubleField("limitHigh").put((double) upperDispLimit);
     }
 
@@ -417,33 +420,34 @@ class PvAccessServerChannel extends Channel implements IServerChannel {
     public void setUpperWarningLimit(Number upperWarningLimit) {
         getPvStructure().getStructureField(ALARM_LIMIT_FIELD_NAME).getDoubleField("highWarningLimit").
                 put((double) upperWarningLimit);
-    }    
-    
+    }
+
     @Deprecated
     @Override
     public void setSettable(boolean settable) {
         // PvAccess protocol does not have RW restrictions
     }
-    
+
     private static class RecordFactory {
 
         private static final FieldCreate fieldCreate = FieldFactory.getFieldCreate();
         private static final StandardField standardField = StandardFieldFactory.getStandardField();
         private static final PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
 
-        private RecordFactory() {}
+        private RecordFactory() {
+        }
 
         private static PVStructure createArrayPvStructure(int size) {
             Structure top = fieldCreate.createFieldBuilder().
-                    addArray("value", ScalarType.pvDouble).
+                    addArray(VALUE_FIELD_NAME, ScalarType.pvDouble).
                     add("alarm", standardField.alarm()).
                     add("timeStamp", standardField.timeStamp()).
-                    add("display", standardField.display()).
-                    add("control", standardField.control()).
-                    add("valueAlarm", standardField.doubleAlarm()).
+                    add(DISPLAY_FIELD_NAME, standardField.display()).
+                    add(CONTROL_FIELD_NAME, standardField.control()).
+                    add(ALARM_LIMIT_FIELD_NAME, standardField.doubleAlarm()).
                     createStructure();
             PVStructure pvStructure = pvDataCreate.createPVStructure(top);
-            PVDoubleArray valueField = (PVDoubleArray)pvStructure.getScalarArrayField("value", ScalarType.pvDouble);
+            PVDoubleArray valueField = (PVDoubleArray) pvStructure.getScalarArrayField(VALUE_FIELD_NAME, ScalarType.pvDouble);
             valueField.setCapacity(size);
             valueField.put(0, size, new double[size], 0);
             return pvStructure;
@@ -451,12 +455,12 @@ class PvAccessServerChannel extends Channel implements IServerChannel {
 
         private static PVStructure createScalarPvStructure() {
             Structure top = fieldCreate.createFieldBuilder().
-                    add("value", ScalarType.pvDouble).
+                    add(VALUE_FIELD_NAME, ScalarType.pvDouble).
                     add("alarm", standardField.alarm()).
                     add("timeStamp", standardField.timeStamp()).
-                    add("display", standardField.display()).
-                    add("control", standardField.control()).
-                    add("valueAlarm", standardField.doubleAlarm()).
+                    add(DISPLAY_FIELD_NAME, standardField.display()).
+                    add(CONTROL_FIELD_NAME, standardField.control()).
+                    add(ALARM_LIMIT_FIELD_NAME, standardField.doubleAlarm()).
                     createStructure();
             return pvDataCreate.createPVStructure(top);
         }
@@ -465,26 +469,26 @@ class PvAccessServerChannel extends Channel implements IServerChannel {
             return size == 1 ? createScalarPvStructure() : createArrayPvStructure(size);
         }
 
-
         static PVRecord createRecord(String signalName, int size) {
             PVStructure pvStructure = createPvStructure(size);
             return new PVRecord(signalName, pvStructure);
         }
 
     }
-    
+
     /**
      * Singleton class that holds the context and destroys it on shutdown.
      */
     private static class ContextManager {
 
         private static class LazyContextHolder {
+
             private static final ContextManager INSTANCE = new ContextManager();
         }
 
         private static final ContextLocal CONTEXT = new ContextLocal();
 
-        private ContextManager () {
+        private ContextManager() {
             CONTEXT.start(false);
 
             // Create shutdown hook to close the resource

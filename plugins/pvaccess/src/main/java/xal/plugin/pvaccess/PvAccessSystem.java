@@ -3,15 +3,18 @@ package xal.plugin.pvaccess;
 import xal.ca.ChannelSystem;
 
 /**
- * A pvAccess plugin implementation of ChannelSystem.
- * As the architecture of pvAccess library is different to jca's methods of this class are not used.
- * 
+ * A pvAccess plugin implementation of ChannelSystem. As the architecture of
+ * pvAccess library is different to jca's methods of this class are not used.
+ *
  * @author <a href="mailto:blaz.kranjc@cosylab.com">Blaz Kranjc</a>
  */
 public class PvAccessSystem extends ChannelSystem {
-	
-    /** Constructor */
-    public PvAccessSystem() {}
+
+    /**
+     * Constructor
+     */
+    public PvAccessSystem() {
+    }
 
     @Deprecated
     @Override

@@ -11,15 +11,17 @@ import xal.tools.ArrayValue;
 
 /**
  * Adaptor for data received from the channel.
+ *
  * @author <a href="mailto:blaz.kranjc@cosylab.com">Blaz Kranjc</a>
  */
 public class PvAccessDataAdapter implements TimeAdaptor {
-    
+
     private final PVStructure structure;
     private final String defaultField;
-    	    
+
     /**
-     * Constructor 
+     * Constructor
+     *
      * @param pvStructure Data received from the channel
      */
     public PvAccessDataAdapter(PVStructure pvStructure) {
@@ -27,7 +29,8 @@ public class PvAccessDataAdapter implements TimeAdaptor {
     }
 
     /**
-     * Constructor 
+     * Constructor
+     *
      * @param pvStructure Data received from the channel
      * @param defaultField Default field to return as value field
      */
@@ -35,7 +38,7 @@ public class PvAccessDataAdapter implements TimeAdaptor {
         this.structure = pvStructure;
         this.defaultField = defaultField;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -44,8 +47,9 @@ public class PvAccessDataAdapter implements TimeAdaptor {
         PVStructure timestampStructure = structure.getStructureField(PvAccessChannel.TIMESTAMP_FIELD_NAME);
         if (timestampStructure != null) {
             PVLong secondsPv = timestampStructure.getLongField("secondsPastEpoch");
-            if (secondsPv != null)
+            if (secondsPv != null) {
                 return new BigDecimal(secondsPv.get());
+            }
         }
         return BigDecimal.ZERO;
     }
@@ -58,8 +62,9 @@ public class PvAccessDataAdapter implements TimeAdaptor {
         PVStructure alarmStructure = structure.getStructureField(PvAccessChannel.ALARM_FIELD_NAME);
         if (alarmStructure != null) {
             PVInt statusPv = alarmStructure.getIntField("status");
-            if (statusPv != null)
+            if (statusPv != null) {
                 return statusPv.get();
+            }
         }
         return 0;
     }
@@ -72,12 +77,13 @@ public class PvAccessDataAdapter implements TimeAdaptor {
         PVStructure alarmStructure = structure.getStructureField(PvAccessChannel.ALARM_FIELD_NAME);
         if (alarmStructure != null) {
             PVInt statusPv = alarmStructure.getIntField("severity");
-            if (statusPv != null)
+            if (statusPv != null) {
                 return statusPv.get();
+            }
         }
         return 0;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -90,16 +96,16 @@ public class PvAccessDataAdapter implements TimeAdaptor {
         // If value is not found return an empty ArrayValue
         return ArrayValue.arrayValueFromArray(new Object[]{});
     }
-    
+
     private Object getValueArray(PVField valueField) {
         Type type = valueField.getField().getType();
         switch (type) {
-        case scalar:
-            return getScalarValueArray((PVScalar) valueField);
-        case scalarArray:
-            return getScalarArrayValueArray((PVScalarArray) valueField);
-        default:
-            break; 
+            case scalar:
+                return getScalarValueArray((PVScalar) valueField);
+            case scalarArray:
+                return getScalarArrayValueArray((PVScalarArray) valueField);
+            default:
+                break;
         }
         return null;
     }
@@ -108,28 +114,28 @@ public class PvAccessDataAdapter implements TimeAdaptor {
         ScalarType type = valueField.getScalar().getScalarType();
         Convert convert = ConvertFactory.getConvert();
         switch (type) {
-        case pvBoolean:
-            return new boolean[]{((PVBoolean) valueField).get()};
-        case pvByte:
-        case pvUByte:
-            return new byte[]{convert.toByte(valueField)};
-        case pvDouble:
-            return new double[]{convert.toDouble(valueField)};
-        case pvFloat:
-            return new float[]{convert.toFloat(valueField)};
-        case pvInt:
-        case pvUInt:
-            return new int[]{convert.toInt(valueField)};
-        case pvLong:
-        case pvULong:
-            return new long[]{convert.toLong(valueField)};
-        case pvShort:
-        case pvUShort:
-            return new short[]{convert.toShort(valueField)};
-        case pvString:
-            return new String[]{convert.toString(valueField)};
-        default:
-            break;
+            case pvBoolean:
+                return new boolean[]{((PVBoolean) valueField).get()};
+            case pvByte:
+            case pvUByte:
+                return new byte[]{convert.toByte(valueField)};
+            case pvDouble:
+                return new double[]{convert.toDouble(valueField)};
+            case pvFloat:
+                return new float[]{convert.toFloat(valueField)};
+            case pvInt:
+            case pvUInt:
+                return new int[]{convert.toInt(valueField)};
+            case pvLong:
+            case pvULong:
+                return new long[]{convert.toLong(valueField)};
+            case pvShort:
+            case pvUShort:
+                return new short[]{convert.toShort(valueField)};
+            case pvString:
+                return new String[]{convert.toString(valueField)};
+            default:
+                break;
         }
         return null;
     }
@@ -140,49 +146,48 @@ public class PvAccessDataAdapter implements TimeAdaptor {
         int length = getElementCount();
         Object arr = null;
         switch (type) {
-        case pvByte:
-        case pvUByte:
-            arr = new byte[length];
-            convert.toByteArray(valueField, 0, length, (byte[])arr, 0);
-            break;
-        case pvDouble:
-            arr = new double[length];
-            convert.toDoubleArray(valueField, 0, length, (double[])arr, 0);
-            break;
-        case pvFloat:
-            arr = new float[length];
-            convert.toFloatArray(valueField, 0, length, (float[])arr, 0);
-            break;
-        case pvInt:
-        case pvUInt:
-            arr = new int[length];
-            convert.toIntArray(valueField, 0, length, (int[])arr, 0);
-            break;
-        case pvLong:
-        case pvULong:
-            arr = new long[length];
-            convert.toLongArray(valueField, 0, length, (long[])arr, 0);
-            break;
-        case pvShort:
-        case pvUShort:
-            arr = new short[length];
-            convert.toShortArray(valueField, 0, length, (short[])arr, 0);
-            break;
-        case pvString:
-            arr = new String[length];
-            convert.toStringArray(valueField, 0, length, (String[])arr, 0);
-            break;
-        case pvBoolean:
-            BooleanArrayData dataArr = new BooleanArrayData();
-            ((PVBooleanArray) valueField).get(0, length, dataArr);
-            arr = Arrays.copyOf(dataArr.data, length);
-            break;
-        default:
-            break;
+            case pvByte:
+            case pvUByte:
+                arr = new byte[length];
+                convert.toByteArray(valueField, 0, length, (byte[]) arr, 0);
+                break;
+            case pvDouble:
+                arr = new double[length];
+                convert.toDoubleArray(valueField, 0, length, (double[]) arr, 0);
+                break;
+            case pvFloat:
+                arr = new float[length];
+                convert.toFloatArray(valueField, 0, length, (float[]) arr, 0);
+                break;
+            case pvInt:
+            case pvUInt:
+                arr = new int[length];
+                convert.toIntArray(valueField, 0, length, (int[]) arr, 0);
+                break;
+            case pvLong:
+            case pvULong:
+                arr = new long[length];
+                convert.toLongArray(valueField, 0, length, (long[]) arr, 0);
+                break;
+            case pvShort:
+            case pvUShort:
+                arr = new short[length];
+                convert.toShortArray(valueField, 0, length, (short[]) arr, 0);
+                break;
+            case pvString:
+                arr = new String[length];
+                convert.toStringArray(valueField, 0, length, (String[]) arr, 0);
+                break;
+            case pvBoolean:
+                BooleanArrayData dataArr = new BooleanArrayData();
+                ((PVBooleanArray) valueField).get(0, length, dataArr);
+                arr = Arrays.copyOf(dataArr.data, length);
+                break;
+            default:
+                break;
         }
         return arr;
     }
-
 
     /**
      * @return Number of elements in value field
@@ -195,15 +200,15 @@ public class PvAccessDataAdapter implements TimeAdaptor {
 
         Type type = valueField.getField().getType();
         switch (type) {
-        case scalar:
-            return 1;
-        case scalarArray:
-            return ((PVScalarArray) valueField).getLength();
-        default:
-            return 0;
+            case scalar:
+                return 1;
+            case scalarArray:
+                return ((PVScalarArray) valueField).getLength();
+            default:
+                return 0;
         }
     }
-    
+
     /**
      * @return Type of the data in the value field.
      */
@@ -212,42 +217,42 @@ public class PvAccessDataAdapter implements TimeAdaptor {
         Type type = valueField.getField().getType();
         ScalarType scalarType;
         switch (type) {
-        case scalar:
-            scalarType = ((PVScalar) valueField).getScalar().getScalarType();
-            break;
-        case scalarArray:
-            scalarType = ((PVScalarArray) valueField).getScalarArray().getElementType();
-            break;
-        default:
-            return null;
+            case scalar:
+                scalarType = ((PVScalar) valueField).getScalar().getScalarType();
+                break;
+            case scalarArray:
+                scalarType = ((PVScalarArray) valueField).getScalarArray().getElementType();
+                break;
+            default:
+                return null;
         }
         return getJavaPrimitiveType(scalarType);
     }
 
     private Class<?> getJavaPrimitiveType(ScalarType type) {
         switch (type) {
-        case pvByte:
-        case pvUByte:
-            return Byte.TYPE;
-        case pvDouble:
-            return Double.TYPE;
-        case pvFloat:
-            return Float.TYPE;
-        case pvInt:
-        case pvUInt:
-            return Integer.TYPE;
-        case pvShort:
-        case pvUShort:
-            return Short.TYPE;
-        case pvBoolean:
-            return Boolean.TYPE;
-        case pvLong:
-        case pvULong:
-            return Long.TYPE;
-        case pvString:
-            return String.class;
-        default:
-            break;
+            case pvByte:
+            case pvUByte:
+                return Byte.TYPE;
+            case pvDouble:
+                return Double.TYPE;
+            case pvFloat:
+                return Float.TYPE;
+            case pvInt:
+            case pvUInt:
+                return Integer.TYPE;
+            case pvShort:
+            case pvUShort:
+                return Short.TYPE;
+            case pvBoolean:
+                return Boolean.TYPE;
+            case pvLong:
+            case pvULong:
+                return Long.TYPE;
+            case pvString:
+                return String.class;
+            default:
+                break;
         }
         return null;
     }
@@ -308,7 +313,7 @@ public class PvAccessDataAdapter implements TimeAdaptor {
     }
 
     /**
-     * @return Upper control limit 
+     * @return Upper control limit
      */
     public Number getUpperControlLimit() {
         PVStructure controlStructure = structure.getStructureField(PvAccessChannel.CONTROL_FIELD_NAME);
@@ -328,7 +333,7 @@ public class PvAccessDataAdapter implements TimeAdaptor {
     }
 
     /**
-     * @return Lower control limit 
+     * @return Lower control limit
      */
     public Number getLowerControlLimit() {
         PVStructure controlStructure = structure.getStructureField(PvAccessChannel.CONTROL_FIELD_NAME);

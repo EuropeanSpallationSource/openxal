@@ -1,12 +1,12 @@
 package xal.plugin.pvaccess;
 
 /**
- * Translation between 
- * 
+ * Translation between
+ *
  * @author <a href="mailto:blaz.kranjc@cosylab.com">Blaz Kranjc</a>
  */
 enum FieldNameConverter {
-    HIHIField ("HIHI") {
+    HIHIField("HIHI") {
         @Override
         String getPvaFieldName() {
             return "valueAlarm.highAlarmLimit";
@@ -56,11 +56,11 @@ enum FieldNameConverter {
     };
 
     private final String epicsFieldName;
-    
+
     private FieldNameConverter(String epicsFieldName) {
         this.epicsFieldName = epicsFieldName;
     }
-    
+
     static String getFieldName(String name) {
         for (FieldNameConverter t : FieldNameConverter.values()) {
             if (t.epicsFieldName.equals(name)) {

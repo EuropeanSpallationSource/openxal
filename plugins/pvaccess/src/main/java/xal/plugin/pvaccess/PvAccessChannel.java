@@ -39,25 +39,27 @@ import xal.ca.PutException;
 import xal.ca.PutListener;
 
 /**
- * Implementation of {@link Channel} class that uses pvAccess library.
- * pvAccess library can be used to connect with pvAccess or ChannelAccess protocol.
- * 
- * This implementation creates a connection to both protocols and only keeps the first 
- * one that is connected. This means that <b>if a pva channel and ca channel with same name
- * exist on the network the behavior of this class is non-deterministic</b>.
- * 
- * To keep compatibility with jca plugin, where the PV.FLD is a valid notation, the channel name
- * is parsed and everything after the first dot is used as a field (eg. \<pv\>.HIHI or 
- * \<pv\>.valueAlarm.highAlarmLimit). Only alarm fields are supported as they are the only ones used in apps.
- * 
+ * Implementation of {@link Channel} class that uses pvAccess library. pvAccess
+ * library can be used to connect with pvAccess or ChannelAccess protocol.
+ *
+ * This implementation creates a connection to both protocols and only keeps the
+ * first one that is connected. This means that <b>if a pva channel and ca
+ * channel with same name exist on the network the behavior of this class is
+ * non-deterministic</b>.
+ *
+ * To keep compatibility with jca plugin, where the PV.FLD is a valid notation,
+ * the channel name is parsed and everything after the first dot is used as a
+ * field (eg. \<pv\>.HIHI or \<pv\>.valueAlarm.highAlarmLimit). Only alarm
+ * fields are supported as they are the only ones used in apps.
+ *
  * @author <a href="mailto:blaz.kranjc@cosylab.com">Blaz Kranjc</a>
  */
 class PvAccessChannel extends Channel {
-    
+
     // Default timeout parameters
     private static final double DEFAULT_IO_TIMEOUT = 5.0;
     private static final double DEFAULT_EVENT_TIMEOUT = 0.1;
-    
+
     // Names of the standard fields
     static final String VALUE_FIELD_NAME = "value";
     static final String ALARM_FIELD_NAME = "alarm";
@@ -65,13 +67,13 @@ class PvAccessChannel extends Channel {
     static final String TIMESTAMP_FIELD_NAME = "timeStamp";
     static final String DISPLAY_FIELD_NAME = "display";
     static final String CONTROL_FIELD_NAME = "control";
-    
+
     // Channel implementation that is used by this class
     private org.epics.pvaccess.client.Channel channel;
-    
+
     // Latch used to notify the connection to the channel
     private volatile CountDownLatch connectionLatch;
-    
+
     // Lock for connection related stuff
     private final Object connectionLock = new Object();
 
@@ -79,34 +81,34 @@ class PvAccessChannel extends Channel {
     private final PVStructure pvRequest;
 
     private static final Logger LOGGER = Logger.getLogger(PvAccessChannel.class.getName());
-    
+
     static {
         LOGGER.setLevel(Level.WARNING);
     }
 
     // Keep a reference to the context manager instance to ensure that it does not get
     // garbage collected while a channel still exists
-    @SuppressWarnings("unused") 
+    @SuppressWarnings("unused")
     private final ProvidersManager manager = ProvidersManager.getInstance();
-    
+
     /**
      * Constructor.
-     * 
+     *
      * @param signalName Name of the PV
      */
     PvAccessChannel(String signalName) {
         super(parseChannelName(signalName));
 
         defaultField = parseDefaultFieldFromName(signalName);
-        
+
         String requestString = defaultField.equals(VALUE_FIELD_NAME) ? "" : defaultField;
-        pvRequest = CreateRequest.create().createRequest("field("+requestString+")");
+        pvRequest = CreateRequest.create().createRequest("field(" + requestString + ")");
 
         m_dblTmIO = DEFAULT_IO_TIMEOUT;
         m_dblTmEvt = DEFAULT_EVENT_TIMEOUT;
         connectionFlag = false;
     }
-    
+
     private static String parseChannelName(String signalName) {
         int indexOfDot = signalName.indexOf(".");
         if (indexOfDot >= 0) {
@@ -129,24 +131,21 @@ class PvAccessChannel extends Channel {
     static Logger getLogger() {
         return LOGGER;
     }
-    
+
     /**
      * @return defaultField value
      */
     String getDefaultField() {
         return defaultField;
     }
-    
+
     /**
      * {@inheritDoc}
      */
     @Override
     public boolean isConnected() {
-        if (channel != null && channel.getConnectionState() == ConnectionState.CONNECTED) {
-            return true;
-        }
-        return false;
-    };
+        return channel != null && channel.getConnectionState() == ConnectionState.CONNECTED;
+    }
     
     /**
      * {@inheritDoc}
@@ -154,7 +153,7 @@ class PvAccessChannel extends Channel {
     @Override
     public void requestConnection() {
         // XXX: This creates a lot of threads but with queuing this might wait for timeouts
-        Thread t = new Thread( new Runnable () {
+        Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
                 connectAndWait();
@@ -162,7 +161,6 @@ class PvAccessChannel extends Channel {
         });
         t.start();
     }
-
 
     /**
      * Handle the channel connected event.
@@ -172,7 +170,7 @@ class PvAccessChannel extends Channel {
             connectionLatch.countDown();
         }
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -182,19 +180,20 @@ class PvAccessChannel extends Channel {
     }
 
     /**
-     * Check if the channel is connected.
-     * The connection attempt procedure may be started if the channel is not yet connected.
-     * @param attemptConnection If true the function will try to attempt connection to the channel if not connected
+     * Check if the channel is connected. The connection attempt procedure may
+     * be started if the channel is not yet connected.
+     *
+     * @param attemptConnection If true the function will try to attempt
+     * connection to the channel if not connected
      * @throws ConnectionException Thrown if connection failed
      */
     private void checkConnection(boolean attemptConnection) throws ConnectionException {
-        if ( !isConnected() ) {
-            if ( attemptConnection ) {
+        if (!isConnected()) {
+            if (attemptConnection) {
                 connectAndWait();
                 checkConnection(false);
-            }
-            else {
-                throw new ConnectionException( this, "The channel " + m_strId + " must be connected for this operation." );
+            } else {
+                throw new ConnectionException(this, "The channel " + m_strId + " must be connected for this operation.");
             }
         }
     }
@@ -204,7 +203,7 @@ class PvAccessChannel extends Channel {
      */
     @Override
     public boolean connectAndWait(double timeout) {
-        if ( m_strId == null || isConnected()) { 
+        if (m_strId == null || isConnected()) {
             return false;
         }
 
@@ -212,10 +211,10 @@ class PvAccessChannel extends Channel {
 
         synchronized (connectionLock) {
             connectionLatch = new CountDownLatch(1);
-        
+
             channel = ChannelProviderRegistryFactory.getChannelProviderRegistry().
                     createProvider(org.epics.pvaccess.ClientFactory.PROVIDER_NAME).createChannel(m_strId,
-                            new PvAccessChannel.ChannelRequesterImpl(), ChannelProvider.PRIORITY_DEFAULT);
+                    new PvAccessChannel.ChannelRequesterImpl(), ChannelProvider.PRIORITY_DEFAULT);
         }
 
         try {
@@ -310,7 +309,7 @@ class PvAccessChannel extends Channel {
      */
     @Override
     public String[] getOperationLimitPVs() {
-        return constructLimitPVs( "LOPR", "HOPR" );
+        return constructLimitPVs("LOPR", "HOPR");
     }
 
     /**
@@ -318,7 +317,7 @@ class PvAccessChannel extends Channel {
      */
     @Override
     public String[] getWarningLimitPVs() {
-        return constructLimitPVs( "LOW", "HIGH" );
+        return constructLimitPVs("LOW", "HIGH");
     }
 
     /**
@@ -326,7 +325,7 @@ class PvAccessChannel extends Channel {
      */
     @Override
     public String[] getAlarmLimitPVs() {
-        return constructLimitPVs( "LOLO", "HIHI" );
+        return constructLimitPVs("LOLO", "HIHI");
     }
 
     /**
@@ -334,14 +333,15 @@ class PvAccessChannel extends Channel {
      */
     @Override
     public String[] getDriveLimitPVs() {
-        return constructLimitPVs( "DRVL", "DRVH" );
+        return constructLimitPVs("DRVL", "DRVH");
     }
 
-    /** 
+    /**
      * Construct the lower and upper limit PVs from the lower and upper suffixes
-     * @return two element array of PVs with the lower and upper limit PVs 
+     *
+     * @return two element array of PVs with the lower and upper limit PVs
      */
-    private String[] constructLimitPVs( final String lowerSuffix, final String upperSuffix ) {
+    private String[] constructLimitPVs(final String lowerSuffix, final String upperSuffix) {
         final String[] rangePVs = new String[2];
         rangePVs[0] = channelName() + "." + lowerSuffix;
         rangePVs[1] = channelName() + "." + upperSuffix;
@@ -463,8 +463,9 @@ class PvAccessChannel extends Channel {
     }
 
     /**
-     * Synchronous get from the channel.
-     * A timeout is used for limiting the connecting time.
+     * Synchronous get from the channel. A timeout is used for limiting the
+     * connecting time.
+     *
      * @return Channel record that contains information on the channel state.
      * @throws ConnectionException Thrown when connection to the channel failed.
      * @throws GetException Thrown when get operation failed.
@@ -521,14 +522,14 @@ class PvAccessChannel extends Channel {
     /**
      * {@inheritDoc}
      */
-    private void putRawValCallback(final Object newVal, final String type, final PutListener listener) 
+    private void putRawValCallback(final Object newVal, final String type, final PutListener listener)
             throws ConnectionException, PutException {
         checkConnection();
-        
+
         ChannelPutRequester requester = new PvAccessChannel.ChannelPutRequesterImpl(newVal, type, listener);
         channel.createChannelPut(requester, pvRequest);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -643,22 +644,25 @@ class PvAccessChannel extends Channel {
             throws ConnectionException, MonitorException {
         return addMonitor(EventSinkAdapter.getAdapter(listener, getDefaultField()), intMaskFire);
     }
-    
+
     private Monitor addMonitor(EventSinkAdapter listener, int intMaskFire) throws ConnectionException {
         MonitorRequester monitorRequester = new PvAccessMonitorRequesterImpl(listener, this, intMaskFire, defaultField);
 
         channel.createMonitor(monitorRequester, pvRequest);
         return (Monitor) monitorRequester;
     }
-        
+
     /**
-     * ChannelRequesterImplementation that sends the connection established events to the 
-     * PvAccessChannel class on connection.
+     * ChannelRequesterImplementation that sends the connection established
+     * events to the PvAccessChannel class on connection.
      */
     private class ChannelRequesterImpl implements ChannelRequester {
-        
-        /** Constructor */
-        public ChannelRequesterImpl() {}
+
+        /**
+         * Constructor
+         */
+        public ChannelRequesterImpl() {
+        }
 
         /**
          * {@inheritDoc}
@@ -686,8 +690,9 @@ class PvAccessChannel extends Channel {
 
         /**
          * {@inheritDoc}
-         * 
-         * This implementation raises an event on the outer class, when the channel is connected.
+         *
+         * This implementation raises an event on the outer class, when the
+         * channel is connected.
          */
         @Override
         public void channelStateChange(org.epics.pvaccess.client.Channel connectedChannel, ConnectionState newState) {
@@ -698,16 +703,17 @@ class PvAccessChannel extends Channel {
             }
         }
     }
-    
+
     /**
      * ChannelGetRequester implementation.
      */
     private class ChannelGetRequesterImpl implements ChannelGetRequester {
 
         EventSinkAdapter listener;
-        
+
         /**
          * Constructor
+         *
          * @param listener An object on which the events are raised
          */
         ChannelGetRequesterImpl(EventSinkAdapter listener) {
@@ -738,9 +744,9 @@ class PvAccessChannel extends Channel {
             if (status.isSuccess()) {
                 channelGet.lastRequest();
                 channelGet.get();
-            }
-            else
+            } else {
                 PvAccessChannel.LOGGER.warning("Error while connecting channel " + channelGet.getChannel().getChannelName() + " for get operation.");
+            }
         }
 
         /**
@@ -750,34 +756,36 @@ class PvAccessChannel extends Channel {
         public void getDone(Status status, ChannelGet channelGet, PVStructure pvStructure, BitSet changedBitSet) {
             if (status.isSuccess()) {
                 listener.eventValue(pvStructure, PvAccessChannel.this);
-            } 
-            else 
+            } else {
                 PvAccessChannel.LOGGER.warning("Error while getting the value from " + channelGet.getChannel().getChannelName() + ".");
+            }
         }
-        
+
     }
-    
+
     /**
      * ChannelPutRequester implementation.
      */
     private class ChannelPutRequesterImpl implements ChannelPutRequester {
-        
+
         private final PutListener listener;
         private final Object value;
         private final String pvType;
 
         /**
          * Constructor for the ChannelPutRequester.
+         *
          * @param value Object to be put on the channel
          * @param type Name of the type of the object to put
-         * @param listener Listener object on which events are raised when operation is completed
+         * @param listener Listener object on which events are raised when
+         * operation is completed
          */
         ChannelPutRequesterImpl(Object value, String type, PutListener listener) {
             this.value = value;
             this.pvType = type;
             this.listener = listener;
         }
-        
+
         /**
          * {@inheritDoc}
          */
@@ -809,17 +817,17 @@ class PvAccessChannel extends Channel {
                 try {
                     PvAccessPutUtils.put(val, value, pvType);
                 } catch (PutException e) {
-                    PvAccessChannel.LOGGER.warning("Error on put to the " + channelPut.getChannel().getChannelName() +
-                            ": " + e.getMessage());
-                    
+                    PvAccessChannel.LOGGER.warning("Error on put to the " + channelPut.getChannel().getChannelName()
+                            + ": " + e.getMessage());
+
                 }
                 bitSet.set(val.getFieldOffset());
                 channelPut.put(pvStructure, bitSet);
             } else {
-                PvAccessChannel.LOGGER.warning("Error while connecting channel " + channelPut.getChannel().getChannelName() +
-                        " for put operation.");
+                PvAccessChannel.LOGGER.warning("Error while connecting channel " + channelPut.getChannel().getChannelName()
+                        + " for put operation.");
             }
-            
+
         }
 
         /**
@@ -841,7 +849,7 @@ class PvAccessChannel extends Channel {
                 PvAccessChannel.LOGGER.warning("Error while puting a value to channel " + channelPut.getChannel().getChannelName() + ".");
             }
         }
-        
+
     }
 
     /**
@@ -850,12 +858,13 @@ class PvAccessChannel extends Channel {
     private static class ProvidersManager {
 
         private static class LazyHolder {
+
             private static final ProvidersManager INSTANCE = new ProvidersManager();
         }
 
-        private ProvidersManager () {
+        private ProvidersManager() {
             org.epics.pvaccess.ClientFactory.start();
-            
+
             // Create shutdown hook to close the resource
             Thread t = new Thread(new Runnable() {
                 @Override
