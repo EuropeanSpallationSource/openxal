@@ -4,27 +4,24 @@
 
     <parent>
         <groupId>org.xal</groupId>
-        <artifactId>openxal.extensions</artifactId>
+        <artifactId>openxal.plugins</artifactId>
         <version>1.1.2-SNAPSHOT</version>
     </parent>
 
-    <artifactId>openxal.extensions.jels</artifactId>
+    <artifactId>openxal.plugins.pvaccess</artifactId>
     
-    <packaging>jar</packaging>
-
     <dependencies>
         <dependency>
-            <groupId>org.xal</groupId>
-            <artifactId>openxal.plugins.pvaccess</artifactId>
-            <scope>runtime</scope>
+            <groupId>org.epics</groupId>
+            <artifactId>pvAccessJava</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.xal</groupId>
-            <artifactId>openxal.extensions.solver</artifactId>
+            <groupId>org.epics</groupId>
+            <artifactId>pvDataJava</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.xal</groupId>
-            <artifactId>openxal.extensions.widgets</artifactId>
+            <groupId>org.epics</groupId>
+            <artifactId>pvDatabaseJava</artifactId>
         </dependency>
     </dependencies>
 </project>

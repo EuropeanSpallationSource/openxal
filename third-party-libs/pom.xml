@@ -54,6 +54,10 @@
         </dependency>
         <dependency>
             <groupId>org.epics</groupId>
+            <artifactId>pvDatabaseJava</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.epics</groupId>
             <artifactId>pvAccessJava</artifactId>
         </dependency>
         <dependency>
