@@ -5,41 +5,122 @@
     <parent>
         <groupId>org.xal</groupId>
         <artifactId>openxal</artifactId>
-        <version>1.1.2-SNAPSHOT</version>
+        <version>1.2.2-SNAPSHOT</version>
     </parent>
 
     <artifactId>openxal.library</artifactId>
-    <version>1.1.2-SNAPSHOT</version>
         
-    <packaging>pom</packaging>
-    <pluginRepositories>
-        <pluginRepository>
-            <id>jcenter</id>
-            <url>https://jcenter.bintray.com</url>
-        </pluginRepository>
-    </pluginRepositories>
-
+    <packaging>jar</packaging>
+    
     <build>
         <plugins>
+            <!-- This plugin will package all dependencies into one jar -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>3.1.0</version>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.1.0</version>              
                 <configuration>
-                    <appendAssemblyId>false</appendAssemblyId>
-                    <descriptors>
-                        <descriptor>library.xml</descriptor>
-                    </descriptors>
+                    <artifactSet>
+                    </artifactSet>
                 </configuration>
                 <executions>
                     <execution>
                         <phase>package</phase>
                         <goals>
-                            <goal>single</goal>
+                            <goal>shade</goal>
                         </goals>
                     </execution>
                 </executions>
             </plugin>
         </plugins>
     </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.xal</groupId>
+            <artifactId>openxal.extensions.widgets</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.xal</groupId>
+            <artifactId>openxal.extensions.bricks</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.xal</groupId>
+            <artifactId>openxal.extensions.service</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.xal</groupId>
+            <artifactId>openxal.extensions.application</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.xal</groupId>
+            <artifactId>openxal.extensions.pvlogger</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.xal</groupId>
+            <artifactId>openxal.extensions.extlatgen</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.xal</groupId>
+            <artifactId>openxal.extensions.solver</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.xal</groupId>
+            <artifactId>openxal.extensions.fit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.xal</groupId>
+            <artifactId>openxal.extensions.logbook</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.xal</groupId>
+            <artifactId>openxal.extensions.orbit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.xal</groupId>
+            <artifactId>openxal.extensions.recordselector</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.xal</groupId>
+            <artifactId>openxal.extensions.scan</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.xal</groupId>
+            <artifactId>openxal.extensions.twissobserver</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.xal</groupId>
+            <artifactId>openxal.extensions.wirescan</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.xal</groupId>
+            <artifactId>openxal.extensions.worker</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.xal</groupId>
+            <!-- Only one of these two plugins can be included. If both are added, only the one which appears first here will be used -->
+            <!-- <artifactId>openxal.plugins.jca</artifactId>--> <!-- This plugin enables EPICS 3 only -->
+            <artifactId>openxal.plugins.pvaccess</artifactId> <!-- This plugin enables EPICS 4 and 3 -->
+        </dependency>
+        <dependency>
+            <groupId>org.xal</groupId>
+            <artifactId>openxal.plugins.essrbac</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.xal</groupId>
+            <artifactId>openxal.plugins.postgres</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.xal</groupId>
+            <artifactId>openxal.extensions.jels</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.xal</groupId>
+            <artifactId>openxal.extensions.jelog</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.xal</groupId>
+            <artifactId>openxal.extensions.tracewin</artifactId>
+        </dependency>
+    </dependencies>
 </project>

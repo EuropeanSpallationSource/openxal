@@ -4,19 +4,10 @@
     <parent>
         <groupId>org.xal</groupId>
         <artifactId>openxal.plugins</artifactId>
-        <version>1.1.2-SNAPSHOT</version>
+        <version>1.2.2-SNAPSHOT</version>
     </parent>
 
     <artifactId>openxal.plugins.essrbac</artifactId>
-
-    <build>
-        <testSourceDirectory>test/java</testSourceDirectory>
-        <testResources>
-            <testResource>
-                <directory>test/resources</directory>
-            </testResource>
-        </testResources>
-    </build>
 
     <dependencies>
         <dependency>
@@ -26,7 +17,6 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-jdk14</artifactId>
-            <version>1.7.9</version>
             <scope>runtime</scope>
         </dependency>
     </dependencies>

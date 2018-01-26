@@ -10,7 +10,7 @@
     
     <!-- Files to include -->
     <fileSets>
-        <!-- Open XAL library file-->
+        <!-- Open XAL library jar -->
         <fileSet>
             <directory>${basedir}/../library/target</directory>
             <outputDirectory>lib</outputDirectory>
@@ -18,7 +18,15 @@
                 <include>openxal.library-${project.version}.jar</include>
             </includes>
         </fileSet>
-        <!-- Open XAL optics files-->
+        <!-- Third party libraries jar -->
+        <fileSet>
+            <directory>${basedir}/../third-party-libs/target</directory>
+            <outputDirectory>lib</outputDirectory>
+            <includes>
+                <include>openxal.third-party-libs-${project.version}.jar</include>
+            </includes>
+        </fileSet>
+        <!-- Open XAL optics files -->
         <fileSet>
             <directory>../site/optics</directory>
             <outputDirectory>optics</outputDirectory>
@@ -28,7 +36,7 @@
         </fileSet>
         <!-- Open XAL applications -->
         <fileSet>
-            <directory>${basedir}/../apps/assembly/target/openxal.apps.assembly-${project.version}/apps/</directory>
+            <directory>${basedir}/../apps/target/dist/</directory>
             <outputDirectory>apps</outputDirectory>
             <includes>
                 <include>*.jar</include>
