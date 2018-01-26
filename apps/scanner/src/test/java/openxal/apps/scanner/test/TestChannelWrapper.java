@@ -9,10 +9,8 @@ package openxal.apps.scanner.test;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import static org.junit.Assert.fail;
-import openxal.apps.scanner.ChannelWrapper;
+import xal.app.scanner.ChannelWrapper;
 import org.junit.AfterClass;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.BeforeClass;
@@ -22,18 +20,10 @@ import xal.ca.Channel;
 import xal.ca.ChannelFactory;
 import xal.ca.ConnectionException;
 import xal.ca.GetException;
-import xal.ca.IServerChannel;
 import xal.ca.PutException;
-import xal.smf.Accelerator;
 import xal.smf.AcceleratorNode;
-import xal.smf.AcceleratorSeq;
-import xal.smf.ChannelSuite;
-import xal.smf.data.XMLDataManager;
 import xal.smf.impl.BPM;
 import xal.smf.impl.Quadrupole;
-import xal.tools.ResourceManager;
-import xal.tools.data.DataAdaptor;
-import xal.tools.xml.XmlDataAdaptor;
 
 /**
  * Test cases for class <code>DeviceData</code> and its derived classes.
