@@ -54,6 +54,10 @@
         </dependency>
         <dependency>
             <groupId>org.xal</groupId>
+            <artifactId>openxal.extensions.fxapplication</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.xal</groupId>
             <artifactId>openxal.extensions.pvlogger</artifactId>
         </dependency>
         <dependency>
