@@ -17,27 +17,33 @@
  */
 package xal.app.trajectorydisplay;
 
-import javafx.application.Application;
+import java.io.IOException;
 import static javafx.application.Application.launch;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
+import javafx.event.Event;
+import javafx.event.EventHandler;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
 import javafx.stage.Stage;
 
-public class MainApp extends Application {
+import openxal.extension.fxapplication.FxApplication;
+
+public class MainApp extends FxApplication {
 
     @Override
-    public void start(Stage stage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("/fxml/TrajectoryDisplay.fxml"));
+    public void start(Stage stage) throws IOException {
 
-        Scene scene = new Scene(root);
-        scene.getStylesheets().add("/styles/Styles.css");
+        MAIN_SCENE = "/fxml/TrajectoryDisplay.fxml";
+        CSS_STYLE = "/styles/Styles.css";
+        STAGE_TITLE = "Trajectory Display";
+        HAS_DOCUMENTS=false;
 
-        stage.getProperties().put("hostServices", this.getHostServices());
-
-        stage.setTitle("Trajectory Display");
-        stage.setScene(scene);
-        stage.show();
+        super.initialize();
+        Menu trajectoryMenu = new Menu("File");
+        MenuItem tMenu = new MenuItem("Trajectory");
+        tMenu.setOnAction(new TrajectoryMenu());
+        trajectoryMenu.getItems().add(tMenu);
+        MENU_BAR.getMenus().add(trajectoryMenu);
+        super.start(stage);
     }
 
     /**
@@ -50,6 +56,15 @@ public class MainApp extends Application {
      */
     public static void main(String[] args) {
         launch(args);
+    }
+
+}
+
+class TrajectoryMenu implements EventHandler {
+
+    @Override
+    public void handle(Event t) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }
