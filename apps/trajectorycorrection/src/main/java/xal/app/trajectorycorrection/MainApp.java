@@ -17,30 +17,23 @@
  */
 package xal.app.trajectorycorrection;
 
-import javafx.application.Application;
+import java.io.IOException;
 import static javafx.application.Application.launch;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-public class MainApp extends Application {
+import openxal.extension.fxapplication.FxApplication;
+
+public class MainApp extends FxApplication {
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) throws IOException {
 
-        Parent root = FXMLLoader.load(getClass().getResource("/fxml/MainPanel.fxml"));
+        MAIN_SCENE = "/fxml/MainPanel.fxml";
+        CSS_STYLE = "/styles/Styles.css";
+        STAGE_TITLE = "Trajectory Correction";
 
-        Scene scene = new Scene(root);
-        scene.getStylesheets().add("/styles/Styles.css");
-
-        stage.setOnCloseRequest(e -> System.exit(0));
-
-        stage.getProperties().put("hostServices", this.getHostServices());
-
-        stage.setTitle("Trajectory Correction");
-        stage.setScene(scene);
-        stage.show();
+        super.initialize();
+        super.start(stage);
     }
 
     /**
