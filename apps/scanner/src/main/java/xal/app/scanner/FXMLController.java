@@ -406,8 +406,6 @@ public class FXMLController implements Initializable {
         listOfWriteablesNpoints.setCellValueFactory(new PropertyValueFactory<>("npoints"));
         listOfWriteablesNpoints.setCellFactory(TextFieldTableCell.<ChannelWrapper, Integer>forTableColumn(new IntegerStringConverter()));
 
-        // Initialize functionality
-        MainFunctions.initialize();
 
         // Initialize constraints
         constraintsList.setItems(MainFunctions.mainDocument.constraints);

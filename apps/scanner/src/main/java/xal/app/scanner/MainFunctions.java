@@ -67,9 +67,9 @@ public class MainFunctions {
     public static SimpleBooleanProperty pauseTask;
     public static SimpleBooleanProperty stopTask;
 
-    public static void initialize() {
+    public static void initialize(ScannerDocument scannerDocument) {
 
-        mainDocument = new ScannerDocument();
+        mainDocument = scannerDocument;
 
         isCombosUpdated = new SimpleBooleanProperty(false);
         runProgress = new SimpleDoubleProperty(-1.0);

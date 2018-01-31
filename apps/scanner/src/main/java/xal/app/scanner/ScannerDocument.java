@@ -46,11 +46,13 @@ import xal.smf.Accelerator;
 import xal.tools.data.DataAdaptor;
 import xal.tools.xml.XmlDataAdaptor;
 
+import openxal.extension.fxapplication.XalFxDocument;
+
 /**
  *
  * @author yngvelevinsen
  */
-public class ScannerDocument {
+public class ScannerDocument extends XalFxDocument {
     /**
      * A dictionary of the created datasets..
      */

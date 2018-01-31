@@ -120,6 +120,10 @@ public class ChannelWrapper {
     public StringProperty typeProperty() {
         return m_type;
     }
+    /**
+     * @propertyDescription Some description
+     * @return
+     */
     public SimpleBooleanProperty isScannedProperty() {
         return isScanned;
     }

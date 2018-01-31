@@ -46,8 +46,12 @@ public class MainApp extends FxApplication {
     MAIN_SCENE = "/fxml/ScannerScene.fxml";
     CSS_STYLE = "/styles/Styles.css";
     STAGE_TITLE = "Scanner Application";
-    super.start(stage);
+    DOCUMENT = new ScannerDocument();
+    // Initialize some static functions (this is probably bad design..)
+    MainFunctions.initialize((ScannerDocument)DOCUMENT);
 
+    super.initialize();
+    super.start(stage);
     }
 
     /**
