@@ -4,12 +4,16 @@
  * Created on January 19, 2018
  */
 
-package openxal.extension.fxapplication;
+package xal.extension.fxapplication;
 
 
+import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import javafx.application.Application;
 import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
@@ -68,13 +72,13 @@ abstract public class FxApplication extends Application {
         Menu fileMenu = new Menu("File");
         if (HAS_DOCUMENTS) {
             MenuItem newFileMenu = new MenuItem("New");
-            newFileMenu.setOnAction(new NewFileMenu());
+            newFileMenu.setOnAction(new NewFileMenu(DOCUMENT));
             final MenuItem saveFileMenu = new MenuItem("Save");
-            saveFileMenu.setOnAction(new SaveFileMenu(false));
+            saveFileMenu.setOnAction(new SaveFileMenu(DOCUMENT, false));
             final MenuItem saveAsFileMenu = new MenuItem("Save as..");
-            saveAsFileMenu.setOnAction(new SaveFileMenu(true));
+            saveAsFileMenu.setOnAction(new SaveFileMenu(DOCUMENT, true));
             final MenuItem loadFileMenu = new MenuItem("Load");
-            loadFileMenu.setOnAction(new LoadFileMenu());
+            loadFileMenu.setOnAction(new LoadFileMenu(DOCUMENT));
             fileMenu.getItems().addAll( newFileMenu, saveFileMenu, saveAsFileMenu, loadFileMenu);
         }
 
@@ -109,7 +113,25 @@ abstract public class FxApplication extends Application {
     }
 
 }
-class NewFileMenu implements EventHandler {
+
+abstract class FileMenuItem implements EventHandler {
+    protected XalFxDocument document;
+
+    public FileMenuItem(XalFxDocument document) {
+        this.document = document;
+    }
+
+    @Override
+    public void handle(Event t) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+}
+
+class NewFileMenu extends FileMenuItem {
+
+    public NewFileMenu(XalFxDocument document) {
+        super(document);
+    }
 
     @Override
     public void handle(Event t) {
@@ -117,22 +139,35 @@ class NewFileMenu implements EventHandler {
     }
 
 }
-class SaveFileMenu implements EventHandler {
+class SaveFileMenu extends FileMenuItem {
     private boolean saveAs;
-    public SaveFileMenu(boolean saveAs) {
+
+    public SaveFileMenu(XalFxDocument document, boolean saveAs) {
+        super(document);
         this.saveAs = saveAs;
     }
     @Override
     public void handle(Event t) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //saveDocumentAs( final URL url )
     }
 
 }
 
-class LoadFileMenu implements EventHandler {
+class LoadFileMenu extends FileMenuItem {
+
+    public LoadFileMenu(XalFxDocument document) {
+        super(document);
+    }
 
     @Override
     public void handle(Event t) {
+        try {
+            // This hard-coded file name should be fixed
+            document.loadDocument(new File("scanner.xml").toURI().toURL());
+        } catch (MalformedURLException ex) {
+            Logger.getLogger(LoadFileMenu.class.getName()).log(Level.SEVERE, null, ex);
+        }
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
