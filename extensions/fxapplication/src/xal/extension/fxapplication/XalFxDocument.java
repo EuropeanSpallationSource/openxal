@@ -16,10 +16,11 @@ import java.net.URL;
  */
 abstract public class XalFxDocument {
     /** wildcard file extension */
-    static public final String WILDCARD_FILE_EXTENSION = "";
+    static public final String WILDCARD_FILE_EXTENSION = "*.xml";
     /** The persistent storage URL for the document */
     protected URL source;
     protected boolean hasChanges;
+
 
     /**
      * Set the whether this document has changes.
@@ -34,6 +35,14 @@ abstract public class XalFxDocument {
     */
     public boolean hasChanges() {
         return hasChanges;
+    }
+
+    public boolean sourceSetAndValid() {
+        return false;
+    }
+    public void setSource(URL newSource) {
+        // TODO check if newSource is valid..
+        source = newSource;
     }
 
     /**

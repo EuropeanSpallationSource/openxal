@@ -22,6 +22,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 
@@ -81,6 +82,10 @@ abstract public class FxApplication extends Application {
             loadFileMenu.setOnAction(new LoadFileMenu(DOCUMENT));
             fileMenu.getItems().addAll( newFileMenu, saveFileMenu, saveAsFileMenu, loadFileMenu);
         }
+        final MenuItem exitMenu = new MenuItem("Exit");
+        exitMenu.setOnAction(new ExitMenu());
+        fileMenu.getItems().addAll( exitMenu);
+
 
         final Menu editMenu = new Menu("Edit");
 
@@ -148,7 +153,32 @@ class SaveFileMenu extends FileMenuItem {
     }
     @Override
     public void handle(Event t) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (saveAs || !document.sourceSetAndValid()) {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Save Application State");
+            fileChooser.setInitialFileName("TrajectoryCorrectionAppState");
+
+            //Set extension filter
+            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("XML files (*.xml)", "*.xml");
+            fileChooser.getExtensionFilters().add(extFilter);
+
+            //Show save file dialog
+            File selectedFile = fileChooser.showSaveDialog(null);
+            if (selectedFile != null) {
+                try {
+                    document.setSource(selectedFile.toURI().toURL());
+                } catch (MalformedURLException ex) {
+                    Logger.getLogger(SaveFileMenu.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        Logger.getLogger(SaveFileMenu.class.getName()).log(Level.INFO, "Saving document");
+        try {
+            document.saveDocumentAs(new File("scanner.xml").toURI().toURL());
+            Logger.getLogger(SaveFileMenu.class.getName()).log(Level.INFO, "Document saved");
+        } catch (MalformedURLException ex) {
+            Logger.getLogger(SaveFileMenu.class.getName()).log(Level.SEVERE, null, ex);
+        }
         //saveDocumentAs( final URL url )
     }
 
@@ -168,7 +198,16 @@ class LoadFileMenu extends FileMenuItem {
         } catch (MalformedURLException ex) {
             Logger.getLogger(LoadFileMenu.class.getName()).log(Level.SEVERE, null, ex);
         }
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+}
+
+class ExitMenu implements EventHandler {
+
+    @Override
+    public void handle(Event t) {
+        Logger.getLogger(ExitMenu.class.getName()).log(Level.INFO, "Exit button clicked");
+        System.exit(0);
     }
 
 }
