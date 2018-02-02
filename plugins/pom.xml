@@ -13,7 +13,6 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>jca</module>
         <module>mysql</module>
         <module>postgres</module>
         <module>pvaccess</module>

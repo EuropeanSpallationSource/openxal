@@ -33,7 +33,7 @@ compile_instructions() {
 execute() {
     openxal_version
     echo "Executing $1"
-    JAR_FILE=dist/target/openxal-${OPENXAL_VERSION}-dist/apps/openxal.apps.$1-${OPENXAL_VERSION}.jar
+    JAR_FILE=dist/target/openxal-${OPENXAL_VERSION}-dist/openxal-${OPENXAL_VERSION}/apps/openxal.apps.$1-${OPENXAL_VERSION}.jar
     if [ -f $JAR_FILE ]
     then
         java -DuseDefaultAccelerator=true -Djava.util.logging.config.file="logging.properties" -jar $JAR_FILE
