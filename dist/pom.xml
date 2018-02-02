@@ -9,9 +9,9 @@
     </parent>
 
     <artifactId>openxal.dist</artifactId>
-    <version>1.1.2-SNAPSHOT</version>
     
     <packaging>pom</packaging>
+    
     <pluginRepositories>
         <pluginRepository>
             <id>jcenter</id>

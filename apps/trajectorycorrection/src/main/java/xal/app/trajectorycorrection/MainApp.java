@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 European Spallation Source ERIC
+ * Copyright (C) 2018 European Spallation Source ERIC
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -15,7 +15,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-
 package xal.app.trajectorycorrection;
 
 import javafx.application.Application;
@@ -25,21 +24,20 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-
 public class MainApp extends Application {
 
     @Override
-    public void start(Stage stage) throws Exception { 
-               
+    public void start(Stage stage) throws Exception {
+
         Parent root = FXMLLoader.load(getClass().getResource("/fxml/MainPanel.fxml"));
-        
+
         Scene scene = new Scene(root);
         scene.getStylesheets().add("/styles/Styles.css");
-        
+
         stage.setOnCloseRequest(e -> System.exit(0));
-        
+
         stage.getProperties().put("hostServices", this.getHostServices());
-        
+
         stage.setTitle("Trajectory Correction");
         stage.setScene(scene);
         stage.show();

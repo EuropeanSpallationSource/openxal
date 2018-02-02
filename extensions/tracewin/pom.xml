@@ -11,16 +11,6 @@
 
     <artifactId>openxal.extensions.tracewin</artifactId>
 
-    <build>
-        <sourceDirectory>src</sourceDirectory>
-
-        <resources>
-            <resource>
-                <directory>resources</directory>
-            </resource>
-        </resources>
-    </build>
-
     <dependencies>
         <dependency>
             <groupId>org.xal</groupId>

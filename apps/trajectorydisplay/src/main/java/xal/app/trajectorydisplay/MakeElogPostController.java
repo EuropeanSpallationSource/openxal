@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 European Spallation Source ERIC
+ * Copyright (C) 2018 European Spallation Source ERIC
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -15,7 +15,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-
 package xal.app.trajectorydisplay;
 
 import java.io.File;
@@ -36,7 +35,6 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import org.apache.commons.io.FileUtils;
-
 
 public class MakeElogPostController implements Initializable {
 
@@ -63,8 +61,10 @@ public class MakeElogPostController implements Initializable {
     private File imageFile = null;
     @FXML
     private ComboBox<String> comboBoxCategory;
+
     /**
      * Initializes the controller class.
+     *
      * @param url
      * @param rb
      */
@@ -76,7 +76,7 @@ public class MakeElogPostController implements Initializable {
         comboBoxType.getItems().add("Configuration");
         comboBoxType.getItems().add("Other");
         comboBoxType.setValue("Routine");
-        
+
         comboBoxCategory.getItems().add("General");
         comboBoxCategory.getItems().add("Hardware");
         comboBoxCategory.getItems().add("Software");
@@ -84,10 +84,10 @@ public class MakeElogPostController implements Initializable {
         comboBoxCategory.getItems().add("Other");
         comboBoxCategory.getItems().add("IS");
         comboBoxCategory.setValue("General");
-    }    
-    
+    }
+
     public BooleanProperty loggedInProperty() {
-        return loggedIn ;
+        return loggedIn;
     }
 
     public final boolean isLoggedIn() {
@@ -96,14 +96,14 @@ public class MakeElogPostController implements Initializable {
 
     public final void setLoggedIn(boolean loggedIn) {
         loggedInProperty().set(loggedIn);
-    } 
-    
+    }
+
     public final void setImagePath(File imageFile) {
         this.imageFile = imageFile;
-    } 
-    
+    }
+
     @FXML
-    public void handleButtonCancel(){
+    public void handleButtonCancel() {
         setLoggedIn(true);
     }
 
@@ -113,17 +113,17 @@ public class MakeElogPostController implements Initializable {
         buttonCancel.setDisable(true);
         try {
             String command = null;
-                           
+
             FileUtils.writeStringToFile(new File("author.txt"), textAuthor.getText());
             FileUtils.writeStringToFile(new File("type.txt"), comboBoxType.getValue());
             FileUtils.writeStringToFile(new File("category.txt"), comboBoxCategory.getValue());
             FileUtils.writeStringToFile(new File("subject.txt"), textSubject.getText());
             FileUtils.writeStringToFile(new File("textInput.txt"), textBody.getText());
-            
-            if (rbimageYes.isSelected()){
-                command = "curl -F cmd=Submit -F Author=@author.txt -F Type=@type.txt -F Category=@category.txt -F Subject=@subject.txt -F Text=@textInput.txt -F attfile=@"+imageFile.getAbsolutePath()+" http://elog.esss.lu.se/demo";
+
+            if (rbimageYes.isSelected()) {
+                command = "curl -F cmd=Submit -F Author=@author.txt -F Type=@type.txt -F Category=@category.txt -F Subject=@subject.txt -F Text=@textInput.txt -F attfile=@" + imageFile.getAbsolutePath() + " http://elog.esss.lu.se/demo";
             } else {
-                command = "curl -F cmd=Submit -F Author=@author.txt -F Type=@type.txt -F Category=@category.txt -F Subject=@subject.txt -F Text=@textInput.txt http://elog.esss.lu.se/demo";        
+                command = "curl -F cmd=Submit -F Author=@author.txt -F Type=@type.txt -F Category=@category.txt -F Subject=@subject.txt -F Text=@textInput.txt http://elog.esss.lu.se/demo";
             }
             //System.out.print(command+"\n");
             try {
@@ -144,5 +144,5 @@ public class MakeElogPostController implements Initializable {
         buttonSubmit.setDisable(false);
         buttonCancel.setDisable(false);
     }
-    
+
 }
