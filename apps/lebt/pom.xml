@@ -16,7 +16,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <mainClass>org.xal.lebt.MainApp</mainClass>
+        <mainClass>xal.app.lebt.MainApp</mainClass>
     </properties>
 
     <organization>

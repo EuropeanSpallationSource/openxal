@@ -1,4 +1,4 @@
-package org.xal.lebt;
+package xal.app.lebt;
 
 import com.sun.javafx.charts.Legend;
 import java.io.File;
@@ -11,6 +11,7 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.event.ActionEvent;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.LineChart;
@@ -36,6 +37,8 @@ import xal.model.ModelException;
 import xal.smf.Accelerator;
 import xal.smf.AcceleratorNode;
 import xal.smf.NoSuchChannelException;
+import xal.smf.impl.CurrentMonitor;
+import xal.smf.impl.HDipoleCorr;
 import xal.tools.URLUtil.FilePathException;
 
 /**
@@ -166,7 +169,8 @@ public class FXMLController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         ActionEvent event = null;
         
-        this.handleLoadAccelerator(event);
+        //this.handleLoadAccelerator(event);
+        accelerator = xal.smf.data.XMLDataManager.loadDefaultAccelerator(); 
         
         //initializing toggle groups
         coordinateGroup = new ToggleGroup();
@@ -241,6 +245,11 @@ public class FXMLController implements Initializable {
         seriesSurroundings[1].getNode().setStyle("-fx-stroke: #000000;");
         
         scale = 1;
+        
+        
+        //Create monitor for the NPMs and Faraday cups to monitor it's values
+        
+        
     }    
     
     @FXML
@@ -355,9 +364,15 @@ public class FXMLController implements Initializable {
     private void handleGetCurrentfromFC(ActionEvent event) {
         if(comboBox_currentFC.isSelected()){
             textField_bc.setDisable(true);
-            AcceleratorNode faradayCup;
-            faradayCup = accelerator.getSequence("LEBT").getAllNodesOfType("CurrentMonitor").get(0);
+            //CurrentMonitor faradayCup;
+            //faradayCup = (CurrentMonitor) accelerator.getSequence("LEBT").getAllNodesOfType("FC");
             //faradayCup.getAndConnectChannel("Avg_current").addMonitorValue(listener, 0);
+            HDipoleCorr corrector;
+            corrector = (HDipoleCorr) accelerator.getSequence("LEBT").getNodeWithId("ST1-HC2");
+            BeamAgent HC2monitor = new BeamAgent(corrector, new String[]{"I","I_Set","psFieldRB"});          
+            HC2monitor.monitorSignals(0.0);
+            textField_bc.setText(Double.toString(HC2monitor._lastRecord.getChannel1Val()));
+            
         } else {
             textField_bc.setDisable(false);
         }
@@ -441,15 +456,15 @@ public class FXMLController implements Initializable {
         textField_alphay.setText(Double.toString(TwissY[0]));
         textField_betay.setText(Double.toString(TwissY[1]));
         textField_emitty.setText(Double.toString(TwissY[2]));
-                      
-        textField_sol1.setText(Double.toString(newRun.getSolenoid1Field()));
-        textField_sol2.setText(Double.toString(newRun.getSolenoid2Field()));
-        textField_V1.setText(Double.toString(newRun.getVsteerer1Field()));
-        textField_H1.setText(Double.toString(newRun.getHsteerer1Field()));
-        textField_V2.setText(Double.toString(newRun.getVsteerer2Field()));
-        textField_H2.setText(Double.toString(newRun.getHsteerer2Field()));
-        textField_bc.setText(Double.toString(newRun.getBeamCurrent()));
-        textField_scc.setText(Double.toString(newRun.getSpaceChargeCompensation()));
+            
+        //textField_sol1.setText(Double.toString(newRun.getSolenoid1Field()));
+        //textField_sol2.setText(Double.toString(newRun.getSolenoid2Field()));
+        //textField_V1.setText(Double.toString(newRun.getVsteerer1Field()));
+        //textField_H1.setText(Double.toString(newRun.getHsteerer1Field()));
+        //textField_V2.setText(Double.toString(newRun.getVsteerer2Field()));
+        //textField_H2.setText(Double.toString(newRun.getHsteerer2Field()));
+        //textField_bc.setText(Double.toString(newRun.getBeamCurrent()));
+        //textField_scc.setText(Double.toString(newRun.getSpaceChargeCompensation()));
     }
     
     /**
