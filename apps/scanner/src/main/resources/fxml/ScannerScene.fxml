@@ -26,55 +26,6 @@
    <children>
       <SplitPane dividerPositions="0.5" orientation="VERTICAL" prefHeight="533.0" prefWidth="1096.0" VBox.vgrow="ALWAYS">
         <items>
-            <MenuBar>
-              <menus>
-                <Menu mnemonicParsing="false" text="File">
-                  <items>
-                    <MenuItem mnemonicParsing="false" text="New" />
-                        <MenuItem mnemonicParsing="false" text="New from template" />
-                        <MenuItem mnemonicParsing="false" onAction="#handleLoadDocument" text="Open" />
-                        <MenuItem mnemonicParsing="false" text="Open Recent" />
-                        <MenuItem mnemonicParsing="false" text="Open Version" />
-                        <SeparatorMenuItem mnemonicParsing="false" />
-                        <MenuItem id="close" mnemonicParsing="false" text="Close">
-                           <accelerator>
-                              <KeyCodeCombination alt="UP" code="W" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
-                           </accelerator>
-                        </MenuItem>
-                        <MenuItem mnemonicParsing="false" text="Close All" />
-                        <MenuItem mnemonicParsing="false" onAction="#handleSaveDocument" text="Save" />
-                        <MenuItem mnemonicParsing="false" text="Save As" />
-                        <MenuItem mnemonicParsing="false" text="Save All" />
-                        <MenuItem mnemonicParsing="false" text="Revert To Saved" />
-                        <SeparatorMenuItem mnemonicParsing="false" />
-                        <MenuItem mnemonicParsing="false" text="Print" />
-                        <MenuItem mnemonicParsing="false" text="Page Setup" />
-                        <SeparatorMenuItem mnemonicParsing="false" />
-                        <MenuItem mnemonicParsing="false" text="Quit" />
-                  </items>
-                </Menu>
-                <Menu mnemonicParsing="false" text="Edit">
-                  <items>
-                    <MenuItem mnemonicParsing="false" text="Delete" />
-                  </items>
-                </Menu>
-                  <Menu mnemonicParsing="false" text="Accelerator">
-                     <items>
-                        <MenuItem mnemonicParsing="false" text="Delete" />
-                     </items>
-                  </Menu>
-                  <Menu mnemonicParsing="false" text="View">
-                     <items>
-                        <MenuItem mnemonicParsing="false" text="Delete" />
-                     </items>
-                  </Menu>
-                <Menu mnemonicParsing="false" text="Help">
-                  <items>
-                    <MenuItem mnemonicParsing="false" text="About" />
-                  </items>
-                </Menu>
-              </menus>
-            </MenuBar>
             <SplitPane dividerPositions="0.39464882943143814" prefHeight="297.0" prefWidth="1094.0">
               <items>
                   <TabPane maxWidth="600.0" minWidth="300.0" prefHeight="398.0" prefWidth="430.0" tabClosingPolicy="UNAVAILABLE">

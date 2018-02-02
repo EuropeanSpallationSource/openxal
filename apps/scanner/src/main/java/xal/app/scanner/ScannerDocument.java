@@ -46,7 +46,7 @@ import xal.smf.Accelerator;
 import xal.tools.data.DataAdaptor;
 import xal.tools.xml.XmlDataAdaptor;
 
-import openxal.extension.fxapplication.XalFxDocument;
+import xal.extension.fxapplication.XalFxDocument;
 
 /**
  *

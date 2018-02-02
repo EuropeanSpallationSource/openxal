@@ -204,17 +204,6 @@ public class FXMLController implements Initializable {
             scanTable.getSelectionModel().getSelectedItems().forEach(cW -> scanTable.getItems().remove(cW));
     }
 
-    @FXML
-    void handleSaveDocument(ActionEvent event) {
-        System.out.println("Save document..");
-        try {
-            MainFunctions.mainDocument.saveDocumentAs(new File("scanner.xml").toURI().toURL());
-            Logger.getLogger(FXMLController.class.getName()).log(Level.INFO, "Document saved");
-        } catch (MalformedURLException ex) {
-            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
     // Extend the the first dimension of the double array to length newLength
     private double[][] extendArray(double[][] origArray, int newLength) {
         double[][] newArray = new double[newLength][origArray[0].length];
@@ -230,6 +219,7 @@ public class FXMLController implements Initializable {
     void handleLoadDocument(ActionEvent event) {
         Logger.getLogger(FXMLController.class.getName()).log(Level.INFO, "Loading document..");
         try {
+            // This hard-coded file name should be fixed
             MainFunctions.mainDocument.loadDocument(new File("scanner.xml").toURI().toURL());
             PVscanList.clear();
             MainFunctions.mainDocument.pvWriteables.forEach(cWrapper -> PVscanList.add(cWrapper));
