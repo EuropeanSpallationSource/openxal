@@ -21,7 +21,7 @@ import java.io.IOException;
 import static javafx.application.Application.launch;
 import javafx.stage.Stage;
 
-import openxal.extension.fxapplication.FxApplication;
+import xal.extension.fxapplication.FxApplication;
 
 public class MainApp extends FxApplication {
 
