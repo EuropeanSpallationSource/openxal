@@ -14,8 +14,6 @@
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
-<?import javafx.scene.effect.Light.Distant?>
-<?import javafx.scene.effect.Lighting?>
 <?import javafx.scene.input.KeyCodeCombination?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.StackPane?>
@@ -85,24 +83,8 @@
                            <content>
                               <AnchorPane prefHeight="386.0" prefWidth="428.0">
                                  <children>
-                                    <Button id="scan_add_pv" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#handleScanAddPV" text="Add PV">
-                                       <effect>
-                                          <Lighting bumpInput="$null">
-                                             <light>
-                                                <Light.Distant color="#52f56a" />
-                                             </light>
-                                          </Lighting>
-                                       </effect>
-                                    </Button>
-                                    <Button id="scan_remove_pv" layoutX="95.0" layoutY="14.0" mnemonicParsing="false" onAction="#handleScanRemovePV" text="Remove PV">
-                                       <effect>
-                                          <Lighting bumpInput="$null">
-                                             <light>
-                                                <Light.Distant color="#ff401a" />
-                                             </light>
-                                          </Lighting>
-                                       </effect>
-                                    </Button>
+                                    <Button id="scan_add_pv" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#handleScanAddPV" text="Add PV" />
+                                    <Button id="scan_remove_pv" layoutX="95.0" layoutY="14.0" mnemonicParsing="false" onAction="#handleScanRemovePV" text="Remove PV" />
                                     <TableView fx:id="scanTable" editable="true" layoutY="57.0" prefHeight="196.0" prefWidth="428.0">
                                       <columns>
                                         <TableColumn fx:id="scanColumnPV" editable="false" prefWidth="370.0" text="Scannable channels" />

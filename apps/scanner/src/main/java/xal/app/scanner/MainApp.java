@@ -32,26 +32,26 @@
 
 package xal.app.scanner;
 
-import javafx.application.Application;
+import java.io.IOException;
 import static javafx.application.Application.launch;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import openxal.extension.fxapplication.FxApplication;
 
-public class MainApp extends Application {
+public class MainApp extends FxApplication {
 
     @Override
-    public void start(Stage stage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("/fxml/ScannerScene.fxml"));
+    public void start(Stage stage) throws IOException {
 
-        Scene scene = new Scene(root);
-        scene.getStylesheets().add("/styles/Styles.css");
+    MAIN_SCENE = "/fxml/ScannerScene.fxml";
+    CSS_STYLE = "/styles/Styles.css";
+    STAGE_TITLE = "Scanner Application";
+    DOCUMENT = new ScannerDocument();
+    // Initialize some static functions (this is probably bad design..)
+    MainFunctions.initialize((ScannerDocument)DOCUMENT);
 
-        stage.setTitle("Scanner Application");
-        stage.setScene(scene);
-        stage.show();
+    super.initialize();
+    super.start(stage);
     }
 
     /**

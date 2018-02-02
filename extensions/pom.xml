@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.xal</groupId>
         <artifactId>openxal</artifactId>
-        <version>1.1.2-SNAPSHOT</version>
+        <version>1.2.2-SNAPSHOT</version>
     </parent>
 
     <artifactId>openxal.extensions</artifactId>
@@ -14,6 +14,7 @@
 
     <modules>
         <module>application</module>
+        <module>fxapplication</module>
         <module>bricks</module>
         <module>extlatgen</module>
         <module>fit</module>
@@ -27,10 +28,10 @@
         <module>widgets</module>
         <module>wirescan</module>
         <module>jels</module>
+        <module>jelog</module>
         <module>tracewin</module>
         <module>../services/pvlogger/extension</module>
         <module>../services/worker/extension</module>
-        <module>zplot</module>
     </modules>
 
     <dependencies>

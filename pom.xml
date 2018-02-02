@@ -1,5 +1,5 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -10,7 +10,7 @@
 
     <groupId>org.xal</groupId>
     <artifactId>openxal</artifactId>
-    <version>1.1.2-SNAPSHOT</version>
+    <version>1.2.2-SNAPSHOT</version>
 
     <packaging>pom</packaging>
 
@@ -47,6 +47,14 @@
             </plugin>
         </plugins>
     </build>
+    
+    <repositories>
+        <repository>
+            <id>epics</id>
+            <name>EPICS repository</name>
+            <url>http://epics.sourceforge.net/maven2</url>
+        </repository>
+    </repositories>
 
     <dependencyManagement>
         <dependencies>
@@ -71,6 +79,22 @@
                 <version>1.1.15</version>
             </dependency>
             <dependency>
+                <groupId>org.epics</groupId>
+                <artifactId>pvDataJava</artifactId>
+                <version>5.0.3</version>
+            </dependency>
+            <dependency>
+                <groupId>org.epics</groupId>
+                <artifactId>pvAccessJava</artifactId>
+                <version>4.1.3</version>
+            </dependency>
+            <dependency>
+                <groupId>org.epics</groupId>
+                <artifactId>pvDatabaseJava</artifactId>
+                <version>4.1.3</version>
+            </dependency>
+
+            <dependency>
                 <groupId>javax.jmdns</groupId>
                 <artifactId>jmdns</artifactId>
                 <version>3.4.2.353-openxal</version>
@@ -80,19 +104,61 @@
                 <artifactId>postgresql</artifactId>
                 <version>9.1-901.jdbc4</version>
             </dependency>
+            <dependency>
+                <groupId>se.esss.ics.rbac</groupId>
+                <artifactId>client-access-java-api</artifactId>
+                <version>2.1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-jdk14</artifactId>
+                <version>1.7.25</version>
+            </dependency>            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>3.5</version>
+            </dependency>
+            <dependency>
+                <groupId>org.gillius</groupId>
+                <artifactId>jfxutils</artifactId>
+                <version>1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.cosylab</groupId>
+                <artifactId>cf-gui</artifactId>
+                <version>1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jfree</groupId>
+                <artifactId>jfreechart</artifactId>
+                <version>1.5.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jfree</groupId>
+                <artifactId>jfreechart-fx</artifactId>
+                <version>1.5.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jfree</groupId>
+                <artifactId>jcommon</artifactId>
+                <version>1.0.23</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>1.3.2</version>
+            </dependency>
 
             <dependency>
                 <groupId>org.xal</groupId>
                 <artifactId>openxal.core</artifactId>
                 <version>${project.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>org.xal</groupId>
                 <artifactId>openxal.library</artifactId>
                 <version>${project.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>org.xal</groupId>
                 <artifactId>openxal.third-party-libs</artifactId>
@@ -101,6 +167,11 @@
             <dependency>
                 <groupId>org.xal</groupId>
                 <artifactId>openxal.plugins.jca</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.xal</groupId>
+                <artifactId>openxal.plugins.pvaccess</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -133,7 +204,11 @@
                 <artifactId>openxal.extensions.application</artifactId>
                 <version>${project.version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>org.xal</groupId>
+                <artifactId>openxal.extensions.fxapplication</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.xal</groupId>
                 <artifactId>openxal.extensions.recordselector</artifactId>
@@ -154,7 +229,6 @@
                 <artifactId>openxal.extensions.worker</artifactId>
                 <version>${project.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>org.xal</groupId>
                 <artifactId>openxal.extensions.fit</artifactId>
@@ -201,6 +275,11 @@
                 <version>${project.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.xal</groupId>
+                <artifactId>openxal.extensions.jelog</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>se.lu.esss.ics.linaclego</groupId>
                 <artifactId>openxal.extensions.linaclego</artifactId>
                 <version>${project.version}</version>
@@ -210,22 +289,6 @@
                 <artifactId>openxal.extensions.tracewin</artifactId>
                 <version>${project.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.xal</groupId>
-                <artifactId>openxal.extensions.zplot</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>se.esss.ics.rbac</groupId>
-                <artifactId>client-access-java-api</artifactId>
-                <version>2.1.0</version>
-            </dependency>
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-jdk14</artifactId>
-                <version>1.7.25</version>
-            </dependency>
         </dependencies>
     </dependencyManagement>
-
 </project>

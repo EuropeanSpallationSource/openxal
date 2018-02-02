@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.xal</groupId>
         <artifactId>openxal</artifactId>
-        <version>1.1.2-SNAPSHOT</version>
+        <version>1.2.2-SNAPSHOT</version>
     </parent>
 
     <artifactId>openxal.library</artifactId>
@@ -54,6 +54,10 @@
         </dependency>
         <dependency>
             <groupId>org.xal</groupId>
+            <artifactId>openxal.extensions.fxapplication</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.xal</groupId>
             <artifactId>openxal.extensions.pvlogger</artifactId>
         </dependency>
         <dependency>
@@ -98,7 +102,9 @@
         </dependency>
         <dependency>
             <groupId>org.xal</groupId>
-            <artifactId>openxal.plugins.jca</artifactId>
+            <!-- Only one of these two plugins can be included. If both are added, only the one which appears first here will be used -->
+            <!-- <artifactId>openxal.plugins.jca</artifactId>--> <!-- This plugin enables EPICS 3 only -->
+            <artifactId>openxal.plugins.pvaccess</artifactId> <!-- This plugin enables EPICS 4 and 3 -->
         </dependency>
         <dependency>
             <groupId>org.xal</groupId>
@@ -111,6 +117,10 @@
         <dependency>
             <groupId>org.xal</groupId>
             <artifactId>openxal.extensions.jels</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.xal</groupId>
+            <artifactId>openxal.extensions.jelog</artifactId>
         </dependency>
         <dependency>
             <groupId>org.xal</groupId>
