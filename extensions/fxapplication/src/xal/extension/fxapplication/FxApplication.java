@@ -156,28 +156,27 @@ class SaveFileMenu extends FileMenuItem {
         if (saveAs || !document.sourceSetAndValid()) {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Save Application State");
-            fileChooser.setInitialFileName("TrajectoryCorrectionAppState");
+            fileChooser.setInitialFileName(document.DEFAULT_FILENAME);
 
             //Set extension filter
-            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("XML files (*.xml)", "*.xml");
+            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Scanner documents ("+document.WILDCARD_FILE_EXTENSION+")", document.WILDCARD_FILE_EXTENSION);
             fileChooser.getExtensionFilters().add(extFilter);
 
             //Show save file dialog
             File selectedFile = fileChooser.showSaveDialog(null);
             if (selectedFile != null) {
-                try {
-                    document.setSource(selectedFile.toURI().toURL());
-                } catch (MalformedURLException ex) {
-                    Logger.getLogger(SaveFileMenu.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                document.setSource(selectedFile);
+            } else {
+                Logger.getLogger(SaveFileMenu.class.getName()).log(Level.WARNING, "Selected file is null {0}",selectedFile);
             }
+        } else {
+            Logger.getLogger(SaveFileMenu.class.getName()).log(Level.FINER, "Using existing file path {0}", document.source);
         }
-        Logger.getLogger(SaveFileMenu.class.getName()).log(Level.INFO, "Saving document");
-        try {
-            document.saveDocumentAs(new File("scanner.xml").toURI().toURL());
-            Logger.getLogger(SaveFileMenu.class.getName()).log(Level.INFO, "Document saved");
-        } catch (MalformedURLException ex) {
-            Logger.getLogger(SaveFileMenu.class.getName()).log(Level.SEVERE, null, ex);
+        if (document.sourceSetAndValid()) {
+            document.saveDocument();
+            Logger.getLogger(SaveFileMenu.class.getName()).log(Level.FINEST, "Document saved");
+        } else {
+            Logger.getLogger(SaveFileMenu.class.getName()).log(Level.SEVERE, "Could not get a good document path {0}", document.source);
         }
         //saveDocumentAs( final URL url )
     }
