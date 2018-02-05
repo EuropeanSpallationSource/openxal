@@ -31,6 +31,7 @@
  */
 package xal.app.scanner;
 
+import java.io.File;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -38,6 +39,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -97,8 +100,6 @@ public class ScannerDocument extends XalFxDocument {
     private XmlDataAdaptor da;
     private DataAdaptor currentMeasAdaptor;
 
-    private URL defaultUrl;
-
     /**
      *  Create a new empty ScanDocument1D
      */
@@ -111,6 +112,8 @@ public class ScannerDocument extends XalFxDocument {
         combos = new ArrayList<>();
         constraints = FXCollections.observableArrayList("", "", "", "");
         numberOfMeasurements = new SimpleIntegerProperty(0);
+        DEFAULT_FILENAME="ScannerData.xms";
+        WILDCARD_FILE_EXTENSION = "*.scan.xml";
     }
 
 
@@ -124,7 +127,9 @@ public class ScannerDocument extends XalFxDocument {
         if (url == null) {
                 return;
         }
-        setSource(url);
+        Logger.getLogger(ScannerDocument.class.getName()).log(Level.FINER, "Loading {0}", url);
+
+        setSource(new File(url.getFile()));
         readScanDocument(url);
 
         //super class method - will show "Save" menu active
@@ -132,22 +137,6 @@ public class ScannerDocument extends XalFxDocument {
                 return;
         }
         setHasChanges(true);
-    }
-
-    /**
-     * This Function should be part of abstract class..
-     * @param url
-     */
-    public final void setSource(URL url) {
-
-    }
-
-    /**
-     * This Function should be part of abstract class..
-     * @param hasChanges
-     */
-    public final void setHasChanges(boolean hasChanges) {
-
     }
 
     /**
@@ -168,8 +157,9 @@ public class ScannerDocument extends XalFxDocument {
      *
      *  @param  url  The file URL where the data should be saved
      */
+    @Override
     public void saveDocumentAs(URL url) {
-        defaultUrl = url;
+        Logger.getLogger(ScannerDocument.class.getName()).log(Level.FINER, "Saving document, filename {0}", url);
         da = XmlDataAdaptor.newEmptyDocumentAdaptor();
         DataAdaptor scannerAdaptor =  da.createChild(SCANNER_SR);
         currentMeasAdaptor = null;
@@ -229,6 +219,7 @@ public class ScannerDocument extends XalFxDocument {
             });
 
         da.writeToUrl( url );
+        Logger.getLogger(ScannerDocument.class.getName()).log(Level.FINEST, "Saved document");
     }
 
     public void saveCurrentMeas(int nmeas) {
@@ -236,7 +227,7 @@ public class ScannerDocument extends XalFxDocument {
             currentMeasAdaptor=da.childAdaptor(SCANNER_SR).createChild(CURRENTMEAS_SR);
         }
         currentMeasAdaptor.createChild("step").setValue("values", currentMeasurement[nmeas]);
-        da.writeToUrl( defaultUrl );
+        da.writeToUrl( source );
     };
 
 
