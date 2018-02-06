@@ -48,7 +48,7 @@ public class MainApp extends FxApplication {
     MAIN_SCENE = "/fxml/ScannerScene.fxml";
     CSS_STYLE = "/styles/Styles.css";
     STAGE_TITLE = "Scanner Application";
-    Logger.getLogger(MainApp.class.getName()).log(Level.WARNING, "Ignoring {0} .. ", Boolean.getBoolean( "useDefaultAccelerator" ));
+    Logger.getLogger(MainApp.class.getName()).log(Level.WARNING, "Ignoring useDefaultAccelerator: {0} .. ", Boolean.getBoolean( "useDefaultAccelerator" ));
     DOCUMENT = new ScannerDocument();
     // Initialize some static functions (this is probably bad design..)
     MainFunctions.initialize((ScannerDocument)DOCUMENT);

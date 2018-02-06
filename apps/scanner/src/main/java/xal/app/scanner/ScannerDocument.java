@@ -112,7 +112,7 @@ public class ScannerDocument extends XalFxDocument {
         combos = new ArrayList<>();
         constraints = FXCollections.observableArrayList("", "", "", "");
         numberOfMeasurements = new SimpleIntegerProperty(0);
-        DEFAULT_FILENAME="ScannerData.xms";
+        DEFAULT_FILENAME="Data.scan.xml";
         WILDCARD_FILE_EXTENSION = "*.scan.xml";
     }
 
