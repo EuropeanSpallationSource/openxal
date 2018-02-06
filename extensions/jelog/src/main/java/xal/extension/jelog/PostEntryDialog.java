@@ -36,24 +36,39 @@ import se.esss.jelog.PostEntryController;
 public class PostEntryDialog {
 
     public static void post() throws IOException, Exception {
-        post(null, null);
+        post(null, null, null);
+    }
+
+    public static void post(String defaultLogbook) throws IOException, Exception {
+        post(null, null, defaultLogbook);
     }
 
     public static void post(WritableImage[] snapshots) throws IOException, Exception {
-        post(snapshots, null);
+        post(snapshots, null, null);
     }
 
     public static void post(Attachment[] attachments) throws IOException, Exception {
-        post(null, attachments);
-
+        post(null, attachments, null);
     }
 
-    public static void post(WritableImage[] snapshots, Attachment[] attachments) throws IOException, Exception {
+    public static void post(WritableImage[] snapshots, String defaultLogbook) throws IOException, Exception {
+        post(snapshots, null, defaultLogbook);
+    }
+
+    public static void post(Attachment[] attachments, String defaultLogbook) throws IOException, Exception {
+        post(null, attachments, defaultLogbook);
+    }
+
+    public static void post(WritableImage[] snapshots, Attachment[] attachments, String defaultLogbook) throws IOException, Exception {
         FXMLLoader fxmlLoader = new FXMLLoader(PostEntryController.class.getResource("/fxml/PostEntryScene.fxml"));
 
         Parent root = (Parent) fxmlLoader.load();
 
         PostEntryController controller = fxmlLoader.<PostEntryController>getController();
+
+        if (defaultLogbook != null) {
+            controller.setDefaultLogbook(defaultLogbook);
+        }
 
         if (controller.login()) {
             controller.setSnapshots(snapshots);
