@@ -169,18 +169,21 @@ public class PVTree extends SplitPane {
     private void addOneChannel(Channel channel) {
         ChannelWrapper newChannelWrapper = new ChannelWrapper(channel);
         try {
+            Logger.getLogger(PVTree.class.getName()).log(Level.FINER, "Channel {0} has write access {1}", new Object[]{channel.getId(), channel.writeAccess()});
             if (channel.writeAccess())
             {
-                if (!FXMLController.pvScannablelist.contains(newChannelWrapper))
+                if (!FXMLController.pvScannablelist.contains(newChannelWrapper)) {
+                    Logger.getLogger(PVTree.class.getName()).log(Level.FINEST, "Adding channel {0} to scannable list", new Object[]{channel.getId()});
                     FXMLController.pvScannablelist.add(newChannelWrapper);
-                else
+                } else
                     Logger.getLogger(PVTree.class.getName()).log(Level.INFO, "Channel {0} has already been added", channel.getId());
             }
             else
             {
-                if (!FXMLController.pvReadablelist.contains(newChannelWrapper))
+                if (!FXMLController.pvReadablelist.contains(newChannelWrapper)) {
+                    Logger.getLogger(PVTree.class.getName()).log(Level.FINEST, "Adding channel {0} to readable list", new Object[]{channel.getId()});
                     FXMLController.pvReadablelist.add(newChannelWrapper);
-                else
+                } else
                     Logger.getLogger(PVTree.class.getName()).log(Level.INFO, "Channel {0} has already been added", channel.getId());
             }
         } catch (ConnectionException ex) {
