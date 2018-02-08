@@ -26,6 +26,10 @@ public class TrajectoryDisplayDocument extends XalFxDocument{
     public TrajectoryDisplayDocument() {
         super();
     }
+    
+    public void saveTrajectory(){
+       
+    }
                 
     @Override
     public void saveDocumentAs(URL url) {

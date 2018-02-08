@@ -129,6 +129,6 @@ class SaveTrajectoryMenu implements EventHandler {
 
     @Override
     public void handle(Event t) {
-
+        document.saveTrajectory();
     } 
 }
