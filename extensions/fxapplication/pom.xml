@@ -28,5 +28,11 @@
             <groupId>org.xal</groupId>
             <artifactId>openxal.plugins.essrbac</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.xal</groupId>
+            <artifactId>openxal.extensions.jelog</artifactId>
+            <version>1.2.2-SNAPSHOT</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
 </project>
