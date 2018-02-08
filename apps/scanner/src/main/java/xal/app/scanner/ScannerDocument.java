@@ -136,7 +136,7 @@ public class ScannerDocument extends XalFxDocument {
         if (url.getProtocol().equals("jar")) {
                 return;
         }
-        setHasChanges(true);
+        setHasChanges(false);
     }
 
     /**

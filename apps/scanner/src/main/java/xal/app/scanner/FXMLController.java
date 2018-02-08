@@ -503,6 +503,7 @@ public class FXMLController implements Initializable {
                 if (MainFunctions.actionScanAddPV(pvScannablelist.get(param), false, true)) {
                     PVscanList.add(pvScannablelist.get(param));
                     MainFunctions.isCombosUpdated.set(false);
+                    MainFunctions.mainDocument.setHasChanges(true);
                 }
                 if (MainFunctions.checkSufficientParams()) {
                     tabConfigure.setDisable(false);

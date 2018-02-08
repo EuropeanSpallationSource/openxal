@@ -100,6 +100,7 @@ public class MainFunctions {
                 return true;
             }
         }
+        mainDocument.setHasChanges(true);
         return false;
     }
 
