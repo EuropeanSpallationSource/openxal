@@ -14,6 +14,7 @@ import javafx.application.Application;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
@@ -114,6 +115,9 @@ abstract public class FxApplication extends Application {
 
         stage.setTitle(STAGE_TITLE);
         stage.setScene(scene);
+        //YIL It is probably very bad to set this here but I am a stupid person.
+        DOCUMENT.sourceString = new SimpleStringProperty(DOCUMENT.DEFAULT_FILENAME);
+        DOCUMENT.sourceString.addListener((observable, oldValue, newValue) -> stage.setTitle(STAGE_TITLE+": "+newValue));
         stage.show();
     }
 
@@ -159,7 +163,7 @@ class SaveFileMenu extends FileMenuItem {
             fileChooser.setInitialFileName(document.DEFAULT_FILENAME);
 
             //Set extension filter
-            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Scanner documents ("+document.WILDCARD_FILE_EXTENSION+")", document.WILDCARD_FILE_EXTENSION);
+            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(document.FILETYPE_DESCRIPTION+" ("+document.WILDCARD_FILE_EXTENSION+")", document.WILDCARD_FILE_EXTENSION);
             fileChooser.getExtensionFilters().add(extFilter);
 
             //Show save file dialog
@@ -191,12 +195,22 @@ class LoadFileMenu extends FileMenuItem {
 
     @Override
     public void handle(Event t) {
-        try {
-            // This hard-coded file name should be fixed
-            document.loadDocument(new File("scanner.xml").toURI().toURL());
-        } catch (MalformedURLException ex) {
-            Logger.getLogger(LoadFileMenu.class.getName()).log(Level.SEVERE, null, ex);
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Load Application State");
+        //fileChooser.setInitialFileName(document.DEFAULT_FILENAME);
+
+        //Set extension filter
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(document.FILETYPE_DESCRIPTION+" ("+document.WILDCARD_FILE_EXTENSION+")", document.WILDCARD_FILE_EXTENSION);
+        fileChooser.getExtensionFilters().add(extFilter);
+
+        //Show save file dialog
+        File selectedFile = fileChooser.showSaveDialog(null);
+        if (selectedFile.exists() && selectedFile.canRead()) {
+            document.setSource(selectedFile);
+            document.loadDocument(document.source);
         }
+        else
+            Logger.getLogger(LoadFileMenu.class.getName()).log(Level.SEVERE, "Could not open {0}", document.source);
     }
 
 }

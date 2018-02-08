@@ -11,6 +11,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.property.SimpleStringProperty;
 
 
 /**
@@ -20,8 +21,10 @@ import java.util.logging.Logger;
  */
 abstract public class XalFxDocument {
     /** wildcard file extension */
+    protected String FILETYPE_DESCRIPTION = "Any XML File";
     protected String WILDCARD_FILE_EXTENSION = "*.xml";
     protected String DEFAULT_FILENAME = "DefaultFileName.xml";
+    protected SimpleStringProperty sourceString;
     /** The persistent storage URL for the document */
     protected URL source;
     protected boolean hasChanges;
@@ -32,6 +35,9 @@ abstract public class XalFxDocument {
      * @param changeStatus Status to set whether this document has changes that need saving.
      */
     public void setHasChanges( final boolean changeStatus ) {
+        // Add a * after the file name in title bar in case there are changes to the file
+        if (!hasChanges)
+            sourceString.set(source+"*");
         hasChanges = changeStatus;
     }
     /**
@@ -48,12 +54,12 @@ abstract public class XalFxDocument {
         return true;
     }
     public void setSource(File newSource) {
-        // TODO check if newSource is valid..
-
-        if (newSource.canWrite()) {
+        // Checking that we are allowed to write to the folder where this file is from
+        if (newSource.getParentFile().canWrite()) {
             try {
                 Logger.getLogger(XalFxDocument.class.getName()).log(Level.FINER, "Changing document source {0}",newSource);
                 source = newSource.toURI().toURL();
+                sourceString.set(newSource.toString());
             } catch (MalformedURLException ex) {
                 Logger.getLogger(XalFxDocument.class.getName()).log(Level.SEVERE, null, ex);
             }
