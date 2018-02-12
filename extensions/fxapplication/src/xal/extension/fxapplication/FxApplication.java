@@ -9,22 +9,38 @@ package xal.extension.fxapplication;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import javafx.application.Application;
 import java.net.URL;
+import javafx.beans.property.SimpleStringProperty;
+import java.util.List;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.control.MenuBar;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.RadioMenuItem;
+import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.VBox;
-import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.FileChooser;
+import xal.smf.Accelerator;
+import xal.smf.AcceleratorSeq;
+import xal.smf.AcceleratorSeqCombo;
+import xal.smf.data.XMLDataManager;
 
 
 /**
@@ -48,6 +64,9 @@ abstract public class FxApplication extends Application {
     // Set to false if this application doesn't save/load xml files
     protected boolean HAS_DOCUMENTS = true;
 
+    // Set to false if this application doesn't need the machine sequences
+    protected boolean HAS_SEQUENCE = true;
+
     protected MenuBar MENU_BAR;
 
     /**
@@ -69,6 +88,9 @@ abstract public class FxApplication extends Application {
     // Call this before start() (so that you can add items to MENU_BAR etc after)
     protected void initialize() {
 
+        Logger.getLogger(FxApplication.class.getName()).log(Level.INFO, "Loading default accelerator.");
+        DOCUMENT.accelerator.setAccelerator(XMLDataManager.loadDefaultAccelerator());
+
         MENU_BAR = new MenuBar();
 
         Menu fileMenu = new Menu("File");
@@ -87,12 +109,47 @@ abstract public class FxApplication extends Application {
         exitMenu.setOnAction(new ExitMenu());
         fileMenu.getItems().addAll( exitMenu);
 
-
         final Menu editMenu = new Menu("Edit");
 
-        final Menu accMenu = new Menu("Accelerator");
+        final Menu acceleratorMenu = new Menu("Accelerator");
+        final MenuItem loadDefaultAcceleratorMenu = new MenuItem("Load Default Accelerator");
+        loadDefaultAcceleratorMenu.setOnAction(new LoadDefaultAcceleratorMenu(DOCUMENT));
+        final MenuItem loadAcceleratorMenu = new MenuItem("Load Accelerator ...");
+        loadAcceleratorMenu.setOnAction(new LoadAcceleratorMenu(DOCUMENT));
+        acceleratorMenu.getItems().addAll(loadDefaultAcceleratorMenu,loadAcceleratorMenu);
+        final Menu sequenceMenu = new Menu("Sequence");
+        final ToggleGroup groupSequence = new ToggleGroup();
 
-        MENU_BAR.getMenus().addAll( fileMenu, editMenu, accMenu);
+
+        if(HAS_SEQUENCE && DOCUMENT.accelerator.getAccelerator()!=null){
+            buildSequenceMenu(DOCUMENT.accelerator.getAccelerator(),sequenceMenu,groupSequence);
+            acceleratorMenu.getItems().addAll(new SeparatorMenuItem(),sequenceMenu);
+            final MenuItem addCombo = new MenuItem("Add new Combo Sequence");
+            addCombo.setOnAction(new AddCombo(DOCUMENT,groupSequence));
+            sequenceMenu.getItems().add(addCombo);
+        }
+
+        final Menu eLogMenu = new Menu("eLog entry");
+        final MenuItem makePostMenu = new MenuItem("Make an eLog post");
+        makePostMenu.setOnAction(new ELogMenu(DOCUMENT));
+        eLogMenu.getItems().addAll(makePostMenu);
+
+        final Menu helpMenu = new Menu("Help");
+        final MenuItem aboutMenu = new MenuItem("About");
+        aboutMenu.setOnAction(new HelpMenu(DOCUMENT));
+        helpMenu.getItems().add(aboutMenu);
+
+        MENU_BAR.getMenus().addAll( fileMenu, editMenu, acceleratorMenu, eLogMenu, helpMenu);
+
+        DOCUMENT.accelerator.addChangeListener((ChangeListener) (ObservableValue o, Object oldVal, Object newVal) -> {
+            if(HAS_SEQUENCE && DOCUMENT.accelerator.getAccelerator()!=null){
+                int menu_num = sequenceMenu.getItems().size();
+                sequenceMenu.getItems().remove(0, menu_num - 1);
+                groupSequence.getToggles().clear();
+                buildSequenceMenu(DOCUMENT.accelerator.getAccelerator(),sequenceMenu,groupSequence);
+                Logger.getLogger(FxApplication.class.getName()).log(Level.INFO, "Rebuilding Sequence Menu.");
+            }
+        });
 
     }
 
@@ -101,12 +158,10 @@ abstract public class FxApplication extends Application {
 
         VBox root = new VBox();
 
-        //final Group root = new Group();
         FXMLLoader loader = new FXMLLoader(getClass().getResource(MAIN_SCENE));
 
         root.getChildren().add(MENU_BAR);
         root.getChildren().add(loader.load());
-        //Parent root = FXMLLoader.load(getClass().getResource(MAIN_SCENE));
 
         Scene scene = new Scene(root);
         scene.getStylesheets().add(CSS_STYLE);
@@ -119,6 +174,37 @@ abstract public class FxApplication extends Application {
         DOCUMENT.sourceString = new SimpleStringProperty(DOCUMENT.DEFAULT_FILENAME);
         DOCUMENT.sourceString.addListener((observable, oldValue, newValue) -> stage.setTitle(STAGE_TITLE+": "+newValue));
         stage.show();
+    }
+
+
+
+    public void buildSequenceMenu(Accelerator accelerator, Menu sequenceMenu, ToggleGroup groupSequence){
+        //Populate the Sequence Menu with the sequences of the machine
+        List<AcceleratorSeq> seqItem = accelerator.getSequences();
+        int k = 0;
+
+        for (AcceleratorSeq item : seqItem) { //AddSequences
+            RadioMenuItem addedItem = new RadioMenuItem(item.toString());
+            sequenceMenu.getItems().add(k,addedItem);
+            addedItem.setToggleGroup(groupSequence);
+            addedItem.setOnAction(new SelectSequenceMenu(DOCUMENT));
+            k++;
+        }
+
+        sequenceMenu.getItems().add(new SeparatorMenuItem());
+
+        List<AcceleratorSeqCombo> seqCombo = accelerator.getComboSequences();
+        k++;
+        for (AcceleratorSeqCombo item : seqCombo) { //AddCombos
+            RadioMenuItem addedItem = new RadioMenuItem(item.toString());
+            sequenceMenu.getItems().add(k,addedItem);
+            addedItem.setToggleGroup(groupSequence);
+            addedItem.setOnAction(new SelectSequenceMenu(DOCUMENT));
+            k++;
+        }
+
+        sequenceMenu.getItems().add(k,new SeparatorMenuItem());
+
     }
 
 }
@@ -148,13 +234,15 @@ class NewFileMenu extends FileMenuItem {
     }
 
 }
+
 class SaveFileMenu extends FileMenuItem {
-    private boolean saveAs;
+    private final boolean saveAs;
 
     public SaveFileMenu(XalFxDocument document, boolean saveAs) {
         super(document);
         this.saveAs = saveAs;
     }
+
     @Override
     public void handle(Event t) {
         if (saveAs || !document.sourceSetAndValid()) {
@@ -222,5 +310,172 @@ class ExitMenu implements EventHandler {
         Logger.getLogger(ExitMenu.class.getName()).log(Level.INFO, "Exit button clicked");
         System.exit(0);
     }
+}
 
+class LoadDefaultAcceleratorMenu implements EventHandler {
+
+    private final XalFxDocument document;
+
+    public LoadDefaultAcceleratorMenu(XalFxDocument document) {
+        this.document = document;
+    }
+
+    @Override
+    public void handle(Event t) {
+        Logger.getLogger(LoadDefaultAcceleratorMenu.class.getName()).log(Level.INFO, "Loading default accelerator.");
+        document.accelerator.setAccelerator(XMLDataManager.loadDefaultAccelerator());
+    }
+
+}
+
+class LoadAcceleratorMenu implements EventHandler {
+
+    private final XalFxDocument document;
+
+    public LoadAcceleratorMenu(XalFxDocument DOCUMENT) {
+        this.document = DOCUMENT;
+    }
+
+    @Override
+    public void handle(Event t) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Load Accelerator");
+
+        //Set extension filter
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("XAL files (*.xal)", "*.xal");
+        fileChooser.getExtensionFilters().add(extFilter);
+
+        //Show save file dialog
+        File selectedFile = fileChooser.showOpenDialog(null);
+        if (selectedFile != null) {
+            Logger.getLogger(LoadAcceleratorMenu.class.getName()).log(Level.INFO, "Loading accelerator from file.");
+            document.accelerator.setAccelerator(XMLDataManager.acceleratorWithPath(selectedFile.getAbsolutePath()));
+        } else {
+            Alert alert = new Alert(AlertType.WARNING);
+            alert.setTitle("Load Accelerator Warning");
+            alert.setHeaderText("Empty or invalid file selected");
+            alert.setContentText("How to proceed?");
+
+            ButtonType buttonTypeLoad = new ButtonType("Load Default Accelerator");
+            ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
+            alert.getButtonTypes().setAll(buttonTypeLoad, buttonTypeCancel);
+
+            Optional<ButtonType> result = alert.showAndWait();
+
+            if (result.get() == buttonTypeLoad){
+                Logger.getLogger(LoadAcceleratorMenu.class.getName()).log(Level.INFO, "Loading default accelerator.");
+                document.accelerator.setAccelerator(XMLDataManager.loadDefaultAccelerator());
+            } else {
+                Logger.getLogger(LoadAcceleratorMenu.class.getName()).log(Level.INFO, "No accelerator selected.");
+                document.accelerator.setAccelerator(null);
+            }
+        }
+    }
+
+}
+
+class SelectSequenceMenu implements EventHandler {
+
+    protected final XalFxDocument document;
+
+    /*
+    * CONTRUCTOR
+    */
+    public SelectSequenceMenu(XalFxDocument DOCUMENT){
+        this.document = DOCUMENT;
+    }
+
+    @Override
+    public void handle(Event t) {
+        final RadioMenuItem getSeqName = (RadioMenuItem) t.getSource();
+        document.setSequence(getSeqName.getText());
+        Logger.getLogger(FxApplication.class.getName()).log(Level.INFO, "Sequence Selected: {0}", document.getSequence());
+    }
+}
+
+
+class AddCombo implements EventHandler {
+
+    protected final XalFxDocument document;
+    protected final ToggleGroup groupSequence;
+
+    /*
+    * CONTRUCTOR
+    */
+    public AddCombo(XalFxDocument DOCUMENT,ToggleGroup groupSequence){
+        this.document = DOCUMENT;
+        this.groupSequence = groupSequence;
+    }
+
+    @Override
+    public void handle(Event t) {
+
+        Stage stage;
+        Parent root;
+        URL url = null;
+        String sceneFile = "/xal/extension/fxapplication/resources/CreateComboSequence.fxml";
+        try {
+            stage = new Stage();
+            url = getClass().getResource(sceneFile);
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(FxApplication.class.getResource(sceneFile));
+            root = loader.load();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Create a Combo Sequence");
+            stage.initModality(Modality.APPLICATION_MODAL);
+            CreateComboSequenceController loginController = loader.getController();
+            loginController.setProperties(document.accelerator.getAccelerator());
+            loginController.loggedInProperty().addListener((ObservableValue<? extends Boolean> obs, Boolean wasLoggedIn, Boolean isNowLoggedIn) -> {
+                if (isNowLoggedIn) {
+                    if (loginController.getComboName() != null) {
+                        AcceleratorSeqCombo comboSequence = new AcceleratorSeqCombo(loginController.getComboName(), loginController.getNewComboSequence());
+                        MenuItem addComboMenu = (MenuItem) t.getSource();
+                        RadioMenuItem addedItem = new RadioMenuItem(loginController.getComboName());
+                        addedItem.setOnAction(new SelectSequenceMenu(document));
+                        addedItem.setToggleGroup(groupSequence);
+                        groupSequence.selectToggle(addedItem);
+                        document.setSequence(loginController.getComboName());
+                        Logger.getLogger(AddCombo.class.getName()).log(Level.INFO, "Sequence Selected: {0}", document.getSequence());
+                        int index = addComboMenu.getParentMenu().getItems().size() - 2;
+                        addComboMenu.getParentMenu().getItems().add(index, addedItem);
+                    }
+                    stage.close();
+                }
+            });
+            stage.showAndWait();
+        } catch (IOException ex) {
+            System.out.println("Exception on FXMLLoader.load()");
+            System.out.println("  * url: " + url);
+            System.out.println("  * " + ex);
+            System.out.println("    ----------------------------------------\n");
+        }
+    }
+
+}
+
+
+class ELogMenu implements EventHandler {
+    protected XalFxDocument document;
+
+    public ELogMenu(XalFxDocument document){
+        this.document = document;
+    }
+
+    @Override
+    public void handle(Event t) {
+        document.eLogPost();
+    }
+}
+
+class HelpMenu implements EventHandler {
+    protected XalFxDocument document;
+
+    public HelpMenu(XalFxDocument document){
+        this.document = document;
+    }
+
+    @Override
+    public void handle(Event t) {
+        document.help();
+    }
 }

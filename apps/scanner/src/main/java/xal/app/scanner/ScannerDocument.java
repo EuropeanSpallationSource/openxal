@@ -104,6 +104,7 @@ public class ScannerDocument extends XalFxDocument {
      *  Create a new empty ScanDocument1D
      */
     public ScannerDocument() {
+        super();
         dataSets = new HashMap<>();
         allPVrb = new HashMap<>();
         allPVw = new HashMap<>();
@@ -331,5 +332,10 @@ public class ScannerDocument extends XalFxDocument {
             }
         }
 
+    }
+
+    @Override
+    public void eLogPost() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

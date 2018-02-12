@@ -43,6 +43,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
@@ -54,6 +56,7 @@ import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
@@ -75,6 +78,7 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import xal.ca.ConnectionException;
 import xal.ca.GetException;
+import xal.extension.jelog.PostEntryDialog;
 import xal.smf.Accelerator;
 import xal.smf.AcceleratorSeq;
 import xal.smf.AcceleratorSeqCombo;
@@ -87,8 +91,8 @@ public class FXMLController implements Initializable {
     //public xal.smf.Accelerator accl = xal.smf.data.XMLDataManager.acceleratorWithPath("/Users/nataliamilas/projects/openxal/site/optics/design/main.xal");
     public Accelerator accl = XMLDataManager.loadDefaultAccelerator();
     public TrajectoryArray DisplayTraj = new TrajectoryArray();//Trajectory to be displayed on the plot
-    private final ObservableList<URL> refTrajData = FXCollections.observableArrayList();// holds info about reference trajectories
-
+    private final ObservableList<URL> refTrajData = FXCollections.observableArrayList();// holds info about reference trajectories       
+    
     //set plot update timer
     private StatusAnimationTimer timerPlotUpdate;
 
@@ -133,8 +137,8 @@ public class FXMLController implements Initializable {
     private Label labelTrajectoryStatus;
 
     @Override
-    public void initialize(URL url, ResourceBundle rb) {
-
+    public void initialize(URL url, ResourceBundle rb) {                    
+                
         //Populate the Accelerator Menu with the sequences of the machine
         List<AcceleratorSeq> seqItem = accl.getSequences();
         int k = 0;
@@ -450,7 +454,7 @@ public class FXMLController implements Initializable {
                     //turn off plot update timer
                     boolean timerisRunning = false;
                     if (timerPlotUpdate != null) {
-                        timerisRunning = timerPlotUpdate.isRunning();
+                        timerisRunning = (timerPlotUpdate.isRunning() && DisplayTraj.isMinChannelConnected());
                         timerPlotUpdate.stop();
                     }
 
@@ -477,11 +481,11 @@ public class FXMLController implements Initializable {
                     RadioMenuItem getSeqName = (RadioMenuItem) groupSequence.getSelectedToggle();
                     //turn on timer
                     if (timerisRunning) {
-                        if (accl.getSequence(getSeqName.getText()) != null) {
-                            DisplayTraj.connectCheckBPMs(accl.getSequence(getSeqName.getText()));
-                        } else if (accl.getComboSequence(getSeqName.getText()) != null) {
-                            DisplayTraj.connectCheckBPMs(accl.getComboSequence(getSeqName.getText()));
-                        }
+                        //if (accl.getSequence(getSeqName.getText()) != null) {
+                        //    DisplayTraj.connectCheckBPMs(accl.getSequence(getSeqName.getText()));
+                        //} else if (accl.getComboSequence(getSeqName.getText()) != null) {
+                        //    DisplayTraj.connectCheckBPMs(accl.getComboSequence(getSeqName.getText()));
+                        //}
                         timerPlotUpdate.start();
                     } else if (labelTrajectoryStatus.getText().length() > 13) {
                         File selectedFile = new File(labelTrajectoryStatus.getText().substring(13));
@@ -504,9 +508,9 @@ public class FXMLController implements Initializable {
             }
         });
 
-        anchorPaneChart.setDisable(true);
+        anchorPaneChart.setDisable(true);                
 
-    }
+    }   
 
     @FXML
     private void handleExitMenu(ActionEvent event) {
@@ -786,28 +790,38 @@ public class FXMLController implements Initializable {
     private void handleMenuLiveTrajectory(ActionEvent event) {
         // Initializes bpm channels
         DisplayTraj.initBPMs(accl);
+        
+        if(DisplayTraj.isMinChannelConnected()){
+        
+            timerPlotUpdate = new StatusAnimationTimer() {
 
-        timerPlotUpdate = new StatusAnimationTimer() {
-
-            @Override
-            public void handle(long now) {
-                RadioMenuItem getSeqName = (RadioMenuItem) groupSequence.getSelectedToggle();
-                if (getSeqName != null) {
-                    //reads trajecotry
-                    try {
-                        DisplayTraj.readTrajectory(accl, getSeqName.getText());
-                    } catch (ConnectionException | GetException ex) {
-                        Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                @Override
+                public void handle(long now) {
+                    RadioMenuItem getSeqName = (RadioMenuItem) groupSequence.getSelectedToggle();
+                    if (getSeqName != null) {
+                        //reads trajecotry
+                        try {
+                            DisplayTraj.readTrajectory(accl, getSeqName.getText());
+                        } catch (ConnectionException | GetException ex) {
+                            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        //updates the dataset
+                        updateDataset(DisplayTraj);
                     }
-                    //updates the dataset
-                    updateDataset(DisplayTraj);
                 }
-            }
 
-        };
+            };
 
-        labelTrajectoryStatus.setText("Trajectory : LIVE");
-        timerPlotUpdate.start();
+            labelTrajectoryStatus.setText("Trajectory : LIVE");
+            timerPlotUpdate.start();
+        } else {
+            Alert alert = new Alert(AlertType.WARNING);
+            alert.setTitle("BPM Connection Warning");
+            alert.setHeaderText("Minimum number of connected channels not reached!");
+            alert.setContentText("Most of the BPM channels are disconected. Display of LIVE trajectory not possible ");
+
+            alert.showAndWait();            
+        }
     }
 
     @FXML
@@ -844,6 +858,17 @@ public class FXMLController implements Initializable {
                 updateDataset(DisplayTraj);
                 anchorPaneChart.setDisable(false);
             }
+        }
+    }
+
+    @FXML
+    private void handleELog(ActionEvent event) {
+        try {
+            WritableImage[] snapshots = new WritableImage[1];
+            mainAnchor1.getScene().snapshot(snapshots[0]);  
+            PostEntryDialog.post(snapshots);
+        } catch (Exception ex) {
+            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

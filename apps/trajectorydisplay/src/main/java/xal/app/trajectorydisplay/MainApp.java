@@ -23,6 +23,7 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.SeparatorMenuItem;
 import javafx.stage.Stage;
 
 import xal.extension.fxapplication.FxApplication;
@@ -36,13 +37,30 @@ public class MainApp extends FxApplication {
         CSS_STYLE = "/styles/Styles.css";
         STAGE_TITLE = "Trajectory Display";
         HAS_DOCUMENTS=false;
+        DOCUMENT = new TrajectoryDisplayDocument();
+        
+        MainFuctions.initialize((TrajectoryDisplayDocument) DOCUMENT);        
+        DOCUMENT.setStage(stage);
+        DOCUMENT.setHelpLink("https://confluence.esss.lu.se/display/BPCRS/User+documentation+for+Trajectory+Correction+application");
 
         super.initialize();
-        Menu trajectoryMenu = new Menu("File");
-        MenuItem tMenu = new MenuItem("Trajectory");
-        tMenu.setOnAction(new TrajectoryMenu());
-        trajectoryMenu.getItems().add(tMenu);
+        
+        Menu trajectoryMenu = new Menu("Trajectory");
+        MenuItem displayLiveTrajMenu = new MenuItem("Display LIVE trajectory");
+        displayLiveTrajMenu.setOnAction(new LiveTrajectoryMenu((TrajectoryDisplayDocument) DOCUMENT));
+        trajectoryMenu.getItems().add(displayLiveTrajMenu );
+        MenuItem trajFromFileMenu =new MenuItem("Display trajectory from File");
+        trajFromFileMenu.setOnAction(new TrajectoryFromFileMenu((TrajectoryDisplayDocument) DOCUMENT));
+        trajectoryMenu.getItems().add(trajFromFileMenu);
+        trajectoryMenu.getItems().add(new SeparatorMenuItem());
+        MenuItem loadReferenceTrajMenu = new MenuItem("Load reference trajectory");
+        loadReferenceTrajMenu.setOnAction(new LoadReferenceTrajectoryMenu((TrajectoryDisplayDocument) DOCUMENT));
+        trajectoryMenu.getItems().add(loadReferenceTrajMenu );
+        MenuItem saveTrajMenu =new MenuItem("Save current trajectory");
+        saveTrajMenu.setOnAction(new SaveTrajectoryMenu((TrajectoryDisplayDocument) DOCUMENT));
+        trajectoryMenu.getItems().add(saveTrajMenu);
         MENU_BAR.getMenus().add(trajectoryMenu);
+        
         super.start(stage);
     }
 
@@ -60,11 +78,58 @@ public class MainApp extends FxApplication {
 
 }
 
-class TrajectoryMenu implements EventHandler {
+class LiveTrajectoryMenu implements EventHandler {
+    
+    protected TrajectoryDisplayDocument document;
+    
+    public LiveTrajectoryMenu(TrajectoryDisplayDocument document){
+        this.document = document;
+    }
 
     @Override
     public void handle(Event t) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        document.liveTrajectory.set(true);
+    }   
+}
+
+class TrajectoryFromFileMenu implements EventHandler {
+
+    protected TrajectoryDisplayDocument document;
+    
+    public TrajectoryFromFileMenu(TrajectoryDisplayDocument document){
+        this.document = document;
     }
 
+    @Override
+    public void handle(Event t) {
+        document.liveTrajectory.set(true);
+    }  
+    }
+
+class LoadReferenceTrajectoryMenu implements EventHandler {
+
+    protected TrajectoryDisplayDocument document;
+    
+    public LoadReferenceTrajectoryMenu(TrajectoryDisplayDocument document){
+        this.document = document;
+    }
+
+    @Override
+    public void handle(Event t) {
+        document.liveTrajectory.set(true);
+    }   
+}
+
+class SaveTrajectoryMenu implements EventHandler {
+
+    protected TrajectoryDisplayDocument document;
+    
+    public SaveTrajectoryMenu(TrajectoryDisplayDocument document){
+        this.document = document;
+    }
+
+    @Override
+    public void handle(Event t) {
+        document.saveTrajectory();
+    } 
 }
