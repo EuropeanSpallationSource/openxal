@@ -89,6 +89,8 @@ public class MainFunctions {
         if (read)
             if (! mainDocument.pvReadbacks.contains(cWrapper)) {
                 mainDocument.pvReadbacks.add(cWrapper);
+                Logger.getLogger(MainFunctions.class.getName()).log(Level.FINER, "Added channel {0} to readable list",cWrapper);
+                mainDocument.setHasChanges(true);
                 return true;
             }
         if (write) {
@@ -97,10 +99,11 @@ public class MainFunctions {
                 cWrapper.npointsProperty().addListener((observable, oldValue, newValue) -> isCombosUpdated.set(false));
                 cWrapper.minProperty().addListener((observable, oldValue, newValue) -> isCombosUpdated.set(false));
                 cWrapper.maxProperty().addListener((observable, oldValue, newValue) -> isCombosUpdated.set(false));
+                Logger.getLogger(MainFunctions.class.getName()).log(Level.FINER, "Added channel {0} to writeable list",cWrapper);
+                mainDocument.setHasChanges(true);
                 return true;
             }
         }
-        mainDocument.setHasChanges(true);
         return false;
     }
 
