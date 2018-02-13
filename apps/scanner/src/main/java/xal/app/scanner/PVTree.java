@@ -159,8 +159,6 @@ public class PVTree extends SplitPane {
             updateTree(newValue);
 
         });
-        // TODO the nodes which have getStatus() false should be grey in the list (to mark them as "problematic")
-        //Model.getInstance().getAccelerator().getRoot().getSequence("MEBT").getAllNodes().stream().forEach(n -> System.out.println("Node " + n.getId() + " is valid? "+ n.getStatus()));
 
         updateTree(elementSearch.getText());
         Logger.getLogger(PVTree.class.getName()).log(Level.FINER, "PV Tree Widget initialized");
