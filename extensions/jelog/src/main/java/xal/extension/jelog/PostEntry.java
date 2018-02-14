@@ -33,9 +33,17 @@ import se.esss.jelog.Jelog;
  */
 public class PostEntry {
 
-    public static final String elogServer = "https://logbook.esss.lu.se/";
+    private static String elogServer = null;
 
     public static final Logger LOGGER = Logger.getLogger(PostEntry.class.getName());
+
+    public static String getElogServer() {
+        return elogServer;
+    }
+
+    public static void setElogServer(String elogServer) {
+        PostEntry.elogServer = elogServer;
+    }
 
     public static int post(HashMap<String, String> fields, String textBody, String logbook) throws IOException, Exception {
         return post(fields, textBody, logbook, null, null);
@@ -52,6 +60,10 @@ public class PostEntry {
 
     public static int post(HashMap<String, String> fields, String textBody, String logbook, WritableImage[] snapshots, Attachment[] attachments) throws IOException, Exception {
         Jelog.setTrustAllCerts();
+        
+        if (elogServer == null){
+            elogServer = ElogServer.getElogURL();
+        }
 
         String[] credentials = Jelog.retrieveUsernameAndPassword(new URL(new URL(elogServer), logbook).toString());
 
