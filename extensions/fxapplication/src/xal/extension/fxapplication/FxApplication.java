@@ -129,10 +129,12 @@ abstract public class FxApplication extends Application {
             sequenceMenu.getItems().add(addCombo);
         }
 
-        final Menu eLogMenu = new Menu("eLog entry");
-        final MenuItem makePostMenu = new MenuItem("Make an eLog post");
+        final Menu eLogMenu = new Menu("eLog");
+        final MenuItem openLogMenu = new MenuItem("Open");
+        openLogMenu.setOnAction(new UrlMenu(DOCUMENT));
+        final MenuItem makePostMenu = new MenuItem("Post");
         makePostMenu.setOnAction(new ELogMenu(DOCUMENT));
-        eLogMenu.getItems().addAll(makePostMenu);
+        eLogMenu.getItems().addAll(openLogMenu,makePostMenu);
 
         final Menu helpMenu = new Menu("Help");
         final MenuItem aboutMenu = new MenuItem("About");
@@ -477,5 +479,18 @@ class HelpMenu implements EventHandler {
     @Override
     public void handle(Event t) {
         document.help();
+    }
+}
+
+class UrlMenu implements EventHandler {
+    protected XalFxDocument document;
+
+    public UrlMenu(XalFxDocument document){
+        this.document = document;
+    }
+
+    @Override
+    public void handle(Event t) {
+        document.openUrl(xal.extension.jelog.ElogServer.getElogURL());
     }
 }
