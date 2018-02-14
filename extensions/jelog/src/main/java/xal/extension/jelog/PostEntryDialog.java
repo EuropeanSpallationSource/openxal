@@ -66,6 +66,8 @@ public class PostEntryDialog {
 
         PostEntryController controller = fxmlLoader.<PostEntryController>getController();
 
+        controller.setElogServer(ElogServer.getElogURL());
+        
         if (defaultLogbook != null) {
             controller.setDefaultLogbook(defaultLogbook);
         }
