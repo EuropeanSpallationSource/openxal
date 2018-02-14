@@ -37,14 +37,12 @@ public class MainApp extends FxApplication {
         CSS_STYLE = "/styles/Styles.css";
         STAGE_TITLE = "Trajectory Display";
         HAS_DOCUMENTS=false;
-        DOCUMENT = new TrajectoryDisplayDocument();
-        
-        MainFuctions.initialize((TrajectoryDisplayDocument) DOCUMENT);        
-        DOCUMENT.setStage(stage);
-        DOCUMENT.setHelpLink("https://confluence.esss.lu.se/display/BPCRS/User+documentation+for+Trajectory+Correction+application");
+        DOCUMENT = new TrajectoryDisplayDocument(stage);
+
+        MainFuctions.initialize((TrajectoryDisplayDocument) DOCUMENT);
 
         super.initialize();
-        
+
         Menu trajectoryMenu = new Menu("Trajectory");
         MenuItem displayLiveTrajMenu = new MenuItem("Display LIVE trajectory");
         displayLiveTrajMenu.setOnAction(new LiveTrajectoryMenu((TrajectoryDisplayDocument) DOCUMENT));
@@ -60,7 +58,7 @@ public class MainApp extends FxApplication {
         saveTrajMenu.setOnAction(new SaveTrajectoryMenu((TrajectoryDisplayDocument) DOCUMENT));
         trajectoryMenu.getItems().add(saveTrajMenu);
         MENU_BAR.getMenus().add(trajectoryMenu);
-        
+
         super.start(stage);
     }
 
@@ -79,9 +77,9 @@ public class MainApp extends FxApplication {
 }
 
 class LiveTrajectoryMenu implements EventHandler {
-    
+
     protected TrajectoryDisplayDocument document;
-    
+
     public LiveTrajectoryMenu(TrajectoryDisplayDocument document){
         this.document = document;
     }
@@ -89,13 +87,13 @@ class LiveTrajectoryMenu implements EventHandler {
     @Override
     public void handle(Event t) {
         document.liveTrajectory.set(true);
-    }   
+    }
 }
 
 class TrajectoryFromFileMenu implements EventHandler {
 
     protected TrajectoryDisplayDocument document;
-    
+
     public TrajectoryFromFileMenu(TrajectoryDisplayDocument document){
         this.document = document;
     }
@@ -103,13 +101,13 @@ class TrajectoryFromFileMenu implements EventHandler {
     @Override
     public void handle(Event t) {
         document.liveTrajectory.set(true);
-    }  
+    }
     }
 
 class LoadReferenceTrajectoryMenu implements EventHandler {
 
     protected TrajectoryDisplayDocument document;
-    
+
     public LoadReferenceTrajectoryMenu(TrajectoryDisplayDocument document){
         this.document = document;
     }
@@ -117,13 +115,13 @@ class LoadReferenceTrajectoryMenu implements EventHandler {
     @Override
     public void handle(Event t) {
         document.liveTrajectory.set(true);
-    }   
+    }
 }
 
 class SaveTrajectoryMenu implements EventHandler {
 
     protected TrajectoryDisplayDocument document;
-    
+
     public SaveTrajectoryMenu(TrajectoryDisplayDocument document){
         this.document = document;
     }
@@ -131,5 +129,5 @@ class SaveTrajectoryMenu implements EventHandler {
     @Override
     public void handle(Event t) {
         document.saveTrajectory();
-    } 
+    }
 }
