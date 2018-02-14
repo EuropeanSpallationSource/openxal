@@ -44,6 +44,7 @@ import java.util.logging.Logger;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.stage.Stage;
 import xal.ca.Channel;
 import xal.smf.Accelerator;
 import xal.tools.data.DataAdaptor;
@@ -103,8 +104,8 @@ public class ScannerDocument extends XalFxDocument {
     /**
      *  Create a new empty ScanDocument1D
      */
-    public ScannerDocument() {
-        super();
+    public ScannerDocument(Stage stage) {
+        super(stage);
         dataSets = new HashMap<>();
         allPVrb = new HashMap<>();
         allPVw = new HashMap<>();
@@ -115,6 +116,7 @@ public class ScannerDocument extends XalFxDocument {
         numberOfMeasurements = new SimpleIntegerProperty(0);
         DEFAULT_FILENAME="Data.scan.xml";
         WILDCARD_FILE_EXTENSION = "*.scan.xml";
+        HELP_PAGEID="227688413";
     }
 
 
@@ -123,8 +125,8 @@ public class ScannerDocument extends XalFxDocument {
      *
      *@param  url  The URL of the file to load into the new document.
      */
-    public ScannerDocument(URL url) {
-        this();
+    public ScannerDocument(URL url, Stage stage) {
+        this(stage);
         if (url == null) {
                 return;
         }
@@ -334,8 +336,4 @@ public class ScannerDocument extends XalFxDocument {
 
     }
 
-    @Override
-    public void eLogPost() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 }
