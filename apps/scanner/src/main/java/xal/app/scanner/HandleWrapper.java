@@ -1,5 +1,7 @@
 package xal.app.scanner;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import xal.ca.Channel;
@@ -57,7 +59,6 @@ public class HandleWrapper {
     HandleWrapper(AcceleratorNode node, String handle) {
         m_node = node;
         m_channel = node.getChannel(handle);
-        m_channel.connectAndWait();
         m_id = new SimpleStringProperty(this, "id");
         m_typeHandle = new SimpleStringProperty(this, "typeHandle");
         m_handle = new SimpleStringProperty(this, "handle");
@@ -67,15 +68,25 @@ public class HandleWrapper {
         m_id.set(m_channel.getId());
         m_handle.set(handle);
         m_typeHandle.set(node.getType()+": "+handle);
-        setType();
 
-       try {
-            m_unit.set(m_channel.getUnits());
-        } catch (ConnectionException | GetException ex) { }
+       Logger.getLogger(HandleWrapper.class.getName()).log(Level.FINEST, "New object {0}", m_handle);
     }
 
+    public boolean initConnection() {
+        Logger.getLogger(HandleWrapper.class.getName()).log(Level.FINEST, "Timeout set to {0}", m_channel.getIoTimeout());
+        m_channel.connectAndWait();
+        setType();
+        try {
+            if (m_channel.isConnected())
+             m_unit.set(m_channel.getUnits());
+        } catch (ConnectionException | GetException ex) {
+            Logger.getLogger(HandleWrapper.class.getName()).log(Level.FINER, "Connection unit problem for {0}", m_handle);
+        }
+        return m_channel.isConnected();
+    }
     private void setType() {
         try {
+            if (m_channel.isConnected()) {
             if (m_channel.readAccess() && m_channel.writeAccess()) {
                 m_type.set("rw");
             } else if (m_channel.readAccess() ) {
@@ -83,7 +94,13 @@ public class HandleWrapper {
             } else if (m_channel.writeAccess() ) {
                 m_type.set("w");
             }
-                } catch (Exception ex) {  m_type.set("rw"); }
+            } else {
+              m_type.set("-");
+            }
+                } catch (Exception ex) {
+                    Logger.getLogger(HandleWrapper.class.getName()).log(Level.FINER, "Connection r/w problem for {0}", m_handle);
+                    m_type.set("rw");
+                }
 
     }
 
@@ -121,5 +138,8 @@ public class HandleWrapper {
     }
     public String getElementClass() {
         return m_node.getType();
+    }
+    public boolean isConnected() {
+        return m_channel.isConnected();
     }
 }

@@ -32,6 +32,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import xal.extension.jelog.ElogServer;
 
 /**
  *
@@ -68,6 +69,10 @@ public class FXMLController implements Initializable {
     private Button openFileButton;
     @FXML
     private Button openDirButton;
+    @FXML
+    private TextField elogServerTextField;
+    @FXML
+    private Button changeElogServerButton;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -93,6 +98,7 @@ public class FXMLController implements Initializable {
         initialParametersChoiceBox.setItems(FXCollections.observableList(list));
         initialParametersChoiceBox.getSelectionModel().select(0);
 
+        elogServerTextField.setText(ElogServer.getElogURL());
     }
 
     @FXML
@@ -177,5 +183,10 @@ public class FXMLController implements Initializable {
         if (output != null) {
             inputTWTextField.setText(output);
         }
+    }
+
+    @FXML
+    private void changeElogServerButtonHandler(ActionEvent event) {
+        ElogServer.setElogURL(elogServerTextField.getText());
     }
 }

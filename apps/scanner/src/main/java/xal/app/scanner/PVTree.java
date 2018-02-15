@@ -34,11 +34,9 @@ package xal.app.scanner;
 
 import java.io.IOException;
 import javafx.fxml.FXMLLoader;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Map;
-import java.util.ResourceBundle;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -59,8 +57,11 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.StackPane;
 import org.apache.commons.lang3.StringUtils;
 import xal.ca.Channel;
+import xal.ca.ChannelFactory;
 import xal.ca.ConnectionException;
 import xal.smf.Accelerator;
 import xal.smf.AcceleratorNode;
@@ -70,7 +71,6 @@ public class PVTree extends SplitPane {
 
     private static final Comparator<? super AcceleratorNode> NODE_COMPARATOR_ALPHABETICALLY = (n1, n2) -> String.CASE_INSENSITIVE_ORDER.compare(StringUtils.defaultString(n1.getId()), StringUtils.defaultString(n2.getId()));
     private static final Comparator<? super AcceleratorNode> NODE_COMPARATOR_BY_POSITION = (n1, n2) -> (int) ( n1.getPosition() - n2.getPosition() );
-    private static final String NO_SELECTION = "<no-selection>";
     private static final Comparator<? super AcceleratorSeq> SEQUENCE_COMPARATOR_ALPHABETICALLY = (s1, s2) -> String.CASE_INSENSITIVE_ORDER.compare(StringUtils.defaultString(s1.getId()), StringUtils.defaultString(s2.getId()));
     private static final Comparator<? super AcceleratorSeq> SEQUENCE_COMPARATOR_BY_POSITION = (s1, s2) -> (int) ( s1.getPosition() - s2.getPosition() );
 
@@ -78,14 +78,11 @@ public class PVTree extends SplitPane {
     private final Map<String, CheckMenuItem> typeMap = new TreeMap<>();
     private final ObservableList<HandleWrapper> epicsChannels = FXCollections.observableArrayList();
 
-    @FXML // ResourceBundle that was given to the FXMLLoader
-    private ResourceBundle resources;
-
-    @FXML // URL location of the FXML file that was given to the FXMLLoader
-    private URL location;
-
     @FXML // fx:id="elementSearch"
     private TextField elementSearch; // Value injected by FXMLLoader
+
+    @FXML // fx:id="elementSearchIcon"
+    private StackPane elementSearchIcon; // Value injected by FXMLLoader
 
     @FXML // fx:id="elementSearchMenuButton"
     private MenuButton elementSearchMenuButton; // Value injected by FXMLLoader
@@ -95,6 +92,14 @@ public class PVTree extends SplitPane {
 
     @FXML // fx:id="elementTree"
     private TreeView<AcceleratorNode> elementTree; // Value injected by FXMLLoader
+
+    @FXML // fx:id="manualTextField"
+    private TextField manualTextField; // Value injected by FXMLLoader
+    private Channel manualChannel;
+
+    @FXML // fx:id="pvCheckManualButton"
+    private Button pvCheckManualButton; // Value injected by FXMLLoader
+
 
     @FXML // fx:id="pvTree"
     private TreeView<?> pvTree; // Value injected by FXMLLoader
@@ -129,32 +134,97 @@ public class PVTree extends SplitPane {
         epicsTypeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
         epicsTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
-        // TODO the nodes which have getStatus() false should be grey in the list (to mark them as "problematic")
-        //Model.getInstance().getAccelerator().getRoot().getSequence("MEBT").getAllNodes().stream().forEach(n -> System.out.println("Node " + n.getId() + " is valid? "+ n.getStatus()));
+
+        manualTextField.textProperty().addListener((obs, oldText, newText) -> {
+            enteringManualPV(oldText, newText);
+            // ...
+        });
+
+        if ( elementSearch.getLength() == 0 ) {
+            //elementSearchIcon.getStyleClass().add("search-magnifying-glass"); //NOI18N
+        } else {
+            //elementSearchIcon.getStyleClass().add("search-clear"); //NOI18N
+        }
+
+        elementSearch.textProperty().addListener(( observable, oldValue, newValue ) -> {
+
+            if ( newValue.isEmpty() ) {
+                elementSearchIcon.getStyleClass().clear();
+                elementSearchIcon.getStyleClass().add("search-magnifying-glass"); //NOI18N
+            } else {
+                elementSearchIcon.getStyleClass().clear();
+                elementSearchIcon.getStyleClass().add("search-clear"); //NOI18N
+            }
+
+            updateTree(newValue);
+
+        });
 
         updateTree(elementSearch.getText());
+        Logger.getLogger(PVTree.class.getName()).log(Level.FINER, "PV Tree Widget initialized");
+    }
+
+    private void addOneChannel(Channel channel) {
+        ChannelWrapper newChannelWrapper = new ChannelWrapper(channel);
+        try {
+            Logger.getLogger(PVTree.class.getName()).log(Level.FINER, "Channel {0} has write access {1}", new Object[]{channel.getId(), channel.writeAccess()});
+            if (channel.writeAccess())
+            {
+                if (!FXMLController.pvScannablelist.contains(newChannelWrapper)) {
+                    Logger.getLogger(PVTree.class.getName()).log(Level.FINEST, "Adding channel {0} to scannable list", new Object[]{channel.getId()});
+                    FXMLController.pvScannablelist.add(newChannelWrapper);
+                } else
+                    Logger.getLogger(PVTree.class.getName()).log(Level.INFO, "Channel {0} has already been added", channel.getId());
+            }
+            else
+            {
+                if (!FXMLController.pvReadablelist.contains(newChannelWrapper)) {
+                    Logger.getLogger(PVTree.class.getName()).log(Level.FINEST, "Adding channel {0} to readable list", new Object[]{channel.getId()});
+                    FXMLController.pvReadablelist.add(newChannelWrapper);
+                } else
+                    Logger.getLogger(PVTree.class.getName()).log(Level.INFO, "Channel {0} has already been added", channel.getId());
+            }
+        } catch (ConnectionException ex) {
+            Logger.getLogger(PVTree.class.getName()).log(Level.SEVERE, "Failed to check channel access", ex);
+        }
     }
 
     @FXML
     void addSelectedPV(ActionEvent event) {
-        epicsTable.getSelectionModel().getSelectedItems().forEach((HandleWrapper hw) -> {
-            elementTree.getSelectionModel().getSelectedItems().forEach( value -> {
-                AcceleratorNode node = value.getValue();
-                if (node.getType().equals(hw.getElementClass())) {
-                    Channel chan = node.findChannel(hw.getHandle());
-                    if (chan!=null)
-                        try {
-                            if (chan.writeAccess())
-                                FXMLController.pvScannablelist.add(new ChannelWrapper(chan));
-                            else
-                                FXMLController.pvReadablelist.add(new ChannelWrapper(chan));
-                        } catch (ConnectionException ex) {
-                            Logger.getLogger(PVTree.class.getName()).log(Level.SEVERE, "Failed to check channel access", ex);
-                        }
-                }
-                });
-            });
+        Logger.getLogger(PVTree.class.getName()).log(Level.INFO, "Adding selected channels");
+        int count = FXMLController.pvScannablelist.size() + FXMLController.pvReadablelist.size();
 
+        if (epicsTable.getSelectionModel().getSelectedItems().size()>0) {
+            epicsTable.getSelectionModel().getSelectedItems().forEach((HandleWrapper hw) -> {
+                elementTree.getSelectionModel().getSelectedItems().forEach( value -> {
+                    AcceleratorNode node = value.getValue();
+                    if (node.getType().equals(hw.getElementClass())) {
+                        Channel chan = node.findChannel(hw.getHandle());
+                        if (chan!=null) {
+                            chan.connectAndWait();
+                            if (chan.isConnected()) {
+                                addOneChannel(chan);
+                            } else {
+                                Logger.getLogger(PVTree.class.getName()).log(Level.WARNING, "Could not connect to {0}, not adding", chan.getId());
+                            }
+                        }
+                    }
+                    });
+                });
+        } else if (manualChannel.isConnected()) {
+            addOneChannel(manualChannel);
+        } else {
+            Logger.getLogger(PVTree.class.getName()).log(Level.WARNING, "Nothing to add");
+        }
+        Logger.getLogger(PVTree.class.getName()).log(Level.INFO, "Added {0} channels.", FXMLController.pvScannablelist.size() + FXMLController.pvReadablelist.size() - count);
+
+    }
+
+
+    @FXML
+    void elementClearSearchField(MouseEvent event) {
+        elementSearch.clear();
+        Logger.getLogger(PVTree.class.getName()).log(Level.FINER, "Search field cleared");
     }
 
     @FXML
@@ -175,6 +245,41 @@ public class PVTree extends SplitPane {
         } catch (IOException exception) {
            throw new RuntimeException(exception);
         }
+    }
+
+    @FXML
+    void checkManualPV(ActionEvent event) {
+        // This function is called when button "Check" is clicked under the manual PV entry
+        // the Add button should be enabled if the PV is found
+        // Ideally we want an area where information about the button is added (units, current value, r or r/w etc)
+        Logger.getLogger(PVTree.class.getName()).log(Level.FINER, "Trying to connect to channel {0}", manualTextField.getText());
+        ChannelFactory cFact = ChannelFactory.defaultFactory();
+        manualChannel = cFact.getChannel(manualTextField.getText());
+        try {
+            manualChannel.connectAndWait();
+            if (manualChannel.isConnected()) {
+                pvAddButton.setDisable(false);
+                Logger.getLogger(PVTree.class.getName()).log(Level.FINER, "Connected to channel {0}", manualTextField.getText());
+            } else {
+                Logger.getLogger(PVTree.class.getName()).log(Level.WARNING, "Did not manage to connect to channel {0}", manualTextField.getText());
+            }
+
+        } catch (Exception exception) {
+            Logger.getLogger(PVTree.class.getName()).log(Level.WARNING, "Exception raised when trying to connect to channel {0}", manualTextField.getText());
+        }
+    }
+
+    void enteringManualPV(String oldText, String newText) {
+        // This function is called when something is written in the text field for manual entry.
+        // Any selection in the element tree should be deselected, and the "Add" button should be disabled
+        if (newText.length()>0)
+        {
+            epicsTable.getSelectionModel().clearSelection();
+            epicsChannels.clear();
+            elementTree.getSelectionModel().clearSelection();
+        }
+        pvAddButton.setDisable(true);
+
     }
 
     private void addTypeMenuItem( String type ) {
@@ -206,17 +311,24 @@ public class PVTree extends SplitPane {
      * @param hw
      */
     private void addHandleToList(HandleWrapper hw) {
-        if (! epicsTableContains(hw.getTypeHandle()))
+        if (! epicsTableContains(hw.getTypeHandle())) {
             epicsChannels.add(hw);
+        }
     }
+
     private void updateEPICSTable( TreeItem<AcceleratorNode> oldValue, TreeItem<AcceleratorNode> newValue) {
 
 
         if (oldValue == newValue)
             return;
         if ( newValue != null ) {
+            // Clear manual text entry (we add EITHER manual entry OR selected entries)
+            manualTextField.clear();
+
+            Logger.getLogger(PVTree.class.getName()).log(Level.FINEST, "Epics table updating...");
             epicsChannels.clear();
 
+            // First we initiate the updated list
             elementTree.getSelectionModel().getSelectedItems().forEach(value -> {
                 AcceleratorNode node = value.getValue();
                 node.getHandles()
@@ -224,6 +336,12 @@ public class PVTree extends SplitPane {
                     .sorted(( h1, h2 ) -> String.CASE_INSENSITIVE_ORDER.compare(h1, h2))
                     .forEach(h -> addHandleToList(new HandleWrapper(node, h)));
             });
+
+            Logger.getLogger(PVTree.class.getName()).log(Level.FINEST, "Connecting handles...");
+            // Then we make connections in parallell (otherwise it will be slow when we don't find PV's on the network)
+            epicsChannels.parallelStream().forEach(h -> h.initConnection());
+
+            Logger.getLogger(PVTree.class.getName()).log(Level.FINEST, "Epics table updated");
         }
     }
 
@@ -236,6 +354,8 @@ public class PVTree extends SplitPane {
         populateTreeWithSequences(rootNode, accelerator, searchPattern);
 
         elementTree.setRoot(rootNode);
+
+        Logger.getLogger(PVTree.class.getName()).log(Level.FINEST, "PV Tree widget updated");
 
     }
 
@@ -281,7 +401,7 @@ public class PVTree extends SplitPane {
 
                 if ( !sequenceNode.isLeaf() || filterNode(s, searchPattern) ) {
 
-                    parent.getChildren().add(sequenceNode);
+                        parent.getChildren().add(sequenceNode);
 
                     if ( sequenceNode.isExpanded() ) {
                         parent.setExpanded(true);
@@ -289,6 +409,5 @@ public class PVTree extends SplitPane {
 
                 }
         });
-
     }
 }

@@ -187,24 +187,21 @@ public class FXMLController implements Initializable {
             stage.setTitle("Add PV");
             stage.setScene(new Scene(root));
             stage.show();
+            Logger.getLogger(FXMLController.class.getName()).log(Level.FINER, "Add PV Window opened");
         }
         catch (IOException e) {
-            Logger.getLogger(MainFunctions.class.getName()).log(Level.SEVERE, "Error opening Add PV window", e);
+            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, "Error opening Add PV window", e);
         }
     }
 
     @FXML
     private void handleScanRemovePV(ActionEvent event) {
-    }
-
-    @FXML
-    void handleSaveDocument(ActionEvent event) {
-        System.out.println("Save document..");
-        try {
-            MainFunctions.mainDocument.saveDocumentAs(new File("scanner.xml").toURI().toURL());
-        } catch (MalformedURLException ex) {
-            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-        }
+            readTable.getSelectionModel().getSelectedItems().forEach(cW ->
+                    Logger.getLogger(FXMLController.class.getName()).log(Level.INFO, "Parameter {0} removed from readback channel list",cW.getChannelName()));
+            readTable.getSelectionModel().getSelectedItems().forEach(cW -> readTable.getItems().remove(cW));
+            scanTable.getSelectionModel().getSelectedItems().forEach(cW ->
+                    Logger.getLogger(FXMLController.class.getName()).log(Level.INFO, "Parameter {0} removed from writeable channel list",cW.getChannelName()));
+            scanTable.getSelectionModel().getSelectedItems().forEach(cW -> scanTable.getItems().remove(cW));
     }
 
     // Extend the the first dimension of the double array to length newLength
@@ -222,6 +219,7 @@ public class FXMLController implements Initializable {
     void handleLoadDocument(ActionEvent event) {
         Logger.getLogger(FXMLController.class.getName()).log(Level.INFO, "Loading document..");
         try {
+            // This hard-coded file name should be fixed
             MainFunctions.mainDocument.loadDocument(new File("scanner.xml").toURI().toURL());
             PVscanList.clear();
             MainFunctions.mainDocument.pvWriteables.forEach(cWrapper -> PVscanList.add(cWrapper));
@@ -241,6 +239,7 @@ public class FXMLController implements Initializable {
                 plotMeasurement();
                 restartButton.setVisible(true);
             }
+            Logger.getLogger(FXMLController.class.getName()).log(Level.INFO, "Document loaded");
 
         } catch (MalformedURLException ex) {
             Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
@@ -376,62 +375,9 @@ public class FXMLController implements Initializable {
         assert pvWriteablesGraph != null : "fx:id=\"pvWriteablesGraph\" was not injected: check your FXML file 'ScannerScene.fxml'.";
 
 
-        // Initialize the list of scan variables..
-        // TODO: A variable cannot be both read and written to..
-        pvScannablelist = FXCollections.observableArrayList();
-        pvReadablelist = FXCollections.observableArrayList();
-        PVscanList = FXCollections.observableArrayList();
-        scanTable.setItems(pvScannablelist);
-        readTable.setItems(pvReadablelist);
 
-        scanColumnPV.setCellValueFactory(new PropertyValueFactory<>("channelName"));
-        readColumnPV.setCellValueFactory(new PropertyValueFactory<>("channelName"));
 
-        readColumnSelect.setCellFactory(CheckBoxTableCell.forTableColumn((Integer param) -> {
-            if (pvReadablelist.get(param).getIsRead()) {
-                MainFunctions.actionScanAddPV(pvReadablelist.get(param), true, false);
-                if (MainFunctions.checkSufficientParams()) {
-                    tabConfigure.setDisable(false);
-                    tabRun.setDisable(false);
-                }
-            } else {
-                MainFunctions.actionScanRemovePV(pvReadablelist.get(param), true, false);
-                if (!MainFunctions.checkSufficientParams()) {
-                    tabConfigure.setDisable(true);
-                    tabRun.setDisable(true);
-                }
-            }
-            return pvReadablelist.get(param).isReadProperty();
-        }));
-        readColumnSelect.setCellValueFactory((CellDataFeatures<ChannelWrapper, Boolean> param) -> param.getValue().isReadProperty());
-
-        scanColumnSelect.setCellFactory(CheckBoxTableCell.forTableColumn((Integer param) -> {
-            if (pvScannablelist.get(param).getIsScanned()) {
-                pvScannablelist.get(param).setInstance();
-                if (MainFunctions.actionScanAddPV(pvScannablelist.get(param), false, true)) {
-                    PVscanList.add(pvScannablelist.get(param));
-                    MainFunctions.isCombosUpdated.set(false);
-                }
-                if (MainFunctions.checkSufficientParams()) {
-                    tabConfigure.setDisable(false);
-                    tabRun.setDisable(false);
-                }
-            }
-            else {
-                MainFunctions.actionScanRemovePV(pvScannablelist.get(param), false, true);
-                if(PVscanList.remove(pvScannablelist.get(param))) {
-                    clearAllConstraints();
-                    MainFunctions.isCombosUpdated.set(false);
-                }
-                if(PVscanList.isEmpty()) {
-                    tabConfigure.setDisable(true);
-                    tabRun.setDisable(true);
-                }
-            }
-            return pvScannablelist.get(param).isScannedProperty();
-        }));
-        scanColumnSelect.setCellValueFactory((CellDataFeatures<ChannelWrapper, Boolean> param) -> param.getValue().isScannedProperty());
-
+        initializeSelectionTables();
 
         // Initialize the configurations list
 
@@ -450,8 +396,6 @@ public class FXMLController implements Initializable {
         listOfWriteablesNpoints.setCellValueFactory(new PropertyValueFactory<>("npoints"));
         listOfWriteablesNpoints.setCellFactory(TextFieldTableCell.<ChannelWrapper, Integer>forTableColumn(new IntegerStringConverter()));
 
-        // Initialize functionality
-        MainFunctions.initialize();
 
         // Initialize constraints
         constraintsList.setItems(MainFunctions.mainDocument.constraints);
@@ -521,6 +465,72 @@ public class FXMLController implements Initializable {
         tabConfigure.setDisable(true);
         tabRun.setDisable(true);
         tabDisplay.setDisable(true);
+    }
+
+    private void initializeSelectionTables() {
+        // Initialize the list of scan variables..
+        // TODO: A variable cannot be both read and written to..
+        pvScannablelist = FXCollections.observableArrayList();
+        pvReadablelist = FXCollections.observableArrayList();
+        PVscanList = FXCollections.observableArrayList();
+        scanTable.setItems(pvScannablelist);
+        readTable.setItems(pvReadablelist);
+
+        scanColumnPV.setCellValueFactory(new PropertyValueFactory<>("channelName"));
+        readColumnPV.setCellValueFactory(new PropertyValueFactory<>("channelName"));
+
+        readColumnSelect.setCellFactory(CheckBoxTableCell.forTableColumn((Integer param) -> {
+            if (pvReadablelist.get(param).getIsRead()) {
+                MainFunctions.actionScanAddPV(pvReadablelist.get(param), true, false);
+                if (MainFunctions.checkSufficientParams()) {
+                    tabConfigure.setDisable(false);
+                    tabRun.setDisable(false);
+                }
+            } else {
+                MainFunctions.actionScanRemovePV(pvReadablelist.get(param), true, false);
+                if (!MainFunctions.checkSufficientParams()) {
+                    tabConfigure.setDisable(true);
+                    tabRun.setDisable(true);
+                }
+            }
+            return pvReadablelist.get(param).isReadProperty();
+        }));
+        readColumnSelect.setCellValueFactory((CellDataFeatures<ChannelWrapper, Boolean> param) -> param.getValue().isReadProperty());
+
+        scanColumnSelect.setCellFactory(CheckBoxTableCell.forTableColumn((Integer param) -> {
+            if (pvScannablelist.get(param).getIsScanned()) {
+                pvScannablelist.get(param).setInstance();
+                if (MainFunctions.actionScanAddPV(pvScannablelist.get(param), false, true)) {
+                    PVscanList.add(pvScannablelist.get(param));
+                    MainFunctions.isCombosUpdated.set(false);
+                    MainFunctions.mainDocument.setHasChanges(true);
+                }
+                if (MainFunctions.checkSufficientParams()) {
+                    tabConfigure.setDisable(false);
+                    tabRun.setDisable(false);
+                }
+            }
+            else {
+                MainFunctions.actionScanRemovePV(pvScannablelist.get(param), false, true);
+                if(PVscanList.remove(pvScannablelist.get(param))) {
+                    clearAllConstraints();
+                    MainFunctions.isCombosUpdated.set(false);
+                }
+                if(PVscanList.isEmpty()) {
+                    tabConfigure.setDisable(true);
+                    tabRun.setDisable(true);
+                }
+            }
+            return pvScannablelist.get(param).isScannedProperty();
+        }));
+        scanColumnSelect.setCellValueFactory((CellDataFeatures<ChannelWrapper, Boolean> param) -> param.getValue().isScannedProperty());
+
+        // Ideally should be able to select multiple channels to remove, but this does not seem to work.
+        //readTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        //scanTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+
+        readTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> { if (newValue!=null) scanTable.getSelectionModel().clearSelection();});
+        scanTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> { if (newValue!=null) readTable.getSelectionModel().clearSelection();});
     }
 
     private void clearAllConstraints() {

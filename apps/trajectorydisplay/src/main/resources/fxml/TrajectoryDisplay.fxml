@@ -41,6 +41,11 @@
                   <MenuItem mnemonicParsing="false" onAction="#handleTrajectoryMenuSave" text="Save Current Trajectory" />
               </items>
             </Menu>
+            <Menu mnemonicParsing="false" text="eLog Post">
+              <items>
+                <MenuItem mnemonicParsing="false" onAction="#handleELog" text="Make an eLog entry" />
+              </items>
+            </Menu>
           <Menu mnemonicParsing="false" text="Help">
             <items>
               <MenuItem mnemonicParsing="false" onAction="#openHelpURL" text="About" />

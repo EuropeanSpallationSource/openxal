@@ -32,26 +32,31 @@
 
 package xal.app.scanner;
 
-import javafx.application.Application;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import static javafx.application.Application.launch;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import xal.extension.fxapplication.FxApplication;
 
-public class MainApp extends Application {
+public class MainApp extends FxApplication {
 
     @Override
-    public void start(Stage stage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("/fxml/ScannerScene.fxml"));
+    public void start(Stage stage) throws IOException {
 
-        Scene scene = new Scene(root);
-        scene.getStylesheets().add("/styles/Styles.css");
+    MAIN_SCENE = "/fxml/ScannerScene.fxml";
+    CSS_STYLE = "/styles/Styles.css";
+    STAGE_TITLE = "Scanner Application";
+    Logger.getLogger(MainApp.class.getName()).log(Level.WARNING, "Ignoring useDefaultAccelerator: {0} .. ", Boolean.getBoolean( "useDefaultAccelerator" ));
+    DOCUMENT = new ScannerDocument(stage);
+    // Initialize some static functions (this is probably bad design..)
+    MainFunctions.initialize((ScannerDocument)DOCUMENT);
 
-        stage.setTitle("Scanner Application");
-        stage.setScene(scene);
-        stage.show();
+    HAS_SEQUENCE=false;
+
+    super.initialize();
+    super.start(stage);
     }
 
     /**
