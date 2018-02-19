@@ -170,7 +170,7 @@
             </dependency>
             <dependency>
                 <groupId>org.xal</groupId>
-                <artifactId>openxal.plugins.pvaccess</artifactId>
+                <artifactId>openxal.plugins.jca</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
