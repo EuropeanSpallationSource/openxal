@@ -38,8 +38,10 @@ import java.util.logging.Logger;
  */
 public class MagFieldProfile3D {
 
-    private double lengthX;
-    private double lengthY;
+    private double minX;
+    private double maxX;
+    private double minY;
+    private double maxY;
     private double lengthZ;
     private double[][][] field;
     private double norm;
@@ -52,9 +54,11 @@ public class MagFieldProfile3D {
 
     private static Map<String, MagFieldProfile3D> instances = new HashMap<>();
 
-    public MagFieldProfile3D(double lengthX, double lengthY, double lengthZ, double[][][] fieldZ) {
-        this.lengthX = lengthX;
-        this.lengthY = lengthY;
+    public MagFieldProfile3D(double minX, double maxX,double minY, double maxY, double lengthZ, double[][][] fieldZ) {
+        this.minX = minX;
+        this.maxX = maxX;
+        this.minY = minY;
+        this.maxY = maxY;
         this.lengthZ = lengthZ;
         this.field = fieldZ.clone();
     }
@@ -88,12 +92,20 @@ public class MagFieldProfile3D {
         return field;
     }
 
-    public double getLengthX() {
-        return lengthX;
+    public double getMinX() {
+        return minX;
     }
 
-    public double getLengthY() {
-        return lengthY;
+    public double getMaxX() {
+        return maxX;
+    }
+
+    public double getMinY() {
+        return minY;
+    }
+
+    public double getMaxY() {
+        return maxY;
     }
 
     public double getLengthZ() {
@@ -131,7 +143,8 @@ public class MagFieldProfile3D {
 
         int nPointsX
                 = Integer.parseInt(data[0]) + 1;
-        lengthX = Double.parseDouble(data[1]);
+        minX = Double.parseDouble(data[1]);
+        maxX = Double.parseDouble(data[2]);
 
         // third line
         line = br.readLine();
@@ -139,7 +152,8 @@ public class MagFieldProfile3D {
 
         int nPointsY
                 = Integer.parseInt(data[0]) + 1;
-        lengthY = Double.parseDouble(data[1]);
+        minY = Double.parseDouble(data[1]);
+        maxY = Double.parseDouble(data[2]);
 
         field = new double[nPointsZ][nPointsY][nPointsX];
 
@@ -172,9 +186,11 @@ public class MagFieldProfile3D {
         PrintWriter pw = new PrintWriter(new FileWriter(fieldMapfile));
 
         double zmax = getLengthZ();
-        double xmax = getLengthX();
-        double ymax = getLengthY();
-        pw.printf("%d %f%n%d %f%n%f%n", field.length - 1, zmax, field[0].length - 1, ymax, field[0][0].length - 1, xmax, norm);
+        double xmin = getMinX();
+        double ymin = getMinY();
+        double xmax = getMaxX();
+        double ymax = getMaxY();
+        pw.printf("%d %f%n%d %f %f%n%d %f %f%n%f%n", field.length - 1, zmax, field[0].length - 1, ymin, ymax, field[0][0].length - 1, xmin, xmax, norm);
         for (int i = 0; i < field.length; i++) {
             for (int j = 0; j < field[0].length; j++) {
                 for (int k = 0; k < field[0][0].length; k++) {
