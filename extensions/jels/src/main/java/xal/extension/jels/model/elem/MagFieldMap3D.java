@@ -76,7 +76,7 @@ public class MagFieldMap3D extends ThickElectromagnet {
             maxX = fpx.getMaxX();
             fieldY = fpy.getField();
             minY = fpx.getMinY();
-            minY = fpx.getMaxY();
+            maxY = fpx.getMaxY();
             fieldZ = fpz.getField();
             lengthZ = fpz.getLengthZ();
             norm = fpx.getNorm();
@@ -112,8 +112,8 @@ public class MagFieldMap3D extends ThickElectromagnet {
         if (firstSliceFieldmap != null) {
             return firstSliceFieldmap.transferMap(probe, dblLen);
         }
-        int nPointsX = fieldX.length - 1;
-        int nPointsY = fieldY.length - 1;
+        int nPointsX = fieldX[0][0].length - 1;
+        int nPointsY = fieldY[0].length - 1;
         int nPointsZ = fieldZ.length - 1;
 
         // To get the (0,0) point in the XY plane.
@@ -238,18 +238,18 @@ public class MagFieldMap3D extends ThickElectromagnet {
             Bx0 = new double[]{getMagField() * 0.5 * (fieldX[in][midPointY][midPointX] + fieldX[in + 1][midPointY][midPointX]) / norm};
             By0 = new double[]{getMagField() * 0.5 * (fieldY[in][midPointY][midPointX] + fieldY[in + 1][midPointY][midPointX]) / norm};
             Bz0 = new double[]{getMagField() * 0.5 * (fieldZ[in][midPointY][midPointX] + fieldZ[in + 1][midPointY][midPointX]) / norm};
-            dBx_dx = new double[]{getMagField() * 0.5 * ((fieldX[i0 + in][midPointY][midPointX + 1] - fieldX[i0 + in][midPointY][midPointX])
-                + (fieldX[i0 + in + 1][midPointY][midPointX + 1] - fieldX[i0 + in + 1][midPointY][midPointX])) / dxFieldMap / norm};
-            dBx_dy = new double[]{getMagField() * 0.5 * ((fieldX[i0 + in][midPointY + 1][midPointX] - fieldX[i0 + in][midPointY][midPointX])
-                + (fieldX[i0 + in + 1][midPointY + 1][midPointX] - fieldX[i0 + in + 1][midPointY][midPointX])) / dyFieldMap / norm};
-            dBx_dz = new double[]{getMagField() * (fieldX[i0 + in + 1][midPointY][midPointX] - fieldX[i0 + in][midPointY][midPointX]) / dzFieldMap / norm};
-            dBy_dx = new double[]{getMagField() * 0.5 * ((fieldY[i0 + in][midPointY][midPointX + 1] - fieldY[i0 + in][midPointY][midPointX])
-                + (fieldY[i0 + in + 1][midPointY][midPointX + 1] - fieldY[i0 + in + 1][midPointY][midPointX])) / dxFieldMap / norm};
-            dBy_dy = new double[]{getMagField() * 0.5 * ((fieldY[i0 + in][midPointY + 1][midPointX] - fieldY[i0 + in][midPointY][midPointX])
-                + (fieldY[i0 + in + 1][midPointY + 1][midPointX] - fieldY[i0 + in + 1][midPointY][midPointX])) / dyFieldMap / norm};
-            dBy_dz = new double[]{getMagField() * (fieldY[i0 + in + 1][midPointY][midPointX] - fieldY[i0 + in][midPointY][midPointX]) / dzFieldMap / norm};
+            dBx_dx = new double[]{getMagField() * 0.5 * ((fieldX[in][midPointY][midPointX + 1] - fieldX[in][midPointY][midPointX])
+                + (fieldX[in + 1][midPointY][midPointX + 1] - fieldX[in + 1][midPointY][midPointX])) / dxFieldMap / norm};
+            dBx_dy = new double[]{getMagField() * 0.5 * ((fieldX[in][midPointY + 1][midPointX] - fieldX[in][midPointY][midPointX])
+                + (fieldX[in + 1][midPointY + 1][midPointX] - fieldX[in + 1][midPointY][midPointX])) / dyFieldMap / norm};
+            dBx_dz = new double[]{getMagField() * (fieldX[in + 1][midPointY][midPointX] - fieldX[in][midPointY][midPointX]) / dzFieldMap / norm};
+            dBy_dx = new double[]{getMagField() * 0.5 * ((fieldY[in][midPointY][midPointX + 1] - fieldY[in][midPointY][midPointX])
+                + (fieldY[in + 1][midPointY][midPointX + 1] - fieldY[in + 1][midPointY][midPointX])) / dxFieldMap / norm};
+            dBy_dy = new double[]{getMagField() * 0.5 * ((fieldY[in][midPointY + 1][midPointX] - fieldY[in][midPointY][midPointX])
+                + (fieldY[in + 1][midPointY + 1][midPointX] - fieldY[in + 1][midPointY][midPointX])) / dyFieldMap / norm};
+            dBy_dz = new double[]{getMagField() * (fieldY[in + 1][midPointY][midPointX] - fieldY[in][midPointY][midPointX]) / dzFieldMap / norm};
 
-            transferMatrix = fieldMapIntegrator(probe, spacingZ, Bx0, By0, Bz0, dBx_dx, dBx_dy, dBx_dz, dBy_dx, dBy_dy, dBy_dz).times(transferMatrix);
+            transferMatrix = fieldMapIntegrator(probe, spacingZ, Bx0, By0, Bz0, dBx_dx, dBx_dy, dBx_dz, dBy_dx, dBy_dy, dBy_dz).times(transferMatrix);            
         }
         return new PhaseMap(transferMatrix);
     }

@@ -54,7 +54,7 @@ public class MagFieldProfile3D {
 
     private static Map<String, MagFieldProfile3D> instances = new HashMap<>();
 
-    public MagFieldProfile3D(double minX, double maxX,double minY, double maxY, double lengthZ, double[][][] fieldZ) {
+    public MagFieldProfile3D(double minX, double maxX, double minY, double maxY, double lengthZ, double[][][] fieldZ) {
         this.minX = minX;
         this.maxX = maxX;
         this.minY = minY;
@@ -141,8 +141,7 @@ public class MagFieldProfile3D {
         line = br.readLine();
         data = line.split(" ");
 
-        int nPointsX
-                = Integer.parseInt(data[0]) + 1;
+        int nPointsX = Integer.parseInt(data[0]) + 1;
         minX = Double.parseDouble(data[1]);
         maxX = Double.parseDouble(data[2]);
 
@@ -150,8 +149,7 @@ public class MagFieldProfile3D {
         line = br.readLine();
         data = line.split(" ");
 
-        int nPointsY
-                = Integer.parseInt(data[0]) + 1;
+        int nPointsY = Integer.parseInt(data[0]) + 1;
         minY = Double.parseDouble(data[1]);
         maxY = Double.parseDouble(data[2]);
 
