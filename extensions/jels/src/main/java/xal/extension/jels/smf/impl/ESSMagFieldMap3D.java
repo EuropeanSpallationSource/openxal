@@ -22,7 +22,7 @@ import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import xal.extension.jels.smf.attr.ESSSolFieldMapBucket;
+import xal.extension.jels.smf.attr.ESSMagFieldMap3DBucket;
 import xal.ca.ChannelFactory;
 import xal.smf.attr.AttributeBucket;
 import xal.smf.impl.Electromagnet;
@@ -31,38 +31,40 @@ import xal.tools.data.DataAdaptor;
 import xal.tools.xml.XmlDataAdaptor;
 
 /**
- * ESS implementation of Solenoid Field Maps.
+ * ESS implementation for 3D magnetic Field Maps.
  *
  * @author Juan F. Esteban Müller <juanf.estebanmuller@esss.se>
  *
  */
-public class ESSSolFieldMap extends Electromagnet {
+public class ESSMagFieldMap3D extends Electromagnet {
 
-    public static final String s_strType = "SFM";
+    public static final String s_strType = "MFM";
 
-    private static final Logger LOGGER = Logger.getLogger(ESSSolFieldMap.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ESSMagFieldMap3D.class.getName());
     
     /*
      *  Local Attributes
      */
     // FieldMap parameters
-    protected ESSSolFieldMapBucket m_bucSolFieldMap;
-    // radial component of the field profile  
-    protected FieldProfile2D fieldProfileR;
-    // longitudinal component of the field profile
-    protected FieldProfile2D fieldProfileZ;
+    protected ESSMagFieldMap3DBucket m_bucMagFieldMap3D;
+    // x component of the field profile  
+    protected MagFieldProfile3D fieldProfileX;
+    // y component of the field profile
+    protected MagFieldProfile3D fieldProfileY;
+    // z component of the field profile
+    protected MagFieldProfile3D fieldProfileZ;
 
     static {
         registerType();
     }
 
-    public ESSSolFieldMap(String strId) {
+    public ESSMagFieldMap3D(String strId) {
         this(strId, null);
     }
 
-    public ESSSolFieldMap(String strId, ChannelFactory channelFactory) {
+    public ESSMagFieldMap3D(String strId, ChannelFactory channelFactory) {
         super(strId, channelFactory);
-        setSolFieldMapBucket(new ESSSolFieldMapBucket());
+        setMagFieldMap3DBucket(new ESSMagFieldMap3DBucket());
         // remove MagBucket bucket
         m_mapAttrs.remove(getMagBucket().getType());
     }
@@ -77,29 +79,29 @@ public class ESSSolFieldMap extends Electromagnet {
      */
     private static void registerType() {
         ElementTypeManager typeManager = ElementTypeManager.defaultManager();
-        typeManager.registerType(ESSSolFieldMap.class, s_strType);
-        typeManager.registerType(ESSSolFieldMap.class, "solfieldmap");
+        typeManager.registerType(ESSMagFieldMap3D.class, s_strType);
+        typeManager.registerType(ESSMagFieldMap3D.class, "magfieldmap");
     }
 
     /*
      *  Attributes
      */
-    public ESSSolFieldMapBucket getSolFieldMapBucket() {
-        return m_bucSolFieldMap;
+    public ESSMagFieldMap3DBucket getMagFieldMap3DBucket() {
+        return m_bucMagFieldMap3D;
     }
 
-    public void setSolFieldMapBucket(ESSSolFieldMapBucket buc) {
-        m_bucSolFieldMap = buc;
+    public void setMagFieldMap3DBucket(ESSMagFieldMap3DBucket buc) {
+        m_bucMagFieldMap3D = buc;
         super.addBucket(buc);
     }
 
     /**
-     * Override AcceleratorNode implementation to check for a ESSFieldMapBucket
+     * Override AcceleratorNode implementation to check for a ESSMagFieldMap3D
      */
     @Override
     public void addBucket(AttributeBucket buc) {
-        if (buc.getClass().equals(ESSSolFieldMapBucket.class)) {
-            setSolFieldMapBucket((ESSSolFieldMapBucket) buc);
+        if (buc.getClass().equals(ESSMagFieldMap3DBucket.class)) {
+            setMagFieldMap3DBucket((ESSMagFieldMap3DBucket) buc);
         }
 
         super.addBucket(buc);
@@ -110,24 +112,24 @@ public class ESSSolFieldMap extends Electromagnet {
      */
     @Override
     public double getDesignField() {
-        return m_bucSolFieldMap.getXmagmax();
+        return m_bucMagFieldMap3D.getXmagmax();
     }
 
     @Override
     public double getDfltField() {
-        return m_bucSolFieldMap.getXmagmax();
+        return m_bucMagFieldMap3D.getXmagmax();
     }
 
     /**
      * Electric field intensity factor
      */
     public void setDesignField(double dblVal) {
-        m_bucSolFieldMap.setXmagmax(dblVal);
+        m_bucMagFieldMap3D.setXmagmax(dblVal);
     }
 
     @Override
     public void setDfltField(double dblVal) {
-        m_bucSolFieldMap.setXmagmax(dblVal);
+        m_bucMagFieldMap3D.setXmagmax(dblVal);
     }
 
     @Override
@@ -139,38 +141,52 @@ public class ESSSolFieldMap extends Electromagnet {
      * FieldMap file
      */
     public String getFieldMapFile() {
-        return m_bucSolFieldMap.getFieldMapFile();
+        return m_bucMagFieldMap3D.getFieldMapFile();
     }
 
     public void setFieldMapFile(String strVal) {
-        m_bucSolFieldMap.setFieldMapFile(strVal);
+        m_bucMagFieldMap3D.setFieldMapFile(strVal);
     }
 
     /**
      * Field profile
      */
-    public FieldProfile2D getFieldProfileR() {
-        return fieldProfileR;
+    public MagFieldProfile3D getMagFieldProfileX() {
+        return fieldProfileX;
     }
 
     /**
      * Field profile
      */
-    public void setFieldProfileR(FieldProfile2D fieldProfileR) {
-        this.fieldProfileR = fieldProfileR;
+    public MagFieldProfile3D getMagFieldProfileY() {
+        return fieldProfileY;
     }
 
     /**
      * Field profile
      */
-    public FieldProfile2D getFieldProfileZ() {
+    public MagFieldProfile3D getMagFieldProfileZ() {
         return fieldProfileZ;
     }
 
     /**
      * Field profile
      */
-    public void setFieldProfileZ(FieldProfile2D fieldProfileZ) {
+    public void setMagFieldProfileX(MagFieldProfile3D fieldProfileX) {
+        this.fieldProfileX = fieldProfileX;
+    }
+
+    /**
+     * Field profile
+     */
+    public void setMagFieldProfileY(MagFieldProfile3D fieldProfileY) {
+        this.fieldProfileY = fieldProfileY;
+    }
+
+    /**
+     * Field profile
+     */
+    public void setMagFieldProfileZ(MagFieldProfile3D fieldProfileZ) {
         this.fieldProfileZ = fieldProfileZ;
     }
 
@@ -181,11 +197,13 @@ public class ESSSolFieldMap extends Electromagnet {
     public void update(DataAdaptor adaptor) {
         super.update(adaptor);
         try {
-            URI fieldProfileRURI = new URI(((XmlDataAdaptor) adaptor).document().getDocumentURI()).resolve(getFieldMapFile() + ".bsr");
+            URI fieldProfileXURI = new URI(((XmlDataAdaptor) adaptor).document().getDocumentURI()).resolve(getFieldMapFile() + ".bsx");
+            URI fieldProfileYURI = new URI(((XmlDataAdaptor) adaptor).document().getDocumentURI()).resolve(getFieldMapFile() + ".bsy");
             URI fieldProfileZURI = new URI(((XmlDataAdaptor) adaptor).document().getDocumentURI()).resolve(getFieldMapFile() + ".bsz");
 
-            setFieldProfileR(FieldProfile2D.getInstance(fieldProfileRURI.toString()));
-            setFieldProfileZ(FieldProfile2D.getInstance(fieldProfileZURI.toString()));
+            setMagFieldProfileX(MagFieldProfile3D.getInstance(fieldProfileXURI.toString()));
+            setMagFieldProfileY(MagFieldProfile3D.getInstance(fieldProfileYURI.toString()));
+            setMagFieldProfileZ(MagFieldProfile3D.getInstance(fieldProfileZURI.toString()));
         } catch (URISyntaxException e) {
             LOGGER.log(Level.SEVERE, "An error occurred trying to update the field profile.", e);
         }

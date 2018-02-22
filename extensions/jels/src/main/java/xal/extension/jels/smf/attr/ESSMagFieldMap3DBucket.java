@@ -21,15 +21,15 @@ import xal.smf.attr.Attribute;
 import xal.smf.attr.AttributeBucket;
 
 /**
- * A set of ESSSolFieldMap attributes.
+ * A set of ESSMagFieldMap3D attributes.
  *
  * @author Juan F. Esteban Müller <juanf.estebanmuller@esss.se>
  */
-public class ESSSolFieldMapBucket extends AttributeBucket {
+public class ESSMagFieldMap3DBucket extends AttributeBucket {
 
     private static final long serialVersionUID = 1;
 
-    public final static String c_strType = "solfieldmap";
+    public final static String c_strType = "magfieldmap";
 
     final static String[] c_arrNames = {
         "xmagmax",
@@ -63,7 +63,7 @@ public class ESSSolFieldMapBucket extends AttributeBucket {
         return c_arrNames;
     }
 
-    public ESSSolFieldMapBucket() {
+    public ESSMagFieldMap3DBucket() {
         super();
 
         m_attXmagmax = new Attribute(1.);
