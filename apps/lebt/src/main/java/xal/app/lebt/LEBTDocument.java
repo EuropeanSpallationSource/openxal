@@ -9,17 +9,10 @@ import java.io.File;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.stage.Stage;
-import xal.ca.Channel;
 import xal.extension.fxapplication.XalFxDocument;
 import xal.tools.data.DataAdaptor;
 import xal.tools.xml.XmlDataAdaptor;
@@ -33,34 +26,7 @@ public class LEBTDocument extends XalFxDocument {
      * String indicating which model to be used in the simulation
      */
     public SimpleStringProperty model;
-    /**
-     * A dictionary of the created datasets..
-     */
-    public Map<String, double[][]> dataSets;
-    /**
-     * For every measurement, store the channels read for this measurement..
-     */
-    public Map<String, List<Channel>> allPVrb;
-    /**
-     * For every measurement, store the channels written to for this measurement..
-     */
-    public Map<String, List<Channel>> allPVw;
-
-    public SimpleIntegerProperty numberOfMeasurements;
-
-    public double[][] currentMeasurement;
-
-    // The current number of measurement points done
-    public int nCombosDone;
-
-    /**
-     * To calculate constraints, we need to know the short hand variable name
-     * for each variable..
-     */
-    public ObservableList<String> constraints;
-   
-
-
+    
     // Save/restore parameters..
     private static final String LEBT_STATE = "ISrc_andLEBT_State";
     private static final String ISRC_DATA = "IonSource_data";
@@ -70,15 +36,10 @@ public class LEBTDocument extends XalFxDocument {
     private DataAdaptor currentMeasAdaptor;
 
     /**
-     *  Create a new empty ScanDocument1D
+     *  Create a new empty LEBT Document
      */
     public LEBTDocument(Stage stage) {
-        super(stage);
-        dataSets = new HashMap<>();
-        allPVrb = new HashMap<>();
-        allPVw = new HashMap<>();       
-        constraints = FXCollections.observableArrayList("", "", "", "");
-        numberOfMeasurements = new SimpleIntegerProperty(0);
+        super(stage);      
         model = new SimpleStringProperty();
         model.set("LIVE");
         DEFAULT_FILENAME="Lebt.xml";
@@ -143,7 +104,6 @@ public class LEBTDocument extends XalFxDocument {
         if (currentMeasAdaptor==null) {
             currentMeasAdaptor=da.childAdaptor(LEBT_STATE).createChild(ISRC_DATA);
         }
-        currentMeasAdaptor.createChild("step").setValue("values", currentMeasurement[nmeas]);
         da.writeToUrl( source );
     };
 

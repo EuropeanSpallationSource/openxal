@@ -36,10 +36,11 @@ public class MainApp extends FxApplication {
         MAIN_SCENE = "/fxml/TrajectoryDisplay.fxml";
         CSS_STYLE = "/styles/Styles.css";
         STAGE_TITLE = "Trajectory Display";
-        HAS_DOCUMENTS=false;
+        HAS_DOCUMENTS= false;
+        HAS_SEQUENCE = true;
         DOCUMENT = new TrajectoryDisplayDocument(stage);
 
-        MainFuctions.initialize((TrajectoryDisplayDocument) DOCUMENT);
+        MainFuctions.initialize((TrajectoryDisplayDocument)DOCUMENT);
 
         super.initialize();
 
