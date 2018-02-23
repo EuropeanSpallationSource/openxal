@@ -1,17 +1,15 @@
 package xal.app.lebt;
 
 import com.sun.javafx.charts.Legend;
-import java.io.File;
+import java.io.FileNotFoundException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.HashMap;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.event.ActionEvent;
-import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.LineChart;
@@ -19,27 +17,19 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonBar.ButtonData;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
-import javafx.scene.control.RadioMenuItem;
-import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
-import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.InputMethodEvent;
-import javafx.stage.FileChooser;
-import xal.ca.ConnectionException;
+import xal.ca.Channel;
 import xal.model.ModelException;
 import xal.smf.Accelerator;
 import xal.smf.AcceleratorNode;
-import xal.smf.NoSuchChannelException;
-import xal.smf.impl.CurrentMonitor;
-import xal.smf.impl.HDipoleCorr;
-import xal.tools.URLUtil.FilePathException;
+import xal.smf.AcceleratorSeqCombo;
+import xal.tools.data.DataAdaptor;
+import xal.tools.xml.XmlDataAdaptor;
 
 /**
  * The class handling the LEBT trajectory prediction.
@@ -47,15 +37,7 @@ import xal.tools.URLUtil.FilePathException;
  * @author sofiaolsson
  */
 public class FXMLController implements Initializable {
-    
-    //constants
-    public static final double SOLENOID_CURRENT_TO_PEAK_RATE = 8.15308527131783e-01; //(A->mT)
-    public static final double SOLENOID_PEAK_RATE_TO_CURRENT = 1/8.15308527131783e-01; //(mT->A)
-    public static final double HSTEERER_CURRENT_TO_PEAK_RATE = 7.166666666666667e-02; //(A->mT)
-    public static final double HSTEERER_PEAK_RATE_TO_CURRENT = 1/7.166666666666667e-02;//(mT->A)
-    public static final double VSTEERER_CURRENT_TO_PEAK_RATE = 8.583333333333334e-02; //(A->mT)
-    public static final double VSTEERER_PEAK_RATE_TO_CURRENT = 1/8.583333333333334e-02;//(mT->A)
-    
+     
     //defining series
     private XYChart.Series seriesX;
     private XYChart.Series seriesY;
@@ -74,6 +56,8 @@ public class FXMLController implements Initializable {
     private SimulationRunner newRun;
     private double[][] surroundings;
     private Accelerator accelerator;
+    private StatusAnimationTimer updateTimer;
+    private Boolean updateAll;
     
     //defining data
     private ArrayList<Double>[] sigmaX;
@@ -87,6 +71,9 @@ public class FXMLController implements Initializable {
     private ArrayList posY;
     private ArrayList posR;
     private ArrayList posPhi;
+    
+    //Map the live machine values
+    private HashMap<Channel,Double> displayValues;
     
     @FXML private LineChart<Double, Double> plot1;
     @FXML private NumberAxis yAxis;
@@ -105,13 +92,7 @@ public class FXMLController implements Initializable {
     @FXML private TextField textField_betay;
     @FXML private TextField textField_alphay;    
     @FXML private TextField textField_scc;
-    @FXML private TextField textField_bc;
-    private TextField textField_sol1;
-    private TextField textField_sol2;
-    private TextField textField_V1;
-    private TextField textField_H1;
-    private TextField textField_V2;
-    private TextField textField_H2;    
+    @FXML private TextField textField_bc;       
     @FXML private RadioButton radioButtonCart;
     @FXML private RadioButton radioButtonCyl;
     private ToggleGroup coordinateGroup;
@@ -132,10 +113,6 @@ public class FXMLController implements Initializable {
     @FXML private TextField textField_H2flow;
     @FXML private Label label_H2flowRB;
     @FXML private TextField textField_highVoltage;
-    @FXML private Label label_HighVoltageRB;
-    @FXML private Label label_ISgauge1;
-    @FXML private Label label_ISgauge2;
-    @FXML private Label label_ISgauge3;
     @FXML private TextField textField_sol1field;
     @FXML private Label label_sol1current;
     @FXML private Label label_sol1currentRB;
@@ -162,16 +139,13 @@ public class FXMLController implements Initializable {
     @FXML private CheckBox comboBox_posNPM;
     @FXML private CheckBox comboBox_sigmaNPM;
     @FXML private CheckBox comboBox_divergenceNPM;
-    @FXML private ToggleGroup displayGroup;    
+    @FXML private Label label_highVoltageRB;
 
              
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         ActionEvent event = null;
-        
-        //this.handleLoadAccelerator(event);
-        accelerator = xal.smf.data.XMLDataManager.loadDefaultAccelerator(); 
-        
+            
         //initializing toggle groups
         coordinateGroup = new ToggleGroup();
         offsetGroup = new ToggleGroup();
@@ -185,8 +159,12 @@ public class FXMLController implements Initializable {
         radioButtonOffsetOn.setSelected(true);
         
         //initializing simulation
-        newRun = new SimulationRunner();
-        surroundings = SimulationRunner.SURROUNDING;
+        newRun = new SimulationRunner(MainFunctions.mainDocument.getAccelerator());
+        try {
+            surroundings = readVacuumChamber();
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
         //assigning labels
         getParameters();
@@ -233,7 +211,8 @@ public class FXMLController implements Initializable {
         plot2.setAnimated(false);
         plot1.setCreateSymbols(false);
         plot2.setCreateSymbols(false);
-        //plot1.getData().add(seriesSurroundings);
+        plot1.getData().add(seriesSurroundings[0]);
+        plot1.getData().add(seriesSurroundings[1]);
         
         
        //Showing surroundings
@@ -249,84 +228,77 @@ public class FXMLController implements Initializable {
         
         //Create monitor for the NPMs and Faraday cups to monitor it's values
         
+        //initializes the timer
+        updateAll = false;
+        updateTimer = new StatusAnimationTimer() {
+
+                @Override
+                public void handle(long now) {
+                    updateGUI();
+                    if(updateAll){
+                        runSimulation();
+                    }                                       
+                }
+        };
+        
+        updateTimer.start();
         
     }    
-    
-    @FXML
-    private void handleLoadDefaultAccelerator(ActionEvent event) {
-       
-        accelerator = xal.smf.data.XMLDataManager.loadDefaultAccelerator();        
-           
-    }
-
-    @FXML
-    private void handleLoadAccelerator(ActionEvent event) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Load Accelerator");
-
-        //Set extension filter
-        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("XAL files (*.xal)", "*.xal");
-        fileChooser.getExtensionFilters().add(extFilter);
-
-        //Show save file dialog
-        File selectedFile = fileChooser.showOpenDialog(null);
-        if (selectedFile != null) {
-            try{
-                accelerator = xal.smf.data.XMLDataManager.acceleratorWithPath(selectedFile.getAbsolutePath());           
-            } catch (FilePathException e) {
-                Alert alert = new Alert(AlertType.CONFIRMATION);
-                alert.setTitle("Load Accelerator");
-                alert.setHeaderText("Exception for bad file path specification.");
-                alert.setContentText("Choose your option.");
-
-                ButtonType buttonDefault = new ButtonType("Load Default");            
-                ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
-
-                alert.getButtonTypes().setAll(buttonDefault, buttonTypeCancel);
-
-                Optional<ButtonType> result = alert.showAndWait();
-                if (result.get() == buttonDefault){
-                    accelerator = xal.smf.data.XMLDataManager.loadDefaultAccelerator();               
-                }       
-            }
-        } else {
-            Alert alert = new Alert(AlertType.CONFIRMATION);
-            alert.setTitle("Load Accelerator");
-            alert.setHeaderText("No file was selected.");
-            alert.setContentText("Choose your option.");
-
-            ButtonType buttonDefault = new ButtonType("Load Default");            
-            ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
-
-            alert.getButtonTypes().setAll(buttonDefault, buttonTypeCancel);
-
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.get() == buttonDefault){
-                accelerator = xal.smf.data.XMLDataManager.loadDefaultAccelerator();               
-            }       
-        }
-    }
-
-    
     //------------------------HANDLE METHODS------------------------------------
+    /**
+     * Update the GUI values from the Live machine
+     */
+    private void updateGUI(){
+        double newval;
+        double oldval;
+        
+        Accelerator accl = MainFunctions.mainDocument.getAccelerator();
+        AcceleratorSeqCombo sequence = accl.getComboSequence("ISRC");
+        
+        
+        //Ion Source Parameters
+        AcceleratorNode Magnetron = sequence.getNodeWithId("Magnetron");
+        textField_magnetron.setText(Magnetron.channelSuite().getSignal("ForwdPrwS"));
+        label_magnetronRB.setText(Magnetron.channelSuite().getSignal("ForwdPrwRB"));
+        
+        AcceleratorNode HighVoltagePS = sequence.getNodeWithId("HVPS");
+        textField_highVoltage.setText(HighVoltagePS.channelSuite().getSignal("VolSet"));
+        label_highVoltageRB.setText(HighVoltagePS.channelSuite().getSignal("VolRB"));
+        
+        AcceleratorNode HighVoltage = sequence.getNodeWithId("HV");        
+        textField_H2flow.setText(HighVoltage.channelSuite().getSignal("H2FlowS"));
+        label_H2flowRB.setText(HighVoltage.channelSuite().getSignal("H2FlowRB"));
+        
+        AcceleratorNode Coil1 = sequence.getNodeWithId("COILPS-01");        
+        textField_coil1.setText(Coil1.channelSuite().getSignal("CurrSet"));
+        label_coil1RB.setText(Coil1.channelSuite().getSignal("CurrRB"));
+        
+        AcceleratorNode Coil2 = sequence.getNodeWithId("COILPS-02");        
+        textField_coil2.setText(Coil2.channelSuite().getSignal("CurrSet"));
+        label_coil2RB.setText(Coil2.channelSuite().getSignal("CurrRB"));
+        
+        AcceleratorNode Coil3 = sequence.getNodeWithId("COILPS-03");        
+        textField_coil2.setText(Coil3.channelSuite().getSignal("CurrSet"));
+        label_coil2RB.setText(Coil3.channelSuite().getSignal("CurrRB"));
+        
+    }
     
     /**
-     * Runs the simulation. Sets simulation parameters from text fields. Displays trajectory plots
-     * @param event 
+     * Runs the simulation. Sets simulation parameters from text fields. Displays trajectory plots       
      */
-    private void runSimulation(ActionEvent event) {
+    private void runSimulation() {
         
         //Re-initializing simulation
-        newRun = new SimulationRunner();
+        newRun = new SimulationRunner(MainFunctions.mainDocument.getAccelerator());
         setParameters();
         
         try {
-            newRun.runSimulation();
+            newRun.runSimulation(MainFunctions.mainDocument.getModel().toString());
             
         } catch (ModelException ex) {
             Alert alert = new Alert(AlertType.ERROR);
             alert.setTitle("Error!");
-            alert.setHeaderText("Modelexception in simulation");
+            alert.setHeaderText("Model exception in simulation");
             alert.setContentText(ex.getMessage());
             alert.showAndWait();
             
@@ -335,7 +307,7 @@ public class FXMLController implements Initializable {
         } catch (InstantiationException ex) {
             Alert alert = new Alert(AlertType.ERROR);
             alert.setTitle("Error!");
-            alert.setHeaderText("Instanitiation exception in simulation");
+            alert.setHeaderText("Instantiation exception in simulation");
             alert.setContentText(ex.getMessage());
             alert.showAndWait();
             
@@ -343,7 +315,6 @@ public class FXMLController implements Initializable {
             
         } catch (Exception ex) {
             ex.getStackTrace();
-            
             Alert alert = new Alert(AlertType.ERROR);
             alert.setTitle("Error!");
             alert.setHeaderText("Unknown error in simulation");
@@ -363,16 +334,7 @@ public class FXMLController implements Initializable {
     @FXML
     private void handleGetCurrentfromFC(ActionEvent event) {
         if(comboBox_currentFC.isSelected()){
-            textField_bc.setDisable(true);
-            //CurrentMonitor faradayCup;
-            //faradayCup = (CurrentMonitor) accelerator.getSequence("LEBT").getAllNodesOfType("FC");
-            //faradayCup.getAndConnectChannel("Avg_current").addMonitorValue(listener, 0);
-            HDipoleCorr corrector;
-            corrector = (HDipoleCorr) accelerator.getSequence("LEBT").getNodeWithId("ST1-HC2");
-            BeamAgent HC2monitor = new BeamAgent(corrector, new String[]{"I","I_Set","psFieldRB"});          
-            HC2monitor.monitorSignals(0.0);
-            textField_bc.setText(Double.toString(HC2monitor._lastRecord.getChannel1Val()));
-            
+            textField_bc.setDisable(true);  
         } else {
             textField_bc.setDisable(false);
         }
@@ -420,19 +382,7 @@ public class FXMLController implements Initializable {
         if (newRun.hasRun()){
             displayEnvelope();
         }
-    }    
-    
-     @FXML
-    private void handleSimulationRunNow(InputMethodEvent event) {
-    }
-
-    @FXML
-    private void handleUpdateIrisPlot(InputMethodEvent event) {
-    }
-   
-     @FXML
-    private void handleUpdateChopperPlot(InputMethodEvent event) {
-    }
+    }       
     
     //------------------------HELP METHODS------------------------------------
     
@@ -478,12 +428,12 @@ public class FXMLController implements Initializable {
                     Double.parseDouble((textField_xp.getText().trim()))*0.001,
                     Double.parseDouble((textField_y.getText().trim()))*0.001,
                     Double.parseDouble((textField_yp.getText().trim()))*0.001);
-            newRun.setSolenoid1Field(Double.parseDouble(textField_sol1.getText().trim())*0.001);
-            newRun.setSolenoid2Field(Double.parseDouble(textField_sol2.getText().trim())*0.001);
-            newRun.setVsteerer1Field(Double.parseDouble(textField_V1.getText().trim())*0.001);
-            newRun.setHsteerer1Field(Double.parseDouble(textField_H1.getText().trim())*0.001);
-            newRun.setVsteerer2Field(Double.parseDouble(textField_V2.getText().trim())*0.001);
-            newRun.setHsteerer2Field(Double.parseDouble(textField_H2.getText().trim())*0.001);
+            newRun.setSolenoid1Field(Double.parseDouble(textField_sol1field.getText().trim())*0.001);
+            newRun.setSolenoid2Field(Double.parseDouble(textField_sol2field.getText().trim())*0.001);
+            newRun.setVsteerer1Field(Double.parseDouble(textField_CV1field.getText().trim())*0.001);
+            newRun.setHsteerer1Field(Double.parseDouble(textField_CH1field.getText().trim())*0.001);
+            newRun.setVsteerer2Field(Double.parseDouble(textField_CV2field.getText().trim())*0.001);
+            newRun.setHsteerer2Field(Double.parseDouble(textField_CH2field.getText().trim())*0.001);
             newRun.setBeamCurrent(Double.parseDouble(textField_bc.getText().trim())*0.001);
             newRun.setBeamTwissX(Double.parseDouble(textField_alphax.getText().trim()), Double.parseDouble(textField_betax.getText().trim()), Double.parseDouble(textField_emittx.getText().trim())*0.000001);
             newRun.setBeamTwissY(Double.parseDouble(textField_alphay.getText().trim()), Double.parseDouble(textField_betay.getText().trim()), Double.parseDouble(textField_emitty.getText().trim())*0.000001);
@@ -522,6 +472,39 @@ public class FXMLController implements Initializable {
         posY = newRun.getPosY();
         posR = newRun.getPosR();
         posPhi = newRun.getPosPhi();
+    }
+    
+    /**
+     * Retrieves and displays trajectory plots
+     * @param newRun the simulation
+     */
+    private double[][] readVacuumChamber() throws FileNotFoundException{
+        
+        double[][] vacuumChamber = null;
+        DataAdaptor readAdp = null;
+        URL file;
+        
+        try {
+            file = this.getClass().getResource("/vacuum_chamber/VacuumChamber.xml");
+            readAdp = XmlDataAdaptor.adaptorForUrl(file,false);
+            DataAdaptor blockheader = readAdp.childAdaptor("LEBTboundaries");
+            DataAdaptor blockPoints = blockheader.childAdaptor("points");
+            int num= blockPoints.intValue("numpoints");
+            DataAdaptor blockPosition = blockheader.childAdaptor("position");
+            double[] pos=blockPosition.doubleArray("data");
+            DataAdaptor blockAperture = blockheader.childAdaptor("chamber");
+            double[] aperture=blockAperture.doubleArray("data");
+            vacuumChamber = new double[2][num];
+            for (int i = 0; i < num ; i++) {
+                vacuumChamber[0][i]= pos[i];
+                vacuumChamber[1][i]= aperture[i];
+            }
+        } catch (XmlDataAdaptor.ParseException | XmlDataAdaptor.ResourceNotFoundException ex) {
+            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+        }            
+                       
+        return vacuumChamber;
+       
     }
     
     /**
@@ -856,65 +839,6 @@ public class FXMLController implements Initializable {
             seriesSigmaOffsetY[i].getData().clear();
             seriesSigmaOffsetR[i].getData().clear();
         }
-    }
-
- //-----------------------CONVERTION FUNCTIONS-------------------------------
-    
-    /**
-     * Converts solenoid current to BField
-     * @param current The solenoid current (A)
-     * @return B The corresponding BField (mT)
-     */
-    private double solCurrentToBField(double current){
-        return SOLENOID_CURRENT_TO_PEAK_RATE*current;
-    }
-    
-    /**
-     * Converts solenoid BField to current 
-     * @param BField of the solenoid (mT)
-     * @return current in the solenoid (A)
-     */
-    private double solBFieldtoCurrent(double BField){
-        return SOLENOID_PEAK_RATE_TO_CURRENT*BField;
-    }
-    
-    /**
-     * Returns an B field from Current for the horizontal steerer.
-     * @param current The current of the horizontal steerer (A)
-     * @return B field for the horizontal steerer (mT)
-     */
-    private double hSteererCurrentToBFields(double current){
-               
-        return HSTEERER_CURRENT_TO_PEAK_RATE*current;
-    }
-    
-     /**
-     * Returns an B field from Current for the Vertical steerer
-     * @param current The current of the vertical steerer (A)
-     * @return B field for the vertical steerer (mT)
-     */
-    private double vSteererCurrentToBFields(double current){
-        
-        return VSTEERER_CURRENT_TO_PEAK_RATE*current;
-    }
-    
-    /**
-     * Returns an B field from Current for the horizontal steerer.
-     * @param BField field for the horizontal steerer (mT)
-     * @return current The current of the horizontal steerer (A)
-     */
-    private double hSteererBFieldtoCurrent(double BField){
-               
-        return HSTEERER_PEAK_RATE_TO_CURRENT*BField;
-    }
-    
-     /**
-     * Returns an B field from Current for the Vertical steerer
-     * @param BField field for the vertical steerer (mT) (A)
-     */
-    private double vSteererBFieldtoCurrent(double BField){
-        
-        return VSTEERER_PEAK_RATE_TO_CURRENT*BField;
     }
     
 }

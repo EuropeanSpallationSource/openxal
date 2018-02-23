@@ -30,6 +30,7 @@
         <module>knobs</module>
         <module>labbook</module>
         <module>launcher</module>
+        <module>lebt</module>
         <module>machinerecorder</module>
         <module>machinesimulator</module>
         <module>magnetcycling</module>

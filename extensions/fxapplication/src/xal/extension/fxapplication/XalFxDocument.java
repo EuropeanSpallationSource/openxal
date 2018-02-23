@@ -126,7 +126,7 @@ abstract public class XalFxDocument {
         try {
             WritableImage[] snapshots = new WritableImage[1];
             snapshots[0] = mainStage.getScene().snapshot(null);
-            PostEntryDialog.post(snapshots);
+            PostEntryDialog.post(snapshots, "Studies");
         } catch (Exception ex) {
             Logger.getLogger(XalFxDocument.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -163,6 +163,11 @@ abstract public class XalFxDocument {
     public void setStage(Stage mainStage) {
         this.mainStage = mainStage;
     }
+    
+     public Accelerator getAccelerator() {
+        return accelerator.getAccelerator();
+    }
+
 
 }
 

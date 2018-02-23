@@ -13,15 +13,14 @@ import xal.model.probe.EnvelopeProbe;
 import xal.model.probe.traj.EnvelopeProbeState;
 import xal.sim.scenario.AlgorithmFactory;
 import xal.sim.scenario.ProbeFactory;
-import xal.smf.AcceleratorSeq;
 import xal.tools.beam.CovarianceMatrix;
 import xal.tools.beam.PhaseVector;
 import xal.smf.Accelerator;
 import xal.tools.beam.Twiss;
 import xal.sim.scenario.Scenario;
 import xal.model.probe.traj.Trajectory;
-import xal.smf.data.XMLDataManager;
 import xal.extension.jels.smf.impl.ESSSolFieldMap;
+import xal.smf.AcceleratorSeqCombo;
 import xal.smf.impl.HDipoleCorr;
 import xal.smf.impl.VDipoleCorr;
 
@@ -32,11 +31,11 @@ import xal.smf.impl.VDipoleCorr;
  */
 public class SimulationRunner {
     
-    private double[] init;
-    private double contineous_bc;
-    private double[] solenoidFields;
-    private double[] correctorFields;
-    private double beta_gamma;
+    private final double[] init;
+    private double continuos_bc;
+    private final double[] solenoidFields;
+    private final double[] correctorFields;
+    private final double beta_gamma;
     
     private ArrayList<Double>[] sigmaX;
     private ArrayList<Double>[] sigmaY;
@@ -52,7 +51,7 @@ public class SimulationRunner {
     private ArrayList<Double> positions;
     
     private Accelerator accelerator;
-    private AcceleratorSeq sequence;
+    private final AcceleratorSeqCombo sequence;
     private EnvTrackerAdapt envelopeTracker;
     private EnvelopeProbe probe;
     private PhaseVector initial_pos;
@@ -60,26 +59,17 @@ public class SimulationRunner {
     
     private boolean hasRun;
     
-    public static final double C_BEAM_TO_OPENXAL_B_BEAM = 22.702702702702703;
-        
-    public static final double HSTEERER_PEAK_CENTER_RATIO = 0.085395431829;
-    public static final double VSTEERER_PEAK_CENTER_RATIO = 0.0804959726196;
-    public static final double HSTEERER_CENTER_EDGE_RATIO = 0.481748317408;
-    public static final double VSTEERER_CENTER_EDGE_RATIO = 0.479235913534;
-    public static final double HSTEERER_PEAK_BL_RATIO = 0.167654873982754;
-    public static final double VSTEERER_PEAK_BL_RATIO = 0.157653311589114;
+    public static final double C_BEAM_TO_OPENXAL_B_BEAM = 22.702702702702703;        
     
     private double SPACE_CHARGE = 0.05;
     
-    private double[] TWISSX = {-3.302987,0.39685261,0.1223e-06};
-    private double[] TWISSY = {-3.2846641,0.39203602,0.1217e-06};
+    private final double[] TWISSX = {-3.302987,0.39685261,0.1223e-06};
+    private final double[] TWISSY = {-3.2846641,0.39203602,0.1217e-06};
     private static final double[] TWISSZ = {0.0,109.50523,5*8.66027784872e-06};
-    
-    public static final double[][] SURROUNDING = {{0,0.483,0.4831,0.733,0.7331,1.0959,1.0960,1.1109,1.1110,1.3569,1.3570,1.4519,1.4520,1.7764,1.7765,1.8342,1.8343,1.9819,1.9820,2.2317,2.2320,2.3796,2.3797,2.4800},{75,75,50,50,75,75,40,40,75,75,35,35,75,75,50,50,75,75,50,50,75,75,43.78,7.1741}};
-    
+        
     //-----------------------CONSTRUCTORS-------------------------------
     
-    public SimulationRunner(){
+    public SimulationRunner(Accelerator accl){
         init = new double[4];
         solenoidFields = new double[2];
         correctorFields = new double[4];
@@ -87,7 +77,10 @@ public class SimulationRunner {
         Arrays.fill(init,0);
         Arrays.fill(solenoidFields,288.23);
         Arrays.fill(correctorFields,0);
-        contineous_bc = 74;
+        continuos_bc = 74;
+        
+        accelerator = accl;
+        sequence = accelerator.getComboSequence("COMISSIONING");
         
         beta_gamma = 0.0126439470187;
               
@@ -103,7 +96,7 @@ public class SimulationRunner {
     public void setHsteerer1Field(double field){correctorFields[1] = field;}
     public void setVsteerer2Field(double field){correctorFields[2] = field;}
     public void setHsteerer2Field(double field){correctorFields[3] = field;}
-    public void setBeamCurrent(double current){contineous_bc = current;}
+    public void setBeamCurrent(double current){continuos_bc = current;}
     public void setBeamTwissX(double alpha, double beta, double emitt){TWISSX[0] = alpha;TWISSX[1] = beta;TWISSX[2] = emitt;}
     public void setBeamTwissY(double alpha, double beta, double emitt){TWISSY[0] = alpha;TWISSY[1] = beta;TWISSY[2] = emitt;}
     public void setInitialBeamParameters(double x,double xp, double y, double yp){init[0] = x; init[1] = xp; init[2] = y; init[3] = yp;}
@@ -116,7 +109,7 @@ public class SimulationRunner {
     public double getHsteerer1Field(){return correctorFields[1];}
     public double getVsteerer2Field(){return correctorFields[2];}
     public double getHsteerer2Field(){return correctorFields[3];}
-    public double getBeamCurrent(){return contineous_bc;}
+    public double getBeamCurrent(){return continuos_bc;}
     public double getSpaceChargeCompensation(){return SPACE_CHARGE;}
     public double[] getTwissX(){return TWISSX;}
     public double[] getTwissY(){return TWISSY;}
@@ -137,38 +130,6 @@ public class SimulationRunner {
     
     //-----------------------CONVERTION FUNCTIONS-------------------------------
         
-    /**
-     * Returns an array with the B_peak fields for the horizontal steerer.
-     * @param current The current of the horizontal steerer
-     * @param length The length of the steerer
-     * @return Bfields for the horizontal steerer, where the first element is for the center and the second for the edges
-     */
-    private double[] hSteererDivideFields(double B_peak ,double length){
-        
-        double[] Bfields = new double[2];
-        
-        Bfields[0] = B_peak*HSTEERER_PEAK_CENTER_RATIO/length; //center peak
-        Bfields[1] = Bfields[0]*HSTEERER_CENTER_EDGE_RATIO; //edge peaks
-        
-        return Bfields;
-    }
-    
-     /**
-     * Returns an array with the B_peak fields for the vertical steerer.
-     * @param current The current of the vertical steerer
-     * @param length The length of the steerer
-     * @return Bfields for the vertical steerer, where the first element is for the center and the second for the edges
-     */
-    private double[] vSteererDivideFields(double B_peak, double length){
-        
-        double[] Bfields = new double[2];
-       
-        Bfields[0] = B_peak*VSTEERER_PEAK_CENTER_RATIO/length; //center peak
-        Bfields[1] = Bfields[0]*VSTEERER_CENTER_EDGE_RATIO; //edge peaks
-        
-        return Bfields;
-    }
-        
     private double beamCurrentToOpenXAL(double cont_current){
         return cont_current*C_BEAM_TO_OPENXAL_B_BEAM*SPACE_CHARGE;
     }
@@ -178,37 +139,24 @@ public class SimulationRunner {
     /**
      * Runs the simulation
      */
-    public void runSimulation() throws ModelException, InstantiationException{
-        initiateOpenXAL();
+    public void runSimulation(String model) throws ModelException, InstantiationException{
         
-        setCorrectorFields();
-        setSolenoidFields();
+        //setCorrectorFields();
+        //setSolenoidFields();
         setTrackerParameters();
         setProbe();
         setCovarianceMatrix();
-        runModel();
+        runModel(model);
         retrieveTrajectory();
         
         hasRun = true;
-    }
-    
-    /**
-     * Connects to OpenXAL and initiates the LEBT sequence.
-     */
-    private void initiateOpenXAL(){
-        if (accelerator == null){
-            accelerator = XMLDataManager.loadDefaultAccelerator();
-        }
-        sequence = accelerator.getSequence("LEBT");
-    }
+    }       
     
     /**
      * Sets the three lenses' field for all steerers according to given currents. Assuming equal length of each steerer element
      */
     private void setCorrectorFields(){
-        
-        double[] V1_Bpeak, H1_Bpeak, V2_Bpeak, H2_Bpeak;
-        
+                
         VDipoleCorr V11 = (VDipoleCorr) sequence.getNodeWithId("ST1-VC1");
         VDipoleCorr V12 = (VDipoleCorr) sequence.getNodeWithId("ST1-VC2");
         VDipoleCorr V13 = (VDipoleCorr) sequence.getNodeWithId("ST1-VC3");
@@ -224,27 +172,22 @@ public class SimulationRunner {
         HDipoleCorr H21 = (HDipoleCorr) sequence.getNodeWithId("ST2-HC1");
         HDipoleCorr H22 = (HDipoleCorr) sequence.getNodeWithId("ST2-HC2");
         HDipoleCorr H23 = (HDipoleCorr) sequence.getNodeWithId("ST2-HC3");
+               
+        V11.setDfltField(correctorFields[0]);
+        V12.setDfltField(correctorFields[0]);
+        V13.setDfltField(correctorFields[0]);
         
-        V1_Bpeak = vSteererDivideFields(correctorFields[0],V12.getLength());
-        H1_Bpeak = hSteererDivideFields(correctorFields[1],H12.getLength());
-        V2_Bpeak = vSteererDivideFields(correctorFields[2],V22.getLength());
-        H2_Bpeak = hSteererDivideFields(correctorFields[3],H22.getLength());
-                
-        V11.setDfltField(V1_Bpeak[1]);
-        V12.setDfltField(V1_Bpeak[0]);
-        V13.setDfltField(V1_Bpeak[1]);
+        H11.setDfltField(correctorFields[1]);
+        H12.setDfltField(correctorFields[1]);
+        H13.setDfltField(correctorFields[1]);
         
-        H11.setDfltField(H1_Bpeak[1]);
-        H12.setDfltField(H1_Bpeak[0]);
-        H13.setDfltField(H1_Bpeak[1]);
+        V21.setDfltField(correctorFields[2]);
+        V22.setDfltField(correctorFields[2]);
+        V23.setDfltField(correctorFields[2]);
         
-        V21.setDfltField(V2_Bpeak[1]);
-        V22.setDfltField(V2_Bpeak[0]);
-        V23.setDfltField(V2_Bpeak[1]);
-        
-        H21.setDfltField(H2_Bpeak[1]);
-        H22.setDfltField(H2_Bpeak[0]);
-        H23.setDfltField(H2_Bpeak[1]);
+        H21.setDfltField(correctorFields[3]);
+        H22.setDfltField(correctorFields[3]);
+        H23.setDfltField(correctorFields[3]);
     }
     
     /**
@@ -288,7 +231,7 @@ public class SimulationRunner {
                                  "0," +      //z
                                  "0");        //z'
                 
-        probe.setBeamCurrent(beamCurrentToOpenXAL(contineous_bc));
+        probe.setBeamCurrent(beamCurrentToOpenXAL(continuos_bc));
         probe.setPosition(0.);
     }
     
@@ -309,10 +252,10 @@ public class SimulationRunner {
      * Initiates model (scenario) and runs the simulation
      * @throws ModelException 
      */
-    private void runModel() throws ModelException{
+    private void runModel(String modeltype) throws ModelException{
         model = Scenario.newScenarioFor(sequence);
         model.setProbe(probe);
-        model.setSynchronizationMode("DESIGN");
+        model.setSynchronizationMode(modeltype);
         model.resync();
         model.run();
     }
