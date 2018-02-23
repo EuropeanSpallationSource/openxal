@@ -3,11 +3,13 @@ package xal.extension.jels.smf;
 import xal.extension.jels.smf.impl.ESSBend;
 import xal.extension.jels.smf.impl.ESSDTLTank;
 import xal.extension.jels.smf.impl.ESSFieldMap;
+import xal.extension.jels.smf.impl.ESSMagFieldMap3D;
 import xal.extension.jels.smf.impl.ESSRfCavity;
 import xal.extension.jels.smf.impl.ESSRfGap;
 import xal.extension.jels.smf.impl.ESSSolFieldMap;
 import xal.extension.jels.smf.impl.FieldProfile;
 import xal.extension.jels.smf.impl.FieldProfile2D;
+import xal.extension.jels.smf.impl.MagFieldProfile3D;
 import xal.smf.AcceleratorNode;
 import xal.smf.ChannelSuite;
 import xal.smf.attr.ApertureBucket;
@@ -303,5 +305,43 @@ public final class ESSElementFactory {
         solenoid.setAper(aper);
 
         return solenoid;
+    }
+
+    /**
+     * Creates the field map node with specified properties.
+     *
+     * @param name Name of the field map.
+     * @param length Length of the fieldmap.
+     * @param xmagmax Electric field intensity factor.
+     * @param fieldPath Path of the file containing the field profile.
+     * @param fieldFile File containing the field profile.
+     * @param aper Aperture details.
+     * @param ps
+     * @param position Position of the field map.
+     * @return ESSFieldMap object.
+     */
+    public static ESSMagFieldMap3D createESSMagFieldMap3D(String name, double length,
+            double xmagmax, String fieldPath, String fieldFile, ApertureBucket aper,
+            MagnetMainSupply ps, double position) {
+        ESSMagFieldMap3D magneticFieldmap = new ESSMagFieldMap3D(name + ":MFM");
+
+        addElectromagnetChannels(name, "B", magneticFieldmap.channelSuite());
+        if (ps != null) {
+            magneticFieldmap.setMainSupplyId(ps.getId());
+        }
+
+        magneticFieldmap.setLength(length);
+        magneticFieldmap.setPosition(position + length / 2.);
+        magneticFieldmap.setFieldMapFile(fieldFile);
+
+        magneticFieldmap.setMagFieldProfileX(MagFieldProfile3D.getInstance(fieldPath + "/" + fieldFile + ".bsx"));
+        magneticFieldmap.setMagFieldProfileY(MagFieldProfile3D.getInstance(fieldPath + "/" + fieldFile + ".bsy"));
+        magneticFieldmap.setMagFieldProfileZ(MagFieldProfile3D.getInstance(fieldPath + "/" + fieldFile + ".bsz"));
+
+        magneticFieldmap.setDesignField(xmagmax);
+
+        magneticFieldmap.setAper(aper);
+
+        return magneticFieldmap;
     }
 }
