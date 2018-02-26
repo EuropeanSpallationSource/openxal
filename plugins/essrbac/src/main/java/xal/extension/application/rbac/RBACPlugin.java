@@ -7,6 +7,7 @@ import xal.rbac.RBACLogin;
 
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.util.prefs.BackingStoreException;
 
 /**
  * This is a plugin for rbac authentication and authorization. It provides a method for retrieving its RbacLogin, thus
@@ -45,12 +46,22 @@ public class RBACPlugin {
     public static void enableRBACLogin() {
         java.util.prefs.Preferences defaults = getDefaults();
         defaults.putBoolean(USE_RBAC_KEY, true);
+        try {
+            defaults.sync();
+        } catch (BackingStoreException ex) {
+            Logger.getLogger(RBACPlugin.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     
     public static void disableRBACLogin() {
         java.util.prefs.Preferences defaults = getDefaults();
         defaults.putBoolean(USE_RBAC_KEY, false);
+        try {
+            defaults.sync();
+        } catch (BackingStoreException ex) {
+            Logger.getLogger(RBACPlugin.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
 
