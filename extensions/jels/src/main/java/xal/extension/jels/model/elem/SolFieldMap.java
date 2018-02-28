@@ -74,7 +74,7 @@ public class SolFieldMap extends ThickElectromagnet {
             try {
                 firstSliceFieldmap = (SolFieldMap) latticeElement.getFirstSlice().createModelingElement();
             } catch (ModelException e) {
-                LOGGER.log(Level.INFO, "Couldn''t load the first slice of the fieldmap{0}", e.getMessage());
+                LOGGER.log(Level.INFO, "Couldn't load the first slice of the fieldmap{0}", e.getMessage());
             }
         }
     }

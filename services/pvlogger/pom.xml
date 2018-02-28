@@ -44,10 +44,5 @@
             <artifactId>openxal.plugins.postgres</artifactId>
             <scope>runtime</scope>
         </dependency>
-        <dependency>
-            <groupId>org.xal</groupId>
-            <artifactId>openxal.plugins.pvaccess</artifactId>
-            <scope>runtime</scope>
-        </dependency>
     </dependencies>
 </project>

@@ -103,8 +103,8 @@
         <dependency>
             <groupId>org.xal</groupId>
             <!-- Only one of these two plugins can be included. If both are added, only the one which appears first here will be used -->
-            <!-- <artifactId>openxal.plugins.jca</artifactId>--> <!-- This plugin enables EPICS 3 only -->
-            <artifactId>openxal.plugins.pvaccess</artifactId> <!-- This plugin enables EPICS 4 and 3 -->
+            <artifactId>openxal.plugins.jca</artifactId> <!-- This plugin enables EPICS 3 only -->
+            <!--<artifactId>openxal.plugins.pvaccess</artifactId>  This plugin enables EPICS 4 and 3 -->
         </dependency>
         <dependency>
             <groupId>org.xal</groupId>
