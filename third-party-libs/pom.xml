@@ -36,11 +36,11 @@
     </build>
     
     <repositories>
-        <repository>
+<!--        <repository>
             <id>epics</id>
             <name>EPICS Repository</name>
             <url>http://epics.sourceforge.net/maven2/</url>
-        </repository>
+        </repository>-->
         <repository>
             <id>project</id>
             <url>file://${project.basedir}/lib</url>
