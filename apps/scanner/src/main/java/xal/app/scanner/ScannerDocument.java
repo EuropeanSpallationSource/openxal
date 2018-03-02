@@ -230,7 +230,8 @@ public class ScannerDocument extends XalFxDocument {
             currentMeasAdaptor=da.childAdaptor(SCANNER_SR).createChild(CURRENTMEAS_SR);
         }
         currentMeasAdaptor.createChild("step").setValue("values", currentMeasurement[nmeas]);
-        da.writeToUrl( source );
+        if (source!=null)
+            da.writeToUrl( source );
     };
 
 
