@@ -163,14 +163,14 @@ public final class OpticsSwitcher {
 
         if (defaultOptics.exists()) {
 
-            File[] directoryArray = defaultOptics.listFiles();
+            File[] fileList = defaultOptics.listFiles();
             File[] fileArray;
             String filename;
 
             // Select directories containing .xal files
-            for (File directory : directoryArray) {
-                if (directory.isDirectory()) {
-                    fileArray = directory.listFiles();
+            for (File fileI : fileList) {
+                if (fileI.isDirectory()) {
+                    fileArray = fileI.listFiles();
                     for (File file : fileArray) {
                         filename = file.getParentFile().getName();
                         filename = filename.concat(File.separator);
@@ -186,6 +186,12 @@ public final class OpticsSwitcher {
 
                         }
                     }
+                } else if (fileI.getName().endsWith(".xal")) {
+                    filename = ".";
+                    filename = filename.concat(File.separator);
+                    filename = filename.concat(fileI.getName());
+                    opticsItems.add(filename);
+                    fileItems.add(fileI.getPath());
                 }
             }
         } else {

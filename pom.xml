@@ -68,13 +68,13 @@
         </plugins>
     </build>
 
-    <repositories>
+<!--    <repositories>
         <repository>
             <id>epics</id>
             <name>EPICS repository</name>
             <url>http://epics.sourceforge.net/maven2</url>
         </repository>
-    </repositories>
+    </repositories>-->
 
     <dependencyManagement>
         <dependencies>
