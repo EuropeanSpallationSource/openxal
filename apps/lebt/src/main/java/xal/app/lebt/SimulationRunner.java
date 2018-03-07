@@ -7,6 +7,8 @@ package xal.app.lebt;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import xal.model.ModelException;
 import xal.model.alg.EnvTrackerAdapt;
 import xal.model.probe.EnvelopeProbe;
@@ -19,10 +21,10 @@ import xal.smf.Accelerator;
 import xal.tools.beam.Twiss;
 import xal.sim.scenario.Scenario;
 import xal.model.probe.traj.Trajectory;
-import xal.extension.jels.smf.impl.ESSSolFieldMap;
+import xal.smf.AcceleratorNode;
+import xal.smf.AcceleratorSeq;
 import xal.smf.AcceleratorSeqCombo;
-import xal.smf.impl.HDipoleCorr;
-import xal.smf.impl.VDipoleCorr;
+import xal.tools.math.Complex;
 
 /**
  * The class handling running the simulation.
@@ -36,10 +38,10 @@ public class SimulationRunner {
     private final double[] solenoidFields;
     private final double[] correctorFields;
     private final double beta_gamma;
+    private boolean electrode;
     
     private ArrayList<Double>[] sigmaX;
     private ArrayList<Double>[] sigmaY;
-    private ArrayList<Double> sigmaZ;
     private ArrayList<Double>[] sigmaR;
     private ArrayList<Double>[] sigmaOffsetR;
     private ArrayList<Double>[] sigmaOffsetX;
@@ -51,7 +53,6 @@ public class SimulationRunner {
     private ArrayList<Double> positions;
     
     private Accelerator accelerator;
-    private final AcceleratorSeqCombo sequence;
     private EnvTrackerAdapt envelopeTracker;
     private EnvelopeProbe probe;
     private PhaseVector initial_pos;
@@ -61,28 +62,63 @@ public class SimulationRunner {
     
     public static final double C_BEAM_TO_OPENXAL_B_BEAM = 22.702702702702703;        
     
-    private double SPACE_CHARGE = 0.05;
+    private double SPACE_CHARGE = 0.95;
     
-    private final double[] TWISSX = {-3.302987,0.39685261,0.1223e-06};
+    private double[] TWISSX = {-3.302987,0.39685261,0.1223e-06};
     private final double[] TWISSY = {-3.2846641,0.39203602,0.1217e-06};
-    private static final double[] TWISSZ = {0.0,109.50523,5*8.66027784872e-06};
+    private static final double[] TWISSZ = {0.0,109.50523,8.66027784872e-06};
         
     //-----------------------CONSTRUCTORS-------------------------------
     
-    public SimulationRunner(Accelerator accl){
+    public SimulationRunner(Accelerator accl, AcceleratorSeq sequence){
+        
+        accelerator = accl; 
         init = new double[4];
         solenoidFields = new double[2];
         correctorFields = new double[4];
+        electrode = false;        
         
-        Arrays.fill(init,0);
-        Arrays.fill(solenoidFields,288.23);
-        Arrays.fill(correctorFields,0);
-        continuos_bc = 74;
+        try {
+            //get inital parameters from file
+            envelopeTracker = AlgorithmFactory.createEnvTrackerAdapt(accelerator.getSequence("LEBT"));
+            probe = ProbeFactory.getEnvelopeProbe(accelerator.getSequence("LEBT"), envelopeTracker);
+        } catch (InstantiationException ex) {
+            Logger.getLogger(SimulationRunner.class.getName()).log(Level.SEVERE, null, ex);
+        }                   
         
-        accelerator = accl;
-        sequence = accelerator.getComboSequence("COMISSIONING");
-        
-        beta_gamma = 0.0126439470187;
+        if (probe != null){            
+            
+            continuos_bc = probe.getBeamCurrent()*1000;
+            beta_gamma = probe.getGamma()*probe.getBeta();
+           
+            Twiss[] iniTwiss = probe.getCovariance().computeTwiss();
+            TWISSX[0] = iniTwiss[0].getAlpha();
+            TWISSX[1] = iniTwiss[0].getBeta();
+            TWISSX[2] = iniTwiss[0].getEmittance()*beta_gamma;
+            
+            TWISSY[0] = iniTwiss[1].getAlpha();
+            TWISSY[1] = iniTwiss[1].getBeta();
+            TWISSY[2] = iniTwiss[1].getEmittance()*beta_gamma;
+            
+            PhaseVector iniPos = probe.getCovariance().getMean();
+            
+            init[0] = iniPos.getx();
+            init[1] = iniPos.getxp();
+            init[2] = iniPos.gety();
+            init[3] = iniPos.getyp();
+            
+            Arrays.fill(solenoidFields,288.23);
+            Arrays.fill(correctorFields,0);
+            
+        } else {       
+           
+            Arrays.fill(init,0);
+            Arrays.fill(solenoidFields,288.23);
+            Arrays.fill(correctorFields,0);
+            continuos_bc = 74;                    
+
+            beta_gamma = 0.0126439470187;
+        }
               
         hasRun = false;
     }
@@ -102,6 +138,8 @@ public class SimulationRunner {
     public void setInitialBeamParameters(double x,double xp, double y, double yp){init[0] = x; init[1] = xp; init[2] = y; init[3] = yp;}
     public void setSpaceChargeCompensation(double sc_comp){SPACE_CHARGE = sc_comp;}
     public void setAccelerator(Accelerator accl){accelerator = accl;}
+    public void setElectrode(boolean val){electrode = val;}
+
     
     public double getSolenoid1Field(){return solenoidFields[0];}
     public double getSolenoid2Field(){return solenoidFields[1];}
@@ -110,6 +148,7 @@ public class SimulationRunner {
     public double getVsteerer2Field(){return correctorFields[2];}
     public double getHsteerer2Field(){return correctorFields[3];}
     public double getBeamCurrent(){return continuos_bc;}
+    public boolean getElectrode(boolean val){return electrode;}
     public double getSpaceChargeCompensation(){return SPACE_CHARGE;}
     public double[] getTwissX(){return TWISSX;}
     public double[] getTwissY(){return TWISSY;}
@@ -120,7 +159,6 @@ public class SimulationRunner {
     public ArrayList[] getSigmaOffsetR(){return sigmaOffsetR;}
     public ArrayList[] getSigmaOffsetX(){return sigmaOffsetX;}
     public ArrayList[] getSigmaOffsetY(){return sigmaOffsetY;}
-    public ArrayList getSigmaZ(){return sigmaZ;}
     public ArrayList getPositions(){return positions;}
     public ArrayList getPosX(){return posX;}
     public ArrayList getPosY(){return posY;}
@@ -131,7 +169,7 @@ public class SimulationRunner {
     //-----------------------CONVERTION FUNCTIONS-------------------------------
         
     private double beamCurrentToOpenXAL(double cont_current){
-        return cont_current*C_BEAM_TO_OPENXAL_B_BEAM*SPACE_CHARGE;
+        return cont_current*C_BEAM_TO_OPENXAL_B_BEAM*(1-SPACE_CHARGE)*1e-03;
     }
             
     //----------------------SIMULATION FUNCTIONS--------------------------------
@@ -139,146 +177,11 @@ public class SimulationRunner {
     /**
      * Runs the simulation
      */
-    public void runSimulation(String model) throws ModelException, InstantiationException{
-        
-        //setCorrectorFields();
-        //setSolenoidFields();
-        setTrackerParameters();
-        setProbe();
-        setCovarianceMatrix();
-        runModel(model);
-        retrieveTrajectory();
-        
-        hasRun = true;
-    }       
-    
-    /**
-     * Sets the three lenses' field for all steerers according to given currents. Assuming equal length of each steerer element
-     */
-    private void setCorrectorFields(){
-                
-        VDipoleCorr V11 = (VDipoleCorr) sequence.getNodeWithId("ST1-VC1");
-        VDipoleCorr V12 = (VDipoleCorr) sequence.getNodeWithId("ST1-VC2");
-        VDipoleCorr V13 = (VDipoleCorr) sequence.getNodeWithId("ST1-VC3");
-        
-        HDipoleCorr H11 = (HDipoleCorr) sequence.getNodeWithId("ST1-HC1");
-        HDipoleCorr H12 = (HDipoleCorr) sequence.getNodeWithId("ST1-HC2");
-        HDipoleCorr H13 = (HDipoleCorr) sequence.getNodeWithId("ST1-HC3");
-        
-        VDipoleCorr V21 = (VDipoleCorr) sequence.getNodeWithId("ST2-VC1");
-        VDipoleCorr V22 = (VDipoleCorr) sequence.getNodeWithId("ST2-VC2");
-        VDipoleCorr V23 = (VDipoleCorr) sequence.getNodeWithId("ST2-VC3");
-        
-        HDipoleCorr H21 = (HDipoleCorr) sequence.getNodeWithId("ST2-HC1");
-        HDipoleCorr H22 = (HDipoleCorr) sequence.getNodeWithId("ST2-HC2");
-        HDipoleCorr H23 = (HDipoleCorr) sequence.getNodeWithId("ST2-HC3");
-               
-        V11.setDfltField(correctorFields[0]);
-        V12.setDfltField(correctorFields[0]);
-        V13.setDfltField(correctorFields[0]);
-        
-        H11.setDfltField(correctorFields[1]);
-        H12.setDfltField(correctorFields[1]);
-        H13.setDfltField(correctorFields[1]);
-        
-        V21.setDfltField(correctorFields[2]);
-        V22.setDfltField(correctorFields[2]);
-        V23.setDfltField(correctorFields[2]);
-        
-        H21.setDfltField(correctorFields[3]);
-        H22.setDfltField(correctorFields[3]);
-        H23.setDfltField(correctorFields[3]);
-    }
-    
-    /**
-     * Sets the solenoid fields according to given solenoid field
-     */
-    private void setSolenoidFields(){
-                          
-        ESSSolFieldMap sol1 = (ESSSolFieldMap) sequence.getNodeWithId("FM1:SFM");
-        ESSSolFieldMap sol2 = (ESSSolFieldMap) sequence.getNodeWithId("FM2:SFM");
-        
-        sol1.setDfltField(solenoidFields[0]);
-        sol2.setDfltField(solenoidFields[1]);
-    }
-    
-    /**
-     * Sets tracker parameters
-     */
-    private void setTrackerParameters() throws InstantiationException{
-       
-        envelopeTracker = AlgorithmFactory.createEnvTrackerAdapt(sequence);
-        
-        envelopeTracker.setMaxIterations(20000);
-        envelopeTracker.setAccuracyOrder(1);
-        envelopeTracker.setErrorTolerance(0.001);
-        envelopeTracker.setUseSpacecharge(true);
-        envelopeTracker.setStepSize(0.01);
-        envelopeTracker.setProbeUpdatePolicy(envelopeTracker.UPDATE_ALWAYS);
-    }
-    
-    /**
-     * Sets the probe parameters.
-     */
-    private void setProbe(){
-        
-        probe = ProbeFactory.getEnvelopeProbe(sequence, envelopeTracker);
-        
-        initial_pos = new PhaseVector(Double.toString(init[0]) + "," +
-                Double.toString(init[1]) + "," +
-                Double.toString(init[2]) + "," +
-                Double.toString(init[3]) + "," +
-                                 "0," +      //z
-                                 "0");        //z'
-                
-        probe.setBeamCurrent(beamCurrentToOpenXAL(continuos_bc));
-        probe.setPosition(0.);
-    }
-    
-    /**
-     * Sets the initial covariance matrix
-     */
-    private void setCovarianceMatrix(){
-        
-        Twiss twissX = new Twiss(TWISSX[0],TWISSX[1],TWISSX[2]/beta_gamma);
-        Twiss twissY = new Twiss(TWISSY[0],TWISSY[1],TWISSY[2]/beta_gamma);
-        Twiss twissZ = new Twiss(TWISSZ[0],TWISSZ[1],TWISSZ[2]);
-        
-        CovarianceMatrix cov = CovarianceMatrix.buildCovariance(twissX,twissY,twissZ,initial_pos);
-        probe.setCovariance(cov);
-    }
-    
-    /**
-     * Initiates model (scenario) and runs the simulation
-     * @throws ModelException 
-     */
-    private void runModel(String modeltype) throws ModelException{
-        model = Scenario.newScenarioFor(sequence);
-        model.setProbe(probe);
-        model.setSynchronizationMode(modeltype);
-        model.resync();
-        model.run();
-    }
-    
-    /**
-     * Retrieves the trajectory from model and adds position and envelope to arraylists. 
-     * Both Cartesian and cylindrical coordinates are calculated
-     * The envelopes are creates as an array of arraylists, with positive and negative values as the different elements. 
-     * SigmaR is calculated to be the max value of sigma X and Y.
-     * Unit is mm and rad*pi.
-     */
-    private void retrieveTrajectory(){
-        probe = (EnvelopeProbe) model.getProbe();
-        
-        Trajectory trajectory = probe.getTrajectory();
-        
-        ArrayList<EnvelopeProbeState> stateElement = (ArrayList<EnvelopeProbeState>) trajectory.getStatesViaIndexer();
-        CovarianceMatrix covmat;
+    public void runSimulation(String model, AcceleratorSeq sequence) throws ModelException, InstantiationException{        
         
         //initialize
         sigmaX = new ArrayList[2];
         sigmaY = new ArrayList[2];
-        sigmaZ = new ArrayList<Double>();
         sigmaR = new ArrayList[2];
         sigmaOffsetR = new ArrayList[2];
         sigmaOffsetX = new ArrayList[2];
@@ -298,6 +201,215 @@ public class SimulationRunner {
             sigmaOffsetY[i] = new ArrayList<Double>();
         }
         
+        setTrackerParameters(sequence);       
+        
+        if(electrode && sequence.getAllNodes().toString().contains("ELECTRODE")){
+            AcceleratorNode electrode = sequence.getNodeWithId("ELECTRODE");
+            setProbe(sequence,0.0);
+            setCovarianceMatrix();
+            runModel(model,sequence,sequence.getAllNodes().get(0).toString(),"ELECTRODE");
+            retrieveTrajectory();
+            CovarianceMatrix cov = getElectrodeCovarianceMatrix();
+            setProbe(sequence,electrode.getPosition());
+            setCovarianceMatrix(cov);
+            runModel(model,sequence,"ELECTRODE",sequence.getAllNodes().get(sequence.getNodeCount()-1).toString());
+            retrieveTrajectory();
+        } else {
+            setProbe(sequence,0.0);
+            setCovarianceMatrix();
+            runModel(model,sequence,sequence.getAllNodes().get(0).toString(),sequence.getAllNodes().get(sequence.getNodeCount()-1).toString());
+            retrieveTrajectory();
+        }
+        
+        hasRun = true;
+    }    
+    
+    /**
+     * Runs the simulation
+     */
+    public void runSimulation(String model, AcceleratorSeqCombo sequence) throws ModelException, InstantiationException{        
+        
+        //initialize
+        sigmaX = new ArrayList[2];
+        sigmaY = new ArrayList[2];
+        sigmaR = new ArrayList[2];
+        sigmaOffsetR = new ArrayList[2];
+        sigmaOffsetX = new ArrayList[2];
+        sigmaOffsetY = new ArrayList[2];
+        posX = new ArrayList<Double>();
+        posY = new ArrayList<Double>();
+        posR = new ArrayList<Double>();
+        posPhi = new ArrayList<Double>();
+        positions = new ArrayList<Double>();
+        
+        for(int i = 0; i < sigmaR.length;i++){
+            sigmaR[i] = new ArrayList<Double>();
+            sigmaX[i] = new ArrayList<Double>();
+            sigmaY[i] = new ArrayList<Double>();
+            sigmaOffsetR[i] = new ArrayList<Double>();
+            sigmaOffsetX[i] = new ArrayList<Double>();
+            sigmaOffsetY[i] = new ArrayList<Double>();
+        }
+        
+        if(electrode && sequence.getAllNodes().toString().contains("ELECTRODE")){
+            AcceleratorNode electrode = sequence.getNodeWithId("ELECTRODE");
+            setProbe(sequence,0.0);
+            setCovarianceMatrix();
+            runModel(model,sequence,sequence.getAllNodes().get(0).toString(),"ELECTRODE");
+            retrieveTrajectory();
+            SPACE_CHARGE = 0.0;
+            CovarianceMatrix cov = getElectrodeCovarianceMatrix();
+            setProbe(sequence,electrode.getPosition());
+            setCovarianceMatrix(cov);
+            runModel(model,sequence,"ELECTRODE",sequence.getAllNodes().get(sequence.getNodeCount()-1).toString());
+            retrieveTrajectory();
+        } else {
+            setProbe(sequence,0.0);
+            setCovarianceMatrix();
+            runModel(model,sequence,sequence.getAllNodes().get(0).toString(),sequence.getAllNodes().get(sequence.getNodeCount()-1).toString());
+            retrieveTrajectory();
+        }
+        
+        hasRun = true;
+    }     
+    
+    /**
+     * Sets tracker parameters
+     */
+    private void setTrackerParameters(AcceleratorSeq sequence) throws InstantiationException{
+       
+        envelopeTracker = AlgorithmFactory.createEnvTrackerAdapt(sequence);
+        
+        envelopeTracker.setMaxIterations(20000);
+        envelopeTracker.setAccuracyOrder(1);
+        envelopeTracker.setErrorTolerance(0.001);
+        envelopeTracker.setUseSpacecharge(true);
+        envelopeTracker.setStepSize(0.01);
+        envelopeTracker.setProbeUpdatePolicy(envelopeTracker.UPDATE_ALWAYS);
+    }
+    
+     /**
+     * Sets tracker parameters
+     */
+    private void setTrackerParameters(AcceleratorSeqCombo sequence) throws InstantiationException{
+       
+        envelopeTracker = AlgorithmFactory.createEnvTrackerAdapt(sequence);
+        
+        envelopeTracker.setMaxIterations(20000);
+        envelopeTracker.setAccuracyOrder(1);
+        envelopeTracker.setErrorTolerance(0.001);
+        envelopeTracker.setUseSpacecharge(true);
+        envelopeTracker.setStepSize(0.01);
+        envelopeTracker.setProbeUpdatePolicy(envelopeTracker.UPDATE_ALWAYS);
+    }
+    
+    /**
+     * Sets the probe parameters.
+     */
+    private void setProbe(AcceleratorSeq sequence, double ini_pos){
+                
+        probe = ProbeFactory.getEnvelopeProbe(sequence, envelopeTracker);
+              
+        probe.setBeamCurrent(beamCurrentToOpenXAL(continuos_bc));
+        probe.setPosition(ini_pos);
+    }
+    
+    private void setProbe(AcceleratorSeqCombo sequence, double ini_pos){
+                
+        probe = ProbeFactory.getEnvelopeProbe(sequence, envelopeTracker);
+               
+        probe.setBeamCurrent(beamCurrentToOpenXAL(continuos_bc));
+        probe.setPosition(ini_pos);
+    }
+    
+    /**
+     * Sets the initial covariance matrix
+     */
+    private void setCovarianceMatrix(){
+        
+        Twiss twissX = new Twiss(TWISSX[0],TWISSX[1],TWISSX[2]/beta_gamma);
+        Twiss twissY = new Twiss(TWISSY[0],TWISSY[1],TWISSY[2]/beta_gamma);
+        Twiss twissZ = new Twiss(TWISSZ[0],TWISSZ[1],TWISSZ[2]);
+        
+        initial_pos = new PhaseVector(Double.toString(init[0]) + "," +
+               Double.toString(init[1]) + "," +
+               Double.toString(init[2]) + "," +
+               Double.toString(init[3]) + "," +
+                                "0," +      //z
+                                "0");       //z'
+
+        CovarianceMatrix cov = CovarianceMatrix.buildCovariance(twissX,twissY,twissZ,initial_pos);
+        probe.setCovariance(cov);
+    }
+    
+    private void setCovarianceMatrix(CovarianceMatrix cov){                
+        probe.setCovariance(cov);
+    }
+    
+    
+    /**
+     * Sets the initial covariance matrix
+     */
+    private CovarianceMatrix getElectrodeCovarianceMatrix(){
+        
+        probe = (EnvelopeProbe) model.getProbe();
+        
+        Trajectory trajectory = probe.getTrajectory();
+        
+        ArrayList<EnvelopeProbeState> stateElement = (ArrayList<EnvelopeProbeState>) trajectory.getStatesViaIndexer();        
+        CovarianceMatrix covmat;
+        
+        covmat = stateElement.get(stateElement.size()-1).getCovarianceMatrix();       
+        
+        return covmat;
+    }
+    
+    /**
+     * Initiates model (scenario) and runs the simulation
+     * @throws ModelException 
+     */
+    private void runModel(String modeltype, AcceleratorSeq sequence, String startNode, String endNode) throws ModelException{
+        model = Scenario.newScenarioFor(sequence);
+        model.setProbe(probe);
+        model.setStartNode(startNode);
+        model.setStopNode(endNode);
+        model.setSynchronizationMode(modeltype);
+        model.resync();
+        model.run();
+    }
+    
+    private void runModel(String modeltype, AcceleratorSeqCombo sequence, String startNode, String endNode) throws ModelException{
+        model = Scenario.newScenarioFor(sequence);
+        model.setProbe(probe);
+        model.setStartNode(startNode);
+        model.setStopNode(endNode);
+        model.setSynchronizationMode(modeltype);
+        model.resync();
+        model.run();
+    }
+    
+    /**
+     * Retrieves the trajectory from model and adds position and envelope to arraylists. 
+     * Both Cartesian and cylindrical coordinates are calculated
+     * The envelopes are creates as an array of arraylists, with positive and negative values as the different elements. 
+     * SigmaR is calculated to be the max value of sigma X and Y.
+     * Unit is mm and rad*pi.
+     */
+    private void retrieveTrajectory(){
+        probe = (EnvelopeProbe) model.getProbe();
+        
+        Trajectory trajectory = probe.getTrajectory();
+        
+        ArrayList<EnvelopeProbeState> stateElement = (ArrayList<EnvelopeProbeState>) trajectory.getStatesViaIndexer();
+        CovarianceMatrix covmat;  
+        //double phase0;
+        
+        //if(posPhi.size()>1){
+        //    phase0 = posPhi.get(posPhi.size()-1);
+        //} else {
+        //    phase0 = 0.0;
+        //}
+        
         //retrieve trajectory
         for(int i=0; i<trajectory.numStates(); i++){
             positions.add(stateElement.get(i).getPosition());
@@ -307,33 +419,28 @@ public class SimulationRunner {
             posY.add(covmat.getMeanY() * 1.0e+3);
             sigmaX[0].add(covmat.getSigmaX() * 1.0e+3);
             sigmaY[0].add(covmat.getSigmaY() * 1.0e+3);
-            sigmaZ.add(covmat.getSigmaZ());
+            sigmaX[1].add(covmat.getSigmaX() * -1.0e+3);
+            sigmaY[1].add(covmat.getSigmaY() * -1.0e+3);
+            sigmaR[0].add(Math.max(covmat.getSigmaX(),covmat.getSigmaY())* 1.0e+3);
+            sigmaR[1].add(Math.max(covmat.getSigmaX(),covmat.getSigmaY())* -1.0e+3);                                    
             
             //Calculating cylindrical coordinates
-            posR.add(Math.sqrt(Math.pow(posX.get(i),2)+Math.pow(posY.get(i),2)));
-            
-            if ((posX.get(i) == 0.0) && (posY.get(i) == 0.0)){
-                posPhi.add(0.0);}
-            else if (posX.get(i) == 0.0){
-                double phi = Math.asin(posY.get(i)/posR.get(i));
-                posPhi.add(phi/Math.PI);}
-            else if (posX.get(i) > 0.0){
-                double phi = Math.atan(posY.get(i)/posX.get(i));
-                posPhi.add(phi/Math.PI);}
-            else if (posY.get(i) >= 0){
-                double phi = Math.atan(posY.get(i)/posX.get(i))+Math.PI;
-                posPhi.add(phi/Math.PI);}
-            else{
-                double phi = Math.atan(posY.get(i)/posX.get(i))-Math.PI;
-                posPhi.add(phi/Math.PI);}
-            
-            sigmaR[0].add(Math.max(sigmaX[0].get(i),sigmaY[0].get(i)));
-            
-            sigmaX[1].add(-sigmaX[0].get(i));
-            sigmaY[1].add(-sigmaY[0].get(i));
-            sigmaR[1].add(-sigmaR[0].get(i));
-            
-            
+            posR.add(Math.sqrt(Math.pow(covmat.getMeanX()*1.0e+3,2)+Math.pow(covmat.getMeanY()*1.0e+3,2)));
+            Complex phi = new Complex(covmat.getMeanX()*1.0e+3,covmat.getMeanY()*1.0e+3);
+            posPhi.add(phi.phase()/Math.PI);
+            //if(i>0 && Math.abs(phi.phase()/Math.PI - phase0)>=1.5){
+            //    if(phase0<0){
+            //        posPhi.add(phi.phase()/Math.PI-2);
+            //        phase0 = phi.phase()/Math.PI-2;
+            //    } else {
+            //        posPhi.add(2-phi.phase()/Math.PI);
+            //        phase0 = 2-phi.phase()/Math.PI;
+            //    }    
+            //} else {
+            //    posPhi.add(phi.phase()/Math.PI);
+            //    phase0 = phi.phase()/Math.PI;
+            //}                                                           
+                                   
             for(int k = 0; k < sigmaOffsetX.length; k++){
                 sigmaOffsetX[k].add(sigmaX[k].get(i)+posX.get(i));
                 sigmaOffsetY[k].add(sigmaY[k].get(i)+posY.get(i));

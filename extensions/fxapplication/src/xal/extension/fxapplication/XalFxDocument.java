@@ -49,6 +49,7 @@ abstract public class XalFxDocument {
     public XalFxDocument() {
         this.HELP_WIKI_BASE = "https://confluence.esss.lu.se/pages/viewpage.action?pageId=";
         this.accelerator = new AcceleratorProperty();
+        this.sequence = new SimpleStringProperty();
     }
 
     public XalFxDocument(Stage stage) {
@@ -150,6 +151,10 @@ abstract public class XalFxDocument {
 
     public String getSequence() {
         return sequence.get();
+    }
+    
+    public SimpleStringProperty getSequenceProperty() {
+        return sequence;
     }
 
     public void setSequence(String sequence) {

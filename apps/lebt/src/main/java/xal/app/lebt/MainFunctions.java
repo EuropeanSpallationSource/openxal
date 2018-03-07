@@ -36,50 +36,17 @@ package xal.app.lebt;
  * @author nataliamilas
  */
 
-import java.io.File;
-import java.net.MalformedURLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.concurrent.Task;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
-import xal.ca.ConnectionException;
-import xal.ca.GetException;
-import xal.ca.PutException;
 
-/**
- *
- * @author yngvelevinsen
- */
 public class MainFunctions {
 
-    public static LEBTDocument mainDocument;
-
-    // Holds the progress of the execution
-    public static SimpleDoubleProperty runProgress;
-
-    // True if combos list is up to date
-    public static SimpleBooleanProperty isCombosUpdated;
-
-    // Sleep time in ms between setting parameters and reading back.
-    private static final long sleepTime = 2000;
-
-    public static SimpleBooleanProperty pauseTask;
-    public static SimpleBooleanProperty stopTask;
+    public static LEBTDocument mainDocument;        
 
     public static void initialize(LEBTDocument lebtDocument) {
 
         mainDocument = lebtDocument;
-
-        isCombosUpdated = new SimpleBooleanProperty(false);
-        runProgress = new SimpleDoubleProperty(-1.0);
-        pauseTask = new SimpleBooleanProperty(false);
-        stopTask = new SimpleBooleanProperty(false);
+                
     }
-
+    
+  
 }
 

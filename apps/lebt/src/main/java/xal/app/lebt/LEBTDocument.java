@@ -9,8 +9,10 @@ import java.io.File;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.stage.Stage;
 import xal.extension.fxapplication.XalFxDocument;
@@ -26,9 +28,15 @@ public class LEBTDocument extends XalFxDocument {
      * String indicating which model to be used in the simulation
      */
     public SimpleStringProperty model;
+        
+    public Map<String,Double> valuesLEBT;
+    
+    public Map<String,Double> valuesISRC;
+    
+    public Map<String,Double> inputModel;
     
     // Save/restore parameters..
-    private static final String LEBT_STATE = "ISrc_andLEBT_State";
+    private static final String LEBT_STATE = "ISrcandLEBT_State";
     private static final String ISRC_DATA = "IonSource_data";
     private static final String LEBT_DATA = "LEBT_data";
     private static final String MODEL_DATA = "Model_Input_data";
@@ -41,7 +49,7 @@ public class LEBTDocument extends XalFxDocument {
     public LEBTDocument(Stage stage) {
         super(stage);      
         model = new SimpleStringProperty();
-        model.set("LIVE");
+        model.set("LIVE");      
         DEFAULT_FILENAME="Lebt.xml";
         WILDCARD_FILE_EXTENSION = "*.xml";
         HELP_PAGEID="255603173";
@@ -51,6 +59,7 @@ public class LEBTDocument extends XalFxDocument {
      *  Create a new document loaded from the URL file
      *
      *@param  url  The URL of the file to load into the new document.
+     *@param stage
      */
     public LEBTDocument(URL url, Stage stage) {
         this(stage);
@@ -91,22 +100,25 @@ public class LEBTDocument extends XalFxDocument {
     public void saveDocumentAs(URL url) {
         Logger.getLogger(LEBTDocument.class.getName()).log(Level.FINER, "Saving document, filename {0}", url);
         da = XmlDataAdaptor.newEmptyDocumentAdaptor();
-        DataAdaptor scannerAdaptor =  da.createChild(LEBT_STATE);
-        currentMeasAdaptor = null;
-        scannerAdaptor.setValue("title", url.getFile());
-        scannerAdaptor.setValue("date", new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date()));
-
+        DataAdaptor headerAdaptor =  da.createChild(LEBT_STATE);
+        headerAdaptor.setValue("title", url.getFile());
+        headerAdaptor.setValue("date", new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date()));        
+        DataAdaptor ionsourceAdaptor =  headerAdaptor.createChild(ISRC_DATA);
+        valuesISRC.keySet().forEach(val -> {
+            ionsourceAdaptor.createChild(val).setValue("value",valuesISRC.get(val));
+        });
+        DataAdaptor lebtAdaptor =  headerAdaptor.createChild(LEBT_DATA);
+        valuesLEBT.keySet().forEach(val -> {
+            lebtAdaptor.createChild(val).setValue("value",valuesLEBT.get(val));
+        });
+        DataAdaptor modelAdaptor =  headerAdaptor.createChild(MODEL_DATA);
+        inputModel.keySet().forEach(val -> {
+            modelAdaptor.createChild(val).setValue("value",inputModel.get(val));
+        });
+        
         da.writeToUrl( url );
         Logger.getLogger(LEBTDocument.class.getName()).log(Level.FINEST, "Saved document");
     }
-
-    public void saveCurrentMeas(int nmeas) {
-        if (currentMeasAdaptor==null) {
-            currentMeasAdaptor=da.childAdaptor(LEBT_STATE).createChild(ISRC_DATA);
-        }
-        da.writeToUrl( source );
-    };
-
 
     /**
      *  Reads the content of the document from the specified URL, and loads the information into the application.
@@ -115,11 +127,22 @@ public class LEBTDocument extends XalFxDocument {
      */
     public void loadDocument(URL url) {
         DataAdaptor readAdp = XmlDataAdaptor.adaptorForUrl( url, false );
-        DataAdaptor scannerAdaptor =  readAdp.childAdaptor(LEBT_STATE);
-
-        //Accelerator acc = Model.getInstance().getAccelerator();
-
-
+        DataAdaptor headerAdaptor =  readAdp.childAdaptor(LEBT_STATE);
+               
+        DataAdaptor ionsourceAdaptor = headerAdaptor.childAdaptor(ISRC_DATA);
+        valuesISRC.keySet().forEach(val -> {
+            ionsourceAdaptor.childAdaptor(val).doubleValue("value");            
+        });
+        DataAdaptor lebtAdaptor = headerAdaptor.childAdaptor(LEBT_DATA);
+        valuesLEBT.keySet().forEach(val -> {
+            lebtAdaptor.childAdaptor(val).doubleValue("value");
+        });
+        DataAdaptor modelAdaptor = headerAdaptor.childAdaptor(MODEL_DATA);
+        inputModel.keySet().forEach(val -> {
+            modelAdaptor.childAdaptor(val).doubleValue("value");
+        });
+        
+       
     }
     
     /**
