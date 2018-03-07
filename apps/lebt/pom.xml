@@ -5,7 +5,7 @@
     <parent>
         <artifactId>openxal.apps</artifactId>
         <groupId>org.xal</groupId>        
-        <version>1.2.2-SNAPSHOT</version>
+        <version>1.2.3-SNAPSHOT</version>
     </parent>
 
     <artifactId>openxal.apps.lebt</artifactId>
@@ -18,30 +18,5 @@
     <organization>
         <name>European Spallation Source ERIC</name>
     </organization>
-    <dependencies>
-        <dependency>
-            <groupId>org.xal</groupId>
-            <artifactId>openxal.library</artifactId>
-            <version>1.2.2-SNAPSHOT</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>org.xal</groupId>
-            <artifactId>openxal.core</artifactId>
-            <version>1.2.2-SNAPSHOT</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>org.xal</groupId>
-            <artifactId>openxal.extensions.fxapplication</artifactId>
-            <version>1.2.2-SNAPSHOT</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>org.xal</groupId>
-            <artifactId>openxal.extensions.jels</artifactId>
-            <version>1.2.2-SNAPSHOT</version>
-            <type>jar</type>
-        </dependency>
-    </dependencies>
+   
 </project>

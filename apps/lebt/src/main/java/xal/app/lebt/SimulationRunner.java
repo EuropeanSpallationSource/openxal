@@ -21,6 +21,7 @@ import xal.smf.Accelerator;
 import xal.tools.beam.Twiss;
 import xal.sim.scenario.Scenario;
 import xal.model.probe.traj.Trajectory;
+import xal.sim.sync.SynchronizationException;
 import xal.smf.AcceleratorNode;
 import xal.smf.AcceleratorSeq;
 import xal.smf.AcceleratorSeqCombo;
@@ -206,7 +207,7 @@ public class SimulationRunner {
         if(electrode && sequence.getAllNodes().toString().contains("ELECTRODE")){
             AcceleratorNode electrode = sequence.getNodeWithId("ELECTRODE");
             setProbe(sequence,0.0);
-            setCovarianceMatrix();
+            setIniCovarianceMatrix();
             runModel(model,sequence,sequence.getAllNodes().get(0).toString(),"ELECTRODE");
             retrieveTrajectory();
             CovarianceMatrix cov = getElectrodeCovarianceMatrix();
@@ -216,7 +217,7 @@ public class SimulationRunner {
             retrieveTrajectory();
         } else {
             setProbe(sequence,0.0);
-            setCovarianceMatrix();
+            setIniCovarianceMatrix();
             runModel(model,sequence,sequence.getAllNodes().get(0).toString(),sequence.getAllNodes().get(sequence.getNodeCount()-1).toString());
             retrieveTrajectory();
         }
@@ -251,10 +252,12 @@ public class SimulationRunner {
             sigmaOffsetY[i] = new ArrayList<Double>();
         }
         
+        setTrackerParameters(sequence);      
+        
         if(electrode && sequence.getAllNodes().toString().contains("ELECTRODE")){
             AcceleratorNode electrode = sequence.getNodeWithId("ELECTRODE");
             setProbe(sequence,0.0);
-            setCovarianceMatrix();
+            setIniCovarianceMatrix();
             runModel(model,sequence,sequence.getAllNodes().get(0).toString(),"ELECTRODE");
             retrieveTrajectory();
             SPACE_CHARGE = 0.0;
@@ -265,7 +268,7 @@ public class SimulationRunner {
             retrieveTrajectory();
         } else {
             setProbe(sequence,0.0);
-            setCovarianceMatrix();
+            setIniCovarianceMatrix();
             runModel(model,sequence,sequence.getAllNodes().get(0).toString(),sequence.getAllNodes().get(sequence.getNodeCount()-1).toString());
             retrieveTrajectory();
         }
@@ -284,7 +287,7 @@ public class SimulationRunner {
         envelopeTracker.setAccuracyOrder(1);
         envelopeTracker.setErrorTolerance(0.001);
         envelopeTracker.setUseSpacecharge(true);
-        envelopeTracker.setStepSize(0.01);
+        envelopeTracker.setStepSize(0.1);
         envelopeTracker.setProbeUpdatePolicy(envelopeTracker.UPDATE_ALWAYS);
     }
     
@@ -299,7 +302,7 @@ public class SimulationRunner {
         envelopeTracker.setAccuracyOrder(1);
         envelopeTracker.setErrorTolerance(0.001);
         envelopeTracker.setUseSpacecharge(true);
-        envelopeTracker.setStepSize(0.01);
+        envelopeTracker.setStepSize(0.1);
         envelopeTracker.setProbeUpdatePolicy(envelopeTracker.UPDATE_ALWAYS);
     }
     
@@ -307,7 +310,9 @@ public class SimulationRunner {
      * Sets the probe parameters.
      */
     private void setProbe(AcceleratorSeq sequence, double ini_pos){
-                
+        
+        probe = new EnvelopeProbe();
+        
         probe = ProbeFactory.getEnvelopeProbe(sequence, envelopeTracker);
               
         probe.setBeamCurrent(beamCurrentToOpenXAL(continuos_bc));
@@ -315,7 +320,9 @@ public class SimulationRunner {
     }
     
     private void setProbe(AcceleratorSeqCombo sequence, double ini_pos){
-                
+        
+        probe = new EnvelopeProbe();
+        
         probe = ProbeFactory.getEnvelopeProbe(sequence, envelopeTracker);
                
         probe.setBeamCurrent(beamCurrentToOpenXAL(continuos_bc));
@@ -325,7 +332,7 @@ public class SimulationRunner {
     /**
      * Sets the initial covariance matrix
      */
-    private void setCovarianceMatrix(){
+    private void setIniCovarianceMatrix(){
         
         Twiss twissX = new Twiss(TWISSX[0],TWISSX[1],TWISSX[2]/beta_gamma);
         Twiss twissY = new Twiss(TWISSY[0],TWISSY[1],TWISSY[2]/beta_gamma);
@@ -352,15 +359,16 @@ public class SimulationRunner {
      */
     private CovarianceMatrix getElectrodeCovarianceMatrix(){
         
-        probe = (EnvelopeProbe) model.getProbe();
+        EnvelopeProbe probeResult = (EnvelopeProbe) model.getProbe();
         
-        Trajectory trajectory = probe.getTrajectory();
+        Trajectory trajectory = probeResult.getTrajectory();
         
         ArrayList<EnvelopeProbeState> stateElement = (ArrayList<EnvelopeProbeState>) trajectory.getStatesViaIndexer();        
         CovarianceMatrix covmat;
+        int[] index = trajectory.indicesForElement("ELECTRODE");
         
-        covmat = stateElement.get(stateElement.size()-1).getCovarianceMatrix();       
-        
+        covmat = stateElement.get(index[0]).getCovarianceMatrix();       
+                
         return covmat;
     }
     
@@ -374,7 +382,12 @@ public class SimulationRunner {
         model.setStartNode(startNode);
         model.setStopNode(endNode);
         model.setSynchronizationMode(modeltype);
-        model.resync();
+        try {
+            model.resync();
+        } catch (SynchronizationException ex){
+            model.setSynchronizationMode("DESIGN");   
+            model.resync();
+        }
         model.run();
     }
     
@@ -384,7 +397,12 @@ public class SimulationRunner {
         model.setStartNode(startNode);
         model.setStopNode(endNode);
         model.setSynchronizationMode(modeltype);
-        model.resync();
+        try {
+            model.resync();
+        } catch (SynchronizationException ex){
+            model.setSynchronizationMode("DESIGN");   
+            model.resync();
+        }
         model.run();
     }
     
@@ -396,9 +414,9 @@ public class SimulationRunner {
      * Unit is mm and rad*pi.
      */
     private void retrieveTrajectory(){
-        probe = (EnvelopeProbe) model.getProbe();
+        EnvelopeProbe probeResult = (EnvelopeProbe) model.getProbe();
         
-        Trajectory trajectory = probe.getTrajectory();
+        Trajectory trajectory = probeResult.getTrajectory();
         
         ArrayList<EnvelopeProbeState> stateElement = (ArrayList<EnvelopeProbeState>) trajectory.getStatesViaIndexer();
         CovarianceMatrix covmat;  

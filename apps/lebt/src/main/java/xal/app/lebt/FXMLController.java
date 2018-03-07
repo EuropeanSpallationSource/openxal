@@ -385,7 +385,7 @@ public class FXMLController implements Initializable {
                 }
             }
         });
-        AcceleratorNode HighVoltage = sequence.getNodeWithId("HV");
+        AcceleratorNode HighVoltage = sequence.getNodeWithId("MFC");
         displayValues.put(HighVoltage.getChannel("V"),label_highVoltageRB);
         setValues.put(HighVoltage.getChannel("V_Set"),textField_highVoltage);
         //textField_highVoltage.setText(String.format("%.3f",HighVoltage.getChannel("V_Read").getValDbl()));
@@ -486,7 +486,7 @@ public class FXMLController implements Initializable {
             if(!newVal){
                 try {
                     double val = Double.parseDouble(textField_sol1field.getText());
-                    if(val>0 && val<450){
+                    if(val>=0 && val<450){
                         Solenoid1.getChannel("fieldSet").putVal(val);
                     } else {
                         textField_sol1field.setText(Double.toString(Solenoid1.getChannel("fieldRB").getValDbl()));
@@ -506,7 +506,7 @@ public class FXMLController implements Initializable {
             if(!newVal){
                 try {
                     double val = Double.parseDouble(textField_sol2field.getText());
-                    if(val>0 && val<450){
+                    if(val>=0 && val<450){
                         Solenoid2.getChannel("fieldSet").putVal(val);
                     } else {
                         textField_sol2field.setText(Double.toString(Solenoid2.getChannel("fieldRB").getValDbl()));
@@ -526,7 +526,7 @@ public class FXMLController implements Initializable {
             if(!newVal){
                 try {
                     double val = Double.parseDouble(textField_CV1field.getText());
-                    if(val>0){
+                    if(val>=0){
                         CV1.getChannel("fieldSet").putVal(val);
                     } else {
                         textField_CV1field.setText(Double.toString(CV1.getChannel("fieldRB").getValDbl()));
@@ -546,7 +546,7 @@ public class FXMLController implements Initializable {
             if(!newVal){
                 try {
                     double val = Double.parseDouble(textField_CV2field.getText());
-                    if(val>0){
+                    if(val>=0){
                         CV2.getChannel("fieldSet").putVal(val);
                     } else {
                         textField_CV2field.setText(Double.toString(CV2.getChannel("fieldRB").getValDbl()));
@@ -566,7 +566,7 @@ public class FXMLController implements Initializable {
             if(!newVal){
                 try {
                     double val = Double.parseDouble(textField_CH1field.getText());
-                    if(val>0){
+                    if(val>=0){
                         CH1.getChannel("fieldSet").putVal(val);
                     } else {
                         textField_CH1field.setText(Double.toString(CH1.getChannel("fieldRB").getValDbl()));
@@ -586,7 +586,7 @@ public class FXMLController implements Initializable {
             if(!newVal){
                 try {
                     double val = Double.parseDouble(textField_CH2field.getText());
-                    if(val>0){
+                    if(val>=0){
                         CH2.getChannel("fieldSet").putVal(val);
                     } else {
                         textField_CH2field.setText(Double.toString(CH2.getChannel("fieldRB").getValDbl()));
@@ -604,7 +604,7 @@ public class FXMLController implements Initializable {
             if(!newVal){
                 try {
                     double val = Double.parseDouble(textField_irisAperture.getText());
-                    if(val>0){
+                    if(val>=0){
                         Iris.getChannel("apertureSet").putVal(val);
                     } else {
                         textField_irisAperture.setText(Double.toString(Iris.getChannel("apertureRB").getValDbl()));
@@ -649,7 +649,7 @@ public class FXMLController implements Initializable {
             if(!newVal){
                 try {
                     double val = Double.parseDouble(textField_irisX.getText());
-                    if(val>0){
+                    if(val>=-50 && val<=50){
                         Iris.getChannel("offsetXSet").putVal(val);
                     } else {
                         textField_irisX.setText(Double.toString(Iris.getChannel("offsetXRB").getValDbl()));
@@ -693,7 +693,7 @@ public class FXMLController implements Initializable {
             if(!newVal){
                  try {
                     double val = Double.parseDouble(textField_irisY.getText());
-                    if(val>0){
+                    if(val>=-50 && val<=50){
                         Iris.getChannel("offsetYSet").putVal(val);
                     } else {
                         textField_irisY.setText(Double.toString(Iris.getChannel("offsetYRB").getValDbl()));
@@ -922,15 +922,13 @@ public class FXMLController implements Initializable {
         //Creates a batch of channels to request when updating GUI
         List<Channel> channels = new ArrayList<>();
         displayValues.keySet().forEach(channel -> channels.add(channel));
-        setValues.keySet().forEach(channel -> channels.add(channel));
-        
+        setValues.keySet().forEach(channel -> channels.add(channel));        
         request = new BatchGetValueRequest( channels );        
         request.submitAndWait(5.0);
-        //request.waitForCompletion(5.0); // wait up to 5 seconds for a response          	
         
         //Initializes TextField values and update GUI
         initTextFields();
-        //updateGUI(); 
+        updateGUI(); 
         
         //initializes the timer                
         updateTimer = new StatusAnimationTimer() {
@@ -1022,11 +1020,14 @@ public class FXMLController implements Initializable {
     private void initTextFields(){   
                               
         setValues.keySet().forEach(channel ->{             
-            final ChannelRecord record = request.getRecord( channel );
-            if (record != null && !request.getFailedChannels().contains(channel)){
-                setValues.get(channel).setText(String.format("%.3f",record.doubleValue()));    
-                setValues.get(channel).setStyle("-fx-background-color: white;");
-                setValues.get(channel).setDisable(false);
+            if (channel.isConnected()){
+                try {
+                    setValues.get(channel).setText(String.format("%.3f",channel.getValDbl()));
+                    setValues.get(channel).setStyle("-fx-background-color: white;");
+                    setValues.get(channel).setDisable(false);
+                } catch (ConnectionException | GetException ex) {
+                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                }
             } else {
                 setValues.get(channel).setStyle("-fx-background-color: magenta;");
                 setValues.get(channel).setDisable(true);
@@ -1049,18 +1050,12 @@ public class FXMLController implements Initializable {
         
         try { 
             if (Sequence.contains(sequenceName)) { 
-                //Re-initializing simulation
-                //newRun = new SimulationRunner(MainFunctions.mainDocument.getAccelerator(),MainFunctions.mainDocument.getAccelerator().getSequence(sequenceName));
                 setParameters();
                 newRun.runSimulation(MainFunctions.mainDocument.getModel().get(),MainFunctions.mainDocument.getAccelerator().getSequence(sequenceName));
             } else if (ComboSequence.contains(sequenceName)) {
-                //Re-initializing simulation
-                //newRun = new SimulationRunner(MainFunctions.mainDocument.getAccelerator(),MainFunctions.mainDocument.getAccelerator().getComboSequence(sequenceName).getPrimaryAncestor());
                 setParameters();
                 newRun.runSimulation(MainFunctions.mainDocument.getModel().get(),MainFunctions.mainDocument.getAccelerator().getComboSequence(sequenceName));
             } else {
-                //Re-initializing simulation
-                //newRun = new SimulationRunner(MainFunctions.mainDocument.getAccelerator(),MainFunctions.mainDocument.getAccelerator().getSequence("LEBT"));
                 setParameters();
                 newRun.runSimulation(MainFunctions.mainDocument.getModel().get(),MainFunctions.mainDocument.getAccelerator().getSequence("LEBT"));
             }
