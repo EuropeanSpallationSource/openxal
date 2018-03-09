@@ -57,6 +57,7 @@ import xal.extension.jels.smf.impl.ESSIonSourceMagnetron;
 import xal.extension.jels.smf.impl.Chopper;
 import xal.extension.jels.smf.impl.Iris;
 import xal.extension.jels.smf.impl.EMU;
+import xal.extension.jels.smf.impl.NPM;
 import xal.extension.widgets.apputils.SimpleProbeEditor;
 import xal.extension.widgets.plot.BasicGraphData;
 import xal.extension.widgets.plot.FunctionGraphsJPanel;
@@ -99,6 +100,7 @@ import xal.smf.impl.TrimmedQuadrupole;
 import xal.smf.impl.VDipoleCorr;
 import xal.smf.impl.qualify.QualifierFactory;
 import xal.smf.impl.qualify.TypeQualifier;
+import xal.tools.beam.CovarianceMatrix;
 import xal.tools.beam.PhaseVector;
 import xal.tools.beam.Twiss;
 import xal.tools.beam.calc.SimpleSimResultsAdaptor;
@@ -226,10 +228,12 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 
     private java.util.List<ProfileMonitor> wss;
     
-    //adding EMU and BCM to the VA
+    //adding EMU, BCM and NPM to the VA
     private java.util.List<EMU> emus;
     
     private java.util.List<CurrentMonitor> bcms;
+    
+    private java.util.List<NPM> npms;
 
     private Channel beamOnEvent;
 
@@ -1460,7 +1464,7 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
             e1.printStackTrace();
         }
         
-        // for EMUs
+        // EMUs
         for (final EMU monitor : emus) {
             Channel emittX = monitor.getChannel(EMU.EMITT_X_HANDLE);
             Channel emittY = monitor.getChannel(EMU.EMITT_Y_HANDLE);
@@ -1485,9 +1489,10 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
             } catch (PutException e) {
                 System.err.println(e.getMessage());
             }
-        }
+        }                
         
-        // for BCMs
+        Channel.flushIO();
+        
         for (final CurrentMonitor bcm : bcms) {
             Channel currentAvg = bcm.getChannel(CurrentMonitor.I_AVG_HANDLE);
             Channel chargeAvg = bcm.getChannel(CurrentMonitor.Q_INTEGRAL_HANDLE);            
@@ -1495,8 +1500,40 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
             try {
                 ProbeState<?> probeState = modelScenario.getTrajectory().stateForElement(bcm.getId());
                 if (modelScenario.getProbe() instanceof EnvelopeProbe) {
-                    currentAvg.putValCallback(((EnvelopeProbeState) probeState).getBeamCurrent(), this);                                 
-                    chargeAvg.putValCallback(((EnvelopeProbeState) probeState).bunchCharge(), this);                                 
+                    final EnvelopeProbeState envelopeState = (EnvelopeProbeState) probeState;
+                    currentAvg.putValCallback(envelopeState.getBeamCurrent(), this);                                 
+                    chargeAvg.putValCallback(envelopeState.bunchCharge(), this);                                       
+                    
+                }
+            } catch (ConnectionException e) {
+                System.err.println(e.getMessage());
+            } catch (PutException e) {
+                System.err.println(e.getMessage());
+            }
+        }                
+        
+        Channel.flushIO();
+        
+        // for NPMs
+        for (final NPM monitor : npms) {
+            Channel sigX = monitor.getChannel(NPM.SIGMA_X_AVG_HANDLE);
+            Channel sigY = monitor.getChannel(NPM.SIGMA_Y_AVG_HANDLE);
+            Channel betaX = monitor.getChannel(NPM.BETA_X_TWISS_HANDLE);
+            Channel betaY = monitor.getChannel(NPM.BETA_Y_TWISS_HANDLE);
+            Channel alphaX = monitor.getChannel(NPM.ALPHA_X_TWISS_HANDLE);
+            Channel alphaY = monitor.getChannel(NPM.ALPHA_Y_TWISS_HANDLE);
+
+            try {
+                ProbeState<?> probeState = modelScenario.getTrajectory().stateForElement(monitor.getId());
+                if (modelScenario.getProbe() instanceof EnvelopeProbe) {
+                    final Twiss[] twiss = ((EnvelopeProbeState) probeState).getCovarianceMatrix().computeTwiss();
+                    final CovarianceMatrix cov = ((EnvelopeProbeState) probeState).getCovarianceMatrix();
+                    sigX.putValCallback(cov.getSigmaX(), this);
+                    sigY.putValCallback(cov.getSigmaY(), this);
+                    betaX.putValCallback(twiss[0].getBeta(), this);
+                    betaY.putValCallback(twiss[1].getBeta(), this);
+                    alphaX.putValCallback(twiss[0].getAlpha(), this);
+                    alphaY.putValCallback(twiss[1].getAlpha(), this);                                      
                 }
             } catch (ConnectionException e) {
                 System.err.println(e.getMessage());
@@ -1505,7 +1542,6 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
             }
         }
         
-
         Channel.flushIO();
     }
 
@@ -1819,6 +1855,9 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
             
             // get all the Current monitors
             bcms = getSelectedSequence().getAllNodesWithQualifier(QualifierFactory.qualifierWithStatusAndType(true, CurrentMonitor.s_strType));
+            
+            // get all the Current monitors
+            npms = getSelectedSequence().getAllNodesWithQualifier(QualifierFactory.qualifierWithStatusAndType(true, NPM.s_strType));
 
             // should create a new map for "set" <-> "readback" PV mapping
             configureReadbacks();
