@@ -54,6 +54,9 @@ import xal.extension.bricks.WindowReference;
 import xal.extension.jels.smf.impl.ESSIonSourceCoil;
 import xal.extension.jels.smf.impl.ESSIonSourceMFC;
 import xal.extension.jels.smf.impl.ESSIonSourceMagnetron;
+import xal.extension.jels.smf.impl.Chopper;
+import xal.extension.jels.smf.impl.Iris;
+import xal.extension.jels.smf.impl.EMU;
 import xal.extension.widgets.apputils.SimpleProbeEditor;
 import xal.extension.widgets.plot.BasicGraphData;
 import xal.extension.widgets.plot.FunctionGraphsJPanel;
@@ -81,6 +84,7 @@ import xal.smf.TimingCenter;
 import xal.smf.attr.BPMBucket;
 import xal.smf.impl.BPM;
 import xal.smf.impl.Bend;
+import xal.smf.impl.CurrentMonitor;
 import xal.smf.impl.Electromagnet;
 import xal.smf.impl.HDipoleCorr;
 import xal.smf.impl.MagnetMainSupply;
@@ -213,6 +217,7 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
     private volatile boolean vaRunning = false;
     // add by liyong
     private java.util.List<AcceleratorNode> nodes;     // TODO: CKA - NEVER USED
+    
     private java.util.List<RfCavity> rfCavities;
 
     private java.util.List<Electromagnet> mags;
@@ -220,6 +225,11 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
     private java.util.List<BPM> bpms;
 
     private java.util.List<ProfileMonitor> wss;
+    
+    //adding EMU and BCM to the VA
+    private java.util.List<EMU> emus;
+    
+    private java.util.List<CurrentMonitor> bcms;
 
     private Channel beamOnEvent;
 
@@ -1256,6 +1266,7 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
     /**
      * This method is for populating the diagnostic PVs (only BPMs + WSs for
      * now)
+     * 2018-03-09 Added EMU, NPMs beam size and Current Monitor 
      */
     protected void putDiagPVs() {
         // CKA Nov 25, 2013
@@ -1448,6 +1459,52 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
             // TODO Auto-generated catch block
             e1.printStackTrace();
         }
+        
+        // for EMUs
+        for (final EMU monitor : emus) {
+            Channel emittX = monitor.getChannel(EMU.EMITT_X_HANDLE);
+            Channel emittY = monitor.getChannel(EMU.EMITT_Y_HANDLE);
+            Channel betaX = monitor.getChannel(EMU.BETA_X_TWISS_HANDLE);
+            Channel betaY = monitor.getChannel(EMU.BETA_Y_TWISS_HANDLE);
+            Channel alphaX = monitor.getChannel(EMU.ALPHA_X_TWISS_HANDLE);
+            Channel alphaY = monitor.getChannel(EMU.ALPHA_Y_TWISS_HANDLE);
+
+            try {
+                ProbeState<?> probeState = modelScenario.getTrajectory().stateForElement(monitor.getId());
+                if (modelScenario.getProbe() instanceof EnvelopeProbe) {
+                    final Twiss[] twiss = ((EnvelopeProbeState) probeState).getCovarianceMatrix().computeTwiss();
+                    emittX.putValCallback(twiss[0].getEmittance(), this);
+                    emittY.putValCallback(twiss[1].getEmittance(), this);
+                    betaX.putValCallback(twiss[0].getBeta(), this);
+                    betaY.putValCallback(twiss[1].getBeta(), this);
+                    alphaX.putValCallback(twiss[0].getAlpha(), this);
+                    alphaY.putValCallback(twiss[1].getAlpha(), this);                                      
+                }
+            } catch (ConnectionException e) {
+                System.err.println(e.getMessage());
+            } catch (PutException e) {
+                System.err.println(e.getMessage());
+            }
+        }
+        
+        // for BCMs
+        for (final CurrentMonitor bcm : bcms) {
+            Channel currentAvg = bcm.getChannel(CurrentMonitor.I_AVG_HANDLE);
+            Channel chargeAvg = bcm.getChannel(CurrentMonitor.Q_INTEGRAL_HANDLE);            
+
+            try {
+                ProbeState<?> probeState = modelScenario.getTrajectory().stateForElement(bcm.getId());
+                if (modelScenario.getProbe() instanceof EnvelopeProbe) {
+                    currentAvg.putValCallback(((EnvelopeProbeState) probeState).getBeamCurrent(), this);                                 
+                    chargeAvg.putValCallback(((EnvelopeProbeState) probeState).bunchCharge(), this);                                 
+                }
+            } catch (ConnectionException e) {
+                System.err.println(e.getMessage());
+            } catch (PutException e) {
+                System.err.println(e.getMessage());
+            }
+        }
+        
 
         Channel.flushIO();
     }
@@ -1646,6 +1703,28 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
                         coil.findChannel(ESSIonSourceCoil.I_HANDLE),
                         coil.findChannel(ESSIonSourceCoil.I_SET_HANDLE)));
             }
+            
+            typeQualifier = QualifierFactory.qualifierWithStatusAndTypes(true, Chopper.s_strType);
+            List<Chopper> choppers = getSelectedSequence().getAllInclusiveNodesWithQualifier(typeQualifier);
+            for (final Chopper chp : choppers) {
+                READBACK_SET_RECORDS.add(new ReadbackSetRecord(chp,
+                        chp.findChannel(Chopper.VOLTAGE_RB_HANDLE),
+                        chp.findChannel(Chopper.VOLTAGE_SET_HANDLE)));
+            }
+            
+            typeQualifier = QualifierFactory.qualifierWithStatusAndTypes(true, Iris.s_strType);
+            List<Iris> apertures = getSelectedSequence().getAllInclusiveNodesWithQualifier(typeQualifier);
+            for (final Iris aper : apertures) {
+                READBACK_SET_RECORDS.add(new ReadbackSetRecord(aper,
+                        aper.findChannel(Iris.APERTURE_RB_HANDLE),
+                        aper.findChannel(Iris.APERTURE_SET_HANDLE)));
+                READBACK_SET_RECORDS.add(new ReadbackSetRecord(aper,
+                        aper.findChannel(Iris.OFFSET_X_RB_HANDLE),
+                        aper.findChannel(Iris.OFFSET_X_SET_HANDLE)));
+                READBACK_SET_RECORDS.add(new ReadbackSetRecord(aper,
+                        aper.findChannel(Iris.OFFSET_Y_RB_HANDLE),
+                        aper.findChannel(Iris.OFFSET_Y_SET_HANDLE)));
+            }
 
             // for BPMs
             for (final BPM bpm : bpms) {
@@ -1734,6 +1813,12 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
             // get all the wire scanners
             wss = getSelectedSequence().getAllNodesWithQualifier(QualifierFactory.qualifierWithStatusAndType(true, ProfileMonitor.PROFILE_MONITOR_TYPE));
             System.out.println(wss);
+            
+            // get all the EMUs
+            emus = getSelectedSequence().getAllNodesWithQualifier(QualifierFactory.qualifierWithStatusAndType(true, EMU.s_strType));
+            
+            // get all the Current monitors
+            bcms = getSelectedSequence().getAllNodesWithQualifier(QualifierFactory.qualifierWithStatusAndType(true, CurrentMonitor.s_strType));
 
             // should create a new map for "set" <-> "readback" PV mapping
             configureReadbacks();
