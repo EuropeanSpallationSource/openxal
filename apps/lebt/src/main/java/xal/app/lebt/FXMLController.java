@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.beans.property.SimpleBooleanProperty;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -42,6 +42,8 @@ import xal.smf.Accelerator;
 import xal.smf.AcceleratorNode;
 import xal.smf.AcceleratorSeq;
 import xal.tools.data.DataAdaptor;
+import xal.tools.dispatch.DispatchQueue;
+import xal.tools.dispatch.DispatchTimer;
 import xal.tools.xml.XmlDataAdaptor;
 
 /**
@@ -70,8 +72,11 @@ public class FXMLController implements Initializable {
     private double[][] surroundings;
     private Accelerator accelerator;
     private StatusAnimationTimer updateTimer;
-    private SimpleBooleanProperty updateSimul;
-    private SimpleBooleanProperty updatePVs;
+    /** timer to synch the readbacks with the setpoints and also sync the model */
+    private DispatchTimer MODEL_SYNC_TIMER;
+
+    /** model sync period in milliseconds */
+    private long _modelSyncPeriod;
     
     //defining data
     private ArrayList<Double>[] sigmaX;
@@ -92,6 +97,7 @@ public class FXMLController implements Initializable {
     private double[] TwissX;
     private double[] TwissY;
     private double spaceChargeComp;
+    private double spaceChargeCompElectrode;
     
     //Map the live machine values
     private HashMap<Channel,Label> displayValues;
@@ -177,16 +183,19 @@ public class FXMLController implements Initializable {
     @FXML private Label label_Doppler;
     @FXML private CheckBox checkBox_electrode;
     @FXML private Circle electrodeStatus;
+    @FXML
+    private TextField textField_sccelectrode;
 
              
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-            
-        //Initializes boolean flags
-        updateSimul = new SimpleBooleanProperty();
-        updatePVs = new SimpleBooleanProperty();
-        updateSimul.set(false);
-        updatePVs.set(false);
+        
+        // timer to synchronize readbacks with setpoints as well as the online model
+        MODEL_SYNC_TIMER = DispatchTimer.getCoalescingInstance( DispatchQueue.createSerialQueue( "" ), getOnlineModelSynchronizer() );
+
+        // set the default model sync period to 1 second
+        _modelSyncPeriod = 1000;
+        
         
         //initializing toggle groups
         coordinateGroup = new ToggleGroup();
@@ -346,7 +355,8 @@ public class FXMLController implements Initializable {
         textField_alphay.setTextFormatter(new TextFormatter<Double>(formatter3d));
         textField_emitty.setTextFormatter(new TextFormatter<Double>(formatter3d));
         textField_bc.setTextFormatter(new TextFormatter<Double>(formatter3d));
-        textField_scc.setTextFormatter(new TextFormatter<Double>(formatter2d));    
+        textField_scc.setTextFormatter(new TextFormatter<Double>(formatter2d));
+        textField_sccelectrode.setTextFormatter(new TextFormatter<Double>(formatter2d));    
         textFieldSigmaScale.setTextFormatter(new TextFormatter<Double>(formatter2d));    
         
         textFieldSigmaScale.focusedProperty().addListener((obs, oldVal, newVal) ->{                
@@ -905,7 +915,7 @@ public class FXMLController implements Initializable {
                 if(!newVal){
                     try {
                         double val = Double.parseDouble(textField_scc.getText().trim());
-                        if(val>0 && val<=1.0){
+                        if(val>=0 && val<=1.0){
                             spaceChargeComp=Double.parseDouble(textField_scc.getText().trim());
                         } else {
                             textField_scc.setText(Double.toString(spaceChargeComp));
@@ -914,7 +924,22 @@ public class FXMLController implements Initializable {
                         textField_scc.setText(Double.toString(spaceChargeComp));
                     }                    
                 }
-            });                        
+            }); 
+        
+        textField_sccelectrode.focusedProperty().addListener((obs, oldVal, newVal) ->{                
+                if(!newVal){
+                    try {
+                        double val = Double.parseDouble(textField_sccelectrode.getText().trim());
+                        if(val>=0 && val<=1.0){
+                            spaceChargeCompElectrode=Double.parseDouble(textField_sccelectrode.getText().trim());
+                        } else {
+                            textField_sccelectrode.setText(Double.toString(spaceChargeCompElectrode));
+                        }
+                    } catch(NumberFormatException ex) {
+                        textField_sccelectrode.setText(Double.toString(spaceChargeCompElectrode));
+                    }                    
+                }
+            });  
         
         yAxis1.setAutoRanging(true);
         yAxis.setAutoRanging(true);                
@@ -928,42 +953,76 @@ public class FXMLController implements Initializable {
         
         //Initializes TextField values and update GUI
         initTextFields();
-        updateGUI(); 
+        updateGUI();         
         
+        //Initialize arrays                        
+        sigmaX = new ArrayList[2];
+        sigmaY = new ArrayList[2];
+        sigmaR = new ArrayList[2];
+        sigmaOffsetR = new ArrayList[2];
+        sigmaOffsetX = new ArrayList[2];
+        sigmaOffsetY = new ArrayList[2];
+        posX = new ArrayList<>();
+        posY = new ArrayList<>();
+        posR = new ArrayList<>();
+        posPhi = new ArrayList<>();
+        positions = new ArrayList<>();
+        
+        for(int i = 0; i < sigmaR.length;i++){
+            sigmaR[i] = new ArrayList<Double>();
+            sigmaX[i] = new ArrayList<Double>();
+            sigmaY[i] = new ArrayList<Double>();
+            sigmaOffsetR[i] = new ArrayList<Double>();
+            sigmaOffsetX[i] = new ArrayList<Double>();
+            sigmaOffsetY[i] = new ArrayList<Double>();
+        }
+        
+        displayPlots();
+                
         //initializes the timer                
-        updateTimer = new StatusAnimationTimer() {
-
-                @Override
-                public void handle(long now) {                  
-                    updateGUI();                      
-                    runSimulation();                    
-                }
-        };
+        //updateTimer = new StatusAnimationTimer() {
+        //
+        //        @Override
+        //        public void handle(long now) {                  
+        //            updateGUI(); 
+        //            if(!newRun.hasRun()){
+        //                runSimulation();                    
+        //            }
+        //        }
+        //};
         
+        MODEL_SYNC_TIMER.setEventHandler( getOnlineModelSynchronizer() );        
+      
         MainFunctions.mainDocument.getSequenceProperty().addListener((obs, oldVal, newVal) ->{ 
-            if (updateTimer.isRunning()){
-                updateTimer.stop();
-            }
+            
             if(!newVal.equals(null) && !newVal.matches("ISRC")){
                 //get Sequence
-                String sequenceName = MainFunctions.mainDocument.getSequence();
-        
+                String sequenceName = MainFunctions.mainDocument.getSequence();        
                 String Sequence = MainFunctions.mainDocument.getAccelerator().getSequences().toString();
                 String ComboSequence = MainFunctions.mainDocument.getAccelerator().getComboSequences().toString();
                 
-                //initializing simulation             
-                newRun = new SimulationRunner(MainFunctions.mainDocument.getAccelerator(),MainFunctions.mainDocument.getAccelerator().getSequence("LEBT"));
-                
+                //initializing simulation                            
                 if (Sequence.contains(sequenceName)) {
-                    newRun = new SimulationRunner(MainFunctions.mainDocument.getAccelerator(),MainFunctions.mainDocument.getAccelerator().getSequence(sequenceName));
+                    newRun = new SimulationRunner(MainFunctions.mainDocument.getAccelerator(),MainFunctions.mainDocument.getAccelerator().getSequence(sequenceName),MainFunctions.mainDocument.getModel().get());
                 } else if (ComboSequence.contains(sequenceName)) {
-                    newRun = new SimulationRunner(MainFunctions.mainDocument.getAccelerator(),MainFunctions.mainDocument.getAccelerator().getComboSequence(sequenceName).getPrimaryAncestor());
+                    newRun = new SimulationRunner(MainFunctions.mainDocument.getAccelerator(),MainFunctions.mainDocument.getAccelerator().getComboSequence(sequenceName).getPrimaryAncestor(),MainFunctions.mainDocument.getModel().get());
                 }
                 //assigning initial parameters
                 getParameters();
-                updateTimer.start();
+                //updateTimer.start();                
             }
-        });                   
+            
+            if(MODEL_SYNC_TIMER.isSuspended()){
+                MODEL_SYNC_TIMER.resume();
+            } else {
+                MODEL_SYNC_TIMER.startNowWithInterval( _modelSyncPeriod, 0 );
+            }
+            
+        });   
+        
+        MainFunctions.mainDocument.getModel().addListener((obs, oldVal, newVal) ->{   
+            newRun.setModelSync(MainFunctions.mainDocument.getModel().get());
+        });
         
     }    
     //------------------------HANDLE METHODS------------------------------------          
@@ -1036,47 +1095,84 @@ public class FXMLController implements Initializable {
                       
     }
     
+    /** get the model sync period in milliseconds
+     * @return the sync period for the model timer */
+    public long getModelSyncPeriod() {
+        return _modelSyncPeriod;
+    }
+
+    /** update the model sync period in milliseconds
+     * @param period the sync period */
+    public void setModelSyncPeriod( final long period ) {
+        _modelSyncPeriod = period;
+        MODEL_SYNC_TIMER.startNowWithInterval( _modelSyncPeriod, 0 );
+    }       
+    
+    /** Get a runnable that syncs the online model */
+    private Runnable getOnlineModelSynchronizer() {
+        return () -> {                                               
+            try {   
+                setParameters();
+                newRun.runSimulation();
+            } catch (ModelException ex ) {
+                //updateTimer.stop();          
+                MODEL_SYNC_TIMER.suspend();
+                Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (InstantiationException ex) {
+                //updateTimer.stop();    
+                MODEL_SYNC_TIMER.suspend();
+                Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (Exception ex) {
+                //updateTimer.stop();            
+                MODEL_SYNC_TIMER.suspend();
+                Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+
+            }
+
+            //Display if successful run
+            if(newRun.hasRun()) {
+                Platform.runLater(
+                () -> {
+                  updateGUI();  
+                  displayData(newRun);
+                }); 
+                //displayData(newRun);
+                //retrieveData(newRun);
+                newRun.sethasRun(false);
+            }
+        };
+    }
     
     /**
      * Runs the simulation. Sets simulation parameters from text fields. Displays trajectory plots       
      */
     private void runSimulation() {
-                           
-        String sequenceName = MainFunctions.mainDocument.getSequence();
-
-        String Sequence = MainFunctions.mainDocument.getAccelerator().getSequences().toString();
-        String ComboSequence = MainFunctions.mainDocument.getAccelerator().getComboSequences().toString();                                                                                         
-
-        
-        try { 
-            if (Sequence.contains(sequenceName)) { 
-                setParameters();
-                newRun.runSimulation(MainFunctions.mainDocument.getModel().get(),MainFunctions.mainDocument.getAccelerator().getSequence(sequenceName));
-            } else if (ComboSequence.contains(sequenceName)) {
-                setParameters();
-                newRun.runSimulation(MainFunctions.mainDocument.getModel().get(),MainFunctions.mainDocument.getAccelerator().getComboSequence(sequenceName));
-            } else {
-                setParameters();
-                newRun.runSimulation(MainFunctions.mainDocument.getModel().get(),MainFunctions.mainDocument.getAccelerator().getSequence("LEBT"));
-            }
-        } catch (ModelException ex) {
-            updateTimer.stop();          
+                                     
+        try {   
+            setParameters();
+            newRun.runSimulation();
+        } catch (ModelException ex ) {
+            //updateTimer.stop();          
+            MODEL_SYNC_TIMER.suspend();
             Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-
         } catch (InstantiationException ex) {
-            updateTimer.stop();           
+            //updateTimer.stop();    
+            MODEL_SYNC_TIMER.suspend();
             Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-
         } catch (Exception ex) {
-            updateTimer.stop();            
+            //updateTimer.stop();            
+            MODEL_SYNC_TIMER.suspend();
             Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
 
         }
         
         //Display if successful run
         if(newRun.hasRun()) {
-            displayData(newRun);
+            //displayData(newRun);
+            retrieveData(newRun);
+            newRun.sethasRun(false);
         }
+        
     }
     
     @FXML
@@ -1157,7 +1253,9 @@ public class FXMLController implements Initializable {
         beamCurrent = newRun.getBeamCurrent();
         textField_bc.setText(Double.toString(beamCurrent));
         spaceChargeComp = newRun.getSpaceChargeCompensation();
+        spaceChargeCompElectrode = newRun.getSpaceChargeCompensationElectrode();;
         textField_scc.setText(Double.toString(spaceChargeComp));
+        textField_sccelectrode.setText(Double.toString(spaceChargeCompElectrode));
     }
     
     /**
@@ -1170,7 +1268,7 @@ public class FXMLController implements Initializable {
             newRun.setBeamCurrent(beamCurrent);
             newRun.setBeamTwissX(TwissX[0],TwissX[1],TwissX[2]);
             newRun.setBeamTwissY(TwissY[0],TwissY[1],TwissY[2]);
-            newRun.setSpaceChargeCompensation(spaceChargeComp);
+            newRun.setSpaceChargeCompensation(spaceChargeComp,spaceChargeCompElectrode);
             newRun.setElectrode(checkBox_electrode.isSelected());
         }
         catch(NumberFormatException e){

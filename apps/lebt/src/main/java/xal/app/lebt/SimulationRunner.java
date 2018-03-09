@@ -54,16 +54,19 @@ public class SimulationRunner {
     private ArrayList<Double> positions;
     
     private Accelerator accelerator;
+    private Object sequence;
     private EnvTrackerAdapt envelopeTracker;
     private EnvelopeProbe probe;
     private PhaseVector initial_pos;
     private Scenario model;
+    private String model_sync;
     
     private boolean hasRun;
     
     public static final double C_BEAM_TO_OPENXAL_B_BEAM = 22.702702702702703;        
     
     private double SPACE_CHARGE = 0.95;
+    private double SPACE_CHARGE_ELECTRODE = 0.0;   
     
     private double[] TWISSX = {-3.302987,0.39685261,0.1223e-06};
     private final double[] TWISSY = {-3.2846641,0.39203602,0.1217e-06};
@@ -71,17 +74,19 @@ public class SimulationRunner {
         
     //-----------------------CONSTRUCTORS-------------------------------
     
-    public SimulationRunner(Accelerator accl, AcceleratorSeq sequence){
+    public SimulationRunner(Accelerator accl, AcceleratorSeq seq, String modelSync){
         
         accelerator = accl; 
         init = new double[4];
         solenoidFields = new double[2];
         correctorFields = new double[4];
-        electrode = false;        
+        electrode = false;  
+        sequence = seq;
+        model_sync = modelSync;
         
         try {
             //get inital parameters from file
-            envelopeTracker = AlgorithmFactory.createEnvTrackerAdapt(accelerator.getSequence("LEBT"));
+            envelopeTracker = AlgorithmFactory.createEnvTrackerAdapt((AcceleratorSeq) sequence);
             probe = ProbeFactory.getEnvelopeProbe(accelerator.getSequence("LEBT"), envelopeTracker);
         } catch (InstantiationException ex) {
             Logger.getLogger(SimulationRunner.class.getName()).log(Level.SEVERE, null, ex);
@@ -137,9 +142,11 @@ public class SimulationRunner {
     public void setBeamTwissX(double alpha, double beta, double emitt){TWISSX[0] = alpha;TWISSX[1] = beta;TWISSX[2] = emitt;}
     public void setBeamTwissY(double alpha, double beta, double emitt){TWISSY[0] = alpha;TWISSY[1] = beta;TWISSY[2] = emitt;}
     public void setInitialBeamParameters(double x,double xp, double y, double yp){init[0] = x; init[1] = xp; init[2] = y; init[3] = yp;}
-    public void setSpaceChargeCompensation(double sc_comp){SPACE_CHARGE = sc_comp;}
+    public void setSpaceChargeCompensation(double sc_comp, double sc_compelectrode){SPACE_CHARGE = sc_comp;SPACE_CHARGE_ELECTRODE = sc_compelectrode;}
     public void setAccelerator(Accelerator accl){accelerator = accl;}
     public void setElectrode(boolean val){electrode = val;}
+    public void sethasRun(boolean val){hasRun = val;}
+    public void setModelSync(String model){model_sync = model;}
 
     
     public double getSolenoid1Field(){return solenoidFields[0];}
@@ -151,6 +158,7 @@ public class SimulationRunner {
     public double getBeamCurrent(){return continuos_bc;}
     public boolean getElectrode(boolean val){return electrode;}
     public double getSpaceChargeCompensation(){return SPACE_CHARGE;}
+    public double getSpaceChargeCompensationElectrode(){return SPACE_CHARGE_ELECTRODE;}
     public double[] getTwissX(){return TWISSX;}
     public double[] getTwissY(){return TWISSY;}
     public double[] getInitialBeamParameters(){return init;}    
@@ -178,7 +186,7 @@ public class SimulationRunner {
     /**
      * Runs the simulation
      */
-    public void runSimulation(String model, AcceleratorSeq sequence) throws ModelException, InstantiationException{        
+    public void runSimulation() throws ModelException, InstantiationException{        
         
         //initialize
         sigmaX = new ArrayList[2];
@@ -201,94 +209,68 @@ public class SimulationRunner {
             sigmaOffsetX[i] = new ArrayList<Double>();
             sigmaOffsetY[i] = new ArrayList<Double>();
         }
-        
-        setTrackerParameters(sequence);       
-        
-        if(electrode && sequence.getAllNodes().toString().contains("ELECTRODE")){
-            AcceleratorNode electrode = sequence.getNodeWithId("ELECTRODE");
-            setProbe(sequence,0.0);
-            setIniCovarianceMatrix();
-            runModel(model,sequence,sequence.getAllNodes().get(0).toString(),"ELECTRODE");
-            retrieveTrajectory();
-            CovarianceMatrix cov = getElectrodeCovarianceMatrix();
-            setProbe(sequence,electrode.getPosition());
-            setCovarianceMatrix(cov);
-            runModel(model,sequence,"ELECTRODE",sequence.getAllNodes().get(sequence.getNodeCount()-1).toString());
-            retrieveTrajectory();
+               
+        if(sequence instanceof AcceleratorSeqCombo){            
+            AcceleratorSeqCombo seq = (AcceleratorSeqCombo) sequence;
+            setTrackerParameters(seq); 
+            if(electrode && seq.getAllNodes().toString().contains("ELECTRODE")){
+                AcceleratorNode electrode = seq.getNodeWithId("ELECTRODE");
+                setProbe(seq,0.0);
+                setIniCovarianceMatrix();
+                runModel(model_sync,seq,seq.getAllNodes().get(0).toString(),"ELECTRODE");
+                retrieveTrajectory();
+                SPACE_CHARGE = SPACE_CHARGE_ELECTRODE;
+                CovarianceMatrix cov = getElectrodeCovarianceMatrix();
+                setProbe(seq,electrode.getPosition());
+                setCovarianceMatrix(cov);
+                runModel(model_sync,seq,"ELECTRODE",seq.getAllNodes().get(seq.getNodeCount()-1).toString());
+                retrieveTrajectory();
+            } else {
+                setProbe(seq,0.0);
+                setIniCovarianceMatrix();
+                runModel(model_sync,seq,seq.getAllNodes().get(0).toString(),seq.getAllNodes().get(seq.getNodeCount()-1).toString());
+                retrieveTrajectory();
+            }
+            hasRun = true;
         } else {
-            setProbe(sequence,0.0);
-            setIniCovarianceMatrix();
-            runModel(model,sequence,sequence.getAllNodes().get(0).toString(),sequence.getAllNodes().get(sequence.getNodeCount()-1).toString());
-            retrieveTrajectory();
-        }
-        
-        hasRun = true;
-    }    
+            AcceleratorSeq seq = (AcceleratorSeq) sequence;            
+            setTrackerParameters(seq);
+            if(electrode && seq.getAllNodes().toString().contains("ELECTRODE")){
+                AcceleratorNode electrode = seq.getNodeWithId("ELECTRODE");
+                setProbe(seq,0.0);
+                setIniCovarianceMatrix();
+                runModel(model_sync,seq,seq.getAllNodes().get(0).toString(),"ELECTRODE");
+                retrieveTrajectory();
+                SPACE_CHARGE = SPACE_CHARGE_ELECTRODE;
+                CovarianceMatrix cov = getElectrodeCovarianceMatrix();
+                setProbe(seq,electrode.getPosition());
+                setCovarianceMatrix(cov);
+                runModel(model_sync,seq,"ELECTRODE",seq.getAllNodes().get(seq.getNodeCount()-1).toString());
+                retrieveTrajectory();
+            } else {
+                setProbe(seq,0.0);
+                setIniCovarianceMatrix();
+                runModel(model_sync,seq,seq.getAllNodes().get(0).toString(),seq.getAllNodes().get(seq.getNodeCount()-1).toString());
+                retrieveTrajectory();
+            }
+            hasRun = true;            
+        }                                    
+                
+    }            
     
-    /**
-     * Runs the simulation
-     */
-    public void runSimulation(String model, AcceleratorSeqCombo sequence) throws ModelException, InstantiationException{        
-        
-        //initialize
-        sigmaX = new ArrayList[2];
-        sigmaY = new ArrayList[2];
-        sigmaR = new ArrayList[2];
-        sigmaOffsetR = new ArrayList[2];
-        sigmaOffsetX = new ArrayList[2];
-        sigmaOffsetY = new ArrayList[2];
-        posX = new ArrayList<Double>();
-        posY = new ArrayList<Double>();
-        posR = new ArrayList<Double>();
-        posPhi = new ArrayList<Double>();
-        positions = new ArrayList<Double>();
-        
-        for(int i = 0; i < sigmaR.length;i++){
-            sigmaR[i] = new ArrayList<Double>();
-            sigmaX[i] = new ArrayList<Double>();
-            sigmaY[i] = new ArrayList<Double>();
-            sigmaOffsetR[i] = new ArrayList<Double>();
-            sigmaOffsetX[i] = new ArrayList<Double>();
-            sigmaOffsetY[i] = new ArrayList<Double>();
-        }
-        
-        setTrackerParameters(sequence);      
-        
-        if(electrode && sequence.getAllNodes().toString().contains("ELECTRODE")){
-            AcceleratorNode electrode = sequence.getNodeWithId("ELECTRODE");
-            setProbe(sequence,0.0);
-            setIniCovarianceMatrix();
-            runModel(model,sequence,sequence.getAllNodes().get(0).toString(),"ELECTRODE");
-            retrieveTrajectory();
-            SPACE_CHARGE = 0.0;
-            CovarianceMatrix cov = getElectrodeCovarianceMatrix();
-            setProbe(sequence,electrode.getPosition());
-            setCovarianceMatrix(cov);
-            runModel(model,sequence,"ELECTRODE",sequence.getAllNodes().get(sequence.getNodeCount()-1).toString());
-            retrieveTrajectory();
-        } else {
-            setProbe(sequence,0.0);
-            setIniCovarianceMatrix();
-            runModel(model,sequence,sequence.getAllNodes().get(0).toString(),sequence.getAllNodes().get(sequence.getNodeCount()-1).toString());
-            retrieveTrajectory();
-        }
-        
-        hasRun = true;
-    }     
-    
-    /**
+     /**
      * Sets tracker parameters
      */
     private void setTrackerParameters(AcceleratorSeq sequence) throws InstantiationException{
        
         envelopeTracker = AlgorithmFactory.createEnvTrackerAdapt(sequence);
         
-        envelopeTracker.setMaxIterations(20000);
-        envelopeTracker.setAccuracyOrder(1);
-        envelopeTracker.setErrorTolerance(0.001);
+        //envelopeTracker.setMaxIterations(20000);
+        //envelopeTracker.setAccuracyOrder(2);
+        //envelopeTracker.setErrorTolerance(0.001);
         envelopeTracker.setUseSpacecharge(true);
-        envelopeTracker.setStepSize(0.1);
-        envelopeTracker.setProbeUpdatePolicy(envelopeTracker.UPDATE_ALWAYS);
+        //envelopeTracker.setStepSize(0.01);
+        //envelopeTracker.setProbeUpdatePolicy(envelopeTracker.UPDATE_ALWAYS);
     }
     
      /**
@@ -298,12 +280,12 @@ public class SimulationRunner {
        
         envelopeTracker = AlgorithmFactory.createEnvTrackerAdapt(sequence);
         
-        envelopeTracker.setMaxIterations(20000);
-        envelopeTracker.setAccuracyOrder(1);
-        envelopeTracker.setErrorTolerance(0.001);
+        //envelopeTracker.setMaxIterations(20000);
+        //envelopeTracker.setAccuracyOrder(2);
+        //envelopeTracker.setErrorTolerance(0.001);
         envelopeTracker.setUseSpacecharge(true);
-        envelopeTracker.setStepSize(0.1);
-        envelopeTracker.setProbeUpdatePolicy(envelopeTracker.UPDATE_ALWAYS);
+        //envelopeTracker.setStepSize(0.01);
+        //envelopeTracker.setProbeUpdatePolicy(envelopeTracker.UPDATE_ALWAYS);
     }
     
     /**

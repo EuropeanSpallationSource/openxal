@@ -157,9 +157,11 @@
                               <Font size="16.0" />
                            </font>
                         </Label>
-                        <Circle fx:id="electrodeStatus" fill="GREEN" layoutX="255.0" layoutY="260.0" radius="8.0" stroke="#9e9c9c" strokeType="INSIDE" />
+                        <Circle fx:id="electrodeStatus" fill="GREEN" layoutX="244.0" layoutY="260.0" radius="8.0" stroke="#9e9c9c" strokeType="INSIDE" />
                         <CheckBox fx:id="checkBox_electrode" contentDisplay="RIGHT" layoutX="165.0" layoutY="249.0" mnemonicParsing="false" selected="true" stylesheets="@../styles/ToggleSwitch.css" text="ON" />
-                        <Label layoutX="270.0" layoutY="251.0" text="Reppeler Electrode PS Status" />
+                        <Label layoutX="255.0" layoutY="251.0" text="Reppeler Electrode PS Status" />
+                        <TextField fx:id="textField_sccelectrode" layoutX="446.0" layoutY="247.0" prefWidth="65.0" />
+                        <Label layoutX="516.0" layoutY="251.0" text="Electrode space charge compensation" />
                      </children>
                   </AnchorPane>
             </content>
