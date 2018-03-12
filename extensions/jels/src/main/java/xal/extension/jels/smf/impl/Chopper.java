@@ -37,11 +37,11 @@ public class Chopper extends AcceleratorNode {
      */
     public static final String s_strType = "CHP";
 
-    public static final String CURRENT_RB_HANDLE = "currentR";
+    public static final String CURRENT_RB_HANDLE = "currR";
     private Channel currentRC = null;
-    public static final String VOLTAGE_SET_HANDLE = "voltageS";
+    public static final String VOLTAGE_SET_HANDLE = "volS";
     private Channel voltageSC = null;
-    public static final String VOLTAGE_RB_HANDLE = "voltageR";
+    public static final String VOLTAGE_RB_HANDLE = "volR";
     private Channel voltageRC = null;
 
     static {

@@ -39,17 +39,17 @@ public class EMU extends AcceleratorNode {
     public static final String s_strType = "EMU";
 
     // EMU channel handles              
-    public static final String EMITT_X_HANDLE = "emittX";
+    public static final String EMITT_X_HANDLE = "xEmitt";
     private Channel emittXC = null;
-    public static final String EMITT_Y_HANDLE = "emittY";
+    public static final String EMITT_Y_HANDLE = "yEmitt";
     private Channel emittYC = null;
-    public static final String ALPHA_Y_TWISS_HANDLE = "alphayTwiss";
+    public static final String ALPHA_Y_TWISS_HANDLE = "yAlphaTwiss";
     private Channel alphayTwissC = null;
-    public static final String BETA_Y_TWISS_HANDLE = "betayTwiss";
+    public static final String BETA_Y_TWISS_HANDLE = "yBetaTwiss";
     private Channel betayTwissC = null;
-    public static final String ALPHA_X_TWISS_HANDLE = "alphaxTwiss";
+    public static final String ALPHA_X_TWISS_HANDLE = "xAlphaTwiss";
     private Channel alphaxTwissC = null;
-    public static final String BETA_X_TWISS_HANDLE = "betaxTwiss";
+    public static final String BETA_X_TWISS_HANDLE = "xBetaTwiss";
     private Channel betaxTwissC = null;
 
     static {
