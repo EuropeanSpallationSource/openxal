@@ -37,10 +37,12 @@ import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.ca.PutException;
 import xal.extension.jels.smf.impl.ESSMagFieldMap3D;
+import xal.extension.jels.smf.impl.NPM;
 import xal.model.ModelException;
 import xal.smf.Accelerator;
 import xal.smf.AcceleratorNode;
 import xal.smf.AcceleratorSeq;
+import xal.smf.impl.CurrentMonitor;
 import xal.tools.data.DataAdaptor;
 import xal.tools.dispatch.DispatchQueue;
 import xal.tools.dispatch.DispatchTimer;
@@ -58,9 +60,11 @@ public class FXMLController implements Initializable {
     private XYChart.Series seriesY;
     private XYChart.Series seriesR;
     private XYChart.Series seriesPhi;
+    private XYChart.Series[] seriesNPMpos;
     private XYChart.Series[] seriesSigmaX;
     private XYChart.Series[] seriesSigmaY;
     private XYChart.Series[] seriesSigmaR;
+    private XYChart.Series[] seriesNPMsigma;
     private XYChart.Series[] seriesSigmaOffsetX;
     private XYChart.Series[] seriesSigmaOffsetY;
     private XYChart.Series[] seriesSigmaOffsetR;
@@ -183,8 +187,9 @@ public class FXMLController implements Initializable {
     @FXML private Label label_Doppler;
     @FXML private CheckBox checkBox_electrode;
     @FXML private Circle electrodeStatus;
+    @FXML private TextField textField_sccelectrode;
     @FXML
-    private TextField textField_sccelectrode;
+    private ToggleGroup toggleGroup_currentBI;
 
              
     @Override
@@ -227,11 +232,25 @@ public class FXMLController implements Initializable {
         seriesSigmaOffsetY = new XYChart.Series[2];
         seriesSigmaOffsetR = new XYChart.Series[2];
         seriesSurroundings = new XYChart.Series[2];
+        
+        seriesNPMpos = new XYChart.Series[2];
+        seriesNPMsigma = new XYChart.Series[2];
+        
 
         seriesX.setName("x");
         seriesY.setName("y");
         seriesR.setName("r");
         seriesPhi.setName("φ");
+        
+        seriesNPMpos[0].setName("NPM_x");
+        seriesNPMpos[1].setName("NPM_y");        
+        seriesNPMsigma[0].setName("NPM_σx");
+        seriesNPMsigma[0].setName("NPM_σy");
+        seriesNPMpos[0].getNode().setStyle("-fx-stroke: transparent;");
+        seriesNPMpos[1].getNode().setStyle("-fx-stroke: transparent;");
+        seriesNPMsigma[0].getNode().setStyle("-fx-stroke: transparent;");
+        seriesNPMsigma[1].getNode().setStyle("-fx-stroke: transparent;");
+        
         
         
         for(int i = 0; i<seriesSurroundings.length;i++){
@@ -242,6 +261,8 @@ public class FXMLController implements Initializable {
             seriesSigmaOffsetY[i] = new XYChart.Series();
             seriesSigmaOffsetR[i] = new XYChart.Series();
             seriesSurroundings[i] = new XYChart.Series();
+            seriesNPMpos[i] = new XYChart.Series();
+            seriesNPMsigma[i] = new XYChart.Series();
         }                             
         
        //Showing surroundings
@@ -763,12 +784,24 @@ public class FXMLController implements Initializable {
         checkBox_electrode.selectedProperty().addListener((obs, oldVal, newVal) ->{ 
             if(newVal){
                 checkBox_electrode.setText("ON");
-                electrodeStatus.setFill(Color.GREEN);
+                electrodeStatus.setFill(Color.GREEN); 
+                textField_sccelectrode.setDisable(false);
+                textField_sccelectrode.setText(Double.toString(spaceChargeCompElectrode));
             } else {
                 checkBox_electrode.setText("OFF");
                 electrodeStatus.setFill(Color.RED);
+                textField_sccelectrode.setDisable(true);
+                textField_sccelectrode.setText(Double.toString(spaceChargeComp));                
             }
         });
+        
+        //Disgnostics equipment
+        AcceleratorNode FC = sequence.getNodeWithId("FC1");
+        AcceleratorNode BCM = sequence.getNodeWithId("BCM");
+        AcceleratorNode Doppler = sequence.getNodeWithId("DOPPLER");
+        displayValues.put(FC.getChannel(CurrentMonitor.I_AVG_HANDLE),label_FC);
+        displayValues.put(BCM.getChannel(CurrentMonitor.I_AVG_HANDLE),label_BCM);
+        displayValues.put(Doppler.getChannel(CurrentMonitor.I_AVG_HANDLE),label_Doppler);
         
         //Set scale text Field
         textFieldSigmaScale.setText(Double.toString(scale));
@@ -1058,19 +1091,74 @@ public class FXMLController implements Initializable {
 
         //Display Current if combo box is selected
         if (comboBox_currentFC.isSelected()){
-            try {
-                double val = MainFunctions.mainDocument.getAccelerator().getNode("FC1").getChannel("currentAvg").getValDbl();
+            String currentBI = toggleGroup_currentBI.getSelectedToggle().toString();
+            String nodeBI = null;
+            if (currentBI.equals("Faraday Cup")){
+                nodeBI = "FC1";
+            } else if (currentBI.equals("Beam Current Monitor")){
+                nodeBI = "BCM";
+            } else if (currentBI.equals("Doppler")){
+                nodeBI = "DOPPLER";
+            } else {
+                nodeBI = "BCM";
+            }
+            try {                
+                double val = MainFunctions.mainDocument.getAccelerator().getNode(nodeBI).getChannel("currentAvg").getValDbl();
                 if(val>0){
                     textField_bc.setText(Double.toString(val));
                     beamCurrent = val;
                 } else {
                     textField_bc.setText(Double.toString(beamCurrent));
+                    comboBox_currentFC.setSelected(false);
                 }
             } catch (ConnectionException | GetException ex) {
                 Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         
+        //Add NPM data to the chart series       
+        String sequenceName = MainFunctions.mainDocument.getSequence();         
+        List<NPM> npms = MainFunctions.mainDocument.getAccelerator().getSequence(sequenceName).getAllNodesOfType("NPM");
+        seriesNPMpos[0].getData().clear();
+        seriesNPMpos[1].getData().clear();
+        seriesNPMsigma[0].getData().clear();
+        seriesNPMsigma[1].getData().clear();
+        
+        npms.forEach((monitor) -> {
+            try {
+                seriesNPMpos[0].getData().add(new XYChart.Data(monitor.getSDisplay(),monitor.getXAvg()));
+                seriesNPMpos[1].getData().add(new XYChart.Data(monitor.getSDisplay(),monitor.getYAvg()));
+            } catch (ConnectionException | GetException ex) {
+                Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+ 
+        
+        if(radioButtonOffsetOff.isSelected()){
+            npms.forEach((monitor) -> {
+                try {
+                    seriesNPMsigma[0].getData().add(new XYChart.Data(monitor.getSDisplay(),scale*monitor.getSigmaxAvgC()));
+                    seriesNPMsigma[0].getData().add(new XYChart.Data(monitor.getSDisplay(),-1*scale*monitor.getSigmaxAvgC()));
+                    seriesNPMsigma[1].getData().add(new XYChart.Data(monitor.getSDisplay(),scale*monitor.getSigmayAvgC()));
+                    seriesNPMsigma[1].getData().add(new XYChart.Data(monitor.getSDisplay(),-1*scale*monitor.getSigmayAvgC()));
+                } catch (ConnectionException | GetException ex) {
+                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            });
+        }
+        if(radioButtonOffsetOn.isSelected()){
+            npms.forEach((monitor) -> {
+                try {
+                    seriesNPMsigma[0].getData().add(new XYChart.Data(monitor.getSDisplay(),scale*monitor.getSigmaxAvgC()+monitor.getXAvg()));
+                    seriesNPMsigma[0].getData().add(new XYChart.Data(monitor.getSDisplay(),-1*scale*monitor.getSigmaxAvgC()+monitor.getXAvg()));
+                    seriesNPMsigma[1].getData().add(new XYChart.Data(monitor.getSDisplay(),scale*monitor.getSigmayAvgC()+monitor.getYAvg()));
+                    seriesNPMsigma[1].getData().add(new XYChart.Data(monitor.getSDisplay(),-1*scale*monitor.getSigmayAvgC()+monitor.getYAvg()));
+                } catch (ConnectionException | GetException ex) {
+                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            });
+        }
+                                    
     }  
     
     /**
@@ -1406,7 +1494,7 @@ public class FXMLController implements Initializable {
             seriesX.getData().add(new XYChart.Data(positions.get(i), posX.get(i)));
             seriesY.getData().add(new XYChart.Data(positions.get(i), posY.get(i)));
         }
-        
+                
         yAxis.setLabel("Offset (mm)");
         
         //set colors
@@ -1610,11 +1698,15 @@ public class FXMLController implements Initializable {
      */
     private void addTrajectorySeriesToPlot(){
         
-        plot1.getData().removeAll(seriesX,seriesY,seriesR,seriesPhi);
+        plot1.getData().removeAll(seriesX,seriesY,seriesR,seriesPhi,seriesNPMpos[0],seriesNPMpos[1]);
         
         if(radioButtonCart.isSelected()){
             plot1.getData().add(seriesX);       
-            plot1.getData().add(seriesY); 
+            plot1.getData().add(seriesY);
+            if(comboBox_posNPM.isSelected()){
+                plot1.getData().add(seriesNPMpos[1]);
+                plot1.getData().add(seriesNPMpos[2]);
+            }
 
         }
         else if (radioButtonCyl.isSelected()){
@@ -1633,25 +1725,31 @@ public class FXMLController implements Initializable {
             seriesSigmaR[0],seriesSigmaR[1],
             seriesSigmaOffsetX[0],seriesSigmaOffsetX[1],
             seriesSigmaOffsetY[0],seriesSigmaOffsetY[1],
-            seriesSigmaOffsetR[0],seriesSigmaOffsetR[1]);
+            seriesSigmaOffsetR[0],seriesSigmaOffsetR[1],
+            seriesNPMsigma[0],seriesNPMsigma[1]);        
         
         if(radioButtonCart.isSelected()){
             
             if(radioButtonOffsetOn.isSelected()){
                 for(int i = 0; i < seriesSigmaX.length; i++){
                     plot2.getData().add(seriesSigmaOffsetX[i]);       
-                    plot2.getData().add(seriesSigmaOffsetY[i]);  
+                    plot2.getData().add(seriesSigmaOffsetY[i]);                    
                 }
-                seriesSigmaOffsetX[1].setName("σ_x");
-                seriesSigmaOffsetY[1].setName("σ_y");
+                seriesSigmaOffsetX[1].setName("σx");
+                seriesSigmaOffsetY[1].setName("σy");
             }
             else if (radioButtonOffsetOff.isSelected()){
                 for(int i = 0; i < seriesSigmaX.length; i++){
                     plot2.getData().add(seriesSigmaX[i]);       
                     plot2.getData().add(seriesSigmaY[i]);  
                 }
-                seriesSigmaX[1].setName("σ_x");
-                seriesSigmaY[1].setName("σ_y");
+                seriesSigmaX[1].setName("σx");
+                seriesSigmaY[1].setName("σy");
+            }
+            
+            if(comboBox_sigmaNPM.isSelected()){
+                plot1.getData().add(seriesNPMsigma[1]);
+                plot1.getData().add(seriesNPMsigma[2]);
             }
 
         }
@@ -1660,13 +1758,13 @@ public class FXMLController implements Initializable {
                 for(int i = 0; i < seriesSigmaX.length; i++){
                     plot2.getData().add(seriesSigmaOffsetR[i]);       
                 }
-                seriesSigmaOffsetR[1].setName("σ_r");
+                seriesSigmaOffsetR[1].setName("σr");
             }
             else if (radioButtonOffsetOff.isSelected()){
                 for(int i = 0; i < seriesSigmaX.length; i++){
                     plot2.getData().add(seriesSigmaR[i]);       
                 }
-                seriesSigmaR[1].setName("σ_r");
+                seriesSigmaR[1].setName("σr");
             }
         }
     }

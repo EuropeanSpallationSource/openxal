@@ -9,6 +9,7 @@
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -16,9 +17,9 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="962.0" prefWidth="1138.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xal.app.lebt.FXMLController">
+<AnchorPane id="AnchorPane" prefHeight="993.0" prefWidth="1138.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xal.app.lebt.FXMLController">
     <children>
-      <LineChart fx:id="plot1" layoutX="21.0" layoutY="71.0" prefHeight="271.0" prefWidth="1064.0" title="Centroid" AnchorPane.leftAnchor="21.0" AnchorPane.rightAnchor="53.0" AnchorPane.topAnchor="71.0">
+      <LineChart fx:id="plot1" layoutX="21.0" layoutY="42.0" prefHeight="300.0" prefWidth="1098.0" title="Centroid" AnchorPane.leftAnchor="21.0" AnchorPane.rightAnchor="19.0" AnchorPane.topAnchor="42.0">
         <xAxis>
           <NumberAxis label="Position (m)" side="BOTTOM" fx:id="xAxis" />
         </xAxis>
@@ -26,7 +27,7 @@
           <NumberAxis fx:id="yAxis" label="Offset (mm)" side="LEFT" />
         </yAxis>
       </LineChart>
-      <LineChart fx:id="plot2" layoutX="21.0" layoutY="342.0" prefHeight="314.0" prefWidth="1098.0" title="Envelope" AnchorPane.bottomAnchor="323.0" AnchorPane.leftAnchor="21.0" AnchorPane.rightAnchor="19.0" AnchorPane.topAnchor="342.0">
+      <LineChart fx:id="plot2" layoutX="21.0" layoutY="342.0" prefHeight="314.0" prefWidth="1098.0" title="Envelope" AnchorPane.leftAnchor="21.0" AnchorPane.rightAnchor="19.0" AnchorPane.topAnchor="342.0">
          <xAxis>
             <NumberAxis label="Position (m)" side="BOTTOM" fx:id="xAxis1" />
          </xAxis>
@@ -40,10 +41,10 @@
       <RadioButton fx:id="radioButtonOffsetOff" layoutX="1070.0" layoutY="350.0" mnemonicParsing="false" onAction="#offsetHandler" selected="true" text="off" />
       <RadioButton fx:id="radioButtonOffsetOn" layoutX="1022.0" layoutY="350.0" mnemonicParsing="false" onAction="#offsetHandler" text="on" />
       <Label layoutX="857.0" layoutY="351.0" text="Include trajectory offset :" />
-      <TextField fx:id="textFieldSigmaScale" layoutX="214.0" layoutY="346.0" onInputMethodTextChanged="#scaleButtonHandler" prefHeight="29.0" prefWidth="50.0" text="1" AnchorPane.bottomAnchor="606.0" AnchorPane.leftAnchor="214.0" AnchorPane.rightAnchor="874.0" AnchorPane.topAnchor="346.0" />
+      <TextField fx:id="textFieldSigmaScale" layoutX="214.0" layoutY="346.0" onInputMethodTextChanged="#scaleButtonHandler" prefHeight="29.0" prefWidth="50.0" text="1" AnchorPane.leftAnchor="214.0" AnchorPane.topAnchor="346.0" />
       <Label layoutX="83.0" layoutY="351.0" text="# sigmas (n) to plot :" />
       <Label layoutX="397.0" layoutY="14.0" text="Plot coordinate system :" />
-      <TabPane layoutX="376.0" layoutY="656.0" prefHeight="322.0" prefWidth="762.0" tabClosingPolicy="UNAVAILABLE">
+      <TabPane layoutX="376.0" layoutY="656.0" prefHeight="322.0" prefWidth="762.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="376.0" AnchorPane.rightAnchor="0.0">
         <tabs>
           <Tab closable="false" text="LEBT Equipment">
             <content>
@@ -157,11 +158,11 @@
                               <Font size="16.0" />
                            </font>
                         </Label>
-                        <Circle fx:id="electrodeStatus" fill="GREEN" layoutX="244.0" layoutY="260.0" radius="8.0" stroke="#9e9c9c" strokeType="INSIDE" />
-                        <CheckBox fx:id="checkBox_electrode" contentDisplay="RIGHT" layoutX="165.0" layoutY="249.0" mnemonicParsing="false" selected="true" stylesheets="@../styles/ToggleSwitch.css" text="ON" />
-                        <Label layoutX="255.0" layoutY="251.0" text="Reppeler Electrode PS Status" />
-                        <TextField fx:id="textField_sccelectrode" layoutX="446.0" layoutY="247.0" prefWidth="65.0" />
-                        <Label layoutX="516.0" layoutY="251.0" text="Electrode space charge compensation" />
+                        <Circle fx:id="electrodeStatus" fill="GREEN" layoutX="521.0" layoutY="258.0" radius="8.0" stroke="#9e9c9c" strokeType="INSIDE" />
+                        <CheckBox fx:id="checkBox_electrode" contentDisplay="RIGHT" layoutX="428.0" layoutY="249.0" mnemonicParsing="false" selected="true" stylesheets="@../styles/ToggleSwitch.css" text="ON" />
+                        <Label layoutX="536.0" layoutY="250.0" text="Reppeler Electrode PS Status" />
+                        <TextField fx:id="textField_sccelectrode" layoutX="165.0" layoutY="245.0" prefWidth="65.0" />
+                        <Label layoutX="238.0" layoutY="250.0" text="Space charge compensation" />
                      </children>
                   </AnchorPane>
             </content>
@@ -170,30 +171,28 @@
               <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <CheckBox fx:id="comboBox_sigmaNPM" layoutX="14.0" layoutY="52.0" mnemonicParsing="false" text="Show sigmas on envelope plot." AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="52.0" />
-                        <CheckBox fx:id="comboBox_posNPM" layoutX="14.0" layoutY="30.0" mnemonicParsing="false" text="Show position on trajectory plot." AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="30.0" />
+                        <CheckBox fx:id="comboBox_sigmaNPM" layoutX="14.0" layoutY="55.0" mnemonicParsing="false" text="Show sigmas on envelope plot." AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="55.0" />
+                        <CheckBox fx:id="comboBox_posNPM" layoutX="14.0" layoutY="30.0" mnemonicParsing="false" text="Show positions on trajectory plot." AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="30.0" />
                         <Label layoutX="14.0" layoutY="4.0" text="NPMs:">
                            <font>
                               <Font size="16.0" />
                            </font>
                         </Label>
-                        <Label layoutX="486.0" layoutY="4.0" text="Use current in simulation:">
+                        <Label layoutX="14.0" layoutY="95.0" text="Use current in simulation:">
                            <font>
                               <Font size="16.0" />
                            </font>
                         </Label>
-                        <RadioButton layoutX="588.0" layoutY="50.0" mnemonicParsing="false" text="Faraday Cup" AnchorPane.leftAnchor="588.0" />
-                        <RadioButton layoutX="588.0" layoutY="79.0" mnemonicParsing="false" text="Beam Current Monitor" AnchorPane.leftAnchor="588.0" />
-                        <RadioButton layoutX="588.0" layoutY="108.0" mnemonicParsing="false" text="Doppler" AnchorPane.leftAnchor="588.0" />
-                        <Label layoutX="281.0" layoutY="4.0" text="EMU readings:">
-                           <font>
-                              <Font size="16.0" />
-                           </font>
-                        </Label>
-                        <Label fx:id="label_FC" layoutX="492.0" layoutY="46.0" prefHeight="27.0" prefWidth="90.0" style="-fx-background-color: ffffff;" AnchorPane.leftAnchor="492.0" />
-                        <Label fx:id="label_BCM" layoutX="492.0" layoutY="75.0" prefHeight="27.0" prefWidth="90.0" style="-fx-background-color: ffffff;" AnchorPane.leftAnchor="492.0" />
-                        <Label fx:id="label_Doppler" layoutX="492.0" layoutY="104.0" prefHeight="27.0" prefWidth="90.0" style="-fx-background-color: ffffff;" AnchorPane.leftAnchor="492.0" />
-                        <Label layoutX="522.0" layoutY="25.0" text="(mA)" />
+                        <RadioButton layoutX="116.0" layoutY="141.0" mnemonicParsing="false" text="Faraday Cup" AnchorPane.leftAnchor="116.0">
+                           <toggleGroup>
+                              <ToggleGroup fx:id="toggleGroup_currentBI" />
+                           </toggleGroup></RadioButton>
+                        <RadioButton layoutX="116.0" layoutY="170.0" mnemonicParsing="false" text="Beam Current Monitor" toggleGroup="$toggleGroup_currentBI" AnchorPane.leftAnchor="116.0" />
+                        <RadioButton layoutX="116.0" layoutY="199.0" mnemonicParsing="false" text="Doppler" toggleGroup="$toggleGroup_currentBI" AnchorPane.leftAnchor="116.0" />
+                        <Label fx:id="label_FC" layoutX="20.0" layoutY="137.0" prefHeight="27.0" prefWidth="90.0" style="-fx-background-color: ffffff;" AnchorPane.leftAnchor="20.0" />
+                        <Label fx:id="label_BCM" layoutX="20.0" layoutY="166.0" prefHeight="27.0" prefWidth="90.0" style="-fx-background-color: ffffff;" AnchorPane.leftAnchor="20.0" />
+                        <Label fx:id="label_Doppler" layoutX="20.0" layoutY="195.0" prefHeight="27.0" prefWidth="90.0" style="-fx-background-color: ffffff;" AnchorPane.leftAnchor="20.0" />
+                        <Label layoutX="50.0" layoutY="116.0" text="(mA)" />
                      </children>
                   </AnchorPane>
               </content>
@@ -282,9 +281,9 @@
             </Tab>
         </tabs>
       </TabPane>
-      <Separator layoutY="655.0" prefHeight="0.0" prefWidth="1138.0" />
-      <Separator layoutX="373.0" layoutY="656.0" orientation="VERTICAL" prefHeight="322.0" prefWidth="5.0" />
-      <Label layoutX="21.0" layoutY="668.0" text="Beam Input Parameters:" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="665.0">
+      <Separator layoutY="655.0" prefHeight="0.0" prefWidth="1138.0" AnchorPane.bottomAnchor="320.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+      <Separator layoutX="373.0" layoutY="656.0" orientation="VERTICAL" prefHeight="322.0" prefWidth="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="373.0" AnchorPane.rightAnchor="759.0" />
+      <Label layoutX="8.0" layoutY="673.0" text="Beam Input Parameters:" AnchorPane.leftAnchor="8.0" AnchorPane.topAnchor="673.0">
          <font>
             <Font size="16.0" />
          </font>
@@ -310,8 +309,8 @@
       <TextField fx:id="textField_bc" layoutX="82.0" layoutY="917.0" prefHeight="27.0" prefWidth="85.0" AnchorPane.leftAnchor="82.0" AnchorPane.topAnchor="917.0" />
       <Label layoutX="28.0" layoutY="922.0" text="Current" AnchorPane.leftAnchor="28.0" AnchorPane.topAnchor="922.0" />
       <Label layoutX="174.0" layoutY="922.0" text="mA" AnchorPane.leftAnchor="174.0" AnchorPane.topAnchor="922.0" />
-      <Label layoutX="45.0" layoutY="953.0" text="Space charge compensation" AnchorPane.leftAnchor="45.0" />
-      <TextField fx:id="textField_scc" layoutX="226.0" layoutY="948.0" prefWidth="65.0" />
+      <Label layoutX="51.0" layoutY="959.0" text="Space charge compensation" AnchorPane.bottomAnchor="17.0" AnchorPane.leftAnchor="51.0" />
+      <TextField fx:id="textField_scc" layoutX="233.0" layoutY="954.0" prefWidth="65.0" AnchorPane.bottomAnchor="12.0" />
       <Label layoutX="291.0" layoutY="872.0" text="mm mrad" AnchorPane.leftAnchor="291.0" />
       <CheckBox fx:id="comboBox_currentFC" layoutX="210.0" layoutY="922.0" mnemonicParsing="false" onAction="#handleGetCurrentfromFC" text="Get current from BI" AnchorPane.leftAnchor="210.0" />
       <TextField fx:id="textField_betay" layoutX="198.0" layoutY="807.0" prefHeight="27.0" prefWidth="85.0" />
