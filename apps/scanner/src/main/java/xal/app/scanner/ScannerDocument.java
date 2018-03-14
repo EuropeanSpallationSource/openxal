@@ -70,7 +70,10 @@ public class ScannerDocument extends XalFxDocument {
      */
     public Map<String, List<Channel>> allPVw;
 
-    public SimpleIntegerProperty numberOfMeasurements;
+    /**
+     * The number of different scans that have been done
+     */
+    public SimpleIntegerProperty numberOfScans;
 
     public double[][] currentMeasurement;
 
@@ -82,6 +85,17 @@ public class ScannerDocument extends XalFxDocument {
      * for each variable..
      */
     public ObservableList<String> constraints;
+
+    /**
+     * The delay between successive measurements in milliseconds
+     */
+    public long delayBetweenMeasurements;
+
+    /**
+     * The number of measurements to take at each location
+     * WARNING: This is not yet implemented!!
+     */
+    public int numberMeasurementsPerCombo;
 
     // The Readback channels
     public List<ChannelWrapper> pvReadbacks;
@@ -113,7 +127,11 @@ public class ScannerDocument extends XalFxDocument {
         pvWriteables = new ArrayList<>();
         combos = new ArrayList<>();
         constraints = FXCollections.observableArrayList("", "", "", "");
-        numberOfMeasurements = new SimpleIntegerProperty(0);
+        numberOfScans = new SimpleIntegerProperty(0);
+
+        numberMeasurementsPerCombo=1;
+        delayBetweenMeasurements=1500;
+
         DEFAULT_FILENAME="Data.scan.xml";
         WILDCARD_FILE_EXTENSION = "*.scan.xml";
         HELP_PAGEID="227688413";
@@ -316,7 +334,7 @@ public class ScannerDocument extends XalFxDocument {
                 dataSets.put(measAdaptor.stringValue("title"), data);
                 allPVw.put(measAdaptor.stringValue("title"), pvW);
                 allPVrb.put(measAdaptor.stringValue("title"), pvR);
-                numberOfMeasurements.set(numberOfMeasurements.get()+1);
+                numberOfScans.set(numberOfScans.get()+1);
 
             });
         }
