@@ -75,7 +75,6 @@ public class FXMLController implements Initializable {
     private SimulationRunner newRun;
     private double[][] surroundings;
     private Accelerator accelerator;
-    private StatusAnimationTimer updateTimer;
     /** timer to synch the readbacks with the setpoints and also sync the model */
     private DispatchTimer MODEL_SYNC_TIMER;
 
@@ -240,18 +239,7 @@ public class FXMLController implements Initializable {
         seriesX.setName("x");
         seriesY.setName("y");
         seriesR.setName("r");
-        seriesPhi.setName("φ");
-        
-        seriesNPMpos[0].setName("NPM_x");
-        seriesNPMpos[1].setName("NPM_y");        
-        seriesNPMsigma[0].setName("NPM_σx");
-        seriesNPMsigma[0].setName("NPM_σy");
-        seriesNPMpos[0].getNode().setStyle("-fx-stroke: transparent;");
-        seriesNPMpos[1].getNode().setStyle("-fx-stroke: transparent;");
-        seriesNPMsigma[0].getNode().setStyle("-fx-stroke: transparent;");
-        seriesNPMsigma[1].getNode().setStyle("-fx-stroke: transparent;");
-        
-        
+        seriesPhi.setName("φ");                        
         
         for(int i = 0; i<seriesSurroundings.length;i++){
             seriesSigmaX[i] = new XYChart.Series();
@@ -264,6 +252,11 @@ public class FXMLController implements Initializable {
             seriesNPMpos[i] = new XYChart.Series();
             seriesNPMsigma[i] = new XYChart.Series();
         }                             
+        
+        seriesNPMpos[0].setName("NPM_x");
+        seriesNPMpos[1].setName("NPM_y");        
+        seriesNPMsigma[0].setName("NPM_σx");
+        seriesNPMsigma[0].setName("NPM_σy");               
         
        //Showing surroundings
         for (int i = 0; i < surroundings[0].length ; i++) {
@@ -399,15 +392,14 @@ public class FXMLController implements Initializable {
         //Ion Source
         AcceleratorSeq sequence = accl.getSequence("ISRC");
         AcceleratorNode Magnetron = sequence.getNodeWithId("MAGNETRON");
-        displayValues.put(Magnetron.getChannel("ForwdPrwRB"),label_magnetronRB);
-        setValues.put(Magnetron.getChannel("ForwdPrwSet"),textField_magnetron);
-        //textField_magnetron.setText(String.format("%.3f",Magnetron.getChannel("ForwdPrwRB").getValDbl()));
+        displayValues.put(Magnetron.getChannel("forwdPrwRB"),label_magnetronRB);
+        setValues.put(Magnetron.getChannel("forwdPrwS"),textField_magnetron);
         textField_magnetron.focusedProperty().addListener((obs, oldVal, newVal) ->{
             if(!newVal){
                 try {
                     double val = Double.parseDouble(textField_magnetron.getText());
                     if(val>=0 && val<=1500){
-                        Magnetron.getChannel("ForwdPrwSet").putVal(val);
+                        Magnetron.getChannel("forwdPrwS").putVal(val);
                     } else {
                         textField_magnetron.setText(Double.toString(Magnetron.getChannel("ForwdPrwSet").getValDbl()));
                     }
@@ -417,15 +409,14 @@ public class FXMLController implements Initializable {
             }
         });
         AcceleratorNode HighVoltage = sequence.getNodeWithId("MFC");
-        displayValues.put(HighVoltage.getChannel("V"),label_highVoltageRB);
-        setValues.put(HighVoltage.getChannel("V_Set"),textField_highVoltage);
-        //textField_highVoltage.setText(String.format("%.3f",HighVoltage.getChannel("V_Read").getValDbl()));
+        displayValues.put(HighVoltage.getChannel("volRB"),label_highVoltageRB);
+        setValues.put(HighVoltage.getChannel("volS"),textField_highVoltage);
         textField_highVoltage.focusedProperty().addListener((obs, oldVal, newVal) ->{
             if(!newVal){
                 try {
                     double val = Double.parseDouble(textField_highVoltage.getText());
                     if(val>=70 && val<=80){
-                        HighVoltage.getChannel("V_Set").putVal(val);
+                        HighVoltage.getChannel("volS").putVal(val);
                     } else {
                         textField_highVoltage.setText(Double.toString(HighVoltage.getChannel("V_Set").getValDbl()));
                     }
@@ -434,15 +425,14 @@ public class FXMLController implements Initializable {
                 }
             }
         });
-        displayValues.put(HighVoltage.getChannel("H2FlowRB"),label_H2flowRB);
-        setValues.put(HighVoltage.getChannel("H2FlowSet"),textField_H2flow);
-        //textField_H2flow.setText(String.format("%.3f",HighVoltage.getChannel("H2FLowRead").getValDbl()));
+        displayValues.put(HighVoltage.getChannel("h2FlowRB"),label_H2flowRB);
+        setValues.put(HighVoltage.getChannel("h2FlowS"),textField_H2flow);
         textField_H2flow.focusedProperty().addListener((obs, oldVal, newVal) ->{
             if(!newVal){
                 try {
                     double val = Double.parseDouble(textField_H2flow.getText());
                     if(val>=0 && val <=5){
-                        HighVoltage.getChannel("H2FlowSet").putVal(val);
+                        HighVoltage.getChannel("h2FlowS").putVal(val);
                     } else {
                         textField_H2flow.setText(Double.toString(HighVoltage.getChannel("H2FlowSet").getValDbl()));
                     }
@@ -454,7 +444,6 @@ public class FXMLController implements Initializable {
         AcceleratorNode Coil1 = sequence.getNodeWithId("COIL01");
         displayValues.put(Coil1.getChannel("I"),label_coil1RB);
         setValues.put(Coil1.getChannel("I_Set"),textField_coil1);
-        //textField_coil1.setText(String.format("%.3f",Coil1.getChannel("I").getValDbl()));
         textField_coil1.focusedProperty().addListener((obs, oldVal, newVal) ->{
             if(!newVal){
                 try {
@@ -472,7 +461,6 @@ public class FXMLController implements Initializable {
         AcceleratorNode Coil2 = sequence.getNodeWithId("COIL02");
         displayValues.put(Coil2.getChannel("I"),label_coil2RB);
         setValues.put(Coil2.getChannel("I_Set"),textField_coil2);
-        //textField_coil2.setText(String.format("%.3f",Coil2.getChannel("I").getValDbl()));
         textField_coil2.focusedProperty().addListener((obs, oldVal, newVal) ->{
             if(!newVal){
                 try {
@@ -490,7 +478,6 @@ public class FXMLController implements Initializable {
         AcceleratorNode Coil3 = sequence.getNodeWithId("COIL03");
         displayValues.put(Coil3.getChannel("I"),label_coil3RB);
         setValues.put(Coil3.getChannel("I_Set"),textField_coil3);
-        //textField_coil3.setText(String.format("%.3f",Coil3.getChannel("I").getValDbl()));
         textField_coil3.focusedProperty().addListener((obs, oldVal, newVal) ->{
             if(!newVal){
                 try {
@@ -512,7 +499,6 @@ public class FXMLController implements Initializable {
         displayValues.put(Solenoid1.getChannel("fieldRB"),label_sol1fieldRB);
         displayValues.put(Solenoid1.getChannel("I_Set"),label_sol1current);
         setValues.put(Solenoid1.getChannel("fieldSet"),textField_sol1field);
-        //textField_sol1field.setText(String.format("%.3f",Solenoid1.getChannel("fieldRB").getValDbl()));
         textField_sol1field.focusedProperty().addListener((obs, oldVal, newVal) ->{
             if(!newVal){
                 try {
@@ -532,7 +518,6 @@ public class FXMLController implements Initializable {
         displayValues.put(Solenoid2.getChannel("I_Set"),label_sol2current);
         displayValues.put(Solenoid2.getChannel("fieldRB"),label_sol2fieldRB);
         setValues.put(Solenoid2.getChannel("fieldSet"),textField_sol2field);
-        //textField_sol2field.setText(String.format("%.3f",Solenoid2.getChannel("fieldRB").getValDbl()));
         textField_sol2field.focusedProperty().addListener((obs, oldVal, newVal) ->{
             if(!newVal){
                 try {
@@ -552,7 +537,6 @@ public class FXMLController implements Initializable {
         displayValues.put(CV1.getChannel("I_Set"),label_CV1current);
         displayValues.put(CV1.getChannel("fieldRB"),label_CV1fieldRB);
         setValues.put(CV1.getChannel("fieldSet"),textField_CV1field);
-        //textField_CV1field.setText(String.format("%.3f",CV1.getChannel("fieldRB").getValDbl()));
         textField_CV1field.focusedProperty().addListener((obs, oldVal, newVal) ->{
             if(!newVal){
                 try {
@@ -572,7 +556,6 @@ public class FXMLController implements Initializable {
         displayValues.put(CV2.getChannel("I_Set"),label_CV2current);
         displayValues.put(CV2.getChannel("fieldRB"),label_CV2fieldRB);
         setValues.put(CV2.getChannel("fieldSet"),textField_CV2field);
-        //textField_CV2field.setText(String.format("%.3f",CV2.getChannel("fieldRB").getValDbl()));
         textField_CV2field.focusedProperty().addListener((obs, oldVal, newVal) ->{
             if(!newVal){
                 try {
@@ -592,7 +575,6 @@ public class FXMLController implements Initializable {
         displayValues.put(CH1.getChannel("I_Set"),label_CH1current);
         displayValues.put(CH1.getChannel("fieldRB"),label_CH1fieldRB);
         setValues.put(CH1.getChannel("fieldSet"),textField_CH1field);
-        //textField_CH1field.setText(String.format("%.3f",CH1.getChannel("fieldRB").getValDbl()));
         textField_CH1field.focusedProperty().addListener((obs, oldVal, newVal) ->{
             if(!newVal){
                 try {
@@ -612,7 +594,6 @@ public class FXMLController implements Initializable {
         displayValues.put(CH2.getChannel("I_Set"),label_CH2current);
         displayValues.put(CH2.getChannel("fieldRB"),label_CH2fieldRB);
         setValues.put(CH2.getChannel("fieldSet"),textField_CH2field);
-        //textField_CH2field.setText(String.format("%.3f",CH2.getChannel("fieldRB").getValDbl()));
         textField_CH2field.focusedProperty().addListener((obs, oldVal, newVal) ->{
             if(!newVal){
                 try {
@@ -629,8 +610,7 @@ public class FXMLController implements Initializable {
         });
         AcceleratorNode Iris = sequence.getNodeWithId("IRIS");
         displayValues.put(Iris.getChannel("apertureRB"),label_irisApertureRB);
-        setValues.put(Iris.getChannel("apertureSet"),textField_irisAperture);
-        //textField_irisAperture.setText(String.format("%.3f",Iris.getChannel("apertureRB").getValDbl()));
+        setValues.put(Iris.getChannel("apertureS"),textField_irisAperture);
         textField_irisAperture.focusedProperty().addListener((obs, oldVal, newVal) ->{
             if(!newVal){
                 try {
@@ -673,15 +653,14 @@ public class FXMLController implements Initializable {
          * });
          */
         
-        displayValues.put(Iris.getChannel("offsetXRB"),label_irisXRB);
-        setValues.put(Iris.getChannel("offsetXSet"),textField_irisX);
-        //textField_irisX.setText(String.format("%.3f",Iris.getChannel("offsetXRB").getValDbl()));
+        displayValues.put(Iris.getChannel("xOffsetRB"),label_irisXRB);
+        setValues.put(Iris.getChannel("xOffsetS"),textField_irisX);
         textField_irisX.focusedProperty().addListener((obs, oldVal, newVal) ->{
             if(!newVal){
                 try {
                     double val = Double.parseDouble(textField_irisX.getText());
                     if(val>=-50 && val<=50){
-                        Iris.getChannel("offsetXSet").putVal(val);
+                        Iris.getChannel("xOffsetS").putVal(val);
                     } else {
                         textField_irisX.setText(Double.toString(Iris.getChannel("offsetXRB").getValDbl()));
                     }
@@ -717,15 +696,15 @@ public class FXMLController implements Initializable {
          * }
          * });
          */
-        displayValues.put(Iris.getChannel("offsetYRB"),label_irisYRB);
-        setValues.put(Iris.getChannel("offsetYSet"),textField_irisY);
+        displayValues.put(Iris.getChannel("yOffsetRB"),label_irisYRB);
+        setValues.put(Iris.getChannel("yOffsetS"),textField_irisY);
         //textField_irisY.setText(String.format("%.3f",Iris.getChannel("offsetYRB").getValDbl()));
         textField_irisY.focusedProperty().addListener((obs, oldVal, newVal) ->{
             if(!newVal){
                  try {
                     double val = Double.parseDouble(textField_irisY.getText());
                     if(val>=-50 && val<=50){
-                        Iris.getChannel("offsetYSet").putVal(val);
+                        Iris.getChannel("yOffsetS").putVal(val);
                     } else {
                         textField_irisY.setText(Double.toString(Iris.getChannel("offsetYRB").getValDbl()));
                     }
@@ -763,19 +742,19 @@ public class FXMLController implements Initializable {
          */
         
         AcceleratorNode Chopper = sequence.getNodeWithId("CHOPPER");
-        displayValues.put(Chopper.getChannel("V"),label_chopperVoltageRB);
-        setValues.put(Chopper.getChannel("V_Set"),textField_chopperVoltage);
+        displayValues.put(Chopper.getChannel("volR"),label_chopperVoltageRB);
+        setValues.put(Chopper.getChannel("volS"),textField_chopperVoltage);
         //textField_chopperVoltage.setText(String.format("%.3f",Chopper.getChannel("V").getValDbl()));
         textField_chopperVoltage.focusedProperty().addListener((obs, oldVal, newVal) ->{
             if(!newVal){
                 try {
-                    Chopper.getChannel("V").putVal(Double.parseDouble(textField_chopperVoltage.getText()));
+                    Chopper.getChannel("volS").putVal(Double.parseDouble(textField_chopperVoltage.getText()));
                 } catch (ConnectionException | PutException ex) {
                     Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         });
-        AcceleratorNode Electrode = sequence.getNodeWithId("ELECTRODE");
+        //AcceleratorNode Electrode = sequence.getNodeWithId("ELECTRODE");
         //displayValues.put(Electrode.getChannel("V"),null);
         //displayValues.put(Electrode.getChannel("V"),null);
         
@@ -797,7 +776,7 @@ public class FXMLController implements Initializable {
         
         //Disgnostics equipment
         AcceleratorNode FC = sequence.getNodeWithId("FC1");
-        AcceleratorNode BCM = sequence.getNodeWithId("BCM");
+        AcceleratorNode BCM = sequence.getNodeWithId("BCM1");
         AcceleratorNode Doppler = sequence.getNodeWithId("DOPPLER");
         displayValues.put(FC.getChannel(CurrentMonitor.I_AVG_HANDLE),label_FC);
         displayValues.put(BCM.getChannel(CurrentMonitor.I_AVG_HANDLE),label_BCM);
@@ -1010,19 +989,7 @@ public class FXMLController implements Initializable {
             sigmaOffsetY[i] = new ArrayList<Double>();
         }
         
-        displayPlots();
-                
-        //initializes the timer                
-        //updateTimer = new StatusAnimationTimer() {
-        //
-        //        @Override
-        //        public void handle(long now) {                  
-        //            updateGUI(); 
-        //            if(!newRun.hasRun()){
-        //                runSimulation();                    
-        //            }
-        //        }
-        //};
+        displayPlots();                        
         
         MODEL_SYNC_TIMER.setEventHandler( getOnlineModelSynchronizer() );        
       
@@ -1042,7 +1009,6 @@ public class FXMLController implements Initializable {
                 }
                 //assigning initial parameters
                 getParameters();
-                //updateTimer.start();                
             }
             
             if(MODEL_SYNC_TIMER.isSuspended()){
@@ -1117,46 +1083,52 @@ public class FXMLController implements Initializable {
         }
         
         //Add NPM data to the chart series       
-        String sequenceName = MainFunctions.mainDocument.getSequence();         
-        List<NPM> npms = MainFunctions.mainDocument.getAccelerator().getSequence(sequenceName).getAllNodesOfType("NPM");
-        seriesNPMpos[0].getData().clear();
-        seriesNPMpos[1].getData().clear();
-        seriesNPMsigma[0].getData().clear();
-        seriesNPMsigma[1].getData().clear();
-        
-        npms.forEach((monitor) -> {
-            try {
-                seriesNPMpos[0].getData().add(new XYChart.Data(monitor.getSDisplay(),monitor.getXAvg()));
-                seriesNPMpos[1].getData().add(new XYChart.Data(monitor.getSDisplay(),monitor.getYAvg()));
-            } catch (ConnectionException | GetException ex) {
-                Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+        String sequenceName = MainFunctions.mainDocument.getSequence();  
+        if(sequenceName!=null){
+            List<NPM> npms = MainFunctions.mainDocument.getAccelerator().getSequence(sequenceName).getAllNodesOfType("NPM");
+            seriesNPMpos[0].getData().clear();
+            seriesNPMpos[1].getData().clear();
+            seriesNPMsigma[0].getData().clear();
+            seriesNPMsigma[1].getData().clear();
+
+            npms.forEach((monitor) -> {
+                try {
+                    seriesNPMpos[0].getData().add(new XYChart.Data(monitor.getSDisplay(),monitor.getXAvg()));
+                    seriesNPMpos[1].getData().add(new XYChart.Data(monitor.getSDisplay(),monitor.getYAvg()));
+                } catch (ConnectionException | GetException ex) {
+                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            });
+
+
+            if(radioButtonOffsetOff.isSelected()){
+                npms.forEach((monitor) -> {
+                    try {
+                        seriesNPMsigma[0].getData().add(new XYChart.Data(monitor.getSDisplay(),scale*monitor.getSigmaxAvgC()));
+                        seriesNPMsigma[0].getData().add(new XYChart.Data(monitor.getSDisplay(),-1*scale*monitor.getSigmaxAvgC()));
+                        seriesNPMsigma[1].getData().add(new XYChart.Data(monitor.getSDisplay(),scale*monitor.getSigmayAvgC()));
+                        seriesNPMsigma[1].getData().add(new XYChart.Data(monitor.getSDisplay(),-1*scale*monitor.getSigmayAvgC()));
+                    } catch (ConnectionException | GetException ex) {
+                        Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                });
+                seriesNPMpos[0].getNode().setStyle("-fx-stroke: transparent;");
+                seriesNPMpos[1].getNode().setStyle("-fx-stroke: transparent;");        
             }
-        });
- 
-        
-        if(radioButtonOffsetOff.isSelected()){
-            npms.forEach((monitor) -> {
-                try {
-                    seriesNPMsigma[0].getData().add(new XYChart.Data(monitor.getSDisplay(),scale*monitor.getSigmaxAvgC()));
-                    seriesNPMsigma[0].getData().add(new XYChart.Data(monitor.getSDisplay(),-1*scale*monitor.getSigmaxAvgC()));
-                    seriesNPMsigma[1].getData().add(new XYChart.Data(monitor.getSDisplay(),scale*monitor.getSigmayAvgC()));
-                    seriesNPMsigma[1].getData().add(new XYChart.Data(monitor.getSDisplay(),-1*scale*monitor.getSigmayAvgC()));
-                } catch (ConnectionException | GetException ex) {
-                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            });
-        }
-        if(radioButtonOffsetOn.isSelected()){
-            npms.forEach((monitor) -> {
-                try {
-                    seriesNPMsigma[0].getData().add(new XYChart.Data(monitor.getSDisplay(),scale*monitor.getSigmaxAvgC()+monitor.getXAvg()));
-                    seriesNPMsigma[0].getData().add(new XYChart.Data(monitor.getSDisplay(),-1*scale*monitor.getSigmaxAvgC()+monitor.getXAvg()));
-                    seriesNPMsigma[1].getData().add(new XYChart.Data(monitor.getSDisplay(),scale*monitor.getSigmayAvgC()+monitor.getYAvg()));
-                    seriesNPMsigma[1].getData().add(new XYChart.Data(monitor.getSDisplay(),-1*scale*monitor.getSigmayAvgC()+monitor.getYAvg()));
-                } catch (ConnectionException | GetException ex) {
-                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            });
+            if(radioButtonOffsetOn.isSelected()){
+                npms.forEach((monitor) -> {
+                    try {
+                        seriesNPMsigma[0].getData().add(new XYChart.Data(monitor.getSDisplay(),scale*monitor.getSigmaxAvgC()+monitor.getXAvg()));
+                        seriesNPMsigma[0].getData().add(new XYChart.Data(monitor.getSDisplay(),-1*scale*monitor.getSigmaxAvgC()+monitor.getXAvg()));
+                        seriesNPMsigma[1].getData().add(new XYChart.Data(monitor.getSDisplay(),scale*monitor.getSigmayAvgC()+monitor.getYAvg()));
+                        seriesNPMsigma[1].getData().add(new XYChart.Data(monitor.getSDisplay(),-1*scale*monitor.getSigmayAvgC()+monitor.getYAvg()));
+                    } catch (ConnectionException | GetException ex) {
+                        Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                });
+                seriesNPMsigma[0].getNode().setStyle("-fx-stroke: transparent;");
+                seriesNPMsigma[1].getNode().setStyle("-fx-stroke: transparent;"); 
+            }
         }
                                     
     }  
@@ -1203,15 +1175,12 @@ public class FXMLController implements Initializable {
                 setParameters();
                 newRun.runSimulation();
             } catch (ModelException ex ) {
-                //updateTimer.stop();          
                 MODEL_SYNC_TIMER.suspend();
                 Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
             } catch (InstantiationException ex) {
-                //updateTimer.stop();    
                 MODEL_SYNC_TIMER.suspend();
                 Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
             } catch (Exception ex) {
-                //updateTimer.stop();            
                 MODEL_SYNC_TIMER.suspend();
                 Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
 
@@ -1240,15 +1209,12 @@ public class FXMLController implements Initializable {
             setParameters();
             newRun.runSimulation();
         } catch (ModelException ex ) {
-            //updateTimer.stop();          
             MODEL_SYNC_TIMER.suspend();
             Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            //updateTimer.stop();    
             MODEL_SYNC_TIMER.suspend();
             Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
         } catch (Exception ex) {
-            //updateTimer.stop();            
             MODEL_SYNC_TIMER.suspend();
             Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
 
