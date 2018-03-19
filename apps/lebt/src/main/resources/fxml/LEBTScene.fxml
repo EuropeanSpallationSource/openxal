@@ -71,7 +71,7 @@
                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                           </rowConstraints>
                            <children>
-                              <Label text="Field (mT)" GridPane.columnIndex="1" />
+                              <Label text="Field (T)" GridPane.columnIndex="1" />
                               <Label text="Current (A)" GridPane.columnIndex="5" />
                               <Label text="Solenoid 1 : " GridPane.rowIndex="1" />
                               <TextField fx:id="textField_sol1field" prefHeight="27.0" prefWidth="92.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
@@ -98,7 +98,7 @@
                               <Label fx:id="label_CV2currentRB" prefHeight="27.0" prefWidth="92.0" style="-fx-background-color: ffffff;" GridPane.columnIndex="7" GridPane.rowIndex="5" />
                               <Label fx:id="label_CH2current" prefHeight="27.0" prefWidth="92.0" style="-fx-background-color: ffffff;" GridPane.columnIndex="5" GridPane.rowIndex="6" />
                               <Label fx:id="label_CH2currentRB" prefHeight="27.0" prefWidth="92.0" style="-fx-background-color: ffffff;" GridPane.columnIndex="7" GridPane.rowIndex="6" />
-                              <Label text="Field RB (mT)" GridPane.columnIndex="3" />
+                              <Label text="Field RB (T)" GridPane.columnIndex="3" />
                               <Label fx:id="label_sol1fieldRB" layoutX="290.0" layoutY="72.0" prefHeight="27.0" prefWidth="92.0" style="-fx-background-color: ffffff;" GridPane.columnIndex="3" GridPane.rowIndex="1" />
                               <Label fx:id="label_CV1fieldRB" layoutX="195.0" layoutY="72.0" prefHeight="27.0" prefWidth="92.0" style="-fx-background-color: ffffff;" GridPane.columnIndex="3" GridPane.rowIndex="2" />
                               <Label fx:id="label_CH1fieldRB" layoutX="195.0" layoutY="102.0" prefHeight="27.0" prefWidth="92.0" style="-fx-background-color: ffffff;" GridPane.columnIndex="3" GridPane.rowIndex="3" />
@@ -171,8 +171,8 @@
               <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <CheckBox fx:id="comboBox_sigmaNPM" layoutX="14.0" layoutY="55.0" mnemonicParsing="false" text="Show sigmas on envelope plot." AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="55.0" />
-                        <CheckBox fx:id="comboBox_posNPM" layoutX="14.0" layoutY="30.0" mnemonicParsing="false" text="Show positions on trajectory plot." AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="30.0" />
+                        <CheckBox fx:id="comboBox_sigmaNPM" layoutX="14.0" layoutY="55.0" mnemonicParsing="false" onAction="#npmSigHandler" text="Show sigmas on envelope plot." AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="55.0" />
+                        <CheckBox fx:id="comboBox_posNPM" layoutX="14.0" layoutY="30.0" mnemonicParsing="false" onAction="#npmPosHandler" text="Show positions on trajectory plot." AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="30.0" />
                         <Label layoutX="14.0" layoutY="4.0" text="NPMs:">
                            <font>
                               <Font size="16.0" />
@@ -183,7 +183,7 @@
                               <Font size="16.0" />
                            </font>
                         </Label>
-                        <RadioButton layoutX="116.0" layoutY="141.0" mnemonicParsing="false" text="Faraday Cup" AnchorPane.leftAnchor="116.0">
+                        <RadioButton layoutX="116.0" layoutY="141.0" mnemonicParsing="false" selected="true" text="Faraday Cup" AnchorPane.leftAnchor="116.0">
                            <toggleGroup>
                               <ToggleGroup fx:id="toggleGroup_currentBI" />
                            </toggleGroup></RadioButton>
@@ -192,7 +192,7 @@
                         <Label fx:id="label_FC" layoutX="20.0" layoutY="137.0" prefHeight="27.0" prefWidth="90.0" style="-fx-background-color: ffffff;" AnchorPane.leftAnchor="20.0" />
                         <Label fx:id="label_BCM" layoutX="20.0" layoutY="166.0" prefHeight="27.0" prefWidth="90.0" style="-fx-background-color: ffffff;" AnchorPane.leftAnchor="20.0" />
                         <Label fx:id="label_Doppler" layoutX="20.0" layoutY="195.0" prefHeight="27.0" prefWidth="90.0" style="-fx-background-color: ffffff;" AnchorPane.leftAnchor="20.0" />
-                        <Label layoutX="50.0" layoutY="116.0" text="(mA)" />
+                        <Label layoutX="56.0" layoutY="115.0" text="(A)" />
                      </children>
                   </AnchorPane>
               </content>

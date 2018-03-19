@@ -427,19 +427,7 @@ public class SimulationRunner {
             //Calculating cylindrical coordinates
             posR.add(Math.sqrt(Math.pow(covmat.getMeanX()*1.0e+3,2)+Math.pow(covmat.getMeanY()*1.0e+3,2)));
             Complex phi = new Complex(covmat.getMeanX()*1.0e+3,covmat.getMeanY()*1.0e+3);
-            posPhi.add(phi.phase()/Math.PI);
-            //if(i>0 && Math.abs(phi.phase()/Math.PI - phase0)>=1.5){
-            //    if(phase0<0){
-            //        posPhi.add(phi.phase()/Math.PI-2);
-            //        phase0 = phi.phase()/Math.PI-2;
-            //    } else {
-            //        posPhi.add(2-phi.phase()/Math.PI);
-            //        phase0 = 2-phi.phase()/Math.PI;
-            //    }    
-            //} else {
-            //    posPhi.add(phi.phase()/Math.PI);
-            //    phase0 = phi.phase()/Math.PI;
-            //}                                                           
+            posPhi.add(phi.phase()/Math.PI);                                                                
                                    
             for(int k = 0; k < sigmaOffsetX.length; k++){
                 sigmaOffsetX[k].add(sigmaX[k].get(i)+posX.get(i));

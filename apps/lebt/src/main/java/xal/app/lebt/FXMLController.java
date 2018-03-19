@@ -12,6 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.LineChart;
@@ -32,11 +33,12 @@ import javafx.scene.shape.Circle;
 import javafx.util.StringConverter;
 import xal.ca.BatchGetValueRequest;
 import xal.ca.Channel;
-import xal.ca.ChannelRecord;
 import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.ca.PutException;
-import xal.extension.jels.smf.impl.ESSMagFieldMap3D;
+import xal.extension.jels.smf.impl.ESSIonSourceCoil;
+import xal.extension.jels.smf.impl.ESSIonSourceMFC;
+import xal.extension.jels.smf.impl.ESSIonSourceMagnetron;
 import xal.extension.jels.smf.impl.NPM;
 import xal.model.ModelException;
 import xal.smf.Accelerator;
@@ -46,6 +48,7 @@ import xal.smf.impl.CurrentMonitor;
 import xal.tools.data.DataAdaptor;
 import xal.tools.dispatch.DispatchQueue;
 import xal.tools.dispatch.DispatchTimer;
+import xal.tools.math.Complex;
 import xal.tools.xml.XmlDataAdaptor;
 
 /**
@@ -61,10 +64,12 @@ public class FXMLController implements Initializable {
     private XYChart.Series seriesR;
     private XYChart.Series seriesPhi;
     private XYChart.Series[] seriesNPMpos;
+    private XYChart.Series[] seriesNPMposCyl;
     private XYChart.Series[] seriesSigmaX;
     private XYChart.Series[] seriesSigmaY;
     private XYChart.Series[] seriesSigmaR;
     private XYChart.Series[] seriesNPMsigma;
+    private XYChart.Series seriesNPMsigmaCyl;
     private XYChart.Series[] seriesSigmaOffsetX;
     private XYChart.Series[] seriesSigmaOffsetY;
     private XYChart.Series[] seriesSigmaOffsetR;
@@ -234,12 +239,15 @@ public class FXMLController implements Initializable {
         
         seriesNPMpos = new XYChart.Series[2];
         seriesNPMsigma = new XYChart.Series[2];
+        seriesNPMposCyl = new XYChart.Series[2];
+        seriesNPMsigmaCyl = new XYChart.Series();
         
 
         seriesX.setName("x");
         seriesY.setName("y");
         seriesR.setName("r");
-        seriesPhi.setName("φ");                        
+        seriesPhi.setName("φ");
+               
         
         for(int i = 0; i<seriesSurroundings.length;i++){
             seriesSigmaX[i] = new XYChart.Series();
@@ -251,12 +259,29 @@ public class FXMLController implements Initializable {
             seriesSurroundings[i] = new XYChart.Series();
             seriesNPMpos[i] = new XYChart.Series();
             seriesNPMsigma[i] = new XYChart.Series();
+            seriesNPMposCyl[i] = new XYChart.Series();
         }                             
+        
+        seriesSigmaX[0].setName("σx");
+        seriesSigmaY[0].setName("σy");
+        seriesSigmaR[0].setName("σr");
+        seriesSigmaOffsetR[0].setName("σr");
+        seriesSigmaOffsetX[0].setName("σx");
+        seriesSigmaOffsetY[0].setName("σy");
+        seriesSigmaX[1].setName("σx");
+        seriesSigmaY[1].setName("σy");
+        seriesSigmaR[1].setName("σr");
+        seriesSigmaOffsetR[1].setName("σr");
+        seriesSigmaOffsetX[1].setName("σx");
+        seriesSigmaOffsetY[1].setName("σy");
         
         seriesNPMpos[0].setName("NPM_x");
         seriesNPMpos[1].setName("NPM_y");        
         seriesNPMsigma[0].setName("NPM_σx");
-        seriesNPMsigma[0].setName("NPM_σy");               
+        seriesNPMsigma[1].setName("NPM_σy"); 
+        seriesNPMposCyl[0].setName("NPM_r");
+        seriesNPMposCyl[1].setName("NPM_φ");        
+        seriesNPMsigmaCyl.setName("NPM_σr");
         
        //Showing surroundings
         for (int i = 0; i < surroundings[0].length ; i++) {
@@ -266,13 +291,11 @@ public class FXMLController implements Initializable {
         
         //Add surroundings        
         plot1.setAnimated(false);
-        plot2.setAnimated(false);
-        plot1.setCreateSymbols(false);
-        plot2.setCreateSymbols(false);       
+        plot2.setAnimated(false);              
         plot2.getData().add(seriesSurroundings[0]);
-        plot2.getData().add(seriesSurroundings[1]); 
-        seriesSurroundings[0].getNode().setStyle("-fx-stroke: #000000;");
-        seriesSurroundings[1].getNode().setStyle("-fx-stroke: #000000;");
+        plot2.getData().add(seriesSurroundings[1]);  
+        plot1.getStylesheets().add(this.getClass().getResource("/styles/TrajectoryPlot.css").toExternalForm());
+        plot2.getStylesheets().add(this.getClass().getResource("/styles/EnvelopePlot.css").toExternalForm());        
         
         
          //remove surrounding legend
@@ -392,16 +415,16 @@ public class FXMLController implements Initializable {
         //Ion Source
         AcceleratorSeq sequence = accl.getSequence("ISRC");
         AcceleratorNode Magnetron = sequence.getNodeWithId("MAGNETRON");
-        displayValues.put(Magnetron.getChannel("forwdPrwRB"),label_magnetronRB);
-        setValues.put(Magnetron.getChannel("forwdPrwS"),textField_magnetron);
+        displayValues.put(Magnetron.getChannel(ESSIonSourceMagnetron.FORWD_PRW_RB_HANDLE),label_magnetronRB);
+        setValues.put(Magnetron.getChannel(ESSIonSourceMagnetron.FORWD_PRW_S_HANDLE),textField_magnetron);
         textField_magnetron.focusedProperty().addListener((obs, oldVal, newVal) ->{
             if(!newVal){
                 try {
                     double val = Double.parseDouble(textField_magnetron.getText());
                     if(val>=0 && val<=1500){
-                        Magnetron.getChannel("forwdPrwS").putVal(val);
+                        Magnetron.getChannel(ESSIonSourceMagnetron.FORWD_PRW_S_HANDLE).putVal(val);
                     } else {
-                        textField_magnetron.setText(Double.toString(Magnetron.getChannel("ForwdPrwSet").getValDbl()));
+                        textField_magnetron.setText(Double.toString(Magnetron.getChannel(ESSIonSourceMagnetron.FORWD_PRW_S_HANDLE).getValDbl()));
                     }
                 } catch (ConnectionException | PutException | GetException ex) {
                     Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
@@ -409,32 +432,32 @@ public class FXMLController implements Initializable {
             }
         });
         AcceleratorNode HighVoltage = sequence.getNodeWithId("MFC");
-        displayValues.put(HighVoltage.getChannel("volRB"),label_highVoltageRB);
-        setValues.put(HighVoltage.getChannel("volS"),textField_highVoltage);
+        displayValues.put(HighVoltage.getChannel(ESSIonSourceMFC.VOLTAGE_RB_HANDLE),label_highVoltageRB);
+        setValues.put(HighVoltage.getChannel(ESSIonSourceMFC.VOLTAGE_SET_HANDLE),textField_highVoltage);
         textField_highVoltage.focusedProperty().addListener((obs, oldVal, newVal) ->{
             if(!newVal){
                 try {
                     double val = Double.parseDouble(textField_highVoltage.getText());
                     if(val>=70 && val<=80){
-                        HighVoltage.getChannel("volS").putVal(val);
+                        HighVoltage.getChannel(ESSIonSourceMFC.VOLTAGE_SET_HANDLE).putVal(val);
                     } else {
-                        textField_highVoltage.setText(Double.toString(HighVoltage.getChannel("V_Set").getValDbl()));
+                        textField_highVoltage.setText(Double.toString(HighVoltage.getChannel(ESSIonSourceMFC.VOLTAGE_SET_HANDLE).getValDbl()));
                     }
                 } catch (ConnectionException | PutException | GetException ex) {
                     Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         });
-        displayValues.put(HighVoltage.getChannel("h2FlowRB"),label_H2flowRB);
-        setValues.put(HighVoltage.getChannel("h2FlowS"),textField_H2flow);
+        displayValues.put(HighVoltage.getChannel(ESSIonSourceMFC.H_2_FLOW_RB_HANDLE),label_H2flowRB);
+        setValues.put(HighVoltage.getChannel(ESSIonSourceMFC.H_2_FLOW_S_HANDLE),textField_H2flow);
         textField_H2flow.focusedProperty().addListener((obs, oldVal, newVal) ->{
             if(!newVal){
                 try {
                     double val = Double.parseDouble(textField_H2flow.getText());
                     if(val>=0 && val <=5){
-                        HighVoltage.getChannel("h2FlowS").putVal(val);
+                        HighVoltage.getChannel(ESSIonSourceMFC.H_2_FLOW_S_HANDLE).putVal(val);
                     } else {
-                        textField_H2flow.setText(Double.toString(HighVoltage.getChannel("H2FlowSet").getValDbl()));
+                        textField_H2flow.setText(Double.toString(HighVoltage.getChannel(ESSIonSourceMFC.H_2_FLOW_S_HANDLE).getValDbl()));
                     }
                 } catch (ConnectionException | PutException | GetException ex) {
                     Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
@@ -442,16 +465,16 @@ public class FXMLController implements Initializable {
             }
         });
         AcceleratorNode Coil1 = sequence.getNodeWithId("COIL01");
-        displayValues.put(Coil1.getChannel("I"),label_coil1RB);
-        setValues.put(Coil1.getChannel("I_Set"),textField_coil1);
+        displayValues.put(Coil1.getChannel(ESSIonSourceCoil.I_HANDLE),label_coil1RB);
+        setValues.put(Coil1.getChannel(ESSIonSourceCoil.I_SET_HANDLE),textField_coil1);
         textField_coil1.focusedProperty().addListener((obs, oldVal, newVal) ->{
             if(!newVal){
                 try {
                     double val = Double.parseDouble(textField_coil1.getText());
                     if(val>=0 && val <=300){
-                        Coil1.getChannel("I_Set").putVal(val);
+                        Coil1.getChannel(ESSIonSourceCoil.I_SET_HANDLE).putVal(val);
                     } else {
-                        textField_coil1.setText(Double.toString(Coil1.getChannel("I_Set").getValDbl()));
+                        textField_coil1.setText(Double.toString(Coil1.getChannel(ESSIonSourceCoil.I_SET_HANDLE).getValDbl()));
                     }
                 } catch (ConnectionException | PutException | GetException ex) {
                     Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
@@ -459,16 +482,16 @@ public class FXMLController implements Initializable {
             }
         });
         AcceleratorNode Coil2 = sequence.getNodeWithId("COIL02");
-        displayValues.put(Coil2.getChannel("I"),label_coil2RB);
-        setValues.put(Coil2.getChannel("I_Set"),textField_coil2);
+        displayValues.put(Coil2.getChannel(ESSIonSourceCoil.I_HANDLE),label_coil2RB);
+        setValues.put(Coil2.getChannel(ESSIonSourceCoil.I_SET_HANDLE),textField_coil2);
         textField_coil2.focusedProperty().addListener((obs, oldVal, newVal) ->{
             if(!newVal){
                 try {
                     double val = Double.parseDouble(textField_coil2.getText());
                     if(val>=0 && val <=300){
-                        Coil2.getChannel("I_Set").putVal(val);
+                        Coil2.getChannel(ESSIonSourceCoil.I_SET_HANDLE).putVal(val);
                     } else {
-                        textField_coil2.setText(Double.toString(Coil2.getChannel("I_Set").getValDbl()));
+                        textField_coil2.setText(Double.toString(Coil2.getChannel(ESSIonSourceCoil.I_SET_HANDLE).getValDbl()));
                     }
                 } catch (ConnectionException | PutException | GetException ex) {
                     Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
@@ -476,16 +499,16 @@ public class FXMLController implements Initializable {
             }
         });
         AcceleratorNode Coil3 = sequence.getNodeWithId("COIL03");
-        displayValues.put(Coil3.getChannel("I"),label_coil3RB);
-        setValues.put(Coil3.getChannel("I_Set"),textField_coil3);
+        displayValues.put(Coil3.getChannel(ESSIonSourceCoil.I_HANDLE),label_coil3RB);
+        setValues.put(Coil3.getChannel(ESSIonSourceCoil.I_SET_HANDLE),textField_coil3);
         textField_coil3.focusedProperty().addListener((obs, oldVal, newVal) ->{
             if(!newVal){
                 try {
                     double val = Double.parseDouble(textField_coil3.getText());
                     if(val>=0 && val <=300){
-                        Coil3.getChannel("I_Set").putVal(val);
+                        Coil3.getChannel(ESSIonSourceCoil.I_SET_HANDLE).putVal(val);
                     } else {
-                        textField_coil3.setText(Double.toString(Coil3.getChannel("I_Set").getValDbl()));
+                        textField_coil3.setText(Double.toString(Coil3.getChannel(ESSIonSourceCoil.I_SET_HANDLE).getValDbl()));
                     }
                 } catch (ConnectionException | PutException | GetException ex) {
                     Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
@@ -616,7 +639,7 @@ public class FXMLController implements Initializable {
                 try {
                     double val = Double.parseDouble(textField_irisAperture.getText());
                     if(val>=0){
-                        Iris.getChannel("apertureSet").putVal(val);
+                        Iris.getChannel("apertureS").putVal(val);
                     } else {
                         textField_irisAperture.setText(Double.toString(Iris.getChannel("apertureRB").getValDbl()));
                     }
@@ -698,7 +721,6 @@ public class FXMLController implements Initializable {
          */
         displayValues.put(Iris.getChannel("yOffsetRB"),label_irisYRB);
         setValues.put(Iris.getChannel("yOffsetS"),textField_irisY);
-        //textField_irisY.setText(String.format("%.3f",Iris.getChannel("offsetYRB").getValDbl()));
         textField_irisY.focusedProperty().addListener((obs, oldVal, newVal) ->{
             if(!newVal){
                  try {
@@ -744,7 +766,6 @@ public class FXMLController implements Initializable {
         AcceleratorNode Chopper = sequence.getNodeWithId("CHOPPER");
         displayValues.put(Chopper.getChannel("volR"),label_chopperVoltageRB);
         setValues.put(Chopper.getChannel("volS"),textField_chopperVoltage);
-        //textField_chopperVoltage.setText(String.format("%.3f",Chopper.getChannel("V").getValDbl()));
         textField_chopperVoltage.focusedProperty().addListener((obs, oldVal, newVal) ->{
             if(!newVal){
                 try {
@@ -959,13 +980,18 @@ public class FXMLController implements Initializable {
         //Creates a batch of channels to request when updating GUI
         List<Channel> channels = new ArrayList<>();
         displayValues.keySet().forEach(channel -> channels.add(channel));
-        setValues.keySet().forEach(channel -> channels.add(channel));        
+        setValues.keySet().forEach(channel -> channels.add(channel));
+        //Add NPM channels
+        List<NPM> npms = new ArrayList<>();
+        npms = MainFunctions.mainDocument.getAccelerator().getAllNodesOfType("NPM"); 
+        npms.forEach(monitor->{
+            channels.add(monitor.getChannel(NPM.X_AVG_HANDLE));
+            channels.add(monitor.getChannel(NPM.Y_AVG_HANDLE));
+            channels.add(monitor.getChannel(NPM.SIGMA_X_AVG_HANDLE));
+            channels.add(monitor.getChannel(NPM.SIGMA_Y_AVG_HANDLE));
+        });
         request = new BatchGetValueRequest( channels );        
-        request.submitAndWait(5.0);
-        
-        //Initializes TextField values and update GUI
-        initTextFields();
-        updateGUI();         
+        request.submitAndWait(5.0);                
         
         //Initialize arrays                        
         sigmaX = new ArrayList[2];
@@ -987,9 +1013,7 @@ public class FXMLController implements Initializable {
             sigmaOffsetR[i] = new ArrayList<Double>();
             sigmaOffsetX[i] = new ArrayList<Double>();
             sigmaOffsetY[i] = new ArrayList<Double>();
-        }
-        
-        displayPlots();                        
+        }                         
         
         MODEL_SYNC_TIMER.setEventHandler( getOnlineModelSynchronizer() );        
       
@@ -1008,8 +1032,8 @@ public class FXMLController implements Initializable {
                     newRun = new SimulationRunner(MainFunctions.mainDocument.getAccelerator(),MainFunctions.mainDocument.getAccelerator().getComboSequence(sequenceName).getPrimaryAncestor(),MainFunctions.mainDocument.getModel().get());
                 }
                 //assigning initial parameters
-                getParameters();
-            }
+                getParameters(); 
+            }                        
             
             if(MODEL_SYNC_TIMER.isSuspended()){
                 MODEL_SYNC_TIMER.resume();
@@ -1017,11 +1041,16 @@ public class FXMLController implements Initializable {
                 MODEL_SYNC_TIMER.startNowWithInterval( _modelSyncPeriod, 0 );
             }
             
-        });   
+        });                   
         
-        MainFunctions.mainDocument.getModel().addListener((obs, oldVal, newVal) ->{   
-            newRun.setModelSync(MainFunctions.mainDocument.getModel().get());
-        });
+        //Initializes TextField values and update GUI
+        initTextFields();
+        
+        //Initializes Plots
+        addTrajectorySeriesToPlot();
+        addEnvelopeSeriesToPlot();
+        displayPlots();
+            
         
     }    
     //------------------------HANDLE METHODS------------------------------------          
@@ -1032,7 +1061,7 @@ public class FXMLController implements Initializable {
     private void updateGUI(){ 
                     
         displayValues.keySet().forEach(channel ->{             
-            if (channel.isConnected()){
+            if (channel.isConnected()){                
                 try {
                     displayValues.get(channel).setText(String.format("%.3f",channel.getValDbl()));
                 } catch (ConnectionException | GetException ex) {
@@ -1057,77 +1086,112 @@ public class FXMLController implements Initializable {
 
         //Display Current if combo box is selected
         if (comboBox_currentFC.isSelected()){
-            String currentBI = toggleGroup_currentBI.getSelectedToggle().toString();
+            RadioButton currentBI = (RadioButton) toggleGroup_currentBI.getSelectedToggle();
             String nodeBI = null;
-            if (currentBI.equals("Faraday Cup")){
+            if (currentBI.getText().equals("Faraday Cup")){
                 nodeBI = "FC1";
-            } else if (currentBI.equals("Beam Current Monitor")){
+            } else if (currentBI.getText().equals("Beam Current Monitor")){
                 nodeBI = "BCM";
-            } else if (currentBI.equals("Doppler")){
+            } else if (currentBI.getText().equals("Doppler")){
                 nodeBI = "DOPPLER";
-            } else {
-                nodeBI = "BCM";
             }
-            try {                
-                double val = MainFunctions.mainDocument.getAccelerator().getNode(nodeBI).getChannel("currentAvg").getValDbl();
-                if(val>0){
-                    textField_bc.setText(Double.toString(val));
-                    beamCurrent = val;
+            if(nodeBI!=null){
+                Channel currentMonitor = MainFunctions.mainDocument.getAccelerator().getNode(nodeBI).getChannel(CurrentMonitor.I_AVG_HANDLE);
+                if (currentMonitor.isConnected()){
+                    try {                
+                        double val = 1000*MainFunctions.mainDocument.getAccelerator().getNode(nodeBI).getChannel(CurrentMonitor.I_AVG_HANDLE).getValDbl();
+                        if(val>0){
+                            textField_bc.setText(Double.toString(val));
+                            beamCurrent = val;
+                        } else {
+                            textField_bc.setText(Double.toString(beamCurrent));
+                            comboBox_currentFC.setSelected(false);
+                        }
+                    } catch (ConnectionException | GetException ex) {
+                        Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 } else {
-                    textField_bc.setText(Double.toString(beamCurrent));
                     comboBox_currentFC.setSelected(false);
+                    textField_bc.setDisable(false);
                 }
-            } catch (ConnectionException | GetException ex) {
-                Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+            } else {
+                comboBox_currentFC.setSelected(false);
+                textField_bc.setDisable(false);
             }
+            
         }
         
-        //Add NPM data to the chart series       
-        String sequenceName = MainFunctions.mainDocument.getSequence();  
+        //Add NPM data to the chart series               
+        String sequenceName = MainFunctions.mainDocument.getSequence();        
+        String Sequence = MainFunctions.mainDocument.getAccelerator().getSequences().toString();
+        String ComboSequence = MainFunctions.mainDocument.getAccelerator().getComboSequences().toString();
+                                
         if(sequenceName!=null){
-            List<NPM> npms = MainFunctions.mainDocument.getAccelerator().getSequence(sequenceName).getAllNodesOfType("NPM");
+            List<NPM> npms = new ArrayList<>();
+            if (Sequence.contains(sequenceName)) {
+                npms = MainFunctions.mainDocument.getAccelerator().getSequence(sequenceName).getAllNodesOfType("NPM");
+            } else if (ComboSequence.contains(sequenceName)) {
+                npms = MainFunctions.mainDocument.getAccelerator().getComboSequence(sequenceName).getAllNodesOfType("NPM");
+            } 
+            //Cartesian
             seriesNPMpos[0].getData().clear();
             seriesNPMpos[1].getData().clear();
             seriesNPMsigma[0].getData().clear();
             seriesNPMsigma[1].getData().clear();
-
+            //Cylindrical
+            seriesNPMposCyl[0].getData().clear();
+            seriesNPMposCyl[1].getData().clear();
+            seriesNPMsigmaCyl.getData().clear();
+            
             npms.forEach((monitor) -> {
-                try {
-                    seriesNPMpos[0].getData().add(new XYChart.Data(monitor.getSDisplay(),monitor.getXAvg()));
-                    seriesNPMpos[1].getData().add(new XYChart.Data(monitor.getSDisplay(),monitor.getYAvg()));
-                } catch (ConnectionException | GetException ex) {
-                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                if(monitor.getChannel(NPM.X_AVG_HANDLE).isConnected() && monitor.getChannel(NPM.Y_AVG_HANDLE).isConnected()){
+                    try {                    
+                        seriesNPMpos[0].getData().add(new XYChart.Data(monitor.getSDisplay(),monitor.getXAvg()));
+                        seriesNPMpos[1].getData().add(new XYChart.Data(monitor.getSDisplay(),monitor.getYAvg()));
+                        Complex phi = new Complex(monitor.getXAvg(),monitor.getYAvg()); 
+                        long scale2 = getScaleAxis(posPhi,posR);
+                        seriesNPMposCyl[0].getData().add(new XYChart.Data(monitor.getSDisplay(),phi.modulus()));
+                        seriesNPMposCyl[1].getData().add(new XYChart.Data(monitor.getSDisplay(),scale2*phi.phase()/Math.PI));
+                    } catch (ConnectionException | GetException ex) {
+                        Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
             });
 
+              
 
             if(radioButtonOffsetOff.isSelected()){
                 npms.forEach((monitor) -> {
-                    try {
-                        seriesNPMsigma[0].getData().add(new XYChart.Data(monitor.getSDisplay(),scale*monitor.getSigmaxAvgC()));
-                        seriesNPMsigma[0].getData().add(new XYChart.Data(monitor.getSDisplay(),-1*scale*monitor.getSigmaxAvgC()));
-                        seriesNPMsigma[1].getData().add(new XYChart.Data(monitor.getSDisplay(),scale*monitor.getSigmayAvgC()));
-                        seriesNPMsigma[1].getData().add(new XYChart.Data(monitor.getSDisplay(),-1*scale*monitor.getSigmayAvgC()));
-                    } catch (ConnectionException | GetException ex) {
-                        Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                    if(monitor.getChannel(NPM.SIGMA_X_AVG_HANDLE).isConnected() && monitor.getChannel(NPM.SIGMA_Y_AVG_HANDLE).isConnected()){
+                        try {
+                            seriesNPMsigma[0].getData().add(new XYChart.Data(monitor.getSDisplay(),scale*monitor.getSigmaxAvgC()*1.0e+3));
+                            seriesNPMsigma[0].getData().add(new XYChart.Data(monitor.getSDisplay(),scale*monitor.getSigmaxAvgC()*-1.0e+3));
+                            seriesNPMsigma[1].getData().add(new XYChart.Data(monitor.getSDisplay(),scale*monitor.getSigmayAvgC()*1.0e+3));
+                            seriesNPMsigma[1].getData().add(new XYChart.Data(monitor.getSDisplay(),scale*monitor.getSigmayAvgC()*-1.0e+3));
+                            seriesNPMsigmaCyl.getData().add(new XYChart.Data(monitor.getSDisplay(),scale*Math.max(monitor.getSigmaxAvgC(), monitor.getSigmayAvgC())*1.0e+3));
+                            seriesNPMsigmaCyl.getData().add(new XYChart.Data(monitor.getSDisplay(),scale*Math.max(monitor.getSigmaxAvgC(), monitor.getSigmayAvgC())*-1.0e+3));
+                        } catch (ConnectionException | GetException ex) {
+                            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                     }
-                });
-                seriesNPMpos[0].getNode().setStyle("-fx-stroke: transparent;");
-                seriesNPMpos[1].getNode().setStyle("-fx-stroke: transparent;");        
+                });                       
             }
             if(radioButtonOffsetOn.isSelected()){
                 npms.forEach((monitor) -> {
-                    try {
-                        seriesNPMsigma[0].getData().add(new XYChart.Data(monitor.getSDisplay(),scale*monitor.getSigmaxAvgC()+monitor.getXAvg()));
-                        seriesNPMsigma[0].getData().add(new XYChart.Data(monitor.getSDisplay(),-1*scale*monitor.getSigmaxAvgC()+monitor.getXAvg()));
-                        seriesNPMsigma[1].getData().add(new XYChart.Data(monitor.getSDisplay(),scale*monitor.getSigmayAvgC()+monitor.getYAvg()));
-                        seriesNPMsigma[1].getData().add(new XYChart.Data(monitor.getSDisplay(),-1*scale*monitor.getSigmayAvgC()+monitor.getYAvg()));
-                    } catch (ConnectionException | GetException ex) {
-                        Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                    if(monitor.getChannel(NPM.SIGMA_X_AVG_HANDLE).isConnected() && monitor.getChannel(NPM.SIGMA_Y_AVG_HANDLE).isConnected()){
+                        try {
+                            seriesNPMsigma[0].getData().add(new XYChart.Data(monitor.getSDisplay(),scale*monitor.getSigmaxAvgC()*1.0e+3+monitor.getXAvg()));
+                            seriesNPMsigma[0].getData().add(new XYChart.Data(monitor.getSDisplay(),scale*monitor.getSigmaxAvgC()*-1.0e+3+monitor.getXAvg()));
+                            seriesNPMsigma[1].getData().add(new XYChart.Data(monitor.getSDisplay(),scale*monitor.getSigmayAvgC()*1.0e+3+monitor.getYAvg()));
+                            seriesNPMsigma[1].getData().add(new XYChart.Data(monitor.getSDisplay(),scale*monitor.getSigmayAvgC()*-1.0e+3+monitor.getYAvg()));
+                            double posR = Math.sqrt(Math.pow(monitor.getXAvg(),2)+Math.pow(monitor.getYAvg(),2));
+                            seriesNPMsigmaCyl.getData().add(new XYChart.Data(monitor.getSDisplay(),scale*Math.max(monitor.getSigmaxAvgC(), monitor.getSigmayAvgC())*1.0e+3+posR));
+                            seriesNPMsigmaCyl.getData().add(new XYChart.Data(monitor.getSDisplay(),scale*Math.max(monitor.getSigmaxAvgC(), monitor.getSigmayAvgC())*-1.0e+3+posR));
+                        } catch (ConnectionException | GetException ex) {
+                            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                     }
-                });
-                seriesNPMsigma[0].getNode().setStyle("-fx-stroke: transparent;");
-                seriesNPMsigma[1].getNode().setStyle("-fx-stroke: transparent;"); 
+                });                
             }
         }
                                     
@@ -1137,9 +1201,13 @@ public class FXMLController implements Initializable {
      * Initializes the values in the textFields
      */
     private void initTextFields(){   
-                              
+        
         setValues.keySet().forEach(channel ->{             
-            if (channel.isConnected()){
+            System.out.print(channel.channelName()+": "+channel.isConnected()+"\n");
+        });
+        
+        setValues.keySet().forEach(channel ->{             
+            if (channel.isConnected()){                
                 try {
                     setValues.get(channel).setText(String.format("%.3f",channel.getValDbl()));
                     setValues.get(channel).setStyle("-fx-background-color: white;");
@@ -1188,46 +1256,16 @@ public class FXMLController implements Initializable {
 
             //Display if successful run
             if(newRun.hasRun()) {
+                retrieveData(newRun);
                 Platform.runLater(
                 () -> {
                   updateGUI();  
-                  displayData(newRun);
-                }); 
-                //displayData(newRun);
-                //retrieveData(newRun);
-                newRun.sethasRun(false);
+                  displayPlots();
+                });                                 
+                //newRun.sethasRun(false);
             }
         };
-    }
-    
-    /**
-     * Runs the simulation. Sets simulation parameters from text fields. Displays trajectory plots       
-     */
-    private void runSimulation() {
-                                     
-        try {   
-            setParameters();
-            newRun.runSimulation();
-        } catch (ModelException ex ) {
-            MODEL_SYNC_TIMER.suspend();
-            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            MODEL_SYNC_TIMER.suspend();
-            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (Exception ex) {
-            MODEL_SYNC_TIMER.suspend();
-            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-
-        }
-        
-        //Display if successful run
-        if(newRun.hasRun()) {
-            //displayData(newRun);
-            retrieveData(newRun);
-            newRun.sethasRun(false);
-        }
-        
-    }
+    }    
     
     @FXML
     private void handleGetCurrentfromFC(ActionEvent event) {
@@ -1243,10 +1281,10 @@ public class FXMLController implements Initializable {
        
         if (newRun.hasRun()){
             addTrajectorySeriesToPlot();
+            npmPosHandler(new ActionEvent());
             addEnvelopeSeriesToPlot();
-            displayPlots();
-        }
-        else{
+            npmSigHandler(new ActionEvent());
+        } else {
             setLabels();
             setBounds();
         }
@@ -1257,8 +1295,8 @@ public class FXMLController implements Initializable {
         
         if (newRun.hasRun()){
             addEnvelopeSeriesToPlot();
-            displayEnvelope();}
-        else{
+            npmSigHandler(new ActionEvent());
+        } else {
             setLabels();
             setBounds();
         }
@@ -1280,7 +1318,94 @@ public class FXMLController implements Initializable {
         if (newRun.hasRun()){
             displayEnvelope();
         }
-    }       
+    }   
+
+    @FXML
+    private void npmPosHandler(ActionEvent event) {
+       
+        if(radioButtonCart.isSelected()){
+            if(comboBox_posNPM.isSelected()){
+                plot1.getData().add(seriesNPMpos[0]);
+                plot1.getData().add(seriesNPMpos[1]);
+                Legend legend = (Legend)plot1.lookup(".chart-legend");
+                legend.getItems().get(0).getSymbol().setStyle("-fx-background-color: #ff0000, white;");
+                legend.getItems().get(1).getSymbol().setStyle("-fx-background-color: #006ddb, white;");   
+                legend.getItems().get(2).getSymbol().setStyle("-fx-background-color: #ff9999, white;");
+                legend.getItems().get(3).getSymbol().setStyle("-fx-background-color: #99ccff, white;");
+
+            } else {
+                plot1.getData().remove(seriesNPMpos[0]);
+                plot1.getData().remove(seriesNPMpos[1]);
+                Legend legend = (Legend)plot1.lookup(".chart-legend");
+                legend.getItems().get(0).getSymbol().setStyle("-fx-background-color: #ff0000, white;");
+                legend.getItems().get(1).getSymbol().setStyle("-fx-background-color: #006ddb, white;");      
+            }
+        }
+        
+        if(radioButtonCyl.isSelected()){
+            if(comboBox_posNPM.isSelected()){
+                plot1.getData().add(seriesNPMposCyl[0]);
+                plot1.getData().add(seriesNPMposCyl[1]);
+                Legend legend = (Legend)plot1.lookup(".chart-legend");
+                legend.getItems().get(0).getSymbol().setStyle("-fx-background-color: #006400, white;");
+                legend.getItems().get(1).getSymbol().setStyle("-fx-background-color: #DAA520, white;");    
+                legend.getItems().get(2).getSymbol().setStyle("-fx-background-color: #99ff99, white;");
+                legend.getItems().get(3).getSymbol().setStyle("-fx-background-color: #f2dca6, white;");
+
+            } else {
+                plot1.getData().remove(seriesNPMposCyl[0]);
+                plot1.getData().remove(seriesNPMposCyl[1]);
+                Legend legend = (Legend)plot1.lookup(".chart-legend");
+                legend.getItems().get(0).getSymbol().setStyle("-fx-background-color: #006400, white;");
+                legend.getItems().get(1).getSymbol().setStyle("-fx-background-color: #DAA520, white;");         
+            }
+        }
+        
+    }    
+        
+    @FXML
+    private void npmSigHandler(ActionEvent event) {
+        
+        if(radioButtonCart.isSelected()){
+            if(comboBox_sigmaNPM.isSelected()){
+                plot2.getData().add(seriesNPMsigma[0]);
+                plot2.getData().add(seriesNPMsigma[1]);
+                Legend legend = (Legend)plot2.lookup(".chart-legend");
+                legend.getItems().remove(0, 4);
+                legend.getItems().get(0).getSymbol().setStyle("-fx-background-color: #ff0000, white;");
+                legend.getItems().get(1).getSymbol().setStyle("-fx-background-color: #006ddb, white;");            
+                legend.getItems().get(2).getSymbol().setStyle("-fx-background-color: #ff9999, white;");
+                legend.getItems().get(3).getSymbol().setStyle("-fx-background-color: #99ccff, white;");
+            } else {
+                plot2.getData().remove(seriesNPMsigma[0]);
+                plot2.getData().remove(seriesNPMsigma[1]);
+                Legend legend = (Legend)plot2.lookup(".chart-legend");
+                int leg_size = legend.getItems().size();
+                legend.getItems().remove(0, leg_size-2);                    
+                legend.getItems().get(0).getSymbol().setStyle("-fx-background-color: #ff0000, white;");
+                legend.getItems().get(1).getSymbol().setStyle("-fx-background-color: #006ddb, white;"); 
+            }
+        }
+        
+        if(radioButtonCyl.isSelected()){
+            if(comboBox_sigmaNPM.isSelected()){
+                plot2.getData().add(seriesNPMsigmaCyl);
+                Legend legend = (Legend)plot2.lookup(".chart-legend");
+                legend.getItems().remove(0, 3);
+                legend.getItems().get(0).getSymbol().setStyle("-fx-background-color: #006400, white;");
+                legend.getItems().get(1).getSymbol().setStyle("-fx-background-color: #99ff99, white;");            
+            } else {
+                plot2.getData().remove(seriesNPMsigmaCyl);
+                Legend legend = (Legend)plot2.lookup(".chart-legend");
+                int leg_size = legend.getItems().size();
+                legend.getItems().remove(0, leg_size-1);  
+                legend.getItems().get(0).getSymbol().setStyle("-fx-background-color: #006400, white;");
+                
+            }
+        }
+        
+    } 
+    
     
     //------------------------HELP METHODS------------------------------------
     
@@ -1324,6 +1449,7 @@ public class FXMLController implements Initializable {
             newRun.setBeamTwissY(TwissY[0],TwissY[1],TwissY[2]);
             newRun.setSpaceChargeCompensation(spaceChargeComp,spaceChargeCompElectrode);
             newRun.setElectrode(checkBox_electrode.isSelected());
+            newRun.setModelSync(MainFunctions.mainDocument.getModel().get());
         }
         catch(NumberFormatException e){
             Alert alert = new Alert(AlertType.ERROR);
@@ -1333,16 +1459,7 @@ public class FXMLController implements Initializable {
             alert.showAndWait();
         }
     }
-    
-    /**
-     * Retrieves data from a run simulation and displays plots. 
-     * @param newRun The run simulation
-     */
-    private void displayData(SimulationRunner newRun){
-        retrieveData(newRun);
-        displayPlots();
-    }
-    
+       
     /**
      * Retrieves and displays trajectory plots
      * @param newRun the simulation
@@ -1417,9 +1534,7 @@ public class FXMLController implements Initializable {
      * Checks which coordinate system radio button is selected and displays plots accordingly
      */
     private void displayPlots(){
-        
-        addTrajectorySeriesToPlot();
-        
+                
         yAxis.setAutoRanging(true);
         
         if (radioButtonCart.isSelected()){
@@ -1437,9 +1552,6 @@ public class FXMLController implements Initializable {
      */
     private void displayEnvelope(){
         
-        addEnvelopeSeriesToPlot();
-        
-        //yAxis1.setAutoRanging(true);       
         
         if (radioButtonCart.isSelected()){
             displayCartEnvelope();
@@ -1461,14 +1573,8 @@ public class FXMLController implements Initializable {
             seriesY.getData().add(new XYChart.Data(positions.get(i), posY.get(i)));
         }
                 
-        yAxis.setLabel("Offset (mm)");
+        yAxis.setLabel("Trajectory (mm)");                
         
-        //set colors
-        Legend legend = (Legend)plot1.lookup(".chart-legend");
-        legend.getItems().get(0).getSymbol().setStyle("-fx-background-color: #ff0000, white;");
-        legend.getItems().get(1).getSymbol().setStyle("-fx-background-color: #006ddb, white;");
-        seriesX.getNode().setStyle("-fx-stroke: #ff0000;");
-        seriesY.getNode().setStyle("-fx-stroke: #006ddb;");
     }
     
     /**
@@ -1492,13 +1598,7 @@ public class FXMLController implements Initializable {
         else{
             yAxis.setLabel("Offset (mm) \nAngle (π rad)");
         }
-        
-        //set colors
-        Legend legend = (Legend)plot1.lookup(".chart-legend");
-        legend.getItems().get(0).getSymbol().setStyle("-fx-background-color: #006400, white;");
-        legend.getItems().get(1).getSymbol().setStyle("-fx-background-color: #DAA520, white;");        
-        seriesR.getNode().setStyle("-fx-stroke: #006400;");
-        seriesPhi.getNode().setStyle("-fx-stroke: #DAA520;");
+                
     }
     
     /**
@@ -1518,13 +1618,7 @@ public class FXMLController implements Initializable {
                 seriesSigmaX[1].getData().add(new XYChart.Data(positions.get(i), ((double) sigmaX[1].get(i))*scale));
                 seriesSigmaY[1].getData().add(new XYChart.Data(positions.get(i), ((double) sigmaY[1].get(i))*scale));
             }
-            
-            //set colors                        
-            seriesSigmaX[0].getNode().setStyle("-fx-stroke: #ff0000;");
-            seriesSigmaY[0].getNode().setStyle("-fx-stroke: #006ddb;");
-            seriesSigmaX[1].getNode().setStyle("-fx-stroke: #ff0000;");
-            seriesSigmaY[1].getNode().setStyle("-fx-stroke: #006ddb;");
-            
+                        
         }
         else if (radioButtonOffsetOn.isSelected()){           
             for (int i = 0; i < sigmaX[0].size(); i++){               
@@ -1534,18 +1628,8 @@ public class FXMLController implements Initializable {
                 seriesSigmaOffsetY[1].getData().add(new XYChart.Data(positions.get(i), scaleAndOffset(sigmaY[1],posY,scale,i)));
             }
             
-            //set colors
-            seriesSigmaOffsetX[0].getNode().setStyle("-fx-stroke: #ff0000;");
-            seriesSigmaOffsetY[0].getNode().setStyle("-fx-stroke: #006ddb;");
-            seriesSigmaOffsetX[1].getNode().setStyle("-fx-stroke: #ff0000;");
-            seriesSigmaOffsetY[1].getNode().setStyle("-fx-stroke: #006ddb;");
-        }
+        }                                          
         
-        //set legend colors
-        Legend legend = (Legend)plot2.lookup(".chart-legend");
-        legend.getItems().remove(0, 4);
-        legend.getItems().get(0).getSymbol().setStyle("-fx-background-color: #ff0000, white;");
-        legend.getItems().get(1).getSymbol().setStyle("-fx-background-color: #006ddb, white;");
     }
     
     /**
@@ -1568,32 +1652,21 @@ public class FXMLController implements Initializable {
                 yAxis1.setUpperBound(Collections.max(sigmaR[0])+10);
             }
             
-            seriesSigmaR[0].getNode().setStyle("-fx-stroke: #006400;");
-            seriesSigmaR[1].getNode().setStyle("-fx-stroke: #006400;");
+            //seriesSigmaR[0].getNode().setStyle("-fx-stroke: #006400;");
+            //seriesSigmaR[1].getNode().setStyle("-fx-stroke: #006400;");
         }
         else if (radioButtonOffsetOn.isSelected()){
             
             for (int i = 0; i < sigmaR[0].size(); i++){
                 seriesSigmaOffsetR[0].getData().add(new XYChart.Data(positions.get(i), scaleAndOffset(sigmaR[0],posR,scale,i)));
                 seriesSigmaOffsetR[1].getData().add(new XYChart.Data(positions.get(i), scaleAndOffset(sigmaR[1],posR,scale,i)));
-            }
-            
-            //Test for new upper bound
-            //if (((double) Collections.max(sigmaR[0])*scale+(double) Collections.max(posR)) > 100){
-            //    yAxis1.setUpperBound(((double) Collections.max(sigmaR[0])*scale+(double) Collections.max(posR))+10);
-            //}
+            }                      
             
             yAxis1.setLowerBound(-90);
             yAxis1.setUpperBound(90);
             
-            seriesSigmaOffsetR[0].getNode().setStyle("-fx-stroke: #006400;");
-            seriesSigmaOffsetR[1].getNode().setStyle("-fx-stroke: #006400;");
-        }
-        
-        //set legend colors
-        Legend legend = (Legend)plot2.lookup(".chart-legend");
-        legend.getItems().remove(0, 3);
-        legend.getItems().get(0).getSymbol().setStyle("-fx-background-color: #006400, white;");
+        }                
+               
     }
     
     /**
@@ -1649,8 +1722,13 @@ public class FXMLController implements Initializable {
         double minr = Collections.min(posr);
         double scalephi = Math.max(Math.abs(maxphi),Math.abs(minphi));
         double scaler = Math.max(Math.abs(maxr),Math.abs(minr));
-  
-        return Math.round(scalephi/scaler)==0 ? 1 : Math.round(scalephi/scaler);
+        
+        if(scalephi>scaler){
+            return Math.round(scaler/scalephi)==0 ? 1 : Math.round(scaler/scalephi);
+        } else {
+            return Math.round(scalephi/scaler)==0 ? 1 : Math.round(scalephi/scaler);
+        }
+                
     }
     
     private double scaleAndOffset(ArrayList<Double> sigma, ArrayList<Double> pos, double scale, int i){
@@ -1664,21 +1742,31 @@ public class FXMLController implements Initializable {
      */
     private void addTrajectorySeriesToPlot(){
         
-        plot1.getData().removeAll(seriesX,seriesY,seriesR,seriesPhi,seriesNPMpos[0],seriesNPMpos[1]);
+        plot1.getData().removeAll(seriesX,seriesY,seriesR,seriesPhi,seriesNPMpos[0],seriesNPMpos[1],seriesNPMposCyl[0],seriesNPMposCyl[1]);        
         
         if(radioButtonCart.isSelected()){
             plot1.getData().add(seriesX);       
             plot1.getData().add(seriesY);
-            if(comboBox_posNPM.isSelected()){
-                plot1.getData().add(seriesNPMpos[1]);
-                plot1.getData().add(seriesNPMpos[2]);
-            }
-
+            //Set Style
+            plot1.getStylesheets().remove(0);
+            plot1.getStylesheets().add(this.getClass().getResource("/styles/TrajectoryPlot.css").toExternalForm());
+            //set colors
+            Legend legend = (Legend)plot1.lookup(".chart-legend");
+            legend.getItems().get(0).getSymbol().setStyle("-fx-background-color: #ff0000, white;");
+            legend.getItems().get(1).getSymbol().setStyle("-fx-background-color: #006ddb, white;");            
         }
         else if (radioButtonCyl.isSelected()){
             plot1.getData().add(seriesR);       
-            plot1.getData().add(seriesPhi); 
-        }
+            plot1.getData().add(seriesPhi);
+            //set Style
+            plot1.getStylesheets().remove(0);
+            plot1.getStylesheets().add(this.getClass().getResource("/styles/TrajectoryPlotCyl.css").toExternalForm());
+            //set colors
+            Legend legend = (Legend)plot1.lookup(".chart-legend");
+            legend.getItems().get(0).getSymbol().setStyle("-fx-background-color: #006400, white;");
+            legend.getItems().get(1).getSymbol().setStyle("-fx-background-color: #DAA520, white;");                    
+        }  
+                
     }
     
     /**
@@ -1692,7 +1780,7 @@ public class FXMLController implements Initializable {
             seriesSigmaOffsetX[0],seriesSigmaOffsetX[1],
             seriesSigmaOffsetY[0],seriesSigmaOffsetY[1],
             seriesSigmaOffsetR[0],seriesSigmaOffsetR[1],
-            seriesNPMsigma[0],seriesNPMsigma[1]);        
+            seriesNPMsigma[0],seriesNPMsigma[1],seriesNPMsigmaCyl);                 
         
         if(radioButtonCart.isSelected()){
             
@@ -1700,23 +1788,23 @@ public class FXMLController implements Initializable {
                 for(int i = 0; i < seriesSigmaX.length; i++){
                     plot2.getData().add(seriesSigmaOffsetX[i]);       
                     plot2.getData().add(seriesSigmaOffsetY[i]);                    
-                }
-                seriesSigmaOffsetX[1].setName("σx");
-                seriesSigmaOffsetY[1].setName("σy");
+                }                
             }
             else if (radioButtonOffsetOff.isSelected()){
                 for(int i = 0; i < seriesSigmaX.length; i++){
                     plot2.getData().add(seriesSigmaX[i]);       
                     plot2.getData().add(seriesSigmaY[i]);  
-                }
-                seriesSigmaX[1].setName("σx");
-                seriesSigmaY[1].setName("σy");
+                }                
             }
             
-            if(comboBox_sigmaNPM.isSelected()){
-                plot1.getData().add(seriesNPMsigma[1]);
-                plot1.getData().add(seriesNPMsigma[2]);
-            }
+            //set Style
+            plot2.getStylesheets().remove(0);
+            plot2.getStylesheets().add(this.getClass().getResource("/styles/EnvelopePlot.css").toExternalForm());
+            //set legend colors
+            Legend legend = (Legend)plot2.lookup(".chart-legend");
+            legend.getItems().remove(0, 4);
+            legend.getItems().get(0).getSymbol().setStyle("-fx-background-color: #ff0000, white;");
+            legend.getItems().get(1).getSymbol().setStyle("-fx-background-color: #006ddb, white;");                    
 
         }
         else if (radioButtonCyl.isSelected()){
@@ -1724,15 +1812,21 @@ public class FXMLController implements Initializable {
                 for(int i = 0; i < seriesSigmaX.length; i++){
                     plot2.getData().add(seriesSigmaOffsetR[i]);       
                 }
-                seriesSigmaOffsetR[1].setName("σr");
             }
             else if (radioButtonOffsetOff.isSelected()){
                 for(int i = 0; i < seriesSigmaX.length; i++){
                     plot2.getData().add(seriesSigmaR[i]);       
                 }
-                seriesSigmaR[1].setName("σr");
             }
-        }
+            //set Style
+            plot2.getStylesheets().remove(0);
+            plot2.getStylesheets().add(this.getClass().getResource("/styles/EnvelopePlotCyl.css").toExternalForm());
+            //set legend colors
+            Legend legend = (Legend)plot2.lookup(".chart-legend");
+            legend.getItems().remove(0, 3);
+            legend.getItems().get(0).getSymbol().setStyle("-fx-background-color: #006400, white;");
+        } 
+                     
     }
 
     //-------------------------CLEAR METHODS------------------------------------

@@ -2,34 +2,6 @@
     -fx-font-weight: bold;
 }
 
-.chart-series-line {    
-    -fx-stroke-width: 2px;
-}
-
 .tooltip {
     -fx-font-color: white;
-}
-
-.default-color0.chart-line-symbol { 
-    -fx-background-color: transparent, transparent; 
-}
-
-.default-color1.chart-line-symbol { 
-    -fx-background-color: transparent, transparent; 
-}
-
-.default-color2.chart-line-symbol { 
-    -fx-background-color: transparent, transparent; 
-}
-
-.default-color3.chart-line-symbol { 
-    -fx-background-color: transparent, transparent; 
-}
-
-.default-color4.chart-line-symbol { 
-    -fx-background-color: white, #ff9999; 
-}
-
-.default-color4.chart-line-symbol { 
-    -fx-background-color: white, #99ccff; 
 }
