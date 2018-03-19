@@ -36,15 +36,15 @@ public class ESSIonSourceMagnetron extends AcceleratorNode {
     public static final String s_strType = "ISM";
 
     // Ion Source's magnetron channel handles
-    public static final String FORWD_PRW_RB_HANDLE = "ForwdPrwRB";
+    public static final String FORWD_PRW_RB_HANDLE = "forwdPrwRB";
 
     private Channel forwdPrwRBC = null;
 
-    public static final String FORWD_PRW_R_HANDLE = "ForwdPrwR";
+    public static final String FORWD_PRW_R_HANDLE = "forwdPrwR";
 
     private Channel forwdPrwRC = null;
 
-    public static final String FORWD_PRW_S_HANDLE = "ForwdPrwS";
+    public static final String FORWD_PRW_S_HANDLE = "forwdPrwS";
 
     private Channel forwdPrwSC = null;
 

@@ -1516,6 +1516,8 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
         
         // for NPMs
         for (final NPM monitor : npms) {
+            Channel xp = monitor.getChannel(NPM.X_P_AVG_HANDLE);
+            Channel yp = monitor.getChannel(NPM.Y_P_AVG_HANDLE);
             Channel sigX = monitor.getChannel(NPM.SIGMA_X_AVG_HANDLE);
             Channel sigY = monitor.getChannel(NPM.SIGMA_Y_AVG_HANDLE);
             Channel betaX = monitor.getChannel(NPM.BETA_X_TWISS_HANDLE);
@@ -1528,12 +1530,16 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
                 if (modelScenario.getProbe() instanceof EnvelopeProbe) {
                     final Twiss[] twiss = ((EnvelopeProbeState) probeState).getCovarianceMatrix().computeTwiss();
                     final CovarianceMatrix cov = ((EnvelopeProbeState) probeState).getCovarianceMatrix();
+                    final PhaseVector position = ((EnvelopeProbeState) probeState).getCovarianceMatrix().getMean();
+                    xp.putValCallback(position.getxp(), this);
+                    yp.putValCallback(position.getyp(), this);
                     sigX.putValCallback(cov.getSigmaX(), this);
                     sigY.putValCallback(cov.getSigmaY(), this);
                     betaX.putValCallback(twiss[0].getBeta(), this);
                     betaY.putValCallback(twiss[1].getBeta(), this);
                     alphaX.putValCallback(twiss[0].getAlpha(), this);
-                    alphaY.putValCallback(twiss[1].getAlpha(), this);                                      
+                    alphaY.putValCallback(twiss[1].getAlpha(), this); 
+                    
                 }
             } catch (ConnectionException e) {
                 System.err.println(e.getMessage());
@@ -1730,6 +1736,9 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
                 READBACK_SET_RECORDS.add(new ReadbackSetRecord(mfc,
                         mfc.findChannel(ESSIonSourceMFC.VOLTAGE_RB_HANDLE),
                         mfc.findChannel(ESSIonSourceMFC.VOLTAGE_SET_HANDLE)));
+                READBACK_SET_RECORDS.add(new ReadbackSetRecord(mfc,
+                        mfc.findChannel(ESSIonSourceMFC.H_2_FLOW_RB_HANDLE),
+                        mfc.findChannel(ESSIonSourceMFC.H_2_FLOW_S_HANDLE)));
             }
 
             typeQualifier = QualifierFactory.qualifierWithStatusAndTypes(true, ESSIonSourceCoil.s_strType);

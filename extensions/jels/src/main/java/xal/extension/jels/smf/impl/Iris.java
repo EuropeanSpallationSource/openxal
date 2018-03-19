@@ -41,13 +41,13 @@ public class Iris extends AcceleratorNode {
     private Channel apertureSC = null;
     public static final String APERTURE_RB_HANDLE = "apertureRB";
     private Channel apertureRBC = null;
-    public static final String OFFSET_X_SET_HANDLE = "offsetXS";
+    public static final String OFFSET_X_SET_HANDLE = "xOffsetS";
     private Channel offsetXSC = null;
-    public static final String OFFSET_X_RB_HANDLE = "offsetXRB";
+    public static final String OFFSET_X_RB_HANDLE = "xOffsetRB";
     private Channel offsetXRBC = null;
-    public static final String OFFSET_Y_SET_HANDLE = "offsetYS";
+    public static final String OFFSET_Y_SET_HANDLE = "yOffsetS";
     private Channel offsetYSC = null;
-    public static final String OFFSET_Y_RB_HANDLE = "offsetYRB";
+    public static final String OFFSET_Y_RB_HANDLE = "yOffsetRB";
     private Channel offsetYRBC = null;
 
     static {

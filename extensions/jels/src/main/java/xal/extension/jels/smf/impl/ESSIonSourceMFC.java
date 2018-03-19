@@ -43,12 +43,12 @@ public class ESSIonSourceMFC extends AcceleratorNode {
     private Channel h2FlowSC = null;
 
     // High-voltage power supply channel handles
-    public static final String VOLTAGE_SET_HANDLE = "VolS";
-    public static final String VOLTAGE_READ_HANDLE = "VolR";
-    public static final String VOLTAGE_RB_HANDLE = "VolRB";
-    public static final String CURRENT_SET_HANDLE = "CurrS";
-    public static final String CURRENT_READ_HANDLE = "CurrR";
-    public static final String CURRENT_RB_HANDLE = "CurrRB";
+    public static final String VOLTAGE_SET_HANDLE = "volS";
+    public static final String VOLTAGE_READ_HANDLE = "volR";
+    public static final String VOLTAGE_RB_HANDLE = "volRB";
+    public static final String CURRENT_SET_HANDLE = "currS";
+    public static final String CURRENT_READ_HANDLE = "currR";
+    public static final String CURRENT_RB_HANDLE = "currRB";
     Channel voltageSetChannel = null;
     Channel voltageReadChannel = null;
     Channel voltageRBChannel = null;
