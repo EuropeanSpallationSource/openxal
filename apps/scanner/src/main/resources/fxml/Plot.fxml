@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.shape.Rectangle?>
+
+<!-- 
+<SplitPane dividerPositions="0.793010752688172" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.111" fx:controller="xal.app.scanner.FXMLPlot">
+-->
+
+<fx:root dividerPositions="0.11, 0.5" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL" prefHeight="744.0" prefWidth="658.0" type="javafx.scene.control.SplitPane" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+    <items>
+        <StackPane fx:id="analyseGraphPane" prefHeight="536.0" prefWidth="658.0">
+           <children>
+              <LineChart fx:id="pvReadbacksGraph" animated="false" legendVisible="false" prefHeight="308.0" prefWidth="355.0">
+                <xAxis>
+                  <NumberAxis side="BOTTOM" />
+                </xAxis>
+                <yAxis>
+                  <NumberAxis side="LEFT" />
+                </yAxis>
+              </LineChart>
+              <Rectangle fx:id="selectRect" arcHeight="5.0" arcWidth="5.0" fill="#ebebeb" height="586.0" mouseTransparent="true" opacity="0.2" stroke="BLACK" strokeType="INSIDE" visible="false" width="658.0" StackPane.alignment="TOP_LEFT" />
+           </children>
+        </StackPane>
+        <LineChart fx:id="pvWriteablesGraph" prefHeight="208.0" prefWidth="658.0">
+            <xAxis>
+              <NumberAxis side="BOTTOM" />
+            </xAxis>
+            <yAxis>
+              <NumberAxis side="LEFT" />
+            </yAxis>
+        </LineChart>
+    </items>
+<!--</SplitPane>-->
+</fx:root>

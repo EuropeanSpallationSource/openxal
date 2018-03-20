@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import xal.app.scanner.*?>
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.Button?>
@@ -116,32 +117,8 @@
                            </content>
                         </Tab>
                     </tabs>
-                  </TabPane>
-                  <SplitPane dividerPositions="0.793010752688172" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0">
-                    <items>
-                        <StackPane fx:id="analyseGraphPane" prefHeight="536.0" prefWidth="658.0">
-                           <children>
-                              <LineChart fx:id="pvReadbacksGraph" animated="false" legendVisible="false" prefHeight="308.0" prefWidth="355.0">
-                                <xAxis>
-                                  <NumberAxis side="BOTTOM" />
-                                </xAxis>
-                                <yAxis>
-                                  <NumberAxis side="LEFT" />
-                                </yAxis>
-                              </LineChart>
-                              <Rectangle fx:id="selectRect" arcHeight="5.0" arcWidth="5.0" fill="#ebebeb" height="586.0" mouseTransparent="true" opacity="0.2" stroke="BLACK" strokeType="INSIDE" visible="false" width="658.0" StackPane.alignment="TOP_LEFT" />
-                           </children>
-                        </StackPane>
-                        <LineChart fx:id="pvWriteablesGraph" animated="false" prefHeight="208.0" prefWidth="658.0">
-                          <xAxis>
-                            <NumberAxis side="BOTTOM" />
-                          </xAxis>
-                          <yAxis>
-                            <NumberAxis side="LEFT" />
-                          </yAxis>
-                        </LineChart>
-                    </items>
-                  </SplitPane>
+                </TabPane>
+                <Plot fx:id="plotArea" prefHeight="744.0" prefWidth="658.0" />
               </items>
             </SplitPane>
    </children>

@@ -49,6 +49,8 @@ import xal.ca.PutException;
 
 /**
  *
+ * @todo It would be nice to refactor this and not do static stuff so much (ugh)
+ *
  * @author yngvelevinsen
  */
 public class MainFunctions {

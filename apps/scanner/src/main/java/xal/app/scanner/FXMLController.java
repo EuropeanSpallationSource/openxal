@@ -36,8 +36,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.ResourceBundle;
 import java.util.function.UnaryOperator;
 import java.util.logging.Level;
@@ -54,8 +52,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressBar;
@@ -73,15 +69,10 @@ import javafx.scene.control.cell.TextFieldListCell;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.StackPane;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.converter.DoubleStringConverter;
 import javafx.util.converter.IntegerStringConverter;
-
-import org.gillius.jfxutils.chart.ChartZoomManager;
-import xal.ca.Channel;
 
 public class FXMLController implements Initializable {
 
@@ -176,16 +167,7 @@ public class FXMLController implements Initializable {
     private ListView<String> analyseList;
 
     @FXML
-    private StackPane analyseGraphPane;
-
-    @FXML
-    private LineChart<Number, Number> pvReadbacksGraph;
-
-    @FXML
-    private Rectangle selectRect;
-
-    @FXML
-    private LineChart<Number, Number> pvWriteablesGraph;
+    private Plot plotArea;
 
     private static ObservableList<String> measurements;
 
@@ -193,8 +175,6 @@ public class FXMLController implements Initializable {
     public static ObservableList<ChannelWrapper> pvReadablelist;
     public static ObservableList<ChannelWrapper> PVscanList;
     public static ObservableList<ChannelWrapper> PVreadList;
-
-    private static ChartZoomManager zoomManager;
 
     @FXML
     private void handleScanAddPV(ActionEvent event) {
@@ -254,52 +234,13 @@ public class FXMLController implements Initializable {
                 MainFunctions.mainDocument.nCombosDone = MainFunctions.mainDocument.currentMeasurement.length;
                 double[][] fullMeasurement = extendArray(MainFunctions.mainDocument.currentMeasurement, MainFunctions.mainDocument.combos.size());
                 MainFunctions.mainDocument.currentMeasurement = fullMeasurement;
-                plotMeasurement();
+                plotArea.plotMeasurement();
                 restartButton.setVisible(true);
             }
             Logger.getLogger(FXMLController.class.getName()).log(Level.INFO, "Document loaded");
 
         } catch (MalformedURLException ex) {
             Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    // Plot measurement of name measName
-    private void plotMeasurement(String measName) {
-        double [][] measurement = MainFunctions.mainDocument.dataSets.get(measName);
-        List<Channel> pvR = MainFunctions.mainDocument.allPVrb.get(measName);
-        List<Channel> pvW = MainFunctions.mainDocument.allPVw.get(measName);
-        plotMeasurement(measurement, pvW, pvR);
-    }
-
-    // Plot the current (ongoing) measurement
-    private void plotMeasurement() {
-        List<Channel> _pvR = new ArrayList<>();
-        List<Channel> _pvW = new ArrayList<>();
-        MainFunctions.mainDocument.pvReadbacks.forEach(cWrap -> _pvR.add(cWrap.getChannel()));
-        MainFunctions.mainDocument.pvWriteables.forEach(cWrap -> _pvW.add(cWrap.getChannel()));
-        plotMeasurement(MainFunctions.mainDocument.currentMeasurement,_pvW,_pvR);
-    }
-
-    // Manually provide list of data and list of channels for the plot
-    private void plotMeasurement(double [][] measurement, List<Channel> pvWriteables, List<Channel> pvReadbacks) {
-        if (measurement != null) {
-            for (int i=0;i<pvWriteables.size();i++) {
-                XYChart.Series<Number, Number> series = new XYChart.Series();
-                for (int j=0;j<measurement.length;j++) {
-                    series.getData().add( new XYChart.Data(j, measurement[j][i]) );
-                }
-                series.setName(pvWriteables.get(i).getId());
-                pvWriteablesGraph.getData().add(series);
-            }
-            for (int i=pvWriteables.size();i<measurement[0].length;i++) {
-                XYChart.Series<Number, Number> series = new XYChart.Series();
-                for (int j=0;j<measurement.length;j++) {
-                    series.getData().add( new XYChart.Data(j, measurement[j][i]) );
-                }
-                series.setName(pvReadbacks.get(i-pvWriteables.size()).getId());
-                pvReadbacksGraph.getData().add(series);
-            }
         }
     }
 
@@ -318,7 +259,7 @@ public class FXMLController implements Initializable {
             analyseList.getSelectionModel().clearSelection();
             analyseList.autosize();
         }
-        plotMeasurement();
+        plotArea.plotMeasurement();
     }
 
     @FXML
@@ -330,7 +271,7 @@ public class FXMLController implements Initializable {
         restartButton.setVisible(false);
         analyseList.getSelectionModel().clearSelection();
         analyseList.autosize();
-        plotMeasurement();
+        plotArea.plotMeasurement();
     }
 
     @FXML
@@ -351,13 +292,11 @@ public class FXMLController implements Initializable {
 
     @FXML
     private void analyseListMouseClicked(MouseEvent event) {
-        pvReadbacksGraph.getData().clear();
-        pvWriteablesGraph.getData().clear();
-        zoomManager.stop();
+        plotArea.clear();
         // There is a problem in getSelectedItems() so need to call this twice..
         analyseList.getSelectionModel().getSelectedItems().forEach((meas) -> dummyBugFunction());
-        analyseList.getSelectionModel().getSelectedItems().forEach((meas) -> plotMeasurement(meas));
-        zoomManager.start();
+        analyseList.getSelectionModel().getSelectedItems().forEach((meas) -> plotArea.plotMeasurement(meas));
+        plotArea.startZoom();
     }
 
 
@@ -430,10 +369,7 @@ public class FXMLController implements Initializable {
         assert restartButton != null : "fx:id=\"restartButton\" was not injected: check your FXML file 'ScannerScene.fxml'.";
         assert tabDisplay != null : "fx:id=\"tabDisplay\" was not injected: check your FXML file 'ScannerScene.fxml'.";
         assert analyseList != null : "fx:id=\"analyseList\" was not injected: check your FXML file 'ScannerScene.fxml'.";
-        assert analyseGraphPane != null : "fx:id=\"analyseGraphPane\" was not injected: check your FXML file 'ScannerScene.fxml'.";
-        assert pvReadbacksGraph != null : "fx:id=\"pvReadbacksGraph\" was not injected: check your FXML file 'ScannerScene.fxml'.";
-        assert selectRect != null : "fx:id=\"selectRect\" was not injected: check your FXML file 'ScannerScene.fxml'.";
-        assert pvWriteablesGraph != null : "fx:id=\"pvWriteablesGraph\" was not injected: check your FXML file 'ScannerScene.fxml'.";
+        assert plotArea != null : "fx:id=\"plotArea\" was not injected: check your FXML file 'ScannerScene.fxml'.";
 
 
 
@@ -502,9 +438,8 @@ public class FXMLController implements Initializable {
                     if (MainFunctions.stopTask.get()==false)
                         runProgressBar.setProgress(0.0);
                 }
-                pvReadbacksGraph.getData().clear();
-                pvWriteablesGraph.getData().clear();
-                plotMeasurement();
+                plotArea.clear();
+                plotArea.plotMeasurement();
             }
           });
 
@@ -516,11 +451,6 @@ public class FXMLController implements Initializable {
                     }
                 });
 
-        // Allow zooming in the chart..
-        zoomManager = new ChartZoomManager( analyseGraphPane, selectRect, pvReadbacksGraph );
-        zoomManager.setMouseWheelZoomAllowed(true);
-        zoomManager.setZoomDurationMillis(100);
-        zoomManager.start();
 
         tabConfigure.setDisable(true);
         tabRun.setDisable(true);
