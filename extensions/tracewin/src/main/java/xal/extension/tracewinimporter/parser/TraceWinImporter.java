@@ -436,10 +436,11 @@ public class TraceWinImporter implements TraceWinTags {
      * @return true if the line represents a beam line, slot or a marker.
      */
     private boolean isESSMetaTag(String line) {
-        LOG.log(Level.FINER, "Checking for meta tag {0} : {1}", new Object[]{line, line.startsWith(M_BEAMLINE) || line.startsWith(M_MARKER) || line.startsWith(M_SLOT) || line.startsWith(M_BEGINBEAMLINE)});
+        LOG.log(Level.FINER, "Checking for meta tag {0} : {1}", new Object[]{line, line.startsWith(COMMENT_MARKER + M_BEAMLINE) || line.startsWith(COMMENT_MARKER + M_MARKER)
+            || line.startsWith(COMMENT_MARKER + M_SLOT) || line.startsWith(COMMENT_MARKER + M_BEGINBEAMLINE)});
         line = line.toUpperCase();
-        return line.startsWith(M_BEAMLINE) || line.startsWith(M_MARKER)
-             || line.startsWith(M_SLOT) || line.startsWith(M_BEGINBEAMLINE);
+        return line.startsWith(COMMENT_MARKER + M_BEAMLINE) || line.startsWith(COMMENT_MARKER + M_MARKER)
+            || line.startsWith(COMMENT_MARKER + M_SLOT) || line.startsWith(COMMENT_MARKER + M_BEGINBEAMLINE);
     }
 
     /**
