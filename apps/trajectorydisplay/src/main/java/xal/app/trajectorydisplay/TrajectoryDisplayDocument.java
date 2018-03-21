@@ -14,7 +14,7 @@ import xal.extension.fxapplication.XalFxDocument;
  *
  * @author nataliamilas
  */
-public class TrajectoryDisplayDocument extends XalFxDocument{
+public class TrajectoryDisplayDocument extends XalFxDocument {
 
     public SimpleBooleanProperty liveTrajectory;
 
@@ -23,9 +23,10 @@ public class TrajectoryDisplayDocument extends XalFxDocument{
     /* CONSTRUCTOR
      * in order to access to variable from the main class
     */
-
     public TrajectoryDisplayDocument(Stage stage) {
         super(stage);
+        DEFAULT_FILENAME="Trajectory.xml";
+        WILDCARD_FILE_EXTENSION = "*.xml";
         HELP_PAGEID="227688944";
     }
 

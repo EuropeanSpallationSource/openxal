@@ -1,0 +1,7 @@
+.button {
+    -fx-font-weight: bold;
+}
+
+.tooltip {
+    -fx-font-color: white;
+}

@@ -39,7 +39,7 @@ public class Knob implements Comparable<Knob>, KnobElementListener, DataListener
 	
 	/** list of knob elements */
 	protected final List<KnobElement> _elements;
-	
+                
 	/** this knob's current setting */
 	protected double _currentSetting;
 	
@@ -48,6 +48,9 @@ public class Knob implements Comparable<Knob>, KnobElementListener, DataListener
 	
 	/** the maximum possible knob setting */
 	protected double _upperLimit;
+        
+        /** list possible element functions types*/
+	protected final String[] _functionTypes = {"B*knob","B*knob^2","B*knob^3","A*cos(B*knob)","A*sin(B*knob)"};      
 	
 	/** dirty flag indicating whether limits need to be recalculated */
 	protected volatile boolean _limitsNeedUpdate;
@@ -109,7 +112,7 @@ public class Knob implements Comparable<Knob>, KnobElementListener, DataListener
 		
 		final List<DataAdaptor>elementAdaptors = adaptor.childAdaptors( KnobElement.DATA_LABEL );
 		for ( DataAdaptor elementAdaptor : elementAdaptors ) {
-			KnobElement element = KnobElement.getInstance( _accelerator, elementAdaptor );
+			KnobElement element = KnobElement.getInstance( _accelerator, elementAdaptor );                        
 			addElement( element );
 		}
     }
@@ -276,6 +279,10 @@ public class Knob implements Comparable<Knob>, KnobElementListener, DataListener
 	
 	/** Set the reading to zero */
 	public void zero() {
+                for ( KnobElement element : _elements ) {
+                        final double value = element.getLatestValue();
+                        element.setInitialValue(value);
+                }
 		setCurrentSetting( 0.0 );
 	}
 	
@@ -285,7 +292,9 @@ public class Knob implements Comparable<Knob>, KnobElementListener, DataListener
 		synchronized( this ) {
 			for ( KnobElement element : _elements ) {
 				final double value = element.getLatestValue();
-				element.setCoefficient( value );
+                                element.setFunction(0);
+				element.setCoefficientB( value );
+                                element.setCoefficientA( 0.0 );
 			}
 			setCurrentSetting( 1.0 );
 		}
@@ -307,7 +316,7 @@ public class Knob implements Comparable<Knob>, KnobElementListener, DataListener
 				if ( isTracking() ) {
 					final double delta = value - _currentSetting;
 					for ( KnobElement element : _elements ) {
-						element.changeValueAndScale( delta );
+						element.changeValueAndScale( value , delta);
 					}
 					Channel.flushIO();
 					_currentSetting = value;
@@ -414,11 +423,87 @@ public class Knob implements Comparable<Knob>, KnobElementListener, DataListener
 				double minDelta = Double.NEGATIVE_INFINITY;
 				double maxDelta = Double.POSITIVE_INFINITY;
 				for ( KnobElement element : _elements ) {
-					final double coefficient = element.getCoefficient();
-					if ( coefficient != 0.0 ) {
+					final double coefficientA = element.getCoefficientA();
+                                        final double coefficientB = element.getCoefficientB();
+                                        final int function = element.getFunctionIndex();
+					if ( coefficientB != 0.0  ) {
 						final double latestValue = element.getSettingValue();
-						final double limitOne = ( element.getEffectiveLowerLimit() - latestValue ) / coefficient;
-						final double limitTwo = ( element.getEffectiveUpperLimit() - latestValue ) / coefficient;
+                                                double limitOne = ( element.getEffectiveLowerLimit() - latestValue )/ coefficientB;
+                                                double limitTwo = ( element.getEffectiveUpperLimit() - latestValue )/ coefficientB;
+                                                switch (function) {                                                    
+                                                    case 0:
+                                                        limitOne = ( element.getEffectiveLowerLimit() - latestValue ) / coefficientB - coefficientA;
+                                                        limitTwo = ( element.getEffectiveUpperLimit() - latestValue ) / coefficientB - coefficientA;
+                                                        break;
+                                                    case 1:
+                                                        if ((( element.getEffectiveLowerLimit() - latestValue )/ coefficientB)>0){
+                                                            limitOne = Math.sqrt(( element.getEffectiveLowerLimit() - latestValue ) / coefficientB);
+                                                        } else {
+                                                            limitOne = 0;
+                                                        }
+                                                        if ((( element.getEffectiveUpperLimit() - latestValue )/ coefficientB)>0){
+                                                            limitTwo = Math.sqrt(( element.getEffectiveUpperLimit() - latestValue )/ coefficientB);
+                                                        } else {
+                                                            limitTwo = 0;
+                                                        }
+                                                        break;
+                                                    case 2:
+                                                        if (( element.getEffectiveLowerLimit() - latestValue )/ coefficientB > 0){
+                                                            limitOne = Math.pow(( element.getEffectiveLowerLimit() - latestValue )/ coefficientB, (double) 1.0/3.0);
+                                                        } else {
+                                                            limitOne = -1* Math.pow(Math.abs(( element.getEffectiveLowerLimit() - latestValue )/ coefficientB), (double) 1.0/3.0);
+                                                        }
+                                                        if (( element.getEffectiveUpperLimit() - latestValue )/ coefficientB > 0){
+                                                            limitTwo = Math.pow(( element.getEffectiveUpperLimit() - latestValue )/ coefficientB, (double) 1.0/3.0);
+                                                        } else {
+                                                            limitTwo = -1* Math.pow(Math.abs(( element.getEffectiveUpperLimit() - latestValue )/ coefficientB), (double) 1.0/3.0);
+                                                        }                                                        
+                                                        break;
+                                                    case 3:
+                                                        if (Math.abs(element.getEffectiveLowerLimit()/coefficientA)>1 && coefficientA!=0){
+                                                            limitOne = - 180/coefficientB;
+                                                        } else {
+                                                            if (coefficientA!=0) {
+                                                                limitOne = - 180*Math.abs(element.getEffectiveLowerLimit()/coefficientA)/coefficientB;
+                                                            } else {
+                                                                limitOne = -1;
+                                                            }
+                                                        }
+                                                        if (Math.abs(element.getEffectiveUpperLimit()/coefficientA)>1 && coefficientA!=0){
+                                                            limitTwo =  180/coefficientB;
+                                                        } else {
+                                                            if (coefficientA!=0) {
+                                                                limitTwo =  180*Math.abs(element.getEffectiveUpperLimit()/coefficientA)/coefficientB;
+                                                            } else {
+                                                                limitTwo = 1;
+                                                            }                                                            
+                                                        }                                                        
+                                                        break;
+                                                    case 4:
+                                                        if (Math.abs(element.getEffectiveLowerLimit()/coefficientA)>1 && coefficientA!=0){
+                                                            limitOne = - 180/coefficientB;
+                                                        } else {
+                                                            if (coefficientA!=0) {
+                                                                limitOne = - 180*Math.abs(element.getEffectiveLowerLimit()/coefficientA)/coefficientB;
+                                                            } else {
+                                                                limitOne = -1;
+                                                            }
+                                                        }
+                                                        if (Math.abs(element.getEffectiveUpperLimit()/coefficientA)>1 && coefficientA!=0){
+                                                            limitTwo =  180/coefficientB;
+                                                        } else {
+                                                            if (coefficientA!=0) {
+                                                                limitTwo =  180*Math.abs(element.getEffectiveUpperLimit()/coefficientA)/coefficientB;
+                                                            } else {
+                                                                limitTwo = 1;
+                                                            }                                                            
+                                                        }             
+                                                        break;
+                                                    default:
+                                                        limitOne = ( element.getEffectiveLowerLimit() - latestValue )/ coefficientB;
+                                                        limitTwo = ( element.getEffectiveUpperLimit() - latestValue )/ coefficientB;
+                                                        break;                        
+                                                }        						
 						final double minElementDelta = Math.min( limitOne, limitTwo );
 						final double maxElementDelta = Math.max( limitOne, limitTwo );
 						maxDelta = Math.min( maxDelta, maxElementDelta );
@@ -487,7 +572,9 @@ public class Knob implements Comparable<Knob>, KnobElementListener, DataListener
 	 */
 	public void addElement( final KnobElement element ) {
 		synchronized( this ) {
-			_elements.add( element );
+                        element.setFunctionType(_functionTypes);
+                        element.setFunction(0);
+			_elements.add( element );                        
 			element.addKnobElementListener( this );
 		}
 		EVENT_PROXY.elementAdded( this, element );
@@ -542,7 +629,19 @@ public class Knob implements Comparable<Knob>, KnobElementListener, DataListener
 	
 	
 	/** event indicating that the element's coefficient has changed */
-	public void coefficientChanged( final KnobElement element, final double coefficient ) {
+	public void coefficientAChanged( final KnobElement element, final double coefficientA ) {
+		_limitsNeedUpdate = true;
+		EVENT_PROXY.elementModified( this, element );
+	}
+        
+        /** event indicating that the element's coefficient has changed */
+	public void coefficientBChanged( final KnobElement element, final double coefficientB ) {
+		_limitsNeedUpdate = true;
+		EVENT_PROXY.elementModified( this, element );
+	}
+        
+        /** event indicating that the element's function has changed */
+	public void functionChanged( final KnobElement element, final String function ) {
 		_limitsNeedUpdate = true;
 		EVENT_PROXY.elementModified( this, element );
 	}

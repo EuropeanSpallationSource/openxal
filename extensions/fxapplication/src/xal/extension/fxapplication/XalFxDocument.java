@@ -49,6 +49,7 @@ abstract public class XalFxDocument {
     public XalFxDocument() {
         this.HELP_WIKI_BASE = "https://confluence.esss.lu.se/pages/viewpage.action?pageId=";
         this.accelerator = new AcceleratorProperty();
+        this.sequence = new SimpleStringProperty();
     }
 
     public XalFxDocument(Stage stage) {
@@ -126,7 +127,7 @@ abstract public class XalFxDocument {
         try {
             WritableImage[] snapshots = new WritableImage[1];
             snapshots[0] = mainStage.getScene().snapshot(null);
-            PostEntryDialog.post(snapshots);
+            PostEntryDialog.post(snapshots, "Studies");
         } catch (Exception ex) {
             Logger.getLogger(XalFxDocument.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -151,6 +152,10 @@ abstract public class XalFxDocument {
     public String getSequence() {
         return sequence.get();
     }
+    
+    public SimpleStringProperty getSequenceProperty() {
+        return sequence;
+    }
 
     public void setSequence(String sequence) {
         this.sequence.set(sequence);
@@ -163,6 +168,11 @@ abstract public class XalFxDocument {
     public void setStage(Stage mainStage) {
         this.mainStage = mainStage;
     }
+    
+     public Accelerator getAccelerator() {
+        return accelerator.getAccelerator();
+    }
+
 
 }
 
