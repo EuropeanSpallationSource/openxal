@@ -7,7 +7,8 @@ pipeline {
     }
 
     environment {
-        GIT_TAG = sh(returnStdout: true, script: 'git describe --exact-match || true').trim()
+        GIT_TAG    = sh(returnStdout: true, script: 'git describe --exact-match || true').trim()
+        GIT_BRANCH = sh(returnStdout: true, script: 'git rev-parse --abbrev-ref HEAD').trim()
     }
 
     stages {
@@ -47,6 +48,11 @@ pipeline {
                     }
                 }
             }
+            when {
+                anyOf {
+                    branch 'site.ess.master'
+                }
+            }
         }
         stage('Generate JavaDoc') {
             environment {
@@ -56,13 +62,11 @@ pipeline {
                 DOC_BUILD_TARGET = '${PWD}/target/site/apidocs'
                 OXALDOC_GITURL = 'https://bitbucket.org/europeanspallationsource/europeanspallationsource.bitbucket.org.git'
                 OXALDOC_GITUSER = 'benjaminbertrand-noemail-bitbucket'
-                OXALDOC_COMMIT_MSG = "Automatic Commit: Added documentation from latest OpenXAL master branch build ${BUILD_DISPLAY_NAME}."
+                OXALDOC_COMMIT_MSG = "Automatic Commit: Added documentation from latest OpenXAL ${GIT_BRANCH} branch, tagged ${GIT_TAG}, build ${BUILD_DISPLAY_NAME}."
             }
-            /*
             when {
                 not { environment name: 'GIT_TAG', value: '' }
             }
-            */
             steps {
                 timestamps {
                     // Create javadoc target directory as a softlink to actual destination
@@ -100,4 +104,4 @@ pipeline {
     }
 }
 
-// vim: et ts=4 sw=4 :
+// vim: et ts=4 sw=4 syntax=groovy :

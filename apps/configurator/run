@@ -1,0 +1,2 @@
+#!/bin/sh
+MAVEN_OPTS=-Djava.util.logging.config.file="logging.properties" mvn exec:java -Dexec.mainClass="xal.app.configurator.MainApp"

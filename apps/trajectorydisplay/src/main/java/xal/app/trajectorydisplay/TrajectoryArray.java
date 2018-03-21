@@ -36,9 +36,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import xal.ca.BatchGetValueRequest;
+import xal.ca.Channel;
+import xal.ca.ChannelRecord;
 import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.smf.Accelerator;
+import xal.smf.AcceleratorNode;
 import xal.smf.AcceleratorSeq;
 import xal.smf.AcceleratorSeqCombo;
 import xal.smf.impl.BPM;
@@ -55,7 +61,6 @@ public class TrajectoryArray {
      *
      * @serial internal array storage.
      */
-    HashMap<BPM, Boolean> channelConnection = new HashMap();
     HashMap<BPM, Double> Pos = new HashMap();
     HashMap<BPM, Double> X = new HashMap();
     HashMap<BPM, Double> Y = new HashMap();
@@ -71,11 +76,41 @@ public class TrajectoryArray {
      * @serial number of BPMs.
      */
     protected int BPMnum;
+    protected int minChannel = 80; // minimum number of channels to be connected in order for the application to work
+    private final BooleanProperty minChannelConnected = new SimpleBooleanProperty();
+  
+    
+    /* ------------------------
+     Check Channel Connection proterty
+    * ------------------------ */
+    /**
+     * Defined is the amount of connected channels are > 80% of total
+     *
+     */
+    
+    public BooleanProperty minChannelConnectedProperty() {
+        return minChannelConnected;
+    }
 
+    public final boolean isMinChannelConnected() {
+        return minChannelConnectedProperty().get();
+    }    
+
+    public final void setMinChannelConnected(boolean minChannelConnected) {
+        minChannelConnectedProperty().set(minChannelConnected);
+    }
+    
+    public int getMinChannel() {
+        return minChannel;
+    }
+
+    public void setMinChannel(int minChannel) {
+        this.minChannel = minChannel;
+    }
 
     /* ------------------------
- Constructors
-* ------------------------ */
+     Initialization
+    * ------------------------ */
     /**
      * Initializes BPMs in the machine and try to connect
      *
@@ -84,10 +119,9 @@ public class TrajectoryArray {
     public void initBPMs(Accelerator accl) {
 
         List<BPM> BPMList = accl.getAllNodesOfType("BPM");
-
-        //initial value for connection always false
+        
         BPMList.forEach(bpm -> {
-            channelConnection.put(bpm, false);
+            //channelConnection.put(bpm, false);
             X.put(bpm, 0.0);
             Y.put(bpm, 0.0);
             XDiff.put(bpm, 0.0);
@@ -95,15 +129,30 @@ public class TrajectoryArray {
             AvgAmpl.put(bpm, 0.0);
             Pos.put(bpm, bpm.getSDisplay());
         });
-
-        BPMList.parallelStream().forEach(bpm -> {
-            if (!(bpm.getChannel("yAvg").isConnected() && bpm.getChannel("xAvg").isConnected() && bpm.getChannel("amplitudeAvg").isConnected())) {
-                channelConnection.replace(bpm, (bpm.getChannel("yAvg").connectAndWait(1.0) && bpm.getChannel("xAvg").connectAndWait(1.0) && bpm.getChannel("amplitudeAvg").connectAndWait(1.0)));
-            } else {
-                channelConnection.replace(bpm, true);
-            }
+       
+        List<Channel> channels = new ArrayList<>();
+        BPMList.forEach(bpm -> {
+            channels.add(bpm.getChannel(BPM.X_AVG_HANDLE));
+            channels.add(bpm.getChannel(BPM.Y_AVG_HANDLE));
+            channels.add(bpm.getChannel(BPM.AMP_AVG_HANDLE));
         });
-
+        final BatchGetValueRequest request = new BatchGetValueRequest( channels );
+        request.submitAndWait( 5.0 );	// wait up to 5 seconds for a response
+                                                 
+        
+        // print an overview of the request status
+        if ( !request.isComplete() ) {
+                final int requestCount = channels.size();
+                final int recordCount = request.getRecordCount();
+                final int exceptionCount = request.getExceptionCount();
+                System.err.println( "Batch channel request for online model is incomplete. " + recordCount + " of " + requestCount + " channels succeeded. " + exceptionCount + " channels had exceptions." );
+                if((recordCount/requestCount)<(minChannel/100)){
+                    this.setMinChannelConnected(false);
+                }
+        }
+        
+        //request.getChannels().forEach(chan -> System.out.print(request.getRecord( chan )+" \n"));
+        
         BPMnum = BPMList.size();
 
     }
@@ -116,14 +165,32 @@ public class TrajectoryArray {
     public void connectCheckBPMs(AcceleratorSeq Sequence) {
 
         List<BPM> BPMList = Sequence.getAllNodesOfType("BPM");
-
-        BPMList.parallelStream().forEach(bpm -> {
-            if (!(bpm.getChannel("yAvg").isConnected() && bpm.getChannel("xAvg").isConnected() && bpm.getChannel("amplitudeAvg").isConnected())) {
-                channelConnection.replace(bpm, (bpm.getChannel("yAvg").connectAndWait(1.0) && bpm.getChannel("xAvg").connectAndWait(1.0) && bpm.getChannel("amplitudeAvg").connectAndWait(1.0)));
-            } else {
-                channelConnection.replace(bpm, true);
-            }
+        
+        //BPMList.forEach(bpm -> {
+        //    channelConnection.put(bpm, true);         
+        //});
+       
+        List<Channel> channels = new ArrayList<>();
+        BPMList.forEach(bpm -> {
+            channels.add(bpm.getChannel(BPM.X_AVG_HANDLE));
+            channels.add(bpm.getChannel(BPM.Y_AVG_HANDLE));
+            channels.add(bpm.getChannel(BPM.AMP_AVG_HANDLE));
         });
+        
+        final BatchGetValueRequest request = new BatchGetValueRequest( channels );
+        request.submitAndWait( 5.0 );	// wait up to 5 seconds for a response
+
+        // print an overview of the request status
+        if ( !request.isComplete() ) {
+                final int requestCount = channels.size();
+                final int recordCount = request.getRecordCount();
+                final int exceptionCount = request.getExceptionCount();
+                System.err.println( "Batch channel request for online model is incomplete. " + recordCount + " of " + requestCount + " channels succeeded. " + exceptionCount + " channels had exceptions." );
+                if((recordCount/requestCount)<(minChannel/100)){
+                    this.setMinChannelConnected(false);
+                }
+        }
+                              
     }
 
     /**
@@ -134,14 +201,31 @@ public class TrajectoryArray {
     public void connectCheckBPMs(AcceleratorSeqCombo ComboSequence) {
 
         List<BPM> BPMList = ComboSequence.getAllNodesOfType("BPM");
-
-        BPMList.parallelStream().forEach(bpm -> {
-            if (!(bpm.getChannel("yAvg").isConnected() && bpm.getChannel("xAvg").isConnected() && bpm.getChannel("amplitudeAvg").isConnected())) {
-                channelConnection.replace(bpm, (bpm.getChannel("yAvg").connectAndWait(1.0) && bpm.getChannel("xAvg").connectAndWait(1.0) && bpm.getChannel("amplitudeAvg").connectAndWait(1.0)));
-            } else {
-                channelConnection.replace(bpm, true);
-            }
+        
+        //BPMList.forEach(bpm -> {
+        //    channelConnection.put(bpm, true);         
+        //});
+       
+        List<Channel> channels = new ArrayList<>();
+        BPMList.forEach(bpm -> {
+            channels.add(bpm.getChannel(BPM.X_AVG_HANDLE));
+            channels.add(bpm.getChannel(BPM.Y_AVG_HANDLE));
+            channels.add(bpm.getChannel(BPM.AMP_AVG_HANDLE));
         });
+        
+        final BatchGetValueRequest request = new BatchGetValueRequest( channels );
+        request.submitAndWait( 5.0 );	// wait up to 5 seconds for a response
+
+        // print an overview of the request status
+        if ( !request.isComplete() ) {
+                final int requestCount = channels.size();
+                final int recordCount = request.getRecordCount();
+                final int exceptionCount = request.getExceptionCount();
+                System.err.println( "Batch channel request for online model is incomplete. " + recordCount + " of " + requestCount + " channels succeeded. " + exceptionCount + " channels had exceptions." );
+                if((recordCount/requestCount)<(minChannel/100)){
+                    this.setMinChannelConnected(false);
+                }
+        }  
     }
 
     /**
@@ -150,14 +234,31 @@ public class TrajectoryArray {
      * @param BPMList List of BPMs
      */
     public void connectCheckBPMs(List<BPM> BPMList) {
-
-        BPMList.parallelStream().forEach(bpm -> {
-            if (!(bpm.getChannel("yAvg").isConnected() && bpm.getChannel("xAvg").isConnected() && bpm.getChannel("amplitudeAvg").isConnected())) {
-                channelConnection.replace(bpm, (bpm.getChannel("yAvg").connectAndWait(1.0) && bpm.getChannel("xAvg").connectAndWait(1.0) && bpm.getChannel("amplitudeAvg").connectAndWait(1.0)));
-            } else {
-                channelConnection.replace(bpm, true);
-            }
+        
+        //BPMList.forEach(bpm -> {
+        //    channelConnection.put(bpm, true);         
+        //});
+       
+        List<Channel> channels = new ArrayList<>();
+        BPMList.forEach(bpm -> {
+            channels.add(bpm.getChannel(BPM.X_AVG_HANDLE));
+            channels.add(bpm.getChannel(BPM.Y_AVG_HANDLE));
+            channels.add(bpm.getChannel(BPM.AMP_AVG_HANDLE));
         });
+        
+        final BatchGetValueRequest request = new BatchGetValueRequest( channels );
+        request.submitAndWait( 5.0 );	// wait up to 5 seconds for a response
+
+        // print an overview of the request status
+        if ( !request.isComplete() ) {
+                final int requestCount = channels.size();
+                final int recordCount = request.getRecordCount();
+                final int exceptionCount = request.getExceptionCount();
+                System.err.println( "Batch channel request for online model is incomplete. " + recordCount + " of " + requestCount + " channels succeeded. " + exceptionCount + " channels had exceptions." );
+                if((recordCount/requestCount)<(minChannel/100)){
+                    this.setMinChannelConnected(false);
+                }
+        }   
     }
 
     /**
@@ -171,6 +272,7 @@ public class TrajectoryArray {
     public void readTrajectory(Accelerator accl, String Seq) throws ConnectionException, GetException {
 
         List<BPM> BPMList = new ArrayList<>();
+        List<Channel> channels = new ArrayList<>();
         String Sequence = accl.getSequences().toString();
         String ComboSequence = accl.getComboSequences().toString();
 
@@ -187,30 +289,50 @@ public class TrajectoryArray {
         XDiff.clear();
         YDiff.clear();
         Pos.clear();
-        AvgAmpl.clear();
-
-        for (BPM item : BPMList) {
-            Pos.put(item, item.getSDisplay());
-            if (channelConnection.get(item)) {
-                X.put(item, item.getXAvg());
-                Y.put(item, item.getYAvg());
-                AvgAmpl.put(item, item.getAmpAvg());
-                if (XRef.containsKey(item)) {
-                    XDiff.put(item, X.get(item) - XRef.get(item));
-                    YDiff.put(item, Y.get(item) - YRef.get(item));
+        AvgAmpl.clear();               
+        
+        BPMList.forEach(bpm -> {
+            channels.add(bpm.getChannel(BPM.X_AVG_HANDLE));
+            channels.add(bpm.getChannel(BPM.Y_AVG_HANDLE));
+            channels.add(bpm.getChannel(BPM.AMP_AVG_HANDLE));
+            Pos.put(bpm,bpm.getSDisplay());
+        });
+        
+        final BatchGetValueRequest request = new BatchGetValueRequest( channels );
+        request.submitAndWait( 5.0 );	// wait up to 5 seconds for a response                
+                
+        int bpmIndex = 0;
+        for(BPM bpm : BPMList){
+            bpmIndex = BPMList.indexOf(bpm);
+            if (request.getRecord(channels.get(3*bpmIndex))!= null) {
+                X.put(bpm,request.getRecord(channels.get(3*bpmIndex)).doubleValue());
+                if (XRef.containsKey(bpm)) {
+                    XDiff.put(bpm, X.get(bpm) - XRef.get(bpm));
                 } else {
-                    XDiff.put(item, X.get(item));
-                    YDiff.put(item, Y.get(item));
+                    XDiff.put(bpm, X.get(bpm));                    
                 }
             } else {
-                X.put(item, 0.0);
-                Y.put(item, 0.0);
-                XDiff.put(item, 0.0);
-                YDiff.put(item, 0.0);
-                AvgAmpl.put(item, 0.0);
-            }
+                X.put(bpm, 0.0);                
+                XDiff.put(bpm, 0.0);                
+            }  
+            if (request.getRecord(channels.get(3*bpmIndex+1))!=null) {
+                Y.put(bpm,request.getRecord(channels.get(3*bpmIndex+1)).doubleValue());
+                if (YRef.containsKey(bpm)) {
+                    YDiff.put(bpm, Y.get(bpm) - YRef.get(bpm));
+                } else {
+                    YDiff.put(bpm, X.get(bpm));                    
+                }
+            } else {
+                Y.put(bpm, 0.0);                
+                YDiff.put(bpm, 0.0);                
+            }  
+            if (request.getRecord(channels.get(3*bpmIndex+2))!=null) {
+                AvgAmpl.put(bpm,request.getRecord(channels.get(3*bpmIndex+2)).doubleValue());                
+            } else {
+                AvgAmpl.put(bpm, 0.0);             
+            }             
         }
-
+         
         BPMnum = BPMList.size();
 
     }
@@ -224,33 +346,55 @@ public class TrajectoryArray {
      */
     public void readTrajectory(List<BPM> BPMList) throws ConnectionException, GetException {
 
+        List<Channel> channels = new ArrayList<>();
+        
         X.clear();
         Y.clear();
         XDiff.clear();
         YDiff.clear();
         Pos.clear();
-        AvgAmpl.clear();
-
-        for (BPM item : BPMList) {
-            Pos.put(item, item.getSDisplay());
-            if (channelConnection.get(item)) {
-                X.put(item, item.getXAvg());
-                Y.put(item, item.getYAvg());
-                AvgAmpl.put(item, item.getAmpAvg());
-                if (XRef.containsKey(item)) {
-                    XDiff.put(item, X.get(item) - XRef.get(item));
-                    YDiff.put(item, Y.get(item) - YRef.get(item));
+        AvgAmpl.clear();               
+        
+        BPMList.forEach(bpm -> {
+            channels.add(bpm.getChannel(BPM.X_AVG_HANDLE));
+            channels.add(bpm.getChannel(BPM.Y_AVG_HANDLE));
+            channels.add(bpm.getChannel(BPM.AMP_AVG_HANDLE));
+            Pos.put(bpm,bpm.getSDisplay());
+        });
+        
+        final BatchGetValueRequest request = new BatchGetValueRequest( channels );
+        request.submitAndWait( 5.0 );	// wait up to 5 seconds for a response                
+                
+        int bpmIndex = 0;
+        for(BPM bpm : BPMList){
+            bpmIndex = BPMList.indexOf(bpm);
+            if (request.getRecord(channels.get(3*bpmIndex))!= null) {
+                X.put(bpm,request.getRecord(channels.get(3*bpmIndex)).doubleValue());
+                if (XRef.containsKey(bpm)) {
+                    XDiff.put(bpm, X.get(bpm) - XRef.get(bpm));
                 } else {
-                    XDiff.put(item, X.get(item));
-                    YDiff.put(item, Y.get(item));
+                    XDiff.put(bpm, X.get(bpm));                    
                 }
             } else {
-                X.put(item, 0.0);
-                Y.put(item, 0.0);
-                XDiff.put(item, 0.0);
-                YDiff.put(item, 0.0);
-                AvgAmpl.put(item, 0.0);
-            }
+                X.put(bpm, 0.0);                
+                XDiff.put(bpm, 0.0);                
+            }  
+            if (request.getRecord(channels.get(3*bpmIndex+1))!=null) {
+                Y.put(bpm,request.getRecord(channels.get(3*bpmIndex+1)).doubleValue());
+                if (YRef.containsKey(bpm)) {
+                    YDiff.put(bpm, Y.get(bpm) - YRef.get(bpm));
+                } else {
+                    YDiff.put(bpm, X.get(bpm));                    
+                }
+            } else {
+                Y.put(bpm, 0.0);                
+                YDiff.put(bpm, 0.0);                
+            }  
+            if (request.getRecord(channels.get(3*bpmIndex+2))!=null) {
+                AvgAmpl.put(bpm,request.getRecord(channels.get(3*bpmIndex+2)).doubleValue());                
+            } else {
+                AvgAmpl.put(bpm, 0.0);             
+            }             
         }
 
         BPMnum = BPMList.size();
@@ -370,20 +514,33 @@ public class TrajectoryArray {
      */
     public void readReferenceTrajectory(Accelerator accl) throws ConnectionException, GetException {
 
-        List<BPM> bpm = new ArrayList<>();
-        bpm = accl.getAllNodesOfType("BPM");
+        List<BPM> BPMList = accl.getAllNodesOfType("BPM");
+        List<Channel> channels = new ArrayList<>();
 
         XRef.clear();
         YRef.clear();
 
-        for (BPM item : bpm) {
-            if (channelConnection.get(item)) {
-                XRef.put(item, item.getXAvg());
-                YRef.put(item, item.getYAvg());
+        BPMList.forEach(bpm -> {
+            channels.add(bpm.getChannel(BPM.X_AVG_HANDLE));
+            channels.add(bpm.getChannel(BPM.Y_AVG_HANDLE));
+        });
+        
+        final BatchGetValueRequest request = new BatchGetValueRequest( channels );
+        request.submitAndWait( 5.0 );	// wait up to 5 seconds for a response                
+                
+        int bpmIndex = 0;
+        for(BPM bpm : BPMList){
+            bpmIndex = BPMList.indexOf(bpm);
+            if (request.getRecord(channels.get(2*bpmIndex))!= null) {
+                XRef.put(bpm,request.getRecord(channels.get(3*bpmIndex)).doubleValue());                
             } else {
-                XRef.put(item, 0.0);
-                YRef.put(item, 0.0);
-            }
+                XRef.put(bpm, 0.0);                
+            }  
+            if (request.getRecord(channels.get(3*bpmIndex+1))!=null) {
+                YRef.put(bpm,request.getRecord(channels.get(3*bpmIndex+1)).doubleValue());                                
+            } else {
+                YRef.put(bpm, 0.0);                
+            }                     
         }
 
     }
@@ -481,6 +638,7 @@ public class TrajectoryArray {
         trajectoryAdaptor.setValue("title", filename.getAbsolutePath());
         trajectoryAdaptor.setValue("date", new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date()));
         List<BPM> BPMList = accl.getAllNodesOfType("BPM");
+        List<Channel> channels = new ArrayList<>();
         String BPMnames = "";
         double[] posS = new double[BPMList.size()];
         double[] posX = new double[BPMList.size()];
@@ -490,18 +648,30 @@ public class TrajectoryArray {
         XRef.clear();
         YRef.clear();
 
-        for (BPM bpm : BPMList) {
-            posS[k] = bpm.getSDisplay();
-            if (channelConnection.get(bpm)) {
-                posX[k] = bpm.getXAvg();
-                posY[k] = bpm.getYAvg();
-                XRef.put(bpm, posX[k]);
-                YRef.put(bpm, posY[k]);
+        BPMList.forEach(bpm -> {
+            channels.add(bpm.getChannel(BPM.X_AVG_HANDLE));
+            channels.add(bpm.getChannel(BPM.Y_AVG_HANDLE));
+        });
+        
+        final BatchGetValueRequest request = new BatchGetValueRequest( channels );
+        request.submitAndWait( 5.0 );	// wait up to 5 seconds for a response                
+                
+        int bpmIndex = 0;
+        for(BPM bpm : BPMList){
+            bpmIndex = BPMList.indexOf(bpm);
+            if (request.getRecord(channels.get(2*bpmIndex))!= null) {
+                posX[k] = bpm.getXAvg();                
+                XRef.put(bpm,request.getRecord(channels.get(3*bpmIndex)).doubleValue());                
             } else {
                 posX[k] = 0.0;
+                XRef.put(bpm, 0.0);                
+            }  
+            if (request.getRecord(channels.get(3*bpmIndex+1))!=null) {
+                posY[k] = bpm.getYAvg();
+                YRef.put(bpm,request.getRecord(channels.get(3*bpmIndex+1)).doubleValue());                                
+            } else {
                 posY[k] = 0.0;
-                XRef.put(bpm, 0.0);
-                YRef.put(bpm, 0.0);
+                YRef.put(bpm, 0.0);                
             }
             k++;
             if (k < BPMList.size()) {
@@ -509,7 +679,7 @@ public class TrajectoryArray {
             } else {
                 BPMnames += bpm.toString();
             }
-        }
+        }        
 
         DataAdaptor trajData = trajectoryAdaptor.createChild("TrajectoryData");
         DataAdaptor BPMData = trajData.createChild("BPM");
@@ -544,6 +714,7 @@ public class TrajectoryArray {
         trajectoryAdaptor.setValue("title", filename.getPath());
         trajectoryAdaptor.setValue("date", new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date()));
         List<BPM> BPMList = accl.getAllNodesOfType("BPM");
+        List<Channel> channels = new ArrayList<>();
         String BPMnames = "";
         double[] posS = new double[BPMList.size()];
         double[] posX = new double[BPMList.size()];
@@ -553,18 +724,30 @@ public class TrajectoryArray {
         XRef.clear();
         YRef.clear();
 
-        for (BPM bpm : BPMList) {
-            posS[k] = bpm.getSDisplay();
-            if (channelConnection.get(bpm)) {
-                posX[k] = bpm.getXAvg();
-                posY[k] = bpm.getYAvg();
-                XRef.put(bpm, posX[k]);
-                YRef.put(bpm, posY[k]);
+        BPMList.forEach(bpm -> {
+            channels.add(bpm.getChannel(BPM.X_AVG_HANDLE));
+            channels.add(bpm.getChannel(BPM.Y_AVG_HANDLE));
+        });
+        
+        final BatchGetValueRequest request = new BatchGetValueRequest( channels );
+        request.submitAndWait( 5.0 );	// wait up to 5 seconds for a response                
+                
+        int bpmIndex = 0;
+        for(BPM bpm : BPMList){
+            bpmIndex = BPMList.indexOf(bpm);
+            if (request.getRecord(channels.get(2*bpmIndex))!= null) {
+                posX[k] = bpm.getXAvg();                
+                XRef.put(bpm,request.getRecord(channels.get(3*bpmIndex)).doubleValue());                
             } else {
                 posX[k] = 0.0;
+                XRef.put(bpm, 0.0);                
+            }  
+            if (request.getRecord(channels.get(3*bpmIndex+1))!=null) {
+                posY[k] = bpm.getYAvg();
+                YRef.put(bpm,request.getRecord(channels.get(3*bpmIndex+1)).doubleValue());                                
+            } else {
                 posY[k] = 0.0;
-                XRef.put(bpm, 0.0);
-                YRef.put(bpm, 0.0);
+                YRef.put(bpm, 0.0);                
             }
             k++;
             if (k < BPMList.size()) {
@@ -572,7 +755,7 @@ public class TrajectoryArray {
             } else {
                 BPMnames += bpm.toString();
             }
-        }
+        }        
 
         DataAdaptor trajData = trajectoryAdaptor.createChild("TrajectoryData");
         DataAdaptor BPMData = trajData.createChild("BPM");
@@ -593,6 +776,7 @@ public class TrajectoryArray {
         DataAdaptor trajectoryAdaptor = da.createChild("ReferenceTrajectory");
         trajectoryAdaptor.setValue("title", filename.getFile());
         List<BPM> BPMList = accl.getAllNodesOfType("BPM");
+        List<Channel> channels = new ArrayList<>();
         String BPMnames = "";
         double[] posS = new double[BPMList.size()];
         double[] posX = new double[BPMList.size()];
@@ -602,18 +786,30 @@ public class TrajectoryArray {
         XRef.clear();
         YRef.clear();
 
-        for (BPM bpm : BPMList) {
-            posS[k] = bpm.getSDisplay();
-            if (channelConnection.get(bpm)) {
-                posX[k] = bpm.getXAvg();
-                posY[k] = bpm.getYAvg();
-                XRef.put(bpm, posX[k]);
-                YRef.put(bpm, posY[k]);
+        BPMList.forEach(bpm -> {
+            channels.add(bpm.getChannel(BPM.X_AVG_HANDLE));
+            channels.add(bpm.getChannel(BPM.Y_AVG_HANDLE));
+        });
+        
+        final BatchGetValueRequest request = new BatchGetValueRequest( channels );
+        request.submitAndWait( 5.0 );	// wait up to 5 seconds for a response                
+                
+        int bpmIndex = 0;
+        for(BPM bpm : BPMList){
+            bpmIndex = BPMList.indexOf(bpm);
+            if (request.getRecord(channels.get(2*bpmIndex))!= null) {
+                posX[k] = bpm.getXAvg();                
+                XRef.put(bpm,request.getRecord(channels.get(3*bpmIndex)).doubleValue());                
             } else {
                 posX[k] = 0.0;
+                XRef.put(bpm, 0.0);                
+            }  
+            if (request.getRecord(channels.get(3*bpmIndex+1))!=null) {
+                posY[k] = bpm.getYAvg();
+                YRef.put(bpm,request.getRecord(channels.get(3*bpmIndex+1)).doubleValue());                                
+            } else {
                 posY[k] = 0.0;
-                XRef.put(bpm, 0.0);
-                YRef.put(bpm, 0.0);
+                YRef.put(bpm, 0.0);                
             }
             k++;
             if (k < BPMList.size()) {
@@ -621,7 +817,7 @@ public class TrajectoryArray {
             } else {
                 BPMnames += bpm.toString();
             }
-        }
+        }        
 
         DataAdaptor trajData = trajectoryAdaptor.createChild("TrajectoryData");
         DataAdaptor BPMData = trajData.createChild("BPM");
@@ -640,6 +836,7 @@ public class TrajectoryArray {
         DataAdaptor trajectoryAdaptor = da.createChild("ReferenceTrajectory");
         trajectoryAdaptor.setValue("title", filename.getAbsolutePath());
         List<BPM> BPMList = accl.getAllNodesOfType("BPM");
+        List<Channel> channels = new ArrayList<>();
         String BPMnames = "";
         double[] posS = new double[BPMList.size()];
         double[] posX = new double[BPMList.size()];
@@ -649,18 +846,30 @@ public class TrajectoryArray {
         XRef.clear();
         YRef.clear();
 
-        for (BPM bpm : BPMList) {
-            posS[k] = bpm.getSDisplay();
-            if (channelConnection.get(bpm)) {
-                posX[k] = bpm.getXAvg();
-                posY[k] = bpm.getYAvg();
-                XRef.put(bpm, posX[k]);
-                YRef.put(bpm, posY[k]);
+        BPMList.forEach(bpm -> {
+            channels.add(bpm.getChannel(BPM.X_AVG_HANDLE));
+            channels.add(bpm.getChannel(BPM.Y_AVG_HANDLE));
+        });
+        
+        final BatchGetValueRequest request = new BatchGetValueRequest( channels );
+        request.submitAndWait( 5.0 );	// wait up to 5 seconds for a response                
+                
+        int bpmIndex = 0;
+        for(BPM bpm : BPMList){
+            bpmIndex = BPMList.indexOf(bpm);
+            if (request.getRecord(channels.get(2*bpmIndex))!= null) {
+                posX[k] = bpm.getXAvg();                
+                XRef.put(bpm,request.getRecord(channels.get(3*bpmIndex)).doubleValue());                
             } else {
                 posX[k] = 0.0;
+                XRef.put(bpm, 0.0);                
+            }  
+            if (request.getRecord(channels.get(3*bpmIndex+1))!=null) {
+                posY[k] = bpm.getYAvg();
+                YRef.put(bpm,request.getRecord(channels.get(3*bpmIndex+1)).doubleValue());                                
+            } else {
                 posY[k] = 0.0;
-                XRef.put(bpm, 0.0);
-                YRef.put(bpm, 0.0);
+                YRef.put(bpm, 0.0);                
             }
             k++;
             if (k < BPMList.size()) {
@@ -668,7 +877,7 @@ public class TrajectoryArray {
             } else {
                 BPMnames += bpm.toString();
             }
-        }
+        }        
 
         DataAdaptor trajData = trajectoryAdaptor.createChild("TrajectoryData");
         DataAdaptor BPMData = trajData.createChild("BPM");

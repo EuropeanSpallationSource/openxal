@@ -31,6 +31,7 @@
  */
 package xal.app.scanner;
 
+import java.io.File;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -38,19 +39,24 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.stage.Stage;
 import xal.ca.Channel;
 import xal.smf.Accelerator;
 import xal.tools.data.DataAdaptor;
 import xal.tools.xml.XmlDataAdaptor;
 
+import xal.extension.fxapplication.XalFxDocument;
+
 /**
  *
  * @author yngvelevinsen
  */
-public class ScannerDocument {
+public class ScannerDocument extends XalFxDocument {
     /**
      * A dictionary of the created datasets..
      */
@@ -64,7 +70,10 @@ public class ScannerDocument {
      */
     public Map<String, List<Channel>> allPVw;
 
-    public SimpleIntegerProperty numberOfMeasurements;
+    /**
+     * The number of different scans that have been done
+     */
+    public SimpleIntegerProperty numberOfScans;
 
     public double[][] currentMeasurement;
 
@@ -76,6 +85,17 @@ public class ScannerDocument {
      * for each variable..
      */
     public ObservableList<String> constraints;
+
+    /**
+     * The delay between successive measurements in milliseconds
+     */
+    public long delayBetweenMeasurements;
+
+    /**
+     * The number of measurements to take at each location
+     * WARNING: This is not yet implemented!!
+     */
+    public int numberMeasurementsPerCombo;
 
     // The Readback channels
     public List<ChannelWrapper> pvReadbacks;
@@ -95,12 +115,11 @@ public class ScannerDocument {
     private XmlDataAdaptor da;
     private DataAdaptor currentMeasAdaptor;
 
-    private URL defaultUrl;
-
     /**
      *  Create a new empty ScanDocument1D
      */
-    public ScannerDocument() {
+    public ScannerDocument(Stage stage) {
+        super(stage);
         dataSets = new HashMap<>();
         allPVrb = new HashMap<>();
         allPVw = new HashMap<>();
@@ -108,7 +127,14 @@ public class ScannerDocument {
         pvWriteables = new ArrayList<>();
         combos = new ArrayList<>();
         constraints = FXCollections.observableArrayList("", "", "", "");
-        numberOfMeasurements = new SimpleIntegerProperty(0);
+        numberOfScans = new SimpleIntegerProperty(0);
+
+        numberMeasurementsPerCombo=1;
+        delayBetweenMeasurements=1500;
+
+        DEFAULT_FILENAME="Data.scan.xml";
+        WILDCARD_FILE_EXTENSION = "*.scan.xml";
+        HELP_PAGEID="227688413";
     }
 
 
@@ -117,35 +143,21 @@ public class ScannerDocument {
      *
      *@param  url  The URL of the file to load into the new document.
      */
-    public ScannerDocument(URL url) {
-        this();
+    public ScannerDocument(URL url, Stage stage) {
+        this(stage);
         if (url == null) {
                 return;
         }
-        setSource(url);
+        Logger.getLogger(ScannerDocument.class.getName()).log(Level.FINER, "Loading {0}", url);
+
+        setSource(new File(url.getFile()));
         readScanDocument(url);
 
         //super class method - will show "Save" menu active
         if (url.getProtocol().equals("jar")) {
                 return;
         }
-        setHasChanges(true);
-    }
-
-    /**
-     * This Function should be part of abstract class..
-     * @param url
-     */
-    public final void setSource(URL url) {
-
-    }
-
-    /**
-     * This Function should be part of abstract class..
-     * @param hasChanges
-     */
-    public final void setHasChanges(boolean hasChanges) {
-
+        setHasChanges(false);
     }
 
     /**
@@ -166,8 +178,9 @@ public class ScannerDocument {
      *
      *  @param  url  The file URL where the data should be saved
      */
+    @Override
     public void saveDocumentAs(URL url) {
-        defaultUrl = url;
+        Logger.getLogger(ScannerDocument.class.getName()).log(Level.FINER, "Saving document, filename {0}", url);
         da = XmlDataAdaptor.newEmptyDocumentAdaptor();
         DataAdaptor scannerAdaptor =  da.createChild(SCANNER_SR);
         currentMeasAdaptor = null;
@@ -227,6 +240,7 @@ public class ScannerDocument {
             });
 
         da.writeToUrl( url );
+        Logger.getLogger(ScannerDocument.class.getName()).log(Level.FINEST, "Saved document");
     }
 
     public void saveCurrentMeas(int nmeas) {
@@ -234,7 +248,8 @@ public class ScannerDocument {
             currentMeasAdaptor=da.childAdaptor(SCANNER_SR).createChild(CURRENTMEAS_SR);
         }
         currentMeasAdaptor.createChild("step").setValue("values", currentMeasurement[nmeas]);
-        da.writeToUrl( defaultUrl );
+        if (source!=null)
+            da.writeToUrl( source );
     };
 
 
@@ -319,7 +334,7 @@ public class ScannerDocument {
                 dataSets.put(measAdaptor.stringValue("title"), data);
                 allPVw.put(measAdaptor.stringValue("title"), pvW);
                 allPVrb.put(measAdaptor.stringValue("title"), pvR);
-                numberOfMeasurements.set(numberOfMeasurements.get()+1);
+                numberOfScans.set(numberOfScans.get()+1);
 
             });
         }
@@ -339,4 +354,5 @@ public class ScannerDocument {
         }
 
     }
+
 }

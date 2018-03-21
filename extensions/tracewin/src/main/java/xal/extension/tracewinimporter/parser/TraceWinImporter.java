@@ -40,7 +40,7 @@ import eu.ess.lt.parser.ComponentFactory;
 import eu.ess.lt.parser.ValidationResult;
 import java.io.InputStreamReader;
 import java.nio.file.Paths;
-import xal.extension.tracewinimporter.parser.Section;
+import java.util.logging.Level;
 
 /**
  * Converter from TraceWin to OpenXAL SMF
@@ -54,10 +54,6 @@ import xal.extension.tracewinimporter.parser.Section;
  */
 public class TraceWinImporter implements TraceWinTags {
 
-    /**
-     * Speed of light
-     */
-    public static final double C = 299792468;
     private static final Logger LOG = Logger.getLogger("eu.ess.bled.import");
 
     private static final String COMMAND_PREFIX = "C_";
@@ -122,7 +118,7 @@ public class TraceWinImporter implements TraceWinTags {
         // Putting it all together
         buildHierarchy();
 
-        List<Subsystem> allSubsystems = new ArrayList<Subsystem>();
+        List<Subsystem> allSubsystems = new ArrayList<>();
         allSubsystems.add(parentSubsystem);
         allSubsystems.addAll(Arrays.asList(section.getBeamlines()));
         allSubsystems.addAll(Arrays.asList(section.getSlots()));
@@ -147,7 +143,7 @@ public class TraceWinImporter implements TraceWinTags {
             currentBeamline.setParentSubsystem(parentSubsystem);
             section.addBeamline(currentBeamline);
             lastSubsystem = lastSubsystem + 1;
-            
+
             try (BufferedReader tracewinInput = new BufferedReader(new InputStreamReader(sourceFileNames[i].toURL().openStream()))) {
                 parseFromBufferedReader(parentSubsystem, tracewinInput);
             }
@@ -156,7 +152,7 @@ public class TraceWinImporter implements TraceWinTags {
         // Putting it all together
         buildHierarchy();
 
-        List<Subsystem> allSubsystems = new ArrayList<Subsystem>();
+        List<Subsystem> allSubsystems = new ArrayList<>();
         allSubsystems.add(parentSubsystem);
         allSubsystems.addAll(Arrays.asList(section.getBeamlines()));
         allSubsystems.addAll(Arrays.asList(section.getSlots()));
@@ -258,9 +254,9 @@ public class TraceWinImporter implements TraceWinTags {
                     String[] bendValues = split(bendLine);
                     String[] edge2Values = split(edge2Line);
 
-                    String bendName = null;
-                    String edge1Name = null;
-                    String edge2Name = null;
+                    String bendName;
+                    String edge1Name;
+                    String edge2Name;
 
                     if (bendIndex > 0) {
                         bendLine = bendLine.substring(bendIndex + 1).trim();
@@ -289,6 +285,7 @@ public class TraceWinImporter implements TraceWinTags {
                     }
                 }
             } else if (isESSMetaTag(originalLine)) {
+                LOG.log(Level.FINEST, "ESS Meta Tag: {0}", originalLine);
                 readESSMetaTag(originalLine, section, parentSubsystem);
                 // } else if (isLatticeBoundaryCommand(originalLine)) {
                 // readLatticeBoundary(originalLine);
@@ -316,7 +313,7 @@ public class TraceWinImporter implements TraceWinTags {
      * @throws IOException if there is a problem reading form the stream.
      */
     private String readNextUncommentedLine(BufferedReader reader) throws IOException {
-        String line = null;
+        String line;
         String originalLine = null;
         // first read the header
         while (reader.ready()) {
@@ -355,7 +352,7 @@ public class TraceWinImporter implements TraceWinTags {
      */
     private static String[] split(String source) {
         String[] vals = source.split("\\s");
-        ArrayList<String> list = new ArrayList<String>();
+        ArrayList<String> list = new ArrayList<>();
         for (String s : vals) {
             String val = s.trim();
             if (s.isEmpty()) {
@@ -439,9 +436,11 @@ public class TraceWinImporter implements TraceWinTags {
      * @return true if the line represents a beam line, slot or a marker.
      */
     private boolean isESSMetaTag(String line) {
+        LOG.log(Level.FINER, "Checking for meta tag {0} : {1}", new Object[]{line, line.startsWith(COMMENT_MARKER + M_BEAMLINE) || line.startsWith(COMMENT_MARKER + M_MARKER)
+            || line.startsWith(COMMENT_MARKER + M_SLOT) || line.startsWith(COMMENT_MARKER + M_BEGINBEAMLINE)});
         line = line.toUpperCase();
         return line.startsWith(COMMENT_MARKER + M_BEAMLINE) || line.startsWith(COMMENT_MARKER + M_MARKER)
-                || line.startsWith(COMMENT_MARKER + M_SLOT) || line.startsWith(COMMENT_MARKER + M_BEGINBEAMLINE);
+            || line.startsWith(COMMENT_MARKER + M_SLOT) || line.startsWith(COMMENT_MARKER + M_BEGINBEAMLINE);
     }
 
     /**
@@ -468,7 +467,7 @@ public class TraceWinImporter implements TraceWinTags {
      * @return <code>true</code> if the line is processed successfully.
      */
     private boolean readESSMetaTag(String originalLine, Section section, Subsystem parentSubsystem) {
-        LOG.finest("Importing ESS meta tag from line: " + originalLine);
+        LOG.log(Level.FINEST, "Importing ESS meta tag from line: {0}", originalLine);
 
         String line = originalLine.toUpperCase().trim();
 
@@ -482,12 +481,10 @@ public class TraceWinImporter implements TraceWinTags {
         if (line.startsWith(M_SLOT) || line.startsWith(M_BEAMLINE) || line.startsWith(M_MARKER)
                 || line.startsWith(M_BEGINBEAMLINE)) {
             String[] values = split(originalLine);
-            String[] elements = null;
+            String[] elements;
             if (values.length > 2) {
                 elements = new String[values.length - 2];
                 System.arraycopy(values, 2, elements, 0, elements.length);
-            } else {
-                elements = new String[0];
             }
             if (line.startsWith(M_SLOT)) {
                 Subsystem slot = bledComponentFactory.getSlot(values[1], originalLine, lastSubsystem);
@@ -530,7 +527,7 @@ public class TraceWinImporter implements TraceWinTags {
      */
     private void readLatticeCommand(BufferedReader reader, String originalLine, Section section, String name,
             Subsystem parentSubsystem) throws IOException {
-        LOG.finest("Importing command " + name + " from line: " + originalLine);
+        LOG.log(Level.FINEST, "Importing command {0} from line: {1}", new Object[]{name, originalLine});
         LatticeCommand latticeCommand = bledComponentFactory.getLatticeCommand(name, originalLine, lastSubsystem);
         section.addComponent(latticeCommand);
         lastSubsystem = lastSubsystem + 1;
@@ -556,7 +553,7 @@ public class TraceWinImporter implements TraceWinTags {
      * @param frequency the frequency at the element
      */
     private void readElement(String line, String values[], Section section, String name) {
-        LOG.finest("Importing element " + name + " from line: " + line);
+        LOG.log(Level.FINEST, "Importing element {0} from line: {1}", new Object[]{name, line});
 
         // check if it is an element and add it to the section
         if (line.startsWith(E_APERTURE)) {
@@ -781,7 +778,7 @@ public class TraceWinImporter implements TraceWinTags {
     private void readEdge(String edge1Line, String edge1Values[], String edge1Name, String bendLine,
             String bendValues[], String bendName, String edge2Line, String edge2Values[], String edge2Name,
             Section section) {
-        LOG.finest("Importing bend element " + bendName + " from line: " + bendLine);
+        LOG.log(Level.FINEST, "Importing bend element {0} from line: {1}", new Object[]{bendName, bendLine});
 
         edge1Values = composeTableValues(edge1Values, 8, true);
         bendValues = composeTableValues(bendValues, 8, true);
@@ -838,29 +835,29 @@ public class TraceWinImporter implements TraceWinTags {
      * @see #findChildren(Subsystem, List)
      */
     private void buildHierarchy() {
-        List<Subsystem> allSubsystems = new ArrayList<Subsystem>();
+        List<Subsystem> allSubsystems = new ArrayList<>();
         allSubsystems.addAll(Arrays.asList(section.getBeamlines()));
         allSubsystems.addAll(Arrays.asList(section.getSlots()));
         allSubsystems.addAll(Arrays.asList(section.getComponents()));
 
         for (Subsystem beamline : section.getBeamlines()) {
             List<Subsystem> children = findChildren(beamline, allSubsystems);
-            for (Subsystem child : children) {
+            children.forEach((child) -> {
                 child.setParentSubsystem(beamline);
-            }
+            });
         }
 
         for (Subsystem slot : section.getSlots()) {
             List<Subsystem> children = findChildren(slot, allSubsystems);
-            for (Subsystem child : children) {
+            children.forEach((child) -> {
                 child.setParentSubsystem(slot);
-            }
+            });
         }
     }
 
     @SuppressWarnings("unused")
     private void checkReferenceConsistency() {
-        List<String> allSubsystemNames = new ArrayList<String>();
+        List<String> allSubsystemNames = new ArrayList<>();
         for (Subsystem subsystem : section.getBeamlines()) {
             allSubsystemNames.add(subsystem.getName().toUpperCase());
         }
@@ -905,6 +902,7 @@ public class TraceWinImporter implements TraceWinTags {
             StringBuilder feedbackBuilder = new StringBuilder(feedback);
             feedbackBuilder.append(" (line:").append(fileLineNumber).append(")");
             responseWriter.println(feedbackBuilder.toString());
+            //LOG.log(Level.INFO,feedbackBuilder.toString());
         }
     }
 
@@ -921,7 +919,7 @@ public class TraceWinImporter implements TraceWinTags {
      * candidates.
      */
     private static List<Subsystem> findChildren(Subsystem parentSubsystem, List<Subsystem> candidates) {
-        List<Subsystem> children = new ArrayList<Subsystem>();
+        List<Subsystem> children = new ArrayList<>();
         // Parent's hierarchy information is stored in the description,
         // therefore description must not be null.
         if (parentSubsystem != null && parentSubsystem.getDescription() != null) {
@@ -929,7 +927,7 @@ public class TraceWinImporter implements TraceWinTags {
             List<String> childrenNames = Arrays.asList(split(parentSubsystem.getDescription().toLowerCase()));
             String parentName = parentSubsystem.getName().toLowerCase();
             // Check children candidates by name.
-            for (Subsystem candidate : candidates) {
+            candidates.forEach((candidate) -> {
                 String candidateName = candidate.getName().toLowerCase();
                 // Parent is not its own child.
                 if (!candidateName.equals(parentName)) {
@@ -937,7 +935,7 @@ public class TraceWinImporter implements TraceWinTags {
                         children.add(candidate);
                     }
                 }
-            }
+            });
         }
         return children;
     }

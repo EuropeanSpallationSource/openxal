@@ -28,6 +28,9 @@ public interface TraceWinTags {
 
     public static final String TRUE_VALUE = "YES";
 
+    /**
+     * Speed of light
+     */
     public static final Double C = 299792468d;
 
     // file header tags
@@ -105,6 +108,7 @@ public interface TraceWinTags {
     public static final String C_SET_SYNC_PHASE = "SET_SYNC_PHASE";
     public static final String C_SET_TWISS = "SET_TWISS";
     public static final String C_SET_BEAM_ENERGY = "SET_BEAM_ENERGY";
+    public static final String C_TUNE_CAVITY = "TUNE_CAVITY";
 
     public static final String C_START_ACHROMAT = "START_ACHROMAT";
 
@@ -159,6 +163,7 @@ public interface TraceWinTags {
     public static final String C_READ_PARTICLE_FILE = "READ_DST";
     public static final String C_PARTRAN_STEP = "PARTRAN_STEP";
 
+    // List of all commands which do not relate to elements directly
     public static final List<String> LATT_COM_LIST = new ArrayList<>(Arrays.<String>asList(C_CHOPPER,
             C_CHANGE_FREQUENCY, C_DUPLICATE_ELEMENTS, C_MAGNETIC_STEERER,
             C_RFQ_COUPLING_GAP, C_RFQ_ELECTRODE_FOUR, C_RFQ_ELECTRODE_TWO,
@@ -203,9 +208,9 @@ public interface TraceWinTags {
             E_APERTURE, E_BEAM_CURRENT, E_BEAM_ROTATION, E_BENDING_MAGNET,
             E_BUNCHED_CAVITY, E_CAVITY_MULTIGAP, E_CHFRAME, E_DRIFT, E_DTL_CELL,
             E_ELECTROSTATIC_ACCELERATION, E_ELECTROSTATIC_QUADRUPOLE,
-            E_FIELD_MAP_PATH, E_FIELD_MAP, E_FUNNELING_GAP, E_MULTIPOLE_FIELD_MAP, 
+            E_FIELD_MAP_PATH, E_FIELD_MAP, E_FUNNELING_GAP, E_MULTIPOLE_FIELD_MAP,
             E_QUADRUPOLE, E_RFQ_CELL, E_SINUS_CAVITY, E_SOLENOID,
-            E_SPACE_CHARGE_COMPENSATION, E_THIN_LENS, E_THIN_MATRIX, 
+            E_SPACE_CHARGE_COMPENSATION, E_THIN_LENS, E_THIN_MATRIX,
             E_THIN_STEERING_MAGNET, E_BEND_ELE, C_MAGNETIC_STEERER));
 
     // diagnostic elements

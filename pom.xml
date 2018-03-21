@@ -125,6 +125,11 @@
             </dependency>
             <dependency>
                 <groupId>org.xal</groupId>
+                <artifactId>openxal.extensions.fxapplication</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.xal</groupId>
                 <artifactId>openxal.extensions.solver</artifactId>
                 <version>${project.version}</version>
             </dependency>

@@ -36,7 +36,7 @@ execute() {
     JAR_FILE=dist/target/openxal-${OPENXAL_VERSION}-dist/openxal-${OPENXAL_VERSION}/apps/openxal.apps.$1-${OPENXAL_VERSION}.jar
     if [ -f $JAR_FILE ]
     then
-        java -DuseDefaultAccelerator=true -jar $JAR_FILE
+        java -DuseDefaultAccelerator=true -Djava.util.logging.config.file="logging.properties" -jar $JAR_FILE
     else
         compile_instructions $@
     fi
