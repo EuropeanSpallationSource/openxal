@@ -51,7 +51,6 @@ pipeline {
             when {
                 anyOf {
                     branch 'site.ess.master'
-                    branch 'site.ess.stable'
                 }
             }
         }
@@ -66,7 +65,7 @@ pipeline {
                 OXALDOC_COMMIT_MSG = "Automatic Commit: Added documentation from latest OpenXAL ${GIT_BRANCH} branch, tagged ${GIT_TAG}, build ${BUILD_DISPLAY_NAME}."
             }
             when {
-                branch 'site.ess.stable'
+                not { environment name: 'GIT_TAG', value: '' }
             }
             steps {
                 timestamps {

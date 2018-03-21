@@ -4,17 +4,13 @@
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.Menu?>
-<?import javafx.scene.control.MenuBar?>
-<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ProgressBar?>
-<?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
-<?import javafx.scene.input.KeyCodeCombination?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
@@ -22,15 +18,13 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="546.0" prefWidth="1096.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xal.app.scanner.FXMLController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="745.0" prefWidth="1096.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xal.app.scanner.FXMLController">
    <children>
-      <SplitPane dividerPositions="0.5" orientation="VERTICAL" prefHeight="533.0" prefWidth="1096.0" VBox.vgrow="ALWAYS">
-        <items>
-            <SplitPane dividerPositions="0.39464882943143814" prefHeight="297.0" prefWidth="1094.0">
+            <SplitPane dividerPositions="0.39464882943143814" prefHeight="745.0" prefWidth="1096.0" VBox.vgrow="ALWAYS">
               <items>
                   <TabPane maxWidth="600.0" minWidth="300.0" prefHeight="398.0" prefWidth="430.0" tabClosingPolicy="UNAVAILABLE">
                     <tabs>
-                      <Tab text="Scan">
+                      <Tab text="Select">
                            <content>
                               <AnchorPane prefHeight="386.0" prefWidth="428.0">
                                  <children>
@@ -54,8 +48,18 @@
                       </Tab>
                         <Tab fx:id="tabConfigure" text="Configure">
                            <content>
-                              <SplitPane dividerPositions="0.5, 0.5" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0">
+                              <SplitPane dividerPositions="0.5, 0.5, 0.5" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0">
                                 <items>
+                              <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="120.0" prefWidth="428.0">
+                                 <children>
+                                    <TextField fx:id="delayBetweenMeas" accessibleHelp="Set the delay between measurements" layoutX="220.0" layoutY="27.0" onKeyReleased="#setDelayEdited" prefHeight="27.0" prefWidth="70.0" />
+                                    <Text layoutX="36.0" layoutY="48.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Delay in seconds" />
+                                    <Text layoutX="36.0" layoutY="72.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Measurements per point" />
+                                    <TextField fx:id="measPerPoint" accessibleHelp="Number of measurements at each combo" layoutX="220.0" layoutY="57.0" onKeyReleased="#setMeasPerPointEdited" prefHeight="27.0" prefWidth="70.0" />
+                                    <Button fx:id="measDelaySetButton" disable="true" layoutX="312.0" layoutY="27.0" mnemonicParsing="false" onAction="#setMeasurementDelay" text="Set" />
+                                    <Button fx:id="nMeasPerSettingSetButton" disable="true" layoutX="312.0" layoutY="57.0" mnemonicParsing="false" onAction="#setNumberOfMeasPerSetting" text="Set" />
+                                 </children>
+                              </AnchorPane>
                                     <TableView fx:id="listOfWriteables" editable="true" prefHeight="200.0" prefWidth="200.0">
                                       <columns>
                                         <TableColumn fx:id="listOfWriteablesShortVar" editable="false" prefWidth="58.0" text="Var" />
@@ -66,7 +70,7 @@
                                       </columns>
                                     </TableView>
                                     <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Add constraints below (use x1,x2,..., +-*/&lt;&gt;=)" />
-                                    <ListView fx:id="constraintsList" accessibleHelp="Accessible Help" accessibleText="Accessible Text" editable="true" prefHeight="200.0" prefWidth="200.0" />
+                                    <ListView fx:id="constraintsList" accessibleHelp="Accessible Help" accessibleText="Accessible Text" editable="true" maxHeight="-Infinity" prefHeight="200.0" prefWidth="200.0" />
                                 </items>
                               </SplitPane>
                            </content>
@@ -140,7 +144,5 @@
                   </SplitPane>
               </items>
             </SplitPane>
-        </items>
-      </SplitPane>
    </children>
 </VBox>
