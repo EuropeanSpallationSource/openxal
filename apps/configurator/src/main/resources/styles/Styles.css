@@ -1,3 +1,8 @@
 .button {
     -fx-font-weight: bold;
+    -fx-font-family:'sans';
+}
+
+.label{
+    -fx-font-family:'sans';
 }
