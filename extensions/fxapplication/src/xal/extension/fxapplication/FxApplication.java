@@ -88,7 +88,7 @@ abstract public class FxApplication extends Application {
     // Call this before start() (so that you can add items to MENU_BAR etc after)
     protected void initialize() {
 
-        Logger.getLogger(FxApplication.class.getName()).log(Level.INFO, "Loading default accelerator.");
+        Logger.getLogger(FxApplication.class.getName()).log(Level.INFO, "Loading default accelerator {0}", XMLDataManager.defaultPath());
         DOCUMENT.accelerator.setAccelerator(XMLDataManager.loadDefaultAccelerator());
 
         MENU_BAR = new MenuBar();
@@ -294,13 +294,17 @@ class LoadFileMenu extends FileMenuItem {
         fileChooser.getExtensionFilters().add(extFilter);
 
         //Show save file dialog
-        File selectedFile = fileChooser.showSaveDialog(null);
-        if (selectedFile.exists() && selectedFile.canRead()) {
-            document.setSource(selectedFile);
-            document.loadDocument(document.source);
+        File selectedFile = fileChooser.showOpenDialog(null);
+        if (selectedFile==null)
+            Logger.getLogger(LoadFileMenu.class.getName()).log(Level.INFO, "No file selected for loading");
+        else {
+            if (selectedFile.exists() && selectedFile.canRead()) {
+                document.setSource(selectedFile);
+                document.loadDocument(document.source);
+            }
+            else
+                Logger.getLogger(LoadFileMenu.class.getName()).log(Level.SEVERE, "Could not open {0}", document.source);
         }
-        else
-            Logger.getLogger(LoadFileMenu.class.getName()).log(Level.SEVERE, "Could not open {0}", document.source);
     }
 
 }
