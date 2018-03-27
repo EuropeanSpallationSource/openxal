@@ -17,7 +17,6 @@ import xal.sim.scenario.AlgorithmFactory;
 import xal.sim.scenario.ProbeFactory;
 import xal.tools.beam.CovarianceMatrix;
 import xal.tools.beam.PhaseVector;
-import xal.smf.Accelerator;
 import xal.tools.beam.Twiss;
 import xal.sim.scenario.Scenario;
 import xal.model.probe.traj.Trajectory;
@@ -53,13 +52,14 @@ public class SimulationRunner {
     private ArrayList<Double> posPhi;
     private ArrayList<Double> positions;
     
-    private Accelerator accelerator;
     private Object sequence;
     private EnvTrackerAdapt envelopeTracker;
     private EnvelopeProbe probe;
     private PhaseVector initial_pos;
     private Scenario model;
     private String model_sync;
+    private String ini_pos_simul;
+    private String final_pos_simul;
     
     private boolean hasRun;
     
@@ -70,24 +70,25 @@ public class SimulationRunner {
     
     private double[] TWISSX = {-3.302987,0.39685261,0.1223e-06};
     private final double[] TWISSY = {-3.2846641,0.39203602,0.1217e-06};
-    private static final double[] TWISSZ = {0.0,109.50523,8.66027784872e-06};
+    private static final double[] TWISSZ = {0.0,110,10e-05};
         
     //-----------------------CONSTRUCTORS-------------------------------
     
-    public SimulationRunner(Accelerator accl, AcceleratorSeq seq, String modelSync){
-        
-        accelerator = accl; 
+    public SimulationRunner(Object seq, String modelSync){
+                
         init = new double[4];
         solenoidFields = new double[2];
         correctorFields = new double[4];
         electrode = false;  
         sequence = seq;
         model_sync = modelSync;
+        final_pos_simul = "";        
         
         try {
             //get inital parameters from file
             envelopeTracker = AlgorithmFactory.createEnvTrackerAdapt((AcceleratorSeq) sequence);
-            probe = ProbeFactory.getEnvelopeProbe(accelerator.getSequence("LEBT"), envelopeTracker);
+            probe = ProbeFactory.getEnvelopeProbe((AcceleratorSeq) sequence, envelopeTracker);
+            probe.setCurrentElement(((AcceleratorSeq) sequence).getNodeAt(0).toString());
         } catch (InstantiationException ex) {
             Logger.getLogger(SimulationRunner.class.getName()).log(Level.SEVERE, null, ex);
         }                   
@@ -143,10 +144,11 @@ public class SimulationRunner {
     public void setBeamTwissY(double alpha, double beta, double emitt){TWISSY[0] = alpha;TWISSY[1] = beta;TWISSY[2] = emitt;}
     public void setInitialBeamParameters(double x,double xp, double y, double yp){init[0] = x; init[1] = xp; init[2] = y; init[3] = yp;}
     public void setSpaceChargeCompensation(double sc_comp, double sc_compelectrode){SPACE_CHARGE = sc_comp;SPACE_CHARGE_ELECTRODE = sc_compelectrode;}
-    public void setAccelerator(Accelerator accl){accelerator = accl;}
     public void setElectrode(boolean val){electrode = val;}
     public void sethasRun(boolean val){hasRun = val;}
     public void setModelSync(String model){model_sync = model;}
+    public void setInitSimulPos(String nodeName){ini_pos_simul = nodeName;}
+    public void setFinalSimulPos(String nodeName){final_pos_simul = nodeName;}
 
     
     public double getSolenoid1Field(){return solenoidFields[0];}
@@ -173,6 +175,8 @@ public class SimulationRunner {
     public ArrayList getPosY(){return posY;}
     public ArrayList getPosR(){return posR;}
     public ArrayList getPosPhi(){return posPhi;}
+    public EnvelopeProbe getProbe(){return probe;}
+    public EnvelopeProbe getFinalProbe(){return (EnvelopeProbe) model.getProbe();}
     public boolean hasRun(){return hasRun;}
     
     //-----------------------CONVERTION FUNCTIONS-------------------------------
@@ -211,49 +215,84 @@ public class SimulationRunner {
         }
                
         if(sequence instanceof AcceleratorSeqCombo){            
-            AcceleratorSeqCombo seq = (AcceleratorSeqCombo) sequence;
-            setTrackerParameters(seq); 
+            AcceleratorSeqCombo seq = (AcceleratorSeqCombo) sequence;             
+            AcceleratorNode start_simul = seq.getNodeWithId(ini_pos_simul);
+            AcceleratorNode start_seq = seq.getAllNodes().get(0);
+            AcceleratorNode end_simul = seq.getAllNodes().get(seq.getNodeCount()-1); 
+            if(final_pos_simul!=""){            
+                end_simul =  seq.getNodeWithId(final_pos_simul);
+            }
+            AcceleratorNode electrode_node = null;
+            if (seq.getAllNodes().toString().contains("ELECTRODE")){
+                electrode_node = seq.getNodeWithId("ELECTRODE");
+                if (electrode_node.getSDisplay()<start_simul.getSDisplay()){
+                    electrode = false;
+                }
+                if (electrode_node.getSDisplay()>end_simul.getSDisplay()){
+                    electrode = false;
+                }
+            } else {
+                electrode = false;
+            }                        
+            setTrackerParameters(seq);
             if(electrode && seq.getAllNodes().toString().contains("ELECTRODE")){
-                AcceleratorNode electrode = seq.getNodeWithId("ELECTRODE");
-                setProbe(seq,0.0);
+                setProbe(seq,start_simul.getSDisplay());
                 setIniCovarianceMatrix();
-                runModel(model_sync,seq,seq.getAllNodes().get(0).toString(),"ELECTRODE");
-                retrieveTrajectory();
+                runModel(model_sync,seq,ini_pos_simul,"ELECTRODE");
+                retrieveTrajectory();  
+                AcceleratorNode electrode = seq.getNodeWithId("ELECTRODE");                
                 SPACE_CHARGE = SPACE_CHARGE_ELECTRODE;
                 CovarianceMatrix cov = getElectrodeCovarianceMatrix();
-                setProbe(seq,electrode.getPosition());
+                setProbe(seq,electrode.getSDisplay());
                 setCovarianceMatrix(cov);
-                runModel(model_sync,seq,"ELECTRODE",seq.getAllNodes().get(seq.getNodeCount()-1).toString());
+                runModel(model_sync,seq,"ELECTRODE",end_simul.toString());
                 retrieveTrajectory();
             } else {
-                setProbe(seq,0.0);
+                setProbe(seq,start_simul.getSDisplay());
                 setIniCovarianceMatrix();
-                runModel(model_sync,seq,seq.getAllNodes().get(0).toString(),seq.getAllNodes().get(seq.getNodeCount()-1).toString());
+                runModel(model_sync,seq,ini_pos_simul,end_simul.toString());
                 retrieveTrajectory();
             }
             hasRun = true;
         } else {
             AcceleratorSeq seq = (AcceleratorSeq) sequence;            
+            AcceleratorNode start_simul = seq.getNodeWithId(ini_pos_simul);
+            AcceleratorNode start_seq = seq.getAllNodes().get(0);
+            AcceleratorNode end_simul = seq.getAllNodes().get(seq.getNodeCount()-1); 
+            if(final_pos_simul!=""){            
+                end_simul =  seq.getNodeWithId(final_pos_simul);
+            }
+            AcceleratorNode electrode_node = null;
+            if (seq.getAllNodes().toString().contains("ELECTRODE")){
+                electrode_node = seq.getNodeWithId("ELECTRODE");
+                if (electrode_node.getSDisplay()<start_simul.getSDisplay()){
+                    electrode = false;
+                }
+                if (electrode_node.getSDisplay()>end_simul.getSDisplay()){
+                    electrode = false;
+                }
+            } else {
+                electrode = false;
+            }            
             setTrackerParameters(seq);
-            if(electrode && seq.getAllNodes().toString().contains("ELECTRODE")){
-                AcceleratorNode electrode = seq.getNodeWithId("ELECTRODE");
-                setProbe(seq,0.0);
+            if(electrode){
+                setProbe(seq,start_simul.getSDisplay());
                 setIniCovarianceMatrix();
-                runModel(model_sync,seq,seq.getAllNodes().get(0).toString(),"ELECTRODE");
-                retrieveTrajectory();
+                runModel(model_sync,seq,ini_pos_simul,"ELECTRODE");
+                retrieveTrajectory();  
                 SPACE_CHARGE = SPACE_CHARGE_ELECTRODE;
                 CovarianceMatrix cov = getElectrodeCovarianceMatrix();
-                setProbe(seq,electrode.getPosition());
+                setProbe(seq,electrode_node.getSDisplay());
                 setCovarianceMatrix(cov);
-                runModel(model_sync,seq,"ELECTRODE",seq.getAllNodes().get(seq.getNodeCount()-1).toString());
+                runModel(model_sync,seq,"ELECTRODE",end_simul.toString());
                 retrieveTrajectory();
             } else {
-                setProbe(seq,0.0);
+                setProbe(seq,start_simul.getSDisplay());
                 setIniCovarianceMatrix();
-                runModel(model_sync,seq,seq.getAllNodes().get(0).toString(),seq.getAllNodes().get(seq.getNodeCount()-1).toString());
+                runModel(model_sync,seq,ini_pos_simul,end_simul.toString());
                 retrieveTrajectory();
             }
-            hasRun = true;            
+            hasRun = true;
         }                                    
                 
     }            
@@ -263,14 +302,9 @@ public class SimulationRunner {
      */
     private void setTrackerParameters(AcceleratorSeq sequence) throws InstantiationException{
        
-        envelopeTracker = AlgorithmFactory.createEnvTrackerAdapt(sequence);
-        
-        //envelopeTracker.setMaxIterations(20000);
-        //envelopeTracker.setAccuracyOrder(2);
-        //envelopeTracker.setErrorTolerance(0.001);
+        envelopeTracker = AlgorithmFactory.createEnvTrackerAdapt(sequence);              
         envelopeTracker.setUseSpacecharge(true);
-        //envelopeTracker.setStepSize(0.01);
-        //envelopeTracker.setProbeUpdatePolicy(envelopeTracker.UPDATE_ALWAYS);
+        
     }
     
      /**
@@ -278,14 +312,9 @@ public class SimulationRunner {
      */
     private void setTrackerParameters(AcceleratorSeqCombo sequence) throws InstantiationException{
        
-        envelopeTracker = AlgorithmFactory.createEnvTrackerAdapt(sequence);
+        envelopeTracker = AlgorithmFactory.createEnvTrackerAdapt(sequence);        
+        envelopeTracker.setUseSpacecharge(true);        
         
-        //envelopeTracker.setMaxIterations(20000);
-        //envelopeTracker.setAccuracyOrder(2);
-        //envelopeTracker.setErrorTolerance(0.001);
-        envelopeTracker.setUseSpacecharge(true);
-        //envelopeTracker.setStepSize(0.01);
-        //envelopeTracker.setProbeUpdatePolicy(envelopeTracker.UPDATE_ALWAYS);
     }
     
     /**
@@ -402,13 +431,6 @@ public class SimulationRunner {
         
         ArrayList<EnvelopeProbeState> stateElement = (ArrayList<EnvelopeProbeState>) trajectory.getStatesViaIndexer();
         CovarianceMatrix covmat;  
-        //double phase0;
-        
-        //if(posPhi.size()>1){
-        //    phase0 = posPhi.get(posPhi.size()-1);
-        //} else {
-        //    phase0 = 0.0;
-        //}
         
         //retrieve trajectory
         for(int i=0; i<trajectory.numStates(); i++){
@@ -425,8 +447,8 @@ public class SimulationRunner {
             sigmaR[1].add(Math.max(covmat.getSigmaX(),covmat.getSigmaY())* -1.0e+3);                                    
             
             //Calculating cylindrical coordinates
-            posR.add(Math.sqrt(Math.pow(covmat.getMeanX()*1.0e+3,2)+Math.pow(covmat.getMeanY()*1.0e+3,2)));
             Complex phi = new Complex(covmat.getMeanX()*1.0e+3,covmat.getMeanY()*1.0e+3);
+            posR.add(phi.modulus());
             posPhi.add(phi.phase()/Math.PI);                                                                
                                    
             for(int k = 0; k < sigmaOffsetX.length; k++){

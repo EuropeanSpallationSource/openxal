@@ -7,12 +7,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.LineChart;
@@ -20,14 +22,21 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.InputMethodEvent;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.util.StringConverter;
@@ -36,14 +45,17 @@ import xal.ca.Channel;
 import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.ca.PutException;
+import xal.extension.jels.smf.impl.EMU;
 import xal.extension.jels.smf.impl.ESSIonSourceCoil;
 import xal.extension.jels.smf.impl.ESSIonSourceMFC;
 import xal.extension.jels.smf.impl.ESSIonSourceMagnetron;
+import xal.extension.jels.smf.impl.Iris;
 import xal.extension.jels.smf.impl.NPM;
 import xal.model.ModelException;
 import xal.smf.Accelerator;
 import xal.smf.AcceleratorNode;
 import xal.smf.AcceleratorSeq;
+import xal.smf.AcceleratorSeqCombo;
 import xal.smf.impl.CurrentMonitor;
 import xal.tools.data.DataAdaptor;
 import xal.tools.dispatch.DispatchQueue;
@@ -100,10 +112,10 @@ public class FXMLController implements Initializable {
     private ArrayList posPhi;
     
     //input beam parameters
-    private double[] initPos;
+    //private double[] initPos;
     private double beamCurrent;
-    private double[] TwissX;
-    private double[] TwissY;
+    //private double[] TwissX;
+    //private double[] TwissY;
     private double spaceChargeComp;
     private double spaceChargeCompElectrode;
     
@@ -170,12 +182,10 @@ public class FXMLController implements Initializable {
     @FXML private Label label_CH2currentRB;
     @FXML private TextField textField_irisAperture;
     @FXML private Label label_irisApertureRB;
-    @FXML private TextField textField_chopperVoltage;
     @FXML private CheckBox comboBox_currentFC;
     @FXML private CheckBox comboBox_posNPM;
     @FXML private CheckBox comboBox_sigmaNPM;
     @FXML private Label label_highVoltageRB;
-    @FXML private Label label_chopperVoltageRB;
     @FXML private TextField textField_irisX;
     @FXML private TextField textField_irisY;
     @FXML private Label label_irisXRB;
@@ -192,8 +202,15 @@ public class FXMLController implements Initializable {
     @FXML private CheckBox checkBox_electrode;
     @FXML private Circle electrodeStatus;
     @FXML private TextField textField_sccelectrode;
-    @FXML
-    private ToggleGroup toggleGroup_currentBI;
+    @FXML private ToggleGroup toggleGroup_currentBI;
+    @FXML private CheckBox checkBox_chopper;
+    @FXML private TextField textField_chopperDelay;
+    @FXML private Label label_chopperDelayRB;
+    @FXML private TextField textField_chopperLength;
+    @FXML private Label label_chopperLengthRB;
+    @FXML private TextField textField_N2flow;
+    @FXML private Label label_N2flowRB;    
+    @FXML private ComboBox<InputParameters> comboBox_inputSimul;
 
              
     @Override
@@ -295,18 +312,20 @@ public class FXMLController implements Initializable {
         plot2.getData().add(seriesSurroundings[0]);
         plot2.getData().add(seriesSurroundings[1]);  
         plot1.getStylesheets().add(this.getClass().getResource("/styles/TrajectoryPlot.css").toExternalForm());
-        plot2.getStylesheets().add(this.getClass().getResource("/styles/EnvelopePlot.css").toExternalForm());        
-        
+        plot2.getStylesheets().add(this.getClass().getResource("/styles/EnvelopePlot.css").toExternalForm());                       
         
          //remove surrounding legend
         Legend legend = (Legend)plot2.lookup(".chart-legend");
         legend.getItems().remove(0, 2);
-
+        
+        //xAxis.setUpperBound(xAxis1.getUpperBound());
+        //xAxis.setLowerBound(xAxis1.getLowerBound());                
+        
          
         scale = 1;
-        initPos = new double[4];
-        TwissX = new double[3];
-        TwissY = new double[3];
+        //initPos = new double[4];
+        //TwissX = new double[3];
+        //TwissY = new double[3];
         
         //Set textField formatting
         StringConverter<Double> formatter2d;
@@ -378,7 +397,8 @@ public class FXMLController implements Initializable {
         textField_irisAperture.setTextFormatter(new TextFormatter<Double>(formatter3d));
         textField_irisX.setTextFormatter(new TextFormatter<Double>(formatter3d));
         textField_irisY.setTextFormatter(new TextFormatter<Double>(formatter3d));
-        textField_chopperVoltage.setTextFormatter(new TextFormatter<Double>(formatter3d));
+        textField_chopperDelay.setTextFormatter(new TextFormatter<Double>(formatter3d));
+        textField_chopperLength.setTextFormatter(new TextFormatter<Double>(formatter3d));
         
         //input values
         textField_x.setTextFormatter(new TextFormatter<Double>(formatter4d));
@@ -631,156 +651,90 @@ public class FXMLController implements Initializable {
                 }
             }
         });
-        AcceleratorNode Iris = sequence.getNodeWithId("IRIS");
-        displayValues.put(Iris.getChannel("apertureRB"),label_irisApertureRB);
-        setValues.put(Iris.getChannel("apertureS"),textField_irisAperture);
+        
+        AcceleratorNode IrisEquip = sequence.getNodeWithId("IRIS");
+        displayValues.put(IrisEquip.getChannel(Iris.APERTURE_RB_HANDLE),label_irisApertureRB);
+        setValues.put(IrisEquip.getChannel(Iris.APERTURE_SET_HANDLE),textField_irisAperture);
         textField_irisAperture.focusedProperty().addListener((obs, oldVal, newVal) ->{
             if(!newVal){
                 try {
                     double val = Double.parseDouble(textField_irisAperture.getText());
                     if(val>=0){
-                        Iris.getChannel("apertureS").putVal(val);
+                        IrisEquip.getChannel(Iris.APERTURE_SET_HANDLE).putVal(val);
                     } else {
-                        textField_irisAperture.setText(Double.toString(Iris.getChannel("apertureRB").getValDbl()));
+                        textField_irisAperture.setText(Double.toString(IrisEquip.getChannel(Iris.APERTURE_RB_HANDLE).getValDbl()));
                     }
                 } catch (ConnectionException | PutException | GetException ex) {
                     Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         });
-        /**
-         * textField_irisAperture.textProperty().addListener((obs,old,niu)->{
-         * if(old.compareTo(niu)==0){
-         * double aperture = Double.parseDouble(label_irisApertureRB.getText());
-         * double Xpos = Double.parseDouble(label_irisXRB.getText());
-         * double Ypos = Double.parseDouble(label_irisYRB.getText());
-         * updatePVs.set(true);
-         * surroundings[1][188]=aperture+Xpos;
-         * surroundings[1][189]=aperture+Xpos;
-         * surroundings[1][190]=aperture+Xpos;
-         * surroundings[1][191]=aperture+Xpos;
-         * seriesSurroundings[0].getData().clear();
-         * for (int i = 0; i < surroundings[0].length ; i++) {
-         * seriesSurroundings[0].getData().add(new XYChart.Data(surroundings[0][i], surroundings[1][i]));
-         * }
-         * 
-         * surroundings[1][188]=aperture-Xpos;
-         * surroundings[1][189]=aperture-Xpos;
-         * surroundings[1][190]=aperture-Xpos;
-         * surroundings[1][191]=aperture-Xpos;
-         * seriesSurroundings[1].getData().clear();
-         * for (int i = 0; i < surroundings[0].length ; i++) {
-         * seriesSurroundings[1].getData().add(new XYChart.Data(surroundings[0][i], -surroundings[1][i]));
-         * }
-         * }
-         * });
-         */
         
-        displayValues.put(Iris.getChannel("xOffsetRB"),label_irisXRB);
-        setValues.put(Iris.getChannel("xOffsetS"),textField_irisX);
+        
+        displayValues.put(IrisEquip.getChannel(Iris.OFFSET_X_RB_HANDLE),label_irisXRB);
+        setValues.put(IrisEquip.getChannel(Iris.OFFSET_X_SET_HANDLE),textField_irisX);
         textField_irisX.focusedProperty().addListener((obs, oldVal, newVal) ->{
             if(!newVal){
                 try {
                     double val = Double.parseDouble(textField_irisX.getText());
                     if(val>=-50 && val<=50){
-                        Iris.getChannel("xOffsetS").putVal(val);
+                        IrisEquip.getChannel(Iris.APERTURE_SET_HANDLE).putVal(val);
                     } else {
-                        textField_irisX.setText(Double.toString(Iris.getChannel("offsetXRB").getValDbl()));
+                        textField_irisX.setText(Double.toString(IrisEquip.getChannel(Iris.OFFSET_X_RB_HANDLE).getValDbl()));
                     }
                 } catch (ConnectionException | PutException | GetException ex) {
                     Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         });
-        /**
-         * textField_irisX.textProperty().addListener((obs,old,niu)->{
-         * if(old.compareTo(niu)==0){
-         * double aperture = Double.parseDouble(label_irisApertureRB.getText());
-         * double Xpos = Double.parseDouble(label_irisXRB.getText());
-         * double Ypos = Double.parseDouble(label_irisYRB.getText());
-         * updatePVs.set(true);
-         * surroundings[1][188]=aperture+Xpos;
-         * surroundings[1][189]=aperture+Xpos;
-         * surroundings[1][190]=aperture+Xpos;
-         * surroundings[1][191]=aperture+Xpos;
-         * seriesSurroundings[0].getData().clear();
-         * for (int i = 0; i < surroundings[0].length ; i++) {
-         * seriesSurroundings[0].getData().add(new XYChart.Data(surroundings[0][i], surroundings[1][i]));
-         * }
-         * 
-         * surroundings[1][188]=aperture-Xpos;
-         * surroundings[1][189]=aperture-Xpos;
-         * surroundings[1][190]=aperture-Xpos;
-         * surroundings[1][191]=aperture-Xpos;
-         * seriesSurroundings[1].getData().clear();
-         * for (int i = 0; i < surroundings[0].length ; i++) {
-         * seriesSurroundings[1].getData().add(new XYChart.Data(surroundings[0][i], -surroundings[1][i]));
-         * }
-         * }
-         * });
-         */
-        displayValues.put(Iris.getChannel("yOffsetRB"),label_irisYRB);
-        setValues.put(Iris.getChannel("yOffsetS"),textField_irisY);
+        
+        displayValues.put(IrisEquip.getChannel(Iris.OFFSET_Y_RB_HANDLE),label_irisYRB);
+        setValues.put(IrisEquip.getChannel(Iris.OFFSET_Y_SET_HANDLE),textField_irisY);
         textField_irisY.focusedProperty().addListener((obs, oldVal, newVal) ->{
             if(!newVal){
                  try {
                     double val = Double.parseDouble(textField_irisY.getText());
                     if(val>=-50 && val<=50){
-                        Iris.getChannel("yOffsetS").putVal(val);
+                        IrisEquip.getChannel(Iris.OFFSET_Y_SET_HANDLE).putVal(val);
                     } else {
-                        textField_irisY.setText(Double.toString(Iris.getChannel("offsetYRB").getValDbl()));
+                        textField_irisY.setText(Double.toString(IrisEquip.getChannel(Iris.OFFSET_Y_RB_HANDLE).getValDbl()));
                     }
                 } catch (ConnectionException | PutException | GetException ex) {
                     Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         });
-        /**
-         * textField_irisY.textProperty().addListener((obs,old,niu)->{
-         * if(old.compareTo(niu)==0){
-         * double aperture = Double.parseDouble(label_irisApertureRB.getText());
-         * double Xpos = Double.parseDouble(label_irisXRB.getText());
-         * double Ypos = Double.parseDouble(label_irisYRB.getText());
-         * updatePVs.set(true);
-         * surroundings[1][188]=aperture+Xpos;
-         * surroundings[1][189]=aperture+Xpos;
-         * surroundings[1][190]=aperture+Xpos;
-         * surroundings[1][191]=aperture+Xpos;
-         * seriesSurroundings[0].getData().clear();
-         * for (int i = 0; i < surroundings[0].length ; i++) {
-         * seriesSurroundings[0].getData().add(new XYChart.Data(surroundings[0][i], surroundings[1][i]));
-         * }
-         * 
-         * surroundings[1][188]=aperture-Xpos;
-         * surroundings[1][189]=aperture-Xpos;
-         * surroundings[1][190]=aperture-Xpos;
-         * surroundings[1][191]=aperture-Xpos;
-         * seriesSurroundings[1].getData().clear();
-         * for (int i = 0; i < surroundings[0].length ; i++) {
-         * seriesSurroundings[1].getData().add(new XYChart.Data(surroundings[0][i], -surroundings[1][i]));
-         * }
-         * }
-         * });
-         */
+        
         
         AcceleratorNode Chopper = sequence.getNodeWithId("CHOPPER");
-        displayValues.put(Chopper.getChannel("volR"),label_chopperVoltageRB);
-        setValues.put(Chopper.getChannel("volS"),textField_chopperVoltage);
-        textField_chopperVoltage.focusedProperty().addListener((obs, oldVal, newVal) ->{
-            if(!newVal){
-                try {
-                    Chopper.getChannel("volS").putVal(Double.parseDouble(textField_chopperVoltage.getText()));
-                } catch (ConnectionException | PutException ex) {
-                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        });
+       // displayValues.put(Chopper.getChannel("volR"),label_chopperVoltageRB);
+      //  setValues.put(Chopper.getChannel("volS"),textField_chopperVoltage);
+      //  textField_chopperVoltage.focusedProperty().addListener((obs, oldVal, newVal) ->{
+      //      if(!newVal){
+      //          try {
+      //              Chopper.getChannel("volS").putVal(Double.parseDouble(textField_chopperVoltage.getText()));
+      //          } catch (ConnectionException | PutException ex) {
+      //              Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+      //          }
+      //      }
+      //  });        
+
         //AcceleratorNode Electrode = sequence.getNodeWithId("ELECTRODE");
         //displayValues.put(Electrode.getChannel("V"),null);
         //displayValues.put(Electrode.getChannel("V"),null);
         
         //define electrode properties
-        checkBox_electrode.setTooltip(new Tooltip("Turns reppeler electrode On and OFF in the simulation only."));
+        checkBox_chopper.setTooltip(new Tooltip("Turns Chopper On and OFF."));
+        checkBox_chopper.selectedProperty().addListener((obs, oldVal, newVal) ->{ 
+            if(newVal){
+                checkBox_chopper.setText("ON");  
+            } else {
+                checkBox_chopper.setText("OFF");                        
+            }
+        });
+        
+        //define electrode properties
+        checkBox_electrode.setTooltip(new Tooltip("Turns RFQ reppeler electrode On and OFF in the simulation only."));
         checkBox_electrode.selectedProperty().addListener((obs, oldVal, newVal) ->{ 
             if(newVal){
                 checkBox_electrode.setText("ON");
@@ -810,19 +764,19 @@ public class FXMLController implements Initializable {
         textField_x.focusedProperty().addListener((obs, oldVal, newVal) ->{                
                 if(!newVal){
                     try {
-                        initPos[0]=Double.parseDouble(textField_x.getText().trim())*1e-3;
+                        comboBox_inputSimul.getSelectionModel().getSelectedItem().setX(Double.parseDouble(textField_x.getText().trim())*1e-3);        
                     } catch(NumberFormatException ex) {
-                        textField_x.setText(Double.toString(initPos[0]));
+                        textField_x.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getX()));
                     }    
                 }
             });
         
         textField_xp.focusedProperty().addListener((obs, oldVal, newVal) ->{                
                 if(!newVal){
-                    try {
-                        initPos[1]=Double.parseDouble(textField_xp.getText().trim())*1e-3;
+                    try {                        
+                        comboBox_inputSimul.getSelectionModel().getSelectedItem().setXP(Double.parseDouble(textField_xp.getText().trim())*1e-3);
                     } catch(NumberFormatException ex) {
-                        textField_xp.setText(Double.toString(initPos[1]));
+                        textField_xp.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getXP()));
                     }    
                 }
             });
@@ -830,9 +784,9 @@ public class FXMLController implements Initializable {
         textField_y.focusedProperty().addListener((obs, oldVal, newVal) ->{                
                 if(!newVal){
                     try {
-                        initPos[2]=Double.parseDouble(textField_y.getText().trim())*1e-3;
+                        comboBox_inputSimul.getSelectionModel().getSelectedItem().setY(Double.parseDouble(textField_y.getText().trim())*1e-3);
                     } catch(NumberFormatException ex) {
-                        textField_y.setText(Double.toString(initPos[2]));
+                        textField_y.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getY()));
                     }    
                 }
             });
@@ -840,9 +794,9 @@ public class FXMLController implements Initializable {
         textField_yp.focusedProperty().addListener((obs, oldVal, newVal) ->{                
                 if(!newVal){
                     try {
-                        initPos[3]=Double.parseDouble(textField_yp.getText().trim())*1e-3;
+                        comboBox_inputSimul.getSelectionModel().getSelectedItem().setYP(Double.parseDouble(textField_yp.getText().trim())*1e-3);
                     } catch(NumberFormatException ex) {
-                        textField_yp.setText(Double.toString(initPos[3]));
+                        textField_yp.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getYP()));
                     }    
                 }
             });
@@ -851,13 +805,13 @@ public class FXMLController implements Initializable {
                 if(!newVal){
                     try {
                         double val = Double.parseDouble(textField_betax.getText().trim());
-                        if(val>=0){
-                            TwissX[1]=val;
+                        if(val>=0){                            
+                            comboBox_inputSimul.getSelectionModel().getSelectedItem().setBETAX(val);
                         } else {
-                            textField_betax.setText(Double.toString(TwissX[1]));
+                            textField_betax.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getBETAX()));
                         }
                     } catch(NumberFormatException ex) {
-                        textField_betax.setText(Double.toString(TwissX[1]));
+                        textField_betax.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getBETAX()));
                     }    
                 }
             });
@@ -866,9 +820,9 @@ public class FXMLController implements Initializable {
                 if(!newVal){
                     try {
                         double val = Double.parseDouble(textField_alphax.getText().trim());                        
-                        TwissX[0]=val;                        
+                        comboBox_inputSimul.getSelectionModel().getSelectedItem().setALPHAX(val);
                     } catch(NumberFormatException ex) {
-                        textField_alphax.setText(Double.toString(TwissX[0]));
+                        textField_alphax.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getALPHAX()));
                     }    
                 }
             });
@@ -878,12 +832,12 @@ public class FXMLController implements Initializable {
                     try {
                         double val = Double.parseDouble(textField_emittx.getText().trim());
                         if(val>=0){
-                            TwissX[2]=val;
+                            comboBox_inputSimul.getSelectionModel().getSelectedItem().setEMITTX(val*1e-6);
                         } else {
-                            textField_emittx.setText(Double.toString(TwissX[2]));
+                            textField_emittx.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getEMITTX()*1e6));
                         }
                     } catch(NumberFormatException ex) {
-                        textField_emittx.setText(Double.toString(TwissX[2]));
+                        textField_emittx.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getEMITTX()*1e6));
                     }    
                 }
             });
@@ -893,12 +847,12 @@ public class FXMLController implements Initializable {
                     try {
                         double val = Double.parseDouble(textField_betay.getText().trim());
                         if(val>=0){
-                            TwissY[1]=val;
+                            comboBox_inputSimul.getSelectionModel().getSelectedItem().setBETAY(val);
                         } else {
-                            textField_betay.setText(Double.toString(TwissY[1]));
+                            textField_betay.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getBETAY()));
                         }
                     } catch(NumberFormatException ex) {
-                        textField_betay.setText(Double.toString(TwissY[1]));
+                        textField_betay.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getBETAY()));
                     }    
                 }
             });
@@ -906,10 +860,10 @@ public class FXMLController implements Initializable {
         textField_alphay.focusedProperty().addListener((obs, oldVal, newVal) ->{                
                 if(!newVal){
                     try {
-                        double val = Double.parseDouble(textField_alphay.getText().trim());                        
-                        TwissY[0]=val;                        
+                        double val = Double.parseDouble(textField_alphay.getText().trim());                                                
+                        comboBox_inputSimul.getSelectionModel().getSelectedItem().setALPHAY(val);
                     } catch(NumberFormatException ex) {
-                        textField_alphay.setText(Double.toString(TwissY[0]));
+                        textField_alphay.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getALPHAY()));
                     }    
                 }
             });
@@ -918,13 +872,13 @@ public class FXMLController implements Initializable {
                 if(!newVal){
                     try {
                         double val = Double.parseDouble(textField_emitty.getText().trim());
-                        if(val>=0){
-                            TwissY[2]=val;
+                        if(val>=0){                            
+                            comboBox_inputSimul.getSelectionModel().getSelectedItem().setEMITTY(val*1e-6);
                         } else {
-                            textField_emitty.setText(Double.toString(TwissY[2]));
+                            textField_emitty.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getEMITTY()*1e6));
                         }
                     } catch(NumberFormatException ex) {
-                        textField_emitty.setText(Double.toString(TwissY[2]));
+                        textField_emitty.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getEMITTY()*1e6));
                     }    
                 }
             });
@@ -983,13 +937,29 @@ public class FXMLController implements Initializable {
         setValues.keySet().forEach(channel -> channels.add(channel));
         //Add NPM channels
         List<NPM> npms = new ArrayList<>();
+        List<EMU> emus = new ArrayList<>();
         npms = MainFunctions.mainDocument.getAccelerator().getAllNodesOfType("NPM"); 
         npms.forEach(monitor->{
             channels.add(monitor.getChannel(NPM.X_AVG_HANDLE));
             channels.add(monitor.getChannel(NPM.Y_AVG_HANDLE));
+            channels.add(monitor.getChannel(NPM.X_P_AVG_HANDLE));
+            channels.add(monitor.getChannel(NPM.Y_P_AVG_HANDLE));
             channels.add(monitor.getChannel(NPM.SIGMA_X_AVG_HANDLE));
             channels.add(monitor.getChannel(NPM.SIGMA_Y_AVG_HANDLE));
+            channels.add(monitor.getChannel(NPM.ALPHA_X_TWISS_HANDLE));
+            channels.add(monitor.getChannel(NPM.ALPHA_Y_TWISS_HANDLE));
+            channels.add(monitor.getChannel(NPM.BETA_X_TWISS_HANDLE));
+            channels.add(monitor.getChannel(NPM.BETA_Y_TWISS_HANDLE));
         });
+        emus = MainFunctions.mainDocument.getAccelerator().getAllNodesOfType("EMU"); 
+        emus.forEach(monitor->{
+            channels.add(monitor.getChannel(EMU.EMITT_X_HANDLE));
+            channels.add(monitor.getChannel(EMU.EMITT_Y_HANDLE));
+            channels.add(monitor.getChannel(EMU.ALPHA_X_TWISS_HANDLE));
+            channels.add(monitor.getChannel(EMU.ALPHA_Y_TWISS_HANDLE));
+            channels.add(monitor.getChannel(EMU.BETA_X_TWISS_HANDLE));
+            channels.add(monitor.getChannel(EMU.BETA_Y_TWISS_HANDLE));
+        });        
         request = new BatchGetValueRequest( channels );        
         request.submitAndWait(5.0);                
         
@@ -1025,14 +995,29 @@ public class FXMLController implements Initializable {
                 String Sequence = MainFunctions.mainDocument.getAccelerator().getSequences().toString();
                 String ComboSequence = MainFunctions.mainDocument.getAccelerator().getComboSequences().toString();
                 
+                //reset input values for Simulation
+                ObservableList<InputParameters> options = FXCollections.observableArrayList();
+                comboBox_inputSimul.getItems().clear();
+                
                 //initializing simulation                            
                 if (Sequence.contains(sequenceName)) {
-                    newRun = new SimulationRunner(MainFunctions.mainDocument.getAccelerator(),MainFunctions.mainDocument.getAccelerator().getSequence(sequenceName),MainFunctions.mainDocument.getModel().get());
+                    newRun = new SimulationRunner(MainFunctions.mainDocument.getAccelerator().getSequence(sequenceName),MainFunctions.mainDocument.getModel().get());                                                           
+                    options.add(new InputParameters(newRun.getProbe()));
+                    MainFunctions.mainDocument.getAccelerator().getSequence(sequenceName).getAllNodesOfType("NPM").forEach(monitor -> options.add(new InputParameters(monitor)));
+                    MainFunctions.mainDocument.getAccelerator().getSequence(sequenceName).getAllNodesOfType("EMU").forEach(monitor -> options.add(new InputParameters(monitor)));
                 } else if (ComboSequence.contains(sequenceName)) {
-                    newRun = new SimulationRunner(MainFunctions.mainDocument.getAccelerator(),MainFunctions.mainDocument.getAccelerator().getComboSequence(sequenceName).getPrimaryAncestor(),MainFunctions.mainDocument.getModel().get());
+                    newRun = new SimulationRunner(MainFunctions.mainDocument.getAccelerator().getComboSequence(sequenceName),MainFunctions.mainDocument.getModel().get());
+                    options.add(new InputParameters(newRun.getProbe()));
+                    MainFunctions.mainDocument.getAccelerator().getComboSequence(sequenceName).getAllNodesOfType("NPM").forEach(monitor -> options.add(new InputParameters(monitor)));
+                    MainFunctions.mainDocument.getAccelerator().getComboSequence(sequenceName).getAllNodesOfType("EMU").forEach(monitor -> options.add(new InputParameters(monitor)));
                 }
+                
+                comboBox_inputSimul.setItems(options);
+                comboBox_inputSimul.getSelectionModel().select(0);                
+                
                 //assigning initial parameters
-                getParameters(); 
+                getParameters();                                
+                
             }                        
             
             if(MODEL_SYNC_TIMER.isSuspended()){
@@ -1041,9 +1026,52 @@ public class FXMLController implements Initializable {
                 MODEL_SYNC_TIMER.startNowWithInterval( _modelSyncPeriod, 0 );
             }
             
-        });                   
+        }); 
         
-        //Initializes TextField values and update GUI
+        //Set input parameter for Simulation
+        comboBox_inputSimul.setCellFactory(listview -> {
+            return new ListCell<InputParameters>() {
+                @Override
+                public void updateItem(InputParameters item, boolean empty) {
+                    super.updateItem(item, empty);
+                    textProperty().unbind();
+                    if (item != null) {
+                        setText(item.getName());                       
+                    } else {
+                        setText(null);                                        
+                    }
+                }
+            };
+        }
+        );
+        
+        comboBox_inputSimul.setButtonCell(new ListCell<InputParameters>() {  
+            {
+                itemProperty().addListener((obs, oldValue, newValue) -> update());
+                emptyProperty().addListener((obs, oldValue, newValue) -> update());                
+            }
+            private void update() {
+                if (isEmpty() || getItem() == null) {
+                    setText(null);
+                } else {
+                    setText(getItem().getName());
+                    getItem().updateValues();                    
+                    textField_x.setText(String.format("%.4f",getItem().getX()*1e03));
+                    textField_xp.setText(String.format("%.4f",getItem().getXP()*1e03));
+                    textField_y.setText(String.format("%.4f",getItem().getY()*1e03));
+                    textField_yp.setText(String.format("%.4f",getItem().getYP()*1e03));
+
+                    textField_alphax.setText(String.format("%.3f",getItem().getALPHAX()));
+                    textField_betax.setText(String.format("%.3f",getItem().getBETAX()));
+                    textField_emittx.setText(String.format("%.3f",getItem().getEMITTX()*1e06));        
+                    textField_alphay.setText(String.format("%.3f",getItem().getALPHAY()));
+                    textField_betay.setText(String.format("%.3f",getItem().getBETAY()));
+                    textField_emitty.setText(String.format("%.3f",getItem().getEMITTY()*1e06));   
+                }
+            }
+        });
+        
+        //Initializes TextField
         initTextFields();
         
         //Initializes Plots
@@ -1169,7 +1197,7 @@ public class FXMLController implements Initializable {
                             seriesNPMsigma[1].getData().add(new XYChart.Data(monitor.getSDisplay(),scale*monitor.getSigmayAvgC()*1.0e+3));
                             seriesNPMsigma[1].getData().add(new XYChart.Data(monitor.getSDisplay(),scale*monitor.getSigmayAvgC()*-1.0e+3));
                             seriesNPMsigmaCyl.getData().add(new XYChart.Data(monitor.getSDisplay(),scale*Math.max(monitor.getSigmaxAvgC(), monitor.getSigmayAvgC())*1.0e+3));
-                            seriesNPMsigmaCyl.getData().add(new XYChart.Data(monitor.getSDisplay(),scale*Math.max(monitor.getSigmaxAvgC(), monitor.getSigmayAvgC())*-1.0e+3));
+                            seriesNPMsigmaCyl.getData().add(new XYChart.Data(monitor.getSDisplay(),scale*Math.min(monitor.getSigmaxAvgC(), monitor.getSigmayAvgC())*-1.0e+3));
                         } catch (ConnectionException | GetException ex) {
                             Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                         }
@@ -1184,7 +1212,7 @@ public class FXMLController implements Initializable {
                             seriesNPMsigma[0].getData().add(new XYChart.Data(monitor.getSDisplay(),scale*monitor.getSigmaxAvgC()*-1.0e+3+monitor.getXAvg()));
                             seriesNPMsigma[1].getData().add(new XYChart.Data(monitor.getSDisplay(),scale*monitor.getSigmayAvgC()*1.0e+3+monitor.getYAvg()));
                             seriesNPMsigma[1].getData().add(new XYChart.Data(monitor.getSDisplay(),scale*monitor.getSigmayAvgC()*-1.0e+3+monitor.getYAvg()));
-                            double posR = Math.sqrt(Math.pow(monitor.getXAvg(),2)+Math.pow(monitor.getYAvg(),2));
+                            double posR = new Complex(monitor.getXAvg(),monitor.getYAvg()).modulus();
                             seriesNPMsigmaCyl.getData().add(new XYChart.Data(monitor.getSDisplay(),scale*Math.max(monitor.getSigmaxAvgC(), monitor.getSigmayAvgC())*1.0e+3+posR));
                             seriesNPMsigmaCyl.getData().add(new XYChart.Data(monitor.getSDisplay(),scale*Math.max(monitor.getSigmaxAvgC(), monitor.getSigmayAvgC())*-1.0e+3+posR));
                         } catch (ConnectionException | GetException ex) {
@@ -1201,11 +1229,7 @@ public class FXMLController implements Initializable {
      * Initializes the values in the textFields
      */
     private void initTextFields(){   
-        
-        setValues.keySet().forEach(channel ->{             
-            System.out.print(channel.channelName()+": "+channel.isConnected()+"\n");
-        });
-        
+               
         setValues.keySet().forEach(channel ->{             
             if (channel.isConnected()){                
                 try {
@@ -1406,6 +1430,90 @@ public class FXMLController implements Initializable {
         
     } 
     
+     @FXML
+    private void handleMatchParameters(ActionEvent event) {
+        
+        MODEL_SYNC_TIMER.suspend();
+        
+        //get Sequence
+        String sequenceName = MainFunctions.mainDocument.getSequence();        
+        String Sequence = MainFunctions.mainDocument.getAccelerator().getSequences().toString();
+        String ComboSequence = MainFunctions.mainDocument.getAccelerator().getComboSequences().toString();               
+        MatchingSolver doMatch = null;
+        
+        //initializing simulation   
+        if(Sequence.contains(sequenceName)){  
+            AcceleratorSeq seq = MainFunctions.mainDocument.getAccelerator().getSequence(sequenceName);
+            doMatch = new MatchingSolver(comboBox_inputSimul.getItems().get(0),comboBox_inputSimul.getSelectionModel().getSelectedItem(), seq, 0.00001);            
+        } else if(ComboSequence.contains(sequenceName)){
+            AcceleratorSeqCombo seq = MainFunctions.mainDocument.getAccelerator().getComboSequence(sequenceName);
+            doMatch = new MatchingSolver(comboBox_inputSimul.getItems().get(0),comboBox_inputSimul.getSelectionModel().getSelectedItem(), seq, 0.00001);                    
+        }    
+        
+        if(doMatch !=null){
+            doMatch.initSimulation(beamCurrent,spaceChargeComp,spaceChargeCompElectrode,checkBox_electrode.isSelected());
+            doMatch.solve();
+            InputParameters finalResult = doMatch.newInputValues();
+            
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle("Matching Dialog");
+            alert.setHeaderText("Matching result summary.");
+            
+            // Create expandable Exception.           
+            String resultText;          
+            resultText = "Positions: \n"+
+                         "(x, xp) = "+String.format("%.3f",finalResult.getX()*1e3)+","+String.format("%.3f",finalResult.getXP()*1e3)+"\n"+
+                         "(y, yp) = "+String.format("%.3f",finalResult.getY()*1e3)+","+String.format("%.3f",finalResult.getYP()*1e3)+"\n"+
+                         "Twiss Parameters: \n"+
+                         "(alphax, betax) = "+String.format("%.3f",finalResult.getALPHAX())+","+String.format("%.3f",finalResult.getBETAX())+"\n"+
+                         "(alphay, betay) = "+String.format("%.3f",finalResult.getALPHAY())+","+String.format("%.3f",finalResult.getBETAY())+"\n"+
+                         "Initial emittances: \n"+
+                         "(emittx, emitty) = "+String.format("%.3f",finalResult.getEMITTX()*1e6)+","+String.format("%.3f",finalResult.getEMITTY()*1e6);
+                    
+            Label label = new Label("New Input parameters:");
+
+            TextArea textArea = new TextArea(resultText);            
+            textArea.setEditable(false);
+            textArea.setWrapText(true);
+
+            textArea.setMaxWidth(Double.MAX_VALUE);
+            textArea.setMaxHeight(Double.MAX_VALUE);            
+            GridPane.setVgrow(textArea, Priority.ALWAYS);
+            GridPane.setHgrow(textArea, Priority.ALWAYS);
+
+            GridPane resultContent = new GridPane();
+            resultContent.setMaxWidth(Double.MAX_VALUE);
+            resultContent.add(label, 0, 0);
+            resultContent.add(textArea, 0, 1);            
+
+            // Set expandable Exception into the dialog pane.
+            alert.getDialogPane().setExpandableContent(resultContent);
+
+            ButtonType buttonTypeUse = new ButtonType("Use matching result");
+            ButtonType buttonTypeCancel = new ButtonType("Cancel");
+
+            alert.getButtonTypes().setAll(buttonTypeUse, buttonTypeCancel);
+            
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.get() == buttonTypeUse){
+                comboBox_inputSimul.getItems().get(0).setX(finalResult.getX());
+                comboBox_inputSimul.getItems().get(0).setXP(finalResult.getXP());
+                comboBox_inputSimul.getItems().get(0).setY(finalResult.getY());
+                comboBox_inputSimul.getItems().get(0).setYP(finalResult.getYP());
+                comboBox_inputSimul.getItems().get(0).setALPHAX(finalResult.getALPHAX());
+                comboBox_inputSimul.getItems().get(0).setBETAX(finalResult.getBETAX());
+                comboBox_inputSimul.getItems().get(0).setEMITTX(finalResult.getEMITTX());
+                comboBox_inputSimul.getItems().get(0).setALPHAY(finalResult.getALPHAY());
+                comboBox_inputSimul.getItems().get(0).setBETAY(finalResult.getBETAY());
+                comboBox_inputSimul.getItems().get(0).setEMITTY(finalResult.getEMITTY());                
+                comboBox_inputSimul.getSelectionModel().select(0);
+            } 
+            
+            MODEL_SYNC_TIMER.resume();
+            
+        }                        
+        
+    }
     
     //------------------------HELP METHODS------------------------------------
     
@@ -1413,22 +1521,27 @@ public class FXMLController implements Initializable {
      * Gets parameters from simulation objects and assigns to text fields
      */
     private void getParameters(){
-                
-        initPos = newRun.getInitialBeamParameters();
+        
+        double[] initPos = new double[4];
+        double[] TwissX = new double[3];
+        double[] TwissY = new double[3];
+        
+        initPos = comboBox_inputSimul.getSelectionModel().getSelectedItem().getInit();
+        TwissX = comboBox_inputSimul.getSelectionModel().getSelectedItem().getTwissX();
+        TwissY = comboBox_inputSimul.getSelectionModel().getSelectedItem().getTwissY();
         
         textField_x.setText(String.format("%.4f",initPos[0]*1e03));
         textField_xp.setText(String.format("%.4f",initPos[1]*1e03));
         textField_y.setText(String.format("%.4f",initPos[2]*1e03));
         textField_yp.setText(String.format("%.4f",initPos[3]*1e03));
                
-        TwissX = newRun.getTwissX();
-        TwissY = newRun.getTwissY();        
         textField_alphax.setText(String.format("%.3f",TwissX[0]));
         textField_betax.setText(String.format("%.3f",TwissX[1]));
         textField_emittx.setText(String.format("%.3f",TwissX[2]*1e06));        
         textField_alphay.setText(String.format("%.3f",TwissY[0]));
         textField_betay.setText(String.format("%.3f",TwissY[1]));
-        textField_emitty.setText(String.format("%.3f",TwissY[2]*1e06)); 
+        textField_emitty.setText(String.format("%.3f",TwissY[2]*1e06));         
+                
         beamCurrent = newRun.getBeamCurrent();
         textField_bc.setText(Double.toString(beamCurrent));
         spaceChargeComp = newRun.getSpaceChargeCompensation();
@@ -1440,13 +1553,22 @@ public class FXMLController implements Initializable {
     /**
      * Sets simulation parameters from text fields.
      */
-    private void setParameters(){
+    private void setParameters(){                
         
-        try{
+        double[] initPos = new double[4];
+        double[] TwissX = new double[3];
+        double[] TwissY = new double[3];
+        
+        initPos = comboBox_inputSimul.getSelectionModel().getSelectedItem().getInit();
+        TwissX = comboBox_inputSimul.getSelectionModel().getSelectedItem().getTwissX();
+        TwissY = comboBox_inputSimul.getSelectionModel().getSelectedItem().getTwissY();
+        
+        try{            
             newRun.setInitialBeamParameters(initPos[0],initPos[1],initPos[2],initPos[3]);        
             newRun.setBeamCurrent(beamCurrent);
             newRun.setBeamTwissX(TwissX[0],TwissX[1],TwissX[2]);
-            newRun.setBeamTwissY(TwissY[0],TwissY[1],TwissY[2]);
+            newRun.setBeamTwissY(TwissY[0],TwissY[1],TwissY[2]);            
+            newRun.setInitSimulPos(comboBox_inputSimul.getSelectionModel().getSelectedItem().getName());                
             newRun.setSpaceChargeCompensation(spaceChargeComp,spaceChargeCompElectrode);
             newRun.setElectrode(checkBox_electrode.isSelected());
             newRun.setModelSync(MainFunctions.mainDocument.getModel().get());
@@ -1689,7 +1811,7 @@ public class FXMLController implements Initializable {
         yAxis1.setAutoRanging(false);
         yAxis1.setLowerBound(-90);
         yAxis1.setUpperBound(90);
-        //yAxis1.setAutoRanging(true);
+
     }
     
     /**
@@ -1765,7 +1887,8 @@ public class FXMLController implements Initializable {
             Legend legend = (Legend)plot1.lookup(".chart-legend");
             legend.getItems().get(0).getSymbol().setStyle("-fx-background-color: #006400, white;");
             legend.getItems().get(1).getSymbol().setStyle("-fx-background-color: #DAA520, white;");                    
-        }  
+        } 
+               
                 
     }
     
@@ -1853,7 +1976,6 @@ public class FXMLController implements Initializable {
             seriesSigmaOffsetY[i].getData().clear();
             seriesSigmaOffsetR[i].getData().clear();
         }
-    }    
-
+    }          
     
 }
