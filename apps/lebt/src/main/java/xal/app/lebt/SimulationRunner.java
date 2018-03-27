@@ -303,7 +303,10 @@ public class SimulationRunner {
     private void setTrackerParameters(AcceleratorSeq sequence) throws InstantiationException{
        
         envelopeTracker = AlgorithmFactory.createEnvTrackerAdapt(sequence);              
+        
         envelopeTracker.setUseSpacecharge(true);
+        
+        envelopeTracker.setMaxIterations(2000);
         
     }
     
@@ -313,7 +316,10 @@ public class SimulationRunner {
     private void setTrackerParameters(AcceleratorSeqCombo sequence) throws InstantiationException{
        
         envelopeTracker = AlgorithmFactory.createEnvTrackerAdapt(sequence);        
-        envelopeTracker.setUseSpacecharge(true);        
+        
+        envelopeTracker.setUseSpacecharge(true); 
+        
+        envelopeTracker.setMaxIterations(2000);
         
     }
     

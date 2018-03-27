@@ -42,7 +42,9 @@ public class MatchingSolver {
     
     private final Object sequence;
     
-    private final ArrayList<Variable> arrVars;
+    private final ArrayList<Variable> trajVars;
+    
+    private final ArrayList<Variable> twissVars;
     
     private final HashMap<Variable, Double> finalVals;
     
@@ -55,7 +57,8 @@ public class MatchingSolver {
         this.finalParams = finalParams;
         this.accuracy = accuracy;
         this.sequence = sequence;
-        this.arrVars = new ArrayList<Variable>();
+        this.trajVars = new ArrayList<Variable>();
+        this.twissVars = new ArrayList<Variable>();
         this.finalVals = new HashMap<>();
         this.simulVals = new HashMap<>();  
     }
@@ -64,38 +67,38 @@ public class MatchingSolver {
         
         //set Variable with initial values and objectives    
                      
-        arrVars.add(new Variable("x", iniParams.getX(), -0.01, 0.01));
-        finalVals.put(arrVars.get(0),finalParams.getX());        
-        simulVals.put(arrVars.get(0),iniParams.getX());        
-        arrVars.add(new Variable("xp", iniParams.getXP(), -0.01, 0.01)); 
-        finalVals.put(arrVars.get(1),finalParams.getXP());       
-        simulVals.put(arrVars.get(1),iniParams.getXP());       
-        arrVars.add(new Variable("y", iniParams.getY(), -0.01, 0.01));
-        finalVals.put(arrVars.get(2),finalParams.getY());        
-        simulVals.put(arrVars.get(2),iniParams.getY());        
-        arrVars.add(new Variable("yp", iniParams.getYP(), -0.01, 0.01));
-        finalVals.put(arrVars.get(3),finalParams.getYP());
-        simulVals.put(arrVars.get(3),iniParams.getYP());
+        trajVars.add(new Variable("x", iniParams.getX(), -0.01, 0.01));
+        finalVals.put(trajVars.get(0),finalParams.getX());        
+        simulVals.put(trajVars.get(0),iniParams.getX());        
+        trajVars.add(new Variable("xp", iniParams.getXP(), -0.01, 0.01)); 
+        finalVals.put(trajVars.get(1),finalParams.getXP());       
+        simulVals.put(trajVars.get(1),iniParams.getXP());       
+        trajVars.add(new Variable("y", iniParams.getY(), -0.01, 0.01));
+        finalVals.put(trajVars.get(2),finalParams.getY());        
+        simulVals.put(trajVars.get(2),iniParams.getY());        
+        trajVars.add(new Variable("yp", iniParams.getYP(), -0.01, 0.01));
+        finalVals.put(trajVars.get(3),finalParams.getYP());
+        simulVals.put(trajVars.get(3),iniParams.getYP());
                                
-        arrVars.add(new Variable("alphax", iniParams.getALPHAX(), -5, 5));
-        finalVals.put(arrVars.get(4),finalParams.getALPHAX());
-        simulVals.put(arrVars.get(4),iniParams.getALPHAX());
-        arrVars.add(new Variable("betax", iniParams.getBETAX(), 0, 20)); 
-        finalVals.put(arrVars.get(5),finalParams.getBETAX());
-        simulVals.put(arrVars.get(5),iniParams.getBETAX());
-        arrVars.add(new Variable("emittx", iniParams.getEMITTX(), 0.05e-06, 0.3e-06));
-        finalVals.put(arrVars.get(6),finalParams.getEMITTX());
-        simulVals.put(arrVars.get(6),iniParams.getEMITTX());
+        twissVars.add(new Variable("alphax", iniParams.getALPHAX(), -5, 5));
+        finalVals.put(twissVars.get(0),finalParams.getALPHAX());
+        simulVals.put(twissVars.get(0),iniParams.getALPHAX());
+        twissVars.add(new Variable("betax", iniParams.getBETAX(), 0, 20)); 
+        finalVals.put(twissVars.get(1),finalParams.getBETAX());
+        simulVals.put(twissVars.get(1),iniParams.getBETAX());
+        twissVars.add(new Variable("emittx", iniParams.getEMITTX(), 0.05e-06, 0.3e-06));
+        finalVals.put(twissVars.get(2),finalParams.getEMITTX());
+        simulVals.put(twissVars.get(2),iniParams.getEMITTX());
                 
-        arrVars.add(new Variable("alphay", iniParams.getALPHAY(), -5, 5));
-        finalVals.put(arrVars.get(7),finalParams.getALPHAY());
-        simulVals.put(arrVars.get(7),iniParams.getALPHAY());
-        arrVars.add(new Variable("betay", iniParams.getBETAY(), 0, 20)); 
-        finalVals.put(arrVars.get(8),finalParams.getBETAY());
-        simulVals.put(arrVars.get(8),iniParams.getBETAY());
-        arrVars.add(new Variable("emitty", iniParams.getEMITTY(), 0.05e-06, 0.3e-06));
-        finalVals.put(arrVars.get(9),finalParams.getEMITTY());
-        simulVals.put(arrVars.get(9),iniParams.getEMITTY());
+        twissVars.add(new Variable("alphay", iniParams.getALPHAY(), -5, 5));
+        finalVals.put(twissVars.get(3),finalParams.getALPHAY());
+        simulVals.put(twissVars.get(3),iniParams.getALPHAY());
+        twissVars.add(new Variable("betay", iniParams.getBETAY(), 0, 20)); 
+        finalVals.put(twissVars.get(4),finalParams.getBETAY());
+        simulVals.put(twissVars.get(4),iniParams.getBETAY());
+        twissVars.add(new Variable("emitty", iniParams.getEMITTY(), 0.05e-06, 0.3e-06));
+        finalVals.put(twissVars.get(5),finalParams.getEMITTY());
+        simulVals.put(twissVars.get(5),iniParams.getEMITTY());
                                          
        
     }
@@ -127,27 +130,32 @@ public class MatchingSolver {
         CovarianceMatrix covmat = stateElement.get(stateElement.size()-1).getCovarianceMatrix(); 
         Twiss[] twiss = covmat.computeTwiss();
         
-        simulVals.replace(arrVars.get(4),twiss[0].getAlpha());
-        simulVals.replace(arrVars.get(5),twiss[0].getBeta());
-        simulVals.replace(arrVars.get(6),twiss[0].getEmittance()*beta_gamma);
+        simulVals.replace(twissVars.get(0),twiss[0].getAlpha());
+        simulVals.replace(twissVars.get(1),twiss[0].getBeta());
+        simulVals.replace(twissVars.get(2),twiss[0].getEmittance()*beta_gamma);
                 
-        simulVals.replace(arrVars.get(7),twiss[1].getAlpha());
-        simulVals.replace(arrVars.get(8),twiss[1].getBeta());
-        simulVals.replace(arrVars.get(9),twiss[1].getEmittance()*beta_gamma);                       
+        simulVals.replace(twissVars.get(3),twiss[1].getAlpha());
+        simulVals.replace(twissVars.get(4),twiss[1].getBeta());
+        simulVals.replace(twissVars.get(5),twiss[1].getEmittance()*beta_gamma);                       
             
         PhaseVector iniPos = covmat.getMean();
-        simulVals.replace(arrVars.get(0),iniPos.getx());        
-        simulVals.replace(arrVars.get(1),iniPos.getxp());       
-        simulVals.replace(arrVars.get(2),iniPos.gety());        
-        simulVals.replace(arrVars.get(3),iniPos.getyp());
+        simulVals.replace(trajVars.get(0),iniPos.getx());        
+        simulVals.replace(trajVars.get(1),iniPos.getxp());       
+        simulVals.replace(trajVars.get(2),iniPos.gety());        
+        simulVals.replace(trajVars.get(3),iniPos.getyp());
                                                
     }
 
-    private void setParameters(Trial trial){                        
-        
-        matchRun.setInitialBeamParameters(trial.getTrialPoint().getValue(arrVars.get(0)),trial.getTrialPoint().getValue(arrVars.get(1)),trial.getTrialPoint().getValue(arrVars.get(2)),trial.getTrialPoint().getValue(arrVars.get(3)));        
-        matchRun.setBeamTwissX(trial.getTrialPoint().getValue(arrVars.get(4)),trial.getTrialPoint().getValue(arrVars.get(5)),trial.getTrialPoint().getValue(arrVars.get(6)));
-        matchRun.setBeamTwissY(trial.getTrialPoint().getValue(arrVars.get(7)),trial.getTrialPoint().getValue(arrVars.get(8)),trial.getTrialPoint().getValue(arrVars.get(9)));                    
+    private void setParameters(Trial trial, int solver){                        
+        //trajectory
+        if (solver == 0){
+            matchRun.setInitialBeamParameters(trial.getTrialPoint().getValue(trajVars.get(0)),trial.getTrialPoint().getValue(trajVars.get(1)),trial.getTrialPoint().getValue(trajVars.get(2)),trial.getTrialPoint().getValue(trajVars.get(3)));        
+        }
+        //twiss
+        if (solver ==1){
+            matchRun.setBeamTwissX(trial.getTrialPoint().getValue(twissVars.get(0)),trial.getTrialPoint().getValue(twissVars.get(1)),trial.getTrialPoint().getValue(twissVars.get(2)));
+            matchRun.setBeamTwissY(trial.getTrialPoint().getValue(twissVars.get(3)),trial.getTrialPoint().getValue(twissVars.get(4)),trial.getTrialPoint().getValue(twissVars.get(5)));                    
+        }
         
     }
     
@@ -161,14 +169,14 @@ public class MatchingSolver {
         CovarianceMatrix cov = finalProbe.getCovariance();
         Twiss[] twiss = cov.computeTwiss();
         
-        Twiss twissX = new Twiss(finalVals.get(arrVars.get(4)),finalVals.get(arrVars.get(5)),finalVals.get(arrVars.get(6))/beta_gamma);
-        Twiss twissY = new Twiss(finalVals.get(arrVars.get(7)),finalVals.get(arrVars.get(8)),finalVals.get(arrVars.get(9))/beta_gamma);
+        Twiss twissX = new Twiss(finalVals.get(twissVars.get(0)),finalVals.get(twissVars.get(1)),finalVals.get(twissVars.get(2))/beta_gamma);
+        Twiss twissY = new Twiss(finalVals.get(twissVars.get(3)),finalVals.get(twissVars.get(4)),finalVals.get(twissVars.get(5))/beta_gamma);
         Twiss twissZ = new Twiss(twiss[2].getAlpha(),twiss[2].getBeta(),twiss[2].getEmittance());
         
-        PhaseVector initial_pos = new PhaseVector(Double.toString(finalVals.get(arrVars.get(0))) + "," +
-               Double.toString(finalVals.get(arrVars.get(1))) + "," +
-               Double.toString(finalVals.get(arrVars.get(2))) + "," +
-               Double.toString(finalVals.get(arrVars.get(3))) + "," +
+        PhaseVector initial_pos = new PhaseVector(Double.toString(finalVals.get(trajVars.get(0))) + "," +
+               Double.toString(finalVals.get(trajVars.get(1))) + "," +
+               Double.toString(finalVals.get(trajVars.get(2))) + "," +
+               Double.toString(finalVals.get(trajVars.get(3))) + "," +
                                 "0," +      //z
                                 "0");       //z'
 
@@ -184,12 +192,12 @@ public class MatchingSolver {
         
         setVariables();                
         
-        Scorer scorer = new Scorer() {
+        Scorer scorerTraj = new Scorer() {
             @Override
             public double score(Trial trial, List<Variable> list) {
                 try {
                     //calculate using new initial trial values
-                    setParameters(trial);
+                    setParameters(trial,0);
                     matchRun.runSimulation();
                 } catch (ModelException | InstantiationException ex) {
                     Logger.getLogger(MatchingSolver.class.getName()).log(Level.SEVERE, null, ex);
@@ -198,24 +206,43 @@ public class MatchingSolver {
                 double score = 0;
                 double diff = 0; 
                 //Trajectory error
-                for(int i=0; i<4; i++){                        
-                    diff = 1e3*(simulVals.get(arrVars.get(i)) - finalVals.get(arrVars.get(i)));
+                for(int i=0; i<trajVars.size(); i++){                        
+                    diff = 1e3*(simulVals.get(trajVars.get(i)) - finalVals.get(trajVars.get(i)));
                     score = score + diff*diff;
-                }
+                }                                    
                 
-                //Emittance error
-                diff = (simulVals.get(arrVars.get(6)) - finalVals.get(arrVars.get(6)))/finalVals.get(arrVars.get(6));
+                return score;
+                
+            }
+                
+        };
+        
+        Scorer scorerTwiss = new Scorer() {
+            @Override
+            public double score(Trial trial, List<Variable> list) {
+                try {
+                    //calculate using new initial trial values
+                    setParameters(trial,1);
+                    matchRun.runSimulation();
+                } catch (ModelException | InstantiationException ex) {
+                    Logger.getLogger(MatchingSolver.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                getSimulationValues(matchRun.getFinalProbe());
+                double score = 0;
+                double diff = 0; 
+                 //Emittance error
+                diff = (simulVals.get(twissVars.get(2)) - finalVals.get(twissVars.get(2)))/finalVals.get(twissVars.get(2));
                 score = score + diff*diff;
-                diff = (simulVals.get(arrVars.get(9)) - finalVals.get(arrVars.get(9)))/finalVals.get(arrVars.get(9));
+                diff = (simulVals.get(twissVars.get(5)) - finalVals.get(twissVars.get(5)))/finalVals.get(twissVars.get(5));
                 score = score + diff*diff;
                 
                 //Twiss Parameter error
-                double Dbeta = (simulVals.get(arrVars.get(5)) - finalVals.get(arrVars.get(5)))/finalVals.get(arrVars.get(5));
-                double Dalpha = (simulVals.get(arrVars.get(4)) - finalVals.get(arrVars.get(4)))-finalVals.get(arrVars.get(4))*Dbeta;
-                score = score + Dbeta*Dbeta + Dalpha*Dalpha;
-                Dbeta = (simulVals.get(arrVars.get(8)) - finalVals.get(arrVars.get(8)))/finalVals.get(arrVars.get(8));
-                Dalpha = (simulVals.get(arrVars.get(7)) - finalVals.get(arrVars.get(7)))-finalVals.get(arrVars.get(7))*Dbeta;
-                score = score + Dbeta*Dbeta + Dalpha*Dalpha;              
+                double Dbeta = (simulVals.get(twissVars.get(1)) - finalVals.get(twissVars.get(1)))/finalVals.get(twissVars.get(1));
+                double Dalpha = (simulVals.get(twissVars.get(0)) - finalVals.get(twissVars.get(0)))-finalVals.get(twissVars.get(0))*Dbeta;
+                score = score + 1/2*Math.sqrt(Dbeta*Dbeta + Dalpha*Dalpha);
+                Dbeta = (simulVals.get(twissVars.get(4)) - finalVals.get(twissVars.get(4)))/finalVals.get(twissVars.get(4));
+                Dalpha = (simulVals.get(twissVars.get(3)) - finalVals.get(twissVars.get(3)))-finalVals.get(twissVars.get(3))*Dbeta;
+                score = score + 1/2*Math.sqrt(Dbeta*Dbeta + Dalpha*Dalpha);                                       
                 
                 return score;
                 
@@ -223,17 +250,26 @@ public class MatchingSolver {
                 
         };
 
-        Problem problem = ProblemFactory.getInverseSquareMinimizerProblem(arrVars, scorer, 0.0001); 
+        Problem problemTraj = ProblemFactory.getInverseSquareMinimizerProblem(trajVars, scorerTraj, 0.0001); 
 
-        Solver solver = new Solver(SolveStopperFactory.maxEvaluationsStopper( 1000 ));
+        Solver solverTraj = new Solver(SolveStopperFactory.maxEvaluationsStopper(100));
 
-        solver.solve(problem);
+        solverTraj.solve(problemTraj);
+               
+        trajVars.forEach(var->{
+            finalVals.put(var,solverTraj.getScoreBoard().getBestSolution().getTrialPoint().getValue(var));
+            simulVals.put(var,solverTraj.getScoreBoard().getBestSolution().getTrialPoint().getValue(var));
+        }); 
         
-        System.out.print(solver.getScoreBoard().getSatisfaction());
+        Problem problemTwiss = ProblemFactory.getInverseSquareMinimizerProblem(twissVars, scorerTwiss, 0.00001); 
+
+        Solver solverTwiss = new Solver(SolveStopperFactory.maxEvaluationsStopper(1000));
+
+        solverTwiss.solve(problemTwiss);
         
-        arrVars.forEach(var->{
-            finalVals.put(var,solver.getScoreBoard().getBestSolution().getTrialPoint().getValue(var));
-        });                
+        twissVars.forEach(var->{
+            finalVals.put(var,solverTwiss.getScoreBoard().getBestSolution().getTrialPoint().getValue(var));
+        });
 
     }
 }

@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -1432,86 +1433,108 @@ public class FXMLController implements Initializable {
     
      @FXML
     private void handleMatchParameters(ActionEvent event) {
+                        
+        Task<Void> task;
+        task = new Task<Void>(){
+
+            @Override
+            protected Void call() throws Exception {
         
-        MODEL_SYNC_TIMER.suspend();
-        
-        //get Sequence
-        String sequenceName = MainFunctions.mainDocument.getSequence();        
-        String Sequence = MainFunctions.mainDocument.getAccelerator().getSequences().toString();
-        String ComboSequence = MainFunctions.mainDocument.getAccelerator().getComboSequences().toString();               
-        MatchingSolver doMatch = null;
-        
-        //initializing simulation   
-        if(Sequence.contains(sequenceName)){  
-            AcceleratorSeq seq = MainFunctions.mainDocument.getAccelerator().getSequence(sequenceName);
-            doMatch = new MatchingSolver(comboBox_inputSimul.getItems().get(0),comboBox_inputSimul.getSelectionModel().getSelectedItem(), seq, 0.00001);            
-        } else if(ComboSequence.contains(sequenceName)){
-            AcceleratorSeqCombo seq = MainFunctions.mainDocument.getAccelerator().getComboSequence(sequenceName);
-            doMatch = new MatchingSolver(comboBox_inputSimul.getItems().get(0),comboBox_inputSimul.getSelectionModel().getSelectedItem(), seq, 0.00001);                    
-        }    
-        
-        if(doMatch !=null){
-            doMatch.initSimulation(beamCurrent,spaceChargeComp,spaceChargeCompElectrode,checkBox_electrode.isSelected());
-            doMatch.solve();
-            InputParameters finalResult = doMatch.newInputValues();
-            
-            Alert alert = new Alert(AlertType.INFORMATION);
-            alert.setTitle("Matching Dialog");
-            alert.setHeaderText("Matching result summary.");
-            
-            // Create expandable Exception.           
-            String resultText;          
-            resultText = "Positions: \n"+
-                         "(x, xp) = "+String.format("%.3f",finalResult.getX()*1e3)+","+String.format("%.3f",finalResult.getXP()*1e3)+"\n"+
-                         "(y, yp) = "+String.format("%.3f",finalResult.getY()*1e3)+","+String.format("%.3f",finalResult.getYP()*1e3)+"\n"+
-                         "Twiss Parameters: \n"+
-                         "(alphax, betax) = "+String.format("%.3f",finalResult.getALPHAX())+","+String.format("%.3f",finalResult.getBETAX())+"\n"+
-                         "(alphay, betay) = "+String.format("%.3f",finalResult.getALPHAY())+","+String.format("%.3f",finalResult.getBETAY())+"\n"+
-                         "Initial emittances: \n"+
-                         "(emittx, emitty) = "+String.format("%.3f",finalResult.getEMITTX()*1e6)+","+String.format("%.3f",finalResult.getEMITTY()*1e6);
+                //get Sequence
+                String sequenceName = MainFunctions.mainDocument.getSequence();        
+                String Sequence = MainFunctions.mainDocument.getAccelerator().getSequences().toString();
+                String ComboSequence = MainFunctions.mainDocument.getAccelerator().getComboSequences().toString();               
+                MatchingSolver doMatch = null;
+
+                //initializing simulation   
+                if(Sequence.contains(sequenceName)){  
+                    AcceleratorSeq seq = MainFunctions.mainDocument.getAccelerator().getSequence(sequenceName);
+                    doMatch = new MatchingSolver(comboBox_inputSimul.getItems().get(0),comboBox_inputSimul.getSelectionModel().getSelectedItem(), seq, 0.00001);            
+                } else if(ComboSequence.contains(sequenceName)){
+                    AcceleratorSeqCombo seq = MainFunctions.mainDocument.getAccelerator().getComboSequence(sequenceName);
+                    doMatch = new MatchingSolver(comboBox_inputSimul.getItems().get(0),comboBox_inputSimul.getSelectionModel().getSelectedItem(), seq, 0.00001);                    
+                }    
+
+                if(doMatch !=null){
+                    doMatch.initSimulation(beamCurrent,spaceChargeComp,spaceChargeCompElectrode,checkBox_electrode.isSelected());
+                    doMatch.solve();
+                    InputParameters finalResult = doMatch.newInputValues();
                     
-            Label label = new Label("New Input parameters:");
+                    
+                    Platform.runLater(
+                    () -> {
+                                                                           
+                        Alert alert = new Alert(AlertType.INFORMATION);
+                        alert.setTitle("Matching Dialog");
+                        alert.setHeaderText("Matching result summary.");
 
-            TextArea textArea = new TextArea(resultText);            
-            textArea.setEditable(false);
-            textArea.setWrapText(true);
+                        // Create expandable Exception.           
+                        String resultText;          
+                        resultText = "Positions: \n"+
+                                     "(x, xp) = "+String.format("%.3f",finalResult.getX()*1e3)+","+String.format("%.3f",finalResult.getXP()*1e3)+"\n"+
+                                     "(y, yp) = "+String.format("%.3f",finalResult.getY()*1e3)+","+String.format("%.3f",finalResult.getYP()*1e3)+"\n"+
+                                     "Twiss Parameters: \n"+
+                                     "(alphax, betax) = "+String.format("%.3f",finalResult.getALPHAX())+","+String.format("%.3f",finalResult.getBETAX())+"\n"+
+                                     "(alphay, betay) = "+String.format("%.3f",finalResult.getALPHAY())+","+String.format("%.3f",finalResult.getBETAY())+"\n"+
+                                     "Initial emittances: \n"+
+                                     "(emittx, emitty) = "+String.format("%.3f",finalResult.getEMITTX()*1e6)+","+String.format("%.3f",finalResult.getEMITTY()*1e6);
 
-            textArea.setMaxWidth(Double.MAX_VALUE);
-            textArea.setMaxHeight(Double.MAX_VALUE);            
-            GridPane.setVgrow(textArea, Priority.ALWAYS);
-            GridPane.setHgrow(textArea, Priority.ALWAYS);
+                        Label label = new Label("New Input parameters:");
 
-            GridPane resultContent = new GridPane();
-            resultContent.setMaxWidth(Double.MAX_VALUE);
-            resultContent.add(label, 0, 0);
-            resultContent.add(textArea, 0, 1);            
+                        TextArea textArea = new TextArea(resultText);            
+                        textArea.setEditable(false);
+                        textArea.setWrapText(true);
 
-            // Set expandable Exception into the dialog pane.
-            alert.getDialogPane().setExpandableContent(resultContent);
+                        textArea.setMaxWidth(Double.MAX_VALUE);
+                        textArea.setMaxHeight(Double.MAX_VALUE);            
+                        GridPane.setVgrow(textArea, Priority.ALWAYS);
+                        GridPane.setHgrow(textArea, Priority.ALWAYS);
 
-            ButtonType buttonTypeUse = new ButtonType("Use matching result");
-            ButtonType buttonTypeCancel = new ButtonType("Cancel");
+                        GridPane resultContent = new GridPane();
+                        resultContent.setMaxWidth(Double.MAX_VALUE);
+                        resultContent.add(label, 0, 0);
+                        resultContent.add(textArea, 0, 1);            
 
-            alert.getButtonTypes().setAll(buttonTypeUse, buttonTypeCancel);
-            
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.get() == buttonTypeUse){
-                comboBox_inputSimul.getItems().get(0).setX(finalResult.getX());
-                comboBox_inputSimul.getItems().get(0).setXP(finalResult.getXP());
-                comboBox_inputSimul.getItems().get(0).setY(finalResult.getY());
-                comboBox_inputSimul.getItems().get(0).setYP(finalResult.getYP());
-                comboBox_inputSimul.getItems().get(0).setALPHAX(finalResult.getALPHAX());
-                comboBox_inputSimul.getItems().get(0).setBETAX(finalResult.getBETAX());
-                comboBox_inputSimul.getItems().get(0).setEMITTX(finalResult.getEMITTX());
-                comboBox_inputSimul.getItems().get(0).setALPHAY(finalResult.getALPHAY());
-                comboBox_inputSimul.getItems().get(0).setBETAY(finalResult.getBETAY());
-                comboBox_inputSimul.getItems().get(0).setEMITTY(finalResult.getEMITTY());                
-                comboBox_inputSimul.getSelectionModel().select(0);
-            } 
-            
-            MODEL_SYNC_TIMER.resume();
-            
-        }                        
+                        // Set expandable Exception into the dialog pane.
+                        alert.getDialogPane().setExpandableContent(resultContent);
+
+                        ButtonType buttonTypeUse = new ButtonType("Use matching result");
+                        ButtonType buttonTypeCancel = new ButtonType("Cancel");
+
+                        alert.getButtonTypes().setAll(buttonTypeUse, buttonTypeCancel);
+
+                        Optional<ButtonType> result = alert.showAndWait();
+                        if (result.get() == buttonTypeUse){
+                            comboBox_inputSimul.getItems().get(0).setX(finalResult.getX());
+                            comboBox_inputSimul.getItems().get(0).setXP(finalResult.getXP());
+                            comboBox_inputSimul.getItems().get(0).setY(finalResult.getY());
+                            comboBox_inputSimul.getItems().get(0).setYP(finalResult.getYP());
+                            comboBox_inputSimul.getItems().get(0).setALPHAX(finalResult.getALPHAX());
+                            comboBox_inputSimul.getItems().get(0).setBETAX(finalResult.getBETAX());
+                            comboBox_inputSimul.getItems().get(0).setEMITTX(finalResult.getEMITTX());
+                            comboBox_inputSimul.getItems().get(0).setALPHAY(finalResult.getALPHAY());
+                            comboBox_inputSimul.getItems().get(0).setBETAY(finalResult.getBETAY());
+                            comboBox_inputSimul.getItems().get(0).setEMITTY(finalResult.getEMITTY());                
+                            comboBox_inputSimul.getSelectionModel().select(0);
+                        } 
+                    });  
+                    
+                    MODEL_SYNC_TIMER.resume();
+                    
+                }
+                
+                return null;
+            }
+        ;
+
+        };
+                    
+        Thread calibrate = new Thread(task);
+        calibrate.setDaemon(true); // thread will not prevent application shutdown 
+        MODEL_SYNC_TIMER.suspend();
+        calibrate.start();
+                               
+                                
         
     }
     
