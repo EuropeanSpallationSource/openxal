@@ -61,9 +61,6 @@ public class MainFunctions {
     // True if combos list is up to date
     public static SimpleBooleanProperty isCombosUpdated;
 
-    // Sleep time in ms between setting parameters and reading back.
-    private static final long sleepTime = 2000;
-
     public static SimpleBooleanProperty pauseTask;
     public static SimpleBooleanProperty stopTask;
 
@@ -224,6 +221,15 @@ public class MainFunctions {
         return mainDocument.combos.size();
     }
 
+    /**
+     * This calculates the total number of measurement points for this scan
+     */
+    public static int calculateNumMeas() {
+        if(!isCombosUpdated.getValue())
+            calculateCombos();
+        return 2+(mainDocument.combos.size()-2)*mainDocument.numberMeasurementsPerCombo;
+    }
+
     /*
      * Set a specific combo
      *
@@ -254,7 +260,7 @@ public class MainFunctions {
     }
 
     public static String getTimeString(int npoints) {
-        int seconds = (int) (npoints*sleepTime/1000);
+        int seconds = (int) (npoints*mainDocument.delayBetweenMeasurements/1000);
         int hours = (seconds - seconds%3600)/3600;
         int min = (seconds - seconds%60)/60;
         String time = ""+(seconds%60)+" s";
@@ -270,7 +276,7 @@ public class MainFunctions {
         if (!isCombosUpdated.get()) calculateCombos();
 
         if (mainDocument.nCombosDone == 0)
-            mainDocument.currentMeasurement = new double[mainDocument.combos.size()][mainDocument.pvWriteables.size()+mainDocument.pvReadbacks.size()];
+            mainDocument.currentMeasurement = new double[2+(mainDocument.combos.size()-2)*mainDocument.numberMeasurementsPerCombo][mainDocument.pvWriteables.size()+mainDocument.pvReadbacks.size()];
 
         try {
             MainFunctions.mainDocument.saveDocumentAs(new File("scanner.xml").toURI().toURL());
@@ -286,10 +292,16 @@ public class MainFunctions {
 
             @Override
             public void run() {
+
+                int nMeasThisCombo=1;
+                int nMeasDone=0;
+                if (mainDocument.nCombosDone>0)
+                    nMeasDone=1+(mainDocument.nCombosDone-1)*mainDocument.numberMeasurementsPerCombo;
+
                 while (mainDocument.nCombosDone<mainDocument.combos.size()) {
                     while (pauseTask.get()) {
                         try {
-                            Thread.sleep(sleepTime);
+                            Thread.sleep(mainDocument.delayBetweenMeasurements);
                         } catch (InterruptedException ex) {
                             Logger.getLogger(MainFunctions.class.getName()).log(Level.SEVERE, "Sleep thread interrupted", ex);
                         }
@@ -297,15 +309,25 @@ public class MainFunctions {
 
                     setCombo(mainDocument.combos.get(mainDocument.nCombosDone));
                     try {
-                        Thread.sleep(sleepTime);
+                        Thread.sleep(mainDocument.delayBetweenMeasurements);
                     } catch (InterruptedException ex) {
                         Logger.getLogger(MainFunctions.class.getName()).log(Level.SEVERE, "Sleep thread interrupted", ex);
                     }
-                    double[] readings = makeReading();
-                    System.arraycopy(mainDocument.combos.get(mainDocument.nCombosDone), 0, mainDocument.currentMeasurement[mainDocument.nCombosDone], 0, mainDocument.pvWriteables.size());
-                    System.arraycopy(readings, 0, mainDocument.currentMeasurement[mainDocument.nCombosDone], mainDocument.pvWriteables.size(), mainDocument.pvReadbacks.size());
-                    updateProgress(mainDocument.nCombosDone+1, mainDocument.combos.size());
-                    mainDocument.saveCurrentMeas(mainDocument.nCombosDone);
+
+                    // The first and last measurement is a check which we only do once
+                    if (mainDocument.nCombosDone!=0 && mainDocument.nCombosDone!=mainDocument.combos.size()-1)
+                        nMeasThisCombo=mainDocument.numberMeasurementsPerCombo;
+                    else
+                        nMeasThisCombo=1;
+                    Logger.getLogger(MainFunctions.class.getName()).log(Level.FINEST, "DBG nmeas at this combo {0}", nMeasThisCombo);
+                    for (int j=0;j<nMeasThisCombo;j++) {
+                        double[] readings = makeReading();
+                        System.arraycopy(mainDocument.combos.get(mainDocument.nCombosDone), 0, mainDocument.currentMeasurement[nMeasDone], 0, mainDocument.pvWriteables.size());
+                        System.arraycopy(readings, 0, mainDocument.currentMeasurement[nMeasDone], mainDocument.pvWriteables.size(), mainDocument.pvReadbacks.size());
+                        updateProgress(mainDocument.nCombosDone+1, mainDocument.combos.size());
+                        mainDocument.saveCurrentMeas(nMeasDone);
+                        nMeasDone++;
+                    }
                     mainDocument.nCombosDone++;
                     // if a stop is requested, break the task loop
                     if (stopTask.get())
@@ -317,10 +339,10 @@ public class MainFunctions {
 
                 // If we finished the measurement, store the new data.
                 if (mainDocument.nCombosDone == mainDocument.combos.size()) {
-                    mainDocument.dataSets.put("Measurement "+(mainDocument.numberOfMeasurements.get()+1), mainDocument.currentMeasurement);
-                    mainDocument.allPVrb.put("Measurement "+(mainDocument.numberOfMeasurements.get()+1), mainDocument.pvReadbacks.stream().map(cw -> cw.getChannel()).collect(Collectors.toList()));
-                    mainDocument.allPVw.put("Measurement "+(mainDocument.numberOfMeasurements.get()+1), mainDocument.pvWriteables.stream().map(cw -> cw.getChannel()).collect(Collectors.toList()));
-                    mainDocument.numberOfMeasurements.set(mainDocument.numberOfMeasurements.get()+1);
+                    mainDocument.dataSets.put("Measurement "+(mainDocument.numberOfScans.get()+1), mainDocument.currentMeasurement);
+                    mainDocument.allPVrb.put("Measurement "+(mainDocument.numberOfScans.get()+1), mainDocument.pvReadbacks.stream().map(cw -> cw.getChannel()).collect(Collectors.toList()));
+                    mainDocument.allPVw.put("Measurement "+(mainDocument.numberOfScans.get()+1), mainDocument.pvWriteables.stream().map(cw -> cw.getChannel()).collect(Collectors.toList()));
+                    mainDocument.numberOfScans.set(mainDocument.numberOfScans.get()+1);
                     mainDocument.nCombosDone=0;
                     try {
                         MainFunctions.mainDocument.saveDocumentAs(new File("scanner.xml").toURI().toURL());

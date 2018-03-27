@@ -858,8 +858,6 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 
                         // continuously loop through the next 3 steps
                         Logger.getLogger(VADocument.class.getName()).log(Level.INFO, "Setup to synchronize the online model periodically...");
-                        MODEL_SYNC_TIMER.setEventHandler( getOnlineModelSynchronizer() );
-                        System.out.println("Setup to synchronize the online model periodically...");
                         MODEL_SYNC_TIMER.setEventHandler(getOnlineModelSynchronizer());
                     }
 
@@ -945,7 +943,6 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
     @Override
     public void willClose() {
         Logger.getLogger(VADocument.class.getName()).log(Level.INFO, "Document will be closed");
-        System.out.println("Document will be closed");
         destroyServer();
     }
 
@@ -1861,11 +1858,8 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
             bpms = getSelectedSequence().<BPM>getAllNodesWithQualifier(QualifierFactory.qualifierWithStatusAndType(true, "BPM"));
 
             // get all the wire scanners
-            wss = getSelectedSequence().getAllNodesWithQualifier( QualifierFactory.qualifierWithStatusAndType( true, ProfileMonitor.PROFILE_MONITOR_TYPE ) );
-            Logger.getLogger(VADocument.class.getName()).log(Level.FINEST, wss.toString());
-
             wss = getSelectedSequence().getAllNodesWithQualifier(QualifierFactory.qualifierWithStatusAndType(true, ProfileMonitor.PROFILE_MONITOR_TYPE));
-            System.out.println(wss);
+            Logger.getLogger(VADocument.class.getName()).log(Level.FINEST, wss.toString());
             
             // get all the EMUs
             emus = getSelectedSequence().getAllNodesWithQualifier(QualifierFactory.qualifierWithStatusAndType(true, EMU.s_strType));
