@@ -193,6 +193,16 @@ public class ChannelSuite implements DataListener {
 		return SIGNAL_SUITE.isValid( handle );
     }
 
+
+    /**
+     * Determine whether the handle's corresponding PV is settable.
+     * @param handle The handle for which to get the attribute.
+     * @return set parameter of the PV or false if there is no entry for the handle
+     */
+    public boolean isSettable( final String handle ) {
+        return SIGNAL_SUITE.isSettable( handle );
+    }
+
     
     /** 
      * Get the channel corresponding to the specified handle.
