@@ -39,14 +39,14 @@ package xal.app.lebt;
 
 public class MainFunctions {
 
-    public static LEBTDocument mainDocument;        
+    public static LEBTDocument mainDocument;  
+        
 
     public static void initialize(LEBTDocument lebtDocument) {
 
         mainDocument = lebtDocument;
-                
-    }
-    
+                        
+    }        
   
 }
 

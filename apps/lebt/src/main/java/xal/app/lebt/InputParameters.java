@@ -61,34 +61,34 @@ public class InputParameters {
         if(nodeName instanceof NPM){
             try {
                 if(((NPM) nodeName).getChannel(NPM.ALPHA_X_TWISS_HANDLE).isConnected()){
-                    this.ALPHAX = ((NPM) nodeName).getAlphaxTwissC();
+                    this.ALPHAX = ((NPM) nodeName).getXAlphaTwiss();
                 }
                 if(((NPM) nodeName).getChannel(NPM.ALPHA_Y_TWISS_HANDLE).isConnected()){
-                    this.ALPHAY = ((NPM) nodeName).getAlphayTwissC();
+                    this.ALPHAY = ((NPM) nodeName).getYAlphaTwiss();
                 }
                 if(((NPM) nodeName).getChannel(NPM.BETA_X_TWISS_HANDLE).isConnected()){
-                    this.BETAX = ((NPM) nodeName).getBetaxTwissC();
+                    this.BETAX = ((NPM) nodeName).getXBetaTwiss();
                     if(((NPM) nodeName).getChannel(NPM.SIGMA_X_AVG_HANDLE).isConnected()){
-                        this.EMITTX = Math.pow(((NPM) nodeName).getSigmaxAvgC(),2)/BETAX*_beta_gamma;
+                        this.EMITTX = Math.pow(((NPM) nodeName).getXSigmaAvg(),2)/BETAX*_beta_gamma;
                     }
                 }
                 if(((NPM) nodeName).getChannel(NPM.BETA_Y_TWISS_HANDLE).isConnected()){
-                    this.BETAY = ((NPM) nodeName).getBetayTwissC();                                                    
+                    this.BETAY = ((NPM) nodeName).getYBetaTwiss();                                                    
                     if(((NPM) nodeName).getChannel(NPM.SIGMA_Y_AVG_HANDLE).isConnected()){
-                        this.EMITTY = Math.pow(((NPM) nodeName).getSigmayAvgC(),2)/BETAY*_beta_gamma;
+                        this.EMITTY = Math.pow(((NPM) nodeName).getYSigmaAvg(),2)/BETAY*_beta_gamma;
                     }
                 }
                 if(((NPM) nodeName).getChannel(NPM.X_AVG_HANDLE).isConnected()){
                     this.X = ((NPM) nodeName).getXAvg()*1e-03;
                 }
                 if(((NPM) nodeName).getChannel(NPM.X_P_AVG_HANDLE).isConnected()){
-                    this.XP = ((NPM) nodeName).getXpAvgC();
+                    this.XP = ((NPM) nodeName).getXpAvg();
                 }
                 if(((NPM) nodeName).getChannel(NPM.Y_AVG_HANDLE).isConnected()){
                     this.Y = ((NPM) nodeName).getYAvg()*1e-03;
                 }
                 if(((NPM) nodeName).getChannel(NPM.Y_P_AVG_HANDLE).isConnected()){
-                    this.YP = ((NPM) nodeName).getYpAvgC();  
+                    this.YP = ((NPM) nodeName).getYpAvg();  
                 }
             } catch (ConnectionException | GetException ex) {
                 Logger.getLogger(InputParameters.class.getName()).log(Level.SEVERE, null, ex);
@@ -96,22 +96,22 @@ public class InputParameters {
         } else if(nodeName instanceof EMU){
             try {
                 if(((EMU) nodeName).getChannel(EMU.EMITT_X_HANDLE).isConnected()){
-                    this.EMITTX = ((EMU) nodeName).getEmittanceX()*_beta_gamma;
+                    this.EMITTX = ((EMU) nodeName).getXEmittance()*_beta_gamma;
                 }
                 if(((EMU) nodeName).getChannel(EMU.EMITT_Y_HANDLE).isConnected()){
-                    this.EMITTY = ((EMU) nodeName).getEmittanceY()*_beta_gamma;
+                    this.EMITTY = ((EMU) nodeName).getYEmittance()*_beta_gamma;
                 }
                 if(((EMU) nodeName).getChannel(EMU.ALPHA_X_TWISS_HANDLE).isConnected()){
-                    this.ALPHAX = ((EMU) nodeName).getAlphaxTwiss();
+                    this.ALPHAX = ((EMU) nodeName).getXAlphaTwiss();
                 }
                 if(((EMU) nodeName).getChannel(EMU.ALPHA_Y_TWISS_HANDLE).isConnected()){
-                    this.ALPHAY = ((EMU) nodeName).getAlphayTwiss();
+                    this.ALPHAY = ((EMU) nodeName).getYAlphaTwiss();
                 }
                 if(((EMU) nodeName).getChannel(EMU.BETA_X_TWISS_HANDLE).isConnected()){
-                    this.BETAX = ((EMU) nodeName).getBetaxTwiss();
+                    this.BETAX = ((EMU) nodeName).getXBetaTwiss();
                 }
                 if(((EMU) nodeName).getChannel(EMU.BETA_Y_TWISS_HANDLE).isConnected()){
-                    this.BETAY = ((EMU) nodeName).getBetayTwiss();
+                    this.BETAY = ((EMU) nodeName).getYBetaTwiss();
                 }                                  
             } catch (ConnectionException | GetException ex) {
                 Logger.getLogger(InputParameters.class.getName()).log(Level.SEVERE, null, ex);
@@ -200,34 +200,34 @@ public class InputParameters {
         if(nodeName instanceof NPM){
             try {
                 if(((NPM) nodeName).getChannel(NPM.ALPHA_X_TWISS_HANDLE).isConnected()){
-                    this.ALPHAX = ((NPM) nodeName).getAlphaxTwissC();
+                    this.ALPHAX = ((NPM) nodeName).getXAlphaTwiss();
                 }
                 if(((NPM) nodeName).getChannel(NPM.ALPHA_Y_TWISS_HANDLE).isConnected()){
-                    this.ALPHAY = ((NPM) nodeName).getAlphayTwissC();
+                    this.ALPHAY = ((NPM) nodeName).getYAlphaTwiss();
                 }
                 if(((NPM) nodeName).getChannel(NPM.BETA_X_TWISS_HANDLE).isConnected()){
-                    this.BETAX = ((NPM) nodeName).getBetaxTwissC();
+                    this.BETAX = ((NPM) nodeName).getXBetaTwiss();
                     if(((NPM) nodeName).getChannel(NPM.SIGMA_X_AVG_HANDLE).isConnected()){
-                        this.EMITTX = Math.pow(((NPM) nodeName).getSigmaxAvgC(),2)/BETAX*_beta_gamma;
+                        this.EMITTX = Math.pow(((NPM) nodeName).getXSigmaAvg(),2)/BETAX*_beta_gamma;
                     }
                 }
                 if(((NPM) nodeName).getChannel(NPM.BETA_Y_TWISS_HANDLE).isConnected()){
-                    this.BETAY = ((NPM) nodeName).getBetayTwissC();                                                    
+                    this.BETAY = ((NPM) nodeName).getYBetaTwiss();                                                    
                     if(((NPM) nodeName).getChannel(NPM.SIGMA_Y_AVG_HANDLE).isConnected()){
-                        this.EMITTY = Math.pow(((NPM) nodeName).getSigmayAvgC(),2)/BETAY*_beta_gamma;
+                        this.EMITTY = Math.pow(((NPM) nodeName).getYSigmaAvg(),2)/BETAY*_beta_gamma;
                     }
                 }
                 if(((NPM) nodeName).getChannel(NPM.X_AVG_HANDLE).isConnected()){
                     this.X = ((NPM) nodeName).getXAvg()*1e-03;
                 }
                 if(((NPM) nodeName).getChannel(NPM.X_P_AVG_HANDLE).isConnected()){
-                    this.XP = ((NPM) nodeName).getXpAvgC();
+                    this.XP = ((NPM) nodeName).getXpAvg();
                 }
                 if(((NPM) nodeName).getChannel(NPM.Y_AVG_HANDLE).isConnected()){
                     this.Y = ((NPM) nodeName).getYAvg()*1e-03;
                 }
                 if(((NPM) nodeName).getChannel(NPM.Y_P_AVG_HANDLE).isConnected()){
-                    this.YP = ((NPM) nodeName).getYpAvgC();  
+                    this.YP = ((NPM) nodeName).getYpAvg();  
                 }
             } catch (ConnectionException | GetException ex) {
                 Logger.getLogger(InputParameters.class.getName()).log(Level.SEVERE, null, ex);
@@ -235,26 +235,26 @@ public class InputParameters {
         } else if(nodeName instanceof EMU){
             try {
                 if(((EMU) nodeName).getChannel(EMU.EMITT_X_HANDLE).isConnected()){
-                    this.EMITTX = ((EMU) nodeName).getEmittanceX()*_beta_gamma;
+                    this.EMITTX = ((EMU) nodeName).getXEmittance()*_beta_gamma;
                 }
                 if(((EMU) nodeName).getChannel(EMU.EMITT_Y_HANDLE).isConnected()){
-                    this.EMITTY = ((EMU) nodeName).getEmittanceY()*_beta_gamma;
+                    this.EMITTY = ((EMU) nodeName).getYEmittance()*_beta_gamma;
                 }
                 if(((EMU) nodeName).getChannel(EMU.ALPHA_X_TWISS_HANDLE).isConnected()){
-                    this.ALPHAX = ((EMU) nodeName).getAlphaxTwiss();
+                    this.ALPHAX = ((EMU) nodeName).getXAlphaTwiss();
                 }
                 if(((EMU) nodeName).getChannel(EMU.ALPHA_Y_TWISS_HANDLE).isConnected()){
-                    this.ALPHAY = ((EMU) nodeName).getAlphayTwiss();
+                    this.ALPHAY = ((EMU) nodeName).getYAlphaTwiss();
                 }
                 if(((EMU) nodeName).getChannel(EMU.BETA_X_TWISS_HANDLE).isConnected()){
-                    this.BETAX = ((EMU) nodeName).getBetaxTwiss();
+                    this.BETAX = ((EMU) nodeName).getXBetaTwiss();
                 }
                 if(((EMU) nodeName).getChannel(EMU.BETA_Y_TWISS_HANDLE).isConnected()){
-                    this.BETAY = ((EMU) nodeName).getBetayTwiss();
-                }                
+                    this.BETAY = ((EMU) nodeName).getYBetaTwiss();
+                }                                  
             } catch (ConnectionException | GetException ex) {
                 Logger.getLogger(InputParameters.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            }      
         }
     }
 

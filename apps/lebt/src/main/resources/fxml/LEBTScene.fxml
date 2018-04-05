@@ -222,9 +222,9 @@
                               <Font size="16.0" />
                            </font>
                         </Label>
-                        <Circle fx:id="electrodeStatus" fill="GREEN" layoutX="643.0" layoutY="46.0" radius="8.0" stroke="#9e9c9c" strokeType="INSIDE" AnchorPane.topAnchor="45.0" />
+                        <Circle fx:id="electrodeStatus" fill="GREEN" layoutX="618.0" layoutY="53.0" radius="8.0" stroke="#9e9c9c" strokeType="INSIDE" AnchorPane.topAnchor="45.0" />
                         <CheckBox fx:id="checkBox_electrode" contentDisplay="RIGHT" layoutX="536.0" layoutY="44.0" mnemonicParsing="false" selected="true" stylesheets="@../styles/ToggleSwitch.css" text="ON" AnchorPane.leftAnchor="530.0" AnchorPane.topAnchor="44.0" />
-                        <Label layoutX="659.0" layoutY="37.0" text="PS Status" AnchorPane.topAnchor="45.0" />
+                        <Label layoutX="634.0" layoutY="45.0" text="PS Status" AnchorPane.topAnchor="45.0" />
                         <TextField fx:id="textField_sccelectrode" layoutX="533.0" layoutY="66.0" prefWidth="65.0" AnchorPane.leftAnchor="530.0" AnchorPane.topAnchor="75.0" />
                         <Label layoutX="602.0" layoutY="79.0" text="Space charge compensation" AnchorPane.topAnchor="79.0" />
                         <Label layoutX="533.0" layoutY="150.0" text="Chopper:" AnchorPane.leftAnchor="530.0" AnchorPane.topAnchor="145.0">
@@ -232,7 +232,7 @@
                               <Font size="16.0" />
                            </font>
                         </Label>
-                        <CheckBox fx:id="checkBox_chopper" contentDisplay="RIGHT" layoutX="617.0" layoutY="150.0" mnemonicParsing="false" selected="true" stylesheets="@../styles/ToggleSwitch.css" text="ON" AnchorPane.leftAnchor="617.0" AnchorPane.topAnchor="145.0" />
+                        <CheckBox fx:id="checkBox_chopper" contentDisplay="RIGHT" layoutX="608.0" layoutY="145.0" mnemonicParsing="false" selected="true" stylesheets="@../styles/ToggleSwitch.css" text="ON" AnchorPane.leftAnchor="608.0" AnchorPane.topAnchor="145.0" />
                         <GridPane layoutX="864.0" layoutY="105.0" AnchorPane.leftAnchor="530.0" AnchorPane.topAnchor="170.0">
                           <columnConstraints>
                             <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="58.0" />
@@ -256,6 +256,8 @@
                               <Label text="RB (ms)" GridPane.columnIndex="3" />
                            </children>
                         </GridPane>
+                        <Circle fx:id="chopperStatus" fill="GREEN" layoutX="696.0" layoutY="156.0" radius="8.0" stroke="#9e9c9c" strokeType="INSIDE" />
+                        <Label layoutX="712.0" layoutY="147.0" text="PS Status" />
                      </children>
                   </AnchorPane>
             </content>
@@ -308,11 +310,11 @@
                               <Font size="16.0" />
                            </font>
                         </Label>
-                        <RadioButton layoutX="116.0" layoutY="133.0" mnemonicParsing="false" selected="true" text="Faraday Cup" AnchorPane.leftAnchor="125.0" AnchorPane.topAnchor="145.0">
+                        <RadioButton layoutX="116.0" layoutY="133.0" mnemonicParsing="false" selected="true" text="LEBT-010:PBI-FC-001" AnchorPane.leftAnchor="125.0" AnchorPane.topAnchor="145.0">
                            <toggleGroup>
                               <ToggleGroup fx:id="toggleGroup_currentBI" />
                            </toggleGroup></RadioButton>
-                        <RadioButton layoutX="116.0" layoutY="162.0" mnemonicParsing="false" text="Beam Current Monitor" toggleGroup="$toggleGroup_currentBI" AnchorPane.leftAnchor="125.0" AnchorPane.topAnchor="175.0" />
+                        <RadioButton layoutX="116.0" layoutY="162.0" mnemonicParsing="false" text="LEBT-010:PBI-BCM-001" toggleGroup="$toggleGroup_currentBI" AnchorPane.leftAnchor="125.0" AnchorPane.topAnchor="175.0" />
                         <Label fx:id="label_FC" layoutX="20.0" layoutY="129.0" prefHeight="27.0" prefWidth="90.0" style="-fx-background-color: ffffff;" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="141.0" />
                         <Label fx:id="label_BCM" layoutX="29.0" layoutY="171.0" prefHeight="27.0" prefWidth="90.0" style="-fx-background-color: ffffff;" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="171.0" />
                         <Label fx:id="label_Doppler" layoutX="20.0" layoutY="230.0" prefHeight="27.0" prefWidth="90.0" style="-fx-background-color: ffffff;" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="240.0" />

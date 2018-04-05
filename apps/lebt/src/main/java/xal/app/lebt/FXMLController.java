@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
@@ -46,12 +47,14 @@ import xal.ca.Channel;
 import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.ca.PutException;
+import xal.extension.jels.smf.impl.Chopper;
 import xal.extension.jels.smf.impl.EMU;
 import xal.extension.jels.smf.impl.ESSIonSourceCoil;
 import xal.extension.jels.smf.impl.ESSIonSourceMFC;
 import xal.extension.jels.smf.impl.ESSIonSourceMagnetron;
 import xal.extension.jels.smf.impl.Iris;
 import xal.extension.jels.smf.impl.NPM;
+import xal.extension.jels.smf.impl.RepellerElectrode;
 import xal.model.ModelException;
 import xal.smf.Accelerator;
 import xal.smf.AcceleratorNode;
@@ -92,7 +95,6 @@ public class FXMLController implements Initializable {
     //defining simulation
     private SimulationRunner newRun;
     private double[][] surroundings;
-    private Accelerator accelerator;
     /** timer to synch the readbacks with the setpoints and also sync the model */
     private DispatchTimer MODEL_SYNC_TIMER;
 
@@ -212,10 +214,23 @@ public class FXMLController implements Initializable {
     @FXML private TextField textField_N2flow;
     @FXML private Label label_N2flowRB;    
     @FXML private ComboBox<InputParameters> comboBox_inputSimul;
+    @FXML
+    private Circle chopperStatus;
 
              
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        
+        //Check if the accelerator file contains the LEBT and Ion Source sequences
+        if(MainFunctions.mainDocument.getAccelerator().findSequence("LEBT")==null || MainFunctions.mainDocument.getAccelerator().findSequence("ISRC")==null){
+             Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("Error!");
+            alert.setHeaderText("Accelerator file has no LEBT and/or Ion Source sequence.");
+            alert.setContentText("Check inputs and try again");
+            alert.showAndWait();
+            Logger.getLogger(FXMLController.class.getName()).log(Level.FINER, "Accelerator file has no LEBT and/or Ion Source sequence.");
+            System.exit(0);
+        }
         
         // timer to synchronize readbacks with setpoints as well as the online model
         MODEL_SYNC_TIMER = DispatchTimer.getCoalescingInstance( DispatchQueue.createSerialQueue( "" ), getOnlineModelSynchronizer() );
@@ -435,7 +450,7 @@ public class FXMLController implements Initializable {
                
         //Ion Source
         AcceleratorSeq sequence = accl.getSequence("ISRC");
-        AcceleratorNode Magnetron = sequence.getNodeWithId("MAGNETRON");
+        AcceleratorNode Magnetron = sequence.getNodesOfType("ISM").get(0);
         displayValues.put(Magnetron.getChannel(ESSIonSourceMagnetron.FORWD_PRW_RB_HANDLE),label_magnetronRB);
         setValues.put(Magnetron.getChannel(ESSIonSourceMagnetron.FORWD_PRW_S_HANDLE),textField_magnetron);
         textField_magnetron.focusedProperty().addListener((obs, oldVal, newVal) ->{
@@ -452,7 +467,7 @@ public class FXMLController implements Initializable {
                 }
             }
         });
-        AcceleratorNode HighVoltage = sequence.getNodeWithId("MFC");
+        AcceleratorNode HighVoltage = sequence.getNodesOfType("ISMFC").get(0);
         displayValues.put(HighVoltage.getChannel(ESSIonSourceMFC.VOLTAGE_RB_HANDLE),label_highVoltageRB);
         setValues.put(HighVoltage.getChannel(ESSIonSourceMFC.VOLTAGE_SET_HANDLE),textField_highVoltage);
         textField_highVoltage.focusedProperty().addListener((obs, oldVal, newVal) ->{
@@ -485,7 +500,7 @@ public class FXMLController implements Initializable {
                 }
             }
         });
-        AcceleratorNode Coil1 = sequence.getNodeWithId("COIL01");
+        AcceleratorNode Coil1 = sequence.getNodesOfType("ISC").get(0);
         displayValues.put(Coil1.getChannel(ESSIonSourceCoil.I_HANDLE),label_coil1RB);
         setValues.put(Coil1.getChannel(ESSIonSourceCoil.I_SET_HANDLE),textField_coil1);
         textField_coil1.focusedProperty().addListener((obs, oldVal, newVal) ->{
@@ -502,7 +517,7 @@ public class FXMLController implements Initializable {
                 }
             }
         });
-        AcceleratorNode Coil2 = sequence.getNodeWithId("COIL02");
+        AcceleratorNode Coil2 = sequence.getNodesOfType("ISC").get(1);
         displayValues.put(Coil2.getChannel(ESSIonSourceCoil.I_HANDLE),label_coil2RB);
         setValues.put(Coil2.getChannel(ESSIonSourceCoil.I_SET_HANDLE),textField_coil2);
         textField_coil2.focusedProperty().addListener((obs, oldVal, newVal) ->{
@@ -519,7 +534,7 @@ public class FXMLController implements Initializable {
                 }
             }
         });
-        AcceleratorNode Coil3 = sequence.getNodeWithId("COIL03");
+        AcceleratorNode Coil3 = sequence.getNodesOfType("ISC").get(2);
         displayValues.put(Coil3.getChannel(ESSIonSourceCoil.I_HANDLE),label_coil3RB);
         setValues.put(Coil3.getChannel(ESSIonSourceCoil.I_SET_HANDLE),textField_coil3);
         textField_coil3.focusedProperty().addListener((obs, oldVal, newVal) ->{
@@ -538,7 +553,7 @@ public class FXMLController implements Initializable {
         });
         //LEBT
         sequence = accl.getSequence("LEBT");
-        AcceleratorNode Solenoid1 = sequence.getNodeWithId("FM1:MFM");
+        AcceleratorNode Solenoid1 = sequence.getNodeWithId("LEBT-010:BMD-Sol-01");
         displayValues.put(Solenoid1.getChannel("I"),label_sol1currentRB);
         displayValues.put(Solenoid1.getChannel("fieldRB"),label_sol1fieldRB);
         displayValues.put(Solenoid1.getChannel("I_Set"),label_sol1current);
@@ -557,7 +572,7 @@ public class FXMLController implements Initializable {
                 }
             }
         });
-        AcceleratorNode  Solenoid2 = sequence.getNodeWithId("FM2:MFM");
+        AcceleratorNode  Solenoid2 = sequence.getNodeWithId("LEBT-010:BMD-Sol-02");
         displayValues.put(Solenoid2.getChannel("I"),label_sol2currentRB);
         displayValues.put(Solenoid2.getChannel("I_Set"),label_sol2current);
         displayValues.put(Solenoid2.getChannel("fieldRB"),label_sol2fieldRB);
@@ -576,7 +591,7 @@ public class FXMLController implements Initializable {
                 }
             }
         });
-        AcceleratorNode CV1 = sequence.getNodeWithId("ST1-VC1");
+        AcceleratorNode CV1 = sequence.getNodeWithId("LEBT-010:BMD-CV-01:1");
         displayValues.put(CV1.getChannel("I"),label_CV1currentRB);
         displayValues.put(CV1.getChannel("I_Set"),label_CV1current);
         displayValues.put(CV1.getChannel("fieldRB"),label_CV1fieldRB);
@@ -595,7 +610,7 @@ public class FXMLController implements Initializable {
                 }
             }
         });
-        AcceleratorNode CV2 = sequence.getNodeWithId("ST2-VC1");
+        AcceleratorNode CV2 = sequence.getNodeWithId("LEBT-010:BMD-CV-02:1");
         displayValues.put(CV2.getChannel("I"),label_CV2currentRB);
         displayValues.put(CV2.getChannel("I_Set"),label_CV2current);
         displayValues.put(CV2.getChannel("fieldRB"),label_CV2fieldRB);
@@ -614,7 +629,7 @@ public class FXMLController implements Initializable {
                 }
             }
         });
-        AcceleratorNode CH1 = sequence.getNodeWithId("ST1-HC1");
+        AcceleratorNode CH1 = sequence.getNodeWithId("LEBT-010:BMD-CH-01:1");
         displayValues.put(CH1.getChannel("I"),label_CH1currentRB);
         displayValues.put(CH1.getChannel("I_Set"),label_CH1current);
         displayValues.put(CH1.getChannel("fieldRB"),label_CH1fieldRB);
@@ -633,7 +648,7 @@ public class FXMLController implements Initializable {
                 }
             }
         });
-        AcceleratorNode CH2 = sequence.getNodeWithId("ST2-HC1");
+        AcceleratorNode CH2 = sequence.getNodeWithId("LEBT-010:BMD-CH-02:1");
         displayValues.put(CH2.getChannel("I"),label_CH2currentRB);
         displayValues.put(CH2.getChannel("I_Set"),label_CH2current);
         displayValues.put(CH2.getChannel("fieldRB"),label_CH2fieldRB);
@@ -653,7 +668,7 @@ public class FXMLController implements Initializable {
             }
         });
         
-        AcceleratorNode IrisEquip = sequence.getNodeWithId("IRIS");
+        AcceleratorNode IrisEquip = sequence.getNodesOfType("IRIS").get(0);
         displayValues.put(IrisEquip.getChannel(Iris.APERTURE_RB_HANDLE),label_irisApertureRB);
         setValues.put(IrisEquip.getChannel(Iris.APERTURE_SET_HANDLE),textField_irisAperture);
         textField_irisAperture.focusedProperty().addListener((obs, oldVal, newVal) ->{
@@ -707,30 +722,62 @@ public class FXMLController implements Initializable {
         });
         
         
-        AcceleratorNode Chopper = sequence.getNodeWithId("CHOPPER");
-       // displayValues.put(Chopper.getChannel("volR"),label_chopperVoltageRB);
-      //  setValues.put(Chopper.getChannel("volS"),textField_chopperVoltage);
-      //  textField_chopperVoltage.focusedProperty().addListener((obs, oldVal, newVal) ->{
-      //      if(!newVal){
-      //          try {
-      //              Chopper.getChannel("volS").putVal(Double.parseDouble(textField_chopperVoltage.getText()));
-      //          } catch (ConnectionException | PutException ex) {
-      //              Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-      //          }
-      //      }
-      //  });        
+        AcceleratorNode Chop = sequence.getNodesOfType("CHP").get(0);
+        displayValues.put(Chop.getChannel(Chopper.DELAY_RB_HANDLE),label_chopperDelayRB);
+        setValues.put(Chop.getChannel(Chopper.DELAY_SET_HANDLE),textField_chopperDelay);
+        displayValues.put(Chop.getChannel(Chopper.LENGTH_RB_HANDLE),label_chopperLengthRB);
+        setValues.put(Chop.getChannel(Chopper.LENGTH_SET_HANDLE),textField_chopperLength);
+        displayValues.put(Chop.getChannel(Chopper.STATUS_RB_HANDLE),null);
+        setValues.put(Chop.getChannel(Chopper.STATUS_SET_HANDLE),null);
+        textField_chopperDelay.focusedProperty().addListener((obs, oldVal, newVal) ->{
+            if(!newVal){
+                try {
+                    double val = Double.parseDouble(textField_chopperDelay.getText());
+                    if(val > 0){
+                        Chop.getChannel(Chopper.DELAY_SET_HANDLE).putVal(val);
+                    } else {
+                        textField_chopperDelay.setText(Double.toString(Chop.getChannel(Chopper.DELAY_RB_HANDLE).getValDbl()));
+                    }
+                } catch (ConnectionException | PutException | GetException ex) {
+                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });  
+        textField_chopperLength.focusedProperty().addListener((obs, oldVal, newVal) ->{
+            if(!newVal){
+                try {
+                    double val = Double.parseDouble(textField_chopperLength.getText());
+                    if(val > 0){
+                        Chop.getChannel(Chopper.LENGTH_SET_HANDLE).putVal(val);
+                    } else {
+                        textField_chopperLength.setText(Double.toString(Chop.getChannel(Chopper.LENGTH_RB_HANDLE).getValDbl()));
+                    }
+                } catch (ConnectionException | PutException | GetException ex) {
+                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });     
 
-        //AcceleratorNode Electrode = sequence.getNodeWithId("ELECTRODE");
-        //displayValues.put(Electrode.getChannel("V"),null);
-        //displayValues.put(Electrode.getChannel("V"),null);
-        
+        AcceleratorNode Electrode = sequence.getNodesOfType("REP").get(0);
+        displayValues.put(Electrode.getChannel(RepellerElectrode.STATUS_RB_HANDLE),null);
+               
         //define electrode properties
-        checkBox_chopper.setTooltip(new Tooltip("Turns Chopper On and OFF."));
+        checkBox_chopper.setTooltip(new Tooltip("Turns Chopper On and OFF.")); 
         checkBox_chopper.selectedProperty().addListener((obs, oldVal, newVal) ->{ 
             if(newVal){
-                checkBox_chopper.setText("ON");  
+                checkBox_chopper.setText("ON"); 
+                try {
+                    Chop.getChannel(Chopper.STATUS_SET_HANDLE).putVal(1);
+                } catch (ConnectionException | PutException ex) {
+                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                }
             } else {
-                checkBox_chopper.setText("OFF");                        
+                checkBox_chopper.setText("OFF");  
+                try {
+                    Chop.getChannel(Chopper.STATUS_SET_HANDLE).putVal(0);
+                } catch (ConnectionException | PutException ex) {
+                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
         
@@ -738,22 +785,20 @@ public class FXMLController implements Initializable {
         checkBox_electrode.setTooltip(new Tooltip("Turns RFQ reppeler electrode On and OFF in the simulation only."));
         checkBox_electrode.selectedProperty().addListener((obs, oldVal, newVal) ->{ 
             if(newVal){
-                checkBox_electrode.setText("ON");
-                electrodeStatus.setFill(Color.GREEN); 
+                checkBox_electrode.setText("ON");                
                 textField_sccelectrode.setDisable(false);
                 textField_sccelectrode.setText(Double.toString(spaceChargeCompElectrode));
             } else {
-                checkBox_electrode.setText("OFF");
-                electrodeStatus.setFill(Color.RED);
+                checkBox_electrode.setText("OFF");                
                 textField_sccelectrode.setDisable(true);
                 textField_sccelectrode.setText(Double.toString(spaceChargeComp));                
             }
         });
         
         //Disgnostics equipment
-        AcceleratorNode FC = sequence.getNodeWithId("FC1");
-        AcceleratorNode BCM = sequence.getNodeWithId("BCM1");
-        AcceleratorNode Doppler = sequence.getNodeWithId("DOPPLER");
+        AcceleratorNode FC = sequence.getNodeWithId("LEBT-010:PBI-FC-001");
+        AcceleratorNode BCM = sequence.getNodeWithId("LEBT-010:PBI-BCM-001");
+        AcceleratorNode Doppler = sequence.getNodeWithId("LEBT-010:PBI-Dpl-001");
         displayValues.put(FC.getChannel(CurrentMonitor.I_AVG_HANDLE),label_FC);
         displayValues.put(BCM.getChannel(CurrentMonitor.I_AVG_HANDLE),label_BCM);
         displayValues.put(Doppler.getChannel(CurrentMonitor.I_AVG_HANDLE),label_Doppler);
@@ -986,8 +1031,8 @@ public class FXMLController implements Initializable {
             sigmaOffsetY[i] = new ArrayList<Double>();
         }                         
         
-        MODEL_SYNC_TIMER.setEventHandler( getOnlineModelSynchronizer() );        
-      
+        MODEL_SYNC_TIMER.setEventHandler( getOnlineModelSynchronizer() );                    
+        
         MainFunctions.mainDocument.getSequenceProperty().addListener((obs, oldVal, newVal) ->{ 
             
             if(!newVal.equals(null) && !newVal.matches("ISRC")){
@@ -1089,41 +1134,60 @@ public class FXMLController implements Initializable {
      */
     private void updateGUI(){ 
                     
-        displayValues.keySet().forEach(channel ->{             
-            if (channel.isConnected()){                
-                try {
-                    displayValues.get(channel).setText(String.format("%.3f",channel.getValDbl()));
-                } catch (ConnectionException | GetException ex) {
-                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                displayValues.get(channel).setStyle("-fx-background-color: white;");                
+        displayValues.keySet().forEach(channel ->{
+            if (displayValues.get(channel)!=null){
+                if (channel.isConnected()){
+                    try {
+                        displayValues.get(channel).setText(String.format("%.3f",channel.getValDbl()));
+                    } catch (ConnectionException | GetException ex) {
+                        Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    displayValues.get(channel).setStyle("-fx-background-color: white;");
+                } else {
+                    displayValues.get(channel).setStyle("-fx-background-color: magenta;");
+                } 
             } else {
-                displayValues.get(channel).setStyle("-fx-background-color: magenta;");
+                if (channel.isConnected()){                    
+                    try {
+                        Integer val = channel.getValInt();
+                        if(channel.channelName().contains("Chop")){  
+                            if(val==1){
+                                chopperStatus.setFill(Color.GREEN);
+                            } else {
+                                chopperStatus.setFill(Color.RED);
+                            }
+                        }
+                        if(channel.channelName().contains("Rep")){
+                            if(val==1){
+                                electrodeStatus.setFill(Color.GREEN);
+                            } else {
+                                electrodeStatus.setFill(Color.RED);
+                            }
+                        }
+                    } catch (ConnectionException | GetException ex) {
+                        Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                    }                    
+                }
             }
+            
         }); 
 
         setValues.keySet().forEach(channel ->{             
-            if (channel.isConnected()){
-                setValues.get(channel).setStyle("-fx-background-color: white;");
-                setValues.get(channel).setDisable(false);
-            } else {
-                setValues.get(channel).setStyle("-fx-background-color: magenta;");
-                setValues.get(channel).setDisable(true);
+            if(setValues.get(channel)!=null){
+                if (channel.isConnected()){
+                    setValues.get(channel).setStyle("-fx-background-color: white;");
+                    setValues.get(channel).setDisable(false);
+                } else {
+                    setValues.get(channel).setStyle("-fx-background-color: magenta;");
+                    setValues.get(channel).setDisable(true);
+                }
             }
-        }); 
-
+        });         
 
         //Display Current if combo box is selected
         if (comboBox_currentFC.isSelected()){
             RadioButton currentBI = (RadioButton) toggleGroup_currentBI.getSelectedToggle();
-            String nodeBI = null;
-            if (currentBI.getText().equals("Faraday Cup")){
-                nodeBI = "FC1";
-            } else if (currentBI.getText().equals("Beam Current Monitor")){
-                nodeBI = "BCM";
-            } else if (currentBI.getText().equals("Doppler")){
-                nodeBI = "DOPPLER";
-            }
+            String nodeBI = currentBI.getText();            
             if(nodeBI!=null){
                 Channel currentMonitor = MainFunctions.mainDocument.getAccelerator().getNode(nodeBI).getChannel(CurrentMonitor.I_AVG_HANDLE);
                 if (currentMonitor.isConnected()){
@@ -1193,12 +1257,12 @@ public class FXMLController implements Initializable {
                 npms.forEach((monitor) -> {
                     if(monitor.getChannel(NPM.SIGMA_X_AVG_HANDLE).isConnected() && monitor.getChannel(NPM.SIGMA_Y_AVG_HANDLE).isConnected()){
                         try {
-                            seriesNPMsigma[0].getData().add(new XYChart.Data(monitor.getSDisplay(),scale*monitor.getSigmaxAvgC()*1.0e+3));
-                            seriesNPMsigma[0].getData().add(new XYChart.Data(monitor.getSDisplay(),scale*monitor.getSigmaxAvgC()*-1.0e+3));
-                            seriesNPMsigma[1].getData().add(new XYChart.Data(monitor.getSDisplay(),scale*monitor.getSigmayAvgC()*1.0e+3));
-                            seriesNPMsigma[1].getData().add(new XYChart.Data(monitor.getSDisplay(),scale*monitor.getSigmayAvgC()*-1.0e+3));
-                            seriesNPMsigmaCyl.getData().add(new XYChart.Data(monitor.getSDisplay(),scale*Math.max(monitor.getSigmaxAvgC(), monitor.getSigmayAvgC())*1.0e+3));
-                            seriesNPMsigmaCyl.getData().add(new XYChart.Data(monitor.getSDisplay(),scale*Math.min(monitor.getSigmaxAvgC(), monitor.getSigmayAvgC())*-1.0e+3));
+                            seriesNPMsigma[0].getData().add(new XYChart.Data(monitor.getSDisplay(),scale*monitor.getXSigmaAvg()*1.0e+3));
+                            seriesNPMsigma[0].getData().add(new XYChart.Data(monitor.getSDisplay(),scale*monitor.getXSigmaAvg()*-1.0e+3));
+                            seriesNPMsigma[1].getData().add(new XYChart.Data(monitor.getSDisplay(),scale*monitor.getYSigmaAvg()*1.0e+3));
+                            seriesNPMsigma[1].getData().add(new XYChart.Data(monitor.getSDisplay(),scale*monitor.getYSigmaAvg()*-1.0e+3));
+                            seriesNPMsigmaCyl.getData().add(new XYChart.Data(monitor.getSDisplay(),scale*Math.max(monitor.getXSigmaAvg(), monitor.getYSigmaAvg())*1.0e+3));
+                            seriesNPMsigmaCyl.getData().add(new XYChart.Data(monitor.getSDisplay(),scale*Math.min(monitor.getXSigmaAvg(), monitor.getYSigmaAvg())*-1.0e+3));
                         } catch (ConnectionException | GetException ex) {
                             Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                         }
@@ -1209,13 +1273,13 @@ public class FXMLController implements Initializable {
                 npms.forEach((monitor) -> {
                     if(monitor.getChannel(NPM.SIGMA_X_AVG_HANDLE).isConnected() && monitor.getChannel(NPM.SIGMA_Y_AVG_HANDLE).isConnected()){
                         try {
-                            seriesNPMsigma[0].getData().add(new XYChart.Data(monitor.getSDisplay(),scale*monitor.getSigmaxAvgC()*1.0e+3+monitor.getXAvg()));
-                            seriesNPMsigma[0].getData().add(new XYChart.Data(monitor.getSDisplay(),scale*monitor.getSigmaxAvgC()*-1.0e+3+monitor.getXAvg()));
-                            seriesNPMsigma[1].getData().add(new XYChart.Data(monitor.getSDisplay(),scale*monitor.getSigmayAvgC()*1.0e+3+monitor.getYAvg()));
-                            seriesNPMsigma[1].getData().add(new XYChart.Data(monitor.getSDisplay(),scale*monitor.getSigmayAvgC()*-1.0e+3+monitor.getYAvg()));
+                            seriesNPMsigma[0].getData().add(new XYChart.Data(monitor.getSDisplay(),scale*monitor.getXSigmaAvg()*1.0e+3+monitor.getXAvg()));
+                            seriesNPMsigma[0].getData().add(new XYChart.Data(monitor.getSDisplay(),scale*monitor.getXSigmaAvg()*-1.0e+3+monitor.getXAvg()));
+                            seriesNPMsigma[1].getData().add(new XYChart.Data(monitor.getSDisplay(),scale*monitor.getYSigmaAvg()*1.0e+3+monitor.getYAvg()));
+                            seriesNPMsigma[1].getData().add(new XYChart.Data(monitor.getSDisplay(),scale*monitor.getYSigmaAvg()*-1.0e+3+monitor.getYAvg()));
                             double posR = new Complex(monitor.getXAvg(),monitor.getYAvg()).modulus();
-                            seriesNPMsigmaCyl.getData().add(new XYChart.Data(monitor.getSDisplay(),scale*Math.max(monitor.getSigmaxAvgC(), monitor.getSigmayAvgC())*1.0e+3+posR));
-                            seriesNPMsigmaCyl.getData().add(new XYChart.Data(monitor.getSDisplay(),scale*Math.max(monitor.getSigmaxAvgC(), monitor.getSigmayAvgC())*-1.0e+3+posR));
+                            seriesNPMsigmaCyl.getData().add(new XYChart.Data(monitor.getSDisplay(),scale*Math.max(monitor.getXSigmaAvg(), monitor.getYSigmaAvg())*1.0e+3+posR));
+                            seriesNPMsigmaCyl.getData().add(new XYChart.Data(monitor.getSDisplay(),scale*Math.max(monitor.getXSigmaAvg(), monitor.getYSigmaAvg())*-1.0e+3+posR));
                         } catch (ConnectionException | GetException ex) {
                             Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                         }
