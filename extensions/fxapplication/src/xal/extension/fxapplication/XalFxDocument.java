@@ -169,10 +169,13 @@ abstract public class XalFxDocument {
         this.mainStage = mainStage;
     }
     
-     public Accelerator getAccelerator() {
+    public Accelerator getAccelerator() {
         return accelerator.getAccelerator();
     }
-
+    
+    public AcceleratorProperty getAcceleratorProperty() {
+        return accelerator;
+    }
 
 }
 
