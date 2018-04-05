@@ -33,8 +33,8 @@ public class ReadbackSetRecord {
 
     /** Constructor */
     public ReadbackSetRecord( final AcceleratorNode node, final Channel readChannel, final Channel setChannel ) {
-        NODE = node;
-        READ_CHANNEL = readChannel;
+        NODE = node;        
+        READ_CHANNEL = readChannel;        
         SET_CHANNEL = setChannel;
     }
 
