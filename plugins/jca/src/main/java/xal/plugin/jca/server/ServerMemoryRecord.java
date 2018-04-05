@@ -59,11 +59,17 @@ public class ServerMemoryRecord extends ServerMemoryProcessVariable {
         upperCtrlLimitPV = new ServerMemoryProcessVariable(name+".DRVH", eventCallback, new double[] {0.}, channelServer); 
         
         //2018-03-20 Natalia Milas: added PREC field in order to be able to test archiver
-        prec = new ServerMemoryProcessVariable(name+".PREC", eventCallback, new double[] {3.0}, channelServer); 
+        prec = new ServerMemoryProcessVariable(name+".PREC", eventCallback, new short[] {(short) 0}, channelServer); 
+        setPrecision((short) 0);
                 
     }
     
-    @Override
+        @Override
+	public short getPrecision() {
+		return ((short[])prec.getValue())[0];
+	}
+    
+        @Override
 	public Number getLowerAlarmLimit() {
 		return ((double[])lowerAlarmLimitPV.getValue())[0];
 	}
