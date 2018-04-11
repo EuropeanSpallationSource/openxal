@@ -32,6 +32,7 @@ package xal.app.scanner;
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+import com.sun.javafx.charts.Legend;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -41,9 +42,11 @@ import javafx.fxml.Initializable;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Cursor;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.SplitPane;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
 import org.gillius.jfxutils.chart.ChartZoomManager;
@@ -66,13 +69,13 @@ public class Plot extends SplitPane implements Initializable {
     private StackPane analyseGraphPane; // Value injected by FXMLLoader
 
     @FXML // fx:id="pvReadbacksGraph"
-    private LineChart<Number, Number> pvReadbacksGraph; // Value injected by FXMLLoader
+    private ScannerLineChart<Number, Number> pvReadbacksGraph; // Value injected by FXMLLoader
 
     @FXML // fx:id="selectRect"
     private Rectangle selectRect; // Value injected by FXMLLoader
 
     @FXML // fx:id="pvWriteablesGraph"
-    private LineChart<Number, Number> pvWriteablesGraph; // Value injected by FXMLLoader
+    private ScannerLineChart<Number, Number> pvWriteablesGraph; // Value injected by FXMLLoader
 
     private static ChartZoomManager zoomManager;
 
@@ -150,6 +153,7 @@ public class Plot extends SplitPane implements Initializable {
                 }
                 series.setName(pvWriteables.get(i).getId());
                 pvWriteablesGraph.getData().add(series);
+                addLegendHideable(pvWriteablesGraph);
             }
             for (int i=pvWriteables.size();i<measurement[0].length;i++) {
                 XYChart.Series<Number, Number> series = new XYChart.Series();
@@ -158,10 +162,42 @@ public class Plot extends SplitPane implements Initializable {
                 }
                 series.setName(pvReadbacks.get(i-pvWriteables.size()).getId());
                 pvReadbacksGraph.getData().add(series);
+                addLegendHideable(pvReadbacksGraph);
             }
         }
     }
 
 
+    private void addLegendHideable(LineChart<Number, Number> chart) {
+        chart.getChildrenUnmodifiable().stream().filter(n -> n instanceof Legend).forEach( n -> {
+            ((Legend)n).getItems().forEach( li -> {
+                for (XYChart.Series<Number, Number> s : chart.getData()) {
+                    if (s.getName().equals(li.getText())) {
+                        li.getSymbol().setCursor(Cursor.HAND);
+                        li.getSymbol().setOnMouseClicked(me -> {
+                            if (me.getButton() == MouseButton.PRIMARY) {
+                                s.getNode().setVisible(!s.getNode().isVisible());
+                                if (s.getNode().isVisible()) {
+                                    li.getSymbol().setOpacity(1.0);
+                                } else {
+                                    li.getSymbol().setOpacity(0.2);
+                                }
+                                for (XYChart.Data<Number, Number> d : s.getData()) {
+                                    if (d.getNode() != null) {
+                                        d.getNode().setVisible(s.getNode().isVisible());
+                                    }
+                                }
+                            }
+                            // This seems like a clumsy way to trigger updateAutoRange(),
+                            // but it is the best I've found for now
+                            chart.getYAxis().setAutoRanging(false);
+                            chart.getYAxis().setAutoRanging(true);
+                        });
+                        break;
+                    }
+                }
+            });
+        });
+    }
 
 }

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import xal.app.scanner.*?>
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.SplitPane?>
@@ -14,25 +15,25 @@
     <items>
         <StackPane fx:id="analyseGraphPane" prefWidth="658.0">
            <children>
-              <LineChart fx:id="pvReadbacksGraph" animated="false" prefWidth="658.0">
+              <ScannerLineChart fx:id="pvReadbacksGraph" animated="false" prefWidth="658.0">
                 <xAxis>
                   <NumberAxis side="BOTTOM" />
                 </xAxis>
                 <yAxis>
                   <NumberAxis side="LEFT" />
                 </yAxis>
-              </LineChart>
+              </ScannerLineChart>
               <Rectangle fx:id="selectRect" arcHeight="5.0" arcWidth="5.0" fill="#ebebeb" height="522.0" mouseTransparent="true" opacity="0.2" stroke="BLACK" strokeType="INSIDE" visible="false" width="658.0" StackPane.alignment="TOP_LEFT" />
            </children>
         </StackPane>
-        <LineChart fx:id="pvWriteablesGraph" animated="false" prefWidth="658.0">
+        <ScannerLineChart fx:id="pvWriteablesGraph" animated="false" prefWidth="658.0">
             <xAxis>
               <NumberAxis side="BOTTOM" />
             </xAxis>
             <yAxis>
               <NumberAxis side="LEFT" />
             </yAxis>
-        </LineChart>
+        </ScannerLineChart>
     </items>
 <!--</SplitPane>-->
 </fx:root>
