@@ -19,6 +19,14 @@ import java.util.logging.Logger;
 
 import xal.ca.Channel;
 import xal.ca.IServerChannel;
+import xal.extension.jels.smf.impl.Chopper;
+import xal.extension.jels.smf.impl.EMU;
+import xal.extension.jels.smf.impl.ESSIonSourceCoil;
+import xal.extension.jels.smf.impl.ESSIonSourceMFC;
+import xal.extension.jels.smf.impl.ESSIonSourceMagnetron;
+import xal.extension.jels.smf.impl.Iris;
+import xal.extension.jels.smf.impl.RepellerElectrode;
+import xal.extension.jels.smf.impl.SpaceChargeCompensation;
 import xal.smf.AcceleratorNode;
 import xal.smf.AcceleratorSeq;
 import xal.smf.TimingCenter;
@@ -93,6 +101,17 @@ public class VAServer {
         registerNodeChannels( BPM.s_strType );
         registerNodeChannels( BLM.s_strType );
         registerNodeChannels( Solenoid.s_strType );
+        
+        //2018-04-05 Natalia Milas - added the creation of the channel for the elements
+        registerNodeChannels( EMU.s_strType );
+        registerNodeChannels( Chopper.s_strType );
+        registerNodeChannels( Iris.s_strType );
+        registerNodeChannels( Electromagnet.s_strType );
+        registerNodeChannels( RepellerElectrode.s_strType );
+        registerNodeChannels( SpaceChargeCompensation.s_strType );
+        registerNodeChannels( ESSIonSourceMagnetron.s_strType);
+        registerNodeChannels( ESSIonSourceMFC.s_strType );
+        registerNodeChannels( ESSIonSourceCoil.s_strType );
 
         // need to distinguish profile monitors from wire scanners which share the same type but have different soft types
         registerNodeChannels( ProfileMonitor.s_strType, ProfileMonitor.SOFTWARE_TYPE, AndTypeQualifier.qualifierWithQualifiers( new KindQualifier( ProfileMonitor.s_strType ), QualifierFactory.getSoftTypeQualifier( ProfileMonitor.SOFTWARE_TYPE ) ) );
@@ -131,6 +150,10 @@ public class VAServer {
             for ( final String handle : handles ) {
                 Logger.getLogger(VAServer.class.getName()).log(Level.INFO, "Getting channel for handle: " + handle);
                 final Channel channel = node.findChannel( handle );
+                //2018-04-05 Natalia Milas - added the VA prefix to all chanels created by the virtual accelerator
+                if(!channel.channelName().contains("VA:")){
+                    channel.setChannelName("VA:"+channel.channelName());
+                }
                 Logger.getLogger(VAServer.class.getName()).log(Level.FINER, "Channel with signal: " + channel.channelName() + " and validity: " + channel.isValid() );
                 if ( channel != null && channel.isValid() ) {
                     final String signal = channel.channelName();

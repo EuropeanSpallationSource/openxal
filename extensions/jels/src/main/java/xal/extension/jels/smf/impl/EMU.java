@@ -87,32 +87,32 @@ public class EMU extends AcceleratorNode {
     /*
      *  Process variable Gets 
      */
-    public double getEmittanceX() throws ConnectionException, GetException {
+    public double getXEmittance() throws ConnectionException, GetException {
         emittXC = lazilyGetAndConnect(EMITT_X_HANDLE, emittXC);
         return emittXC.getValDbl();
     }
 
-    public double getEmittanceY() throws ConnectionException, GetException {
+    public double getYEmittance() throws ConnectionException, GetException {
         emittYC = lazilyGetAndConnect(EMITT_Y_HANDLE, emittYC);
         return emittYC.getValDbl();
     }
 
-    public double getAlphayTwiss() throws ConnectionException, GetException {
+    public double getYAlphaTwiss() throws ConnectionException, GetException {
         alphayTwissC = lazilyGetAndConnect(ALPHA_Y_TWISS_HANDLE, alphayTwissC);
         return alphayTwissC.getValDbl();
     }
 
-    public double getBetayTwiss() throws ConnectionException, GetException {
+    public double getYBetaTwiss() throws ConnectionException, GetException {
         betayTwissC = lazilyGetAndConnect(BETA_Y_TWISS_HANDLE, betayTwissC);
         return betayTwissC.getValDbl();
     }
 
-    public double getAlphaxTwiss() throws ConnectionException, GetException {
+    public double getXAlphaTwiss() throws ConnectionException, GetException {
         alphaxTwissC = lazilyGetAndConnect(ALPHA_X_TWISS_HANDLE, alphaxTwissC);
         return alphaxTwissC.getValDbl();
     }
 
-    public double getBetaxTwiss() throws ConnectionException, GetException {
+    public double getXBetaTwiss() throws ConnectionException, GetException {
         betaxTwissC = lazilyGetAndConnect(BETA_X_TWISS_HANDLE, betaxTwissC);
         return betaxTwissC.getValDbl();
     }

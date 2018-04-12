@@ -60,6 +60,8 @@ import xal.extension.jels.smf.impl.Chopper;
 import xal.extension.jels.smf.impl.Iris;
 import xal.extension.jels.smf.impl.EMU;
 import xal.extension.jels.smf.impl.NPM;
+import xal.extension.jels.smf.impl.RepellerElectrode;
+import xal.extension.jels.smf.impl.SpaceChargeCompensation;
 import xal.extension.widgets.apputils.SimpleProbeEditor;
 import xal.extension.widgets.plot.BasicGraphData;
 import xal.extension.widgets.plot.FunctionGraphsJPanel;
@@ -1755,8 +1757,14 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
             List<Chopper> choppers = getSelectedSequence().getAllInclusiveNodesWithQualifier(typeQualifier);
             for (final Chopper chp : choppers) {
                 READBACK_SET_RECORDS.add(new ReadbackSetRecord(chp,
-                        chp.findChannel(Chopper.VOLTAGE_RB_HANDLE),
-                        chp.findChannel(Chopper.VOLTAGE_SET_HANDLE)));
+                        chp.findChannel(Chopper.DELAY_RB_HANDLE),
+                        chp.findChannel(Chopper.DELAY_SET_HANDLE)));
+                READBACK_SET_RECORDS.add(new ReadbackSetRecord(chp,
+                        chp.findChannel(Chopper.LENGTH_RB_HANDLE),
+                        chp.findChannel(Chopper.LENGTH_SET_HANDLE)));
+                READBACK_SET_RECORDS.add(new ReadbackSetRecord(chp,
+                        chp.findChannel(Chopper.STATUS_RB_HANDLE),
+                        chp.findChannel(Chopper.STATUS_SET_HANDLE)));
             }
             
             typeQualifier = QualifierFactory.qualifierWithStatusAndTypes(true, Iris.s_strType);
@@ -1771,6 +1779,22 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
                 READBACK_SET_RECORDS.add(new ReadbackSetRecord(aper,
                         aper.findChannel(Iris.OFFSET_Y_RB_HANDLE),
                         aper.findChannel(Iris.OFFSET_Y_SET_HANDLE)));
+            }
+            
+            typeQualifier = QualifierFactory.qualifierWithStatusAndTypes(true, RepellerElectrode.s_strType);
+            List<RepellerElectrode> repelectrodes = getSelectedSequence().getAllInclusiveNodesWithQualifier(typeQualifier);
+            for (final RepellerElectrode repelec : repelectrodes) {               
+                READBACK_SET_RECORDS.add(new ReadbackSetRecord(repelec,
+                        repelec.findChannel(RepellerElectrode.STATUS_RB_HANDLE),
+                        repelec.findChannel(RepellerElectrode.STATUS_SET_HANDLE)));
+            }
+            
+            typeQualifier = QualifierFactory.qualifierWithStatusAndTypes(true, SpaceChargeCompensation.s_strType);
+            List<SpaceChargeCompensation> N2flow = getSelectedSequence().getAllInclusiveNodesWithQualifier(typeQualifier);
+            for (final SpaceChargeCompensation scc : N2flow) {               
+                READBACK_SET_RECORDS.add(new ReadbackSetRecord(scc,
+                        scc.findChannel(SpaceChargeCompensation.N2FLOW_RB_HANDLE),
+                        scc.findChannel(SpaceChargeCompensation.N2FLOW_SET_HANDLE)));
             }
 
             // for BPMs
