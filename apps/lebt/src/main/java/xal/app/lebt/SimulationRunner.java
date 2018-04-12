@@ -223,8 +223,8 @@ public class SimulationRunner {
                 end_simul =  seq.getNodeWithId(final_pos_simul);
             }
             AcceleratorNode electrode_node = null;
-            if (seq.getAllNodes().toString().contains("ELECTRODE")){
-                electrode_node = seq.getNodeWithId("ELECTRODE");
+            if (seq.getAllNodes().toString().contains("LEBT-010:BMD-Rep-01")){
+                electrode_node = seq.getNodeWithId("LEBT-010:BMD-Rep-01");
                 if (electrode_node.getSDisplay()<start_simul.getSDisplay()){
                     electrode = false;
                 }
@@ -235,17 +235,16 @@ public class SimulationRunner {
                 electrode = false;
             }                        
             setTrackerParameters(seq);
-            if(electrode && seq.getAllNodes().toString().contains("ELECTRODE")){
+            if(electrode){
                 setProbe(seq,start_simul.getSDisplay());
                 setIniCovarianceMatrix();
-                runModel(model_sync,seq,ini_pos_simul,"ELECTRODE");
-                retrieveTrajectory();  
-                AcceleratorNode electrode = seq.getNodeWithId("ELECTRODE");                
+                runModel(model_sync,seq,ini_pos_simul,electrode_node.toString());
+                retrieveTrajectory();   
                 SPACE_CHARGE = SPACE_CHARGE_ELECTRODE;
                 CovarianceMatrix cov = getElectrodeCovarianceMatrix();
-                setProbe(seq,electrode.getSDisplay());
+                setProbe(seq,electrode_node.getSDisplay());
                 setCovarianceMatrix(cov);
-                runModel(model_sync,seq,"ELECTRODE",end_simul.toString());
+                runModel(model_sync,seq,electrode_node.toString(),end_simul.toString());
                 retrieveTrajectory();
             } else {
                 setProbe(seq,start_simul.getSDisplay());
@@ -263,8 +262,8 @@ public class SimulationRunner {
                 end_simul =  seq.getNodeWithId(final_pos_simul);
             }
             AcceleratorNode electrode_node = null;
-            if (seq.getAllNodes().toString().contains("ELECTRODE")){
-                electrode_node = seq.getNodeWithId("ELECTRODE");
+            if (seq.getAllNodes().toString().contains("LEBT-010:BMD-Rep-01")){
+                electrode_node = seq.getNodeWithId("LEBT-010:BMD-Rep-01");
                 if (electrode_node.getSDisplay()<start_simul.getSDisplay()){
                     electrode = false;
                 }
@@ -278,13 +277,13 @@ public class SimulationRunner {
             if(electrode){
                 setProbe(seq,start_simul.getSDisplay());
                 setIniCovarianceMatrix();
-                runModel(model_sync,seq,ini_pos_simul,"ELECTRODE");
+                runModel(model_sync,seq,ini_pos_simul,electrode_node.toString());
                 retrieveTrajectory();  
                 SPACE_CHARGE = SPACE_CHARGE_ELECTRODE;
                 CovarianceMatrix cov = getElectrodeCovarianceMatrix();
                 setProbe(seq,electrode_node.getSDisplay());
                 setCovarianceMatrix(cov);
-                runModel(model_sync,seq,"ELECTRODE",end_simul.toString());
+                runModel(model_sync,seq,electrode_node.toString(),end_simul.toString());
                 retrieveTrajectory();
             } else {
                 setProbe(seq,start_simul.getSDisplay());
@@ -382,7 +381,7 @@ public class SimulationRunner {
         
         ArrayList<EnvelopeProbeState> stateElement = (ArrayList<EnvelopeProbeState>) trajectory.getStatesViaIndexer();        
         CovarianceMatrix covmat;
-        int[] index = trajectory.indicesForElement("ELECTRODE");
+        int[] index = trajectory.indicesForElement("LEBT-010:BMD-Rep-01");
         
         covmat = stateElement.get(index[0]).getCovarianceMatrix();       
                 

@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
-import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
@@ -36,7 +35,6 @@ import javafx.scene.control.TextFormatter;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.InputMethodEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
@@ -1295,18 +1293,20 @@ public class FXMLController implements Initializable {
      */
     private void initTextFields(){   
                
-        setValues.keySet().forEach(channel ->{             
-            if (channel.isConnected()){                
-                try {
-                    setValues.get(channel).setText(String.format("%.3f",channel.getValDbl()));
-                    setValues.get(channel).setStyle("-fx-background-color: white;");
-                    setValues.get(channel).setDisable(false);
-                } catch (ConnectionException | GetException ex) {
-                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+        setValues.keySet().forEach(channel ->{  
+            if (setValues.get(channel)!=null){
+                if (channel.isConnected()){                
+                    try {
+                        setValues.get(channel).setText(String.format("%.3f",channel.getValDbl()));
+                        setValues.get(channel).setStyle("-fx-background-color: white;");
+                        setValues.get(channel).setDisable(false);
+                    } catch (ConnectionException | GetException ex) {
+                        Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                } else {
+                    setValues.get(channel).setStyle("-fx-background-color: magenta;");
+                    setValues.get(channel).setDisable(true);
                 }
-            } else {
-                setValues.get(channel).setStyle("-fx-background-color: magenta;");
-                setValues.get(channel).setDisable(true);
             }
         });                
                       
