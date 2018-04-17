@@ -145,8 +145,8 @@ abstract public class FxApplication extends Application {
 
         DOCUMENT.accelerator.addChangeListener((ChangeListener) (ObservableValue o, Object oldVal, Object newVal) -> {
             if(HAS_SEQUENCE && DOCUMENT.accelerator.getAccelerator()!=null){
-                int menu_num = sequenceMenu.getItems().size();
-                sequenceMenu.getItems().remove(0, menu_num - 1);
+                int menu_num = sequenceMenu.getItems().size()-1;
+                sequenceMenu.getItems().remove(0, menu_num);
                 groupSequence.getToggles().clear();
                 buildSequenceMenu(DOCUMENT.accelerator.getAccelerator(),sequenceMenu,groupSequence);
                 Logger.getLogger(FxApplication.class.getName()).log(Level.INFO, "Rebuilding Sequence Menu.");
@@ -193,7 +193,7 @@ abstract public class FxApplication extends Application {
             k++;
         }
 
-        sequenceMenu.getItems().add(new SeparatorMenuItem());
+        sequenceMenu.getItems().add(k,new SeparatorMenuItem());
 
         List<AcceleratorSeqCombo> seqCombo = accelerator.getComboSequences();
         k++;

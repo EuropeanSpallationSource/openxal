@@ -93,7 +93,8 @@ public class KnobMagician {
 				}
 				for ( final KnobElementStateRecord record : ELEMENT_STATE_RECORDS ) {
 					final KnobElement element = record.getElement();
-					_knob.coefficientChanged( element, element.getCoefficient() );
+					_knob.coefficientAChanged( element, element.getCoefficientA() );
+                                        _knob.coefficientBChanged( element, element.getCoefficientB() );
 				}
 				_knob.setLimitsNeedUpdating();
 				_knob.setCurrentSetting( knobValue );
@@ -167,7 +168,9 @@ class KnobElementStateRecord {
 	/** apply the coefficient for the specified knob unit change */
 	public void applyCoefficient( final double knobUnits ) {
 		final double coefficient = ( _finalValue - _initialValue ) / knobUnits;
-		KNOB_ELEMENT.setCoefficient( coefficient, false );
+                KNOB_ELEMENT.setFunction(0);
+                KNOB_ELEMENT.setCoefficientA( 0.0, false );
+		KNOB_ELEMENT.setCoefficientB( coefficient, false );
 	}
 	
 	

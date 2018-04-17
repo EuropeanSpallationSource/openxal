@@ -339,7 +339,7 @@ public class BumpGenerator {
 			final KnobElement element = new KnobElement();
 			element.setAccelerator( accelerator );
 			element.setNodeChannelRef( new NodeChannelRef( bumpMagnets.get( magnetIndex ), MagnetMainSupply.FIELD_SET_HANDLE ) );
-			element.setCoefficient( fields[magnetIndex] );
+			element.setCoefficientB( fields[magnetIndex] );
 			knob.addElement( element );
 		}
 		EVENT_PROXY.knobGenerated( this, knob );

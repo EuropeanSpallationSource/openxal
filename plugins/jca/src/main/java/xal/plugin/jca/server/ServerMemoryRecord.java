@@ -26,10 +26,11 @@ import com.cosylab.epics.caj.cas.util.MemoryProcessVariable;
  * @author Blaz Kranjc <blaz.kranjc@cosylab.com>
  */
 public class ServerMemoryRecord extends ServerMemoryProcessVariable {
-	protected ServerMemoryProcessVariable lowerWarningLimitPV, upperWarningLimitPV;
+    protected ServerMemoryProcessVariable lowerWarningLimitPV, upperWarningLimitPV;
     protected ServerMemoryProcessVariable lowerAlarmLimitPV, upperAlarmLimitPV;
     protected ServerMemoryProcessVariable lowerDispLimitPV, upperDispLimitPV;
     protected ServerMemoryProcessVariable lowerCtrlLimitPV, upperCtrlLimitPV;
+    protected ServerMemoryProcessVariable prec;
         
     /**
      * Creates and registers the main PV and all field PVs that are expected.
@@ -55,10 +56,20 @@ public class ServerMemoryRecord extends ServerMemoryProcessVariable {
         upperDispLimitPV = new ServerMemoryProcessVariable(name+".HOPR", eventCallback, new double[] {0.}, channelServer);
         
         lowerCtrlLimitPV = new ServerMemoryProcessVariable(name+".DRVL", eventCallback, new double[] {0.}, channelServer);
-        upperCtrlLimitPV = new ServerMemoryProcessVariable(name+".DRVH", eventCallback, new double[] {0.}, channelServer);        
+        upperCtrlLimitPV = new ServerMemoryProcessVariable(name+".DRVH", eventCallback, new double[] {0.}, channelServer); 
+        
+        //2018-03-20 Natalia Milas: added PREC field in order to be able to test archiver
+        prec = new ServerMemoryProcessVariable(name+".PREC", eventCallback, new short[] {(short) 0}, channelServer); 
+        setPrecision((short) 0);
+                
     }
     
-    @Override
+        @Override
+	public short getPrecision() {
+		return ((short[])prec.getValue())[0];
+	}
+    
+        @Override
 	public Number getLowerAlarmLimit() {
 		return ((double[])lowerAlarmLimitPV.getValue())[0];
 	}

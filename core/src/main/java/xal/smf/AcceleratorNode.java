@@ -244,6 +244,10 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
 
         return channel;
     }
+    
+    public boolean isChannelSettable( final String handle ) {
+            return channelSuite.isSettable( handle );
+    }
 
 
     /**

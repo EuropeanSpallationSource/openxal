@@ -17,9 +17,14 @@ public interface KnobElementListener {
 	public void channelChanged( final KnobElement element, final Channel channel );
 	
 	
-	/** event indicating that the element's coefficient has changed */
-	public void coefficientChanged( final KnobElement element, final double coefficient );
-	
+	/** event indicating that the element's coefficientA has changed */
+	public void coefficientAChanged( final KnobElement element, final double coefficientA );
+        
+        /** event indicating that the element's coefficientA has changed */
+	public void coefficientBChanged( final KnobElement element, final double coefficientB );
+        
+        /** event indicating that the element's function has changed */
+	public void functionChanged( final KnobElement element, final String function );	
 	
 	/** connection changed event */
 	public void connectionChanged( final KnobElement element, final boolean isConnected );

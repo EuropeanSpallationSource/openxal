@@ -23,30 +23,22 @@ import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.ca.PutException;
 import xal.smf.AcceleratorNode;
-import xal.smf.NoSuchChannelException;
 import xal.smf.impl.qualify.ElementTypeManager;
-
 /**
- * The implementation of the ESS Ion Source's magnetron.
- *
- * @author Juan F. Esteban Müller <juanf.estebanmuller@esss.se>
+ * The implementation of the Gas flow element for Space Charge Compensation.
+ * 
+ * @author Natalia Milas <natalia.milas@esss.se>
  */
-public class ESSIonSourceMagnetron extends AcceleratorNode {
-
-    public static final String s_strType = "ISM";
-
-    // Ion Source's magnetron channel handles
-    public static final String FORWD_PRW_RB_HANDLE = "forwdPrwRB";
-
-    private Channel forwdPrwRBC = null;
-
-    public static final String FORWD_PRW_R_HANDLE = "forwdPrwR";
-
-    private Channel forwdPrwRC = null;
-
-    public static final String FORWD_PRW_S_HANDLE = "forwdPrwS";
-
-    private Channel forwdPrwSC = null;
+public class SpaceChargeCompensation extends AcceleratorNode {
+     /*
+     *  Constants
+     */
+    public static final String s_strType = "SCC";
+    
+    public static final String N2FLOW_RB_HANDLE = "n2flowRB";
+    private Channel n2flowRC = null;
+    public static final String N2FLOW_SET_HANDLE = "n2flowS";
+    private Channel n2flowSC = null;    
 
     static {
         registerType();
@@ -56,12 +48,14 @@ public class ESSIonSourceMagnetron extends AcceleratorNode {
      * Register type for qualification
      */
     private static void registerType() {
-        ElementTypeManager.defaultManager().registerTypes(ESSIonSourceMagnetron.class, s_strType);
+        ElementTypeManager.defaultManager().registerTypes(SpaceChargeCompensation.class, s_strType);
     }
 
     /**
      * Override to provide type signature
+     * @return String type
      */
+    @Override
     public String getType() {
         return s_strType;
     }
@@ -69,32 +63,31 @@ public class ESSIonSourceMagnetron extends AcceleratorNode {
     /**
      * Constructor
      */
-    public ESSIonSourceMagnetron(final String strId, final ChannelFactory channelFactory) {
+    public SpaceChargeCompensation(final String strId, final ChannelFactory channelFactory) {
         super(strId, channelFactory);
     }
 
     /**
      * Constructor
      */
-    public ESSIonSourceMagnetron(final String strId) {
+    public SpaceChargeCompensation(final String strId) {
         this(strId, null);
     }
 
     /*
      *  Process variable Gets 
      */
-    public double getForwdPrwRB() throws ConnectionException, GetException {
-        forwdPrwRBC = lazilyGetAndConnect(FORWD_PRW_RB_HANDLE, forwdPrwRBC);
-        return forwdPrwRBC.getValDbl();
+    public double getN2Flow() throws ConnectionException, GetException {
+        n2flowRC = lazilyGetAndConnect(N2FLOW_RB_HANDLE, n2flowRC);
+        return n2flowRC.getValDbl();
     }
-
-    public double getForwdPrwR() throws ConnectionException, GetException {
-        forwdPrwRC = lazilyGetAndConnect(FORWD_PRW_R_HANDLE, forwdPrwRC);
-        return forwdPrwRC.getValDbl();
+   
+    /*
+     *  Process variable Puts 
+     */
+    public void setN2Flow(double dblVal) throws ConnectionException, PutException {
+        n2flowSC = lazilyGetAndConnect(N2FLOW_SET_HANDLE, n2flowSC);
+        n2flowSC.putVal(dblVal);
     }
-
-    public void setForwdPrwS(double dblVal) throws NoSuchChannelException, ConnectionException, PutException {
-        forwdPrwSC = getAndConnectChannel(FORWD_PRW_S_HANDLE);
-        forwdPrwSC.putVal(dblVal);
-    }
+   
 }

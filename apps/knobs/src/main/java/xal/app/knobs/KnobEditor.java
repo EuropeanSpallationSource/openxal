@@ -55,9 +55,16 @@ public class KnobEditor extends Box implements KnobListener {
 		
 		setBorder( TITLED_BORDER );
 		
-		_elementTableModel = new KnobElementTableModel();
-		_elementTable = new JTable( _elementTableModel );
-		
+		_elementTableModel = new KnobElementTableModel();		
+                
+                _elementTable = new JTable( _elementTableModel );                                
+                JComboBox<String> comboBox = new JComboBox<String>(_knob._functionTypes);
+                DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+                renderer.setHorizontalAlignment(JLabel.RIGHT);
+                renderer.setToolTipText("Click for function list");
+                _elementTable.getColumnModel().getColumn(_elementTableModel.FUNCTION_COLUMN).setCellEditor(new DefaultCellEditor(comboBox)); 
+                _elementTable.getColumnModel().getColumn(_elementTableModel.FUNCTION_COLUMN).setCellRenderer(renderer);
+                
 		buildView();
 		
 		knob.addKnobListener( this );
@@ -78,7 +85,7 @@ public class KnobEditor extends Box implements KnobListener {
 	
 	/** build knob element table view */
 	protected Component buildKnobElementTableView() {
-		final Box view = new Box( BoxLayout.Y_AXIS );
+		final Box view = new Box( BoxLayout.Y_AXIS );                  
 		view.add( new JScrollPane( _elementTable ) );
 		view.add ( buildBottomEditingRow() );
 		return view;
@@ -142,13 +149,15 @@ public class KnobEditor extends Box implements KnobListener {
 		
 		final JButton fillButton = new JButton( "Fill Down" );
 		row.add( fillButton );
-		fillButton.setToolTipText( "Apply the coefficient of the first selected element to all subsequent selected elements." );
+		fillButton.setToolTipText( "Apply the coefficients and function type of the first selected element to all subsequent selected elements." );
 		fillButton.addActionListener( new ActionListener() {
 			public void actionPerformed( final ActionEvent event ) {
 				final int[] rows = _elementTable.getSelectedRows();
 				if ( rows.length > 1 ) {	// only meaninful if more than one row is selected
 					final KnobElement prototypeElement = _elementTableModel.getKnobElement( rows[0] );
-					final double coefficient = prototypeElement.getCoefficient();
+					final double coefficientA = prototypeElement.getCoefficientA();
+                                        final double coefficientB = prototypeElement.getCoefficientB();
+                                        final int functionIndex = prototypeElement.getFunctionIndex();
 					final boolean usingCustomLimits = prototypeElement.isUsingCustomLimits();
 					final boolean wrapsValueAroundLimits = prototypeElement.wrapsValueAroundLimits();
 					final double lowerLimit = prototypeElement.getLowerLimit();
@@ -156,7 +165,9 @@ public class KnobEditor extends Box implements KnobListener {
 					for ( int rindex = 1 ; rindex < rows.length ; rindex++ ) {
 						final int row = rows[rindex];
 						final KnobElement element = _elementTableModel.getKnobElement( row );
-						element.setCoefficient( coefficient );
+						element.setCoefficientA( coefficientA );
+                                                element.setCoefficientB( coefficientB );
+                                                element.setFunction(functionIndex);
 						element.setUsingCustomLimits( usingCustomLimits );
 						// only fill down custom limits if prototype uses custom limits
 						if ( usingCustomLimits ) {
@@ -204,7 +215,7 @@ public class KnobEditor extends Box implements KnobListener {
 	}
 	
 	
-	/** revresh this view */
+	/** refresh this view */
 	public void refresh() {
 		_elementTableModel.fireTableDataChanged();
 	}
@@ -261,13 +272,14 @@ public class KnobEditor extends Box implements KnobListener {
         /** serialization identifier */
         private static final long serialVersionUID = 1L;
 		final protected int PV_COLUMN = 0;
-		final protected int COEFFICIENT_COLUMN = PV_COLUMN + 1;
-		final protected int CUSTOM_LIMITS_COLUMN = COEFFICIENT_COLUMN + 1;
+		final protected int COEFFICIENT_A_COLUMN = PV_COLUMN + 1;
+                final protected int COEFFICIENT_B_COLUMN = COEFFICIENT_A_COLUMN + 1;
+                final protected int FUNCTION_COLUMN = COEFFICIENT_B_COLUMN + 1;
+		final protected int CUSTOM_LIMITS_COLUMN = FUNCTION_COLUMN + 1;
 		final protected int WRAPS_AROUND_LIMITS_COLUMN = CUSTOM_LIMITS_COLUMN + 1;
 		final protected int LOWER_LIMIT_COLUMN = WRAPS_AROUND_LIMITS_COLUMN + 1;
 		final protected int UPPER_LIMIT_COLUMN = LOWER_LIMIT_COLUMN + 1;
-		final private int COLUMN_COUNT = UPPER_LIMIT_COLUMN + 1;
-		
+		final private int COLUMN_COUNT = UPPER_LIMIT_COLUMN + 1;		                
 		
 		/** Constructor */
 		public KnobElementTableModel() {}
@@ -296,8 +308,12 @@ public class KnobEditor extends Box implements KnobListener {
 			switch ( column ) {
 				case PV_COLUMN:
 					return "PV";
-				case COEFFICIENT_COLUMN:
-					return "Coefficient";
+				case COEFFICIENT_A_COLUMN:
+					return "Coeff_A";
+                                case COEFFICIENT_B_COLUMN:
+					return "Coeff_B";
+                                case FUNCTION_COLUMN:
+					return "Function";
 				case CUSTOM_LIMITS_COLUMN:
 					return "Custom Limits";
 				case WRAPS_AROUND_LIMITS_COLUMN:
@@ -317,8 +333,12 @@ public class KnobEditor extends Box implements KnobListener {
 			switch ( column ) {
 				case PV_COLUMN:
 					return String.class;
-				case COEFFICIENT_COLUMN:
+				case COEFFICIENT_A_COLUMN:
 					return FormattedNumber.class;
+                                case COEFFICIENT_B_COLUMN:
+					return FormattedNumber.class;        
+                                case FUNCTION_COLUMN:
+					return String.class;
 				case CUSTOM_LIMITS_COLUMN:
 					return Boolean.class;
 				case WRAPS_AROUND_LIMITS_COLUMN:
@@ -340,7 +360,11 @@ public class KnobEditor extends Box implements KnobListener {
 			switch ( column ) {
 				case PV_COLUMN:
 					return true;
-				case COEFFICIENT_COLUMN:
+				case COEFFICIENT_A_COLUMN:
+					return element.getFunctionIndex()>2;
+                                case COEFFICIENT_B_COLUMN:
+					return true;
+                                case FUNCTION_COLUMN:
 					return true;
 				case CUSTOM_LIMITS_COLUMN:
 					return true;
@@ -364,8 +388,12 @@ public class KnobEditor extends Box implements KnobListener {
 			switch ( column ) {
 				case PV_COLUMN:
 					return element.getChannelString();
-				case COEFFICIENT_COLUMN:
-					return new FormattedNumber( element.getCoefficient() );
+				case COEFFICIENT_A_COLUMN:
+					return new FormattedNumber( element.getCoefficientA() );
+                                case COEFFICIENT_B_COLUMN:
+					return new FormattedNumber( element.getCoefficientB() );        
+                                case FUNCTION_COLUMN:
+					return element.getFunction();
 				case CUSTOM_LIMITS_COLUMN:
 					return element.isUsingCustomLimits();
 				case WRAPS_AROUND_LIMITS_COLUMN:
@@ -389,9 +417,16 @@ public class KnobEditor extends Box implements KnobListener {
 				case PV_COLUMN:
 					setElementChannel( element, value.toString().trim() );
 					break;
-				case COEFFICIENT_COLUMN:
-					final double coefficient = ((Number)value).doubleValue();
-					element.setCoefficient( coefficient );
+				case COEFFICIENT_A_COLUMN:
+					final double coefficientA = ((Number)value).doubleValue();
+					element.setCoefficientA( coefficientA );
+					break;
+                                case COEFFICIENT_B_COLUMN:
+					final double coefficientB = ((Number)value).doubleValue();
+					element.setCoefficientB( coefficientB );
+					break;
+                                case FUNCTION_COLUMN:
+					element.setFunction((String) value);
 					break;
 				case CUSTOM_LIMITS_COLUMN:
 					element.setUsingCustomLimits( (Boolean)value );
@@ -416,7 +451,7 @@ public class KnobEditor extends Box implements KnobListener {
 			final Accelerator accelerator = _knob.getAccelerator();
 			final NodeChannelRef channelRef = accelerator != null ? NodeChannelRef.getInstance( accelerator, channelString ) : null;
 			if ( channelRef != null ) {
-				element.setNodeChannelRef( channelRef );
+				element.setNodeChannelRef( channelRef );                                
 			}
 			else {
 				element.setPV( channelString );

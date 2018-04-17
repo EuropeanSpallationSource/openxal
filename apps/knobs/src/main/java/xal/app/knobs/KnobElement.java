@@ -16,6 +16,8 @@ import xal.tools.messaging.MessageCenter;
 import xal.tools.StringJoiner;
 
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /** Represents a knob element */
@@ -57,7 +59,19 @@ public class KnobElement implements DataListener {
 	protected Monitor _monitor;
 	
 	/** the knob coefficient for this element */
-	protected double _coefficient;
+	protected double _coefficientA;
+        
+        /** the knob coefficient for this element */
+	protected double _coefficientB;
+        
+        /** the knob function for this element */
+	protected String _function;
+        
+        /** list possible element functions types*/
+	protected String[] _functionTypes;
+	        
+        /** the cannel initial value */
+	protected double _initialValue;
 	
 	/** latest value from the monitor */
 	protected double _monitoredValue;
@@ -124,7 +138,7 @@ public class KnobElement implements DataListener {
 		PUT_HANDLER = new PutHandler();
 		
 		CA_LIMITS_HANDLER = new CALimitsHandler();
-		CUSTOM_LIMITS_HANDLER = new CustomLimitsHandler();
+		CUSTOM_LIMITS_HANDLER = new CustomLimitsHandler();                
 		
 		_limitsHandler = CA_LIMITS_HANDLER;
 		
@@ -133,8 +147,11 @@ public class KnobElement implements DataListener {
 		
 		_lowerLimit = Double.NaN;
 		_upperLimit = Double.NaN;
-		_coefficient = 1.0;
+		_coefficientA = 0.0;
+                _coefficientB = 1.0;
+                _function = "";
 		_wrapsValueAroundLimits = false;
+                _initialValue = Double.NaN;                
 		
 		_isPutPending = false;
 	}
@@ -159,7 +176,9 @@ public class KnobElement implements DataListener {
 			listener.channelChanged( this, getChannel() );
 			listener.connectionChanged( this, isConnected() );
 			listener.readyStateChanged( this, isReady() );
-			listener.coefficientChanged( this, getCoefficient() );
+			listener.coefficientAChanged( this, getCoefficientA() );
+                        listener.coefficientBChanged( this, getCoefficientB() );
+                        listener.functionChanged(this, getFunction() );
 			listener.valueChanged( this, getLatestValue() );
 		}
 	}
@@ -199,7 +218,7 @@ public class KnobElement implements DataListener {
     /**
 	 * Update the data based on the given adaptor.
 	 * @param accelerator the accelerator to use for node channel references
-     * @param adaptor The data adaptor corresponding to this object's data node.
+         * @param adaptor The data adaptor corresponding to this object's data node.
      */
     public void update( final Accelerator accelerator, final DataAdaptor adaptor ) {
 		if ( accelerator != null && adaptor.hasAttribute( "nodeChannelRef" ) ) {
@@ -209,7 +228,17 @@ public class KnobElement implements DataListener {
 			setPV( adaptor.stringValue( "pv" ) );
 		}
 		
-		setCoefficient( adaptor.doubleValue( "coefficient" ) );
+                if ( adaptor.hasAttribute( "coefficientA" ) ) {
+                        setCoefficientA( adaptor.doubleValue( "coefficientA" ) );
+                }
+                
+                if ( adaptor.hasAttribute( "coefficientB" ) ) {
+                        setCoefficientB( adaptor.doubleValue( "coefficientB" ) );
+                }  
+                
+                if ( adaptor.hasAttribute( "function" ) ) {
+                        setCoefficientB( adaptor.doubleValue( "function" ) );
+                }  
 		
 		if ( adaptor.hasAttribute( "customLowerLimit" ) ) {
 			setCustomLowerLimit( adaptor.doubleValue( "customLowerLimit" ) );
@@ -246,13 +275,24 @@ public class KnobElement implements DataListener {
 		else if ( _channel != null ) {
 			adaptor.setValue( "pv", _channel.channelName() );
 		}
-		adaptor.setValue( "coefficient", _coefficient );
+		adaptor.setValue( "coefficientA", _coefficientA );
+                adaptor.setValue( "coefficientB", _coefficientB );
+                adaptor.setValue( "function", _function );
 		adaptor.setValue( "customLowerLimit", CUSTOM_LIMITS_HANDLER.getLowerLimit() );
 		adaptor.setValue( "customUpperLimit", CUSTOM_LIMITS_HANDLER.getUpperLimit() );
 		adaptor.setValue( "usingCustomLimits", isUsingCustomLimits() );
 		adaptor.setValue( "wrapsValueAroundLimits", wrapsValueAroundLimits() );
     }
 	
+        /**
+	 * Set Function Type.
+	 * @return this element's name
+	 */
+	public void setFunctionType(final String[] funcType) {
+		_functionTypes = funcType;
+	}
+	
+    
 	
 	/**
 	 * Get the element's name.
@@ -342,6 +382,7 @@ public class KnobElement implements DataListener {
 			_monitoredValue = Double.NaN;
 			_lowerLimit = Double.NaN;
 			_upperLimit = Double.NaN;
+                        _initialValue = Double.NaN;
 			if ( HAS_DEFAULT_LIMITS ) {
 				_lowerLimit = - DEFAULT_LIMIT;
 				_upperLimit = DEFAULT_LIMIT;
@@ -351,8 +392,13 @@ public class KnobElement implements DataListener {
 				channel.addConnectionListener( CONNECTION_HANDLER );
 				channel.requestConnection();
 				CA_LIMITS_HANDLER.setChannel( channel );
-				Channel.flushIO();
+				Channel.flushIO();                            
 			}
+                        //try {
+                        //    _initialValue = _channel.getValueRecord().doubleValue();
+                        //} catch (ConnectionException | GetException ex) {
+                        //    Logger.getLogger(KnobElement.class.getName()).log(Level.SEVERE, null, ex);
+                        //}
 		}
 		
 		EVENT_PROXY.channelChanged( this, channel );
@@ -411,7 +457,7 @@ public class KnobElement implements DataListener {
 	}
 
 
-	/** Determinw whether the element's current value is within its limits */
+	/** Determine whether the element's current value is within its limits */
 	public boolean isSettingValueWithinLimits() {
 		final double settingValue = _settingValue;
 		final double lowerLimit = _lowerLimit;
@@ -447,34 +493,130 @@ public class KnobElement implements DataListener {
 		return joiner.toString();
 	}
 	
-	
-	/**
-	 * Get the knob coefficient
+        /**
+	 * Get the Initial Value
 	 * @return the knob coefficient
 	 */
-	public double getCoefficient() {
-		return _coefficient;
+	public double getInitialValue() {
+		return _initialValue;
 	}
 	
 	
 	/**
-	 * Set the knob coefficient.
-	 * @param coefficient the new knob coefficient
+	 * Set the Initial Value.
+	 * @param initialVal initial values of the PV in the knob
 	 */
-	public void setCoefficient( final double coefficient ) {
-		setCoefficient( coefficient, true );
+	public void setInitialValue( final double initialVal ) {
+		_initialValue = initialVal;
+	}
+	
+	/**
+	 * Get the knob coefficientA
+	 * @return the knob coefficient
+	 */
+	public double getCoefficientA() {
+		return _coefficientA;
 	}
 	
 	
 	/**
-	 * Set the knob coefficient.
-	 * @param coefficient the new knob coefficient
+	 * Set the knob coefficientA.
+	 * @param coefficientA the new knob coefficient
+	 */
+	public void setCoefficientA( final double coefficientA ) {
+		setCoefficientA( coefficientA, true );
+	}
+        
+        /**
+	 * Set the knob coefficientA.
+	 * @param coefficientA the new knob coefficient
 	 * @param notify indicates whether or not to notify listeners
 	 */
-	public void setCoefficient( final double coefficient, final boolean notify  ) {
-		_coefficient = coefficient;
+	public void setCoefficientA( final double coefficientA, final boolean notify  ) {
+		_coefficientA = coefficientA;
 		if ( notify ) {
-			EVENT_PROXY.coefficientChanged( this, coefficient );
+			EVENT_PROXY.coefficientAChanged( this, coefficientA );
+		}
+	}
+        
+        /**
+	 * Get the knob coefficientB
+	 * @return the knob coefficient
+	 */
+	public double getCoefficientB() {
+		return _coefficientB;
+	}
+	
+	
+	/**
+	 * Set the knob coefficientB.
+	 * @param coefficientB the new knob coefficient
+	 */
+	public void setCoefficientB( final double coefficientB ) {
+		setCoefficientB( coefficientB, true );
+	}
+        
+        /**
+	 * Set the knob coefficientA.
+	 * @param coefficientB the new knob coefficient
+	 * @param notify indicates whether or not to notify listeners
+	 */
+	public void setCoefficientB( final double coefficientB, final boolean notify  ) {
+		_coefficientB = coefficientB;
+		if ( notify ) {
+			EVENT_PROXY.coefficientBChanged( this, coefficientB );
+		}
+	}
+        
+        /**
+	 * Get the knob function
+	 * @return the knob function
+	 */
+	public String getFunction() {
+		return _function;
+	}
+	
+        /**
+	 * Get the knob function index
+	 * @return the knob function index
+	 */
+	public int getFunctionIndex() {
+                int index=0;
+                for(int i=0; i<_functionTypes.length;i++){
+                    if (_function.equals(_functionTypes[i])){  
+                        index=i;
+                        break;
+                    }
+                }		
+                return index;
+	}
+	
+	/**
+	 * Set the knob function.
+	 * @param functionIndex the new knob coefficient
+	 */
+	public void setFunction( final int functionIndex ) {
+		setFunction( _functionTypes[functionIndex], true );
+	}
+        
+        /**
+	 * Set the knob function.
+	 * @param functionName the new knob coefficient
+	 */
+	public void setFunction( final String functionName ) {
+		setFunction( functionName, true );
+	}
+        	
+	
+	/**
+	 * Set the knob function.
+	 * @param function the new knob function
+	 * @param notify indicates whether or not to notify listeners
+	 */
+	public void setFunction( final String function, final boolean notify  ) {
+		_function = function;
+		if ( notify ) {
+			EVENT_PROXY.functionChanged( this, function );
 		}
 	}
 	
@@ -654,14 +796,33 @@ public class KnobElement implements DataListener {
 	
 	/**
 	 * Change the element's value and scale it by the element's coefficient.
-	 * @param delta the amount to scale by the coefficient and then change this element's value
+	 * @param value the amount to scale by the coefficient and then change this element's value
 	 */
-	public void changeValueAndScale( final double delta ) {
-		setValue( getSettingValue() + _coefficient * delta );
+	//public void changeValueAndScale( final double delta ) {
+        public void changeValueAndScale( final double value, final double delta) {    
+                int functionIndex = this.getFunctionIndex();                
+                switch (functionIndex) {
+                    case 0:
+		        setValue( _latestValue + _coefficientB * delta  );
+                        break;
+                    case 1:
+		        setValue( _initialValue + _coefficientB*Math.pow( value, 2 ) );
+                        break;
+                    case 2:
+		        setValue( _initialValue + _coefficientB* Math.pow( value, 3 ) );
+                        break;
+                    case 3:
+		        setValue( _initialValue + _coefficientA * Math.cos( _coefficientB * value ) );
+                        break;
+                    case 4:
+		        setValue( _initialValue + _coefficientA * Math.sin( _coefficientB * value ) );
+                        break;                            
+                    default:
+                        setValue( _latestValue + _coefficientB * delta );
+                        break;                        
+                }        
 	}
-	
-	
-	
+		
 	/** Connection handler */
 	protected class ConnectionHandler implements ConnectionListener {
 		/** handle the connection event */
@@ -931,6 +1092,10 @@ public class KnobElement implements DataListener {
 				_latestValue = _monitoredValue;
 				latestValue = _latestValue;
 				_lastMonitorTime = new Date();
+                                
+                                if ( Double.isNaN(_initialValue) ){
+                                    _initialValue = _monitoredValue;
+                                }
 
 				// while this element isn't ready, synchronize the setting value with monitor value
 				if ( !isReady() ) {
