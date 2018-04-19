@@ -34,10 +34,18 @@ execute() {
     openxal_version
     echo "Executing $1"
     JAR_FILE=dist/target/openxal-${OPENXAL_VERSION}-dist/openxal-${OPENXAL_VERSION}/apps/openxal.apps.$1-${OPENXAL_VERSION}.jar
+    
+    # Adding extra platform specific arguments for Java
+    unameOut="$(uname -s)"
+    case "${unameOut}" in
+        Darwin*)    EXTRA_ARGS=-Djava.net.preferIPv4Stack=true;;
+        *)          EXTRA_ARGS="";;
+    esac
+
     if [ -f $JAR_FILE ]
     then
-        echo java -ea -DuseDefaultAccelerator=true -Djava.util.logging.config.file="logging.properties" -jar $JAR_FILE
-        java -ea -DuseDefaultAccelerator=true -Djava.util.logging.config.file="logging.properties" -jar $JAR_FILE
+        echo java -ea -DuseDefaultAccelerator=true -Djava.util.logging.config.file="logging.properties" $EXTRA_ARGS -jar $JAR_FILE
+        java -ea -DuseDefaultAccelerator=true -Djava.util.logging.config.file="logging.properties" $EXTRA_ARGS -jar $JAR_FILE
     else
         compile_instructions $@
     fi
