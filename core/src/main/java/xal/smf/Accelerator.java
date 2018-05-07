@@ -325,6 +325,19 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
 	public ElementMapping getElementMapping() {
 	    return this.elementMapping;
 	}
+        
+    /** 
+     * Updates the channel suites with the new ChannelFactory. This method is
+     * useful when running a CA server after the context is disposed.
+     * @param channelFactory - the new ChannelFactory
+     * added by Juan
+     */
+    public void updateChannelFactory( ChannelFactory channelFactory ) {
+        channelSuite.setChannelFactory(channelFactory);        
+        final List<AcceleratorNode> allNodes = getAllNodes();
+        allNodes.forEach(node -> node.channelSuite.setChannelFactory(channelFactory));
+        getMagnetMainSupplies().forEach(mps -> mps.getChannelSuite().setChannelFactory(channelFactory));
+    }
 	
 	/**
 	 * Get this accelerator's edit context

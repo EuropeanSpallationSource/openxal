@@ -45,6 +45,7 @@ import xal.ca.Channel;
 import xal.ca.ChannelFactory;
 import xal.ca.ConnectionException;
 import xal.ca.GetException;
+import xal.ca.IServerChannelFactory;
 import xal.ca.PutException;
 import xal.ca.PutListener;
 import xal.extension.application.Application;
@@ -107,7 +108,7 @@ import xal.tools.xml.XmlDataAdaptor;
  * <h4>CKA NOTES:</h4>
  * - In method <code>{@link #createDefaultProbe()}</code> a <code>TransferMapProbe</code>
  * is created in the case of a ring.  The method <code>TransferMapState#setPhaseCoordinates</code>
- * is called to create an initial static erorr.  This does nothing because transfer map probes
+ * is called to create an initial static error.  This does nothing because transfer map probes
  * do not have phase coordinates any longer, the method is deprecated.
  * <br/>
  * <br/>
@@ -129,8 +130,9 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
     /** factory for server channels
      * Not sure whether it is better for this to be static and shared across all documents.
      * For now we will just use a common server factory across all documents (possibly prevents server conflicts).
+     * Juan: Changed to one server per document, which can be disposed.
      */
-    final static private ChannelFactory CHANNEL_SERVER_FACTORY = ChannelFactory.newServerFactory();
+    private ChannelFactory CHANNEL_SERVER_FACTORY = ChannelFactory.newServerFactory();
 
     /** The document for the text pane in the main window. */
     protected PlainDocument textDocument;
@@ -757,64 +759,7 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
             static final long serialVersionUID = 0;
             @Override
             public void actionPerformed(ActionEvent event) {
-                if ( vaRunning ) {
-                    JOptionPane.showMessageDialog( getMainWindow(), "Virtual Accelerator has already started.", "Warning!", JOptionPane.PLAIN_MESSAGE );
-                    return;
-                }
-                if(!Application.getApp().authorizeWithRBAC("Start")){
-                    JOptionPane.showMessageDialog( getMainWindow(), "You are unauthorized for this action.", "Warning!", JOptionPane.PLAIN_MESSAGE );
-                    return;
-                }
-                if ( getSelectedSequence() == null ) {
-                    JOptionPane.showMessageDialog( getMainWindow(), "You need to select sequence(s) first.", "Warning!", JOptionPane.PLAIN_MESSAGE );
-                } else {
-                    // use PV logger
-                    if ( isFromPVLogger ) {
-                        long pvLoggerId = plsc.getPVLogId();
-
-                        runServer();
-
-                        plds = new PVLoggerDataSource(pvLoggerId);
-
-                        // use PVLogger to construct the model
-                        if (isForOLM) {
-                            // load the settings from the PV Logger
-                            putSetPVsFromPVLogger();
-                            // synchronize with the online model
-                            MODEL_SYNC_TIMER.setEventHandler( getOnlineModelSynchronizer() );
-                        }
-                        else {      // directly use PVLogger data for replay
-                            MODEL_SYNC_TIMER.setEventHandler( getPVLoggerSynchronizer() );
-                        }
-                    }
-                    // use online model
-                    else {
-                        if ( currentProbe == null ) {
-                            createDefaultProbe();
-                            if ( currentProbe == null ) {
-                                displayWarning( "Warning!", "You need to select probe file first." );
-                                return;
-                            }
-                            actionPerformed( event );
-                        }
-                        else {
-                            runServer();
-                        }
-
-                        // put the initial B_Book PVs to the server
-                        configFieldBookPVs();
-
-                        //put "set" PVs to the server
-                        putSetPVs();
-
-                        // continuously loop through the next 3 steps
-                        System.out.println( "Setup to synchronize the online model periodically..." );
-                        MODEL_SYNC_TIMER.setEventHandler( getOnlineModelSynchronizer() );
-                    }
-
-                    MODEL_SYNC_TIMER.startNowWithInterval( _modelSyncPeriod, 0 );
-                    MODEL_SYNC_TIMER.resume();
-                }
+                startServer(event);
             }
         };
         runAction.putValue(Action.NAME, "run-va");
@@ -1546,10 +1491,65 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
         }
     }
 
+    /**
+     * run the VA server
+     */
+    private void startServer(ActionEvent event) {
+        if (vaRunning) {
+            JOptionPane.showMessageDialog(getMainWindow(), "Virtual Accelerator has already started.", "Warning!", JOptionPane.PLAIN_MESSAGE);
+            return;
+        }
+        if (!Application.getApp().authorizeWithRBAC("Start")) {
+            JOptionPane.showMessageDialog(getMainWindow(), "You are unauthorized for this action.", "Warning!", JOptionPane.PLAIN_MESSAGE);
+            return;
+        }
+        if (getSelectedSequence() == null) {
+            JOptionPane.showMessageDialog(getMainWindow(), "You need to select sequence(s) first.", "Warning!", JOptionPane.PLAIN_MESSAGE);
+        } else {
+            // use PV logger
+            if (isFromPVLogger) {
+                long pvLoggerId = plsc.getPVLogId();
 
-    /** run the VA server */
-    private void runServer() {
-        vaRunning = true;
+                vaRunning = true;
+
+                plds = new PVLoggerDataSource(pvLoggerId);
+
+                // use PVLogger to construct the model
+                if (isForOLM) {
+                    // load the settings from the PV Logger
+                    putSetPVsFromPVLogger();
+                    // synchronize with the online model
+                    MODEL_SYNC_TIMER.setEventHandler(getOnlineModelSynchronizer());
+                } else {      // directly use PVLogger data for replay
+                    MODEL_SYNC_TIMER.setEventHandler(getPVLoggerSynchronizer());
+                }
+            } // use online model
+            else {
+                if (currentProbe == null) {
+                    createDefaultProbe();
+                    if (currentProbe == null) {
+                        displayWarning("Warning!", "You need to select probe file first.");
+                        return;
+                    }
+                    actionPerformed(event);
+                } else {
+                    vaRunning = true;
+                }
+
+                // put the initial B_Book PVs to the server
+                configFieldBookPVs();
+
+                //put "set" PVs to the server
+                putSetPVs();
+
+                // continuously loop through the next 3 steps
+                System.out.println("Setup to synchronize the online model periodically...");
+                MODEL_SYNC_TIMER.setEventHandler(getOnlineModelSynchronizer());
+            }
+
+            MODEL_SYNC_TIMER.startNowWithInterval(_modelSyncPeriod, 0);
+            MODEL_SYNC_TIMER.resume();
+        }
     }
 
 
@@ -1557,6 +1557,10 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
     private void stopServer() {
         MODEL_SYNC_TIMER.suspend();
         vaRunning = false;
+        ((IServerChannelFactory) CHANNEL_SERVER_FACTORY).dispose();
+        // Creating a new Context
+        CHANNEL_SERVER_FACTORY = ChannelFactory.newServerFactory();
+        accelerator.updateChannelFactory(CHANNEL_SERVER_FACTORY);
     }
 
 
@@ -1594,7 +1598,7 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 
     @Override
     public void selectedSequenceChanged() {
-        destroyServer();
+        stopServer();
 
         if (selectedSequence != null) {
             try {
