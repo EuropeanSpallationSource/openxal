@@ -7,6 +7,7 @@ import gov.aps.jca.JCALibrary;
 import gov.aps.jca.cas.ServerContext;
 import xal.ca.ChannelFactory;
 import xal.ca.ChannelSystem;
+import xal.ca.IServerChannelFactory;
 
 /**
  * Concrete implementation of ChannelFactory that uses JCA.
@@ -14,7 +15,7 @@ import xal.ca.ChannelSystem;
  * @version 0.1 13 Jul 2015
  * @author Blaz Kranjc <blaz.kranjc@cosylab.com>
  */
-public class JcaServerChannelFactory extends ChannelFactory {
+public class JcaServerChannelFactory extends ChannelFactory implements IServerChannelFactory{
     /** JCA channel system */
     private JcaServerChannelSystem JCA_SERVER_SYSTEM;
     
@@ -69,6 +70,11 @@ public class JcaServerChannelFactory extends ChannelFactory {
     public boolean init() {
         // nothing to initialize
         return true;
+    }
+
+    @Override
+    public void dispose() {
+        CONTEXT.dispose();
     }
  
 }
