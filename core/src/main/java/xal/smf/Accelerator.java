@@ -334,8 +334,8 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
      */
     public void updateChannelFactory( ChannelFactory channelFactory ) {
         channelSuite.setChannelFactory(channelFactory);        
-        final List<AcceleratorNode> allNodes = getAllNodes();
-        allNodes.forEach(node -> node.channelSuite.setChannelFactory(channelFactory));
+        
+        getAllNodes().forEach(node -> node.channelSuite.setChannelFactory(channelFactory));
         getMagnetMainSupplies().forEach(mps -> mps.getChannelSuite().setChannelFactory(channelFactory));
     }
 	
