@@ -393,10 +393,12 @@ public class JcaServerChannel extends Channel implements IServerChannel {
         private IEventSinkValTime listener;
 
         protected JcaServerMonitor(IEventSinkValTime listener, int intMaskEvent)
-                throws ConnectionException {
+                throws ConnectionException, MonitorException {
             super(JcaServerChannel.this, intMaskEvent);
             this.listener = listener;
             this.maskEvent = intMaskEvent;
+            
+            this.begin();
         }
 
         @Override
