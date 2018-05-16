@@ -67,14 +67,14 @@ public class FXMLController implements Initializable {
 
         TextField pvName = new TextField();
         pvName.setPromptText("PV name");
-        CheckBox pvWrittable = new CheckBox();
+        CheckBox pvWritable = new CheckBox();
         TextField pvValue = new TextField();
         pvValue.setPromptText("Value");
 
         grid.add(new Label("PV name:"), 0, 0);
         grid.add(pvName, 1, 0);
-        grid.add(new Label("Writtable:"), 0, 1);
-        grid.add(pvWrittable, 1, 1);
+        grid.add(new Label("Writable:"), 0, 1);
+        grid.add(pvWritable, 1, 1);
         grid.add(new Label("Value:"), 0, 2);
         grid.add(pvValue, 1, 2);
 
@@ -98,7 +98,7 @@ public class FXMLController implements Initializable {
         // Convert the result to a new PV when the OK button is clicked.
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == okButtonType) {
-                return new PV(pvName.getText(), pvWrittable.isSelected(), pvValue.getText());
+                return new PV(pvName.getText(), pvWritable.isSelected(), pvValue.getText());
             }
             return null;
         });
@@ -167,13 +167,13 @@ public class FXMLController implements Initializable {
         });
 
         PVServer pvServer = PVServer.getInstance();
-        pvServer.setPvs(pvTableView.getItems());
+        pvServer.setPvTableView(pvTableView);
 
         startServerButton.setDisable(true);
     }
 
     private void checkSelection(MouseEvent e) {
-        if (!pvTableView.getSelectionModel().getSelectedCells().isEmpty()) {
+        if (!pvTableView.getSelectionModel().getSelectedCells().isEmpty() && !serverRunning) {
             removePVButton.setDisable(false);
         } else {
             removePVButton.setDisable(true);
@@ -190,6 +190,8 @@ public class FXMLController implements Initializable {
             serverRunning = false;
             addPVButton.setDisable(false);
             checkSelection(null);
+            pvNameColumn.setEditable(true);
+            pvWritableColumn.setEditable(true);
         } else {
             //start server
             PVServer pvServer = PVServer.getInstance();
@@ -198,8 +200,8 @@ public class FXMLController implements Initializable {
             serverRunning = true;
             addPVButton.setDisable(true);
             removePVButton.setDisable(true);
-
-            // TODO: disable name column when server is running.
+            pvNameColumn.setEditable(false);
+            pvWritableColumn.setEditable(false);
         }
     }
 }

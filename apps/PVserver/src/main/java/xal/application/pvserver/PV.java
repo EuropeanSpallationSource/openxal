@@ -20,7 +20,7 @@ public class PV {
     private SimpleBooleanProperty writable;
 
     private SimpleStringProperty value;
-    
+
     private Channel channel;
 
     public Channel getChannel() {
