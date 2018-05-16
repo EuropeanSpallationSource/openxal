@@ -2,13 +2,15 @@ package xal.application.pvserver;
 
 import javafx.application.Application;
 import static javafx.application.Application.launch;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 /**
- * 
+ *
  * @author Juan F. Esteban Müller <juanf.estebanmuller@esss.se>
  */
 public class MainApp extends Application {
@@ -16,10 +18,18 @@ public class MainApp extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("/fxml/Scene.fxml"));
-        
+
         Scene scene = new Scene(root);
         scene.getStylesheets().add("/styles/Styles.css");
-        
+
+        stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                PVServer pvServer = PVServer.getInstance();
+                pvServer.stopServer();
+            }
+        });
+
         stage.setTitle("PV server");
         stage.setScene(scene);
         stage.show();

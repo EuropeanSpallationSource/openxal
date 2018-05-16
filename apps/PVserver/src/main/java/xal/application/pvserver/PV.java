@@ -7,6 +7,7 @@ package xal.application.pvserver;
 
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
+import xal.ca.Channel;
 
 /**
  *
@@ -16,11 +17,19 @@ public class PV {
 
     private SimpleStringProperty name;
 
-    private SimpleBooleanProperty read;
-
-    private SimpleBooleanProperty write;
+    private SimpleBooleanProperty writable;
 
     private SimpleStringProperty value;
+    
+    private Channel channel;
+
+    public Channel getChannel() {
+        return channel;
+    }
+
+    public void setChannel(Channel channel) {
+        this.channel = channel;
+    }
 
     public String getName() {
         return name.get();
@@ -30,28 +39,16 @@ public class PV {
         this.name.set(name);
     }
 
-    public SimpleBooleanProperty readProperty() {
-        return read;
+    public SimpleBooleanProperty writableProperty() {
+        return writable;
     }
 
-    public Boolean getRead() {
-        return read.get();
+    public Boolean getWritable() {
+        return writable.get();
     }
 
-    public void setRead(Boolean read) {
-        this.read.set(read);
-    }
-
-    public SimpleBooleanProperty writeProperty() {
-        return write;
-    }
-
-    public Boolean getWrite() {
-        return write.get();
-    }
-
-    public void setWrite(Boolean write) {
-        this.write.set(write);
+    public void setWrite(Boolean writable) {
+        this.writable.set(writable);
     }
 
     public String getValue() {
@@ -63,13 +60,12 @@ public class PV {
     }
 
     public PV() {
-        this(null, true, true, null);
+        this(null, true, null);
     }
 
-    public PV(String name, Boolean read, Boolean write, String value) {
+    public PV(String name, Boolean writable, String value) {
         this.name = new SimpleStringProperty(name);
-        this.read = new SimpleBooleanProperty(read);
-        this.write = new SimpleBooleanProperty(write);
+        this.writable = new SimpleBooleanProperty(writable);
         this.value = new SimpleStringProperty(value);
     }
 

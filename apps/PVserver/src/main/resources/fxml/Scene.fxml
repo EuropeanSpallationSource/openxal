@@ -17,8 +17,7 @@
             <TableView fx:id="pvTableView" editable="true">
               <columns>
                 <TableColumn fx:id="pvNameColumn" minWidth="300.0" prefWidth="75.0" text="PV name" />
-                <TableColumn fx:id="pvReadColumn" prefWidth="75.0" text="Read" />
-                  <TableColumn fx:id="pvWriteColumn" prefWidth="75.0" text="Write" />
+                  <TableColumn fx:id="pvWritableColumn" prefWidth="75.0" text="Writable" />
                   <TableColumn fx:id="pvValuecolumn" prefWidth="75.0" text="Value" />
               </columns>
             </TableView>

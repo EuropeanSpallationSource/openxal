@@ -42,7 +42,7 @@
         <module>pta</module>
         <module>pvhistogram</module>
         <module>pvlogger</module>
-        <module>PVserver</module>
+        <module>pvserver</module>
         <module>quadshaker</module>
         <module>rfphaseshaker</module>
         <module>saddam</module>
