@@ -34,7 +34,7 @@ public class ChannelSuite implements DataListener {
     final private Map<String,Channel> CHANNEL_HANDLE_MAP;
 	
     /** channel factory for getting channels */
-	final private ChannelFactory CHANNEL_FACTORY;
+    private ChannelFactory CHANNEL_FACTORY;
     
     /** Signal Suite */
     final private SignalSuite SIGNAL_SUITE;
@@ -61,6 +61,13 @@ public class ChannelSuite implements DataListener {
 	public ChannelFactory getChannelFactory() {
 		return CHANNEL_FACTORY;
 	}
+
+
+    /** set a new channel factory and clears the old channel map */
+    public void setChannelFactory(ChannelFactory channelFactory) {
+        CHANNEL_FACTORY = channelFactory;
+        CHANNEL_HANDLE_MAP.clear();
+    }
     
     
     /** 
@@ -191,6 +198,16 @@ public class ChannelSuite implements DataListener {
      */
     final public boolean isValid( final String handle ) {
 		return SIGNAL_SUITE.isValid( handle );
+    }
+
+
+    /**
+     * Determine whether the handle's corresponding PV is settable.
+     * @param handle The handle for which to get the attribute.
+     * @return set parameter of the PV or false if there is no entry for the handle
+     */
+    public boolean isSettable( final String handle ) {
+        return SIGNAL_SUITE.isSettable( handle );
     }
 
     

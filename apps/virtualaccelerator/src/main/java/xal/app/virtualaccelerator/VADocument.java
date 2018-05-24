@@ -46,6 +46,7 @@ import xal.ca.Channel;
 import xal.ca.ChannelFactory;
 import xal.ca.ConnectionException;
 import xal.ca.GetException;
+import xal.ca.IServerChannelFactory;
 import xal.ca.PutException;
 import xal.ca.PutListener;
 import xal.extension.application.Application;
@@ -120,7 +121,7 @@ import xal.tools.xml.XmlDataAdaptor;
  * - In method <code>{@link #createDefaultProbe()}</code> a
  * <code>TransferMapProbe</code> is created in the case of a ring. The method
  * <code>TransferMapState#setPhaseCoordinates</code> is called to create an
- * initial static erorr. This does nothing because transfer map probes do not
+ * initial static error. This does nothing because transfer map probes do not
  * have phase coordinates any longer, the method is deprecated.
  * <br/>
  * <br/>
@@ -152,8 +153,9 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
      * factory for server channels Not sure whether it is better for this to be
      * static and shared across all documents. For now we will just use a common
      * server factory across all documents (possibly prevents server conflicts).
+     * Juan: Changed to one server per document, which can be disposed.
      */
-    final static private ChannelFactory CHANNEL_SERVER_FACTORY = ChannelFactory.newServerFactory();
+    private ChannelFactory CHANNEL_SERVER_FACTORY = ChannelFactory.newServerFactory();
 
     /**
      * The document for the text pane in the main window.
@@ -223,7 +225,7 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
     private volatile boolean vaRunning = false;
     // add by liyong
     private java.util.List<AcceleratorNode> nodes;     // TODO: CKA - NEVER USED
-    
+
     private java.util.List<RfCavity> rfCavities;
 
     private java.util.List<Electromagnet> mags;
@@ -231,12 +233,12 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
     private java.util.List<BPM> bpms;
 
     private java.util.List<ProfileMonitor> wss;
-    
+
     //adding EMU, BCM and NPM to the VA
     private java.util.List<EMU> emus;
-    
+
     private java.util.List<CurrentMonitor> bcms;
-    
+
     private java.util.List<NPM> npms;
 
     private Channel beamOnEvent;
@@ -811,61 +813,7 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 
             @Override
             public void actionPerformed(ActionEvent event) {
-                if (vaRunning) {
-                    JOptionPane.showMessageDialog(getMainWindow(), "Virtual Accelerator has already started.", "Warning!", JOptionPane.PLAIN_MESSAGE);
-                    return;
-                }
-                if (!Application.getApp().authorizeWithRBAC("Start")) {
-                    JOptionPane.showMessageDialog(getMainWindow(), "You are unauthorized for this action.", "Warning!", JOptionPane.PLAIN_MESSAGE);
-                    return;
-                }
-                if (getSelectedSequence() == null) {
-                    JOptionPane.showMessageDialog(getMainWindow(), "You need to select sequence(s) first.", "Warning!", JOptionPane.PLAIN_MESSAGE);
-                } else {
-                    // use PV logger
-                    if (isFromPVLogger) {
-                        long pvLoggerId = plsc.getPVLogId();
-
-                        runServer();
-
-                        plds = new PVLoggerDataSource(pvLoggerId);
-
-                        // use PVLogger to construct the model
-                        if (isForOLM) {
-                            // load the settings from the PV Logger
-                            putSetPVsFromPVLogger();
-                            // synchronize with the online model
-                            MODEL_SYNC_TIMER.setEventHandler(getOnlineModelSynchronizer());
-                        } else {      // directly use PVLogger data for replay
-                            MODEL_SYNC_TIMER.setEventHandler(getPVLoggerSynchronizer());
-                        }
-                    } // use online model
-                    else {
-                        if (currentProbe == null) {
-                            createDefaultProbe();
-                            if (currentProbe == null) {
-                                displayWarning("Warning!", "You need to select probe file first.");
-                                return;
-                            }
-                            actionPerformed(event);
-                        } else {
-                            runServer();
-                        }
-
-                        // put the initial B_Book PVs to the server
-                        configFieldBookPVs();
-
-                        //put "set" PVs to the server
-                        putSetPVs();
-
-                        // continuously loop through the next 3 steps
-                        Logger.getLogger(VADocument.class.getName()).log(Level.INFO, "Setup to synchronize the online model periodically...");
-                        MODEL_SYNC_TIMER.setEventHandler(getOnlineModelSynchronizer());
-                    }
-
-                    MODEL_SYNC_TIMER.startNowWithInterval(_modelSyncPeriod, 0);
-                    MODEL_SYNC_TIMER.resume();
-                }
+                startServer(event);
             }
         };
         runAction.putValue(Action.NAME, "run-va");
@@ -1273,8 +1221,7 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 
     /**
      * This method is for populating the diagnostic PVs (only BPMs + WSs for
-     * now)
-     * 2018-03-09 Added EMU, NPMs beam size and Current Monitor 
+     * now) 2018-03-09 Added EMU, NPMs beam size and Current Monitor
      */
     protected void putDiagPVs() {
         // CKA Nov 25, 2013
@@ -1467,7 +1414,7 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
             // TODO Auto-generated catch block
             e1.printStackTrace();
         }
-        
+
         // EMUs
         for (final EMU monitor : emus) {
             Channel emittX = monitor.getChannel(EMU.EMITT_X_HANDLE);
@@ -1486,38 +1433,38 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
                     betaX.putValCallback(twiss[0].getBeta(), this);
                     betaY.putValCallback(twiss[1].getBeta(), this);
                     alphaX.putValCallback(twiss[0].getAlpha(), this);
-                    alphaY.putValCallback(twiss[1].getAlpha(), this);                                      
+                    alphaY.putValCallback(twiss[1].getAlpha(), this);
                 }
             } catch (ConnectionException e) {
                 System.err.println(e.getMessage());
             } catch (PutException e) {
                 System.err.println(e.getMessage());
             }
-        }                
-        
+        }
+
         Channel.flushIO();
-        
+
         for (final CurrentMonitor bcm : bcms) {
             Channel currentAvg = bcm.getChannel(CurrentMonitor.I_AVG_HANDLE);
-            Channel chargeAvg = bcm.getChannel(CurrentMonitor.Q_INTEGRAL_HANDLE);            
+            Channel chargeAvg = bcm.getChannel(CurrentMonitor.Q_INTEGRAL_HANDLE);
 
             try {
                 ProbeState<?> probeState = modelScenario.getTrajectory().stateForElement(bcm.getId());
                 if (modelScenario.getProbe() instanceof EnvelopeProbe) {
                     final EnvelopeProbeState envelopeState = (EnvelopeProbeState) probeState;
-                    currentAvg.putValCallback(envelopeState.getBeamCurrent(), this);                                 
-                    chargeAvg.putValCallback(envelopeState.bunchCharge(), this);                                       
-                    
+                    currentAvg.putValCallback(envelopeState.getBeamCurrent(), this);
+                    chargeAvg.putValCallback(envelopeState.bunchCharge(), this);
+
                 }
             } catch (ConnectionException e) {
                 System.err.println(e.getMessage());
             } catch (PutException e) {
                 System.err.println(e.getMessage());
             }
-        }                
-        
+        }
+
         Channel.flushIO();
-        
+
         // for NPMs
         for (final NPM monitor : npms) {
             Channel xp = monitor.getChannel(NPM.X_P_AVG_HANDLE);
@@ -1542,8 +1489,8 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
                     betaX.putValCallback(twiss[0].getBeta(), this);
                     betaY.putValCallback(twiss[1].getBeta(), this);
                     alphaX.putValCallback(twiss[0].getAlpha(), this);
-                    alphaY.putValCallback(twiss[1].getAlpha(), this); 
-                    
+                    alphaY.putValCallback(twiss[1].getAlpha(), this);
+
                 }
             } catch (ConnectionException e) {
                 System.err.println(e.getMessage());
@@ -1551,7 +1498,7 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
                 System.err.println(e.getMessage());
             }
         }
-        
+
         Channel.flushIO();
     }
 
@@ -1752,7 +1699,7 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
                         coil.findChannel(ESSIonSourceCoil.I_HANDLE),
                         coil.findChannel(ESSIonSourceCoil.I_SET_HANDLE)));
             }
-            
+
             typeQualifier = QualifierFactory.qualifierWithStatusAndTypes(true, Chopper.s_strType);
             List<Chopper> choppers = getSelectedSequence().getAllInclusiveNodesWithQualifier(typeQualifier);
             for (final Chopper chp : choppers) {
@@ -1766,7 +1713,7 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
                         chp.findChannel(Chopper.STATUS_RB_HANDLE),
                         chp.findChannel(Chopper.STATUS_SET_HANDLE)));
             }
-            
+
             typeQualifier = QualifierFactory.qualifierWithStatusAndTypes(true, Iris.s_strType);
             List<Iris> apertures = getSelectedSequence().getAllInclusiveNodesWithQualifier(typeQualifier);
             for (final Iris aper : apertures) {
@@ -1780,18 +1727,18 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
                         aper.findChannel(Iris.OFFSET_Y_RB_HANDLE),
                         aper.findChannel(Iris.OFFSET_Y_SET_HANDLE)));
             }
-            
+
             typeQualifier = QualifierFactory.qualifierWithStatusAndTypes(true, RepellerElectrode.s_strType);
             List<RepellerElectrode> repelectrodes = getSelectedSequence().getAllInclusiveNodesWithQualifier(typeQualifier);
-            for (final RepellerElectrode repelec : repelectrodes) {               
+            for (final RepellerElectrode repelec : repelectrodes) {
                 READBACK_SET_RECORDS.add(new ReadbackSetRecord(repelec,
                         repelec.findChannel(RepellerElectrode.STATUS_RB_HANDLE),
                         repelec.findChannel(RepellerElectrode.STATUS_SET_HANDLE)));
             }
-            
+
             typeQualifier = QualifierFactory.qualifierWithStatusAndTypes(true, SpaceChargeCompensation.s_strType);
             List<SpaceChargeCompensation> N2flow = getSelectedSequence().getAllInclusiveNodesWithQualifier(typeQualifier);
-            for (final SpaceChargeCompensation scc : N2flow) {               
+            for (final SpaceChargeCompensation scc : N2flow) {
                 READBACK_SET_RECORDS.add(new ReadbackSetRecord(scc,
                         scc.findChannel(SpaceChargeCompensation.N2FLOW_RB_HANDLE),
                         scc.findChannel(SpaceChargeCompensation.N2FLOW_SET_HANDLE)));
@@ -1811,8 +1758,62 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
     /**
      * run the VA server
      */
-    private void runServer() {
-        vaRunning = true;
+    private void startServer(ActionEvent event) {
+        if (vaRunning) {
+            JOptionPane.showMessageDialog(getMainWindow(), "Virtual Accelerator has already started.", "Warning!", JOptionPane.PLAIN_MESSAGE);
+            return;
+        }
+        if (!Application.getApp().authorizeWithRBAC("Start")) {
+            JOptionPane.showMessageDialog(getMainWindow(), "You are unauthorized for this action.", "Warning!", JOptionPane.PLAIN_MESSAGE);
+            return;
+        }
+        if (getSelectedSequence() == null) {
+            JOptionPane.showMessageDialog(getMainWindow(), "You need to select sequence(s) first.", "Warning!", JOptionPane.PLAIN_MESSAGE);
+        } else {
+            // use PV logger
+            if (isFromPVLogger) {
+                long pvLoggerId = plsc.getPVLogId();
+
+                vaRunning = true;
+
+                plds = new PVLoggerDataSource(pvLoggerId);
+
+                // use PVLogger to construct the model
+                if (isForOLM) {
+                    // load the settings from the PV Logger
+                    putSetPVsFromPVLogger();
+                    // synchronize with the online model
+                    MODEL_SYNC_TIMER.setEventHandler(getOnlineModelSynchronizer());
+                } else {      // directly use PVLogger data for replay
+                    MODEL_SYNC_TIMER.setEventHandler(getPVLoggerSynchronizer());
+                }
+            } // use online model
+            else {
+                if (currentProbe == null) {
+                    createDefaultProbe();
+                    if (currentProbe == null) {
+                        displayWarning("Warning!", "You need to select probe file first.");
+                        return;
+                    }
+                    actionPerformed(event);
+                } else {
+                    vaRunning = true;
+                }
+
+                // put the initial B_Book PVs to the server
+                configFieldBookPVs();
+
+                //put "set" PVs to the server
+                putSetPVs();
+
+                // continuously loop through the next 3 steps
+                System.out.println("Setup to synchronize the online model periodically...");
+                MODEL_SYNC_TIMER.setEventHandler(getOnlineModelSynchronizer());
+            }
+
+            MODEL_SYNC_TIMER.startNowWithInterval(_modelSyncPeriod, 0);
+            MODEL_SYNC_TIMER.resume();
+        }
     }
 
     /**
@@ -1821,6 +1822,10 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
     private void stopServer() {
         MODEL_SYNC_TIMER.suspend();
         vaRunning = false;
+        ((IServerChannelFactory) CHANNEL_SERVER_FACTORY).dispose();
+        // Creating a new Context
+        CHANNEL_SERVER_FACTORY = ChannelFactory.newServerFactory();
+        accelerator.updateChannelFactory(CHANNEL_SERVER_FACTORY);
     }
 
     /**
@@ -1857,7 +1862,7 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 
     @Override
     public void selectedSequenceChanged() {
-        destroyServer();
+        stopServer();
 
         if (selectedSequence != null) {
             try {
@@ -1884,13 +1889,13 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
             // get all the wire scanners
             wss = getSelectedSequence().getAllNodesWithQualifier(QualifierFactory.qualifierWithStatusAndType(true, ProfileMonitor.PROFILE_MONITOR_TYPE));
             Logger.getLogger(VADocument.class.getName()).log(Level.FINEST, wss.toString());
-            
+
             // get all the EMUs
             emus = getSelectedSequence().getAllNodesWithQualifier(QualifierFactory.qualifierWithStatusAndType(true, EMU.s_strType));
-            
+
             // get all the Current monitors
             bcms = getSelectedSequence().getAllNodesWithQualifier(QualifierFactory.qualifierWithStatusAndType(true, CurrentMonitor.s_strType));
-            
+
             // get all the Current monitors
             npms = getSelectedSequence().getAllNodesWithQualifier(QualifierFactory.qualifierWithStatusAndType(true, NPM.s_strType));
 
