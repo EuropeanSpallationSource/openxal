@@ -13,22 +13,22 @@
     <packaging>pom</packaging>
     
     <modules>
-        <module>arraypvviewer</module>
+        <!--<module>arraypvviewer</module>
         <module>beam_matcher</module>
         <module>bpmviewer</module>
         <module>bricks</module>
         <module>bsmanalysis</module>
         <module>configurator</module>
-        <!--<module>dbbrowser</module>
+        <module>dbbrowser</module>
         <module>diagtiming</module>
         <module>ema</module>
         <module>emittanceanalysis</module>
         <module>energymanager</module>
         <module>experimentautomator</module>
         <module>extlatgenerator</module>
-        <module>injdumpwizard</module>-->
+        <module>injdumpwizard</module>
         <module>knobs</module>
-        <!--<module>labbook</module>-->
+        <module>labbook</module>-->
         <module>launcher</module>
         <module>lebt</module>
         <!--<module>machinerecorder</module>
@@ -47,17 +47,17 @@
         <module>quadshaker</module>
         <module>rfphaseshaker</module>
         <module>saddam</module>
-        <module>scalarpvviewer</module> -->
+        <module>scalarpvviewer</module>
         <module>scanner</module>
-        <!--<module>scan1d</module>
+        <module>scan1d</module>
         <module>scan2d</module>
         <module>sclmonitor</module>
         <module>scope</module>
         <module>score</module>
         <module>timestamptest</module>
-        <module>ttffactory</module> -->
+        <module>ttffactory</module>
         <module>virtualaccelerator</module>
-        <!--<module>wireanalysis</module>
+        <module>wireanalysis</module>
         <module>wirescan</module>
         <module>xyzcorrelator</module>-->
         <module>trajectorycorrection</module>
