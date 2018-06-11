@@ -46,6 +46,7 @@ import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.ca.PutException;
 import xal.extension.jels.smf.impl.Chopper;
+import xal.extension.jels.smf.impl.Doppler;
 import xal.extension.jels.smf.impl.EMU;
 import xal.extension.jels.smf.impl.ESSIonSourceCoil;
 import xal.extension.jels.smf.impl.ESSIonSourceMFC;
@@ -796,10 +797,10 @@ public class FXMLController implements Initializable {
         //Disgnostics equipment
         AcceleratorNode FC = sequence.getNodeWithId("LEBT-010:PBI-FC-001");
         AcceleratorNode BCM = sequence.getNodeWithId("LEBT-010:PBI-BCM-001");
-        AcceleratorNode Doppler = sequence.getNodeWithId("LEBT-010:PBI-Dpl-001");
+        AcceleratorNode DopplerElem = sequence.getNodeWithId("LEBT-010:PBI-Dpl-001");
         displayValues.put(FC.getChannel(CurrentMonitor.I_AVG_HANDLE),label_FC);
         displayValues.put(BCM.getChannel(CurrentMonitor.I_AVG_HANDLE),label_BCM);
-        displayValues.put(Doppler.getChannel(CurrentMonitor.I_AVG_HANDLE),label_Doppler);
+        displayValues.put(DopplerElem.getChannel(Doppler.FRACTION_H_R_HANDLE),label_Doppler);
         
         //Set scale text Field
         textFieldSigmaScale.setText(Double.toString(scale));

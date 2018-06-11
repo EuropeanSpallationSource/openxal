@@ -63,7 +63,7 @@ public class SimulationRunner {
     
     private boolean hasRun;
     
-    public static final double C_BEAM_TO_OPENXAL_B_BEAM = 22.702702702702703;        
+    public static final double C_BEAM_TO_OPENXAL_B_BEAM = 35;        
     
     private double SPACE_CHARGE = 0.95;
     private double SPACE_CHARGE_ELECTRODE = 0.0;   

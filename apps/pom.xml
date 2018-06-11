@@ -13,7 +13,7 @@
     <packaging>pom</packaging>
     
     <modules>
-        <module>arraypvviewer</module>
+        <!--<module>arraypvviewer</module>
         <module>beam_matcher</module>
         <module>bpmviewer</module>
         <module>bricks</module>
@@ -28,10 +28,10 @@
         <module>extlatgenerator</module>
         <module>injdumpwizard</module>
         <module>knobs</module>
-        <module>labbook</module>
+        <module>labbook</module>-->
         <module>launcher</module>
         <module>lebt</module>
-        <module>machinerecorder</module>
+        <!--<module>machinerecorder</module>
         <module>machinesimulator</module>
         <module>magnetcycling</module>
         <module>modelbrowser</module>
@@ -59,7 +59,7 @@
         <module>virtualaccelerator</module>
         <module>wireanalysis</module>
         <module>wirescan</module>
-        <module>xyzcorrelator</module>
+        <module>xyzcorrelator</module>-->
         <module>trajectorycorrection</module>
         <module>trajectorydisplay</module>
   </modules>

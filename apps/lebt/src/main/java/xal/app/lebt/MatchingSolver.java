@@ -151,7 +151,7 @@ public class MatchingSolver {
             matchRun.setInitialBeamParameters(trial.getTrialPoint().getValue(trajVars.get(0)),trial.getTrialPoint().getValue(trajVars.get(1)),trial.getTrialPoint().getValue(trajVars.get(2)),trial.getTrialPoint().getValue(trajVars.get(3)));        
         }
         //twiss
-        if (solver ==1){
+        if (solver == 1){
             matchRun.setBeamTwissX(trial.getTrialPoint().getValue(twissVars.get(0)),trial.getTrialPoint().getValue(twissVars.get(1)),trial.getTrialPoint().getValue(twissVars.get(2)));
             matchRun.setBeamTwissY(trial.getTrialPoint().getValue(twissVars.get(3)),trial.getTrialPoint().getValue(twissVars.get(4)),trial.getTrialPoint().getValue(twissVars.get(5)));                    
         }
@@ -229,19 +229,21 @@ public class MatchingSolver {
                 getSimulationValues(matchRun.getFinalProbe());
                 double score = 0;
                 double diff = 0; 
-                 //Emittance error
-                diff = (simulVals.get(twissVars.get(2)) - finalVals.get(twissVars.get(2)))/finalVals.get(twissVars.get(2));
-                score = score + diff*diff;
-                diff = (simulVals.get(twissVars.get(5)) - finalVals.get(twissVars.get(5)))/finalVals.get(twissVars.get(5));
-                score = score + diff*diff;
+                //Emittance error
+                //diff = (simulVals.get(twissVars.get(2)) - finalVals.get(twissVars.get(2)))/finalVals.get(twissVars.get(2));
+                //score = score + diff*diff;
+                //diff = (simulVals.get(twissVars.get(5)) - finalVals.get(twissVars.get(5)))/finalVals.get(twissVars.get(5));
+                //score = score + diff*diff;
                 
                 //Twiss Parameter error
                 double Dbeta = (simulVals.get(twissVars.get(1)) - finalVals.get(twissVars.get(1)))/finalVals.get(twissVars.get(1));
                 double Dalpha = (simulVals.get(twissVars.get(0)) - finalVals.get(twissVars.get(0)))-finalVals.get(twissVars.get(0))*Dbeta;
                 score = score + 1/2*Math.sqrt(Dbeta*Dbeta + Dalpha*Dalpha);
+                //score = score + Dbeta*Dbeta + Dalpha*Dalpha;                                       
                 Dbeta = (simulVals.get(twissVars.get(4)) - finalVals.get(twissVars.get(4)))/finalVals.get(twissVars.get(4));
                 Dalpha = (simulVals.get(twissVars.get(3)) - finalVals.get(twissVars.get(3)))-finalVals.get(twissVars.get(3))*Dbeta;
                 score = score + 1/2*Math.sqrt(Dbeta*Dbeta + Dalpha*Dalpha);                                       
+                //score = score + Dbeta*Dbeta + Dalpha*Dalpha;                                       
                 
                 return score;
                 
@@ -249,9 +251,9 @@ public class MatchingSolver {
                 
         };
 
-        Problem problemTraj = ProblemFactory.getInverseSquareMinimizerProblem(trajVars, scorerTraj, 0.0001); 
+        Problem problemTraj = ProblemFactory.getInverseSquareMinimizerProblem(trajVars, scorerTraj, 0.04); 
 
-        Solver solverTraj = new Solver(SolveStopperFactory.maxEvaluationsStopper(100));
+        Solver solverTraj = new Solver(SolveStopperFactory.maxEvaluationsStopper(1000));
 
         solverTraj.solve(problemTraj);
                
@@ -262,7 +264,7 @@ public class MatchingSolver {
         
         Problem problemTwiss = ProblemFactory.getInverseSquareMinimizerProblem(twissVars, scorerTwiss, 0.00001); 
 
-        Solver solverTwiss = new Solver(SolveStopperFactory.maxEvaluationsStopper(1000));
+        Solver solverTwiss = new Solver(SolveStopperFactory.maxEvaluationsStopper(2000));
 
         solverTwiss.solve(problemTwiss);
         
