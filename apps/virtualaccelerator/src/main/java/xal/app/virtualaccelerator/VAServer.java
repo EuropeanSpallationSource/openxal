@@ -150,10 +150,6 @@ public class VAServer {
             for ( final String handle : handles ) {
                 Logger.getLogger(VAServer.class.getName()).log(Level.INFO, "Getting channel for handle: " + handle);
                 final Channel channel = node.findChannel( handle );
-                //2018-04-05 Natalia Milas - added the VA prefix to all chanels created by the virtual accelerator
-                if(!channel.channelName().contains("VA:")){
-                    channel.setChannelName("VA:"+channel.channelName());
-                }
                 Logger.getLogger(VAServer.class.getName()).log(Level.FINER, "Channel with signal: " + channel.channelName() + " and validity: " + channel.isValid() );
                 if ( channel != null && channel.isValid() ) {
                     final String signal = channel.channelName();

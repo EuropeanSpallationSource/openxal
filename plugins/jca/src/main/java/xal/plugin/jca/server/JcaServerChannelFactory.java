@@ -7,35 +7,42 @@ import gov.aps.jca.JCALibrary;
 import gov.aps.jca.cas.ServerContext;
 import xal.ca.ChannelFactory;
 import xal.ca.ChannelSystem;
+import xal.ca.IServerChannelFactory;
 
 /**
  * Concrete implementation of ChannelFactory that uses JCA.
- * 
+ *
  * @version 0.1 13 Jul 2015
  * @author Blaz Kranjc <blaz.kranjc@cosylab.com>
  */
-public class JcaServerChannelFactory extends ChannelFactory {
-    /** JCA channel system */
+public class JcaServerChannelFactory extends ChannelFactory implements IServerChannelFactory {
+
+    /**
+     * JCA channel system
+     */
     private JcaServerChannelSystem JCA_SERVER_SYSTEM;
-    
+
     /**
      * Channel server for creating and holding PVs.
      */
     private DefaultServerImpl CHANNEL_SERVER;
-    
-    /** CA Server context */
+
+    /**
+     * CA Server context
+     */
     private ServerContext CONTEXT;
 
-     
-    /** Constructor */
+    /**
+     * Constructor
+     */
     public JcaServerChannelFactory() {
         try {
-	        // Create server implementation
-	        CHANNEL_SERVER = new DefaultServerImpl();
-	
-	        // Create a context with default configuration values.
-	        CONTEXT = JCALibrary.getInstance().createServerContext(JCALibrary.CHANNEL_ACCESS_SERVER_JAVA, CHANNEL_SERVER);	     
-	        JCA_SERVER_SYSTEM = new JcaServerChannelSystem(CONTEXT);
+            // Create server implementation
+            CHANNEL_SERVER = new DefaultServerImpl();
+
+            // Create a context with default configuration values.
+            CONTEXT = JCALibrary.getInstance().createServerContext(JCALibrary.CHANNEL_ACCESS_SERVER_JAVA, CHANNEL_SERVER);
+            JCA_SERVER_SYSTEM = new JcaServerChannelSystem(CONTEXT);
         } catch (CAException e) {
             e.printStackTrace();
         }
@@ -43,9 +50,8 @@ public class JcaServerChannelFactory extends ChannelFactory {
 
     /**
      * Create a JCA server channel for the specified PV
-     * 
-     * @param signalName
-     *            The name of the PV signal
+     *
+     * @param signalName The name of the PV signal
      */
     protected xal.ca.Channel newChannel(final String signalName) {
         return (xal.ca.Channel) new JcaServerChannel(signalName, CHANNEL_SERVER);
@@ -53,14 +59,16 @@ public class JcaServerChannelFactory extends ChannelFactory {
 
     /**
      * JcaSystem handles static behavior of Jca channels
-     * 
+     *
      * @return the JCA channel system
      */
     protected ChannelSystem channelSystem() {
         return JCA_SERVER_SYSTEM;
     }
 
-    /** print information about this channel factory */
+    /**
+     * print information about this channel factory
+     */
     public void printInfo() {
         JCA_SERVER_SYSTEM.printInfo();
     }
@@ -70,5 +78,10 @@ public class JcaServerChannelFactory extends ChannelFactory {
         // nothing to initialize
         return true;
     }
- 
+
+    @Override
+    public void dispose() {
+        CONTEXT.dispose();
+    }
+
 }
