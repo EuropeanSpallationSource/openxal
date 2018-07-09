@@ -100,10 +100,6 @@ public class PVTree extends SplitPane {
     @FXML // fx:id="pvCheckManualButton"
     private Button pvCheckManualButton; // Value injected by FXMLLoader
 
-
-    @FXML // fx:id="pvTree"
-    private TreeView<?> pvTree; // Value injected by FXMLLoader
-
     @FXML // fx:id="epicsTable"
     private TableView<HandleWrapper> epicsTable; // Value injected by FXMLLoader
 
@@ -120,7 +116,6 @@ public class PVTree extends SplitPane {
     void initialize() {
         assert elementSearch != null : "fx:id=\"elementSearch\" was not injected: check your FXML file 'PVTree.fxml'.";
         assert elementTree != null : "fx:id=\"elementTree\" was not injected: check your FXML file 'PVTree.fxml'.";
-        assert pvTree != null : "fx:id=\"pvTree\" was not injected: check your FXML file 'PVTree.fxml'.";
         assert pvAddButton != null : "fx:id=\"pvAddButton\" was not injected: check your FXML file 'PVTree.fxml'.";
 
         Model.getInstance().getAccelerator().getRoot().getAllNodes().stream().map(n -> n.getType()).distinct().sorted().forEachOrdered(t -> addTypeMenuItem(t));
