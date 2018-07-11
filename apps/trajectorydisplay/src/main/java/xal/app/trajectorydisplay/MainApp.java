@@ -40,7 +40,7 @@ public class MainApp extends FxApplication {
         HAS_SEQUENCE = true;
         DOCUMENT = new TrajectoryDisplayDocument(stage);
 
-        MainFuctions.initialize((TrajectoryDisplayDocument)DOCUMENT);
+        MainFunctions.initialize((TrajectoryDisplayDocument)DOCUMENT);
 
         super.initialize();
 
@@ -57,8 +57,8 @@ public class MainApp extends FxApplication {
         trajectoryMenu.getItems().add(loadReferenceTrajMenu );
         MenuItem saveTrajMenu =new MenuItem("Save current trajectory");
         saveTrajMenu.setOnAction(new SaveTrajectoryMenu((TrajectoryDisplayDocument) DOCUMENT));
-        trajectoryMenu.getItems().add(saveTrajMenu);
-        MENU_BAR.getMenus().add(trajectoryMenu);
+        trajectoryMenu.getItems().add(saveTrajMenu);       
+        MENU_BAR.getMenus().add(MENU_BAR.getMenus().size()-2, trajectoryMenu);
 
         super.start(stage);
     }
@@ -101,7 +101,8 @@ class TrajectoryFromFileMenu implements EventHandler {
 
     @Override
     public void handle(Event t) {
-        document.liveTrajectory.set(true);
+        document.liveTrajectory.set(false);
+        document.getTrajectoryFromFile();
     }
     }
 
@@ -115,7 +116,7 @@ class LoadReferenceTrajectoryMenu implements EventHandler {
 
     @Override
     public void handle(Event t) {
-        document.liveTrajectory.set(true);
+        document.loadRefTrajectory();
     }
 }
 

@@ -178,38 +178,3 @@ abstract public class XalFxDocument {
     }
 
 }
-
-class AcceleratorProperty {
-
-    private Accelerator accelerator;
-
-    private final Set<ChangeListener> listeners = new HashSet<>();
-
-    public void setAccelerator(Accelerator accelerator) {
-        synchronized( listeners ){
-          Accelerator old_accelerator = this.accelerator;
-          this.accelerator = accelerator;
-          listeners.forEach(listener -> listener.changed(null, old_accelerator, this.accelerator));
-        }
-
-    }
-
-    public Accelerator getAccelerator() {
-        synchronized( listeners ){
-         return accelerator;
-        }
-    }
-
-    public void addChangeListener(ChangeListener listener){
-        synchronized( listeners ){
-          listeners.add(listener);
-        }
-    };
-
-    public void removeChangeListener(ChangeListener listener){
-        synchronized( listeners ){
-          listeners.remove(listener);
-        }
-    };
-
-}

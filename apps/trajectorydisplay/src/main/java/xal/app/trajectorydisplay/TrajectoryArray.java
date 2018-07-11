@@ -578,8 +578,13 @@ public class TrajectoryArray {
         posY = YData.doubleArray("data");
 
         BPMList.forEach(item -> {
-            XRef.put(item, posX[listBPMname.indexOf(item.toString())]);
-            YRef.put(item, posY[listBPMname.indexOf(item.toString())]);
+            if(listBPMname.contains(item)){
+                XRef.put(item, posX[listBPMname.indexOf(item.toString())]);
+                YRef.put(item, posY[listBPMname.indexOf(item.toString())]);
+            } else {
+                XRef.put(item, 0.0);
+                YRef.put(item, 0.0);
+            }
         });
 
     }

@@ -16,3 +16,4 @@
 #plotVertical *.default-color1.chart-line-symbol { -fx-background-color: transparent; }
 #plotCharge *.default-color0.chart-line-symbol { -fx-background-color: green, white; }
 #plotCharge *.default-color1.chart-line-symbol { -fx-background-color: transparent; }
+

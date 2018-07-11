@@ -17,4 +17,12 @@
     <organization>
         <name>European Spallation Source ERIC</name>
     </organization>
+    <dependencies>
+        <dependency>
+            <groupId>org.xal</groupId>
+            <artifactId>openxal.extensions.fxapplication</artifactId>
+            <version>1.2.3-SNAPSHOT</version>
+            <type>jar</type>
+        </dependency>
+    </dependencies>
 </project>
