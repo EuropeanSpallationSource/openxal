@@ -6,6 +6,7 @@ import xal.tools.beam.optics.DriftSpace;
 import xal.model.IProbe;
 
 import java.io.PrintWriter;
+import xal.tools.beam.PhaseVector;
 
 /**
  * <p>
@@ -97,35 +98,70 @@ public class IdealMagSolenoid  extends ThickElectromagnet {
      */
     @Override
     public PhaseMap transferMap( final IProbe probe, final double length ) {
-		double charge = probe.getSpeciesCharge();
+        double charge = probe.getSpeciesCharge();
         double Er = probe.getSpeciesRestEnergy();
         double beta = probe.getBeta();
         double gamma = probe.getGamma();
         
         // focusing constant (radians/meter)
-        final double k = ( charge * LightSpeed * getMagField() ) / ( Er * beta * gamma )/2.;
-//		final double kSqrt = Math.sqrt( Math.abs( k ) );
+        //final double k = ( charge * LightSpeed * getMagField() ) / ( Er * beta * gamma )/2.;
+        final double k = ( charge * LightSpeed * getMagField() ) / (2.* Er * beta * gamma );
 
         // Compute the transfer matrix components
-//		double r11 = Math.cos(k*length)*Math.cos(k*length);
-//		double r12 = 2.*Math.sin(k*length)*Math.cos(k*length)/k;
-//		double r13 = Math.sin(k*length)*Math.cos(k*length);
-//		double r14 = 2.*Math.sin(k*length)*Math.sin(k*length)/k;
-//		double r21 = -1*k*Math.sin(k*length)*Math.cos(k*length)/2.;
-//		double r41 = k*Math.sin(k*length)*Math.sin(k*length)/2.;
-		double r11 = Math.cos(k*length)*Math.cos(k*length);
-		double r12 = Math.sin(k*length)*Math.cos(k*length)/k;
-		double r13 = Math.sin(k*length)*Math.cos(k*length);
-		double r14 = Math.sin(k*length)*Math.sin(k*length)/k;
-		double r21 = -1*k*Math.sin(k*length)*Math.cos(k*length);
-		double r41 = k*Math.sin(k*length)*Math.sin(k*length);
+
+        double r11 = Math.cos(k*length)*Math.cos(k*length);
+        double r12 = Math.sin(k*length)*Math.cos(k*length)/k;
+        double r13 = Math.sin(k*length)*Math.cos(k*length);
+        double r14 = Math.sin(k*length)*Math.sin(k*length)/k;
+        double r21 = -1*k*Math.sin(k*length)*Math.cos(k*length);
+        double r41 = k*Math.sin(k*length)*Math.sin(k*length);
 		
         final double[][] arr0 = DriftSpace.transferDriftPlane( length );
 
-		// Build the tranfer matrix from its component blocks
+        PhaseMatrix Mentrance = new PhaseMatrix();
+        PhaseMatrix Mbody = new PhaseMatrix();
+        PhaseMatrix Mexit = new PhaseMatrix();
+                      
+        
+        //Build each matrix
+        Mentrance.setElem(0, 0, 1);
+        Mentrance.setElem(1, 1, 1);
+        Mentrance.setElem(2, 2, 1);
+        Mentrance.setElem(3, 3, 1);
+        Mentrance.setElem(1, 2, k);
+        Mentrance.setElem(3, 0, -k);
+        
+        
+        Mexit.setElem(0, 0, 1);
+        Mexit.setElem(1, 1, 1);
+        Mexit.setElem(2, 2, 1);
+        Mexit.setElem(3, 3, 1);
+        Mexit.setElem(1, 2, -k);
+        Mexit.setElem(3, 0, k);
+        
+        Mbody.setElem(0, 0, 1);
+        Mbody.setElem(1, 1, Math.cos(2.*k*length));
+        Mbody.setElem(2, 2, 1);
+        Mbody.setElem(3, 3, Math.cos(2.*k*length));
+        Mbody.setElem(0, 1, r12);
+        Mbody.setElem(0, 2, 0.0);
+        Mbody.setElem(0, 3, r14);
+        Mbody.setElem(1, 0, 0.0);
+        Mbody.setElem(1, 2, 0.0);        
+        Mbody.setElem(1, 3, 2.*r13);
+        Mbody.setElem(2, 0, 0.0);              
+        Mbody.setElem(2, 1, -1.*r14);
+        Mbody.setElem(2, 3, r12);        
+        Mbody.setElem(3, 0, 0.0);       
+        Mbody.setElem(3, 1, -2.*r13);
+        Mbody.setElem(3, 2, 0.0);
+        
+        
+        
+        // Build the tranfer matrix from its component blocks
         PhaseMatrix matPhi = new PhaseMatrix();
 
-        matPhi.setElem(0, 0, r11);
+        /*matPhi.setElem(0, 0, r11);
         matPhi.setElem(1, 1, r11);
         matPhi.setElem(2, 2, r11);
         matPhi.setElem(3, 3, r11);
@@ -140,14 +176,33 @@ public class IdealMagSolenoid  extends ThickElectromagnet {
         matPhi.setElem(1, 0, r21);
         matPhi.setElem(3, 2, r21);
         matPhi.setElem(3, 0, r41);
-        matPhi.setElem(1, 2, -1.*r41);
+        matPhi.setElem(1, 2, -1.*r41);*/
+                
+        if (isFirstSubslice(probe.getPosition())) {
+            matPhi = Mbody.times(Mentrance);            
+        //} else if (isLastSubslice(probe.getPosition() + length)) {
+        //    matPhi = Mexit.times(Mbody);
+        } else {
+            matPhi = Mbody;
+        }      
         
-        matPhi.setSubMatrix( 4, 5, 4, 5, arr0 ); // a drift space longitudinally
-        matPhi.setElem( 6, 6, 1.0 ); // homogeneous coordinates
+        matPhi.setSubMatrix( 4, 5, 4, 5, arr0 ); // a drift space longitudinally       
+        matPhi.setElem( 6, 6, 1.0 ); // homogeneous coordinates      
+        
+        // apply alignment and rotation errors
+        // 2018-07-02 Natalia Milas
+	matPhi = applySolenoidErrors(matPhi, probe, length);	
+        //matPhi = applyErrors2(matPhi, probe, length);	
+        //matPhi = applyErrors(matPhi, probe, length);	
+        if (isLastSubslice(probe.getPosition() + length)) {
+            Mexit = applySolenoidErrors(Mexit, probe, 0);
+            matPhi = Mexit.times(matPhi);
+        }
         
         return new PhaseMap( matPhi );
     }
 
+    
 
     /*
      *  Testing and Debugging
