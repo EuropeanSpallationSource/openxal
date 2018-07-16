@@ -160,22 +160,24 @@ public class PVTree extends SplitPane {
     }
 
     private void addOneChannel(Channel channel) {
+        
+
         ChannelWrapper newChannelWrapper = new ChannelWrapper(channel);
         try {
             Logger.getLogger(PVTree.class.getName()).log(Level.FINER, "Channel {0} has write access {1}", new Object[]{channel.getId(), channel.writeAccess()});
             if (channel.writeAccess())
             {
-                if (!FXMLController.pvScannablelist.contains(newChannelWrapper)) {
+                if (!MainFunctions.mainDocument.pvWriteables.contains(newChannelWrapper)) {
                     Logger.getLogger(PVTree.class.getName()).log(Level.FINEST, "Adding channel {0} to scannable list", new Object[]{channel.getId()});
-                    FXMLController.pvScannablelist.add(newChannelWrapper);
+                    MainFunctions.mainDocument.pvWriteables.add(newChannelWrapper);
                 } else
                     Logger.getLogger(PVTree.class.getName()).log(Level.INFO, "Channel {0} has already been added", channel.getId());
             }
             else
             {
-                if (!FXMLController.pvReadablelist.contains(newChannelWrapper)) {
+                if (!MainFunctions.mainDocument.pvReadbacks.contains(newChannelWrapper)) {
                     Logger.getLogger(PVTree.class.getName()).log(Level.FINEST, "Adding channel {0} to readable list", new Object[]{channel.getId()});
-                    FXMLController.pvReadablelist.add(newChannelWrapper);
+                    MainFunctions.mainDocument.pvReadbacks.add(newChannelWrapper);
                 } else
                     Logger.getLogger(PVTree.class.getName()).log(Level.INFO, "Channel {0} has already been added", channel.getId());
             }
@@ -187,7 +189,7 @@ public class PVTree extends SplitPane {
     @FXML
     void addSelectedPV(ActionEvent event) {
         Logger.getLogger(PVTree.class.getName()).log(Level.INFO, "Adding selected channels");
-        int count = FXMLController.pvScannablelist.size() + FXMLController.pvReadablelist.size();
+        int count = MainFunctions.mainDocument.pvWriteables.size() + MainFunctions.mainDocument.pvReadbacks.size();
 
         if (epicsTable.getSelectionModel().getSelectedItems().size()>0) {
             epicsTable.getSelectionModel().getSelectedItems().forEach((HandleWrapper hw) -> {
@@ -211,8 +213,9 @@ public class PVTree extends SplitPane {
         } else {
             Logger.getLogger(PVTree.class.getName()).log(Level.WARNING, "Nothing to add");
         }
-        Logger.getLogger(PVTree.class.getName()).log(Level.INFO, "Added {0} channels.", FXMLController.pvScannablelist.size() + FXMLController.pvReadablelist.size() - count);
-
+        Logger.getLogger(PVTree.class.getName()).log(Level.INFO, "Added {0} channels.", MainFunctions.mainDocument.pvWriteables.size() + MainFunctions.mainDocument.pvReadbacks.size() - count);
+        Logger.getLogger(PVTree.class.getName()).log(Level.FINEST, "Writeables: {0}",MainFunctions.mainDocument.pvWriteables );
+        Logger.getLogger(PVTree.class.getName()).log(Level.FINEST, "Readbacks: {0}",MainFunctions.mainDocument.pvReadbacks );
     }
 
 

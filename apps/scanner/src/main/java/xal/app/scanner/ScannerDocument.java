@@ -97,10 +97,10 @@ public class ScannerDocument extends XalFxDocument {
      */
     public int numberMeasurementsPerCombo;
 
-    // The Readback channels
-    public List<ChannelWrapper> pvReadbacks;
-    // The Set channels
-    public List<ChannelWrapper> pvWriteables;
+    // The Readback channels that may be read
+    public ObservableList<ChannelWrapper> pvReadbacks;
+    // The Channels that may be scanned
+    public ObservableList<ChannelWrapper> pvWriteables;
     // The combination of scan points (each double[] is equal to number of writeables)
     public List<double[]> combos;
 
@@ -123,8 +123,8 @@ public class ScannerDocument extends XalFxDocument {
         dataSets = new HashMap<>();
         allPVrb = new HashMap<>();
         allPVw = new HashMap<>();
-        pvReadbacks = new ArrayList<>();
-        pvWriteables = new ArrayList<>();
+        pvReadbacks = FXCollections.observableArrayList();
+        pvWriteables = FXCollections.observableArrayList();
         combos = new ArrayList<>();
         constraints = FXCollections.observableArrayList("", "", "", "");
         numberOfScans = new SimpleIntegerProperty(0);
@@ -169,7 +169,7 @@ public class ScannerDocument extends XalFxDocument {
 
         DataAdaptor readAdaptor = XmlDataAdaptor.adaptorForUrl( url, false );
         if (readAdaptor != null) {
-            System.out.println("Will read document "+url.getFile());
+            Logger.getLogger(ScannerDocument.class.getName()).log(Level.INFO, "Will read document {0}", url.getFile());
         }
 
     }
@@ -269,6 +269,7 @@ public class ScannerDocument extends XalFxDocument {
         DataAdaptor scanpvScanner = scannerAdaptor.childAdaptor(SCANPVS_SR);
         pvWriteables.clear();
         scanpvScanner.childAdaptors().forEach( (childAdaptor) -> {
+            Logger.getLogger(ScannerDocument.class.getName()).log(Level.FINER, "Loading scan PV {0}", childAdaptor.stringValue("name"));
             String name = childAdaptor.stringValue("name");
             double min = childAdaptor.doubleValue("min");
             double max = childAdaptor.doubleValue("max");
@@ -296,6 +297,7 @@ public class ScannerDocument extends XalFxDocument {
             ChannelWrapper cWrap = new ChannelWrapper(chan);
             cWrap.isReadProperty().set(true);
 
+            Logger.getLogger(ScannerDocument.class.getName()).log(Level.FINER, "Loading readback PV {0}", name);
             pvReadbacks.add(cWrap);
         });
 

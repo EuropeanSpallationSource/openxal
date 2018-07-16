@@ -121,12 +121,16 @@ public class ChannelWrapper {
         return m_type;
     }
     /**
-     * @propertyDescription Some description
-     * @return
+     * @propertyDescription Set to true if this channel is selected to be scanned (ie is active)
+     * @return true if channel will be scanned
      */
     public SimpleBooleanProperty isScannedProperty() {
         return isScanned;
     }
+    /**
+     * @propertyDescription Set to true if this channel is selected to be read (ie is active)
+     * @return true if channel will be read
+     */
     public SimpleBooleanProperty isReadProperty() {
         return isRead;
     }
@@ -197,6 +201,10 @@ public class ChannelWrapper {
 
     @Override
     public boolean equals(Object other) {
+        if (other == null) {
+            System.out.println("Other is null!!");
+            return false;
+        }
         if (other.getClass() == this.getClass()) {
             if (((ChannelWrapper)other).getChannelName() == null ? this.getChannelName() == null : ((ChannelWrapper)other).getChannelName().equals(this.getChannelName())) {
                 return true;

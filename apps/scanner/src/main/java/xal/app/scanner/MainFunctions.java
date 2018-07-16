@@ -37,6 +37,8 @@ import java.net.MalformedURLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javafx.beans.InvalidationListener;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.concurrent.Task;
@@ -66,6 +68,8 @@ public class MainFunctions {
     public static SimpleBooleanProperty pauseTask;
     public static SimpleBooleanProperty stopTask;
 
+    private static InvalidationListener changeListener;
+    
     public static void initialize(ScannerDocument scannerDocument) {
 
         mainDocument = scannerDocument;
@@ -74,50 +78,59 @@ public class MainFunctions {
         runProgress = new SimpleDoubleProperty(-1.0);
         pauseTask = new SimpleBooleanProperty(false);
         stopTask = new SimpleBooleanProperty(false);
+        changeListener = observable -> {
+            Logger.getLogger(MainFunctions.class.getName()).log(Level.FINEST, "ChangeListener triggered, combos must be recalculated");
+            isCombosUpdated.set(false);
+        };
     }
 
+
     /**
+     * This should be called when the channel is selected in the GUI.
      *
      * @param cWrapper The channel to add
      * @param read Add the channel to readbacks
      * @param write Add the channel to writeables
      * @return true if the channel was added (ie was not already in list)
      */
-    public static boolean actionScanAddPV(ChannelWrapper cWrapper, Boolean read, Boolean write) {
-
-        if (read)
-            if (! mainDocument.pvReadbacks.contains(cWrapper)) {
-                mainDocument.pvReadbacks.add(cWrapper);
-                Logger.getLogger(MainFunctions.class.getName()).log(Level.FINER, "Added channel {0} to readable list",cWrapper);
-                mainDocument.setHasChanges(true);
-                return true;
+    public static boolean actionAddPV(ChannelWrapper cWrapper, Boolean read, Boolean write) {
+        Logger.getLogger(MainFunctions.class.getName()).log(Level.FINEST, "Add PV called for {0}",cWrapper);
+        if (read)  {
+            Logger.getLogger(MainFunctions.class.getName()).log(Level.FINER, "Added channel {0} to readable list",cWrapper);
+            mainDocument.setHasChanges(true);
+            return true;
             }
         if (write) {
-            if (! mainDocument.pvWriteables.contains(cWrapper)) {
-                mainDocument.pvWriteables.add(cWrapper);
-                cWrapper.npointsProperty().addListener((observable, oldValue, newValue) -> isCombosUpdated.set(false));
-                cWrapper.minProperty().addListener((observable, oldValue, newValue) -> isCombosUpdated.set(false));
-                cWrapper.maxProperty().addListener((observable, oldValue, newValue) -> isCombosUpdated.set(false));
-                Logger.getLogger(MainFunctions.class.getName()).log(Level.FINER, "Added channel {0} to writeable list",cWrapper);
-                mainDocument.setHasChanges(true);
-                return true;
-            }
+            Logger.getLogger(MainFunctions.class.getName()).log(Level.FINER, "Added channel {0} to writeable list",cWrapper);
+            cWrapper.npointsProperty().addListener(changeListener);
+            cWrapper.minProperty().addListener(changeListener);
+            cWrapper.maxProperty().addListener(changeListener);
+            mainDocument.setHasChanges(true);
+            return true;
         }
         return false;
     }
 
     /**
-     *
+     * This should be called when the channel is unselected in the GUI.
+     * It currently only have a function for writeable channels, but please 
+     * always call this when a channel is unselected (in case we need some logic 
+     * in the future).
+     * 
      * @param cWrapper The channel to remove
      * @param read Remove the channel from readbacks
      * @param write Remove the channel from writeables
      */
-    public static void actionScanRemovePV(ChannelWrapper cWrapper, Boolean read, Boolean write) {
-        if (read) {
-            mainDocument.pvReadbacks.remove(cWrapper);
+    public static void actionRemovePV(ChannelWrapper cWrapper, Boolean read, Boolean write) {
+        Logger.getLogger(MainFunctions.class.getName()).log(Level.FINEST, "Remove PV called for {0}",cWrapper);
+        if (read)  {
+            Logger.getLogger(MainFunctions.class.getName()).log(Level.FINER, "Removing channel {0} from readable list",cWrapper);
         }
         if (write) {
-            mainDocument.pvWriteables.remove(cWrapper);
+            Logger.getLogger(MainFunctions.class.getName()).log(Level.FINER, "Removing channel {0} from writeable list",cWrapper);
+            cWrapper.npointsProperty().removeListener(changeListener);
+            cWrapper.minProperty().removeListener(changeListener);
+            cWrapper.maxProperty().removeListener(changeListener);
         }
     }
 
@@ -147,10 +160,59 @@ public class MainFunctions {
     private static boolean hasConstraints() {
         return mainDocument.constraints.stream().anyMatch((constraint) -> (constraint.trim().length()>0));
     }
-    // Return the current reading of the i'th pvWriteables
-    private static double getPVsetting(int i) throws ConnectionException, GetException {
-        return mainDocument.pvWriteables.get(i).getChannel().getRawValueRecord().doubleValue();
+    
+    private static Stream<ChannelWrapper> getActivePVreadables() {
+        return mainDocument.pvReadbacks.stream().filter((readable) -> (readable.getIsRead()));
     }
+    
+    private static Stream<ChannelWrapper> getActivePVwritebacks() {
+        return mainDocument.pvWriteables.stream().filter((writeable) -> (writeable.getIsScanned()));
+    }
+    
+    /**
+     *
+     * @param i the channel index (counting active only)
+     * @return Return the i'th active readable channel
+     */
+    private static ChannelWrapper getActivePVreadable(int i) {
+        int j=-1;
+        for (ChannelWrapper cw : mainDocument.pvReadbacks) {
+            if (cw.getIsRead())
+                j++;
+            if (j==i)
+                return cw;
+        }
+        return null;
+    }
+        
+    /**
+     *
+     * @param i the channel index (counting active only)
+     * @return Return the i'th active scannable channel
+     */
+    private static ChannelWrapper getActivePVwriteback(int i) {
+        int j=-1;
+        for (ChannelWrapper cw : mainDocument.pvWriteables) {
+            if (cw.getIsScanned())
+                j++;
+            if (j==i)
+                return cw;
+        }
+        return null;
+    }
+    
+    // Return the current reading of the i'th ACTIVE pvWriteable
+    private static double getPVsetting(int i) throws ConnectionException, GetException {
+        int j = -1;
+        for (ChannelWrapper cw : mainDocument.pvWriteables) {
+            if (cw.getIsScanned())
+                j++;
+            if (i==j)
+                return cw.getChannel().getRawValueRecord().doubleValue();
+       }
+       return Double.NaN;
+    }
+
     /*
      * This function updates combos with the correct combinations of settings
      * for each variable.
@@ -163,15 +225,13 @@ public class MainFunctions {
 
         // Calculate the correct amount of combos..
         int ncombos=1;
-        for (ChannelWrapper cw : mainDocument.pvWriteables) {
-            ncombos*=cw.getNpoints();
-        }
+        ncombos = getActivePVwritebacks().map((cw) -> cw.getNpoints()).reduce(ncombos, (accumulator, _item) -> accumulator * _item);
         for (int i = 0;i<ncombos+2;i++)
-            mainDocument.combos.add(new double[mainDocument.pvWriteables.size()]);
+            mainDocument.combos.add(new double[(int) getActivePVwritebacks().count()]);
 
         // Read in all settings before any modifications..
         // First and last measurement is at initial parameters
-        for (int i=0;i<mainDocument.pvWriteables.size();i++) {
+        for (int i=0;i<(int) getActivePVwritebacks().count();i++) {
              try {
                  mainDocument.combos.get(0)[i] = getPVsetting(i);
                  mainDocument.combos.get(ncombos+1)[i] = mainDocument.combos.get(0)[i];
@@ -188,19 +248,20 @@ public class MainFunctions {
         // n2 will say how many times we should loop the current PV
         int n2 = 1;
         // Write out one parameter at the time
-        for (int i=0; i<mainDocument.pvWriteables.size();i++) {
+        for (int i=0; i<(int) getActivePVwritebacks().count();i++) {
             // The combo index we are currently inserting
             int m = 1;
-            n1/=mainDocument.pvWriteables.get(i).getNpoints();
+            ChannelWrapper cw = getActivePVwriteback(i);
+            n1/=cw.getNpoints();
             for (int l=0;l<n2;l++) {
-                for ( double sp : mainDocument.pvWriteables.get(i).getScanPoints()) {
+                for ( double sp : cw.getScanPoints()) {
                     for (int k=0;k<n1;k++) {
                         mainDocument.combos.get(m)[i]=sp;
                         m+=1;
                     }
                 }
             }
-            n2*=mainDocument.pvWriteables.get(i).getNpoints();
+            n2*=cw.getNpoints();
          }
 
         // Now we check if any of the combos are invalid..
@@ -238,9 +299,10 @@ public class MainFunctions {
      */
     private static void setCombo(double[] combo) {
         for (int i=0;i<combo.length;i++) {
+            ChannelWrapper cw = getActivePVwriteback(i);
             try {
-                if (mainDocument.pvWriteables.get(i).getChannel().connectAndWait(5))
-                    mainDocument.pvWriteables.get(i).getChannel().putVal(combo[i]);
+                if (cw.getChannel().connectAndWait(5))
+                    cw.getChannel().putVal(combo[i]);
             } catch (ConnectionException | PutException ex) {
                 Logger.getLogger(MainFunctions.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -248,11 +310,11 @@ public class MainFunctions {
     }
 
     private static double [] makeReading() {
-        double[] readings = new double[mainDocument.pvReadbacks.size()];
+        double[] readings = new double[(int) getActivePVreadables().count()];
         for (int i=0;i<readings.length;i++) {
             try {
                 // Here you insert an actual reading of the PV value..
-                readings[i]=mainDocument.pvReadbacks.get(i).getChannel().getRawValueRecord().doubleValue();
+                readings[i]=getActivePVreadable(i).getChannel().getRawValueRecord().doubleValue();
             } catch (ConnectionException | GetException ex) {
                 Logger.getLogger(MainFunctions.class.getName()).log(Level.SEVERE, null, ex);
                 readings[i]=0.0;
@@ -321,11 +383,11 @@ public class MainFunctions {
                         nMeasThisCombo=mainDocument.numberMeasurementsPerCombo;
                     else
                         nMeasThisCombo=1;
-                    Logger.getLogger(MainFunctions.class.getName()).log(Level.FINEST, "DBG nmeas at this combo {0}", nMeasThisCombo);
+                    Logger.getLogger(MainFunctions.class.getName()).log(Level.FINEST, "nmeas at this combo {0}", nMeasThisCombo);
                     for (int j=0;j<nMeasThisCombo;j++) {
                         double[] readings = makeReading();
-                        System.arraycopy(mainDocument.combos.get(mainDocument.nCombosDone), 0, mainDocument.currentMeasurement[nMeasDone], 0, mainDocument.pvWriteables.size());
-                        System.arraycopy(readings, 0, mainDocument.currentMeasurement[nMeasDone], mainDocument.pvWriteables.size(), mainDocument.pvReadbacks.size());
+                        System.arraycopy(mainDocument.combos.get(mainDocument.nCombosDone), 0, mainDocument.currentMeasurement[nMeasDone], 0, (int) getActivePVwritebacks().count());
+                        System.arraycopy(readings, 0, mainDocument.currentMeasurement[nMeasDone], mainDocument.pvWriteables.size(), (int) getActivePVreadables().count());
                         updateProgress(mainDocument.nCombosDone+1, mainDocument.combos.size());
                         mainDocument.saveCurrentMeas(nMeasDone);
                         nMeasDone++;
