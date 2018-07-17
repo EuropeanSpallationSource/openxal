@@ -225,12 +225,14 @@ public class ScannerDocument extends XalFxDocument {
             scan_PV_name.setValue("max", pv.maxProperty().get() );
             scan_PV_name.setValue("npoints", pv.npointsProperty().get() );
             scan_PV_name.setValue("instance", pv.instanceProperty().get() );
+            scan_PV_name.setValue("active", pv.isScannedProperty().get() );
         });
 
         DataAdaptor measpvScanner = scannerAdaptor.createChild(MEASUREPVS_SR);
         pvReadbacks.forEach((pv) -> {
             DataAdaptor meas_PV_name =  measpvScanner.createChild("PV");
             meas_PV_name.setValue("name", pv.getChannel().getId() );
+            meas_PV_name.setValue("active", pv.isReadProperty().get() );
         });
 
         DataAdaptor constraintsAdaptor = scannerAdaptor.createChild(CONSTRAINTS_SR);
@@ -269,8 +271,10 @@ public class ScannerDocument extends XalFxDocument {
         DataAdaptor scanpvScanner = scannerAdaptor.childAdaptor(SCANPVS_SR);
         pvWriteables.clear();
         scanpvScanner.childAdaptors().forEach( (childAdaptor) -> {
-            Logger.getLogger(ScannerDocument.class.getName()).log(Level.FINER, "Loading scan PV {0}", childAdaptor.stringValue("name"));
             String name = childAdaptor.stringValue("name");
+            boolean active = childAdaptor.booleanValue("active");
+            Logger.getLogger(ScannerDocument.class.getName()).log(Level.FINER, "Loading scan PV {0}, active: {1}", new Object[]{name, active});
+
             double min = childAdaptor.doubleValue("min");
             double max = childAdaptor.doubleValue("max");
             int npoints = childAdaptor.intValue("npoints");
@@ -279,7 +283,7 @@ public class ScannerDocument extends XalFxDocument {
             Channel chan = acc.channelSuite().getChannelFactory().getChannel(name);
 
             ChannelWrapper cWrap = new ChannelWrapper(chan);
-            cWrap.isScannedProperty().set(true);
+            cWrap.isScannedProperty().set(active);
             cWrap.minProperty().set(min);
             cWrap.maxProperty().set(max);
             cWrap.npointsProperty().set(npoints);
@@ -292,12 +296,13 @@ public class ScannerDocument extends XalFxDocument {
         pvReadbacks.clear();
         readpvScanner.childAdaptors().forEach( (childAdaptor) -> {
             String name = childAdaptor.stringValue("name");
+            boolean active = childAdaptor.booleanValue("active");
+            Logger.getLogger(ScannerDocument.class.getName()).log(Level.FINER, "Loading readback PV {0}, active: {1}", new Object[]{name, active});
 
             Channel chan = acc.channelSuite().getChannelFactory().getChannel(name);
             ChannelWrapper cWrap = new ChannelWrapper(chan);
-            cWrap.isReadProperty().set(true);
+            cWrap.isReadProperty().set(active);
 
-            Logger.getLogger(ScannerDocument.class.getName()).log(Level.FINER, "Loading readback PV {0}", name);
             pvReadbacks.add(cWrap);
         });
 
@@ -314,6 +319,7 @@ public class ScannerDocument extends XalFxDocument {
         if ( scannerAdaptor.childAdaptor(MEASUREMENTS_SR) != null) {
             DataAdaptor measurementsScanner = scannerAdaptor.childAdaptor(MEASUREMENTS_SR);
             measurementsScanner.childAdaptors().forEach( (measAdaptor) -> {
+                Logger.getLogger(ScannerDocument.class.getName()).log(Level.FINEST, "Loading measurement {0}", measAdaptor.stringValue("title"));
                 List<Channel> pvW = new ArrayList<>();
                 List<Channel> pvR = new ArrayList<>();
                 int ncombos = measAdaptor.childAdaptors().get(0).doubleArray("data").length;
@@ -345,6 +351,7 @@ public class ScannerDocument extends XalFxDocument {
             currentMeasAdaptor = scannerAdaptor.childAdaptor(CURRENTMEAS_SR);
             // Need to calculate nmeas (or ncombos if you want)
             nCombosDone=currentMeasAdaptor.childAdaptors().size();
+            Logger.getLogger(ScannerDocument.class.getName()).log(Level.FINEST, "Loading unfinished measurement, {0} points finished", nCombosDone);
             int nVars = pvWriteables.size() + pvReadbacks.size();
             currentMeasurement = new double[nCombosDone][nVars];
             for(int i = 0;i<nCombosDone;i++) {
