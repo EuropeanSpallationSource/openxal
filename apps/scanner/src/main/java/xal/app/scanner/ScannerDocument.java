@@ -32,6 +32,7 @@
 package xal.app.scanner;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -46,6 +47,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.stage.Stage;
 import xal.ca.Channel;
+import xal.ca.Timestamp;
 import xal.smf.Accelerator;
 import xal.tools.data.DataAdaptor;
 import xal.tools.xml.XmlDataAdaptor;
@@ -69,6 +71,10 @@ public class ScannerDocument extends XalFxDocument {
      * For every measurement, store the channels written to for this measurement..
      */
     public Map<String, List<Channel>> allPVw;
+    /**
+     * For every measurement, store time stamps of all read variables here
+     */
+    public Map<String, Timestamp[][]> allTimestamps;
 
     /**
      * The number of different scans that have been done
@@ -76,6 +82,7 @@ public class ScannerDocument extends XalFxDocument {
     public SimpleIntegerProperty numberOfScans;
 
     public double[][] currentMeasurement;
+    public Timestamp[][] currentTimestamps;
 
     // The current number of measurement points done
     public int nCombosDone;
@@ -112,17 +119,24 @@ public class ScannerDocument extends XalFxDocument {
     private static final String MEASUREMENTS_SR = "measurements";
     private static final String CONSTRAINTS_SR = "constraints";
     private static final String CURRENTMEAS_SR = "currentMeasurement";
+    private static final String SETTINGS_SR = "settings";
+    
+    private static final SimpleDateFormat TIMEFORMAT_SR = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
     private XmlDataAdaptor da;
     private DataAdaptor currentMeasAdaptor;
 
     /**
      *  Create a new empty ScanDocument1D
+     * 
+     * @param stage The stage for this application
      */
     public ScannerDocument(Stage stage) {
         super(stage);
         dataSets = new HashMap<>();
         allPVrb = new HashMap<>();
         allPVw = new HashMap<>();
+        allTimestamps = new HashMap<>();
         pvReadbacks = FXCollections.observableArrayList();
         pvWriteables = FXCollections.observableArrayList();
         combos = new ArrayList<>();
@@ -181,12 +195,17 @@ public class ScannerDocument extends XalFxDocument {
     @Override
     public void saveDocumentAs(URL url) {
         Logger.getLogger(ScannerDocument.class.getName()).log(Level.FINER, "Saving document, filename {0}", url);
-        da = XmlDataAdaptor.newEmptyDocumentAdaptor();
-        DataAdaptor scannerAdaptor =  da.createChild(SCANNER_SR);
+        initDocumentAdaptor();
+        DataAdaptor scannerAdaptor =  da.childAdaptor(SCANNER_SR);
         currentMeasAdaptor = null;
         scannerAdaptor.setValue("title", url.getFile());
-        scannerAdaptor.setValue("date", new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date()));
+        scannerAdaptor.setValue("date", TIMEFORMAT_SR.format(new Date()));
 
+
+        // Store the settings..
+        DataAdaptor settingsAdaptor = scannerAdaptor.createChild(SETTINGS_SR);
+        settingsAdaptor.setValue("MeasurementDelay", delayBetweenMeasurements);
+        settingsAdaptor.setValue("MeasurementPerCombo", numberMeasurementsPerCombo);
 
         // Store information about all measurements done..
         DataAdaptor measurementsScanner = scannerAdaptor.createChild(MEASUREMENTS_SR);
@@ -194,6 +213,7 @@ public class ScannerDocument extends XalFxDocument {
             // convenience variables..
             List<Channel> pvW = allPVw.get(measurement.getKey());
             List<Channel> pvR = allPVrb.get(measurement.getKey());
+            Timestamp[][] tstamps = allTimestamps.get(measurement.getKey());
             DataAdaptor measurementAdaptor = measurementsScanner.createChild("measurement");
             measurementAdaptor.setValue("title", measurement.getKey());
             for (int i=0;i<measurement.getValue()[0].length;i++) {
@@ -206,14 +226,22 @@ public class ScannerDocument extends XalFxDocument {
                     channelAdaptor.setValue("type", "r");
                 }
                 double[] data = new double[measurement.getValue().length];
+                String tstamps_str = "";
                 for (int j = 0;j<measurement.getValue().length;j++) {
                     data[j]=measurement.getValue()[j][i];
+                    // TODO!!
+                    if (i>=pvW.size()) {
+                        if (j!=0)
+                            tstamps_str=tstamps_str.concat(", ");
+                        tstamps_str=tstamps_str.concat(tstamps[j][i-pvW.size()].toBigDecimal().toString());
+                    }
+                    channelAdaptor.setValue("data", data);
                 }
                 channelAdaptor.setValue("data", data);
+                if (i>=pvW.size())
+                    channelAdaptor.setValue("timestamps", tstamps_str);
             }
         });
-
-
         // Store information about current measurement setup..
 
         // Store list of variables to read & write.. ChannelWrapper objects
@@ -246,8 +274,11 @@ public class ScannerDocument extends XalFxDocument {
     }
 
     public void saveCurrentMeas(int nmeas) {
+        if (da == null)
+            initDocumentAdaptor();
         if (currentMeasAdaptor==null) {
             currentMeasAdaptor=da.childAdaptor(SCANNER_SR).createChild(CURRENTMEAS_SR);
+            currentMeasAdaptor.createChild("channels").setValue("values", da);
         }
         currentMeasAdaptor.createChild("step").setValue("values", currentMeasurement[nmeas]);
         if (source!=null)
@@ -255,6 +286,12 @@ public class ScannerDocument extends XalFxDocument {
     };
 
 
+
+    private void initDocumentAdaptor() {
+        da = XmlDataAdaptor.newEmptyDocumentAdaptor();
+        da.createChild(SCANNER_SR);
+        
+    }
     /**
      *  Reads the content of the document from the specified URL, and loads the information into the application.
      *
@@ -265,6 +302,11 @@ public class ScannerDocument extends XalFxDocument {
         DataAdaptor scannerAdaptor =  readAdp.childAdaptor(SCANNER_SR);
 
         Accelerator acc = Model.getInstance().getAccelerator();
+
+        // Load the settings
+        DataAdaptor settingsAdaptor = scannerAdaptor.childAdaptor(SETTINGS_SR);
+        delayBetweenMeasurements = settingsAdaptor.longValue("MeasurementDelay");
+        numberMeasurementsPerCombo = settingsAdaptor.intValue("MeasurementPerCombo");
 
         // Load list of variables to read & write.. ChannelWrapper objects
         // There is probably an issue since these variables are not read into MainFunctions.PVlist
@@ -322,26 +364,40 @@ public class ScannerDocument extends XalFxDocument {
                 Logger.getLogger(ScannerDocument.class.getName()).log(Level.FINEST, "Loading measurement {0}", measAdaptor.stringValue("title"));
                 List<Channel> pvW = new ArrayList<>();
                 List<Channel> pvR = new ArrayList<>();
-                int ncombos = measAdaptor.childAdaptors().get(0).doubleArray("data").length;
-                int nchannels = measAdaptor.childAdaptors().size();
-                double[][] data = new double[ncombos][nchannels];
-                //dataSets.get(measAdaptor.stringValue("title"));
-                for (int ichan=0;ichan<nchannels;ichan++) {
+
+                int numCombos = measAdaptor.childAdaptors().get(0).doubleArray("data").length;
+                int numChannels = measAdaptor.childAdaptors().size();
+                int numReadChannels = (int) measAdaptor.childAdaptors().stream().filter((adaptor) -> ("r".equals(adaptor.stringValue("type"))) ).count();
+
+                double[][] data = new double[numCombos][numChannels];
+                Timestamp[][] tstamps = new Timestamp[numCombos][numReadChannels];
+                int iReadChan = 0;
+                for (int ichan=0;ichan<numChannels;ichan++) {
                     DataAdaptor chanAdaptor = measAdaptor.childAdaptors().get(ichan);
+                    boolean isRead = "r".equals(chanAdaptor.stringValue("type"));
+                    boolean isWrite = "w".equals(chanAdaptor.stringValue("type"));
                     double[] channelData = chanAdaptor.doubleArray("data");
-                    for (int icombo=0;icombo<ncombos;icombo++) {
+                    for (int icombo=0;icombo<numCombos;icombo++) {
                         data[icombo][ichan] = channelData[icombo];
                     }
+                    if (isRead) {
+                        String[] tstampData = chanAdaptor.stringValue("timestamps").split(", ");
+                        for (int icombo=0;icombo<numCombos;icombo++) {
+                            tstamps[icombo][iReadChan] = new Timestamp(new BigDecimal(tstampData[icombo]));
+                        }
+                        iReadChan+=1;
+                    }
                     Channel chan = acc.channelSuite().getChannelFactory().getChannel(chanAdaptor.stringValue("name"));
-                    if ("w".equals(chanAdaptor.stringValue("type"))) {
+                    if (isWrite) {
                         pvW.add(chan);
-                    } else if ("r".equals(chanAdaptor.stringValue("type"))) {
+                    } else if (isRead) {
                         pvR.add(chan);
                     }
                 }
                 dataSets.put(measAdaptor.stringValue("title"), data);
                 allPVw.put(measAdaptor.stringValue("title"), pvW);
                 allPVrb.put(measAdaptor.stringValue("title"), pvR);
+                allTimestamps.put(measAdaptor.stringValue("title"), tstamps);
                 numberOfScans.set(numberOfScans.get()+1);
 
             });

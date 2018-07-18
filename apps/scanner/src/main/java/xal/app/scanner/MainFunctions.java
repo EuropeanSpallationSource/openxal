@@ -32,8 +32,7 @@
 
 package xal.app.scanner;
 
-import java.io.File;
-import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -45,9 +44,11 @@ import javafx.concurrent.Task;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+import xal.ca.ChannelTimeRecord;
 import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.ca.PutException;
+import xal.ca.Timestamp;
 
 /**
  *
@@ -309,15 +310,14 @@ public class MainFunctions {
         }
     }
 
-    private static double [] makeReading() {
-        double[] readings = new double[(int) getActivePVreadables().count()];
-        for (int i=0;i<readings.length;i++) {
+    private static ArrayList<ChannelTimeRecord> makeReading() {
+        ArrayList<ChannelTimeRecord> readings = new ArrayList((int) getActivePVreadables().count());
+        for (int i=0;i<(int) getActivePVreadables().count();i++) {
             try {
                 // Here you insert an actual reading of the PV value..
-                readings[i]=getActivePVreadable(i).getChannel().getRawValueRecord().doubleValue();
+                readings.add(getActivePVreadable(i).getChannel().getTimeRecord());
             } catch (ConnectionException | GetException ex) {
                 Logger.getLogger(MainFunctions.class.getName()).log(Level.SEVERE, null, ex);
-                readings[i]=0.0;
             }
         }
         return readings;
@@ -339,14 +339,13 @@ public class MainFunctions {
 
         if (!isCombosUpdated.get()) calculateCombos();
 
-        if (mainDocument.nCombosDone == 0)
-            mainDocument.currentMeasurement = new double[2+(mainDocument.combos.size()-2)*mainDocument.numberMeasurementsPerCombo][mainDocument.pvWriteables.size()+mainDocument.pvReadbacks.size()];
-
-        try {
-            MainFunctions.mainDocument.saveDocumentAs(new File("scanner.xml").toURI().toURL());
-        } catch (MalformedURLException ex) {
-            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+        if (mainDocument.nCombosDone == 0) {
+            mainDocument.currentMeasurement = new double[2+(mainDocument.combos.size()-2)*mainDocument.numberMeasurementsPerCombo][((int) getActivePVwritebacks().count())+((int) getActivePVreadables().count())];
+            mainDocument.currentTimestamps = new Timestamp[2+(mainDocument.combos.size()-2)*mainDocument.numberMeasurementsPerCombo][(int) getActivePVreadables().count()];
         }
+
+        // Warning, this only saves if document is defined (user has saved before)
+        MainFunctions.mainDocument.saveDocument();
 
         pauseTask.set(false);
         stopTask.set(false);
@@ -383,11 +382,12 @@ public class MainFunctions {
                         nMeasThisCombo=mainDocument.numberMeasurementsPerCombo;
                     else
                         nMeasThisCombo=1;
-                    Logger.getLogger(MainFunctions.class.getName()).log(Level.FINEST, "nmeas at this combo {0}", nMeasThisCombo);
+                    Logger.getLogger(MainFunctions.class.getName()).log(Level.FINEST, "Number of measurements with this combo {0}", nMeasThisCombo);
                     for (int j=0;j<nMeasThisCombo;j++) {
-                        double[] readings = makeReading();
+                        ArrayList<ChannelTimeRecord> readings = makeReading();
                         System.arraycopy(mainDocument.combos.get(mainDocument.nCombosDone), 0, mainDocument.currentMeasurement[nMeasDone], 0, (int) getActivePVwritebacks().count());
-                        System.arraycopy(readings, 0, mainDocument.currentMeasurement[nMeasDone], mainDocument.pvWriteables.size(), (int) getActivePVreadables().count());
+                        System.arraycopy(readings.stream().mapToDouble(m -> m.doubleValue()).toArray(), 0, mainDocument.currentMeasurement[nMeasDone], (int) getActivePVwritebacks().count(), (int) getActivePVreadables().count());
+                        System.arraycopy(readings.stream().map(m -> m.getTimestamp()).toArray(), 0, mainDocument.currentTimestamps[nMeasDone], 0, (int) getActivePVreadables().count());
                         updateProgress(mainDocument.nCombosDone+1, mainDocument.combos.size());
                         mainDocument.saveCurrentMeas(nMeasDone);
                         nMeasDone++;
@@ -404,15 +404,13 @@ public class MainFunctions {
                 // If we finished the measurement, store the new data.
                 if (mainDocument.nCombosDone == mainDocument.combos.size()) {
                     mainDocument.dataSets.put("Measurement "+(mainDocument.numberOfScans.get()+1), mainDocument.currentMeasurement);
-                    mainDocument.allPVrb.put("Measurement "+(mainDocument.numberOfScans.get()+1), mainDocument.pvReadbacks.stream().map(cw -> cw.getChannel()).collect(Collectors.toList()));
-                    mainDocument.allPVw.put("Measurement "+(mainDocument.numberOfScans.get()+1), mainDocument.pvWriteables.stream().map(cw -> cw.getChannel()).collect(Collectors.toList()));
+                    mainDocument.allPVrb.put("Measurement "+(mainDocument.numberOfScans.get()+1), getActivePVreadables().map(cw -> cw.getChannel()).collect(Collectors.toList()));
+                    mainDocument.allPVw.put("Measurement "+(mainDocument.numberOfScans.get()+1), getActivePVwritebacks().map(cw -> cw.getChannel()).collect(Collectors.toList()));
+                    mainDocument.allTimestamps.put("Measurement "+(mainDocument.numberOfScans.get()+1), mainDocument.currentTimestamps);
                     mainDocument.numberOfScans.set(mainDocument.numberOfScans.get()+1);
                     mainDocument.nCombosDone=0;
-                    try {
-                        MainFunctions.mainDocument.saveDocumentAs(new File("scanner.xml").toURI().toURL());
-                    } catch (MalformedURLException ex) {
-                        Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, "Failed to save document", ex);
-                    }
+                    // Note that this is only saved if document is defined
+                    MainFunctions.mainDocument.saveDocument();
                 }
             }
 
