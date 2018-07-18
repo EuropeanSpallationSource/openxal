@@ -267,7 +267,7 @@ public class FXMLController implements Initializable {
     @FXML
     void setDelayEdited(KeyEvent event) {
         Logger.getLogger(FXMLController.class.getName()).log(Level.FINER, "Delay edited to {0}", delayBetweenMeas.getText());
-        if((long) (Float.parseFloat(delayBetweenMeas.getText())*1000)!=MainFunctions.mainDocument.delayBetweenMeasurements)
+        if((long) (Float.parseFloat(delayBetweenMeas.getText())*1000)!=MainFunctions.mainDocument.delayBetweenMeasurements.get())
             measDelaySetButton.setDisable(false);
         else
             measDelaySetButton.setDisable(true);
@@ -276,7 +276,7 @@ public class FXMLController implements Initializable {
     @FXML
     void setMeasPerPointEdited(KeyEvent event) {
         Logger.getLogger(FXMLController.class.getName()).log(Level.FINER, "Measurements per point edited to {0}", measPerPoint.getText());
-        if(Integer.parseInt(measPerPoint.getText())!=MainFunctions.mainDocument.numberMeasurementsPerCombo)
+        if(Integer.parseInt(measPerPoint.getText())!=MainFunctions.mainDocument.numberMeasurementsPerCombo.get())
             nMeasPerSettingSetButton.setDisable(false);
         else
             nMeasPerSettingSetButton.setDisable(true);
@@ -285,8 +285,8 @@ public class FXMLController implements Initializable {
 
     @FXML
     void setMeasurementDelay(ActionEvent event) {
-        MainFunctions.mainDocument.delayBetweenMeasurements=(long) (Float.parseFloat(delayBetweenMeas.getText())*1000);
-        Logger.getLogger(FXMLController.class.getName()).log(Level.INFO, "Measurement delay set to {0} ms", MainFunctions.mainDocument.delayBetweenMeasurements);
+        MainFunctions.mainDocument.delayBetweenMeasurements.set((long) (Float.parseFloat(delayBetweenMeas.getText())*1000));
+        Logger.getLogger(FXMLController.class.getName()).log(Level.INFO, "Measurement delay set to {0} ms", MainFunctions.mainDocument.delayBetweenMeasurements.get());
         // If combos are already calculated we trigger a quick refresh of the calculation
         if (MainFunctions.isCombosUpdated.getValue())
             handlePreCalculate(event);
@@ -295,7 +295,7 @@ public class FXMLController implements Initializable {
 
     @FXML
     void setNumberOfMeasPerSetting(ActionEvent event) {
-        MainFunctions.mainDocument.numberMeasurementsPerCombo = Integer.parseInt(measPerPoint.getText());
+        MainFunctions.mainDocument.numberMeasurementsPerCombo.set(Integer.parseInt(measPerPoint.getText()));
         Logger.getLogger(FXMLController.class.getName()).log(Level.INFO, "Measurement per point set to {0}", MainFunctions.mainDocument.numberMeasurementsPerCombo);
         // If combos are already calculated we trigger a quick refresh of the calculation
         if (MainFunctions.isCombosUpdated.getValue())
@@ -416,14 +416,26 @@ public class FXMLController implements Initializable {
                 });
 
 
+        MainFunctions.mainDocument.delayBetweenMeasurements.addListener((observable, oldValue, newValue) -> {
+                    delayBetweenMeas.setText(String.valueOf(0.001*newValue.longValue()));
+                });
+
+
+        MainFunctions.mainDocument.numberMeasurementsPerCombo.addListener((observable, oldValue, newValue) -> {
+                    measPerPoint.setText(newValue.toString());
+                });
+        
+        
+
+
         tabConfigure.setDisable(true);
         tabRun.setDisable(true);
         tabDisplay.setDisable(true);
 
         // -- configuration text fields --
         // Set default values in the box
-        delayBetweenMeas.setText(String.valueOf(0.001*MainFunctions.mainDocument.delayBetweenMeasurements));
-        measPerPoint.setText(String.valueOf(MainFunctions.mainDocument.numberMeasurementsPerCombo));
+        //delayBetweenMeas.setText(String.valueOf(0.001*MainFunctions.mainDocument.delayBetweenMeasurements.get()));
+        //measPerPoint.setText(String.valueOf(MainFunctions.mainDocument.numberMeasurementsPerCombo));
         // Add ToolTips to both text fields
         Tooltip delayBetweenMeasTooltip = new Tooltip();
         delayBetweenMeasTooltip.setText("Set the delay between measurements");

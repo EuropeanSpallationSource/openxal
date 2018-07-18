@@ -162,14 +162,6 @@ public class MainFunctions {
         return mainDocument.constraints.stream().anyMatch((constraint) -> (constraint.trim().length()>0));
     }
     
-    private static Stream<ChannelWrapper> getActivePVreadables() {
-        return mainDocument.pvReadbacks.stream().filter((readable) -> (readable.getIsRead()));
-    }
-    
-    private static Stream<ChannelWrapper> getActivePVwritebacks() {
-        return mainDocument.pvWriteables.stream().filter((writeable) -> (writeable.getIsScanned()));
-    }
-    
     /**
      *
      * @param i the channel index (counting active only)
@@ -226,13 +218,13 @@ public class MainFunctions {
 
         // Calculate the correct amount of combos..
         int ncombos=1;
-        ncombos = getActivePVwritebacks().map((cw) -> cw.getNpoints()).reduce(ncombos, (accumulator, _item) -> accumulator * _item);
+        ncombos = mainDocument.getActivePVwritebacks().map((cw) -> cw.getNpoints()).reduce(ncombos, (accumulator, _item) -> accumulator * _item);
         for (int i = 0;i<ncombos+2;i++)
-            mainDocument.combos.add(new double[(int) getActivePVwritebacks().count()]);
+            mainDocument.combos.add(new double[(int) mainDocument.getActivePVwritebacks().count()]);
 
         // Read in all settings before any modifications..
         // First and last measurement is at initial parameters
-        for (int i=0;i<(int) getActivePVwritebacks().count();i++) {
+        for (int i=0;i<(int) mainDocument.getActivePVwritebacks().count();i++) {
              try {
                  mainDocument.combos.get(0)[i] = getPVsetting(i);
                  mainDocument.combos.get(ncombos+1)[i] = mainDocument.combos.get(0)[i];
@@ -249,7 +241,7 @@ public class MainFunctions {
         // n2 will say how many times we should loop the current PV
         int n2 = 1;
         // Write out one parameter at the time
-        for (int i=0; i<(int) getActivePVwritebacks().count();i++) {
+        for (int i=0; i<(int) mainDocument.getActivePVwritebacks().count();i++) {
             // The combo index we are currently inserting
             int m = 1;
             ChannelWrapper cw = getActivePVwriteback(i);
@@ -291,7 +283,7 @@ public class MainFunctions {
     public static int calculateNumMeas() {
         if(!isCombosUpdated.getValue())
             calculateCombos();
-        return 2+(mainDocument.combos.size()-2)*mainDocument.numberMeasurementsPerCombo;
+        return 2+(mainDocument.combos.size()-2)*mainDocument.numberMeasurementsPerCombo.get();
     }
 
     /*
@@ -311,8 +303,8 @@ public class MainFunctions {
     }
 
     private static ArrayList<ChannelTimeRecord> makeReading() {
-        ArrayList<ChannelTimeRecord> readings = new ArrayList((int) getActivePVreadables().count());
-        for (int i=0;i<(int) getActivePVreadables().count();i++) {
+        ArrayList<ChannelTimeRecord> readings = new ArrayList((int) mainDocument.getActivePVreadables().count());
+        for (int i=0;i<(int) mainDocument.getActivePVreadables().count();i++) {
             try {
                 // Here you insert an actual reading of the PV value..
                 readings.add(getActivePVreadable(i).getChannel().getTimeRecord());
@@ -324,7 +316,7 @@ public class MainFunctions {
     }
 
     public static String getTimeString(int npoints) {
-        int seconds = (int) (npoints*mainDocument.delayBetweenMeasurements/1000);
+        int seconds = (int) (npoints*mainDocument.delayBetweenMeasurements.get()/1000);
         int hours = (seconds - seconds%3600)/3600;
         int min = (seconds - seconds%60)/60;
         String time = ""+(seconds%60)+" s";
@@ -340,8 +332,8 @@ public class MainFunctions {
         if (!isCombosUpdated.get()) calculateCombos();
 
         if (mainDocument.nCombosDone == 0) {
-            mainDocument.currentMeasurement = new double[2+(mainDocument.combos.size()-2)*mainDocument.numberMeasurementsPerCombo][((int) getActivePVwritebacks().count())+((int) getActivePVreadables().count())];
-            mainDocument.currentTimestamps = new Timestamp[2+(mainDocument.combos.size()-2)*mainDocument.numberMeasurementsPerCombo][(int) getActivePVreadables().count()];
+            mainDocument.currentMeasurement = new double[2+(mainDocument.combos.size()-2)*mainDocument.numberMeasurementsPerCombo.get()][((int) mainDocument.getActivePVwritebacks().count())+((int) mainDocument.getActivePVreadables().count())];
+            mainDocument.currentTimestamps = new Timestamp[2+(mainDocument.combos.size()-2)*mainDocument.numberMeasurementsPerCombo.get()][(int) mainDocument.getActivePVreadables().count()];
         }
 
         // Warning, this only saves if document is defined (user has saved before)
@@ -359,12 +351,12 @@ public class MainFunctions {
                 int nMeasThisCombo=1;
                 int nMeasDone=0;
                 if (mainDocument.nCombosDone>0)
-                    nMeasDone=1+(mainDocument.nCombosDone-1)*mainDocument.numberMeasurementsPerCombo;
+                    nMeasDone=1+(mainDocument.nCombosDone-1)*mainDocument.numberMeasurementsPerCombo.get();
 
                 while (mainDocument.nCombosDone<mainDocument.combos.size()) {
                     while (pauseTask.get()) {
                         try {
-                            Thread.sleep(mainDocument.delayBetweenMeasurements);
+                            Thread.sleep(mainDocument.delayBetweenMeasurements.get());
                         } catch (InterruptedException ex) {
                             Logger.getLogger(MainFunctions.class.getName()).log(Level.SEVERE, "Sleep thread interrupted", ex);
                         }
@@ -372,22 +364,34 @@ public class MainFunctions {
 
                     setCombo(mainDocument.combos.get(mainDocument.nCombosDone));
                     try {
-                        Thread.sleep(mainDocument.delayBetweenMeasurements);
+                        Thread.sleep(mainDocument.delayBetweenMeasurements.get());
                     } catch (InterruptedException ex) {
                         Logger.getLogger(MainFunctions.class.getName()).log(Level.SEVERE, "Sleep thread interrupted", ex);
                     }
 
                     // The first and last measurement is a check which we only do once
                     if (mainDocument.nCombosDone!=0 && mainDocument.nCombosDone!=mainDocument.combos.size()-1)
-                        nMeasThisCombo=mainDocument.numberMeasurementsPerCombo;
+                        nMeasThisCombo=mainDocument.numberMeasurementsPerCombo.get();
                     else
                         nMeasThisCombo=1;
                     Logger.getLogger(MainFunctions.class.getName()).log(Level.FINEST, "Number of measurements with this combo {0}", nMeasThisCombo);
                     for (int j=0;j<nMeasThisCombo;j++) {
                         ArrayList<ChannelTimeRecord> readings = makeReading();
-                        System.arraycopy(mainDocument.combos.get(mainDocument.nCombosDone), 0, mainDocument.currentMeasurement[nMeasDone], 0, (int) getActivePVwritebacks().count());
-                        System.arraycopy(readings.stream().mapToDouble(m -> m.doubleValue()).toArray(), 0, mainDocument.currentMeasurement[nMeasDone], (int) getActivePVwritebacks().count(), (int) getActivePVreadables().count());
-                        System.arraycopy(readings.stream().map(m -> m.getTimestamp()).toArray(), 0, mainDocument.currentTimestamps[nMeasDone], 0, (int) getActivePVreadables().count());
+                        System.arraycopy(mainDocument.combos.get(mainDocument.nCombosDone),
+                                0,
+                                mainDocument.currentMeasurement[nMeasDone],
+                                0,
+                                (int) mainDocument.getActivePVwritebacks().count());
+                        System.arraycopy(readings.stream().mapToDouble(m -> m.doubleValue()).toArray(),
+                                0,
+                                mainDocument.currentMeasurement[nMeasDone],
+                                (int) mainDocument.getActivePVwritebacks().count(),
+                                (int) mainDocument.getActivePVreadables().count());
+                        System.arraycopy(readings.stream().map(m -> m.getTimestamp()).toArray(),
+                                0,
+                                mainDocument.currentTimestamps[nMeasDone],
+                                0,
+                                (int) mainDocument.getActivePVreadables().count());
                         updateProgress(mainDocument.nCombosDone+1, mainDocument.combos.size());
                         mainDocument.saveCurrentMeas(nMeasDone);
                         nMeasDone++;
@@ -404,8 +408,8 @@ public class MainFunctions {
                 // If we finished the measurement, store the new data.
                 if (mainDocument.nCombosDone == mainDocument.combos.size()) {
                     mainDocument.dataSets.put("Measurement "+(mainDocument.numberOfScans.get()+1), mainDocument.currentMeasurement);
-                    mainDocument.allPVrb.put("Measurement "+(mainDocument.numberOfScans.get()+1), getActivePVreadables().map(cw -> cw.getChannel()).collect(Collectors.toList()));
-                    mainDocument.allPVw.put("Measurement "+(mainDocument.numberOfScans.get()+1), getActivePVwritebacks().map(cw -> cw.getChannel()).collect(Collectors.toList()));
+                    mainDocument.allPVrb.put("Measurement "+(mainDocument.numberOfScans.get()+1), mainDocument.getActivePVreadables().map(cw -> cw.getChannel()).collect(Collectors.toList()));
+                    mainDocument.allPVw.put("Measurement "+(mainDocument.numberOfScans.get()+1), mainDocument.getActivePVwritebacks().map(cw -> cw.getChannel()).collect(Collectors.toList()));
                     mainDocument.allTimestamps.put("Measurement "+(mainDocument.numberOfScans.get()+1), mainDocument.currentTimestamps);
                     mainDocument.numberOfScans.set(mainDocument.numberOfScans.get()+1);
                     mainDocument.nCombosDone=0;

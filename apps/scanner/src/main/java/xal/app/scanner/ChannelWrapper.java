@@ -189,6 +189,7 @@ public class ChannelWrapper {
         // but it is not guaranteed!
         instanceCount+=1;
         instance.set(shortName);
+        Logger.getLogger(ChannelWrapper.class.getName()).log(Level.FINEST, "Forced short name {0}, counter at {1}", new Object[]{shortName, instanceCount});
         return instance.get();
     }
 

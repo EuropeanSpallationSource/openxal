@@ -42,10 +42,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleLongProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.stage.Stage;
+import static xal.app.scanner.MainFunctions.mainDocument;
 import xal.ca.Channel;
 import xal.ca.Timestamp;
 import xal.smf.Accelerator;
@@ -96,13 +99,12 @@ public class ScannerDocument extends XalFxDocument {
     /**
      * The delay between successive measurements in milliseconds
      */
-    public long delayBetweenMeasurements;
+    public static SimpleLongProperty delayBetweenMeasurements;
 
     /**
      * The number of measurements to take at each location
-     * WARNING: This is not yet implemented!!
      */
-    public int numberMeasurementsPerCombo;
+    public SimpleIntegerProperty numberMeasurementsPerCombo;
 
     // The Readback channels that may be read
     public ObservableList<ChannelWrapper> pvReadbacks;
@@ -143,8 +145,8 @@ public class ScannerDocument extends XalFxDocument {
         constraints = FXCollections.observableArrayList("", "", "", "");
         numberOfScans = new SimpleIntegerProperty(0);
 
-        numberMeasurementsPerCombo=1;
-        delayBetweenMeasurements=1500;
+        numberMeasurementsPerCombo = new SimpleIntegerProperty(1);
+        delayBetweenMeasurements = new SimpleLongProperty(1500);
 
         DEFAULT_FILENAME="Data.scan.xml";
         WILDCARD_FILE_EXTENSION = "*.scan.xml";
@@ -278,7 +280,6 @@ public class ScannerDocument extends XalFxDocument {
             initDocumentAdaptor();
         if (currentMeasAdaptor==null) {
             currentMeasAdaptor=da.childAdaptor(SCANNER_SR).createChild(CURRENTMEAS_SR);
-            currentMeasAdaptor.createChild("channels").setValue("values", da);
         }
         currentMeasAdaptor.createChild("step").setValue("values", currentMeasurement[nmeas]);
         if (source!=null)
@@ -305,8 +306,8 @@ public class ScannerDocument extends XalFxDocument {
 
         // Load the settings
         DataAdaptor settingsAdaptor = scannerAdaptor.childAdaptor(SETTINGS_SR);
-        delayBetweenMeasurements = settingsAdaptor.longValue("MeasurementDelay");
-        numberMeasurementsPerCombo = settingsAdaptor.intValue("MeasurementPerCombo");
+        delayBetweenMeasurements.set(settingsAdaptor.longValue("MeasurementDelay"));
+        numberMeasurementsPerCombo.set(settingsAdaptor.intValue("MeasurementPerCombo"));
 
         // Load list of variables to read & write.. ChannelWrapper objects
         // There is probably an issue since these variables are not read into MainFunctions.PVlist
@@ -418,6 +419,14 @@ public class ScannerDocument extends XalFxDocument {
             }
         }
 
+    }
+
+    public Stream<ChannelWrapper> getActivePVreadables() {
+        return pvReadbacks.stream().filter((readable) -> (readable.getIsRead()));
+    }
+
+    public Stream<ChannelWrapper> getActivePVwritebacks() {
+        return pvWriteables.stream().filter((writeable) -> (writeable.getIsScanned()));
     }
 
 }
