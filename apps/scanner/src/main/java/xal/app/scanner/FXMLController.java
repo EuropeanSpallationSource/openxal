@@ -210,34 +210,6 @@ public class FXMLController implements Initializable {
         return newArray;
     }
 
-    //WARNING this function is never reached anymore
-    @FXML
-    void handleLoadDocument(ActionEvent event) {
-        Logger.getLogger(FXMLController.class.getName()).log(Level.INFO, "Loading document..");
-        try {
-            // This hard-coded file name should be fixed
-            MainFunctions.mainDocument.loadDocument(new File("scanner.xml").toURI().toURL());
-            PVscanList.clear();
-            MainFunctions.mainDocument.pvWriteables.forEach(cWrapper -> PVscanList.add(cWrapper));
-
-            constraintsList.setItems(MainFunctions.mainDocument.constraints);
-            MainFunctions.isCombosUpdated.set(false);
-            handlePreCalculate(event);
-            // In case there is a half finished measurement in the file..
-            if (MainFunctions.mainDocument.currentMeasurement != null) {
-                MainFunctions.mainDocument.nCombosDone = MainFunctions.mainDocument.currentMeasurement.length;
-                double[][] fullMeasurement = extendArray(MainFunctions.mainDocument.currentMeasurement, MainFunctions.mainDocument.combos.size());
-                MainFunctions.mainDocument.currentMeasurement = fullMeasurement;
-                plotArea.plotMeasurement();
-                restartButton.setVisible(true);
-            }
-            Logger.getLogger(FXMLController.class.getName()).log(Level.INFO, "Document loaded");
-
-        } catch (MalformedURLException ex) {
-            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
     @FXML
     void handlePreCalculate(ActionEvent event) {
         int nPoints = MainFunctions.calculateNumMeas();
