@@ -33,6 +33,7 @@
 package xal.app.scanner;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import javafx.fxml.FXMLLoader;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -60,6 +61,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import org.apache.commons.lang3.StringUtils;
+import xal.ca.BatchGetValueRequest;
 import xal.ca.Channel;
 import xal.ca.ChannelFactory;
 import xal.ca.ConnectionException;
@@ -328,16 +330,23 @@ public class PVTree extends SplitPane {
 
             // First we initiate the updated list
             elementTree.getSelectionModel().getSelectedItems().forEach(value -> {
-                AcceleratorNode node = value.getValue();
-                node.getHandles()
-                    .stream()
-                    .sorted(( h1, h2 ) -> String.CASE_INSENSITIVE_ORDER.compare(h1, h2))
-                    .forEach(h -> addHandleToList(new HandleWrapper(node, h)));
+                if (value != null) {
+                    AcceleratorNode node = value.getValue();
+                    node.getHandles()
+                        .stream()
+                        .sorted(( h1, h2 ) -> String.CASE_INSENSITIVE_ORDER.compare(h1, h2))
+                        .forEach(h -> addHandleToList(new HandleWrapper(node, h)));
+                }
             });
 
-            Logger.getLogger(PVTree.class.getName()).log(Level.FINEST, "Connecting handles...");
-            // Then we make connections in parallell (otherwise it will be slow when we don't find PV's on the network)
-            epicsChannels.parallelStream().forEach(h -> h.initConnection());
+
+
+            ArrayList<Channel> channels = new ArrayList<>();
+            epicsChannels.forEach(h -> channels.add(h.getChannel()));
+            final BatchGetValueRequest request = new BatchGetValueRequest( channels );
+            Logger.getLogger(PVTree.class.getName()).log(Level.FINER, "Connecting {0} channels...", channels.size());
+            request.submitAndWait(2);
+            epicsChannels.parallelStream().forEach(h -> h.updateAfterConnected());
 
             Logger.getLogger(PVTree.class.getName()).log(Level.FINEST, "Epics table updated");
         }
