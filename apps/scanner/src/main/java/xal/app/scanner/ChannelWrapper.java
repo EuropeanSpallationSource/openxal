@@ -202,10 +202,8 @@ public class ChannelWrapper {
 
     @Override
     public boolean equals(Object other) {
-        if (other == null) {
-            System.out.println("Other is null!!");
+        if (other == null)
             return false;
-        }
         if (other.getClass() == this.getClass()) {
             if (((ChannelWrapper)other).getChannelName() == null ? this.getChannelName() == null : ((ChannelWrapper)other).getChannelName().equals(this.getChannelName())) {
                 return true;

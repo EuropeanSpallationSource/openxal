@@ -36,14 +36,10 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.concurrent.Task;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
 import xal.ca.ChannelTimeRecord;
 import xal.ca.ConnectionException;
 import xal.ca.GetException;
@@ -95,7 +91,6 @@ public class MainFunctions {
      * @return true if the channel was added (ie was not already in list)
      */
     public static boolean actionAddPV(ChannelWrapper cWrapper, Boolean read, Boolean write) {
-        Logger.getLogger(MainFunctions.class.getName()).log(Level.FINEST, "Add PV called for {0}",cWrapper);
         if (read)  {
             Logger.getLogger(MainFunctions.class.getName()).log(Level.FINER, "Added channel {0} to readable list",cWrapper);
             mainDocument.setHasChanges(true);
@@ -123,7 +118,6 @@ public class MainFunctions {
      * @param write Remove the channel from writeables
      */
     public static void actionRemovePV(ChannelWrapper cWrapper, Boolean read, Boolean write) {
-        Logger.getLogger(MainFunctions.class.getName()).log(Level.FINEST, "Remove PV called for {0}",cWrapper);
         if (read)  {
             Logger.getLogger(MainFunctions.class.getName()).log(Level.FINER, "Removing channel {0} from readable list",cWrapper);
         }
@@ -135,77 +129,6 @@ public class MainFunctions {
         }
     }
 
-    /**
-     * Check a combo for any of the potentially defined constraints
-     *
-     * TODO there are probably better/safer ways to do this?
-     *
-     * @param combo
-     * @return whether or not combo pass all constraints
-     * @throws ScriptException
-     */
-    public static boolean checkConstraints(double[] combo) throws ScriptException {
-        ScriptEngineManager manager = new ScriptEngineManager();
-        ScriptEngine engine = manager.getEngineByName("js");
-        for(int i=0;i<combo.length;i++) {
-            engine.eval(mainDocument.pvWriteables.get(i).instanceProperty().get()+"="+combo[i]);
-        }
-        for(String constraint:mainDocument.constraints) {
-            if (constraint.trim().length()>0)
-                if (!(boolean)engine.eval(constraint))
-                    return false;
-        }
-        return true;
-    }
-
-    private static boolean hasConstraints() {
-        return mainDocument.constraints.stream().anyMatch((constraint) -> (constraint.trim().length()>0));
-    }
-    
-    /**
-     *
-     * @param i the channel index (counting active only)
-     * @return Return the i'th active readable channel
-     */
-    private static ChannelWrapper getActivePVreadable(int i) {
-        int j=-1;
-        for (ChannelWrapper cw : mainDocument.pvReadbacks) {
-            if (cw.getIsRead())
-                j++;
-            if (j==i)
-                return cw;
-        }
-        return null;
-    }
-        
-    /**
-     *
-     * @param i the channel index (counting active only)
-     * @return Return the i'th active scannable channel
-     */
-    private static ChannelWrapper getActivePVwriteback(int i) {
-        int j=-1;
-        for (ChannelWrapper cw : mainDocument.pvWriteables) {
-            if (cw.getIsScanned())
-                j++;
-            if (j==i)
-                return cw;
-        }
-        return null;
-    }
-    
-    // Return the current reading of the i'th ACTIVE pvWriteable
-    private static double getPVsetting(int i) throws ConnectionException, GetException {
-        int j = -1;
-        for (ChannelWrapper cw : mainDocument.pvWriteables) {
-            if (cw.getIsScanned())
-                j++;
-            if (i==j)
-                return cw.getChannel().getRawValueRecord().doubleValue();
-       }
-       return Double.NaN;
-    }
-
     /*
      * This function updates combos with the correct combinations of settings
      * for each variable.
@@ -213,66 +136,7 @@ public class MainFunctions {
      * Note that combos.get(0) always returns the INITIAL SETTINGS
      */
     public static int calculateCombos() {
-         mainDocument.combos.clear();
-         mainDocument.nCombosDone = 0;
-
-        // Calculate the correct amount of combos..
-        int ncombos=1;
-        ncombos = mainDocument.getActivePVwritebacks().map((cw) -> cw.getNpoints()).reduce(ncombos, (accumulator, _item) -> accumulator * _item);
-        for (int i = 0;i<ncombos+2;i++)
-            mainDocument.combos.add(new double[(int) mainDocument.getActivePVwritebacks().count()]);
-
-        // Read in all settings before any modifications..
-        // First and last measurement is at initial parameters
-        for (int i=0;i<(int) mainDocument.getActivePVwritebacks().count();i++) {
-             try {
-                 mainDocument.combos.get(0)[i] = getPVsetting(i);
-                 mainDocument.combos.get(ncombos+1)[i] = mainDocument.combos.get(0)[i];
-             } catch (ConnectionException | GetException ex) {
-                Logger.getLogger(MainFunctions.class.getName()).log(Level.WARNING, null, ex);
-                mainDocument.combos.get(0)[i] = 0.0;
-                mainDocument.combos.get(ncombos+1)[i] = 0.0;
-             }
-        }
-
-        // Insert all numbers..
-        // n1 will say how many times each number should currently be repeated
-        int n1 = ncombos;
-        // n2 will say how many times we should loop the current PV
-        int n2 = 1;
-        // Write out one parameter at the time
-        for (int i=0; i<(int) mainDocument.getActivePVwritebacks().count();i++) {
-            // The combo index we are currently inserting
-            int m = 1;
-            ChannelWrapper cw = getActivePVwriteback(i);
-            n1/=cw.getNpoints();
-            for (int l=0;l<n2;l++) {
-                for ( double sp : cw.getScanPoints()) {
-                    for (int k=0;k<n1;k++) {
-                        mainDocument.combos.get(m)[i]=sp;
-                        m+=1;
-                    }
-                }
-            }
-            n2*=cw.getNpoints();
-         }
-
-        // Now we check if any of the combos are invalid..
-        if (hasConstraints()) {
-            int i=0;
-            while(i<mainDocument.combos.size())
-            {
-                try {
-                    if (!checkConstraints(mainDocument.combos.get(i))) {
-                        mainDocument.combos.remove(i);
-                        continue;
-                    }
-                } catch (ScriptException ex) {
-                    Logger.getLogger(MainFunctions.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                i+=1;
-            }
-        }
+        mainDocument.calculateCombos();
         isCombosUpdated.set(true);
         return mainDocument.combos.size();
     }
@@ -292,7 +156,7 @@ public class MainFunctions {
      */
     private static void setCombo(double[] combo) {
         for (int i=0;i<combo.length;i++) {
-            ChannelWrapper cw = getActivePVwriteback(i);
+            ChannelWrapper cw = mainDocument.getActivePVwriteback(i);
             try {
                 if (cw.getChannel().connectAndWait(5))
                     cw.getChannel().putVal(combo[i]);
@@ -307,7 +171,7 @@ public class MainFunctions {
         for (int i=0;i<(int) mainDocument.getActivePVreadables().count();i++) {
             try {
                 // Here you insert an actual reading of the PV value..
-                readings.add(getActivePVreadable(i).getChannel().getTimeRecord());
+                readings.add(mainDocument.getActivePVreadable(i).getChannel().getTimeRecord());
             } catch (ConnectionException | GetException ex) {
                 Logger.getLogger(MainFunctions.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -348,10 +212,14 @@ public class MainFunctions {
             @Override
             public void run() {
 
+                Logger.getLogger(MainFunctions.class.getName()).log(Level.INFO, "Starting a new scan {0}",mainDocument.nCombosDone);
+
                 int nMeasThisCombo=1;
                 int nMeasDone=0;
-                if (mainDocument.nCombosDone>0)
+                if (mainDocument.nCombosDone>0) {
+                    Logger.getLogger(MainFunctions.class.getName()).log(Level.FINER, "Continuing old measurement, {0} combos already done", mainDocument.nCombosDone);
                     nMeasDone=1+(mainDocument.nCombosDone-1)*mainDocument.numberMeasurementsPerCombo.get();
+                }
 
                 while (mainDocument.nCombosDone<mainDocument.combos.size()) {
                     while (pauseTask.get()) {

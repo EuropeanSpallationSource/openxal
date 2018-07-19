@@ -211,8 +211,13 @@ public class FXMLController implements Initializable {
     @FXML
     void handlePreCalculate(ActionEvent event) {
         int nPoints = MainFunctions.calculateNumMeas();
+        int nDone = MainFunctions.mainDocument.nCombosDone;
         textFieldNumMeas.setText("Number of measurement points: "+nPoints);
-        textFieldTimeEstimate.setText("This will take "+MainFunctions.getTimeString(nPoints));
+        if (nDone==0) {
+            textFieldTimeEstimate.setText("This will take "+MainFunctions.getTimeString(nPoints));
+        } else {
+            textFieldTimeEstimate.setText((nPoints-nDone) +" remaining, this will take "+MainFunctions.getTimeString(nPoints-nDone));
+        }
     }
 
     @FXML
@@ -266,20 +271,24 @@ public class FXMLController implements Initializable {
 
     @FXML
     void setDelayEdited(KeyEvent event) {
-        Logger.getLogger(FXMLController.class.getName()).log(Level.FINER, "Delay edited to {0}", delayBetweenMeas.getText());
-        if((long) (Float.parseFloat(delayBetweenMeas.getText())*1000)!=MainFunctions.mainDocument.delayBetweenMeasurements.get())
-            measDelaySetButton.setDisable(false);
-        else
-            measDelaySetButton.setDisable(true);
+        if (!delayBetweenMeas.getText().equals("")) {
+            Logger.getLogger(FXMLController.class.getName()).log(Level.FINER, "Delay edited to {0}", delayBetweenMeas.getText());
+            if((long) (Float.parseFloat(delayBetweenMeas.getText())*1000)!=MainFunctions.mainDocument.delayBetweenMeasurements.get())
+                measDelaySetButton.setDisable(false);
+            else
+                measDelaySetButton.setDisable(true);
+        }
     }
 
     @FXML
     void setMeasPerPointEdited(KeyEvent event) {
-        Logger.getLogger(FXMLController.class.getName()).log(Level.FINER, "Measurements per point edited to {0}", measPerPoint.getText());
-        if(Integer.parseInt(measPerPoint.getText())!=MainFunctions.mainDocument.numberMeasurementsPerCombo.get())
-            nMeasPerSettingSetButton.setDisable(false);
-        else
-            nMeasPerSettingSetButton.setDisable(true);
+        if (!measPerPoint.getText().equals("")) {
+            Logger.getLogger(FXMLController.class.getName()).log(Level.FINER, "Measurements per point edited to {0}", measPerPoint.getText());
+            if(Integer.parseInt(measPerPoint.getText())!=MainFunctions.mainDocument.numberMeasurementsPerCombo.get())
+                nMeasPerSettingSetButton.setDisable(false);
+            else
+                nMeasPerSettingSetButton.setDisable(true);
+        }
     }
 
 
@@ -296,7 +305,7 @@ public class FXMLController implements Initializable {
     @FXML
     void setNumberOfMeasPerSetting(ActionEvent event) {
         MainFunctions.mainDocument.numberMeasurementsPerCombo.set(Integer.parseInt(measPerPoint.getText()));
-        Logger.getLogger(FXMLController.class.getName()).log(Level.INFO, "Measurement per point set to {0}", MainFunctions.mainDocument.numberMeasurementsPerCombo);
+        Logger.getLogger(FXMLController.class.getName()).log(Level.INFO, "Measurements per point set to {0}", MainFunctions.mainDocument.numberMeasurementsPerCombo.get());
         // If combos are already calculated we trigger a quick refresh of the calculation
         if (MainFunctions.isCombosUpdated.getValue())
             handlePreCalculate(event);
@@ -395,7 +404,10 @@ public class FXMLController implements Initializable {
                     stopButton.setVisible(true);
                     runProgressBar.setProgress(MainFunctions.runProgress.getValue());
                 } else {
-                    executeButton.setText("Execute");
+                    if(restartButton.isVisible())
+                        executeButton.setText("Continue");
+                    else
+                        executeButton.setText("Execute");
                     executeButton.setDisable(false);
                     pauseButton.setVisible(false);
                     stopButton.setVisible(false);
@@ -419,13 +431,24 @@ public class FXMLController implements Initializable {
         MainFunctions.mainDocument.delayBetweenMeasurements.addListener((observable, oldValue, newValue) -> {
                     delayBetweenMeas.setText(String.valueOf(0.001*newValue.longValue()));
                 });
+        delayBetweenMeas.setText(String.valueOf(0.001*MainFunctions.mainDocument.delayBetweenMeasurements.get()));
 
 
         MainFunctions.mainDocument.numberMeasurementsPerCombo.addListener((observable, oldValue, newValue) -> {
                     measPerPoint.setText(newValue.toString());
                 });
+        measPerPoint.setText(String.valueOf(MainFunctions.mainDocument.numberMeasurementsPerCombo.get()));
         
         
+        MainFunctions.mainDocument.currentMeasurementWasLoaded.addListener((observable, oldValue, newValue) -> {
+                    // When this property goes from true -> false it means we should prep the continuation
+                    if (oldValue && !newValue) {
+                        MainFunctions.triggerStop();
+                        restartButton.setVisible(MainFunctions.mainDocument.nCombosDone != 0);
+                        executeButton.setText("Continue");
+                        // Should also trigger a plot here!
+                    }
+                });
 
 
         tabConfigure.setDisable(true);
@@ -504,7 +527,7 @@ public class FXMLController implements Initializable {
             else {
                 Logger.getLogger(FXMLController.class.getName()).log(Level.FINEST, "Will remove {0}",MainFunctions.mainDocument.pvWriteables.get(param).getChannel().channelName());
                 //MainFunctions.actionRemovePV(MainFunctions.mainDocument.pvWriteables.get(param), false, true);
-                if(PVscanList.remove(MainFunctions.mainDocument.pvWriteables.get(param))) {
+                if(PVscanList.removeAll(MainFunctions.mainDocument.pvWriteables.get(param))) {
                     clearAllConstraints();
                     MainFunctions.isCombosUpdated.set(false);
                 }

@@ -43,13 +43,18 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.stage.Stage;
-import static xal.app.scanner.MainFunctions.mainDocument;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 import xal.ca.Channel;
+import xal.ca.ConnectionException;
+import xal.ca.GetException;
 import xal.ca.Timestamp;
 import xal.smf.Accelerator;
 import xal.tools.data.DataAdaptor;
@@ -86,6 +91,9 @@ public class ScannerDocument extends XalFxDocument {
 
     public double[][] currentMeasurement;
     public Timestamp[][] currentTimestamps;
+    
+    // Use this as a trigger to update the GUI so that we can continue a loaded half-finished measurement
+    public SimpleBooleanProperty currentMeasurementWasLoaded;
 
     // The current number of measurement points done
     public int nCombosDone;
@@ -99,7 +107,7 @@ public class ScannerDocument extends XalFxDocument {
     /**
      * The delay between successive measurements in milliseconds
      */
-    public static SimpleLongProperty delayBetweenMeasurements;
+    public SimpleLongProperty delayBetweenMeasurements;
 
     /**
      * The number of measurements to take at each location
@@ -148,6 +156,8 @@ public class ScannerDocument extends XalFxDocument {
         numberMeasurementsPerCombo = new SimpleIntegerProperty(1);
         delayBetweenMeasurements = new SimpleLongProperty(1500);
 
+        currentMeasurementWasLoaded = new SimpleBooleanProperty(false);
+        
         DEFAULT_FILENAME="Data.scan.xml";
         WILDCARD_FILE_EXTENSION = "*.scan.xml";
         HELP_PAGEID="227688413";
@@ -206,8 +216,8 @@ public class ScannerDocument extends XalFxDocument {
 
         // Store the settings..
         DataAdaptor settingsAdaptor = scannerAdaptor.createChild(SETTINGS_SR);
-        settingsAdaptor.setValue("MeasurementDelay", delayBetweenMeasurements);
-        settingsAdaptor.setValue("MeasurementPerCombo", numberMeasurementsPerCombo);
+        settingsAdaptor.setValue("MeasurementDelay", delayBetweenMeasurements.get());
+        settingsAdaptor.setValue("MeasurementPerCombo", numberMeasurementsPerCombo.get());
 
         // Store information about all measurements done..
         DataAdaptor measurementsScanner = scannerAdaptor.createChild(MEASUREMENTS_SR);
@@ -231,7 +241,6 @@ public class ScannerDocument extends XalFxDocument {
                 String tstamps_str = "";
                 for (int j = 0;j<measurement.getValue().length;j++) {
                     data[j]=measurement.getValue()[j][i];
-                    // TODO!!
                     if (i>=pvW.size()) {
                         if (j!=0)
                             tstamps_str=tstamps_str.concat(", ");
@@ -281,7 +290,17 @@ public class ScannerDocument extends XalFxDocument {
         if (currentMeasAdaptor==null) {
             currentMeasAdaptor=da.childAdaptor(SCANNER_SR).createChild(CURRENTMEAS_SR);
         }
-        currentMeasAdaptor.createChild("step").setValue("values", currentMeasurement[nmeas]);
+
+        String tstamps_str = "";
+        for(Timestamp tstamp : currentTimestamps[nmeas]) {
+            if (tstamps_str!="")
+                tstamps_str=tstamps_str.concat(", ");
+            tstamps_str=tstamps_str.concat(tstamp.toBigDecimal().toString());
+        }
+        DataAdaptor stepAdaptor = currentMeasAdaptor.createChild("step");
+        stepAdaptor.setValue("values", currentMeasurement[nmeas]);
+        stepAdaptor.setValue("timestamps", tstamps_str);
+        
         if (source!=null)
             da.writeToUrl( source );
     };
@@ -330,7 +349,9 @@ public class ScannerDocument extends XalFxDocument {
             cWrap.minProperty().set(min);
             cWrap.maxProperty().set(max);
             cWrap.npointsProperty().set(npoints);
-            cWrap.forceInstance(instance);
+            // if instance equals x0 it means the variable was never used.
+            if (!instance.equals("x0"))
+                cWrap.forceInstance(instance);
 
             pvWriteables.add(cWrap);
         });
@@ -349,6 +370,7 @@ public class ScannerDocument extends XalFxDocument {
             pvReadbacks.add(cWrap);
         });
 
+        // Load all constraints from the file
         DataAdaptor constraintsAdaptor = scannerAdaptor.childAdaptor(CONSTRAINTS_SR);
         for(int i = 0; i<constraints.size();i++)
             constraints.set(i, "");
@@ -404,19 +426,29 @@ public class ScannerDocument extends XalFxDocument {
             });
         }
 
-        if ( scannerAdaptor.childAdaptor(CURRENTMEAS_SR) != null) {
-            currentMeasAdaptor = scannerAdaptor.childAdaptor(CURRENTMEAS_SR);
+        currentMeasAdaptor = scannerAdaptor.childAdaptor(CURRENTMEAS_SR);
+        if ( currentMeasAdaptor != null) {
             // Need to calculate nmeas (or ncombos if you want)
+            int nStepsTotal = calculateCombos();
             nCombosDone=currentMeasAdaptor.childAdaptors().size();
-            Logger.getLogger(ScannerDocument.class.getName()).log(Level.FINEST, "Loading unfinished measurement, {0} points finished", nCombosDone);
-            int nVars = pvWriteables.size() + pvReadbacks.size();
-            currentMeasurement = new double[nCombosDone][nVars];
+            Logger.getLogger(ScannerDocument.class.getName()).log(Level.FINEST, "Loading unfinished measurement, found {0} measurement points", nCombosDone);
+            int nActiveWrites = (int) getActivePVwritebacks().count();
+            int nActiveReads = (int) getActivePVreadables().count();
+            int nActiveChannels = nActiveWrites + nActiveReads;
+            currentMeasurement = new double[nStepsTotal][nActiveChannels];
+            currentTimestamps = new Timestamp[2+(nStepsTotal-2)*numberMeasurementsPerCombo.get()][(int) getActivePVreadables().count()];
             for(int i = 0;i<nCombosDone;i++) {
                 double [] values = currentMeasAdaptor.childAdaptors().get(i).doubleArray("values");
-                for (int j=0;j<nVars;j++) {
+                String[] tstamps = currentMeasAdaptor.childAdaptors().get(i).stringValue("timestamps").split(", ");
+                for (int j=0;j<nActiveChannels;j++) {
                     currentMeasurement[i][j] = values[j];
+                    if (j>=getActivePVwritebacks().count()) {
+                        currentTimestamps[i][j-nActiveWrites] = new Timestamp(new BigDecimal(tstamps[j-nActiveWrites]));
+                    }
                 }
             }
+            currentMeasurementWasLoaded.set(true);
+            // TODO Is there a way to trigger plot of the current measurement here?
         }
 
     }
@@ -427,6 +459,148 @@ public class ScannerDocument extends XalFxDocument {
 
     public Stream<ChannelWrapper> getActivePVwritebacks() {
         return pvWriteables.stream().filter((writeable) -> (writeable.getIsScanned()));
+    }
+    
+    /**
+     *
+     * @param i the channel index (counting active only)
+     * @return Return the i'th active readable channel
+     */
+    public ChannelWrapper getActivePVreadable(int i) {
+        int j=-1;
+        for (ChannelWrapper cw : pvReadbacks) {
+            if (cw.getIsRead())
+                j++;
+            if (j==i)
+                return cw;
+        }
+        return null;
+    }
+        
+    /**
+     *
+     * @param i the channel index (counting active only)
+     * @return Return the i'th active scannable channel
+     */
+    public ChannelWrapper getActivePVwriteback(int i) {
+        int j=-1;
+        for (ChannelWrapper cw : pvWriteables) {
+            if (cw.getIsScanned())
+                j++;
+            if (j==i)
+                return cw;
+        }
+        return null;
+    }
+
+    private boolean hasConstraints() {
+        return constraints.stream().anyMatch((constraint) -> (constraint.trim().length()>0));
+    }
+
+    /**
+     * Check a combo for any of the potentially defined constraints
+     *
+     * TODO there are probably better/safer ways to do this?
+     *
+     * @param combo
+     * @return whether or not combo pass all constraints
+     * @throws ScriptException
+     */
+    public boolean checkConstraints(double[] combo) throws ScriptException {
+        ScriptEngineManager manager = new ScriptEngineManager();
+        ScriptEngine engine = manager.getEngineByName("js");
+        for(int i=0;i<combo.length;i++) {
+            engine.eval(pvWriteables.get(i).instanceProperty().get()+"="+combo[i]);
+        }
+        for(String constraint:constraints) {
+            if (constraint.trim().length()>0)
+                if (!(boolean)engine.eval(constraint))
+                    return false;
+        }
+        return true;
+    }
+    
+    // Return the current reading of the i'th ACTIVE pvWriteable
+    private double getPVsetting(int i) throws ConnectionException, GetException {
+        int j = -1;
+        for (ChannelWrapper cw : pvWriteables) {
+            if (cw.getIsScanned())
+                j++;
+            if (i==j)
+                return cw.getChannel().getRawValueRecord().doubleValue();
+       }
+       return Double.NaN;
+    }
+    
+    public int calculateCombos() {
+
+        Logger.getLogger(ScannerDocument.class.getName()).log(Level.FINER, "Recalculating steps");
+
+         combos.clear();
+         if(currentMeasurementWasLoaded.get()) {
+             currentMeasurementWasLoaded.set(false);
+         } else {
+             nCombosDone = 0;
+         }
+
+        // Calculate the correct amount of combos..
+        int ncombos=1;
+        ncombos = getActivePVwritebacks().map((cw) -> cw.getNpoints()).reduce(ncombos, (accumulator, _item) -> accumulator * _item);
+        for (int i = 0;i<ncombos+2;i++)
+            combos.add(new double[(int) getActivePVwritebacks().count()]);
+
+        // Read in all settings before any modifications..
+        // First and last measurement is at initial parameters
+        for (int i=0;i<(int) getActivePVwritebacks().count();i++) {
+             try {
+                 combos.get(0)[i] = getPVsetting(i);
+                 combos.get(ncombos+1)[i] = combos.get(0)[i];
+             } catch (ConnectionException | GetException ex) {
+                Logger.getLogger(MainFunctions.class.getName()).log(Level.WARNING, null, ex);
+                combos.get(0)[i] = 0.0;
+                combos.get(ncombos+1)[i] = 0.0;
+             }
+        }
+
+        // Insert all numbers..
+        // n1 will say how many times each number should currently be repeated
+        int n1 = ncombos;
+        // n2 will say how many times we should loop the current PV
+        int n2 = 1;
+        // Write out one parameter at the time
+        for (int i=0; i<(int) getActivePVwritebacks().count();i++) {
+            // The combo index we are currently inserting
+            int m = 1;
+            ChannelWrapper cw = getActivePVwriteback(i);
+            n1/=cw.getNpoints();
+            for (int l=0;l<n2;l++) {
+                for ( double sp : cw.getScanPoints()) {
+                    for (int k=0;k<n1;k++) {
+                        combos.get(m)[i]=sp;
+                        m+=1;
+                    }
+                }
+            }
+            n2*=cw.getNpoints();
+         }
+
+        // Now we check if any of the combos are invalid..
+        if (hasConstraints()) {
+            int i=0;
+            while(i<combos.size())
+            {
+                try {
+                    if (!checkConstraints(combos.get(i))) {
+                        combos.remove(i);
+                        continue;
+                    }
+                } catch (ScriptException ex) {
+                    Logger.getLogger(MainFunctions.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                i+=1;
+            }
+        }
+        return combos.size();
     }
 
 }
