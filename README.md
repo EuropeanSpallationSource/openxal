@@ -14,11 +14,17 @@ Open XAL is designed to be a flexible application framework for developing accel
 - EPICS Channel Access support
 - Ant based build system independent of IDE
 
+## Requirements (ESS/Maven branch)
+
+- Java version 1.8
+- Maven at least version 3.5
+- The [ess-java-config](https://bitbucket.org/europeanspallationsource/ess-java-config) repository installed
+
 ## Build Results
 
 Branch | Travis | GitLab-CI | Jenkins
 ------ | ------ | --------- | -------
 Open XAL Master | [![Open XAL Master Build Test](https://travis-ci.org/openxal/openxal.svg?branch=master)](https://travis-ci.org/openxal/openxal)| - | - |
 SNS Master | [![Open XAL sns.master Build Test](https://travis-ci.org/openxal/openxal.svg?branch=site.sns.master)](https://travis-ci.org/openxal/openxal)| - | - |
-ESS Master | [![ESS Build Travis](https://travis-ci.org/EuropeanSpallationSource/openxal.svg?branch=site.ess.master)](https://travis-ci.org/EuropeanSpallationSource/openxal) | [![ESS Build GitLab-CI](https://gitlab01.esss.lu.se/ess-crs/openxal/badges/site.ess.master/build.svg)](https://gitlab01.esss.lu.se/ess-crs/openxal/) | [![ESS Build Jenkins](https://jenkins02.esss.lu.se/buildStatus/icon?job=bitbucket-ess-folder/openxal/site.ess.master)](https://jenkins02.esss.lu.se/job/bitbucket-ess-folder/job/openxal/)
+ESS Master | [![ESS Build Travis](https://travis-ci.org/EuropeanSpallationSource/openxal.svg?branch=site.ess.master)](https://travis-ci.org/EuropeanSpallationSource/openxal) | [![ESS Build GitLab-CI](https://gitlab.esss.lu.se/ess-crs/openxal/badges/site.ess.master/build.svg)](https://gitlab.esss.lu.se/ess-crs/openxal/) | [![ESS Build Jenkins](https://jenkins.esss.lu.se/buildStatus/icon?job=bitbucket-ess-folder/openxal/site.ess.master)](https://jenkins.esss.lu.se/job/bitbucket-ess-folder/job/openxal/)
 
