@@ -122,6 +122,9 @@ public class FXMLController implements Initializable {
     private TableColumn<ChannelWrapper, String> listOfWriteablesPV;
 
     @FXML
+    private TableColumn<ChannelWrapper, String> listOfWriteablesUnit;
+
+    @FXML
     private TableColumn<ChannelWrapper, Double> listOfWriteablesMin;
 
     @FXML
@@ -330,6 +333,7 @@ public class FXMLController implements Initializable {
         assert listOfWriteables != null : "fx:id=\"listOfWriteables\" was not injected: check your FXML file 'ScannerScene.fxml'.";
         assert listOfWriteablesShortVar != null : "fx:id=\"listOfWriteablesShortVar\" was not injected: check your FXML file 'ScannerScene.fxml'.";
         assert listOfWriteablesPV != null : "fx:id=\"listOfWriteablesPV\" was not injected: check your FXML file 'ScannerScene.fxml'.";
+        assert listOfWriteablesUnit != null : "fx:id=\"listOfWriteablesUnit\" was not injected: check your FXML file 'ScannerScene.fxml'.";
         assert listOfWriteablesMin != null : "fx:id=\"listOfWriteablesMin\" was not injected: check your FXML file 'ScannerScene.fxml'.";
         assert listOfWriteablesMax != null : "fx:id=\"listOfWriteablesMax\" was not injected: check your FXML file 'ScannerScene.fxml'.";
         assert listOfWriteablesNpoints != null : "fx:id=\"listOfWriteablesNpoints\" was not injected: check your FXML file 'ScannerScene.fxml'.";
@@ -360,6 +364,7 @@ public class FXMLController implements Initializable {
         listOfWriteables.setItems(PVscanList);
         listOfWriteablesPV.setCellValueFactory(new PropertyValueFactory<>("channelName"));
         listOfWriteablesShortVar.setCellValueFactory(new PropertyValueFactory<>("instance"));
+        listOfWriteablesUnit.setCellValueFactory(new PropertyValueFactory<>("unit"));
         listOfWriteablesMin.setCellValueFactory(new PropertyValueFactory<>("min"));
         listOfWriteablesMin.setCellFactory(TextFieldTableCell.<ChannelWrapper, Double>forTableColumn(new DoubleStringConverter()));
         listOfWriteablesMax.setCellValueFactory(new PropertyValueFactory<>("max"));
