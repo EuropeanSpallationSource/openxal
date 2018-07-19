@@ -211,4 +211,11 @@ public class ChannelWrapper {
         }
         return false;
     }
+
+    public int compareTo(Object other) {
+        if (other == null)
+            return 1;
+        return this.instance.get().compareTo(((ChannelWrapper) other).instance.get());
+
+    }
 }

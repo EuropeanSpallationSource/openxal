@@ -34,12 +34,14 @@ package xal.app.scanner;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Comparator;
 import java.util.ResourceBundle;
 import java.util.function.UnaryOperator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import javafx.application.Platform;
+import javafx.beans.InvalidationListener;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -515,9 +517,12 @@ public class FXMLController implements Initializable {
                 Logger.getLogger(FXMLController.class.getName()).log(Level.FINEST, "Will scan {0}",MainFunctions.mainDocument.pvWriteables.get(param).getChannel().channelName());
                 MainFunctions.mainDocument.pvWriteables.get(param).setInstance();
                 if (MainFunctions.actionAddPV(MainFunctions.mainDocument.pvWriteables.get(param), false, true)) {
-                    PVscanList.add(MainFunctions.mainDocument.pvWriteables.get(param));
-                    MainFunctions.isCombosUpdated.set(false);
-                    MainFunctions.mainDocument.setHasChanges(true);
+                    if (!PVscanList.contains(MainFunctions.mainDocument.pvWriteables.get(param))) {
+                        PVscanList.add(MainFunctions.mainDocument.pvWriteables.get(param));
+                        PVscanList.sort(ChannelWrapper::compareTo);
+                        MainFunctions.isCombosUpdated.set(false);
+                        MainFunctions.mainDocument.setHasChanges(true);
+                    }
                 }
                 if (MainFunctions.checkSufficientParams()) {
                     tabConfigure.setDisable(false);
