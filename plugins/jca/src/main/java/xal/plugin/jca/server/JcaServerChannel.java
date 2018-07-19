@@ -54,7 +54,7 @@ public class JcaServerChannel extends Channel implements IServerChannel {
         if (signal.length() > 0) {
             size = signal.matches(".*(TBT|A)") ? DEFAULT_ARRAY_SIZE : 1;
             pv = new ServerMemoryRecord(signal, null, new double[size], channelServer);
-            pv.setUnits("units");
+            pv.setUnits("unknown");
 
             pved = new ProcessVariableEventDispatcher(pv);
             pv.setEventCallback(pved);
