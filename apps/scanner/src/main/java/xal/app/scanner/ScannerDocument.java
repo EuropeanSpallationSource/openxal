@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -52,6 +53,7 @@ import javafx.stage.Stage;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+import static xal.app.scanner.MainFunctions.mainDocument;
 import xal.ca.Channel;
 import xal.ca.ConnectionException;
 import xal.ca.GetException;
@@ -70,19 +72,19 @@ public class ScannerDocument extends XalFxDocument {
     /**
      * A dictionary of the created datasets..
      */
-    public Map<String, double[][]> dataSets;
+    private Map<String, double[][]> dataSets;
     /**
      * For every measurement, store the channels read for this measurement..
      */
-    public Map<String, List<Channel>> allPVrb;
+    private Map<String, List<Channel>> allPVrb;
     /**
      * For every measurement, store the channels written to for this measurement..
      */
-    public Map<String, List<Channel>> allPVw;
+    private Map<String, List<Channel>> allPVw;
     /**
      * For every measurement, store time stamps of all read variables here
      */
-    public Map<String, Timestamp[][]> allTimestamps;
+    private Map<String, Timestamp[][]> allTimestamps;
 
     /**
      * The number of different scans that have been done
@@ -134,6 +136,8 @@ public class ScannerDocument extends XalFxDocument {
 
     private XmlDataAdaptor da;
     private DataAdaptor currentMeasAdaptor;
+
+    // -- Constructors --
 
     /**
      *  Create a new empty ScanDocument1D
@@ -208,6 +212,75 @@ public class ScannerDocument extends XalFxDocument {
         }
 
     }
+
+
+    // -- Getters/setters --
+
+    public Map<String, double[][]> getDataSets() {
+        return dataSets;
+    }
+
+    public double[][] getDataSet(String setName) {
+        return dataSets.get(setName);
+    }
+
+    public void setDataSet(String setName, double[][] data) {
+        dataSets.put(setName, data);
+    }
+
+
+    public Map<String, List<Channel>> getAllPVrbData() {
+        return allPVrb;
+    }
+
+    public List<Channel> getPVrbData(String setName) {
+        return allPVrb.get(setName);
+    }
+
+    public void setPVreadbackData(String setName, List<Channel> data) {
+        allPVrb.put(setName, data);
+    }
+
+    public void setPVreadbackData(String setName) {
+        setPVreadbackData(setName, getActivePVreadables().map(cw -> cw.getChannel()).collect(Collectors.toList()));
+    }
+
+
+    public Map<String, List<Channel>> getAllPVWriteData() {
+        return allPVw;
+    }
+
+    public List<Channel> getPVWriteData(String setName) {
+        return allPVw.get(setName);
+    }
+
+    public void setPVwriteData(String setName, List<Channel> data) {
+        allPVw.put(setName, data);
+    }
+
+    public void setPVwriteData(String setName) {
+        setPVwriteData(setName, getActivePVwritebacks().map(cw -> cw.getChannel()).collect(Collectors.toList()));
+    }
+
+
+    public Map<String, Timestamp[][]> getAllTimestamps() {
+        return allTimestamps;
+    }
+
+    public Timestamp[][] getTimestamps(String setName) {
+        return allTimestamps.get(setName);
+    }
+
+    public void setTimestamps(String setName, Timestamp[][] timestamps) {
+        allTimestamps.put(setName, timestamps);
+    }
+
+    public void setTimestamps(String setName) {
+        setTimestamps(setName, currentTimestamps);
+    }
+
+    // -- File I/O --
+
     /**
      *  Save the ScannerDocument document to the specified URL.
      *
@@ -314,13 +387,6 @@ public class ScannerDocument extends XalFxDocument {
             da.writeToUrl( source );
     };
 
-
-
-    private void initDocumentAdaptor() {
-        da = XmlDataAdaptor.newEmptyDocumentAdaptor();
-        da.createChild(SCANNER_SR);
-        
-    }
     /**
      *  Reads the content of the document from the specified URL, and loads the information into the application.
      *
@@ -460,6 +526,15 @@ public class ScannerDocument extends XalFxDocument {
             // TODO Is there a way to trigger plot of the current measurement here?
         }
 
+    }
+
+    // -- Functions --
+
+
+    private void initDocumentAdaptor() {
+        da = XmlDataAdaptor.newEmptyDocumentAdaptor();
+        da.createChild(SCANNER_SR);
+        
     }
 
     public Stream<ChannelWrapper> getActivePVreadables() {

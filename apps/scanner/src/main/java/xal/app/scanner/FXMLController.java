@@ -570,7 +570,7 @@ public class FXMLController implements Initializable {
         Platform.runLater(
             () -> {
                 measurements.clear();
-                MainFunctions.mainDocument.dataSets.entrySet().forEach(dataSet -> measurements.add(dataSet.getKey()));
+                MainFunctions.mainDocument.getDataSets().entrySet().forEach(dataSet -> measurements.add(dataSet.getKey()));
                 if (measurements.size() >0 )
                     tabDisplay.setDisable(false);
                 Logger.getLogger(FXMLController.class.getName()).log(Level.FINER, "Analysis list updated");

@@ -128,9 +128,9 @@ public class Plot extends SplitPane implements Initializable {
 
     // Plot measurement of name measName
     public void plotMeasurement(String measName) {
-        double [][] measurement = MainFunctions.mainDocument.dataSets.get(measName);
-        List<Channel> pvR = MainFunctions.mainDocument.allPVrb.get(measName);
-        List<Channel> pvW = MainFunctions.mainDocument.allPVw.get(measName);
+        double [][] measurement = MainFunctions.mainDocument.getDataSet(measName);
+        List<Channel> pvR = MainFunctions.mainDocument.getPVrbData(measName);
+        List<Channel> pvW = MainFunctions.mainDocument.getPVWriteData(measName);
         plotMeasurement(measurement, pvW, pvR);
     }
 

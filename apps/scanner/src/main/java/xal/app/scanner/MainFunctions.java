@@ -275,10 +275,11 @@ public class MainFunctions {
 
                 // If we finished the measurement, store the new data.
                 if (mainDocument.nCombosDone == mainDocument.combos.size()) {
-                    mainDocument.dataSets.put("Measurement "+(mainDocument.numberOfScans.get()+1), mainDocument.currentMeasurement);
-                    mainDocument.allPVrb.put("Measurement "+(mainDocument.numberOfScans.get()+1), mainDocument.getActivePVreadables().map(cw -> cw.getChannel()).collect(Collectors.toList()));
-                    mainDocument.allPVw.put("Measurement "+(mainDocument.numberOfScans.get()+1), mainDocument.getActivePVwritebacks().map(cw -> cw.getChannel()).collect(Collectors.toList()));
-                    mainDocument.allTimestamps.put("Measurement "+(mainDocument.numberOfScans.get()+1), mainDocument.currentTimestamps);
+                    String setName = "Measurement "+(mainDocument.numberOfScans.get()+1);
+                    mainDocument.setDataSet(setName, mainDocument.currentMeasurement);
+                    mainDocument.setPVreadbackData(setName);
+                    mainDocument.setPVwriteData(setName);
+                    mainDocument.setTimestamps(setName);
                     mainDocument.numberOfScans.set(mainDocument.numberOfScans.get()+1);
                     mainDocument.nCombosDone=0;
                     // Note that this is only saved if document is defined
