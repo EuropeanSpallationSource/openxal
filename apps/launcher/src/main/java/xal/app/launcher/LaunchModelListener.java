@@ -17,10 +17,10 @@ package xal.app.launcher;
  * @author  tap
  */
 public interface LaunchModelListener {
-	/**
-	 * Handle the event indicating that the launch model has been modified.
-	 * @param model The model which has been modified.
-	 */
-	public void modified( LaunchModel model );
+    /**
+     * Handle the event indicating that the launch model has been modified.
+     * @param model The model which has been modified.
+     */
+    public void modified( LaunchModel model );
 }
 
