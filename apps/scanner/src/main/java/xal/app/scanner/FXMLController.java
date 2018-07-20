@@ -445,8 +445,8 @@ public class FXMLController implements Initializable {
                     measPerPoint.setText(newValue.toString());
                 });
         measPerPoint.setText(String.valueOf(MainFunctions.mainDocument.numberMeasurementsPerCombo.get()));
-        
-        
+
+
         MainFunctions.mainDocument.currentMeasurementWasLoaded.addListener((observable, oldValue, newValue) -> {
                     // When this property goes from true -> false it means we should prep the continuation
                     if (oldValue && !newValue) {

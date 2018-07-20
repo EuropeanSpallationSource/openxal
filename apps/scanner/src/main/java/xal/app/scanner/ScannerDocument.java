@@ -131,6 +131,10 @@ public class ScannerDocument extends XalFxDocument {
     private final String CONSTRAINTS_SR;
     private final String CURRENTMEAS_SR;
     private final String SETTINGS_SR;
+    private final String TIMESTAMPS_SR;
+    private final String TITLE_SR;
+    private final String ACTIVE_SR;
+    private final String NAME_SR;
     
     private final SimpleDateFormat TIMEFORMAT_SR;
 
@@ -154,6 +158,10 @@ public class ScannerDocument extends XalFxDocument {
         CONSTRAINTS_SR = "constraints";
         CURRENTMEAS_SR = "currentMeasurement";
         SETTINGS_SR = "settings";
+        TIMESTAMPS_SR = "timestamps";
+        TITLE_SR = "title";
+        ACTIVE_SR = "active";
+        NAME_SR = "name";
         TIMEFORMAT_SR = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         dataSets = new HashMap<>();
@@ -292,7 +300,7 @@ public class ScannerDocument extends XalFxDocument {
         initDocumentAdaptor();
         DataAdaptor scannerAdaptor =  da.childAdaptor(SCANNER_SR);
         currentMeasAdaptor = null;
-        scannerAdaptor.setValue("title", url.getFile());
+        scannerAdaptor.setValue(TITLE_SR, url.getFile());
         scannerAdaptor.setValue("date", TIMEFORMAT_SR.format(new Date()));
 
 
@@ -303,20 +311,20 @@ public class ScannerDocument extends XalFxDocument {
 
         // Store information about all measurements done..
         DataAdaptor measurementsScanner = scannerAdaptor.createChild(MEASUREMENTS_SR);
-        dataSets.entrySet().forEach(measurement -> {
+        dataSets.entrySet().forEach( measurement -> {
             // convenience variables..
             List<Channel> pvW = allPVw.get(measurement.getKey());
             List<Channel> pvR = allPVrb.get(measurement.getKey());
             Timestamp[][] tstamps = allTimestamps.get(measurement.getKey());
             DataAdaptor measurementAdaptor = measurementsScanner.createChild("measurement");
-            measurementAdaptor.setValue("title", measurement.getKey());
+            measurementAdaptor.setValue(TITLE_SR, measurement.getKey());
             for (int i=0;i<measurement.getValue()[0].length;i++) {
                 DataAdaptor channelAdaptor = measurementAdaptor.createChild("channel");
                 if (i<pvW.size()) {
-                    channelAdaptor.setValue("name", pvW.get(i).getId());
+                    channelAdaptor.setValue(NAME_SR, pvW.get(i).getId());
                     channelAdaptor.setValue("type", "w");
                 } else {
-                    channelAdaptor.setValue("name", pvR.get(i-pvW.size()).getId());
+                    channelAdaptor.setValue(NAME_SR, pvR.get(i-pvW.size()).getId());
                     channelAdaptor.setValue("type", "r");
                 }
                 double[] data = new double[measurement.getValue().length];
@@ -332,32 +340,32 @@ public class ScannerDocument extends XalFxDocument {
                 }
                 channelAdaptor.setValue("data", data);
                 if (i>=pvW.size())
-                    channelAdaptor.setValue("timestamps", tstamps_str);
+                    channelAdaptor.setValue(TIMESTAMPS_SR, tstamps_str);
             }
         });
         // Store information about current measurement setup..
 
         // Store list of variables to read & write.. ChannelWrapper objects
         DataAdaptor scanpvScanner = scannerAdaptor.createChild(SCANPVS_SR);
-        pvWriteables.forEach((pv) -> {
+        pvWriteables.forEach( pv -> {
             DataAdaptor scan_PV_name =  scanpvScanner.createChild("PV");
-            scan_PV_name.setValue("name", pv.getChannelName() );
+            scan_PV_name.setValue(NAME_SR, pv.getChannelName() );
             scan_PV_name.setValue("min", pv.minProperty().get() );
             scan_PV_name.setValue("max", pv.maxProperty().get() );
             scan_PV_name.setValue("npoints", pv.npointsProperty().get() );
             scan_PV_name.setValue("instance", pv.instanceProperty().get() );
-            scan_PV_name.setValue("active", pv.isScannedProperty().get() );
+            scan_PV_name.setValue(ACTIVE_SR, pv.isScannedProperty().get() );
         });
 
         DataAdaptor measpvScanner = scannerAdaptor.createChild(MEASUREPVS_SR);
-        pvReadbacks.forEach((pv) -> {
+        pvReadbacks.forEach( pv -> {
             DataAdaptor meas_PV_name =  measpvScanner.createChild("PV");
-            meas_PV_name.setValue("name", pv.getChannel().getId() );
-            meas_PV_name.setValue("active", pv.isReadProperty().get() );
+            meas_PV_name.setValue(NAME_SR, pv.getChannel().getId() );
+            meas_PV_name.setValue(ACTIVE_SR, pv.isReadProperty().get() );
         });
 
         DataAdaptor constraintsAdaptor = scannerAdaptor.createChild(CONSTRAINTS_SR);
-        constraints.forEach(constraint -> {
+        constraints.forEach( constraint -> {
             if (! constraint.isEmpty())
                 constraintsAdaptor.createChild("constraint").setValue("value", constraint);
             });
@@ -381,7 +389,7 @@ public class ScannerDocument extends XalFxDocument {
         }
         DataAdaptor stepAdaptor = currentMeasAdaptor.createChild("step");
         stepAdaptor.setValue("values", currentMeasurement[nmeas]);
-        stepAdaptor.setValue("timestamps", tstamps_str);
+        stepAdaptor.setValue(TIMESTAMPS_SR, tstamps_str);
         
         if (source!=null)
             da.writeToUrl( source );
@@ -407,9 +415,9 @@ public class ScannerDocument extends XalFxDocument {
         // There is probably an issue since these variables are not read into MainFunctions.PVlist
         DataAdaptor scanpvScanner = scannerAdaptor.childAdaptor(SCANPVS_SR);
         pvWriteables.clear();
-        scanpvScanner.childAdaptors().forEach( (childAdaptor) -> {
-            String name = childAdaptor.stringValue("name");
-            boolean active = childAdaptor.booleanValue("active");
+        scanpvScanner.childAdaptors().forEach( childAdaptor -> {
+            String name = childAdaptor.stringValue(NAME_SR);
+            boolean active = childAdaptor.booleanValue(ACTIVE_SR);
             Logger.getLogger(ScannerDocument.class.getName()).log(Level.FINER, "Loading scan PV {0}, active: {1}", new Object[]{name, active});
 
             double min = childAdaptor.doubleValue("min");
@@ -433,9 +441,9 @@ public class ScannerDocument extends XalFxDocument {
 
         DataAdaptor readpvScanner = scannerAdaptor.childAdaptor(MEASUREPVS_SR);
         pvReadbacks.clear();
-        readpvScanner.childAdaptors().forEach( (childAdaptor) -> {
-            String name = childAdaptor.stringValue("name");
-            boolean active = childAdaptor.booleanValue("active");
+        readpvScanner.childAdaptors().forEach( childAdaptor -> {
+            String name = childAdaptor.stringValue(NAME_SR);
+            boolean active = childAdaptor.booleanValue(ACTIVE_SR);
             Logger.getLogger(ScannerDocument.class.getName()).log(Level.FINER, "Loading readback PV {0}, active: {1}", new Object[]{name, active});
 
             Channel chan = acc.channelSuite().getChannelFactory().getChannel(name);
@@ -458,8 +466,8 @@ public class ScannerDocument extends XalFxDocument {
         // Load earlier measurements..
         if ( scannerAdaptor.childAdaptor(MEASUREMENTS_SR) != null) {
             DataAdaptor measurementsScanner = scannerAdaptor.childAdaptor(MEASUREMENTS_SR);
-            measurementsScanner.childAdaptors().forEach( (measAdaptor) -> {
-                Logger.getLogger(ScannerDocument.class.getName()).log(Level.FINEST, "Loading measurement {0}", measAdaptor.stringValue("title"));
+            measurementsScanner.childAdaptors().forEach( measAdaptor -> {
+                Logger.getLogger(ScannerDocument.class.getName()).log(Level.FINEST, "Loading measurement {0}", measAdaptor.stringValue(TITLE_SR));
                 List<Channel> pvW = new ArrayList<>();
                 List<Channel> pvR = new ArrayList<>();
 
@@ -479,23 +487,23 @@ public class ScannerDocument extends XalFxDocument {
                         data[icombo][ichan] = channelData[icombo];
                     }
                     if (isRead) {
-                        String[] tstampData = chanAdaptor.stringValue("timestamps").split(", ");
+                        String[] tstampData = chanAdaptor.stringValue(TIMESTAMPS_SR).split(", ");
                         for (int icombo=0;icombo<numCombos;icombo++) {
                             tstamps[icombo][iReadChan] = new Timestamp(new BigDecimal(tstampData[icombo]));
                         }
                         iReadChan+=1;
                     }
-                    Channel chan = acc.channelSuite().getChannelFactory().getChannel(chanAdaptor.stringValue("name"));
+                    Channel chan = acc.channelSuite().getChannelFactory().getChannel(chanAdaptor.stringValue(NAME_SR));
                     if (isWrite) {
                         pvW.add(chan);
                     } else if (isRead) {
                         pvR.add(chan);
                     }
                 }
-                dataSets.put(measAdaptor.stringValue("title"), data);
-                allPVw.put(measAdaptor.stringValue("title"), pvW);
-                allPVrb.put(measAdaptor.stringValue("title"), pvR);
-                allTimestamps.put(measAdaptor.stringValue("title"), tstamps);
+                dataSets.put(measAdaptor.stringValue(TITLE_SR), data);
+                allPVw.put(measAdaptor.stringValue(TITLE_SR), pvW);
+                allPVrb.put(measAdaptor.stringValue(TITLE_SR), pvR);
+                allTimestamps.put(measAdaptor.stringValue(TITLE_SR), tstamps);
                 numberOfScans.set(numberOfScans.get()+1);
 
             });
@@ -514,7 +522,7 @@ public class ScannerDocument extends XalFxDocument {
             currentTimestamps = new Timestamp[2+(nStepsTotal-2)*numberMeasurementsPerCombo.get()][(int) getActivePVreadables().count()];
             for(int i = 0;i<nCombosDone;i++) {
                 double [] values = currentMeasAdaptor.childAdaptors().get(i).doubleArray("values");
-                String[] tstamps = currentMeasAdaptor.childAdaptors().get(i).stringValue("timestamps").split(", ");
+                String[] tstamps = currentMeasAdaptor.childAdaptors().get(i).stringValue(TIMESTAMPS_SR).split(", ");
                 for (int j=0;j<nActiveChannels;j++) {
                     currentMeasurement[i][j] = values[j];
                     if (j>=getActivePVwritebacks().count()) {
