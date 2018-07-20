@@ -66,7 +66,7 @@ public class MainFunctions {
     public static SimpleBooleanProperty stopTask;
 
     private static InvalidationListener changeListener;
-    
+
     public static void initialize(ScannerDocument scannerDocument) {
 
         mainDocument = scannerDocument;
@@ -109,10 +109,10 @@ public class MainFunctions {
 
     /**
      * This should be called when the channel is unselected in the GUI.
-     * It currently only have a function for writeable channels, but please 
-     * always call this when a channel is unselected (in case we need some logic 
+     * It currently only have a function for writeable channels, but please
+     * always call this when a channel is unselected (in case we need some logic
      * in the future).
-     * 
+     *
      * @param cWrapper The channel to remove
      * @param read Remove the channel from readbacks
      * @param write Remove the channel from writeables

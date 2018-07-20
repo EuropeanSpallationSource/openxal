@@ -93,7 +93,7 @@ public class ScannerDocument extends XalFxDocument {
 
     public double[][] currentMeasurement;
     public Timestamp[][] currentTimestamps;
-    
+
     // Use this as a trigger to update the GUI so that we can continue a loaded half-finished measurement
     public SimpleBooleanProperty currentMeasurementWasLoaded;
 
@@ -135,7 +135,7 @@ public class ScannerDocument extends XalFxDocument {
     private final String TITLE_SR;
     private final String ACTIVE_SR;
     private final String NAME_SR;
-    
+
     private final SimpleDateFormat TIMEFORMAT_SR;
 
     private XmlDataAdaptor da;
@@ -145,7 +145,7 @@ public class ScannerDocument extends XalFxDocument {
 
     /**
      *  Create a new empty ScanDocument1D
-     * 
+     *
      * @param stage The stage for this application
      */
     public ScannerDocument(Stage stage) {
@@ -178,7 +178,7 @@ public class ScannerDocument extends XalFxDocument {
         delayBetweenMeasurements = new SimpleLongProperty(1500);
 
         currentMeasurementWasLoaded = new SimpleBooleanProperty(false);
-        
+
         DEFAULT_FILENAME="Data.scan.xml";
         WILDCARD_FILE_EXTENSION = "*.scan.xml";
         HELP_PAGEID="227688413";
@@ -390,7 +390,7 @@ public class ScannerDocument extends XalFxDocument {
         DataAdaptor stepAdaptor = currentMeasAdaptor.createChild("step");
         stepAdaptor.setValue("values", currentMeasurement[nmeas]);
         stepAdaptor.setValue(TIMESTAMPS_SR, tstamps_str);
-        
+
         if (source!=null)
             da.writeToUrl( source );
     };
@@ -473,7 +473,7 @@ public class ScannerDocument extends XalFxDocument {
 
                 int numCombos = measAdaptor.childAdaptors().get(0).doubleArray("data").length;
                 int numChannels = measAdaptor.childAdaptors().size();
-                int numReadChannels = (int) measAdaptor.childAdaptors().stream().filter((adaptor) -> ("r".equals(adaptor.stringValue("type"))) ).count();
+                int numReadChannels = (int) measAdaptor.childAdaptors().stream().filter( childAdaptor -> ("r".equals(childAdaptor.stringValue("type"))) ).count();
 
                 double[][] data = new double[numCombos][numChannels];
                 Timestamp[][] tstamps = new Timestamp[numCombos][numReadChannels];
@@ -542,17 +542,17 @@ public class ScannerDocument extends XalFxDocument {
     private void initDocumentAdaptor() {
         da = XmlDataAdaptor.newEmptyDocumentAdaptor();
         da.createChild(SCANNER_SR);
-        
+
     }
 
     public Stream<ChannelWrapper> getActivePVreadables() {
-        return pvReadbacks.stream().filter((readable) -> (readable.getIsRead()));
+        return pvReadbacks.stream().filter( readable -> (readable.getIsRead()));
     }
 
     public Stream<ChannelWrapper> getActivePVwritebacks() {
-        return pvWriteables.stream().filter((writeable) -> (writeable.getIsScanned()));
+        return pvWriteables.stream().filter( writeable -> (writeable.getIsScanned()));
     }
-    
+
     /**
      *
      * @param i the channel index (counting active only)
@@ -568,7 +568,7 @@ public class ScannerDocument extends XalFxDocument {
         }
         return null;
     }
-        
+
     /**
      *
      * @param i the channel index (counting active only)
@@ -586,7 +586,7 @@ public class ScannerDocument extends XalFxDocument {
     }
 
     private boolean hasConstraints() {
-        return constraints.stream().anyMatch((constraint) -> (constraint.trim().length()>0));
+        return constraints.stream().anyMatch( constraint -> (constraint.trim().length()>0));
     }
 
     /**
@@ -611,7 +611,7 @@ public class ScannerDocument extends XalFxDocument {
         }
         return true;
     }
-    
+
     // Return the current reading of the i'th ACTIVE pvWriteable
     private double getPVsetting(int i) throws ConnectionException, GetException {
         int j = -1;
@@ -623,7 +623,7 @@ public class ScannerDocument extends XalFxDocument {
        }
        return Double.NaN;
     }
-    
+
     public int calculateCombos() {
 
         Logger.getLogger(ScannerDocument.class.getName()).log(Level.FINER, "Recalculating steps");
@@ -637,7 +637,7 @@ public class ScannerDocument extends XalFxDocument {
 
         // Calculate the correct amount of combos..
         int ncombos=1;
-        ncombos = getActivePVwritebacks().map((cw) -> cw.getNpoints()).reduce(ncombos, (accumulator, _item) -> accumulator * _item);
+        ncombos = getActivePVwritebacks().map( cw -> cw.getNpoints()).reduce(ncombos, (accumulator, _item) -> accumulator * _item);
         for (int i = 0;i<ncombos+2;i++)
             combos.add(new double[(int) getActivePVwritebacks().count()]);
 

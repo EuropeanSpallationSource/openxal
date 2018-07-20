@@ -162,7 +162,7 @@ public class PVTree extends SplitPane {
     }
 
     private void addOneChannel(Channel channel) {
-        
+
 
         ChannelWrapper newChannelWrapper = new ChannelWrapper(channel);
         try {

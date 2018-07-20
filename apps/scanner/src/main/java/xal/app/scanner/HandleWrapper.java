@@ -74,7 +74,7 @@ public class HandleWrapper {
 
     /**
      * Call this function after channel has been connected to update attributes for the handle
-     * 
+     *
      * @return true if all successful
      */
     public boolean updateAfterConnected() {
