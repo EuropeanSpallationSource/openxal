@@ -121,17 +121,16 @@ public class ScannerDocument extends XalFxDocument {
     // The combination of scan points (each double[] is equal to number of writeables)
     public List<double[]> combos;
 
-
     // Save/restore parameters..
-    private static final String SCANNER_SR = "ScannerData";
-    private static final String SCANPVS_SR = "scan_PVs";
-    private static final String MEASUREPVS_SR = "measure_PVs";
-    private static final String MEASUREMENTS_SR = "measurements";
-    private static final String CONSTRAINTS_SR = "constraints";
-    private static final String CURRENTMEAS_SR = "currentMeasurement";
-    private static final String SETTINGS_SR = "settings";
+    private final String SCANNER_SR;
+    private final String SCANPVS_SR;
+    private final String MEASUREPVS_SR;
+    private final String MEASUREMENTS_SR;
+    private final String CONSTRAINTS_SR;
+    private final String CURRENTMEAS_SR;
+    private final String SETTINGS_SR;
     
-    private static final SimpleDateFormat TIMEFORMAT_SR = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private final SimpleDateFormat TIMEFORMAT_SR;
 
     private XmlDataAdaptor da;
     private DataAdaptor currentMeasAdaptor;
@@ -143,6 +142,16 @@ public class ScannerDocument extends XalFxDocument {
      */
     public ScannerDocument(Stage stage) {
         super(stage);
+
+        SCANNER_SR = "ScannerData";
+        SCANPVS_SR = "scan_PVs";
+        MEASUREPVS_SR = "measure_PVs";
+        MEASUREMENTS_SR = "measurements";
+        CONSTRAINTS_SR = "constraints";
+        CURRENTMEAS_SR = "currentMeasurement";
+        SETTINGS_SR = "settings";
+        TIMEFORMAT_SR = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
         dataSets = new HashMap<>();
         allPVrb = new HashMap<>();
         allPVw = new HashMap<>();
