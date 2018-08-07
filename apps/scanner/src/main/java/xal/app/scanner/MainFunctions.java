@@ -35,7 +35,6 @@ package xal.app.scanner;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -92,12 +91,12 @@ public class MainFunctions {
      */
     public static boolean actionAddPV(ChannelWrapper cWrapper, Boolean read, Boolean write) {
         if (read)  {
-            Logger.getLogger(MainFunctions.class.getName()).log(Level.FINER, "Added channel {0} to readable list",cWrapper);
+            Logger.getLogger(MainFunctions.class.getName()).log(Level.FINER, "Added channel {0} to readable list", cWrapper);
             mainDocument.setHasChanges(true);
             return true;
             }
         if (write) {
-            Logger.getLogger(MainFunctions.class.getName()).log(Level.FINER, "Added channel {0} to writeable list",cWrapper);
+            Logger.getLogger(MainFunctions.class.getName()).log(Level.FINER, "Added channel {0} to writeable list", cWrapper);
             cWrapper.npointsProperty().addListener(changeListener);
             cWrapper.minProperty().addListener(changeListener);
             cWrapper.maxProperty().addListener(changeListener);
