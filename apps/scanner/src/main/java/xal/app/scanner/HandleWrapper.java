@@ -72,36 +72,56 @@ public class HandleWrapper {
        Logger.getLogger(HandleWrapper.class.getName()).log(Level.FINEST, "New object {0}", m_handle);
     }
 
-    public boolean initConnection() {
-        Logger.getLogger(HandleWrapper.class.getName()).log(Level.FINEST, "Timeout set to {0}", m_channel.getIoTimeout());
-        m_channel.connectAndWait();
-        setType();
-        try {
-            if (m_channel.isConnected())
-             m_unit.set(m_channel.getUnits());
-        } catch (ConnectionException | GetException ex) {
-            Logger.getLogger(HandleWrapper.class.getName()).log(Level.FINER, "Connection unit problem for {0}", m_handle);
-        }
-        return m_channel.isConnected();
+    /**
+     * Call this function after channel has been connected to update attributes for the handle
+     *
+     * @return true if all successful
+     */
+    public boolean updateAfterConnected() {
+        return updateUnits() && setType();
     }
-    private void setType() {
+
+    /**
+     * Update the units by calling this function after the channel is connected.
+     * @return true if the units were successfully retrieved from the channel, otherwise false
+     */
+    private boolean updateUnits() {
+            if (m_channel.isConnected())
+                try {
+                    m_unit.set(m_channel.getUnits());
+                    return true;
+                } catch (ConnectionException | GetException ex) {
+                    Logger.getLogger(HandleWrapper.class.getName()).log(Level.WARNING, "Connection unit problem for {0}", getChannelName());
+                }
+            return false;
+    }
+
+    /**
+     * Set the channel type (r/w or only r)
+     * Requires that the channel is already connected.
+     * @return true if channel type was discovered
+     */
+    private boolean setType() {
         try {
             if (m_channel.isConnected()) {
             if (m_channel.readAccess() && m_channel.writeAccess()) {
                 m_type.set("rw");
+                return true;
             } else if (m_channel.readAccess() ) {
                 m_type.set("r");
+                return true;
             } else if (m_channel.writeAccess() ) {
                 m_type.set("w");
+                return true;
             }
             } else {
               m_type.set("-");
             }
-                } catch (Exception ex) {
-                    Logger.getLogger(HandleWrapper.class.getName()).log(Level.FINER, "Connection r/w problem for {0}", m_handle);
-                    m_type.set("rw");
-                }
-
+        } catch (Exception ex) {
+            Logger.getLogger(HandleWrapper.class.getName()).log(Level.WARNING, "Connection r/w problem for {0}", getChannelName());
+            m_type.set("rw");
+        }
+        return false;
     }
 
     // Properties...

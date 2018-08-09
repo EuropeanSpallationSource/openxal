@@ -91,8 +91,8 @@ public class FXMLController implements Initializable {
     //public xal.smf.Accelerator accl = xal.smf.data.XMLDataManager.acceleratorWithPath("/Users/nataliamilas/projects/openxal/site/optics/design/main.xal");
     public Accelerator accl = XMLDataManager.loadDefaultAccelerator();
     public TrajectoryArray DisplayTraj = new TrajectoryArray();//Trajectory to be displayed on the plot
-    private final ObservableList<URL> refTrajData = FXCollections.observableArrayList();// holds info about reference trajectories       
-    
+    private final ObservableList<URL> refTrajData = FXCollections.observableArrayList();// holds info about reference trajectories
+
     //set plot update timer
     private StatusAnimationTimer timerPlotUpdate;
 
@@ -137,8 +137,8 @@ public class FXMLController implements Initializable {
     private Label labelTrajectoryStatus;
 
     @Override
-    public void initialize(URL url, ResourceBundle rb) {                    
-                
+    public void initialize(URL url, ResourceBundle rb) {
+
         //Populate the Accelerator Menu with the sequences of the machine
         List<AcceleratorSeq> seqItem = accl.getSequences();
         int k = 0;
@@ -508,9 +508,9 @@ public class FXMLController implements Initializable {
             }
         });
 
-        anchorPaneChart.setDisable(true);                
+        anchorPaneChart.setDisable(true);
 
-    }   
+    }
 
     @FXML
     private void handleExitMenu(ActionEvent event) {
@@ -790,9 +790,9 @@ public class FXMLController implements Initializable {
     private void handleMenuLiveTrajectory(ActionEvent event) {
         // Initializes bpm channels
         DisplayTraj.initBPMs(accl);
-        
+
         if(DisplayTraj.isMinChannelConnected()){
-        
+
             timerPlotUpdate = new StatusAnimationTimer() {
 
                 @Override
@@ -820,7 +820,7 @@ public class FXMLController implements Initializable {
             alert.setHeaderText("Minimum number of connected channels not reached!");
             alert.setContentText("Most of the BPM channels are disconected. Display of LIVE trajectory not possible ");
 
-            alert.showAndWait();            
+            alert.showAndWait();
         }
     }
 
@@ -865,7 +865,7 @@ public class FXMLController implements Initializable {
     private void handleELog(ActionEvent event) {
         try {
             WritableImage[] snapshots = new WritableImage[1];
-            mainAnchor1.getScene().snapshot(snapshots[0]);  
+            mainAnchor1.getScene().snapshot(snapshots[0]);
             PostEntryDialog.post(snapshots);
         } catch (Exception ex) {
             Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);

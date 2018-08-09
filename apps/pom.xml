@@ -13,6 +13,7 @@
     <packaging>pom</packaging>
     
     <modules>
+        <module>configurator</module>
         <module>launcher</module>
         <module>lebt</module>
         <module>scanner</module>
@@ -26,7 +27,6 @@
         <module>bpmviewer</module>
         <module>bricks</module>
         <module>bsmanalysis</module>
-        <module>configurator</module>
         <module>dbbrowser</module>
         <module>diagtiming</module>
         <module>ema</module>

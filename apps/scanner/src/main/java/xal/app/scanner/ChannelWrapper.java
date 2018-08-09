@@ -121,12 +121,16 @@ public class ChannelWrapper {
         return m_type;
     }
     /**
-     * @propertyDescription Some description
-     * @return
+     * @propertyDescription Set to true if this channel is selected to be scanned (ie is active)
+     * @return true if channel will be scanned
      */
     public SimpleBooleanProperty isScannedProperty() {
         return isScanned;
     }
+    /**
+     * @propertyDescription Set to true if this channel is selected to be read (ie is active)
+     * @return true if channel will be read
+     */
     public SimpleBooleanProperty isReadProperty() {
         return isRead;
     }
@@ -185,6 +189,7 @@ public class ChannelWrapper {
         // but it is not guaranteed!
         instanceCount+=1;
         instance.set(shortName);
+        Logger.getLogger(ChannelWrapper.class.getName()).log(Level.FINEST, "Forced short name {0}, counter at {1}", new Object[]{shortName, instanceCount});
         return instance.get();
     }
 
@@ -197,11 +202,20 @@ public class ChannelWrapper {
 
     @Override
     public boolean equals(Object other) {
+        if (other == null)
+            return false;
         if (other.getClass() == this.getClass()) {
             if (((ChannelWrapper)other).getChannelName() == null ? this.getChannelName() == null : ((ChannelWrapper)other).getChannelName().equals(this.getChannelName())) {
                 return true;
             }
         }
         return false;
+    }
+
+    public int compareTo(Object other) {
+        if (other == null)
+            return 1;
+        return this.instance.get().compareTo(((ChannelWrapper) other).instance.get());
+
     }
 }

@@ -11,12 +11,12 @@ package xal.app.trajectorydisplay;
  * @author nataliamilas
  */
 public class MainFuctions {
-    
+
     public static TrajectoryDisplayDocument mainDocument;
-    
+
     public static void initialize(TrajectoryDisplayDocument trajectoryDocument) {
-        
-        mainDocument = trajectoryDocument; 
-     
+
+        mainDocument = trajectoryDocument;
+
     }
 }

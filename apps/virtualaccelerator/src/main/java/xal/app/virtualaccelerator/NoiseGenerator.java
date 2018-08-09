@@ -14,7 +14,7 @@ import xal.ca.ConnectionException;
 import xal.ca.GetException;
 
 /**
- * NoiseGenerator generates noise for readback PVs 
+ * NoiseGenerator generates noise for readback PVs
  *
  * @version   0.1  02 Mar 2004
  * @author  Paul Chu
@@ -22,11 +22,11 @@ import xal.ca.GetException;
 
 public class NoiseGenerator {
     /**
-     * input the "set" PV and return double value as the corresponding 
+     * input the "set" PV and return double value as the corresponding
      * readback PV value
      *
      * @param pvVal the "set" PV value
-     * @param noiseLevel noise level for the readback PV 
+     * @param noiseLevel noise level for the readback PV
      * @param offset offset from the nominal value
      * @param relative if noise should be set relative to pvVal
      * @return readback PV value with noise added
@@ -37,7 +37,7 @@ public class NoiseGenerator {
         else
             return pvVal  + noiseLevel * (Math.random()-0.5)*2. + offset;
     }
-    
+
     /**
      * Get an array with noise based on a nominal value.
      *
@@ -52,26 +52,26 @@ public class NoiseGenerator {
      */
     public static double[] noisyArrayForNominal( final double nominalValue, final int arrayLength, final int dataLength,  final double noiseLevel, final double offset ) {
         if ( dataLength > arrayLength )  throw new IllegalArgumentException( "The data length: " + dataLength + " must be less than or equal to the array length: " + arrayLength + " to generate a noisy array." );
-        
+
         final double[] noisyArray = new double[arrayLength];
         for ( int index = 0 ; index < dataLength ; index++ ) {
             noisyArray[index] = setValForPV( nominalValue, noiseLevel, offset, false );
         }
-        
+
         return noisyArray;
     }
-    
-    
+
+
     /** Get the average from the array */
     public static double getAverage( final double[] array, final int dataLength ) {
         if ( dataLength <= 0 )  return 0.0;
-        
+
         double sum = 0.0;
-        
+
         for ( int index = 0 ; index < dataLength ; index++ ) {
             sum += array[index];
         }
-        
+
         return sum / dataLength;
     }
 }
