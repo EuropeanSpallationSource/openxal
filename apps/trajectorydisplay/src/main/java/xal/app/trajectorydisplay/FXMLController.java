@@ -31,7 +31,6 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -50,11 +49,8 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.SeparatorMenuItem;
-import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
@@ -84,8 +80,6 @@ public class FXMLController implements Initializable {
     //Creates the Accelerator
     //public xal.smf.Accelerator accl = xal.smf.data.XMLDataManager.acceleratorWithPath("/Users/nataliamilas/projects/openxal/site/optics/design/main.xal");
     //public Accelerator accl = XMLDataManager.loadDefaultAccelerator();
-
-
     //Trajectory to be displayed on the plot
     public TrajectoryArray DisplayTraj = new TrajectoryArray();
 
@@ -134,7 +128,6 @@ public class FXMLController implements Initializable {
 
         //Populate the Accelerator Menu with the sequences of the machine
         //Accelerator accl = MainFunctions.mainDocument.getAccelerator();
-
         //Listener for Accelerator changes
         MainFunctions.mainDocument.getAcceleratorProperty().addChangeListener((ChangeListener) (ObservableValue o, Object oldVal, Object newVal) -> {
             //turn off plot update timer
@@ -176,53 +169,53 @@ public class FXMLController implements Initializable {
             File selectedFile = new File(MainFunctions.mainDocument.refTrajectoryFile.getValue());
 
             if (selectedFile.exists()) {
-            try {
-                refTrajData.add(selectedFile.toURI().toURL());
-                comboBoxRefTrajectory.setValue(selectedFile.toURI().toURL());
-            } catch (MalformedURLException ex) {
-                Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                try {
+                    refTrajData.add(selectedFile.toURI().toURL());
+                    comboBoxRefTrajectory.setValue(selectedFile.toURI().toURL());
+                } catch (MalformedURLException ex) {
+                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
-        }
 
         });
 
         MainFunctions.mainDocument.displayTrajectoryFile.addListener((ChangeListener) (ObservableValue o, Object oldVal, Object newVal) -> {
 
-                //turn off plot update timer
-                if (timerPlotUpdate != null) {
-                    timerPlotUpdate.stop();
-                }
+            //turn off plot update timer
+            if (timerPlotUpdate != null) {
+                timerPlotUpdate.stop();
+            }
 
-                File selectedFile = new File(MainFunctions.mainDocument.displayTrajectoryFile.getValue());
+            File selectedFile = new File(MainFunctions.mainDocument.displayTrajectoryFile.getValue());
 
-                String getSeqName = MainFunctions.mainDocument.getSequence();
-                Accelerator accelerator = MainFunctions.mainDocument.getAccelerator();
+            String getSeqName = MainFunctions.mainDocument.getSequence();
+            Accelerator accelerator = MainFunctions.mainDocument.getAccelerator();
 
-                if (selectedFile.exists()) {
-                    labelTrajectoryStatus.setText("Trajectory : " + selectedFile.getPath());
-                    if (getSeqName != null) {
-                        try {
-                            if (accelerator.getSequence(getSeqName) != null) {
-                                DisplayTraj.loadTrajectory(accelerator.getSequence(getSeqName).getAllNodesOfType("BPM"), selectedFile);
-                            } else if (accelerator.getComboSequence(getSeqName) != null) {
-                                DisplayTraj.loadTrajectory(accelerator.getComboSequence(getSeqName).getAllNodesOfType("BPM"), selectedFile);
-                            }
-                        } catch (IOException ex) {
-                            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+            if (selectedFile.exists()) {
+                labelTrajectoryStatus.setText("Trajectory : " + selectedFile.getPath());
+                if (getSeqName != null) {
+                    try {
+                        if (accelerator.getSequence(getSeqName) != null) {
+                            DisplayTraj.loadTrajectory(accelerator.getSequence(getSeqName).getAllNodesOfType("BPM"), selectedFile);
+                        } else if (accelerator.getComboSequence(getSeqName) != null) {
+                            DisplayTraj.loadTrajectory(accelerator.getComboSequence(getSeqName).getAllNodesOfType("BPM"), selectedFile);
                         }
-                        updateDataset(DisplayTraj);
-                        anchorPaneChart.setDisable(false);
+                    } catch (IOException ex) {
+                        Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                     }
+                    updateDataset(DisplayTraj);
+                    anchorPaneChart.setDisable(false);
                 }
+            }
         });
 
         MainFunctions.mainDocument.liveTrajectory.addListener((ChangeListener) (ObservableValue o, Object oldVal, Object newVal) -> {
 
-            if(((SimpleBooleanProperty) newVal).getValue()){
+            if (((SimpleBooleanProperty) newVal).getValue()) {
                 // Initializes bpm channels
                 DisplayTraj.initBPMs(MainFunctions.mainDocument.getAccelerator());
 
-                if(DisplayTraj.isMinChannelConnected()){
+                if (DisplayTraj.isMinChannelConnected()) {
 
                     timerPlotUpdate = new StatusAnimationTimer() {
 
@@ -255,7 +248,6 @@ public class FXMLController implements Initializable {
                     alert.showAndWait();
                 }
             }
-
 
         });
 
@@ -486,54 +478,54 @@ public class FXMLController implements Initializable {
 
         MainFunctions.mainDocument.getSequenceProperty().addListener((ChangeListener) (ObservableValue o, Object oldVal, Object newVal) -> {
 
-                if (MainFunctions.mainDocument.getSequence() != null) {
-                    //turn off plot update timer
-                    if (timerPlotUpdate != null) {
-                        timerPlotUpdate.stop();
-                    }
+            if (MainFunctions.mainDocument.getSequence() != null) {
+                //turn off plot update timer
+                if (timerPlotUpdate != null) {
+                    timerPlotUpdate.stop();
+                }
 
-                    gridpaneCursor.setVisible(false);
+                gridpaneCursor.setVisible(false);
 
-                    HorizontalMarker.getData().clear();
-                    VerticalMarker.getData().clear();
-                    ChargeMarker.getData().clear();
+                HorizontalMarker.getData().clear();
+                VerticalMarker.getData().clear();
+                ChargeMarker.getData().clear();
 
-                    //clear the initial values
-                    horizontalSeries.clear();
-                    verticalSeries.clear();
-                    chargeSeries.clear();
+                //clear the initial values
+                horizontalSeries.clear();
+                verticalSeries.clear();
+                chargeSeries.clear();
 
-                    //remove crosshair markers
-                    chartHorizontal.setDomainCrosshairVisible(false);
-                    chartHorizontal.setRangeCrosshairVisible(false);
-                    chartVertical.setDomainCrosshairVisible(false);
-                    chartVertical.setRangeCrosshairVisible(false);
-                    chartCharge.setDomainCrosshairVisible(false);
-                    chartCharge.setRangeCrosshairVisible(false);
-                    combinedXYplot.getDomainAxis().setAutoRange(true);
+                //remove crosshair markers
+                chartHorizontal.setDomainCrosshairVisible(false);
+                chartHorizontal.setRangeCrosshairVisible(false);
+                chartVertical.setDomainCrosshairVisible(false);
+                chartVertical.setRangeCrosshairVisible(false);
+                chartCharge.setDomainCrosshairVisible(false);
+                chartCharge.setRangeCrosshairVisible(false);
+                combinedXYplot.getDomainAxis().setAutoRange(true);
 
-                    String getSeqName = MainFunctions.mainDocument.getSequence();
+                String getSeqName = MainFunctions.mainDocument.getSequence();
 
 //turn on timer
-                    if (MainFunctions.mainDocument.liveTrajectory.getValue()) {
-                        timerPlotUpdate.start();
-                    } else if (labelTrajectoryStatus.getText().length() > 13) {
-                        File selectedFile = new File(labelTrajectoryStatus.getText().substring(13));
-                        if (selectedFile != null) {
-                            try {
-                                if (MainFunctions.mainDocument.getAccelerator().getSequence(getSeqName) != null) {
-                                    DisplayTraj.loadTrajectory(MainFunctions.mainDocument.getAccelerator().getSequence(getSeqName).getAllNodesOfType("BPM"), selectedFile);
-                                } else if (MainFunctions.mainDocument.getAccelerator().getComboSequence(getSeqName) != null) {
-                                    DisplayTraj.loadTrajectory(MainFunctions.mainDocument.getAccelerator().getComboSequence(getSeqName).getAllNodesOfType("BPM"), selectedFile);
-                                }
-                            } catch (IOException ex) {
-                                Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                if (MainFunctions.mainDocument.liveTrajectory.getValue()) {
+                    timerPlotUpdate.start();
+                } else if (labelTrajectoryStatus.getText().length() > 13) {
+                    File selectedFile = new File(labelTrajectoryStatus.getText().substring(13));
+                    if (selectedFile != null) {
+                        try {
+                            if (MainFunctions.mainDocument.getAccelerator().getSequence(getSeqName) != null) {
+                                DisplayTraj.loadTrajectory(MainFunctions.mainDocument.getAccelerator().getSequence(getSeqName).getAllNodesOfType("BPM"), selectedFile);
+                            } else if (MainFunctions.mainDocument.getAccelerator().getComboSequence(getSeqName) != null) {
+                                DisplayTraj.loadTrajectory(MainFunctions.mainDocument.getAccelerator().getComboSequence(getSeqName).getAllNodesOfType("BPM"), selectedFile);
                             }
-                            updateDataset(DisplayTraj);
+                        } catch (IOException ex) {
+                            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                         }
+                        updateDataset(DisplayTraj);
                     }
-
                 }
+
+            }
 
         });
 

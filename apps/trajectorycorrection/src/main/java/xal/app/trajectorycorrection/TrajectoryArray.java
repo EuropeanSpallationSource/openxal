@@ -209,9 +209,8 @@ public class TrajectoryArray {
                 YDiff.put(item, 0.0);
                 AvgAmpl.put(item, 0.0);
             }
-       
+
         }
-       
 
         BPMnum = BPMList.size();
 

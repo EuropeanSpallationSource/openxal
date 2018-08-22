@@ -11,41 +11,38 @@ import javafx.beans.value.ChangeListener;
 
 /**
  * Generic class for monitoring Objects
- * 
+ *
  * @author nataliamilas
  */
 public class Monitor {
-    
+
     private Object object;
 
     private final Set<ChangeListener> listeners = new HashSet<>();
 
     public void setMonitor(Object object) {
-        synchronized( listeners ){
-          Object old_object = this.object;
-          this.object = object;
-          listeners.forEach(listener -> listener.changed(null, old_object, this.object));
+        synchronized (listeners) {
+            Object old_object = this.object;
+            this.object = object;
+            listeners.forEach(listener -> listener.changed(null, old_object, this.object));
         }
-
     }
 
     public Object getMonitor() {
-        synchronized( listeners ){
-         return object;
+        synchronized (listeners) {
+            return object;
         }
     }
 
-    public void addChangeListener(ChangeListener listener){
-        synchronized( listeners ){
-          listeners.add(listener);
+    public void addChangeListener(ChangeListener listener) {
+        synchronized (listeners) {
+            listeners.add(listener);
         }
-    };
+    }
 
-    public void removeChangeListener(ChangeListener listener){
-        synchronized( listeners ){
-          listeners.remove(listener);
+    public void removeChangeListener(ChangeListener listener) {
+        synchronized (listeners) {
+            listeners.remove(listener);
         }
-    };
-
-    
+    }
 }
