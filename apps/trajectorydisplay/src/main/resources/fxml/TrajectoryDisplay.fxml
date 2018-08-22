@@ -3,11 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Menu?>
-<?import javafx.scene.control.MenuBar?>
-<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.Separator?>
-<?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -15,45 +11,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" fx:id="mainAnchor1" prefHeight="755.0" prefWidth="1140.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xal.app.trajectorydisplay.FXMLController">
+<AnchorPane id="AnchorPane" fx:id="mainAnchor1" prefHeight="727.0" prefWidth="1141.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xal.app.trajectorydisplay.FXMLController">
    <children>
-      <MenuBar layoutX="-1.0" prefHeight="30.0" prefWidth="1140.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-        <menus>
-          <Menu mnemonicParsing="false" text="File">
-            <items>
-              <MenuItem fx:id="menuExit" mnemonicParsing="false" onAction="#handleExitMenu" text="Exit" />
-            </items>
-          </Menu>
-          <Menu mnemonicParsing="false" text="Accelerator">
-               <items>
-                  <MenuItem mnemonicParsing="false" onAction="#handleLoadDefaultAccelerator" text="Load Default Accelerator" />
-                  <MenuItem mnemonicParsing="false" onAction="#handleLoadAccelerator" text="Load Accelerator ..." />
-                  <SeparatorMenuItem mnemonicParsing="false" />
-                  <Menu fx:id="menuSequence" mnemonicParsing="false" text="Sequence" />
-               </items>
-          </Menu>
-            <Menu mnemonicParsing="false" text="Trajectory">
-              <items>
-                  <MenuItem mnemonicParsing="false" onAction="#handleMenuLiveTrajectory" text="Display Live Trajectory" />
-                  <MenuItem mnemonicParsing="false" onAction="#handleMenuTrajectoryfromFile" text="Display Trajectory from File" />
-                  <SeparatorMenuItem mnemonicParsing="false" />
-                <MenuItem mnemonicParsing="false" onAction="#handleTrajectoryMenuLoad" text="Load Reference Trajectory" />
-                  <MenuItem mnemonicParsing="false" onAction="#handleTrajectoryMenuSave" text="Save Current Trajectory" />
-              </items>
-            </Menu>
-            <Menu mnemonicParsing="false" text="eLog Post">
-              <items>
-                <MenuItem mnemonicParsing="false" onAction="#handleELog" text="Make an eLog entry" />
-              </items>
-            </Menu>
-          <Menu mnemonicParsing="false" text="Help">
-            <items>
-              <MenuItem mnemonicParsing="false" onAction="#openHelpURL" text="About" />
-            </items>
-          </Menu>
-        </menus>
-      </MenuBar>
-      <VBox layoutX="5.0" layoutY="29.0" prefHeight="730.0" prefWidth="1130.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="30.0">
+      <VBox layoutX="5.0" layoutY="29.0" prefHeight="730.0" prefWidth="1130.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
          <children>
             <AnchorPane maxHeight="41.0" minHeight="41.0" prefHeight="76.0" prefWidth="1130.0" VBox.vgrow="NEVER">
                <children>

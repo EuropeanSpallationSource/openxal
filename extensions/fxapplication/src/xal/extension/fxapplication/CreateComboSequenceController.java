@@ -15,6 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+
 package xal.extension.fxapplication;
 
 import java.util.ArrayList;
@@ -32,6 +33,12 @@ import javafx.scene.control.ListView;
 import xal.smf.Accelerator;
 import xal.smf.AcceleratorSeq;
 
+
+/**
+ * Created the GUI window to create a combo sequence
+ * 
+ * @author Natalia Milas <natalia.milas@esss.se>
+ */
 public class CreateComboSequenceController {
 
     private final BooleanProperty loggedIn = new SimpleBooleanProperty();
