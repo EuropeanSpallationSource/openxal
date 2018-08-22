@@ -79,10 +79,10 @@ public class SingularValueDecomposition implements java.io.Serializable {
         m = Arg.getRowDimension();
         n = Arg.getColumnDimension();
 
-        /* Apparently the failing cases are only a proper subset of (m<n), 
-	 so let's not throw error.  Correct fix to come later?
+        /* Apparently the failing cases are only a proper subset of (m<n),
+     so let's not throw error.  Correct fix to come later?
       if (m<n) {
-	  throw new IllegalArgumentException("Jama SVD only works for m >= n"); }
+      throw new IllegalArgumentException("Jama SVD only works for m >= n"); }
          */
         int nu = Math.min(m, n);
         s = new double[Math.min(m + 1, n)];

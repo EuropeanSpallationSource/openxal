@@ -78,6 +78,14 @@ public class Timestamp implements Comparable<Timestamp> {
     public long getTime() {
         return ( _timestamp.multiply(THOUSAND) ).longValue();        
     }
+
+    /**
+     *Get the timestamp relative to the Java epoch.
+     * @return The full time since Java epoch
+     */
+    public BigDecimal toBigDecimal() {
+        return _timestamp;
+    }
 	
 	
 	/**

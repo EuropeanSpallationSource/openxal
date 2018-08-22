@@ -416,7 +416,7 @@ public class TrajectoryArray {
         for (int k = 0; k < bpmNames.length; k += 1) {
             listBPMname.add(bpmNames[k]);
         }
-        
+
         DataAdaptor XData = trajData.childAdaptor("Horizontal");
         posX = XData.doubleArray("data");
         DataAdaptor YData = trajData.childAdaptor("Vertical");
@@ -456,7 +456,7 @@ public class TrajectoryArray {
         for (int k = 0; k < bpmNames.length; k += 1) {
             listBPMname.add(bpmNames[k]);
         }
-        
+
         DataAdaptor XData = trajData.childAdaptor("Horizontal");
         posX = XData.doubleArray("data");
         DataAdaptor YData = trajData.childAdaptor("Vertical");
@@ -591,7 +591,7 @@ public class TrajectoryArray {
     }
 
     public void saveTrajectory(Accelerator accl, URL filename, DataAdaptor da) throws ConnectionException, GetException {
-        //Saves the data into the file and set as reference        
+        //Saves the data into the file and set as reference
         DataAdaptor trajectoryAdaptor = da.createChild("ReferenceTrajectory");
         trajectoryAdaptor.setValue("title", filename.getFile());
         List<BPM> BPMList = accl.getAllNodesOfType("BPM");
@@ -638,7 +638,7 @@ public class TrajectoryArray {
     }
 
     public void saveTrajectory(Accelerator accl, File filename, DataAdaptor da) throws ConnectionException, GetException {
-        //Saves the data into the file and set as reference        
+        //Saves the data into the file and set as reference
         DataAdaptor trajectoryAdaptor = da.createChild("ReferenceTrajectory");
         trajectoryAdaptor.setValue("title", filename.getAbsolutePath());
         List<BPM> BPMList = accl.getAllNodesOfType("BPM");

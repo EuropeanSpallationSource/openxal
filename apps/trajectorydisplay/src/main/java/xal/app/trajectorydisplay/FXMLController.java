@@ -84,14 +84,14 @@ public class FXMLController implements Initializable {
     //Creates the Accelerator
     //public xal.smf.Accelerator accl = xal.smf.data.XMLDataManager.acceleratorWithPath("/Users/nataliamilas/projects/openxal/site/optics/design/main.xal");
     //public Accelerator accl = XMLDataManager.loadDefaultAccelerator();
-   
-    
+
+
     //Trajectory to be displayed on the plot
     public TrajectoryArray DisplayTraj = new TrajectoryArray();
-    
-    // holds info about reference trajectories  
-    private final ObservableList<URL> refTrajData = FXCollections.observableArrayList();     
-    
+
+    // holds info about reference trajectories
+    private final ObservableList<URL> refTrajData = FXCollections.observableArrayList();
+
     //set plot update timer
     private StatusAnimationTimer timerPlotUpdate;
 
@@ -121,7 +121,7 @@ public class FXMLController implements Initializable {
     @FXML
     private Label labelBPM;
     @FXML
-    private AnchorPane anchorPaneChart;    
+    private AnchorPane anchorPaneChart;
     @FXML
     private AnchorPane mainAnchor1;
     @FXML
@@ -130,9 +130,9 @@ public class FXMLController implements Initializable {
     private Label labelTrajectoryStatus;
 
     @Override
-    public void initialize(URL url, ResourceBundle rb) {                    
-                
-        //Populate the Accelerator Menu with the sequences of the machine      
+    public void initialize(URL url, ResourceBundle rb) {
+
+        //Populate the Accelerator Menu with the sequences of the machine
         //Accelerator accl = MainFunctions.mainDocument.getAccelerator();
 
         //Listener for Accelerator changes
@@ -143,14 +143,14 @@ public class FXMLController implements Initializable {
                 timerisRunning = timerPlotUpdate.isRunning();
                 timerPlotUpdate.stop();
             }
-        });                 
+        });
 
         //TrajectoryMenu
         MainFunctions.mainDocument.saveTrajectoryFile.addListener((ChangeListener) (ObservableValue o, Object oldVal, Object newVal) -> {
-                    
+
             URL urlselectedfile = null;
-            File selectedFile = new File(MainFunctions.mainDocument.saveTrajectoryFile.getValue());            
-            
+            File selectedFile = new File(MainFunctions.mainDocument.saveTrajectoryFile.getValue());
+
             try {
                 urlselectedfile = selectedFile.toURI().toURL();
             } catch (MalformedURLException ex) {
@@ -168,13 +168,13 @@ public class FXMLController implements Initializable {
                     Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-            
+
         });
-        
+
         MainFunctions.mainDocument.refTrajectoryFile.addListener((ChangeListener) (ObservableValue o, Object oldVal, Object newVal) -> {
-            
-            File selectedFile = new File(MainFunctions.mainDocument.refTrajectoryFile.getValue());    
-            
+
+            File selectedFile = new File(MainFunctions.mainDocument.refTrajectoryFile.getValue());
+
             if (selectedFile.exists()) {
             try {
                 refTrajData.add(selectedFile.toURI().toURL());
@@ -183,21 +183,21 @@ public class FXMLController implements Initializable {
                 Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-            
+
         });
-        
-        MainFunctions.mainDocument.displayTrajectoryFile.addListener((ChangeListener) (ObservableValue o, Object oldVal, Object newVal) -> {                           
-                
+
+        MainFunctions.mainDocument.displayTrajectoryFile.addListener((ChangeListener) (ObservableValue o, Object oldVal, Object newVal) -> {
+
                 //turn off plot update timer
                 if (timerPlotUpdate != null) {
                     timerPlotUpdate.stop();
                 }
-                
+
                 File selectedFile = new File(MainFunctions.mainDocument.displayTrajectoryFile.getValue());
-                
+
                 String getSeqName = MainFunctions.mainDocument.getSequence();
                 Accelerator accelerator = MainFunctions.mainDocument.getAccelerator();
-                
+
                 if (selectedFile.exists()) {
                     labelTrajectoryStatus.setText("Trajectory : " + selectedFile.getPath());
                     if (getSeqName != null) {
@@ -213,11 +213,11 @@ public class FXMLController implements Initializable {
                         updateDataset(DisplayTraj);
                         anchorPaneChart.setDisable(false);
                     }
-                }            
+                }
         });
-        
+
         MainFunctions.mainDocument.liveTrajectory.addListener((ChangeListener) (ObservableValue o, Object oldVal, Object newVal) -> {
-            
+
             if(((SimpleBooleanProperty) newVal).getValue()){
                 // Initializes bpm channels
                 DisplayTraj.initBPMs(MainFunctions.mainDocument.getAccelerator());
@@ -252,13 +252,13 @@ public class FXMLController implements Initializable {
                     alert.setHeaderText("Minimum number of connected channels not reached!");
                     alert.setContentText("Most of the BPM channels are disconected. Display of LIVE trajectory not possible ");
 
-                    alert.showAndWait();            
+                    alert.showAndWait();
                 }
             }
-        
-        
+
+
         });
-        
+
         //Load reference and zero trajectories
         comboBoxRefTrajectory.setCellFactory((ListView<URL> fileName) -> {
             ListCell cell = new ListCell<URL>() {
@@ -274,7 +274,7 @@ public class FXMLController implements Initializable {
             };
             return cell;
         });
-        
+
         ///Load reference and zero trajectories
         refTrajData.add(this.getClass().getResource("/zerotrajectory/ZeroTrajectory.xml"));
 
@@ -485,7 +485,7 @@ public class FXMLController implements Initializable {
         });
 
         MainFunctions.mainDocument.getSequenceProperty().addListener((ChangeListener) (ObservableValue o, Object oldVal, Object newVal) -> {
-            
+
                 if (MainFunctions.mainDocument.getSequence() != null) {
                     //turn off plot update timer
                     if (timerPlotUpdate != null) {
@@ -513,9 +513,9 @@ public class FXMLController implements Initializable {
                     combinedXYplot.getDomainAxis().setAutoRange(true);
 
                     String getSeqName = MainFunctions.mainDocument.getSequence();
-                    
+
 //turn on timer
-                    if (MainFunctions.mainDocument.liveTrajectory.getValue()) {                        
+                    if (MainFunctions.mainDocument.liveTrajectory.getValue()) {
                         timerPlotUpdate.start();
                     } else if (labelTrajectoryStatus.getText().length() > 13) {
                         File selectedFile = new File(labelTrajectoryStatus.getText().substring(13));
@@ -534,12 +534,12 @@ public class FXMLController implements Initializable {
                     }
 
                 }
-            
+
         });
 
-        anchorPaneChart.setDisable(true);                
+        anchorPaneChart.setDisable(true);
 
-    }   
+    }
 
     private static XYPlot createPlot(XYDataset dataset, String yLabel, int chartSeries) {
 
@@ -594,7 +594,7 @@ public class FXMLController implements Initializable {
         return plot;
 
     }
-    
+
     public void updateDataset(TrajectoryArray Traj) {
 
         horizontalSeries.clear();

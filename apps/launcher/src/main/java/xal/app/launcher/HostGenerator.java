@@ -11,9 +11,9 @@ package xal.app.launcher;
 
 /** interface for host generators */
 public interface HostGenerator {
-	/** get the next host */
-	public String nextHost();
-	
-	/** get the type of the host generator */
-	public String getType();
+    /** get the next host */
+    public String nextHost();
+
+    /** get the type of the host generator */
+    public String getType();
 }

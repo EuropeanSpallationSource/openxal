@@ -142,7 +142,7 @@ public class CorrectionElementSelectionController implements Initializable {
         seqItem.remove(accl.getSequence("LEBT"));
         seqItem.remove(accl.getSequence("RFQ"));
 
-        //seqItem.forEach(Seq -> {   
+        //seqItem.forEach(Seq -> {
         //    if(Seq.toString().equals("LEBT")){
         //        seqItem.remove(Seq);
         //    }

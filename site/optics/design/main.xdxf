@@ -9,6 +9,17 @@
         <sequence id="HEBT"/>
         <sequence id="A2T"/>
     </comboseq>
+    <comboseq id="NC">
+        <sequence id="LEBT"/>
+        <sequence id="RFQ"/>
+        <sequence id="MEBT"/>
+        <sequence id="DTL"/>
+    </comboseq>
+    <comboseq id="SC">
+        <sequence id="SPK"/>
+        <sequence id="MBL"/>
+        <sequence id="HBL"/>
+    </comboseq>
     <sequence id="LEBT" len="2.505899999999999" pos="0.0" s="0.0">
         <node id="FM1:SFM" len="0.5454" pos="0.6081000000000001" s="0.6081000000000001" type="SFM">
             <attributes>

@@ -101,7 +101,7 @@ public class VAServer {
         registerNodeChannels( BPM.s_strType );
         registerNodeChannels( BLM.s_strType );
         registerNodeChannels( Solenoid.s_strType );
-        
+
         //2018-04-05 Natalia Milas - added the creation of the channel for the elements
         registerNodeChannels( EMU.s_strType );
         registerNodeChannels( Chopper.s_strType );
