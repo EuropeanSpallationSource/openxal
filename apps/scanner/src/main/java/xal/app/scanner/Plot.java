@@ -138,8 +138,10 @@ public class Plot extends SplitPane implements Initializable {
     public void plotMeasurement() {
         List<Channel> _pvR = new ArrayList<>();
         List<Channel> _pvW = new ArrayList<>();
-        MainFunctions.mainDocument.pvReadbacks.forEach(cWrap -> _pvR.add(cWrap.getChannel()));
-        MainFunctions.mainDocument.pvWriteables.forEach(cWrap -> _pvW.add(cWrap.getChannel()));
+        MainFunctions.mainDocument.pvChannels.forEach(cWrap -> {
+            if (cWrap.getIsRead()) _pvR.add(cWrap.getChannel());
+            if (cWrap.getIsScanned()) _pvW.add(cWrap.getChannel());
+        });
         plotMeasurement(MainFunctions.mainDocument.currentMeasurement,_pvW,_pvR);
     }
 

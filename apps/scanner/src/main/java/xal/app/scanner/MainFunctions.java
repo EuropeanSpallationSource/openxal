@@ -297,15 +297,6 @@ public class MainFunctions {
         return mainDocument.currentMeasurement;
     }
 
-    /**
-     * Check if we have selected enough parameters to do a scan
-     *
-     * @return true if we have at least one parameter to scan and one to read
-     */
-    static boolean checkSufficientParams() {
-        return !(mainDocument.pvReadbacks.isEmpty() || mainDocument.pvWriteables.isEmpty());
-    }
-
     static public void triggerPause() {
         // flip the pause state true/false
         if (pauseTask.get()) {
