@@ -334,7 +334,7 @@ public class ScannerDocument extends XalFxDocument {
                     if (i>=pvW.size()) {
                         if (j!=0)
                             tstamps_str=tstamps_str.concat(", ");
-                        tstamps_str=tstamps_str.concat(tstamps[j][i-pvW.size()].toBigDecimal().toString());
+                        tstamps_str=tstamps_str.concat(tstamps[j][i-pvW.size()].getFullSeconds().toString());
                     }
                     channelAdaptor.setValue("data", data);
                 }
@@ -385,7 +385,7 @@ public class ScannerDocument extends XalFxDocument {
         for(Timestamp tstamp : currentTimestamps[nmeas]) {
             if (tstamps_str!="")
                 tstamps_str=tstamps_str.concat(", ");
-            tstamps_str=tstamps_str.concat(tstamp.toBigDecimal().toString());
+            tstamps_str=tstamps_str.concat(tstamp.getFullSeconds().toString());
         }
         DataAdaptor stepAdaptor = currentMeasAdaptor.createChild("step");
         stepAdaptor.setValue("values", currentMeasurement[nmeas]);
