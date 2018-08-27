@@ -98,7 +98,7 @@ public class FXMLController implements Initializable {
     @FXML
     private MenuItem menuItemPlot;
 
-    //radio buttons & groups   
+    //radio buttons & groups
     @FXML
     private ToggleGroup groupCorrection;
     @FXML
@@ -162,7 +162,7 @@ public class FXMLController implements Initializable {
     public TrajectoryArray DisplayTraj = new TrajectoryArray();//Trajectory to be displayed on the plot
     public ObservableList<CorrectionBlock> CorrectionElements = FXCollections.observableArrayList();  //List of defined Blocks
     public ObservableList<CorrectionBlock> CorrectionElementsSelected = FXCollections.observableArrayList();  //List selected blocks (can be used in correction)
-    private final ObservableList<URL> refTrajData = FXCollections.observableArrayList();// holds info about reference trajectories   
+    private final ObservableList<URL> refTrajData = FXCollections.observableArrayList();// holds info about reference trajectories
     private double trajectoryLimit = 0.5;
     private double steererLimit = 0.002;
     private boolean abortFlag = false;
@@ -189,14 +189,14 @@ public class FXMLController implements Initializable {
         //initialize and connect BPMs
         DisplayTraj.initBPMs(accl);
 
-        //initalize horizontal correctors 
+        //initalize horizontal correctors
         accl.getAllNodesOfType("DCH").parallelStream().forEach(hc -> {
             if (!(hc.getChannel("fieldSet").isConnected())) {
                 hc.getChannel("fieldSet").connectAndWait(1.0);
             }
         });
 
-        //initalize vertical correctors 
+        //initalize vertical correctors
         accl.getAllNodesOfType("DCV").parallelStream().forEach(hv -> {
             if (!(hv.getChannel("fieldSet").isConnected())) {
                 hv.getChannel("fieldSet").connectAndWait(1.0);
@@ -271,19 +271,19 @@ public class FXMLController implements Initializable {
         //listViewBlockSelection.setOnMouseClicked(new EventHandler<MouseEvent>() {
         //    @Override
         //    public void handle(MouseEvent event) {
-        //        CorrectionBlock item = listViewBlockSelection.getSelectionModel().getSelectedItem();                
+        //        CorrectionBlock item = listViewBlockSelection.getSelectionModel().getSelectedItem();
         //        if (item.isOkSVD()){
         //           tabSVD.setGraphic(new ImageView(this.getClass().getResource("/pictures/ok.png").toString()));
         //        } else {
-        //           tabSVD.setGraphic(new ImageView(this.getClass().getResource("/pictures/error.png").toString())); 
+        //           tabSVD.setGraphic(new ImageView(this.getClass().getResource("/pictures/error.png").toString()));
         //        }
         //        if (item.isOk1to1()){
         //           tab1to1.setGraphic(new ImageView(this.getClass().getResource("/pictures/ok.png").toString()));
         //        } else {
-        //           tab1to1.setGraphic(new ImageView(this.getClass().getResource("/pictures/error.png").toString())); 
+        //           tab1to1.setGraphic(new ImageView(this.getClass().getResource("/pictures/error.png").toString()));
         //        }
-        //    }               
-        //});      
+        //    }
+        //});
         listViewBlockSelection.setCellFactory(lv -> new ListCell<CorrectionBlock>() {
             @Override
             protected void updateItem(CorrectionBlock item, boolean empty) {
@@ -605,9 +605,9 @@ public class FXMLController implements Initializable {
         ;
 
         };
- 
+
         Thread calibrate = new Thread(task);
-        calibrate.setDaemon(true); // thread will not prevent application shutdown  
+        calibrate.setDaemon(true); // thread will not prevent application shutdown
         if (result.isPresent()) {
             labelProgressCorrection.setVisible(true);
             progressBarCorrection.setVisible(true);
@@ -689,13 +689,13 @@ public class FXMLController implements Initializable {
         ;
 
         };
- 
+
         labelProgressCorrection.setVisible(true);
         progressBarCorrection.setVisible(true);
         labelProgressCorrection.setText("Correcting Trajectory");
         progressBarCorrection.progressProperty().bind(task.progressProperty());
         Thread correct = new Thread(task);
-        correct.setDaemon(true); // thread will not prevent application shutdown  
+        correct.setDaemon(true); // thread will not prevent application shutdown
         correct.start();
 
     }
@@ -783,7 +783,7 @@ public class FXMLController implements Initializable {
             };
 
             Thread calibrate = new Thread(task);
-            calibrate.setDaemon(true); // thread will not prevent application shutdown  
+            calibrate.setDaemon(true); // thread will not prevent application shutdown
             progressBarCorrection.progressProperty().bind(task.progressProperty());
             if (result.isPresent()) {
                 labelProgressCorrection.setVisible(true);
@@ -1322,7 +1322,7 @@ public class FXMLController implements Initializable {
             };
 
             Thread calibrate = new Thread(task);
-            calibrate.setDaemon(true); // thread will not prevent application shutdown  
+            calibrate.setDaemon(true); // thread will not prevent application shutdown
             progressBarCorrection.progressProperty().bind(task.progressProperty());
             if (result.isPresent()) {
                 labelProgressCorrection.setVisible(true);
@@ -1413,9 +1413,9 @@ public class FXMLController implements Initializable {
         ;
 
         };
- 
+
         Thread calibrate = new Thread(task);
-        calibrate.setDaemon(true); // thread will not prevent application shutdown  
+        calibrate.setDaemon(true); // thread will not prevent application shutdown
         if (result.isPresent()) {
             labelProgressCorrection.setVisible(true);
             progressBarCorrection.setVisible(true);

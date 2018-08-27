@@ -134,7 +134,6 @@ public class FXMLController implements Initializable {
                 
         //Populate the Accelerator Menu with the sequences of the machine      
         //Accelerator accl = MainFunctions.mainDocument.getAccelerator();
-
         //Listener for Accelerator changes
         MainFunctions.mainDocument.getAcceleratorProperty().addChangeListener((ChangeListener) (ObservableValue o, Object oldVal, Object newVal) -> {
             //turn off plot update timer
@@ -537,9 +536,9 @@ public class FXMLController implements Initializable {
             
         });
 
-        anchorPaneChart.setDisable(true);                
+        anchorPaneChart.setDisable(true);
 
-    }   
+    }
 
     private static XYPlot createPlot(XYDataset dataset, String yLabel, int chartSeries) {
 

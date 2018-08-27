@@ -100,8 +100,8 @@ public class RunSimulationService {
 
     }
 
-    ;   
-    
+    ;
+
     public HashMap<AcceleratorNode, R3> runTwissSimulation(List<AcceleratorNode> objList) throws InstantiationException, ModelException {
 
         EnvelopeTracker envelopeTracker = AlgorithmFactory.createEnvelopeTracker(sequence);
@@ -128,7 +128,7 @@ public class RunSimulationService {
         List<Double> phi_x = new ArrayList<>();
         List<Double> phi_y = new ArrayList<>();
 
-        //append position zero        
+        //append position zero
         double beta_v = stateElement.get(0).getBeta();
         double betax1 = stateElement.get(0).getCovarianceMatrix().computeTwiss()[0].getBeta();
         double betay1 = stateElement.get(0).getCovarianceMatrix().computeTwiss()[1].getBeta();
@@ -190,7 +190,7 @@ public class RunSimulationService {
             i_0_y.add(phi_y.size());
         }
 
-        // Divide data into half periods 
+        // Divide data into half periods
         List<List<Double>> x_180 = new ArrayList<>();
         List<List<Double>> y_180 = new ArrayList<>();
         List<Double> maxx_180 = new ArrayList<>();

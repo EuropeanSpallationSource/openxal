@@ -68,11 +68,11 @@ import xal.tools.xml.XmlDataAdaptor;
 
 /**
  * The class handling the LEBT trajectory prediction.
- * 
+ *
  * @author sofiaolsson
  */
 public class FXMLController implements Initializable {
-     
+
     //defining series
     private XYChart.Series seriesX;
     private XYChart.Series seriesY;
@@ -90,7 +90,7 @@ public class FXMLController implements Initializable {
     private XYChart.Series[] seriesSigmaOffsetR;
     private XYChart.Series[] seriesSurroundings;
     private Object range;
-    
+
     //defining simulation
     private SimulationRunner newRun;
     private double[][] surroundings;
@@ -99,7 +99,7 @@ public class FXMLController implements Initializable {
 
     /** model sync period in milliseconds */
     private long _modelSyncPeriod;
-    
+
     //defining data
     private ArrayList<Double>[] sigmaX;
     private ArrayList<Double>[] sigmaY;
@@ -112,7 +112,7 @@ public class FXMLController implements Initializable {
     private ArrayList posY;
     private ArrayList posR;
     private ArrayList posPhi;
-    
+
     //input beam parameters
     //private double[] initPos;
     private double beamCurrent;
@@ -120,18 +120,18 @@ public class FXMLController implements Initializable {
     //private double[] TwissY;
     private double spaceChargeComp;
     private double spaceChargeCompElectrode;
-    
+
     //Map the live machine values
     private HashMap<Channel,Label> displayValues;
     private HashMap<Channel,TextField> setValues;
     private BatchGetValueRequest request;
-    
+
     @FXML private LineChart<Double, Double> plot1;
     @FXML private NumberAxis yAxis;
     @FXML private NumberAxis xAxis;
     @FXML private LineChart<Double, Double> plot2;
     @FXML private NumberAxis yAxis1;
-    @FXML private NumberAxis xAxis1;  
+    @FXML private NumberAxis xAxis1;
     @FXML private TextField textField_x;
     @FXML private TextField textField_xp;
     @FXML private TextField textField_y;
@@ -141,9 +141,9 @@ public class FXMLController implements Initializable {
     @FXML private TextField textField_alphax;
     @FXML private TextField textField_emitty;
     @FXML private TextField textField_betay;
-    @FXML private TextField textField_alphay;    
+    @FXML private TextField textField_alphay;
     @FXML private TextField textField_scc;
-    @FXML private TextField textField_bc;       
+    @FXML private TextField textField_bc;
     @FXML private RadioButton radioButtonCart;
     @FXML private RadioButton radioButtonCyl;
     private ToggleGroup coordinateGroup;
@@ -160,7 +160,7 @@ public class FXMLController implements Initializable {
     @FXML private Label label_coil2RB;
     @FXML private Label label_coil3RB;
     @FXML private TextField textField_magnetron;
-    @FXML private Label label_magnetronRB;    
+    @FXML private Label label_magnetronRB;
     @FXML private TextField textField_H2flow;
     @FXML private Label label_H2flowRB;
     @FXML private TextField textField_highVoltage;
@@ -211,15 +211,15 @@ public class FXMLController implements Initializable {
     @FXML private TextField textField_chopperLength;
     @FXML private Label label_chopperLengthRB;
     @FXML private TextField textField_N2flow;
-    @FXML private Label label_N2flowRB;    
+    @FXML private Label label_N2flowRB;
     @FXML private ComboBox<InputParameters> comboBox_inputSimul;
     @FXML
     private Circle chopperStatus;
 
-             
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        
+
         //Check if the accelerator file contains the LEBT and Ion Source sequences
         if(MainFunctions.mainDocument.getAccelerator().findSequence("LEBT")==null || MainFunctions.mainDocument.getAccelerator().findSequence("ISRC")==null){
              Alert alert = new Alert(AlertType.ERROR);
@@ -230,32 +230,32 @@ public class FXMLController implements Initializable {
             Logger.getLogger(FXMLController.class.getName()).log(Level.FINER, "Accelerator file has no LEBT and/or Ion Source sequence.");
             System.exit(0);
         }
-        
+
         // timer to synchronize readbacks with setpoints as well as the online model
         MODEL_SYNC_TIMER = DispatchTimer.getCoalescingInstance( DispatchQueue.createSerialQueue( "" ), getOnlineModelSynchronizer() );
 
         // set the default model sync period to 1 second
         _modelSyncPeriod = 1000;
-        
-        
+
+
         //initializing toggle groups
         coordinateGroup = new ToggleGroup();
         offsetGroup = new ToggleGroup();
-        
+
         radioButtonCart.setToggleGroup(coordinateGroup);
         radioButtonCart.setSelected(true);
         radioButtonCyl.setToggleGroup(coordinateGroup);
-        
+
         radioButtonOffsetOff.setToggleGroup(offsetGroup);
         radioButtonOffsetOn.setToggleGroup(offsetGroup);
         radioButtonOffsetOff.setSelected(true);
-                
+
         try {
             surroundings = readVacuumChamber();
         } catch (FileNotFoundException ex) {
             Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-        }               
-        
+        }
+
         //initializing series
         seriesX = new XYChart.Series();
         seriesY = new XYChart.Series();
@@ -268,19 +268,19 @@ public class FXMLController implements Initializable {
         seriesSigmaOffsetY = new XYChart.Series[2];
         seriesSigmaOffsetR = new XYChart.Series[2];
         seriesSurroundings = new XYChart.Series[2];
-        
+
         seriesNPMpos = new XYChart.Series[2];
         seriesNPMsigma = new XYChart.Series[2];
         seriesNPMposCyl = new XYChart.Series[2];
         seriesNPMsigmaCyl = new XYChart.Series();
-        
+
 
         seriesX.setName("x");
         seriesY.setName("y");
         seriesR.setName("r");
         seriesPhi.setName("φ");
-               
-        
+
+
         for(int i = 0; i<seriesSurroundings.length;i++){
             seriesSigmaX[i] = new XYChart.Series();
             seriesSigmaY[i] = new XYChart.Series();
@@ -292,8 +292,8 @@ public class FXMLController implements Initializable {
             seriesNPMpos[i] = new XYChart.Series();
             seriesNPMsigma[i] = new XYChart.Series();
             seriesNPMposCyl[i] = new XYChart.Series();
-        }                             
-        
+        }
+
         seriesSigmaX[0].setName("σx");
         seriesSigmaY[0].setName("σy");
         seriesSigmaR[0].setName("σr");
@@ -306,42 +306,42 @@ public class FXMLController implements Initializable {
         seriesSigmaOffsetR[1].setName("σr");
         seriesSigmaOffsetX[1].setName("σx");
         seriesSigmaOffsetY[1].setName("σy");
-        
+
         seriesNPMpos[0].setName("NPM_x");
-        seriesNPMpos[1].setName("NPM_y");        
+        seriesNPMpos[1].setName("NPM_y");
         seriesNPMsigma[0].setName("NPM_σx");
-        seriesNPMsigma[1].setName("NPM_σy"); 
+        seriesNPMsigma[1].setName("NPM_σy");
         seriesNPMposCyl[0].setName("NPM_r");
-        seriesNPMposCyl[1].setName("NPM_φ");        
+        seriesNPMposCyl[1].setName("NPM_φ");
         seriesNPMsigmaCyl.setName("NPM_σr");
-        
+
        //Showing surroundings
         for (int i = 0; i < surroundings[0].length ; i++) {
             seriesSurroundings[0].getData().add(new XYChart.Data(surroundings[0][i], surroundings[1][i]*1000));
             seriesSurroundings[1].getData().add(new XYChart.Data(surroundings[0][i], -surroundings[1][i]*1000));
-        }       
-        
-        //Add surroundings        
+        }
+
+        //Add surroundings
         plot1.setAnimated(false);
-        plot2.setAnimated(false);              
+        plot2.setAnimated(false);
         plot2.getData().add(seriesSurroundings[0]);
-        plot2.getData().add(seriesSurroundings[1]);  
+        plot2.getData().add(seriesSurroundings[1]);
         plot1.getStylesheets().add(this.getClass().getResource("/styles/TrajectoryPlot.css").toExternalForm());
-        plot2.getStylesheets().add(this.getClass().getResource("/styles/EnvelopePlot.css").toExternalForm());                       
-        
+        plot2.getStylesheets().add(this.getClass().getResource("/styles/EnvelopePlot.css").toExternalForm());
+
          //remove surrounding legend
         Legend legend = (Legend)plot2.lookup(".chart-legend");
         legend.getItems().remove(0, 2);
-        
+
         //xAxis.setUpperBound(xAxis1.getUpperBound());
-        //xAxis.setLowerBound(xAxis1.getLowerBound());                
-        
-         
+        //xAxis.setLowerBound(xAxis1.getLowerBound());
+
+
         scale = 1;
         //initPos = new double[4];
         //TwissX = new double[3];
         //TwissY = new double[3];
-        
+
         //Set textField formatting
         StringConverter<Double> formatter2d;
         StringConverter<Double> formatter3d;
@@ -357,9 +357,9 @@ public class FXMLController implements Initializable {
             public String toString(Double object)
             {
                if (object == null)
-                  return "0.0000";   
+                  return "0.0000";
                return String.format("%.4f",object);
-            }            
+            }
         };
         formatter3d = new StringConverter<Double>(){
             @Override
@@ -374,7 +374,7 @@ public class FXMLController implements Initializable {
                if (object == null)
                   return "0.0000";
                return String.format("%.3f",object);
-            }            
+            }
         };
         formatter2d = new StringConverter<Double>(){
             @Override
@@ -389,11 +389,11 @@ public class FXMLController implements Initializable {
                if (object == null)
                   return "0.0000";
                return String.format("%.2f",object);
-            }            
+            }
         };
-       
-                         
-        
+
+
+
         //Ion Source
         textField_magnetron.setTextFormatter(new TextFormatter<Double>(formatter3d));
         textField_coil1.setTextFormatter(new TextFormatter<Double>(formatter3d));
@@ -401,7 +401,7 @@ public class FXMLController implements Initializable {
         textField_coil3.setTextFormatter(new TextFormatter<Double>(formatter3d));
         textField_H2flow.setTextFormatter(new TextFormatter<Double>(formatter3d));
         textField_highVoltage.setTextFormatter(new TextFormatter<Double>(formatter3d));
-        
+
         //LEBT
         textField_sol1field.setTextFormatter(new TextFormatter<Double>(formatter3d));
         textField_sol2field.setTextFormatter(new TextFormatter<Double>(formatter3d));
@@ -414,7 +414,7 @@ public class FXMLController implements Initializable {
         textField_irisY.setTextFormatter(new TextFormatter<Double>(formatter3d));
         textField_chopperDelay.setTextFormatter(new TextFormatter<Double>(formatter3d));
         textField_chopperLength.setTextFormatter(new TextFormatter<Double>(formatter3d));
-        
+
         //input values
         textField_x.setTextFormatter(new TextFormatter<Double>(formatter4d));
         textField_xp.setTextFormatter(new TextFormatter<Double>(formatter4d));
@@ -428,25 +428,25 @@ public class FXMLController implements Initializable {
         textField_emitty.setTextFormatter(new TextFormatter<Double>(formatter3d));
         textField_bc.setTextFormatter(new TextFormatter<Double>(formatter3d));
         textField_scc.setTextFormatter(new TextFormatter<Double>(formatter2d));
-        textField_sccelectrode.setTextFormatter(new TextFormatter<Double>(formatter2d));    
-        textFieldSigmaScale.setTextFormatter(new TextFormatter<Double>(formatter2d));    
-        
-        textFieldSigmaScale.focusedProperty().addListener((obs, oldVal, newVal) ->{                
+        textField_sccelectrode.setTextFormatter(new TextFormatter<Double>(formatter2d));
+        textFieldSigmaScale.setTextFormatter(new TextFormatter<Double>(formatter2d));
+
+        textFieldSigmaScale.focusedProperty().addListener((obs, oldVal, newVal) ->{
                 if(!newVal){
                     try{
                         scale = Double.parseDouble(textFieldSigmaScale.getText().trim());
                     }
                     catch(NumberFormatException e){
                         scale = 1.0;
-                    } 
+                    }
                 }
-            });                                               
-        
+            });
+
         //Map the channels to the label or textfield it belongs
         displayValues = new HashMap<Channel,Label>();
-        setValues = new HashMap<Channel,TextField>();       
-        Accelerator accl = MainFunctions.mainDocument.getAccelerator();              
-               
+        setValues = new HashMap<Channel,TextField>();
+        Accelerator accl = MainFunctions.mainDocument.getAccelerator();
+
         //Ion Source
         AcceleratorSeq sequence = accl.getSequence("ISRC");
         AcceleratorNode Magnetron = sequence.getNodesOfType("ISM").get(0);
@@ -666,7 +666,7 @@ public class FXMLController implements Initializable {
                 }
             }
         });
-        
+
         AcceleratorNode IrisEquip = sequence.getNodesOfType("IRIS").get(0);
         displayValues.put(IrisEquip.getChannel(Iris.APERTURE_RB_HANDLE),label_irisApertureRB);
         setValues.put(IrisEquip.getChannel(Iris.APERTURE_SET_HANDLE),textField_irisAperture);
@@ -684,8 +684,8 @@ public class FXMLController implements Initializable {
                 }
             }
         });
-        
-        
+
+
         displayValues.put(IrisEquip.getChannel(Iris.OFFSET_X_RB_HANDLE),label_irisXRB);
         setValues.put(IrisEquip.getChannel(Iris.OFFSET_X_SET_HANDLE),textField_irisX);
         textField_irisX.focusedProperty().addListener((obs, oldVal, newVal) ->{
@@ -702,7 +702,7 @@ public class FXMLController implements Initializable {
                 }
             }
         });
-        
+
         displayValues.put(IrisEquip.getChannel(Iris.OFFSET_Y_RB_HANDLE),label_irisYRB);
         setValues.put(IrisEquip.getChannel(Iris.OFFSET_Y_SET_HANDLE),textField_irisY);
         textField_irisY.focusedProperty().addListener((obs, oldVal, newVal) ->{
@@ -719,8 +719,8 @@ public class FXMLController implements Initializable {
                 }
             }
         });
-        
-        
+
+
         AcceleratorNode Chop = sequence.getNodesOfType("CHP").get(0);
         displayValues.put(Chop.getChannel(Chopper.DELAY_RB_HANDLE),label_chopperDelayRB);
         setValues.put(Chop.getChannel(Chopper.DELAY_SET_HANDLE),textField_chopperDelay);
@@ -741,7 +741,7 @@ public class FXMLController implements Initializable {
                     Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-        });  
+        });
         textField_chopperLength.focusedProperty().addListener((obs, oldVal, newVal) ->{
             if(!newVal){
                 try {
@@ -755,23 +755,23 @@ public class FXMLController implements Initializable {
                     Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-        });     
+        });
 
         AcceleratorNode Electrode = sequence.getNodesOfType("REP").get(0);
         displayValues.put(Electrode.getChannel(RepellerElectrode.STATUS_RB_HANDLE),null);
-               
+
         //define electrode properties
-        checkBox_chopper.setTooltip(new Tooltip("Turns Chopper On and OFF.")); 
-        checkBox_chopper.selectedProperty().addListener((obs, oldVal, newVal) ->{ 
+        checkBox_chopper.setTooltip(new Tooltip("Turns Chopper On and OFF."));
+        checkBox_chopper.selectedProperty().addListener((obs, oldVal, newVal) ->{
             if(newVal){
-                checkBox_chopper.setText("ON"); 
+                checkBox_chopper.setText("ON");
                 try {
                     Chop.getChannel(Chopper.STATUS_SET_HANDLE).putVal(1);
                 } catch (ConnectionException | PutException ex) {
                     Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             } else {
-                checkBox_chopper.setText("OFF");  
+                checkBox_chopper.setText("OFF");
                 try {
                     Chop.getChannel(Chopper.STATUS_SET_HANDLE).putVal(0);
                 } catch (ConnectionException | PutException ex) {
@@ -779,21 +779,21 @@ public class FXMLController implements Initializable {
                 }
             }
         });
-        
+
         //define electrode properties
         checkBox_electrode.setTooltip(new Tooltip("Turns RFQ reppeler electrode On and OFF in the simulation only."));
-        checkBox_electrode.selectedProperty().addListener((obs, oldVal, newVal) ->{ 
+        checkBox_electrode.selectedProperty().addListener((obs, oldVal, newVal) ->{
             if(newVal){
-                checkBox_electrode.setText("ON");                
+                checkBox_electrode.setText("ON");
                 textField_sccelectrode.setDisable(false);
                 textField_sccelectrode.setText(Double.toString(spaceChargeCompElectrode));
             } else {
-                checkBox_electrode.setText("OFF");                
+                checkBox_electrode.setText("OFF");
                 textField_sccelectrode.setDisable(true);
-                textField_sccelectrode.setText(Double.toString(spaceChargeComp));                
+                textField_sccelectrode.setText(Double.toString(spaceChargeComp));
             }
         });
-        
+
         //Disgnostics equipment
         AcceleratorNode FC = sequence.getNodeWithId("LEBT-010:PBI-FC-001");
         AcceleratorNode BCM = sequence.getNodeWithId("LEBT-010:PBI-BCM-001");
@@ -801,78 +801,78 @@ public class FXMLController implements Initializable {
         displayValues.put(FC.getChannel(CurrentMonitor.I_AVG_HANDLE),label_FC);
         displayValues.put(BCM.getChannel(CurrentMonitor.I_AVG_HANDLE),label_BCM);
         displayValues.put(DopplerElem.getChannel(Doppler.FRACTION_H_R_HANDLE),label_Doppler);
-        
+
         //Set scale text Field
         textFieldSigmaScale.setText(Double.toString(scale));
-        
+
         //Create listener for intial parameters
-        textField_x.focusedProperty().addListener((obs, oldVal, newVal) ->{                
+        textField_x.focusedProperty().addListener((obs, oldVal, newVal) ->{
                 if(!newVal){
                     try {
-                        comboBox_inputSimul.getSelectionModel().getSelectedItem().setX(Double.parseDouble(textField_x.getText().trim())*1e-3);        
+                        comboBox_inputSimul.getSelectionModel().getSelectedItem().setX(Double.parseDouble(textField_x.getText().trim())*1e-3);
                     } catch(NumberFormatException ex) {
                         textField_x.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getX()));
-                    }    
+                    }
                 }
             });
-        
-        textField_xp.focusedProperty().addListener((obs, oldVal, newVal) ->{                
+
+        textField_xp.focusedProperty().addListener((obs, oldVal, newVal) ->{
                 if(!newVal){
-                    try {                        
+                    try {
                         comboBox_inputSimul.getSelectionModel().getSelectedItem().setXP(Double.parseDouble(textField_xp.getText().trim())*1e-3);
                     } catch(NumberFormatException ex) {
                         textField_xp.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getXP()));
-                    }    
+                    }
                 }
             });
-        
-        textField_y.focusedProperty().addListener((obs, oldVal, newVal) ->{                
+
+        textField_y.focusedProperty().addListener((obs, oldVal, newVal) ->{
                 if(!newVal){
                     try {
                         comboBox_inputSimul.getSelectionModel().getSelectedItem().setY(Double.parseDouble(textField_y.getText().trim())*1e-3);
                     } catch(NumberFormatException ex) {
                         textField_y.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getY()));
-                    }    
+                    }
                 }
             });
-        
-        textField_yp.focusedProperty().addListener((obs, oldVal, newVal) ->{                
+
+        textField_yp.focusedProperty().addListener((obs, oldVal, newVal) ->{
                 if(!newVal){
                     try {
                         comboBox_inputSimul.getSelectionModel().getSelectedItem().setYP(Double.parseDouble(textField_yp.getText().trim())*1e-3);
                     } catch(NumberFormatException ex) {
                         textField_yp.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getYP()));
-                    }    
+                    }
                 }
             });
-        
-        textField_betax.focusedProperty().addListener((obs, oldVal, newVal) ->{                
+
+        textField_betax.focusedProperty().addListener((obs, oldVal, newVal) ->{
                 if(!newVal){
                     try {
                         double val = Double.parseDouble(textField_betax.getText().trim());
-                        if(val>=0){                            
+                        if(val>=0){
                             comboBox_inputSimul.getSelectionModel().getSelectedItem().setBETAX(val);
                         } else {
                             textField_betax.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getBETAX()));
                         }
                     } catch(NumberFormatException ex) {
                         textField_betax.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getBETAX()));
-                    }    
+                    }
                 }
             });
-        
-        textField_alphax.focusedProperty().addListener((obs, oldVal, newVal) ->{                
+
+        textField_alphax.focusedProperty().addListener((obs, oldVal, newVal) ->{
                 if(!newVal){
                     try {
-                        double val = Double.parseDouble(textField_alphax.getText().trim());                        
+                        double val = Double.parseDouble(textField_alphax.getText().trim());
                         comboBox_inputSimul.getSelectionModel().getSelectedItem().setALPHAX(val);
                     } catch(NumberFormatException ex) {
                         textField_alphax.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getALPHAX()));
-                    }    
+                    }
                 }
             });
-        
-        textField_emittx.focusedProperty().addListener((obs, oldVal, newVal) ->{                
+
+        textField_emittx.focusedProperty().addListener((obs, oldVal, newVal) ->{
                 if(!newVal){
                     try {
                         double val = Double.parseDouble(textField_emittx.getText().trim());
@@ -883,11 +883,11 @@ public class FXMLController implements Initializable {
                         }
                     } catch(NumberFormatException ex) {
                         textField_emittx.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getEMITTX()*1e6));
-                    }    
+                    }
                 }
             });
-        
-        textField_betay.focusedProperty().addListener((obs, oldVal, newVal) ->{                
+
+        textField_betay.focusedProperty().addListener((obs, oldVal, newVal) ->{
                 if(!newVal){
                     try {
                         double val = Double.parseDouble(textField_betay.getText().trim());
@@ -898,38 +898,38 @@ public class FXMLController implements Initializable {
                         }
                     } catch(NumberFormatException ex) {
                         textField_betay.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getBETAY()));
-                    }    
+                    }
                 }
             });
-        
-        textField_alphay.focusedProperty().addListener((obs, oldVal, newVal) ->{                
+
+        textField_alphay.focusedProperty().addListener((obs, oldVal, newVal) ->{
                 if(!newVal){
                     try {
-                        double val = Double.parseDouble(textField_alphay.getText().trim());                                                
+                        double val = Double.parseDouble(textField_alphay.getText().trim());
                         comboBox_inputSimul.getSelectionModel().getSelectedItem().setALPHAY(val);
                     } catch(NumberFormatException ex) {
                         textField_alphay.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getALPHAY()));
-                    }    
+                    }
                 }
             });
-        
-        textField_emitty.focusedProperty().addListener((obs, oldVal, newVal) ->{                
+
+        textField_emitty.focusedProperty().addListener((obs, oldVal, newVal) ->{
                 if(!newVal){
                     try {
                         double val = Double.parseDouble(textField_emitty.getText().trim());
-                        if(val>=0){                            
+                        if(val>=0){
                             comboBox_inputSimul.getSelectionModel().getSelectedItem().setEMITTY(val*1e-6);
                         } else {
                             textField_emitty.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getEMITTY()*1e6));
                         }
                     } catch(NumberFormatException ex) {
                         textField_emitty.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getEMITTY()*1e6));
-                    }    
+                    }
                 }
             });
-        
-        textField_bc.focusedProperty().addListener((obs, oldVal, newVal) ->{                
-                if(!newVal){                    
+
+        textField_bc.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                if(!newVal){
                     try {
                         double val = Double.parseDouble(textField_bc.getText().trim());
                         if(val>=0){
@@ -939,11 +939,11 @@ public class FXMLController implements Initializable {
                         }
                     } catch(NumberFormatException ex) {
                         textField_bc.setText(Double.toString(beamCurrent));
-                    }    
+                    }
                 }
             });
-        
-        textField_scc.focusedProperty().addListener((obs, oldVal, newVal) ->{                
+
+        textField_scc.focusedProperty().addListener((obs, oldVal, newVal) ->{
                 if(!newVal){
                     try {
                         double val = Double.parseDouble(textField_scc.getText().trim());
@@ -954,11 +954,11 @@ public class FXMLController implements Initializable {
                         }
                     } catch(NumberFormatException ex) {
                         textField_scc.setText(Double.toString(spaceChargeComp));
-                    }                    
+                    }
                 }
-            }); 
-        
-        textField_sccelectrode.focusedProperty().addListener((obs, oldVal, newVal) ->{                
+            });
+
+        textField_sccelectrode.focusedProperty().addListener((obs, oldVal, newVal) ->{
                 if(!newVal){
                     try {
                         double val = Double.parseDouble(textField_sccelectrode.getText().trim());
@@ -969,13 +969,13 @@ public class FXMLController implements Initializable {
                         }
                     } catch(NumberFormatException ex) {
                         textField_sccelectrode.setText(Double.toString(spaceChargeCompElectrode));
-                    }                    
+                    }
                 }
-            });  
-        
+            });
+
         yAxis1.setAutoRanging(true);
-        yAxis.setAutoRanging(true);                
-        
+        yAxis.setAutoRanging(true);
+
         //Creates a batch of channels to request when updating GUI
         List<Channel> channels = new ArrayList<>();
         displayValues.keySet().forEach(channel -> channels.add(channel));
@@ -983,7 +983,7 @@ public class FXMLController implements Initializable {
         //Add NPM channels
         List<NPM> npms = new ArrayList<>();
         List<EMU> emus = new ArrayList<>();
-        npms = MainFunctions.mainDocument.getAccelerator().getAllNodesOfType("NPM"); 
+        npms = MainFunctions.mainDocument.getAccelerator().getAllNodesOfType("NPM");
         npms.forEach(monitor->{
             channels.add(monitor.getChannel(NPM.X_AVG_HANDLE));
             channels.add(monitor.getChannel(NPM.Y_AVG_HANDLE));
@@ -996,7 +996,7 @@ public class FXMLController implements Initializable {
             channels.add(monitor.getChannel(NPM.BETA_X_TWISS_HANDLE));
             channels.add(monitor.getChannel(NPM.BETA_Y_TWISS_HANDLE));
         });
-        emus = MainFunctions.mainDocument.getAccelerator().getAllNodesOfType("EMU"); 
+        emus = MainFunctions.mainDocument.getAccelerator().getAllNodesOfType("EMU");
         emus.forEach(monitor->{
             channels.add(monitor.getChannel(EMU.EMITT_X_HANDLE));
             channels.add(monitor.getChannel(EMU.EMITT_Y_HANDLE));
@@ -1004,11 +1004,11 @@ public class FXMLController implements Initializable {
             channels.add(monitor.getChannel(EMU.ALPHA_Y_TWISS_HANDLE));
             channels.add(monitor.getChannel(EMU.BETA_X_TWISS_HANDLE));
             channels.add(monitor.getChannel(EMU.BETA_Y_TWISS_HANDLE));
-        });        
-        request = new BatchGetValueRequest( channels );        
-        request.submitAndWait(5.0);                
-        
-        //Initialize arrays                        
+        });
+        request = new BatchGetValueRequest( channels );
+        request.submitAndWait(5.0);
+
+        //Initialize arrays
         sigmaX = new ArrayList[2];
         sigmaY = new ArrayList[2];
         sigmaR = new ArrayList[2];
@@ -1020,7 +1020,7 @@ public class FXMLController implements Initializable {
         posR = new ArrayList<>();
         posPhi = new ArrayList<>();
         positions = new ArrayList<>();
-        
+
         for(int i = 0; i < sigmaR.length;i++){
             sigmaR[i] = new ArrayList<Double>();
             sigmaX[i] = new ArrayList<Double>();
@@ -1028,25 +1028,25 @@ public class FXMLController implements Initializable {
             sigmaOffsetR[i] = new ArrayList<Double>();
             sigmaOffsetX[i] = new ArrayList<Double>();
             sigmaOffsetY[i] = new ArrayList<Double>();
-        }                         
-        
-        MODEL_SYNC_TIMER.setEventHandler( getOnlineModelSynchronizer() );                    
-        
-        MainFunctions.mainDocument.getSequenceProperty().addListener((obs, oldVal, newVal) ->{ 
-            
-            if(!newVal.equals(null) && !newVal.matches("ISRC")){
+        }
+
+        MODEL_SYNC_TIMER.setEventHandler( getOnlineModelSynchronizer() );
+
+        MainFunctions.mainDocument.getSequenceProperty().addListener((obs, oldVal, newVal) ->{
+
+            if(newVal != null && !newVal.matches("ISRC")){
                 //get Sequence
-                String sequenceName = MainFunctions.mainDocument.getSequence();        
+                String sequenceName = MainFunctions.mainDocument.getSequence();
                 String Sequence = MainFunctions.mainDocument.getAccelerator().getSequences().toString();
                 String ComboSequence = MainFunctions.mainDocument.getAccelerator().getComboSequences().toString();
-                
+
                 //reset input values for Simulation
                 ObservableList<InputParameters> options = FXCollections.observableArrayList();
                 comboBox_inputSimul.getItems().clear();
-                
-                //initializing simulation                            
+
+                //initializing simulation
                 if (Sequence.contains(sequenceName)) {
-                    newRun = new SimulationRunner(MainFunctions.mainDocument.getAccelerator().getSequence(sequenceName),MainFunctions.mainDocument.getModel().get());                                                           
+                    newRun = new SimulationRunner(MainFunctions.mainDocument.getAccelerator().getSequence(sequenceName),MainFunctions.mainDocument.getModel().get());
                     options.add(new InputParameters(newRun.getProbe()));
                     MainFunctions.mainDocument.getAccelerator().getSequence(sequenceName).getAllNodesOfType("NPM").forEach(monitor -> options.add(new InputParameters(monitor)));
                     MainFunctions.mainDocument.getAccelerator().getSequence(sequenceName).getAllNodesOfType("EMU").forEach(monitor -> options.add(new InputParameters(monitor)));
@@ -1056,23 +1056,23 @@ public class FXMLController implements Initializable {
                     MainFunctions.mainDocument.getAccelerator().getComboSequence(sequenceName).getAllNodesOfType("NPM").forEach(monitor -> options.add(new InputParameters(monitor)));
                     MainFunctions.mainDocument.getAccelerator().getComboSequence(sequenceName).getAllNodesOfType("EMU").forEach(monitor -> options.add(new InputParameters(monitor)));
                 }
-                
+
                 comboBox_inputSimul.setItems(options);
-                comboBox_inputSimul.getSelectionModel().select(0);                
-                
+                comboBox_inputSimul.getSelectionModel().select(0);
+
                 //assigning initial parameters
-                getParameters();                                
-                
-            }                        
-            
+                getParameters();
+
+            }
+
             if(MODEL_SYNC_TIMER.isSuspended()){
                 MODEL_SYNC_TIMER.resume();
             } else {
                 MODEL_SYNC_TIMER.startNowWithInterval( _modelSyncPeriod, 0 );
             }
-            
-        }); 
-        
+
+        });
+
         //Set input parameter for Simulation
         comboBox_inputSimul.setCellFactory(listview -> {
             return new ListCell<InputParameters>() {
@@ -1081,26 +1081,26 @@ public class FXMLController implements Initializable {
                     super.updateItem(item, empty);
                     textProperty().unbind();
                     if (item != null) {
-                        setText(item.getName());                       
+                        setText(item.getName());
                     } else {
-                        setText(null);                                        
+                        setText(null);
                     }
                 }
             };
         }
         );
-        
-        comboBox_inputSimul.setButtonCell(new ListCell<InputParameters>() {  
+
+        comboBox_inputSimul.setButtonCell(new ListCell<InputParameters>() {
             {
                 itemProperty().addListener((obs, oldValue, newValue) -> update());
-                emptyProperty().addListener((obs, oldValue, newValue) -> update());                
+                emptyProperty().addListener((obs, oldValue, newValue) -> update());
             }
             private void update() {
                 if (isEmpty() || getItem() == null) {
                     setText(null);
                 } else {
                     setText(getItem().getName());
-                    getItem().updateValues();                    
+                    getItem().updateValues();
                     textField_x.setText(String.format("%.4f",getItem().getX()*1e03));
                     textField_xp.setText(String.format("%.4f",getItem().getXP()*1e03));
                     textField_y.setText(String.format("%.4f",getItem().getY()*1e03));
@@ -1108,31 +1108,31 @@ public class FXMLController implements Initializable {
 
                     textField_alphax.setText(String.format("%.3f",getItem().getALPHAX()));
                     textField_betax.setText(String.format("%.3f",getItem().getBETAX()));
-                    textField_emittx.setText(String.format("%.3f",getItem().getEMITTX()*1e06));        
+                    textField_emittx.setText(String.format("%.3f",getItem().getEMITTX()*1e06));
                     textField_alphay.setText(String.format("%.3f",getItem().getALPHAY()));
                     textField_betay.setText(String.format("%.3f",getItem().getBETAY()));
-                    textField_emitty.setText(String.format("%.3f",getItem().getEMITTY()*1e06));   
+                    textField_emitty.setText(String.format("%.3f",getItem().getEMITTY()*1e06));
                 }
             }
         });
-        
+
         //Initializes TextField
         initTextFields();
-        
+
         //Initializes Plots
         addTrajectorySeriesToPlot();
         addEnvelopeSeriesToPlot();
         displayPlots();
-            
-        
-    }    
-    //------------------------HANDLE METHODS------------------------------------          
-    
+
+
+    }
+    //------------------------HANDLE METHODS------------------------------------
+
     /**
      * Update the GUI values from the Live machine
      */
-    private void updateGUI(){ 
-                    
+    private void updateGUI(){
+
         displayValues.keySet().forEach(channel ->{
             if (displayValues.get(channel)!=null){
                 if (channel.isConnected()){
@@ -1144,12 +1144,12 @@ public class FXMLController implements Initializable {
                     displayValues.get(channel).setStyle("-fx-background-color: white;");
                 } else {
                     displayValues.get(channel).setStyle("-fx-background-color: magenta;");
-                } 
+                }
             } else {
-                if (channel.isConnected()){                    
+                if (channel.isConnected()){
                     try {
                         Integer val = channel.getValInt();
-                        if(channel.channelName().contains("Chop")){  
+                        if(channel.channelName().contains("Chop")){
                             if(val==1){
                                 chopperStatus.setFill(Color.GREEN);
                             } else {
@@ -1165,13 +1165,13 @@ public class FXMLController implements Initializable {
                         }
                     } catch (ConnectionException | GetException ex) {
                         Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-                    }                    
+                    }
                 }
             }
-            
-        }); 
 
-        setValues.keySet().forEach(channel ->{             
+        });
+
+        setValues.keySet().forEach(channel ->{
             if(setValues.get(channel)!=null){
                 if (channel.isConnected()){
                     setValues.get(channel).setStyle("-fx-background-color: white;");
@@ -1181,16 +1181,16 @@ public class FXMLController implements Initializable {
                     setValues.get(channel).setDisable(true);
                 }
             }
-        });         
+        });
 
         //Display Current if combo box is selected
         if (comboBox_currentFC.isSelected()){
             RadioButton currentBI = (RadioButton) toggleGroup_currentBI.getSelectedToggle();
-            String nodeBI = currentBI.getText();            
+            String nodeBI = currentBI.getText();
             if(nodeBI!=null){
                 Channel currentMonitor = MainFunctions.mainDocument.getAccelerator().getNode(nodeBI).getChannel(CurrentMonitor.I_AVG_HANDLE);
                 if (currentMonitor.isConnected()){
-                    try {                
+                    try {
                         double val = 1000*MainFunctions.mainDocument.getAccelerator().getNode(nodeBI).getChannel(CurrentMonitor.I_AVG_HANDLE).getValDbl();
                         if(val>0){
                             textField_bc.setText(Double.toString(val));
@@ -1210,21 +1210,21 @@ public class FXMLController implements Initializable {
                 comboBox_currentFC.setSelected(false);
                 textField_bc.setDisable(false);
             }
-            
+
         }
-        
-        //Add NPM data to the chart series               
-        String sequenceName = MainFunctions.mainDocument.getSequence();        
+
+        //Add NPM data to the chart series
+        String sequenceName = MainFunctions.mainDocument.getSequence();
         String Sequence = MainFunctions.mainDocument.getAccelerator().getSequences().toString();
         String ComboSequence = MainFunctions.mainDocument.getAccelerator().getComboSequences().toString();
-                                
+
         if(sequenceName!=null){
             List<NPM> npms = new ArrayList<>();
             if (Sequence.contains(sequenceName)) {
                 npms = MainFunctions.mainDocument.getAccelerator().getSequence(sequenceName).getAllNodesOfType("NPM");
             } else if (ComboSequence.contains(sequenceName)) {
                 npms = MainFunctions.mainDocument.getAccelerator().getComboSequence(sequenceName).getAllNodesOfType("NPM");
-            } 
+            }
             //Cartesian
             seriesNPMpos[0].getData().clear();
             seriesNPMpos[1].getData().clear();
@@ -1234,13 +1234,13 @@ public class FXMLController implements Initializable {
             seriesNPMposCyl[0].getData().clear();
             seriesNPMposCyl[1].getData().clear();
             seriesNPMsigmaCyl.getData().clear();
-            
+
             npms.forEach((monitor) -> {
                 if(monitor.getChannel(NPM.X_AVG_HANDLE).isConnected() && monitor.getChannel(NPM.Y_AVG_HANDLE).isConnected()){
-                    try {                    
+                    try {
                         seriesNPMpos[0].getData().add(new XYChart.Data(monitor.getSDisplay(),monitor.getXAvg()));
                         seriesNPMpos[1].getData().add(new XYChart.Data(monitor.getSDisplay(),monitor.getYAvg()));
-                        Complex phi = new Complex(monitor.getXAvg(),monitor.getYAvg()); 
+                        Complex phi = new Complex(monitor.getXAvg(),monitor.getYAvg());
                         long scale2 = getScaleAxis(posPhi,posR);
                         seriesNPMposCyl[0].getData().add(new XYChart.Data(monitor.getSDisplay(),phi.modulus()));
                         seriesNPMposCyl[1].getData().add(new XYChart.Data(monitor.getSDisplay(),scale2*phi.phase()/Math.PI));
@@ -1250,7 +1250,7 @@ public class FXMLController implements Initializable {
                 }
             });
 
-              
+
 
             if(radioButtonOffsetOff.isSelected()){
                 npms.forEach((monitor) -> {
@@ -1266,7 +1266,7 @@ public class FXMLController implements Initializable {
                             Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     }
-                });                       
+                });
             }
             if(radioButtonOffsetOn.isSelected()){
                 npms.forEach((monitor) -> {
@@ -1283,20 +1283,20 @@ public class FXMLController implements Initializable {
                             Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     }
-                });                
+                });
             }
         }
-                                    
-    }  
-    
+
+    }
+
     /**
      * Initializes the values in the textFields
      */
-    private void initTextFields(){   
-               
-        setValues.keySet().forEach(channel ->{  
+    private void initTextFields(){
+
+        setValues.keySet().forEach(channel ->{
             if (setValues.get(channel)!=null){
-                if (channel.isConnected()){                
+                if (channel.isConnected()){
                     try {
                         setValues.get(channel).setText(String.format("%.3f",channel.getValDbl()));
                         setValues.get(channel).setStyle("-fx-background-color: white;");
@@ -1309,10 +1309,10 @@ public class FXMLController implements Initializable {
                     setValues.get(channel).setDisable(true);
                 }
             }
-        });                
-                      
+        });
+
     }
-    
+
     /** get the model sync period in milliseconds
      * @return the sync period for the model timer */
     public long getModelSyncPeriod() {
@@ -1324,12 +1324,12 @@ public class FXMLController implements Initializable {
     public void setModelSyncPeriod( final long period ) {
         _modelSyncPeriod = period;
         MODEL_SYNC_TIMER.startNowWithInterval( _modelSyncPeriod, 0 );
-    }       
-    
+    }
+
     /** Get a runnable that syncs the online model */
     private Runnable getOnlineModelSynchronizer() {
-        return () -> {                                               
-            try {   
+        return () -> {
+            try {
                 setParameters();
                 newRun.runSimulation();
             } catch (ModelException ex ) {
@@ -1349,26 +1349,26 @@ public class FXMLController implements Initializable {
                 retrieveData(newRun);
                 Platform.runLater(
                 () -> {
-                  updateGUI();  
+                  updateGUI();
                   displayPlots();
-                });                                 
+                });
                 //newRun.sethasRun(false);
             }
         };
-    }    
-    
+    }
+
     @FXML
     private void handleGetCurrentfromFC(ActionEvent event) {
         if(comboBox_currentFC.isSelected()){
-            textField_bc.setDisable(true);  
+            textField_bc.setDisable(true);
         } else {
             textField_bc.setDisable(false);
         }
     }
-    
+
     @FXML
     private void coordinateHandler(ActionEvent event) {
-       
+
         if (newRun.hasRun()){
             addTrajectorySeriesToPlot();
             npmPosHandler(new ActionEvent());
@@ -1382,7 +1382,7 @@ public class FXMLController implements Initializable {
 
     @FXML
     private void offsetHandler(ActionEvent event) {
-        
+
         if (newRun.hasRun()){
             addEnvelopeSeriesToPlot();
             npmSigHandler(new ActionEvent());
@@ -1391,9 +1391,9 @@ public class FXMLController implements Initializable {
             setBounds();
         }
     }
-    
+
     @FXML
-    private void scaleButtonHandler(InputMethodEvent event) {    
+    private void scaleButtonHandler(InputMethodEvent event) {
         try{
             scale = Double.parseDouble(textFieldSigmaScale.getText().trim());
         }
@@ -1404,22 +1404,22 @@ public class FXMLController implements Initializable {
             alert.setContentText("Check inputs and try again");
             alert.showAndWait();
         }
-        
+
         if (newRun.hasRun()){
             displayEnvelope();
         }
-    }   
+    }
 
     @FXML
     private void npmPosHandler(ActionEvent event) {
-       
+
         if(radioButtonCart.isSelected()){
             if(comboBox_posNPM.isSelected()){
                 plot1.getData().add(seriesNPMpos[0]);
                 plot1.getData().add(seriesNPMpos[1]);
                 Legend legend = (Legend)plot1.lookup(".chart-legend");
                 legend.getItems().get(0).getSymbol().setStyle("-fx-background-color: #ff0000, white;");
-                legend.getItems().get(1).getSymbol().setStyle("-fx-background-color: #006ddb, white;");   
+                legend.getItems().get(1).getSymbol().setStyle("-fx-background-color: #006ddb, white;");
                 legend.getItems().get(2).getSymbol().setStyle("-fx-background-color: #ff9999, white;");
                 legend.getItems().get(3).getSymbol().setStyle("-fx-background-color: #99ccff, white;");
 
@@ -1428,17 +1428,17 @@ public class FXMLController implements Initializable {
                 plot1.getData().remove(seriesNPMpos[1]);
                 Legend legend = (Legend)plot1.lookup(".chart-legend");
                 legend.getItems().get(0).getSymbol().setStyle("-fx-background-color: #ff0000, white;");
-                legend.getItems().get(1).getSymbol().setStyle("-fx-background-color: #006ddb, white;");      
+                legend.getItems().get(1).getSymbol().setStyle("-fx-background-color: #006ddb, white;");
             }
         }
-        
+
         if(radioButtonCyl.isSelected()){
             if(comboBox_posNPM.isSelected()){
                 plot1.getData().add(seriesNPMposCyl[0]);
                 plot1.getData().add(seriesNPMposCyl[1]);
                 Legend legend = (Legend)plot1.lookup(".chart-legend");
                 legend.getItems().get(0).getSymbol().setStyle("-fx-background-color: #006400, white;");
-                legend.getItems().get(1).getSymbol().setStyle("-fx-background-color: #DAA520, white;");    
+                legend.getItems().get(1).getSymbol().setStyle("-fx-background-color: #DAA520, white;");
                 legend.getItems().get(2).getSymbol().setStyle("-fx-background-color: #99ff99, white;");
                 legend.getItems().get(3).getSymbol().setStyle("-fx-background-color: #f2dca6, white;");
 
@@ -1447,15 +1447,15 @@ public class FXMLController implements Initializable {
                 plot1.getData().remove(seriesNPMposCyl[1]);
                 Legend legend = (Legend)plot1.lookup(".chart-legend");
                 legend.getItems().get(0).getSymbol().setStyle("-fx-background-color: #006400, white;");
-                legend.getItems().get(1).getSymbol().setStyle("-fx-background-color: #DAA520, white;");         
+                legend.getItems().get(1).getSymbol().setStyle("-fx-background-color: #DAA520, white;");
             }
         }
-        
-    }    
-        
+
+    }
+
     @FXML
     private void npmSigHandler(ActionEvent event) {
-        
+
         if(radioButtonCart.isSelected()){
             if(comboBox_sigmaNPM.isSelected()){
                 plot2.getData().add(seriesNPMsigma[0]);
@@ -1463,7 +1463,7 @@ public class FXMLController implements Initializable {
                 Legend legend = (Legend)plot2.lookup(".chart-legend");
                 legend.getItems().remove(0, 4);
                 legend.getItems().get(0).getSymbol().setStyle("-fx-background-color: #ff0000, white;");
-                legend.getItems().get(1).getSymbol().setStyle("-fx-background-color: #006ddb, white;");            
+                legend.getItems().get(1).getSymbol().setStyle("-fx-background-color: #006ddb, white;");
                 legend.getItems().get(2).getSymbol().setStyle("-fx-background-color: #ff9999, white;");
                 legend.getItems().get(3).getSymbol().setStyle("-fx-background-color: #99ccff, white;");
             } else {
@@ -1471,70 +1471,70 @@ public class FXMLController implements Initializable {
                 plot2.getData().remove(seriesNPMsigma[1]);
                 Legend legend = (Legend)plot2.lookup(".chart-legend");
                 int leg_size = legend.getItems().size();
-                legend.getItems().remove(0, leg_size-2);                    
+                legend.getItems().remove(0, leg_size-2);
                 legend.getItems().get(0).getSymbol().setStyle("-fx-background-color: #ff0000, white;");
-                legend.getItems().get(1).getSymbol().setStyle("-fx-background-color: #006ddb, white;"); 
+                legend.getItems().get(1).getSymbol().setStyle("-fx-background-color: #006ddb, white;");
             }
         }
-        
+
         if(radioButtonCyl.isSelected()){
             if(comboBox_sigmaNPM.isSelected()){
                 plot2.getData().add(seriesNPMsigmaCyl);
                 Legend legend = (Legend)plot2.lookup(".chart-legend");
                 legend.getItems().remove(0, 3);
                 legend.getItems().get(0).getSymbol().setStyle("-fx-background-color: #006400, white;");
-                legend.getItems().get(1).getSymbol().setStyle("-fx-background-color: #99ff99, white;");            
+                legend.getItems().get(1).getSymbol().setStyle("-fx-background-color: #99ff99, white;");
             } else {
                 plot2.getData().remove(seriesNPMsigmaCyl);
                 Legend legend = (Legend)plot2.lookup(".chart-legend");
                 int leg_size = legend.getItems().size();
-                legend.getItems().remove(0, leg_size-1);  
+                legend.getItems().remove(0, leg_size-1);
                 legend.getItems().get(0).getSymbol().setStyle("-fx-background-color: #006400, white;");
-                
+
             }
         }
-        
-    } 
-    
+
+    }
+
      @FXML
     private void handleMatchParameters(ActionEvent event) {
-                        
+
         Task<Void> task;
         task = new Task<Void>(){
 
             @Override
             protected Void call() throws Exception {
-        
+
                 //get Sequence
-                String sequenceName = MainFunctions.mainDocument.getSequence();        
+                String sequenceName = MainFunctions.mainDocument.getSequence();
                 String Sequence = MainFunctions.mainDocument.getAccelerator().getSequences().toString();
-                String ComboSequence = MainFunctions.mainDocument.getAccelerator().getComboSequences().toString();               
+                String ComboSequence = MainFunctions.mainDocument.getAccelerator().getComboSequences().toString();
                 MatchingSolver doMatch = null;
 
-                //initializing simulation   
-                if(Sequence.contains(sequenceName)){  
+                //initializing simulation
+                if(Sequence.contains(sequenceName)){
                     AcceleratorSeq seq = MainFunctions.mainDocument.getAccelerator().getSequence(sequenceName);
-                    doMatch = new MatchingSolver(comboBox_inputSimul.getItems().get(0),comboBox_inputSimul.getSelectionModel().getSelectedItem(), seq, 0.00001);            
+                    doMatch = new MatchingSolver(comboBox_inputSimul.getItems().get(0),comboBox_inputSimul.getSelectionModel().getSelectedItem(), seq, 0.00001);
                 } else if(ComboSequence.contains(sequenceName)){
                     AcceleratorSeqCombo seq = MainFunctions.mainDocument.getAccelerator().getComboSequence(sequenceName);
-                    doMatch = new MatchingSolver(comboBox_inputSimul.getItems().get(0),comboBox_inputSimul.getSelectionModel().getSelectedItem(), seq, 0.00001);                    
-                }    
+                    doMatch = new MatchingSolver(comboBox_inputSimul.getItems().get(0),comboBox_inputSimul.getSelectionModel().getSelectedItem(), seq, 0.00001);
+                }
 
                 if(doMatch !=null){
                     doMatch.initSimulation(beamCurrent,spaceChargeComp,spaceChargeCompElectrode,checkBox_electrode.isSelected());
                     doMatch.solve();
                     InputParameters finalResult = doMatch.newInputValues();
-                    
-                    
+
+
                     Platform.runLater(
                     () -> {
-                                                                           
+
                         Alert alert = new Alert(AlertType.INFORMATION);
                         alert.setTitle("Matching Dialog");
                         alert.setHeaderText("Matching result summary.");
 
-                        // Create expandable Exception.           
-                        String resultText;          
+                        // Create expandable Exception.
+                        String resultText;
                         resultText = "Positions: \n"+
                                      "(x, xp) = "+String.format("%.3f",finalResult.getX()*1e3)+","+String.format("%.3f",finalResult.getXP()*1e3)+"\n"+
                                      "(y, yp) = "+String.format("%.3f",finalResult.getY()*1e3)+","+String.format("%.3f",finalResult.getYP()*1e3)+"\n"+
@@ -1546,19 +1546,19 @@ public class FXMLController implements Initializable {
 
                         Label label = new Label("New Input parameters:");
 
-                        TextArea textArea = new TextArea(resultText);            
+                        TextArea textArea = new TextArea(resultText);
                         textArea.setEditable(false);
                         textArea.setWrapText(true);
 
                         textArea.setMaxWidth(Double.MAX_VALUE);
-                        textArea.setMaxHeight(Double.MAX_VALUE);            
+                        textArea.setMaxHeight(Double.MAX_VALUE);
                         GridPane.setVgrow(textArea, Priority.ALWAYS);
                         GridPane.setHgrow(textArea, Priority.ALWAYS);
 
                         GridPane resultContent = new GridPane();
                         resultContent.setMaxWidth(Double.MAX_VALUE);
                         resultContent.add(label, 0, 0);
-                        resultContent.add(textArea, 0, 1);            
+                        resultContent.add(textArea, 0, 1);
 
                         // Set expandable Exception into the dialog pane.
                         alert.getDialogPane().setExpandableContent(resultContent);
@@ -1579,57 +1579,57 @@ public class FXMLController implements Initializable {
                             comboBox_inputSimul.getItems().get(0).setEMITTX(finalResult.getEMITTX());
                             comboBox_inputSimul.getItems().get(0).setALPHAY(finalResult.getALPHAY());
                             comboBox_inputSimul.getItems().get(0).setBETAY(finalResult.getBETAY());
-                            comboBox_inputSimul.getItems().get(0).setEMITTY(finalResult.getEMITTY());                
+                            comboBox_inputSimul.getItems().get(0).setEMITTY(finalResult.getEMITTY());
                             comboBox_inputSimul.getSelectionModel().select(0);
-                        } 
-                    });  
-                    
+                        }
+                    });
+
                     MODEL_SYNC_TIMER.resume();
-                    
+
                 }
-                
+
                 return null;
             }
         ;
 
         };
-                    
+
         Thread calibrate = new Thread(task);
-        calibrate.setDaemon(true); // thread will not prevent application shutdown 
+        calibrate.setDaemon(true); // thread will not prevent application shutdown
         MODEL_SYNC_TIMER.suspend();
         calibrate.start();
-                               
-                                
-        
+
+
+
     }
-    
+
     //------------------------HELP METHODS------------------------------------
-    
+
     /**
      * Gets parameters from simulation objects and assigns to text fields
      */
     private void getParameters(){
-        
+
         double[] initPos = new double[4];
         double[] TwissX = new double[3];
         double[] TwissY = new double[3];
-        
+
         initPos = comboBox_inputSimul.getSelectionModel().getSelectedItem().getInit();
         TwissX = comboBox_inputSimul.getSelectionModel().getSelectedItem().getTwissX();
         TwissY = comboBox_inputSimul.getSelectionModel().getSelectedItem().getTwissY();
-        
+
         textField_x.setText(String.format("%.4f",initPos[0]*1e03));
         textField_xp.setText(String.format("%.4f",initPos[1]*1e03));
         textField_y.setText(String.format("%.4f",initPos[2]*1e03));
         textField_yp.setText(String.format("%.4f",initPos[3]*1e03));
-               
+
         textField_alphax.setText(String.format("%.3f",TwissX[0]));
         textField_betax.setText(String.format("%.3f",TwissX[1]));
-        textField_emittx.setText(String.format("%.3f",TwissX[2]*1e06));        
+        textField_emittx.setText(String.format("%.3f",TwissX[2]*1e06));
         textField_alphay.setText(String.format("%.3f",TwissY[0]));
         textField_betay.setText(String.format("%.3f",TwissY[1]));
-        textField_emitty.setText(String.format("%.3f",TwissY[2]*1e06));         
-                
+        textField_emitty.setText(String.format("%.3f",TwissY[2]*1e06));
+
         beamCurrent = newRun.getBeamCurrent();
         textField_bc.setText(Double.toString(beamCurrent));
         spaceChargeComp = newRun.getSpaceChargeCompensation();
@@ -1637,26 +1637,26 @@ public class FXMLController implements Initializable {
         textField_scc.setText(Double.toString(spaceChargeComp));
         textField_sccelectrode.setText(Double.toString(spaceChargeCompElectrode));
     }
-    
+
     /**
      * Sets simulation parameters from text fields.
      */
-    private void setParameters(){                
-        
+    private void setParameters(){
+
         double[] initPos = new double[4];
         double[] TwissX = new double[3];
         double[] TwissY = new double[3];
-        
+
         initPos = comboBox_inputSimul.getSelectionModel().getSelectedItem().getInit();
         TwissX = comboBox_inputSimul.getSelectionModel().getSelectedItem().getTwissX();
         TwissY = comboBox_inputSimul.getSelectionModel().getSelectedItem().getTwissY();
-        
-        try{            
-            newRun.setInitialBeamParameters(initPos[0],initPos[1],initPos[2],initPos[3]);        
+
+        try{
+            newRun.setInitialBeamParameters(initPos[0],initPos[1],initPos[2],initPos[3]);
             newRun.setBeamCurrent(beamCurrent);
             newRun.setBeamTwissX(TwissX[0],TwissX[1],TwissX[2]);
-            newRun.setBeamTwissY(TwissY[0],TwissY[1],TwissY[2]);            
-            newRun.setInitSimulPos(comboBox_inputSimul.getSelectionModel().getSelectedItem().getName());                
+            newRun.setBeamTwissY(TwissY[0],TwissY[1],TwissY[2]);
+            newRun.setInitSimulPos(comboBox_inputSimul.getSelectionModel().getSelectedItem().getName());
             newRun.setSpaceChargeCompensation(spaceChargeComp,spaceChargeCompElectrode);
             newRun.setElectrode(checkBox_electrode.isSelected());
             newRun.setModelSync(MainFunctions.mainDocument.getModel().get());
@@ -1669,28 +1669,28 @@ public class FXMLController implements Initializable {
             alert.showAndWait();
         }
     }
-       
+
     /**
      * Retrieves and displays trajectory plots
      * @param newRun the simulation
      */
     private void retrieveData(SimulationRunner newRun){
-        
+
         //get Sequence
         String sequenceName = MainFunctions.mainDocument.getSequence();
 
         String Sequence = MainFunctions.mainDocument.getAccelerator().getSequences().toString();
         String ComboSequence = MainFunctions.mainDocument.getAccelerator().getComboSequences().toString();
-        
+
         double pos_ini = 0.0;
-        
+
         if (Sequence.contains(sequenceName)) {
             pos_ini = MainFunctions.mainDocument.getAccelerator().getSequence(sequenceName).getPosition();
         } else if (ComboSequence.contains(sequenceName)) {
             pos_ini = MainFunctions.mainDocument.getAccelerator().getComboSequence(sequenceName).getPosition();
         }
-        
-        
+
+
         //retrieves data
         sigmaX = newRun.getSigmaX();
         sigmaY = newRun.getSigmaY();
@@ -1700,23 +1700,23 @@ public class FXMLController implements Initializable {
         posY = newRun.getPosY();
         posR = newRun.getPosR();
         posPhi = newRun.getPosPhi();
-                
+
         for(int i = 0; i < positions.size() ; i++) {
             positions.set(i, (Double) positions.get(i) + pos_ini);
         }
-        
+
     }
-    
+
     /**
      * Retrieves and displays trajectory plots
      * @param newRun the simulation
      */
     private double[][] readVacuumChamber() throws FileNotFoundException{
-        
+
         double[][] vacuumChamber = null;
         DataAdaptor readAdp = null;
         URL file;
-        
+
         try {
             file = this.getClass().getResource("/vacuum_chamber/VacuumChamber.xml");
             readAdp = XmlDataAdaptor.adaptorForUrl(file,false);
@@ -1734,35 +1734,35 @@ public class FXMLController implements Initializable {
             }
         } catch (XmlDataAdaptor.ParseException | XmlDataAdaptor.ResourceNotFoundException ex) {
             Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-        }            
-                       
+        }
+
         return vacuumChamber;
-       
+
     }
-    
+
     /**
      * Checks which coordinate system radio button is selected and displays plots accordingly
      */
     private void displayPlots(){
-                
+
         yAxis.setAutoRanging(true);
-        
+
         if (radioButtonCart.isSelected()){
             displayCartTrajectory();
         }
         else if (radioButtonCyl.isSelected()){
             displayCylTrajectory();
         }
-        
+
         displayEnvelope();
     }
-    
+
     /**
      * Checks which coordinate system radio button is selected and displays envelope accordingly
      */
     private void displayEnvelope(){
-        
-        
+
+
         if (radioButtonCart.isSelected()){
             displayCartEnvelope();
         }
@@ -1770,37 +1770,37 @@ public class FXMLController implements Initializable {
             displayCylEnvelope();
         }
     }
-    
+
     /**
      * Displays the trajectory in Cartesian coordinates
      */
     private void displayCartTrajectory(){
-        
+
         clearTrajectorySeries();
-                
+
         for (int i = 0; i < posX.size() ; i++) {
             seriesX.getData().add(new XYChart.Data(positions.get(i), posX.get(i)));
             seriesY.getData().add(new XYChart.Data(positions.get(i), posY.get(i)));
         }
-                
-        yAxis.setLabel("Trajectory (mm)");                
-        
+
+        yAxis.setLabel("Trajectory (mm)");
+
     }
-    
+
     /**
      * Displays the trajectory in cylindrical coordinates
      */
     private void displayCylTrajectory(){
-        
+
         clearTrajectorySeries();
-        
+
         long scale2 = getScaleAxis(posPhi,posR);
-        
+
         for (int i = 0; i < posX.size() ; i++) {
             seriesR.getData().add(new XYChart.Data(positions.get(i), posR.get(i)));
             seriesPhi.getData().add(new XYChart.Data(positions.get(i), new Double(posPhi.get(i).toString())*scale2));
         }
-        
+
         if (scale2 != 1){
             yAxis.setLabel("Offset (mm) \nAngle (" + Double.toString((double) 1/scale2) + " * π rad)");
             //System.out.print(scale2);
@@ -1808,77 +1808,77 @@ public class FXMLController implements Initializable {
         else{
             yAxis.setLabel("Offset (mm) \nAngle (π rad)");
         }
-                
+
     }
-    
+
     /**
      * Checks which offset radio button is selected and displays envelope accordingly in Cartesian coordinates
      */
     private void displayCartEnvelope(){
-        
+
         clearEnvelopeSeries();
-        
+
         setCartBounds();
-        
+
         if (radioButtonOffsetOff.isSelected()){
-            
+
             for (int i = 0; i < sigmaX[0].size(); i++){
                 seriesSigmaX[0].getData().add(new XYChart.Data(positions.get(i), ((double) sigmaX[0].get(i))*scale));
                 seriesSigmaY[0].getData().add(new XYChart.Data(positions.get(i), ((double) sigmaY[0].get(i))*scale));
                 seriesSigmaX[1].getData().add(new XYChart.Data(positions.get(i), ((double) sigmaX[1].get(i))*scale));
                 seriesSigmaY[1].getData().add(new XYChart.Data(positions.get(i), ((double) sigmaY[1].get(i))*scale));
             }
-                        
+
         }
-        else if (radioButtonOffsetOn.isSelected()){           
-            for (int i = 0; i < sigmaX[0].size(); i++){               
+        else if (radioButtonOffsetOn.isSelected()){
+            for (int i = 0; i < sigmaX[0].size(); i++){
                 seriesSigmaOffsetX[0].getData().add(new XYChart.Data(positions.get(i), scaleAndOffset(sigmaX[0],posX,scale,i)));
                 seriesSigmaOffsetY[0].getData().add(new XYChart.Data(positions.get(i), scaleAndOffset(sigmaY[0],posY,scale,i)));
                 seriesSigmaOffsetX[1].getData().add(new XYChart.Data(positions.get(i), scaleAndOffset(sigmaX[1],posX,scale,i)));
                 seriesSigmaOffsetY[1].getData().add(new XYChart.Data(positions.get(i), scaleAndOffset(sigmaY[1],posY,scale,i)));
             }
-            
-        }                                          
-        
+
+        }
+
     }
-    
+
     /**
      * Checks which offset radio button is selected and displays envelope accordingly in cylindrical coordinates
      */
     private void displayCylEnvelope(){
-        
+
         clearEnvelopeSeries();
-        
+
         setCylBounds();
-        
+
         if (radioButtonOffsetOff.isSelected()){
-            
+
             for (int i = 0; i < sigmaX[0].size(); i++){
                 seriesSigmaR[0].getData().add(new XYChart.Data(positions.get(i), ((double) sigmaR[0].get(i))*scale));
                 seriesSigmaR[1].getData().add(new XYChart.Data(positions.get(i), ((double) sigmaR[1].get(i))*scale));
-                
+
             }
             if (Collections.max(sigmaR[0]) > 100){
                 yAxis1.setUpperBound(Collections.max(sigmaR[0])+10);
             }
-            
+
             //seriesSigmaR[0].getNode().setStyle("-fx-stroke: #006400;");
             //seriesSigmaR[1].getNode().setStyle("-fx-stroke: #006400;");
         }
         else if (radioButtonOffsetOn.isSelected()){
-            
+
             for (int i = 0; i < sigmaR[0].size(); i++){
                 seriesSigmaOffsetR[0].getData().add(new XYChart.Data(positions.get(i), scaleAndOffset(sigmaR[0],posR,scale,i)));
                 seriesSigmaOffsetR[1].getData().add(new XYChart.Data(positions.get(i), scaleAndOffset(sigmaR[1],posR,scale,i)));
-            }                      
-            
+            }
+
             yAxis1.setLowerBound(-90);
             yAxis1.setUpperBound(90);
-            
-        }                
-               
+
+        }
+
     }
-    
+
     /**
      * Determines which surrounding to show
      */
@@ -1890,29 +1890,29 @@ public class FXMLController implements Initializable {
             setCylBounds();
         }
     }
-    
+
     /**
      * Displays the surroundings in both positive and negative range.
     */
     private void setCartBounds(){
-       
+
         yAxis1.setAutoRanging(false);
         yAxis1.setLowerBound(-90);
         yAxis1.setUpperBound(90);
 
     }
-    
+
     /**
      * Displays the surroundings in only positive range.
      */
     private void setCylBounds(){
-        
+
         yAxis1.setAutoRanging(false);
         yAxis1.setLowerBound(0.0);
         yAxis1.setUpperBound(90);
-        
+
     }
-    
+
     private void setLabels(){
         if (radioButtonCart.isSelected()){
             yAxis.setLabel("Offset (mm)");
@@ -1921,41 +1921,41 @@ public class FXMLController implements Initializable {
             yAxis.setLabel("Offset (mm) \n Angle (π rad)");
         }
     }
-    
+
     private long getScaleAxis(ArrayList<Double> posphi, ArrayList<Double> posr){
-        
+
         int i = 1;
-        
+
         double maxphi = Collections.max(posphi);
         double minphi = Collections.min(posphi);
         double maxr = Collections.max(posr);
         double minr = Collections.min(posr);
         double scalephi = Math.max(Math.abs(maxphi),Math.abs(minphi));
         double scaler = Math.max(Math.abs(maxr),Math.abs(minr));
-        
+
         if(scalephi>scaler){
             return Math.round(scaler/scalephi)==0 ? 1 : Math.round(scaler/scalephi);
         } else {
             return Math.round(scalephi/scaler)==0 ? 1 : Math.round(scalephi/scaler);
         }
-                
+
     }
-    
+
     private double scaleAndOffset(ArrayList<Double> sigma, ArrayList<Double> pos, double scale, int i){
         return ((double) sigma.get(i)*scale+(double) pos.get(i));
     }
-    
+
 //-------------------------PLOT FUNCTIONS---------------------------------------
-    
+
     /**
      * Removes the series from plot and adds the relevant series.
      */
     private void addTrajectorySeriesToPlot(){
-        
-        plot1.getData().removeAll(seriesX,seriesY,seriesR,seriesPhi,seriesNPMpos[0],seriesNPMpos[1],seriesNPMposCyl[0],seriesNPMposCyl[1]);        
-        
+
+        plot1.getData().removeAll(seriesX,seriesY,seriesR,seriesPhi,seriesNPMpos[0],seriesNPMpos[1],seriesNPMposCyl[0],seriesNPMposCyl[1]);
+
         if(radioButtonCart.isSelected()){
-            plot1.getData().add(seriesX);       
+            plot1.getData().add(seriesX);
             plot1.getData().add(seriesY);
             //Set Style
             plot1.getStylesheets().remove(0);
@@ -1963,10 +1963,10 @@ public class FXMLController implements Initializable {
             //set colors
             Legend legend = (Legend)plot1.lookup(".chart-legend");
             legend.getItems().get(0).getSymbol().setStyle("-fx-background-color: #ff0000, white;");
-            legend.getItems().get(1).getSymbol().setStyle("-fx-background-color: #006ddb, white;");            
+            legend.getItems().get(1).getSymbol().setStyle("-fx-background-color: #006ddb, white;");
         }
         else if (radioButtonCyl.isSelected()){
-            plot1.getData().add(seriesR);       
+            plot1.getData().add(seriesR);
             plot1.getData().add(seriesPhi);
             //set Style
             plot1.getStylesheets().remove(0);
@@ -1974,40 +1974,40 @@ public class FXMLController implements Initializable {
             //set colors
             Legend legend = (Legend)plot1.lookup(".chart-legend");
             legend.getItems().get(0).getSymbol().setStyle("-fx-background-color: #006400, white;");
-            legend.getItems().get(1).getSymbol().setStyle("-fx-background-color: #DAA520, white;");                    
-        } 
-               
-                
+            legend.getItems().get(1).getSymbol().setStyle("-fx-background-color: #DAA520, white;");
+        }
+
+
     }
-    
+
     /**
      * Removes series from plot and adds the relevant series.
      */
     private void addEnvelopeSeriesToPlot(){
-        
+
         plot2.getData().removeAll(seriesSigmaX[0],seriesSigmaX[1],
             seriesSigmaY[0],seriesSigmaY[1],
             seriesSigmaR[0],seriesSigmaR[1],
             seriesSigmaOffsetX[0],seriesSigmaOffsetX[1],
             seriesSigmaOffsetY[0],seriesSigmaOffsetY[1],
             seriesSigmaOffsetR[0],seriesSigmaOffsetR[1],
-            seriesNPMsigma[0],seriesNPMsigma[1],seriesNPMsigmaCyl);                 
-        
+            seriesNPMsigma[0],seriesNPMsigma[1],seriesNPMsigmaCyl);
+
         if(radioButtonCart.isSelected()){
-            
+
             if(radioButtonOffsetOn.isSelected()){
                 for(int i = 0; i < seriesSigmaX.length; i++){
-                    plot2.getData().add(seriesSigmaOffsetX[i]);       
-                    plot2.getData().add(seriesSigmaOffsetY[i]);                    
-                }                
+                    plot2.getData().add(seriesSigmaOffsetX[i]);
+                    plot2.getData().add(seriesSigmaOffsetY[i]);
+                }
             }
             else if (radioButtonOffsetOff.isSelected()){
                 for(int i = 0; i < seriesSigmaX.length; i++){
-                    plot2.getData().add(seriesSigmaX[i]);       
-                    plot2.getData().add(seriesSigmaY[i]);  
-                }                
+                    plot2.getData().add(seriesSigmaX[i]);
+                    plot2.getData().add(seriesSigmaY[i]);
+                }
             }
-            
+
             //set Style
             plot2.getStylesheets().remove(0);
             plot2.getStylesheets().add(this.getClass().getResource("/styles/EnvelopePlot.css").toExternalForm());
@@ -2015,18 +2015,18 @@ public class FXMLController implements Initializable {
             Legend legend = (Legend)plot2.lookup(".chart-legend");
             legend.getItems().remove(0, 4);
             legend.getItems().get(0).getSymbol().setStyle("-fx-background-color: #ff0000, white;");
-            legend.getItems().get(1).getSymbol().setStyle("-fx-background-color: #006ddb, white;");                    
+            legend.getItems().get(1).getSymbol().setStyle("-fx-background-color: #006ddb, white;");
 
         }
         else if (radioButtonCyl.isSelected()){
             if(radioButtonOffsetOn.isSelected()){
                 for(int i = 0; i < seriesSigmaX.length; i++){
-                    plot2.getData().add(seriesSigmaOffsetR[i]);       
+                    plot2.getData().add(seriesSigmaOffsetR[i]);
                 }
             }
             else if (radioButtonOffsetOff.isSelected()){
                 for(int i = 0; i < seriesSigmaX.length; i++){
-                    plot2.getData().add(seriesSigmaR[i]);       
+                    plot2.getData().add(seriesSigmaR[i]);
                 }
             }
             //set Style
@@ -2036,12 +2036,12 @@ public class FXMLController implements Initializable {
             Legend legend = (Legend)plot2.lookup(".chart-legend");
             legend.getItems().remove(0, 3);
             legend.getItems().get(0).getSymbol().setStyle("-fx-background-color: #006400, white;");
-        } 
-                     
+        }
+
     }
 
     //-------------------------CLEAR METHODS------------------------------------
-    
+
     /**
      * Clears plot1 of all data
      */
@@ -2051,7 +2051,7 @@ public class FXMLController implements Initializable {
         seriesR.getData().clear();
         seriesPhi.getData().clear();
     }
-    
+
     /**
      * Clears plot2 of all data
      */
@@ -2064,6 +2064,6 @@ public class FXMLController implements Initializable {
             seriesSigmaOffsetY[i].getData().clear();
             seriesSigmaOffsetR[i].getData().clear();
         }
-    }          
-    
+    }
+
 }

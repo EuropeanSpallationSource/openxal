@@ -238,7 +238,7 @@ public class CorrectionSVD {
         }
     }
 
-    //calculate Horizontal Trajectory Response Matrix 
+    //calculate Horizontal Trajectory Response Matrix
     public void calculateTRMHorizontal(Double Dk, String synchronizationMode) throws ConnectionException, GetException, PutException, InterruptedException {
 
         double HC_val = 0.0;

@@ -38,10 +38,10 @@ public class MainApp extends FxApplication {
         modelLiveMenu.setOnAction(new ModelMenu((LEBTDocument) DOCUMENT,modelGroup));
         modelMenu.getItems().add(modelLiveMenu);
         modelGroup.getToggles().add(modelLiveMenu);
-        modelGroup.selectToggle(modelLiveMenu);   
+        modelGroup.selectToggle(modelLiveMenu);
         MENU_BAR.getMenus().add(MENU_BAR.getMenus().size()-2, modelMenu);
-        
-        
+
+
         super.start(stage);
     }
 
