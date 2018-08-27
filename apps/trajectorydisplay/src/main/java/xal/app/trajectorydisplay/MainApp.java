@@ -36,29 +36,29 @@ public class MainApp extends FxApplication {
         MAIN_SCENE = "/fxml/TrajectoryDisplay.fxml";
         CSS_STYLE = "/styles/Styles.css";
         STAGE_TITLE = "Trajectory Display";
-        HAS_DOCUMENTS= false;
+        HAS_DOCUMENTS = false;
         HAS_SEQUENCE = true;
         DOCUMENT = new TrajectoryDisplayDocument(stage);
 
-        MainFunctions.initialize((TrajectoryDisplayDocument)DOCUMENT);
+        MainFunctions.initialize((TrajectoryDisplayDocument) DOCUMENT);
 
         super.initialize();
 
         Menu trajectoryMenu = new Menu("Trajectory");
         MenuItem displayLiveTrajMenu = new MenuItem("Display LIVE trajectory");
         displayLiveTrajMenu.setOnAction(new LiveTrajectoryMenu((TrajectoryDisplayDocument) DOCUMENT));
-        trajectoryMenu.getItems().add(displayLiveTrajMenu );
-        MenuItem trajFromFileMenu =new MenuItem("Display trajectory from File");
+        trajectoryMenu.getItems().add(displayLiveTrajMenu);
+        MenuItem trajFromFileMenu = new MenuItem("Display trajectory from File");
         trajFromFileMenu.setOnAction(new TrajectoryFromFileMenu((TrajectoryDisplayDocument) DOCUMENT));
         trajectoryMenu.getItems().add(trajFromFileMenu);
         trajectoryMenu.getItems().add(new SeparatorMenuItem());
         MenuItem loadReferenceTrajMenu = new MenuItem("Load reference trajectory");
         loadReferenceTrajMenu.setOnAction(new LoadReferenceTrajectoryMenu((TrajectoryDisplayDocument) DOCUMENT));
-        trajectoryMenu.getItems().add(loadReferenceTrajMenu );
-        MenuItem saveTrajMenu =new MenuItem("Save current trajectory");
+        trajectoryMenu.getItems().add(loadReferenceTrajMenu);
+        MenuItem saveTrajMenu = new MenuItem("Save current trajectory");
         saveTrajMenu.setOnAction(new SaveTrajectoryMenu((TrajectoryDisplayDocument) DOCUMENT));
-        trajectoryMenu.getItems().add(saveTrajMenu);       
-        MENU_BAR.getMenus().add(MENU_BAR.getMenus().size()-2, trajectoryMenu);
+        trajectoryMenu.getItems().add(saveTrajMenu);
+        MENU_BAR.getMenus().add(MENU_BAR.getMenus().size() - 2, trajectoryMenu);
 
         super.start(stage);
     }
@@ -81,7 +81,7 @@ class LiveTrajectoryMenu implements EventHandler {
 
     protected TrajectoryDisplayDocument document;
 
-    public LiveTrajectoryMenu(TrajectoryDisplayDocument document){
+    public LiveTrajectoryMenu(TrajectoryDisplayDocument document) {
         this.document = document;
     }
 
@@ -95,7 +95,7 @@ class TrajectoryFromFileMenu implements EventHandler {
 
     protected TrajectoryDisplayDocument document;
 
-    public TrajectoryFromFileMenu(TrajectoryDisplayDocument document){
+    public TrajectoryFromFileMenu(TrajectoryDisplayDocument document) {
         this.document = document;
     }
 
@@ -104,13 +104,13 @@ class TrajectoryFromFileMenu implements EventHandler {
         document.liveTrajectory.set(false);
         document.getTrajectoryFromFile();
     }
-    }
+}
 
 class LoadReferenceTrajectoryMenu implements EventHandler {
 
     protected TrajectoryDisplayDocument document;
 
-    public LoadReferenceTrajectoryMenu(TrajectoryDisplayDocument document){
+    public LoadReferenceTrajectoryMenu(TrajectoryDisplayDocument document) {
         this.document = document;
     }
 
@@ -124,7 +124,7 @@ class SaveTrajectoryMenu implements EventHandler {
 
     protected TrajectoryDisplayDocument document;
 
-    public SaveTrajectoryMenu(TrajectoryDisplayDocument document){
+    public SaveTrajectoryMenu(TrajectoryDisplayDocument document) {
         this.document = document;
     }
 

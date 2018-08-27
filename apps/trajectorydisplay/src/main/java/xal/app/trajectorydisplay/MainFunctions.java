@@ -1,4 +1,4 @@
- /*
+/*
  * Copyright (C) 2018 European Spallation Source ERIC
  *
  * This program is free software; you can redistribute it and/or
@@ -21,15 +21,11 @@ package xal.app.trajectorydisplay;
  *
  * @author nataliamilas
  */
-public class MainFunctions {   
-    
+public class MainFunctions {
+
     public static TrajectoryDisplayDocument mainDocument;
-       
+
     public static void initialize(TrajectoryDisplayDocument trajectoryDocument) {
-        
-        mainDocument = trajectoryDocument; 
-        
-     
+        mainDocument = trajectoryDocument;
     }
 }
-
