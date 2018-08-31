@@ -32,7 +32,9 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import xal.ca.Channel;
 import xal.extension.jelog.ElogServer;
+import xal.tools.apputils.Preferences;
 
 /**
  *
@@ -73,6 +75,19 @@ public class FXMLController implements Initializable {
     private TextField elogServerTextField;
     @FXML
     private Button changeElogServerButton;
+    @FXML
+    private TextField pendIOTimeoutTextField;
+    @FXML
+    private TextField pendEventTimeoutTextField;
+    @FXML
+    private Button timeoutsButton;
+
+    // Property names
+    private static final String DEF_TIME_IO = "c_dblDefTimeIO";
+    private static final String DEF_TIME_EVENT = "c_dblDefTimeEvent";
+
+    private double m_dblTmIO;
+    private double m_dblTmEvt;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -99,6 +114,27 @@ public class FXMLController implements Initializable {
         initialParametersChoiceBox.getSelectionModel().select(0);
 
         elogServerTextField.setText(ElogServer.getElogURL());
+
+        refreshTimouts();
+    }
+
+    private void refreshTimouts() {
+        // Load default timeouts from preferences if available, otherwise use hardcoded values.
+        java.util.prefs.Preferences defaults = Preferences.nodeForPackage(Channel.class);
+        m_dblTmIO = defaults.getDouble(DEF_TIME_IO, -1);
+        m_dblTmEvt = defaults.getDouble(DEF_TIME_EVENT, -1);
+
+        if (m_dblTmIO != -1) {
+            pendIOTimeoutTextField.setText(Double.toString(m_dblTmIO));
+        } else {
+            pendIOTimeoutTextField.setText("");
+        }
+
+        if (m_dblTmEvt != -1) {
+            pendEventTimeoutTextField.setText(Double.toString(m_dblTmEvt));
+        } else {
+            pendEventTimeoutTextField.setText("");
+        }
     }
 
     @FXML
@@ -188,5 +224,33 @@ public class FXMLController implements Initializable {
     @FXML
     private void changeElogServerButtonHandler(ActionEvent event) {
         ElogServer.setElogURL(elogServerTextField.getText());
+    }
+
+    @FXML
+    private void timeoutsHandler(ActionEvent event) {
+        // Load default timeouts from preferences if available, otherwise use hardcoded values.
+        java.util.prefs.Preferences defaults = Preferences.nodeForPackage(Channel.class);
+
+        if (!pendIOTimeoutTextField.getText().isEmpty()) {
+            m_dblTmIO = Double.parseDouble(pendIOTimeoutTextField.getText());
+
+            if (m_dblTmIO > 0) {
+                defaults.putDouble(DEF_TIME_IO, m_dblTmIO);
+            } else if (m_dblTmIO == -1) {
+                defaults.remove(DEF_TIME_IO);
+            }
+        }
+
+        if (!pendEventTimeoutTextField.getText().isEmpty()) {
+            m_dblTmEvt = Double.parseDouble(pendEventTimeoutTextField.getText());
+
+            if (m_dblTmEvt > 0) {
+                defaults.putDouble(DEF_TIME_EVENT, m_dblTmEvt);
+            } else if (m_dblTmEvt == -1) {
+                defaults.remove(DEF_TIME_EVENT);
+            }
+        }
+
+        refreshTimouts();
     }
 }
