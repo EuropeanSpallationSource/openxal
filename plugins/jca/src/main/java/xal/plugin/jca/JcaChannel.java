@@ -17,6 +17,7 @@ import gov.aps.jca.TimeoutException;
 import gov.aps.jca.dbr.*;
 
 import java.util.logging.*;
+import xal.tools.apputils.Preferences;
 
 
 /**
@@ -42,6 +43,10 @@ class JcaChannel extends Channel {
     public static final double      c_dblDefTimeIO = 5.0;       // default pend IO timeout
     public static final double      c_dblDefTimeEvent = 0.1;    // default pend event timeout
     
+    // Property names
+    private static final String DEF_TIME_IO = "c_dblDefTimeIO";
+    private static final String DEF_TIME_EVENT = "c_dblDefTimeEvent";
+
 	
     //  Database Request (DBR) Data Types
     public static final int STRING;
@@ -110,8 +115,10 @@ class JcaChannel extends Channel {
 		_jcaChannel = null;
 		_connectionLock = new Object();
         
-        m_dblTmIO  = c_dblDefTimeIO;
-        m_dblTmEvt = c_dblDefTimeEvent;
+        // Load default timeouts from preferences if available, otherwise use hardcoded values.
+        java.util.prefs.Preferences defaults = Preferences.nodeForPackage(Channel.class);
+        m_dblTmIO = defaults.getDouble( DEF_TIME_IO, c_dblDefTimeIO);
+        m_dblTmEvt = defaults.getDouble( DEF_TIME_EVENT, c_dblDefTimeEvent);    
     }
     
     
