@@ -7,13 +7,39 @@ test:
     only:
         - master
         - /^site.sns.*$/
-test.maven:
+
+.maven: &maven
     image: registry.esss.lu.se/yngvelevinsen/dockers/oracle-jdk-maven:1.8
+    only:
+        - /^site.ess.*$/
+build.maven:
+    <<: *maven
+    stage:
+        build
     script:
-        - mvn package -B
+        - 'mvn -DskipTests -Dmaven.javadoc.skip=true -Dmaven.test.failure.ignore clean install -B'
+test.maven:
+    <<: *maven
+    stage:
+        test
+    script:
+        - 'mvn test -B'
     artifacts:
         reports:
             junit: "**/target/surefire-reports/TEST-*.xml"
+sonarqube.maven:
+    <<: *maven
+    stage:
+        test
+    script:
+        - 'mvn -Dsonar.login={{SONAR_TOKEN}} sonar:sonar'
     only:
-        - /^site.ess.*$/
-
+        - /^site.ess.never*$/
+publish.maven:
+    <<: *maven
+    stage:
+        deploy
+    script:
+        - 'mvn deploy -pl dist -Dartifactory.username={{ARTIFACTORY_USERNAME}} -Dartifactory.password={{ARTIFACTORY_PASSWORD}}'
+    only:
+        - site.ess.master.never@ess-crs/openxal
