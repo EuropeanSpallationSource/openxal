@@ -17,7 +17,7 @@ build.maven:
     stage:
         build
     script:
-        - 'mvn -DskipTests -Dmaven.javadoc.skip=true -Dmaven.test.failure.ignore clean install -B'
+        - 'mvn -DskipTests -Dmaven.javadoc.skip=true clean install -B'
 test.maven:
     <<: *maven
     stage:
@@ -44,3 +44,12 @@ publish.maven:
         - 'mvn deploy -pl dist -Dartifactory.username={{ARTIFACTORY_USERNAME}} -Dartifactory.password={{ARTIFACTORY_PASSWORD}}'
     only:
         - site.ess.master.never@ess-crs/openxal
+pages:
+    <<: *maven
+    script:
+        - 'mvn javadoc:aggregate -B'
+    artifacts:
+        paths:
+            - target/site/apidocs
+    only:
+        - site.ess.master
