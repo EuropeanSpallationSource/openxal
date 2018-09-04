@@ -27,7 +27,9 @@ test.maven:
         - '! grep "Build failures were ignored" std.out'
     artifacts:
         reports:
-            junit: "**/target/surefire-reports/TEST-*.xml"
+            junit:
+                - "*/target/surefire-reports/TEST-*.xml"
+                - "*/*/target/surefire-reports/TEST-*.xml"
 sonarqube.maven:
     <<: *maven
     stage:
