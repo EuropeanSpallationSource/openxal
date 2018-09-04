@@ -30,7 +30,7 @@ public class MainApp extends FxApplication {
 
         MAIN_SCENE = "/fxml/MainPanel.fxml";
         CSS_STYLE = "/styles/Styles.css";
-        STAGE_TITLE = "Trajectory Correction";
+        setApplicationName("Trajectory Correction");
 
         super.initialize();
         super.start(stage);

@@ -19,7 +19,7 @@ public class MainApp extends FxApplication {
 
         MAIN_SCENE = "/fxml/LEBTScene.fxml";
         CSS_STYLE = "/styles/Styles.css";
-        STAGE_TITLE = "LEBT Commissioning Application";
+        setApplicationName("LEBT Commissioning Application");
         HAS_DOCUMENTS= false;
         HAS_SEQUENCE = true;
         DOCUMENT = new LEBTDocument(stage);
