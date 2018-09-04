@@ -18,18 +18,36 @@ build.maven:
         build
     script:
         - 'mvn -DskipTests -Dmaven.javadoc.skip=true clean install -B'
-test.maven:
+.maventest: &maventest
     <<: *maven
     stage:
         test
     script:
-        - 'mvn verify -B -fn | tee std.out'
+        - 'mvn -DskipTests -Dmaven.javadoc.skip=true clean install -B'
+        - 'cd $SUBDIR'
+        - 'mvn verify -Dmaven.javadoc.skip=true -B -fn | tee std.out'
         - '! grep "Build failures were ignored" std.out'
     artifacts:
         reports:
             junit:
-                - "*/target/surefire-reports/TEST-*.xml"
-                - "*/*/target/surefire-reports/TEST-*.xml"
+                - "$SUBDIR/target/surefire-reports/TEST-*.xml"
+                - "$SUBDIR/*/target/surefire-reports/TEST-*.xml"
+test.maven.apps:
+    <<: *maventest
+    variables:
+        SUBDIR: 'apps'
+test.maven.core:
+    <<: *maventest
+    variables:
+        SUBDIR: 'test'
+test.maven.extensions:
+    <<: *maventest
+    variables:
+        SUBDIR: 'extensions'
+test.maven.plugins:
+    <<: *maventest
+    variables:
+        SUBDIR: 'plugins'
 sonarqube.maven:
     <<: *maven
     stage:
