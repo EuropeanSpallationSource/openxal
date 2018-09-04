@@ -14,18 +14,16 @@ test:
         - /^site.ess.*$/
 build.maven:
     <<: *maven
-    stage:
-        build
+    stage: build
     script:
-        - 'mvn -DskipTests -Dmaven.javadoc.skip=true clean install -B'
+        - 'mvn -DskipTests -Dmaven.javadoc.skip=true install -B'
 .maventest: &maventest
     <<: *maven
-    stage:
-        test
+    stage: test
     script:
-        - 'mvn -DskipTests -Dmaven.javadoc.skip=true clean install -B'
+        - 'mvn -DskipTests -Dmaven.javadoc.skip=true install -B'
         - 'cd $SUBDIR'
-        - 'mvn verify -Dmaven.javadoc.skip=true -B -fn | tee std.out'
+        - 'mvn verify -Dmaven.javadoc.skip=true -fn -B | tee std.out'
         - '! grep "Build failures were ignored" std.out'
     artifacts:
         reports:
@@ -50,16 +48,14 @@ test.maven.plugins:
         SUBDIR: 'plugins'
 sonarqube.maven:
     <<: *maven
-    stage:
-        test
+    stage: deploy
     script:
         - 'mvn -Dsonar.login={{SONAR_TOKEN}} sonar:sonar'
     only:
         - /^site.ess.never*$/
 publish.maven:
     <<: *maven
-    stage:
-        deploy
+    stage: deploy
     script:
         - 'mvn deploy -pl dist -Dartifactory.username={{ARTIFACTORY_USERNAME}} -Dartifactory.password={{ARTIFACTORY_PASSWORD}}'
     only:
@@ -67,9 +63,15 @@ publish.maven:
 pages:
     <<: *maven
     script:
+        - 'mvn -Dmaven.javadoc.skip=true install -B'
         - 'mvn javadoc:aggregate -B'
+        - 'mvn jacoco:report-aggregate -B'
+        - 'mv report/target/site/jacoco-aggregate target/site/apidocs/coverage'
+        - 'mv target/site/apidocs public'
     artifacts:
         paths:
-            - target/site/apidocs
+            - public
     only:
         - site.ess.master
+        - site.ess.devel.gitlab-junit
+
