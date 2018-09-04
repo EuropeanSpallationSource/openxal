@@ -23,7 +23,8 @@ test.maven:
     stage:
         test
     script:
-        - 'mvn test -B'
+        - 'mvn verify -B -fn | tee std.out'
+        - '! grep "Build failures were ignored" std.out'
     artifacts:
         reports:
             junit: "**/target/surefire-reports/TEST-*.xml"
