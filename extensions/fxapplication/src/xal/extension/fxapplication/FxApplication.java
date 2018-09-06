@@ -263,8 +263,18 @@ abstract public class FxApplication extends Application {
         Platform.runLater(getStage()::toFront);
     }
 
-    void quit() {
+    /**
+     * Overriding the stop method to ensure that applications close properly
+     * after calling Platform.exit(). In case some application need to perform
+     * some preparation before exiting, this method should be overridden.
+     */
+    @Override
+    public void stop() {
         System.exit(0);
+    }
+
+    void quit() {
+        Platform.exit();
     }
 
     /**
