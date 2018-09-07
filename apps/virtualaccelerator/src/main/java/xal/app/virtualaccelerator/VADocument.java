@@ -1770,6 +1770,11 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
         if (getSelectedSequence() == null) {
             JOptionPane.showMessageDialog(getMainWindow(), "You need to select sequence(s) first.", "Warning!", JOptionPane.PLAIN_MESSAGE);
         } else {
+            try {
+                _vaServer = new VAServer(selectedSequence);
+            } catch (Exception exception) {
+                exception.printStackTrace();
+            }
             // use PV logger
             if (isFromPVLogger) {
                 long pvLoggerId = plsc.getPVLogId();
@@ -1805,6 +1810,14 @@ public class VADocument extends AcceleratorDocument implements ActionListener, P
 
                 //put "set" PVs to the server
                 putSetPVs();
+                
+                
+            // should create a new map for "set" <-> "readback" PV mapping
+            configureReadbacks();
+
+            // misalign the selected sequence (also sets new modelScenario and probe)
+            misalignElements();
+
 
                 // continuously loop through the next 3 steps
                 System.out.println("Setup to synchronize the online model periodically...");
