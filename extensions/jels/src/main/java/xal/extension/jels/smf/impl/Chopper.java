@@ -86,9 +86,9 @@ public class Chopper extends AcceleratorNode {
     /*
      *  Process variable Gets 
      */
-    public Integer getStatusON_OFF() throws ConnectionException, GetException {
+    public Double getStatusON_OFF() throws ConnectionException, GetException {
         statusRC = lazilyGetAndConnect(STATUS_RB_HANDLE, statusRC);
-        return statusRC.getValInt();
+        return statusRC.getValDbl();
     }
 
     public double getDelay() throws ConnectionException, GetException {
@@ -104,9 +104,9 @@ public class Chopper extends AcceleratorNode {
     /*
      *  Process variable Puts 
      */
-    public void setStatusON_OFF(Integer intVal) throws ConnectionException, PutException {
+    public void setStatusON_OFF(Double dblVal) throws ConnectionException, PutException {
         statusSC = lazilyGetAndConnect(STATUS_SET_HANDLE, statusSC);
-        statusSC.putVal(intVal);
+        statusSC.putVal(dblVal);
     }
 
     public void setDelay(double dblVal) throws ConnectionException, PutException  {

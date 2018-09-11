@@ -1,6 +1,8 @@
 package xal.app.lebt;
 
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import static javafx.application.Application.launch;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.Event;
@@ -72,7 +74,7 @@ class ModelMenu implements EventHandler {
     @Override
     public void handle(Event t) {
         RadioMenuItem menu = (RadioMenuItem) modelGroup.getSelectedToggle();
-        document.setModel((SimpleStringProperty) menu.textProperty());
-        //Logger.getLogger(LEBTDocument.class.getName()).log(Level.FINER, "Selected Model {0}",document.getModel().toString());
+        document.setModel(menu.getText());
+        Logger.getLogger(LEBTDocument.class.getName()).log(Level.FINER, "Selected Model {0}",document.getModel().toString());
     }
 }

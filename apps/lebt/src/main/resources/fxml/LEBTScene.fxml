@@ -232,7 +232,6 @@
                               <Font size="16.0" />
                            </font>
                         </Label>
-                        <CheckBox fx:id="checkBox_chopper" contentDisplay="RIGHT" layoutX="608.0" layoutY="145.0" mnemonicParsing="false" selected="true" stylesheets="@../styles/ToggleSwitch.css" text="ON" AnchorPane.leftAnchor="608.0" AnchorPane.topAnchor="145.0" />
                         <GridPane layoutX="864.0" layoutY="105.0" AnchorPane.leftAnchor="530.0" AnchorPane.topAnchor="170.0">
                           <columnConstraints>
                             <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="58.0" />
@@ -256,8 +255,8 @@
                               <Label text="RB (ms)" GridPane.columnIndex="3" />
                            </children>
                         </GridPane>
-                        <Circle fx:id="chopperStatus" fill="GREEN" layoutX="696.0" layoutY="156.0" radius="8.0" stroke="#9e9c9c" strokeType="INSIDE" />
-                        <Label layoutX="712.0" layoutY="147.0" text="PS Status" />
+                        <Circle fx:id="chopperStatus" fill="GREEN" layoutX="618.0" layoutY="156.0" radius="8.0" stroke="#9e9c9c" strokeType="INSIDE" />
+                        <Label layoutX="634.0" layoutY="147.0" text="PS Status" />
                      </children>
                   </AnchorPane>
             </content>
