@@ -48,7 +48,7 @@ public class Chopper extends AcceleratorNode {
     public static final String STATUS_RB_HANDLE = "statusRB";
     private Channel statusRC = null;
     public static final String STATUS_SET_HANDLE = "statusS";
-    private Channel statusSC = null;    
+    private Channel statusSC = null;
 
     static {
         registerType();
@@ -84,36 +84,36 @@ public class Chopper extends AcceleratorNode {
     }
 
     /*
-     *  Process variable Gets 
+     *  Process variable Gets
      */
-    public Double getStatusON_OFF() throws ConnectionException, GetException {
+    public int getStatusON_OFF() throws ConnectionException, GetException {
         statusRC = lazilyGetAndConnect(STATUS_RB_HANDLE, statusRC);
-        return statusRC.getValDbl();
+        return statusRC.getValEnum();
     }
 
     public double getDelay() throws ConnectionException, GetException {
         delayRC = lazilyGetAndConnect(DELAY_RB_HANDLE, delayRC);
         return delayRC.getValDbl();
     }
-    
+
     public double getPulseLength() throws ConnectionException, GetException {
         lengthRC = lazilyGetAndConnect(LENGTH_RB_HANDLE, lengthRC);
         return lengthRC.getValDbl();
     }
 
     /*
-     *  Process variable Puts 
+     *  Process variable Puts
      */
-    public void setStatusON_OFF(Double dblVal) throws ConnectionException, PutException {
+    public void setStatusON_OFF(int intVal) throws ConnectionException, PutException {
         statusSC = lazilyGetAndConnect(STATUS_SET_HANDLE, statusSC);
-        statusSC.putVal(dblVal);
+        statusSC.putVal(intVal);
     }
 
     public void setDelay(double dblVal) throws ConnectionException, PutException  {
         delaySC = lazilyGetAndConnect(DELAY_SET_HANDLE, delaySC);
         delaySC.putVal(dblVal);
     }
-    
+
     public void  setPulseLength(double dblVal) throws ConnectionException, PutException  {
         lengthSC = lazilyGetAndConnect(LENGTH_SET_HANDLE, lengthSC);
         lengthSC.putVal(dblVal);

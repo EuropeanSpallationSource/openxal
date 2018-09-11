@@ -26,7 +26,7 @@ import xal.smf.AcceleratorNode;
 import xal.smf.impl.qualify.ElementTypeManager;
 /**
  * The implementation of the Repeller Electrode class.
- * 
+ *
  * @author Natalia Milas <natalia.milas@esss.se>
  */
 public class RepellerElectrode extends AcceleratorNode {
@@ -34,11 +34,11 @@ public class RepellerElectrode extends AcceleratorNode {
      *  Constants
      */
     public static final String s_strType = "REP";
-    
+
     public static final String STATUS_RB_HANDLE = "statusRB";
     private Channel statusRC = null;
     public static final String STATUS_SET_HANDLE = "statusS";
-    private Channel statusSC = null;    
+    private Channel statusSC = null;
 
     static {
         registerType();
@@ -75,19 +75,19 @@ public class RepellerElectrode extends AcceleratorNode {
     }
 
     /*
-     *  Process variable Gets 
+     *  Process variable Gets
      */
-    public double getStatusON_OFF() throws ConnectionException, GetException {
+    public int getStatusON_OFF() throws ConnectionException, GetException {
         statusRC = lazilyGetAndConnect(STATUS_RB_HANDLE, statusRC);
-        return statusRC.getValDbl();
+        return statusRC.getValEnum();
     }
-   
+
     /*
-     *  Process variable Puts 
+     *  Process variable Puts
      */
-    public void setStatusON_OFF(double dblVal) throws ConnectionException, PutException {
+    public void setStatusON_OFF(int intVal) throws ConnectionException, PutException {
         statusSC = lazilyGetAndConnect(STATUS_SET_HANDLE, statusSC);
-        statusSC.putVal(dblVal);
+        statusSC.putVal(intVal);
     }
-   
+
 }

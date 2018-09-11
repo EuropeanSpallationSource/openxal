@@ -60,7 +60,7 @@ import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
-import xal.ca.BatchGetValueRequest;
+import xal.ca.BatchConnectionRequest;
 import xal.ca.Channel;
 import xal.ca.ConnectionException;
 import xal.ca.GetException;
@@ -146,7 +146,7 @@ public class FXMLController implements Initializable {
     //Map the live machine values
     private HashMap<Channel,Label> displayValues;
     private HashMap<Channel,TextField> setValues;
-    private BatchGetValueRequest request;
+    private BatchConnectionRequest request;
 
     @FXML private LineChart<Double, Double> plot1;
     @FXML private NumberAxis yAxis;
@@ -226,7 +226,7 @@ public class FXMLController implements Initializable {
     @FXML private CheckBox checkBox_electrode;
     @FXML private Circle electrodeStatus;
     @FXML private TextField textField_sccelectrode;
-    @FXML private ToggleGroup toggleGroup_currentBI;   
+    @FXML private ToggleGroup toggleGroup_currentBI;
     @FXML private TextField textField_chopperDelay;
     @FXML private Label label_chopperDelayRB;
     @FXML private TextField textField_chopperLength;
@@ -579,7 +579,7 @@ public class FXMLController implements Initializable {
         displayValues.put(Solenoid1.getChannel("I_Set"),label_sol1current);
         setValues.put(Solenoid1.getChannel("fieldSet"),textField_sol1field);
         textField_sol1field.focusedProperty().addListener((obs, oldVal, newVal) ->{
-            if(!newVal && MainFunctions.mainDocument.getModel().get().matches("LIVE")){                
+            if(!newVal && MainFunctions.mainDocument.getModel().get().matches("LIVE")){
                 try {
                     double val = Double.parseDouble(textField_sol1field.getText());
                     if(val>=0 && val<450){
@@ -780,7 +780,7 @@ public class FXMLController implements Initializable {
 
         AcceleratorNode Electrode = sequence.getNodesOfType("REP").get(0);
         displayValues.put(Electrode.getChannel(RepellerElectrode.STATUS_RB_HANDLE),null);
-        
+
         AcceleratorNode n2FlowSCC = sequence.getNodesOfType("SCC").get(0);
         displayValues.put(n2FlowSCC.getChannel(SpaceChargeCompensation.N2FLOW_RB_HANDLE),label_N2flowRB);
         setValues.put(n2FlowSCC.getChannel(SpaceChargeCompensation.N2FLOW_SET_HANDLE),textField_N2flow);
@@ -1024,7 +1024,7 @@ public class FXMLController implements Initializable {
             channels.add(monitor.getChannel(EMU.BETA_X_TWISS_HANDLE));
             channels.add(monitor.getChannel(EMU.BETA_Y_TWISS_HANDLE));
         });
-        request = new BatchGetValueRequest( channels );
+        request = new BatchConnectionRequest( channels );
         request.submitAndWait(5.0);
 
         //Initialize arrays
@@ -1134,11 +1134,11 @@ public class FXMLController implements Initializable {
                 }
             }
         });
-        
+
         //Disable text field in case Model type chages to Design
-        MainFunctions.mainDocument.getModel().addListener((ObservableValue<? extends String> obs, String oldVal, String newVal) ->{    
+        MainFunctions.mainDocument.getModel().addListener((ObservableValue<? extends String> obs, String oldVal, String newVal) ->{
             MODEL_SYNC_TIMER.suspend();
-            if(newVal.matches("DESIGN")){  
+            if(newVal.matches("DESIGN")){
                 //Ion Source
                 textField_magnetron.setDisable(true);
                 textField_coil1.setDisable(true);
@@ -1157,48 +1157,48 @@ public class FXMLController implements Initializable {
             } else if (newVal.matches("LIVE")){
                 //set the magnets values as the readbacks from the channels
                 Button applyButton = new Button("Apply");
-                Button cancelButton = new Button("Cancel");                                              
-                
-                HBox hbox = new HBox(8);                
-                hbox.setPadding(new Insets(5, 10, 10, 5));    
+                Button cancelButton = new Button("Cancel");
+
+                HBox hbox = new HBox(8);
+                hbox.setPadding(new Insets(5, 10, 10, 5));
                 hbox.setAlignment(Pos.CENTER_RIGHT);
-                hbox.getChildren().addAll(applyButton,cancelButton); 
-                
+                hbox.getChildren().addAll(applyButton,cancelButton);
+
                 TableView<Magnet> table = new TableView<Magnet>();
                 TableColumn<Magnet,Boolean> booleanColumn = new TableColumn<Magnet, Boolean>("Set?");
                 TableColumn<Magnet,String> elementColumn = new TableColumn<Magnet, String>("Element");
                 TableColumn<Magnet,String> newFieldColumn = new TableColumn<Magnet, String>("New Field");
                 TableColumn<Magnet,String> oldFieldColumn = new TableColumn<Magnet, String>("Old Field");
-                
-                ObservableList<Magnet> inputMagnets = FXCollections.observableArrayList(); 
-                                
+
+                ObservableList<Magnet> inputMagnets = FXCollections.observableArrayList();
+
                 inputMagnets.add(new Magnet(Solenoid1.getId(),textField_sol1field.getText(),label_sol1fieldRB.getText(),false));
                 inputMagnets.add(new Magnet(Solenoid2.getId(),textField_sol2field.getText(),label_sol2fieldRB.getText(),false));
                 inputMagnets.add(new Magnet(CV1.getId(),textField_CV1field.getText(),label_CV1fieldRB.getText(),false));
                 inputMagnets.add(new Magnet(CH1.getId(),textField_CH1field.getText(),label_CH1fieldRB.getText(),false));
                 inputMagnets.add(new Magnet(CV2.getId(),textField_CV2field.getText(),label_CV2fieldRB.getText(),false));
-                inputMagnets.add(new Magnet(CH2.getId(),textField_CH2field.getText(),label_CH2fieldRB.getText(),false));                                                                                
-                
+                inputMagnets.add(new Magnet(CH2.getId(),textField_CH2field.getText(),label_CH2fieldRB.getText(),false));
+
                 elementColumn.setCellValueFactory(new PropertyValueFactory<>("magnetName"));
                 newFieldColumn.setCellValueFactory(new PropertyValueFactory<>("newField"));
                 oldFieldColumn.setCellValueFactory(new PropertyValueFactory<>("oldField"));
                 booleanColumn.setCellValueFactory( new PropertyValueFactory<>( "selected" ));
-                booleanColumn.setCellFactory(tc -> new CheckBoxTableCell<>());                
+                booleanColumn.setCellFactory(tc -> new CheckBoxTableCell<>());
 
                 table.setItems(inputMagnets);
                 table.setEditable(true);
-                table.getColumns().addAll(booleanColumn,elementColumn,newFieldColumn,oldFieldColumn);                
-                
+                table.getColumns().addAll(booleanColumn,elementColumn,newFieldColumn,oldFieldColumn);
+
                 BorderPane secondaryLayout = new BorderPane();
-                secondaryLayout.setTop(new Label("Choose magnets to restore new fields to machine:")); 
-                secondaryLayout.setCenter(table); 
+                secondaryLayout.setTop(new Label("Choose magnets to restore new fields to machine:"));
+                secondaryLayout.setCenter(table);
                 secondaryLayout.setBottom(hbox);
 
-                Scene secondScene = new Scene(secondaryLayout, 375, 258); 
+                Scene secondScene = new Scene(secondaryLayout, 375, 258);
                 Stage newWindow = new Stage();
                 newWindow.setTitle("Magnets Settings");
                 newWindow.setScene(secondScene);
-                
+
                 applyButton.setOnMouseClicked(new EventHandler<MouseEvent>(){
                     @Override
                     public void handle(MouseEvent event) {
@@ -1213,15 +1213,15 @@ public class FXMLController implements Initializable {
                                 } catch (PutException ex) {
                                     Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                                 }
-                            } else {                                
-                                setValues.get(node.getChannel("fieldSet")).setText(mag.getOldField());                                
+                            } else {
+                                setValues.get(node.getChannel("fieldSet")).setText(mag.getOldField());
                             }
-                        }); 
+                        });
                         newWindow.close();
-                        MODEL_SYNC_TIMER.resume();                         
+                        MODEL_SYNC_TIMER.resume();
                     }
                 });
-                
+
                 cancelButton.setOnMouseClicked(new EventHandler<MouseEvent>(){
                     @Override
                     public void handle(MouseEvent event) {
@@ -1232,10 +1232,10 @@ public class FXMLController implements Initializable {
                         textField_CV2field.setText(label_CV2fieldRB.getText());
                         textField_CH2field.setText(label_CH2fieldRB.getText());
                         newWindow.close();
-                        MODEL_SYNC_TIMER.resume(); 
+                        MODEL_SYNC_TIMER.resume();
                     }
                 });
-                                                
+
                 //Ion Source
                 textField_magnetron.setDisable(false);
                 textField_coil1.setDisable(false);
@@ -1249,11 +1249,11 @@ public class FXMLController implements Initializable {
                 textField_irisY.setDisable(false);
                 textField_chopperDelay.setDisable(false);
                 textField_chopperLength.setDisable(false);
-                textField_N2flow.setDisable(false);                               
+                textField_N2flow.setDisable(false);
 
                 newWindow.show();
-            } 
-                                    
+            }
+
         });
 
         //Initializes TextField
@@ -1803,7 +1803,7 @@ public class FXMLController implements Initializable {
             newRun.setSpaceChargeCompensation(spaceChargeComp,spaceChargeCompElectrode);
             newRun.setElectrode(checkBox_electrode.isSelected());
             newRun.setModelSync(MainFunctions.mainDocument.getModel().get());
-            
+
             //Set fields: if model changes from Live to DESIGN the defaults fileds will be up-to-date
             newRun.setSolenoid1Field(Double.parseDouble(textField_sol1field.getText()));
             newRun.setSolenoid2Field(Double.parseDouble(textField_sol2field.getText()));
@@ -1811,7 +1811,7 @@ public class FXMLController implements Initializable {
             newRun.setVsteerer2Field(Double.parseDouble(textField_CV2field.getText()));
             newRun.setHsteerer1Field(Double.parseDouble(textField_CH1field.getText()));
             newRun.setHsteerer2Field(Double.parseDouble(textField_CH2field.getText()));
-            
+
         }
         catch(NumberFormatException e){
             Alert alert = new Alert(AlertType.ERROR);
@@ -2219,7 +2219,7 @@ public class FXMLController implements Initializable {
     }
 
     public class Magnet{
-    
+
         private String magnetName;
         private String newField;
         private String oldField;
@@ -2231,7 +2231,7 @@ public class FXMLController implements Initializable {
             this.oldField = oldField;
             this.selected.set(selected);
         }
-        
+
         public BooleanProperty selectedProperty() { return selected; }
 
         public String getMagnetName() {
@@ -2256,8 +2256,8 @@ public class FXMLController implements Initializable {
 
         public void setOldField(String oldField) {
             this.oldField = oldField;
-        }        
-    
+        }
+
     }
-    
+
 }
