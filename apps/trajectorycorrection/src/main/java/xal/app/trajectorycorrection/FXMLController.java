@@ -20,6 +20,7 @@ package xal.app.trajectorycorrection;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -442,10 +443,21 @@ public class FXMLController implements Initializable {
         }
     }
 
+    private boolean isZeroTrajectory(URL trajectory) {
+        try {
+            if (refTrajData.get(0).toURI().equals(trajectory.toURI())) {
+                return true;
+            }
+        } catch (URISyntaxException ex) {
+            Logger.getLogger(FXMLController.class.getName()).log(Level.WARNING, "Malformed trajectory file URL", ex);
+        }
+        return false;
+    }
+
     //handles table context menu for deleting a entry (doesn;t allow deleting the zero orbit)
     @FXML
     public void handleTrajectoryMenuDelete(ActionEvent event) {
-        if (refTrajData.get(0).equals(comboBoxRefTrajectory.getValue())) {
+        if (isZeroTrajectory(comboBoxRefTrajectory.getValue())) {
             Alert alert = new Alert(AlertType.INFORMATION);
             alert.setTitle("Information Dialog");
             alert.setHeaderText(null);
