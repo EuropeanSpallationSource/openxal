@@ -198,15 +198,15 @@ public abstract class ThickElement extends Element {
     protected PhaseMatrix applyErrors(PhaseMatrix matPhi, IProbe probe, double length)
     {
 		if (isFirstSubslice(probe.getPosition())) {
-			double px = getPhiX();
+                    double px = getPhiX();
 		    double py = getPhiY();
 		    double pz = getPhiZ();
-	    	double dx = getAlignX();
-	        double dy = getAlignY();
-	        double dz = getAlignZ();
+                    double dx = getAlignX();
+                    double dy = getAlignY();
+                    double dz = getAlignZ();
 	        
 		    if (px != 0. || py != 0.) {
-		    	PhaseMatrix T = PhaseMatrix.translation(new PhaseVector(px*m_dblNodeLen/2., -px, py*m_dblNodeLen/2., -py, 0., 0.));		    	
+		    	PhaseMatrix T = PhaseMatrix.translation(new PhaseVector(py*m_dblNodeLen/2., -py, px*m_dblNodeLen/2., -px, 0., 0.));		    	
 		    	matPhi = matPhi.times(T);
 		    }
 		    
@@ -215,22 +215,22 @@ public abstract class ThickElement extends Element {
 		    	matPhi = matPhi.times(R);
 		    }		   
 
-	        if ((dx != 0)||(dy != 0)||(dz !=0)) {
-	            PhaseMatrix T = PhaseMatrix.spatialTranslation(new R3(-dx, -dy, -dz));
-	        	matPhi = matPhi.times(T);
-	        }
+                    if ((dx != 0)||(dy != 0)||(dz !=0)) {
+                        PhaseMatrix T = PhaseMatrix.spatialTranslation(new R3(-dx, -dy, -dz));
+                            matPhi = matPhi.times(T);
+                    }
 		}
 		
 		if (isLastSubslice(probe.getPosition() + length)) {
-			double px = getPhiX();
+                    double px = getPhiX();
 		    double py = getPhiY();
 		    double pz = getPhiZ();
-			double dx = getAlignX();
-	        double dy = getAlignY();
-	        double dz = getAlignZ();
+                    double dx = getAlignX();
+                    double dy = getAlignY();
+                    double dz = getAlignZ();
 	        
 		    if (px != 0. || py != 0.) {
-		    	PhaseMatrix T = PhaseMatrix.translation(new PhaseVector(px*m_dblNodeLen/2., px, py*m_dblNodeLen/2., py, 0., 0.)); 		    
+		    	PhaseMatrix T = PhaseMatrix.translation(new PhaseVector(py*m_dblNodeLen/2., py, px*m_dblNodeLen/2., px, 0., 0.)); 		    
 		    	matPhi = T.times(matPhi);
 		    }
 		    
@@ -239,13 +239,103 @@ public abstract class ThickElement extends Element {
 		    	matPhi = R.times(matPhi);	    		    
 		    }
 
-	        if ((dx != 0)||(dy != 0)||(dz !=0)) {
-	        	 PhaseMatrix T = PhaseMatrix.spatialTranslation(new R3(dx,dy,dz));
-	             matPhi = T.times(matPhi);
-	        } 
+                    if ((dx != 0)||(dy != 0)||(dz !=0)) {
+                             PhaseMatrix T = PhaseMatrix.spatialTranslation(new R3(dx,dy,dz));
+                         matPhi = T.times(matPhi);
+                    } 
 		}
 		   		   
 		return matPhi;
+    }   
+    
+
+    /**
+     * <h2>Add Rotation and Displacement Error to Transfer Matrix</h2>
+     * <p>
+     * Method to add the effects of a spatial rotation and displacement to the
+     * beamline element represented by the given transfer matrix.
+     *
+     * @param   matPhi      transfer matrix <b>&Phi;</b> to be processed
+     * @param   probe       instance of the probe     
+     * @return              transfer matrix <b>&Phi;</b> after applying displacement and rotation
+     * 
+     * @author  Natalia Milas
+     * 
+     * @see PhaseMatrix
+     */
+    protected PhaseMatrix applySolenoidErrors(PhaseMatrix matPhi, IProbe probe, double length)
+    {
+            double px = getPhiX();
+            double py = getPhiY();
+            double pz = getPhiZ();
+            double dx = getAlignX();
+            double dy = getAlignY();
+            double dz = getAlignZ();
+            double pos = compProbeLocation(probe);
+            if(length != 0){
+                if (px != 0. || py != 0.|| dx !=0 || dy != 0) {
+                    PhaseMatrix T = PhaseMatrix.translation(new PhaseVector(py*(m_dblNodeLen/2.-pos)-dx, -py, px*(m_dblNodeLen/2.-pos)-dy, -px, 0., 0.));		    	
+                    matPhi = matPhi.times(T);
+                }
+
+                if (pz != 0.) {		   
+                    PhaseMatrix R = PhaseMatrix.rotationProduct(R3x3.newRotationZ(-pz));		    
+                    matPhi = matPhi.times(R);
+                }	
+                if ((dx != 0)) {
+                    PhaseMatrix T = PhaseMatrix.spatialTranslation(new R3(0.0, 0.0, -dz));
+                    matPhi = matPhi.times(T);
+                }
+
+
+                if (px != 0. || py != 0. || dx !=0 || dy != 0) {
+                    PhaseMatrix T = PhaseMatrix.translation(new PhaseVector(-py*(m_dblNodeLen/2.-(pos+length))+dx, py, -px*(m_dblNodeLen/2.-(pos+length))+dy, px, 0., 0.)); 		    
+                    matPhi = T.times(matPhi);
+                }
+
+                if (pz != 0.) {		   
+                    PhaseMatrix R = PhaseMatrix.rotationProduct(R3x3.newRotationZ(pz));
+                    matPhi = R.times(matPhi);	    		    
+                }
+
+                if ((dx != 0)) {
+                    PhaseMatrix T = PhaseMatrix.spatialTranslation(new R3(0.0,0.0,dz));
+                     matPhi = T.times(matPhi);
+                } 
+            } else {
+                pos = m_dblNodeLen;
+                if (px != 0. || py != 0.|| dx !=0 || dy != 0) {
+                    PhaseMatrix T = PhaseMatrix.translation(new PhaseVector(py*(m_dblNodeLen/2.-pos)-dx, -py, px*(m_dblNodeLen/2.-pos)-dy, -px, 0., 0.));		    	
+                    matPhi = matPhi.times(T);
+                }
+
+                if (pz != 0.) {		   
+                    PhaseMatrix R = PhaseMatrix.rotationProduct(R3x3.newRotationZ(-pz));		    
+                    matPhi = matPhi.times(R);
+                }	
+                if ((dx != 0)) {
+                    PhaseMatrix T = PhaseMatrix.spatialTranslation(new R3(0.0, 0.0, -dz));
+                    matPhi = matPhi.times(T);
+                }
+
+
+                if (px != 0. || py != 0. || dx !=0 || dy != 0) {
+                    PhaseMatrix T = PhaseMatrix.translation(new PhaseVector(-py*(m_dblNodeLen/2.-(pos+length))+dx, py, -px*(m_dblNodeLen/2.-(pos+length))+dy, px, 0., 0.)); 		    
+                    matPhi = T.times(matPhi);
+                }
+
+                if (pz != 0.) {		   
+                    PhaseMatrix R = PhaseMatrix.rotationProduct(R3x3.newRotationZ(pz));
+                    matPhi = R.times(matPhi);	    		    
+                }
+
+                if ((dx != 0)) {
+                    PhaseMatrix T = PhaseMatrix.spatialTranslation(new R3(0.0,0.0,dz));
+                     matPhi = T.times(matPhi);
+                } 
+            }
+            
+            return matPhi;
     }   
 
     public abstract double elapsedTime(IProbe probe, double dblLen);

@@ -9,13 +9,10 @@ package xal.extension.fxapplication;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.HostServices;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.scene.image.WritableImage;
 import javafx.stage.Stage;
 import xal.extension.jelog.PostEntryDialog;
@@ -176,40 +173,5 @@ abstract public class XalFxDocument {
     public AcceleratorProperty getAcceleratorProperty() {
         return accelerator;
     }
-
-}
-
-class AcceleratorProperty {
-
-    private Accelerator accelerator;
-
-    private final Set<ChangeListener> listeners = new HashSet<>();
-
-    public void setAccelerator(Accelerator accelerator) {
-        synchronized( listeners ){
-          Accelerator old_accelerator = this.accelerator;
-          this.accelerator = accelerator;
-          listeners.forEach(listener -> listener.changed(null, old_accelerator, this.accelerator));
-        }
-
-    }
-
-    public Accelerator getAccelerator() {
-        synchronized( listeners ){
-         return accelerator;
-        }
-    }
-
-    public void addChangeListener(ChangeListener listener){
-        synchronized( listeners ){
-          listeners.add(listener);
-        }
-    };
-
-    public void removeChangeListener(ChangeListener listener){
-        synchronized( listeners ){
-          listeners.remove(listener);
-        }
-    };
 
 }
