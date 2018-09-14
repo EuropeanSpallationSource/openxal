@@ -32,12 +32,10 @@
         <dependency>
             <groupId>org.xal</groupId>
             <artifactId>openxal.extensions.jelog</artifactId>
-            <type>jar</type>
         </dependency>
         <dependency>
             <groupId>org.xal</groupId>
             <artifactId>openxal.extensions.application</artifactId>
-            <type>jar</type>
         </dependency>
     </dependencies>
 </project>

@@ -27,8 +27,7 @@
         <dependency>
             <groupId>se.esss</groupId>
             <artifactId>jelog</artifactId>
-            <version>1.1</version>
-            <type>jar</type>
+            <version>1.2</version>
         </dependency>
     </dependencies>
 </project>
