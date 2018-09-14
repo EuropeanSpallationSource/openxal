@@ -31,6 +31,7 @@ public class MainApp extends FxApplication {
         MAIN_SCENE = "/fxml/MainPanel.fxml";
         CSS_STYLE = "/styles/Styles.css";
         setApplicationName("Trajectory Correction");
+        DOCUMENT = new TrajectoryCorrectionDocument(stage);
 
         super.initialize();
         super.start(stage);

@@ -3,6 +3,7 @@
  *
  * Created on January 19, 2018
  */
+
 package xal.extension.fxapplication;
 
 import java.io.File;
@@ -78,8 +79,6 @@ abstract public class FxApplication extends Application {
 
     /**
      * Application constructor.
-     *
-     * @param adaptor The application adaptor used for customization.
      */
     protected FxApplication() {
         this(new URL[]{});
