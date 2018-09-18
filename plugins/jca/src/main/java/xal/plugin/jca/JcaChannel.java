@@ -1339,15 +1339,16 @@ class JcaChannel extends Channel {
 			throw new GetException( "JcaChannel.flushGetIO() - channel access time out occurred" );
 		}
 		catch( TimeoutException exception ) {
-			exception.printStackTrace();
-			Logger.getLogger("global").log( Level.SEVERE, "Error flushing the channel access GET I/O buffer.", exception );
-			throw new GetException( "JcaChannel.flushGetIO() - channel access time out occurred" );
+                        // TODO: this exception should be thrown and logged. It has been disabled while OXAL-578 is not solved.
+//			exception.printStackTrace();
+//			Logger.getLogger("global").log( Level.SEVERE, "Error flushing the channel access GET I/O buffer.", exception );
+//			throw new GetException( "JcaChannel.flushGetIO() - channel access time out occurred" );
 		}
      }
      
      
     /**
-     *  Flushs the channel access request buffer for put operations
+     *  Flushes the channel access request buffer for put operations
      *  @exception  PutException        a pendIO time out occurred
      */
      private void flushPutIO() throws PutException    {
