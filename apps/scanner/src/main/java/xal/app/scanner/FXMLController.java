@@ -168,6 +168,8 @@ public class FXMLController implements Initializable {
 
     public static ObservableList<ChannelWrapper> PVscanList;
 
+    private static final Logger logger = Logger.getLogger(FXMLController.class.getName());
+
     @FXML
     private void handleScanAddPV(ActionEvent event) {
         try {
@@ -177,17 +179,17 @@ public class FXMLController implements Initializable {
             stage.setTitle("Add PV");
             stage.setScene(new Scene(root));
             stage.show();
-            Logger.getLogger(FXMLController.class.getName()).log(Level.FINER, "Add PV Window opened");
+            logger.log(Level.FINER, "Add PV Window opened");
         }
         catch (IOException e) {
-            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, "Error opening Add PV window", e);
+            logger.log(Level.SEVERE, "Error opening Add PV window", e);
         }
     }
 
     @FXML
     private void handleScanRemovePV(ActionEvent event) {
             pvTable.getSelectionModel().getSelectedItems().forEach(cW -> {
-                    Logger.getLogger(FXMLController.class.getName()).log(Level.INFO, "Parameter {0} removed from channel list",cW.getChannelName());
+                    logger.log(Level.INFO, "Parameter {0} removed from channel list",cW.getChannelName());
                     pvTable.getItems().remove(cW);
                     listOfWriteables.getItems().remove(cW);
             });
@@ -268,7 +270,7 @@ public class FXMLController implements Initializable {
     @FXML
     void setDelayEdited(KeyEvent event) {
         if (!delayBetweenMeas.getText().equals("")) {
-            Logger.getLogger(FXMLController.class.getName()).log(Level.FINER, "Delay edited to {0}", delayBetweenMeas.getText());
+            logger.log(Level.FINER, "Delay edited to {0}", delayBetweenMeas.getText());
             if((long) (Float.parseFloat(delayBetweenMeas.getText())*1000)!=MainFunctions.mainDocument.delayBetweenMeasurements.get())
                 measDelaySetButton.setDisable(false);
             else
@@ -279,7 +281,7 @@ public class FXMLController implements Initializable {
     @FXML
     void setMeasPerPointEdited(KeyEvent event) {
         if (!measPerPoint.getText().equals("")) {
-            Logger.getLogger(FXMLController.class.getName()).log(Level.FINER, "Measurements per point edited to {0}", measPerPoint.getText());
+            logger.log(Level.FINER, "Measurements per point edited to {0}", measPerPoint.getText());
             if(Integer.parseInt(measPerPoint.getText())!=MainFunctions.mainDocument.numberMeasurementsPerCombo.get())
                 nMeasPerSettingSetButton.setDisable(false);
             else
@@ -291,7 +293,7 @@ public class FXMLController implements Initializable {
     @FXML
     void setMeasurementDelay(ActionEvent event) {
         MainFunctions.mainDocument.delayBetweenMeasurements.set((long) (Float.parseFloat(delayBetweenMeas.getText())*1000));
-        Logger.getLogger(FXMLController.class.getName()).log(Level.INFO, "Measurement delay set to {0} ms", MainFunctions.mainDocument.delayBetweenMeasurements.get());
+        logger.log(Level.INFO, "Measurement delay set to {0} ms", MainFunctions.mainDocument.delayBetweenMeasurements.get());
         // If combos are already calculated we trigger a quick refresh of the calculation
         if (MainFunctions.isCombosUpdated.getValue())
             handlePreCalculate(event);
@@ -301,7 +303,7 @@ public class FXMLController implements Initializable {
     @FXML
     void setNumberOfMeasPerSetting(ActionEvent event) {
         MainFunctions.mainDocument.numberMeasurementsPerCombo.set(Integer.parseInt(measPerPoint.getText()));
-        Logger.getLogger(FXMLController.class.getName()).log(Level.INFO, "Measurements per point set to {0}", MainFunctions.mainDocument.numberMeasurementsPerCombo.get());
+        logger.log(Level.INFO, "Measurements per point set to {0}", MainFunctions.mainDocument.numberMeasurementsPerCombo.get());
         // If combos are already calculated we trigger a quick refresh of the calculation
         if (MainFunctions.isCombosUpdated.getValue())
             handlePreCalculate(event);
@@ -371,9 +373,15 @@ public class FXMLController implements Initializable {
             MainFunctions.isCombosUpdated.set(false);
         });
 
+        // Make sure the user has defined a document before starting a scan
         // Only allow to push execute when the combo list is up to date..
+        // executeButton.setDisable(!(MainFunctions.mainDocument.sourceSetAndValid() && MainFunctions.isCombosUpdated.getValue()));
         executeButton.setDisable(!MainFunctions.isCombosUpdated.getValue());
-        MainFunctions.isCombosUpdated.addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> executeButton.setDisable(!newValue));
+        MainFunctions.isCombosUpdated.addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
+            boolean executeAllowed = newValue; // && MainFunctions.mainDocument.sourceSetAndValid()
+            logger.log(Level.FINER, "Execute allowed: {0}",executeAllowed);
+            executeButton.setDisable(!executeAllowed);
+            });
 
 
         MainFunctions.mainDocument.numberOfScans.addListener((observable, oldValue, newValue) -> updateAnalysisList());
@@ -485,7 +493,7 @@ public class FXMLController implements Initializable {
         pvNameColumn.setCellValueFactory(new PropertyValueFactory<>("channelName"));
 
         readColumnSelect.setCellFactory(CheckBoxTableCell.forTableColumn((Integer param) -> {
-            Logger.getLogger(FXMLController.class.getName()).log(Level.FINEST, "Selection trigger for {0}", MainFunctions.mainDocument.pvChannels.get(param));
+            logger.log(Level.FINEST, "Selection trigger for {0}", MainFunctions.mainDocument.pvChannels.get(param));
             if (MainFunctions.mainDocument.pvChannels.get(param).getIsRead()) {
                 MainFunctions.actionAddPV(MainFunctions.mainDocument.pvChannels.get(param), true, false);
                 checkSufficientParams();
@@ -498,9 +506,9 @@ public class FXMLController implements Initializable {
         readColumnSelect.setCellValueFactory((CellDataFeatures<ChannelWrapper, Boolean> param) -> param.getValue().isReadProperty());
 
         scanColumnSelect.setCellFactory(CheckBoxTableCell.forTableColumn((Integer param) -> {
-            Logger.getLogger(FXMLController.class.getName()).log(Level.FINEST, "Selection trigger for {0}", MainFunctions.mainDocument.pvChannels.get(param));
+            logger.log(Level.FINEST, "Selection trigger for {0}", MainFunctions.mainDocument.pvChannels.get(param));
             if (MainFunctions.mainDocument.pvChannels.get(param).getIsScanned()) {
-                Logger.getLogger(FXMLController.class.getName()).log(Level.FINEST, "Will scan {0}",MainFunctions.mainDocument.pvChannels.get(param).getChannel().channelName());
+                logger.log(Level.FINEST, "Will scan {0}",MainFunctions.mainDocument.pvChannels.get(param).getChannel().channelName());
                 MainFunctions.mainDocument.pvChannels.get(param).setInstance();
                 if (MainFunctions.actionAddPV(MainFunctions.mainDocument.pvChannels.get(param), false, true)) {
                     if (!PVscanList.contains(MainFunctions.mainDocument.pvChannels.get(param))) {
@@ -513,7 +521,7 @@ public class FXMLController implements Initializable {
                 checkSufficientParams();
             }
             else {
-                Logger.getLogger(FXMLController.class.getName()).log(Level.FINEST, "Will remove {0}",MainFunctions.mainDocument.pvChannels.get(param).getChannel().channelName());
+                logger.log(Level.FINEST, "Will remove {0}",MainFunctions.mainDocument.pvChannels.get(param).getChannel().channelName());
                 //MainFunctions.actionRemovePV(MainFunctions.mainDocument.pvWriteables.get(param), false, true);
                 if(PVscanList.removeAll(MainFunctions.mainDocument.pvChannels.get(param))) {
                     clearAllConstraints();
@@ -548,7 +556,7 @@ public class FXMLController implements Initializable {
                 MainFunctions.mainDocument.getDataSets().entrySet().forEach(dataSet -> measurements.add(dataSet.getKey()));
                 if (measurements.size() >0 )
                     tabDisplay.setDisable(false);
-                Logger.getLogger(FXMLController.class.getName()).log(Level.FINER, "Analysis list updated");
+                logger.log(Level.FINER, "Analysis list updated");
             }
           );
     }

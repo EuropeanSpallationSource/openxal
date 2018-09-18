@@ -13,6 +13,6 @@
         <URL value="@/styles/Styles.css" />
     </stylesheets>
    <children>
-      <PVTree layoutX="0.0" layoutY="5.0" prefHeight="600.0" prefWidth="500.0" />
+      <PVTree layoutX="0.0" layoutY="5.0"  AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
    </children>
 </AnchorPane>
