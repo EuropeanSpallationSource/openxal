@@ -144,6 +144,9 @@ public class FXMLController implements Initializable {
     private Text textFieldTimeEstimate;
 
     @FXML
+    private Text textFieldWarnSave;
+
+    @FXML
     private Button stopButton;
 
     @FXML
@@ -209,6 +212,8 @@ public class FXMLController implements Initializable {
     @FXML
     void handlePreCalculate(ActionEvent event) {
         int nPoints = MainFunctions.calculateNumMeas();
+        // Trigger update of Execute button
+        MainFunctions.isCombosUpdated.set(true);
         int nDone = MainFunctions.mainDocument.nCombosDone;
         textFieldNumMeas.setText("Number of measurement points: "+nPoints);
         if (nDone==0) {
@@ -216,6 +221,8 @@ public class FXMLController implements Initializable {
         } else {
             textFieldTimeEstimate.setText((nPoints-nDone) +" remaining, this will take "+MainFunctions.getTimeString(nPoints-nDone));
         }
+        if (!MainFunctions.mainDocument.sourceSetAndValid())
+            textFieldWarnSave.setText("Remember to save document first!");
     }
 
     @FXML
@@ -373,13 +380,11 @@ public class FXMLController implements Initializable {
             MainFunctions.isCombosUpdated.set(false);
         });
 
-        // Make sure the user has defined a document before starting a scan
         // Only allow to push execute when the combo list is up to date..
-        // executeButton.setDisable(!(MainFunctions.mainDocument.sourceSetAndValid() && MainFunctions.isCombosUpdated.getValue()));
         executeButton.setDisable(!MainFunctions.isCombosUpdated.getValue());
         MainFunctions.isCombosUpdated.addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
-            boolean executeAllowed = newValue; // && MainFunctions.mainDocument.sourceSetAndValid()
-            logger.log(Level.FINER, "Execute allowed: {0}",executeAllowed);
+            boolean executeAllowed = newValue;
+            logger.log(Level.FINEST, "Execute allowed: {0}", new Object[]{executeAllowed});
             executeButton.setDisable(!executeAllowed);
             });
 
@@ -428,6 +433,7 @@ public class FXMLController implements Initializable {
                     if(!newValue) {
                         textFieldNumMeas.setText("");
                         textFieldTimeEstimate.setText("");
+                        textFieldWarnSave.setText("");
                     }
                 });
 

@@ -2,6 +2,7 @@
 
 <?import xal.app.scanner.*?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.SplitPane?>
@@ -75,29 +76,15 @@
                            <content>
                               <AnchorPane>
                                  <children>
-                                    <Button fx:id="executeButton" layoutX="105.0" layoutY="269.0" mnemonicParsing="false" onAction="#handleRunExecute" prefHeight="64.0" prefWidth="191.0" text="Execute">
-                                       <font>
-                                          <Font size="14.0" />
-                                       </font></Button>
                                     <Button layoutX="101.0" layoutY="47.0" mnemonicParsing="false" onAction="#handlePreCalculate" prefHeight="41.0" prefWidth="198.0" text="Pre-calculate" />
+                                    <Text fx:id="textFieldNumMeas" layoutX="100.0" layoutY="155.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" />
+                                    <Text fx:id="textFieldTimeEstimate" layoutX="145.0" layoutY="185.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" />
+                                    <Text fx:id="textFieldWarnSave" id="text-warning" layoutX="110.0" layoutY="215.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" />
+                                    <Button fx:id="executeButton" layoutX="105.0" layoutY="269.0" mnemonicParsing="false" onAction="#handleRunExecute" prefHeight="64.0" prefWidth="191.0" text="Execute" />
                                     <ProgressBar fx:id="runProgressBar" layoutX="24.0" layoutY="345.0" prefHeight="20.0" prefWidth="358.0" progress="0.0" />
-                                    <Text fx:id="textFieldNumMeas" layoutX="120.0" layoutY="135.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" />
-                                    <Text fx:id="textFieldTimeEstimate" layoutX="155.0" layoutY="177.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" />
-                                    <Button fx:id="pauseButton" layoutX="37.0" layoutY="234.0" mnemonicParsing="false" onAction="#handleRunPause" prefHeight="54.0" prefWidth="109.0" text="Pause" visible="false">
-                                       <font>
-                                          <Font size="14.0" />
-                                       </font>
-                                    </Button>
-                                    <Button fx:id="stopButton" layoutX="289.0" layoutY="234.0" mnemonicParsing="false" onAction="#handleRunStop" prefHeight="54.0" prefWidth="109.0" text="Stop" visible="false">
-                                       <font>
-                                          <Font size="14.0" />
-                                       </font>
-                                    </Button>
-                                    <Button fx:id="restartButton" layoutX="160.0" layoutY="396.0" mnemonicParsing="false" onAction="#handleRunRestart" prefHeight="54.0" prefWidth="109.0" text="Restart" visible="false">
-                                       <font>
-                                          <Font size="14.0" />
-                                       </font>
-                                    </Button>
+                                    <Button fx:id="pauseButton" layoutX="37.0" layoutY="234.0" mnemonicParsing="false" onAction="#handleRunPause" prefHeight="54.0" prefWidth="109.0" text="Pause" visible="false" />
+                                    <Button fx:id="stopButton" layoutX="289.0" layoutY="234.0" mnemonicParsing="false" onAction="#handleRunStop" prefHeight="54.0" prefWidth="109.0" text="Stop" visible="false" />
+                                    <Button fx:id="restartButton" layoutX="160.0" layoutY="396.0" mnemonicParsing="false" onAction="#handleRunRestart" prefHeight="54.0" prefWidth="109.0" text="Restart" visible="false" />
                                  </children>
                               </AnchorPane>
                            </content>
