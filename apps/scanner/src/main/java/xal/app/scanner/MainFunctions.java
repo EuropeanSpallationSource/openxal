@@ -181,7 +181,7 @@ public class MainFunctions {
     public static String getTimeString(int npoints) {
         int seconds = (int) (npoints*mainDocument.delayBetweenMeasurements.get()/1000);
         int hours = (seconds - seconds%3600)/3600;
-        int min = (seconds - seconds%60)/60;
+        int min = (seconds - seconds%60)/60 - hours*60;
         String time = ""+(seconds%60)+" s";
         if (seconds>59)
                 time=""+min+" m, "+time;
