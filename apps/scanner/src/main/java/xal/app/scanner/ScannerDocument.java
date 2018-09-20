@@ -53,7 +53,6 @@ import javafx.stage.Stage;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
-import static xal.app.scanner.MainFunctions.mainDocument;
 import xal.ca.Channel;
 import xal.ca.ConnectionException;
 import xal.ca.GetException;
@@ -116,24 +115,22 @@ public class ScannerDocument extends XalFxDocument {
      */
     public SimpleIntegerProperty numberMeasurementsPerCombo;
 
-    // The Readback channels that may be read
-    public ObservableList<ChannelWrapper> pvReadbacks;
-    // The Channels that may be scanned
-    public ObservableList<ChannelWrapper> pvWriteables;
+    // The channels that may be scanned or only read
+    public ObservableList<ChannelWrapper> pvChannels;
     // The combination of scan points (each double[] is equal to number of writeables)
     public List<double[]> combos;
 
     // Save/restore parameters..
     private final String SCANNER_SR;
-    private final String SCANPVS_SR;
-    private final String MEASUREPVS_SR;
+    private final String CHANNELS_SR;
     private final String MEASUREMENTS_SR;
     private final String CONSTRAINTS_SR;
     private final String CURRENTMEAS_SR;
     private final String SETTINGS_SR;
     private final String TIMESTAMPS_SR;
     private final String TITLE_SR;
-    private final String ACTIVE_SR;
+    private final String ACTIVE_SCAN_SR;
+    private final String ACTIVE_READ_SR;
     private final String NAME_SR;
 
     private final SimpleDateFormat TIMEFORMAT_SR;
@@ -152,15 +149,15 @@ public class ScannerDocument extends XalFxDocument {
         super(stage);
 
         SCANNER_SR = "ScannerData";
-        SCANPVS_SR = "scan_PVs";
-        MEASUREPVS_SR = "measure_PVs";
+        CHANNELS_SR = "Channels";
         MEASUREMENTS_SR = "measurements";
         CONSTRAINTS_SR = "constraints";
         CURRENTMEAS_SR = "currentMeasurement";
         SETTINGS_SR = "settings";
         TIMESTAMPS_SR = "timestamps";
         TITLE_SR = "title";
-        ACTIVE_SR = "active";
+        ACTIVE_SCAN_SR = "active_scan";
+        ACTIVE_READ_SR = "active_read";
         NAME_SR = "name";
         TIMEFORMAT_SR = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -168,8 +165,7 @@ public class ScannerDocument extends XalFxDocument {
         allPVrb = new HashMap<>();
         allPVw = new HashMap<>();
         allTimestamps = new HashMap<>();
-        pvReadbacks = FXCollections.observableArrayList();
-        pvWriteables = FXCollections.observableArrayList();
+        pvChannels = FXCollections.observableArrayList();
         combos = new ArrayList<>();
         constraints = FXCollections.observableArrayList("", "", "", "");
         numberOfScans = new SimpleIntegerProperty(0);
@@ -346,22 +342,16 @@ public class ScannerDocument extends XalFxDocument {
         // Store information about current measurement setup..
 
         // Store list of variables to read & write.. ChannelWrapper objects
-        DataAdaptor scanpvScanner = scannerAdaptor.createChild(SCANPVS_SR);
-        pvWriteables.forEach( pv -> {
+        DataAdaptor scanpvScanner = scannerAdaptor.createChild(CHANNELS_SR);
+        pvChannels.forEach( pv -> {
             DataAdaptor scan_PV_name =  scanpvScanner.createChild("PV");
             scan_PV_name.setValue(NAME_SR, pv.getChannelName() );
             scan_PV_name.setValue("min", pv.minProperty().get() );
             scan_PV_name.setValue("max", pv.maxProperty().get() );
             scan_PV_name.setValue("npoints", pv.npointsProperty().get() );
             scan_PV_name.setValue("instance", pv.instanceProperty().get() );
-            scan_PV_name.setValue(ACTIVE_SR, pv.isScannedProperty().get() );
-        });
-
-        DataAdaptor measpvScanner = scannerAdaptor.createChild(MEASUREPVS_SR);
-        pvReadbacks.forEach( pv -> {
-            DataAdaptor meas_PV_name =  measpvScanner.createChild("PV");
-            meas_PV_name.setValue(NAME_SR, pv.getChannel().getId() );
-            meas_PV_name.setValue(ACTIVE_SR, pv.isReadProperty().get() );
+            scan_PV_name.setValue(ACTIVE_SCAN_SR, pv.isScannedProperty().get() );
+            scan_PV_name.setValue(ACTIVE_READ_SR, pv.isReadProperty().get() );
         });
 
         DataAdaptor constraintsAdaptor = scannerAdaptor.createChild(CONSTRAINTS_SR);
@@ -412,13 +402,13 @@ public class ScannerDocument extends XalFxDocument {
         numberMeasurementsPerCombo.set(settingsAdaptor.intValue("MeasurementPerCombo"));
 
         // Load list of variables to read & write.. ChannelWrapper objects
-        // There is probably an issue since these variables are not read into MainFunctions.PVlist
-        DataAdaptor scanpvScanner = scannerAdaptor.childAdaptor(SCANPVS_SR);
-        pvWriteables.clear();
-        scanpvScanner.childAdaptors().forEach( childAdaptor -> {
+        DataAdaptor channelScanner = scannerAdaptor.childAdaptor(CHANNELS_SR);
+        pvChannels.clear();
+        channelScanner.childAdaptors().forEach( childAdaptor -> {
             String name = childAdaptor.stringValue(NAME_SR);
-            boolean active = childAdaptor.booleanValue(ACTIVE_SR);
-            Logger.getLogger(ScannerDocument.class.getName()).log(Level.FINER, "Loading scan PV {0}, active: {1}", new Object[]{name, active});
+            boolean active_scan = childAdaptor.booleanValue(ACTIVE_SCAN_SR);
+            boolean active_read = childAdaptor.booleanValue(ACTIVE_READ_SR);
+            Logger.getLogger(ScannerDocument.class.getName()).log(Level.FINER, "Loading PV {0}, scan: {1}, read: {2}", new Object[]{name, active_scan, active_read});
 
             double min = childAdaptor.doubleValue("min");
             double max = childAdaptor.doubleValue("max");
@@ -428,7 +418,8 @@ public class ScannerDocument extends XalFxDocument {
             Channel chan = acc.channelSuite().getChannelFactory().getChannel(name);
 
             ChannelWrapper cWrap = new ChannelWrapper(chan);
-            cWrap.isScannedProperty().set(active);
+            cWrap.isScannedProperty().set(active_scan);
+            cWrap.isReadProperty().set(active_read);
             cWrap.minProperty().set(min);
             cWrap.maxProperty().set(max);
             cWrap.npointsProperty().set(npoints);
@@ -436,21 +427,7 @@ public class ScannerDocument extends XalFxDocument {
             if (!instance.equals("x0"))
                 cWrap.forceInstance(instance);
 
-            pvWriteables.add(cWrap);
-        });
-
-        DataAdaptor readpvScanner = scannerAdaptor.childAdaptor(MEASUREPVS_SR);
-        pvReadbacks.clear();
-        readpvScanner.childAdaptors().forEach( childAdaptor -> {
-            String name = childAdaptor.stringValue(NAME_SR);
-            boolean active = childAdaptor.booleanValue(ACTIVE_SR);
-            Logger.getLogger(ScannerDocument.class.getName()).log(Level.FINER, "Loading readback PV {0}, active: {1}", new Object[]{name, active});
-
-            Channel chan = acc.channelSuite().getChannelFactory().getChannel(name);
-            ChannelWrapper cWrap = new ChannelWrapper(chan);
-            cWrap.isReadProperty().set(active);
-
-            pvReadbacks.add(cWrap);
+            pvChannels.add(cWrap);
         });
 
         // Load all constraints from the file
@@ -546,11 +523,11 @@ public class ScannerDocument extends XalFxDocument {
     }
 
     public Stream<ChannelWrapper> getActivePVreadables() {
-        return pvReadbacks.stream().filter( readable -> (readable.getIsRead()));
+        return pvChannels.stream().filter( channel -> (channel.getIsRead()));
     }
 
     public Stream<ChannelWrapper> getActivePVwritebacks() {
-        return pvWriteables.stream().filter( writeable -> (writeable.getIsScanned()));
+        return pvChannels.stream().filter( channel -> (channel.getIsScanned()));
     }
 
     /**
@@ -560,7 +537,7 @@ public class ScannerDocument extends XalFxDocument {
      */
     public ChannelWrapper getActivePVreadable(int i) {
         int j=-1;
-        for (ChannelWrapper cw : pvReadbacks) {
+        for (ChannelWrapper cw : pvChannels) {
             if (cw.getIsRead())
                 j++;
             if (j==i)
@@ -576,7 +553,7 @@ public class ScannerDocument extends XalFxDocument {
      */
     public ChannelWrapper getActivePVwriteback(int i) {
         int j=-1;
-        for (ChannelWrapper cw : pvWriteables) {
+        for (ChannelWrapper cw : pvChannels) {
             if (cw.getIsScanned())
                 j++;
             if (j==i)
@@ -602,7 +579,7 @@ public class ScannerDocument extends XalFxDocument {
         ScriptEngineManager manager = new ScriptEngineManager();
         ScriptEngine engine = manager.getEngineByName("js");
         for(int i=0;i<combo.length;i++) {
-            engine.eval(pvWriteables.get(i).instanceProperty().get()+"="+combo[i]);
+            engine.eval(pvChannels.get(i).instanceProperty().get()+"="+combo[i]);
         }
         for(String constraint:constraints) {
             if (constraint.trim().length()>0)
@@ -615,7 +592,7 @@ public class ScannerDocument extends XalFxDocument {
     // Return the current reading of the i'th ACTIVE pvWriteable
     private double getPVsetting(int i) throws ConnectionException, GetException {
         int j = -1;
-        for (ChannelWrapper cw : pvWriteables) {
+        for (ChannelWrapper cw : pvChannels) {
             if (cw.getIsScanned())
                 j++;
             if (i==j)

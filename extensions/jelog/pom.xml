@@ -28,6 +28,7 @@
             <groupId>se.esss</groupId>
             <artifactId>jelog</artifactId>
             <version>1.2</version>
+            <type>jar</type>
         </dependency>
     </dependencies>
 </project>

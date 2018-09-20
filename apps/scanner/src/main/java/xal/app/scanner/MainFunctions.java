@@ -181,7 +181,7 @@ public class MainFunctions {
     public static String getTimeString(int npoints) {
         int seconds = (int) (npoints*mainDocument.delayBetweenMeasurements.get()/1000);
         int hours = (seconds - seconds%3600)/3600;
-        int min = (seconds - seconds%60)/60;
+        int min = (seconds - seconds%60)/60 - hours*60;
         String time = ""+(seconds%60)+" s";
         if (seconds>59)
                 time=""+min+" m, "+time;
@@ -295,15 +295,6 @@ public class MainFunctions {
         new Thread(runTask).start();
 
         return mainDocument.currentMeasurement;
-    }
-
-    /**
-     * Check if we have selected enough parameters to do a scan
-     *
-     * @return true if we have at least one parameter to scan and one to read
-     */
-    static boolean checkSufficientParams() {
-        return !(mainDocument.pvReadbacks.isEmpty() || mainDocument.pvWriteables.isEmpty());
     }
 
     static public void triggerPause() {

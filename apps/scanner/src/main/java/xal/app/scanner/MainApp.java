@@ -52,6 +52,7 @@ public class MainApp extends FxApplication {
         // Initialize some static functions (this is probably bad design..)
         MainFunctions.initialize((ScannerDocument) DOCUMENT);
 
+
         HAS_SEQUENCE = false;
 
         super.initialize();
