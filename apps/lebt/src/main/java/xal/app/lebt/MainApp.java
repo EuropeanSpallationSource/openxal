@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static javafx.application.Application.launch;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.control.Menu;
