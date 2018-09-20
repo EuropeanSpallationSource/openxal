@@ -284,7 +284,7 @@ class JcaChannel extends Channel {
 		requestConnection();
 		flushIO();
 		if ( this.isConnected() )  return true;		// check if we have a connection
-        waitForConnection( timeout );
+                pendIO(timeout);
 		return isConnected();
 	}
 	
@@ -1339,10 +1339,9 @@ class JcaChannel extends Channel {
 			throw new GetException( "JcaChannel.flushGetIO() - channel access time out occurred" );
 		}
 		catch( TimeoutException exception ) {
-                        // TODO: this exception should be thrown and logged. It has been disabled while OXAL-578 is not solved.
-//			exception.printStackTrace();
-//			Logger.getLogger("global").log( Level.SEVERE, "Error flushing the channel access GET I/O buffer.", exception );
-//			throw new GetException( "JcaChannel.flushGetIO() - channel access time out occurred" );
+			exception.printStackTrace();
+			Logger.getLogger("global").log( Level.SEVERE, "Error flushing the channel access GET I/O buffer.", exception );
+			throw new GetException( "JcaChannel.flushGetIO() - channel access time out occurred" );
 		}
      }
      
