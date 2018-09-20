@@ -41,6 +41,8 @@ public class SimulationRunner {
 
     private final double[] init;
     private double continuos_bc;
+    private double transmission;
+    private double transmission_offset;
     private final double[] solenoidFields;
     private final double[] correctorVFields;
     private final double[] correctorHFields;
@@ -90,6 +92,8 @@ public class SimulationRunner {
         electrode = false;
         sequence = seq;
         model_sync = modelSync;
+        transmission = 1;
+        transmission_offset = 1;
         final_pos_simul = "";
 
         try {
@@ -185,6 +189,11 @@ public class SimulationRunner {
     public ArrayList getPosY(){return posY;}
     public ArrayList getPosR(){return posR;}
     public ArrayList getPosPhi(){return posPhi;}
+    public double getTransmission(boolean hasOffset){ if(hasOffset){
+                                                        return transmission_offset;
+                                                    }else{ 
+                                                        return transmission;
+                                                    }}
     public EnvelopeProbe getProbe(){return probe;}
     public EnvelopeProbe getFinalProbe(){return (EnvelopeProbe) model.getProbe();}
     public boolean hasRun(){return hasRun;}
@@ -524,6 +533,7 @@ public class SimulationRunner {
 
         ArrayList<EnvelopeProbeState> stateElement = (ArrayList<EnvelopeProbeState>) trajectory.getStatesViaIndexer();
         CovarianceMatrix covmat;
+        int[] index = trajectory.indicesForElement("END-LEBT");
 
         //retrieve trajectory
         for(int i=0; i<trajectory.numStates(); i++){
@@ -549,8 +559,29 @@ public class SimulationRunner {
                 sigmaOffsetY[k].add(sigmaY[k].get(i)+posY.get(i));
                 sigmaOffsetR[k].add(sigmaR[k].get(i)+posR.get(i));
             }
+            
+            if(index.length>0){
+                if(i==index[0]){
+                    double x0 = (0.007-covmat.getMeanX())/(Math.sqrt(2.0)*covmat.getSigmaX());
+                    double x1 = (-0.007-covmat.getMeanX())/(Math.sqrt(2.0)*covmat.getSigmaX());
+                    double y0 = (0.007-covmat.getMeanY())/(Math.sqrt(2.0)*covmat.getSigmaY());
+                    double y1 = (-0.007-covmat.getMeanY())/(Math.sqrt(2.0)*covmat.getSigmaY());                   
+                    transmission_offset = 0.25*Math.abs(erf(x0)-erf(x1))*Math.abs(erf(y0)-erf(y1));
 
-        }
+                    x0 = 0.007/(Math.sqrt(2.0)*covmat.getSigmaX());
+                    y0 = 0.007/(Math.sqrt(2.0)*covmat.getSigmaY());
+                    transmission = erf(x0)*erf(y0);
+                }
+            }
+
+        }                        
+        
+    }    
+    
+    private double erf(double x){
+        return Math.signum(x)*Math.sqrt((1-Math.exp(-1.0*x*x)))*(1+0.1749*Math.exp(-1.0*x*x)-0.0481*Math.exp(-2.0*x*x));
     }
+   
+    
 }
 

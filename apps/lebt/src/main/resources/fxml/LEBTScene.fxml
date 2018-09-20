@@ -139,7 +139,7 @@
                               <Font size="16.0" />
                            </font>
                         </Label>
-                        <TextField fx:id="textField_scc" layoutX="899.0" layoutY="95.0" prefWidth="65.0" AnchorPane.leftAnchor="935.0" AnchorPane.topAnchor="95.0" />
+                        <TextField fx:id="textField_scc" layoutX="899.0" layoutY="95.0" prefWidth="92.0" AnchorPane.leftAnchor="935.0" AnchorPane.topAnchor="95.0" />
                         <Label layoutX="29.0" layoutY="13.0" text="Initial simulation point:" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="15.0">
                            <font>
                               <Font size="16.0" />
@@ -437,5 +437,7 @@
         </tabs>
       </TabPane>
       <Separator layoutY="655.0" prefHeight="0.0" prefWidth="1138.0" AnchorPane.bottomAnchor="320.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+      <Label layoutX="857.0" layoutY="324.0" text="Transmission (%)" AnchorPane.leftAnchor="857.0" AnchorPane.topAnchor="324.0" />
+      <Label fx:id="label_transmission" layoutX="966.0" layoutY="319.0" prefHeight="27.0" prefWidth="92.0" style="-fx-background-color: ffffff;" AnchorPane.leftAnchor="966.0" AnchorPane.topAnchor="319.0" />
     </children>
 </AnchorPane>
