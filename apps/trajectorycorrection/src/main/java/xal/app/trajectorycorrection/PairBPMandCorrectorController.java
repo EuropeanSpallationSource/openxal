@@ -186,7 +186,7 @@ public class PairBPMandCorrectorController {
 
     public void createGui() {
 
-        //configure Tables in the GUI        
+        //configure Tables in the GUI
         tableHorizontalPairs.setEditable(false);
         tableVerticalPairs.setEditable(false);
 

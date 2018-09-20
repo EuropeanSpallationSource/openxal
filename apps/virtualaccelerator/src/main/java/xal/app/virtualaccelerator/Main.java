@@ -25,7 +25,7 @@ import xal.extension.application.smf.AcceleratorApplication;
 /**
  * This is the main class and Application adapter for Virtual accelerator. It provides entry point for the program and
  * information along with some callback for other parts of application.
- * 
+ *
  * @version 0.2 13 Jul 2015
  * @author Paul Chu
  * @author Blaz Kranjc <blaz.kranjc@cosylab.com>
@@ -36,7 +36,7 @@ public class Main extends ApplicationAdaptor {
      * default.
      */
     private static boolean runOnFinishedLaunching = false;
-    
+
     //-------------Constructors-------------
     public Main() {
     }
@@ -57,10 +57,10 @@ public class Main extends ApplicationAdaptor {
             JOptionPane.showMessageDialog( null, exception.getMessage(), exception.getClass().getName(), JOptionPane.WARNING_MESSAGE );
         }
     }
-    
+
     /**
      * Loads command line options.
-     * 
+     *
      * @param args
      *            arguments given by main method.
      */
@@ -69,11 +69,11 @@ public class Main extends ApplicationAdaptor {
         final java.util.ArrayList<String> docPaths = new java.util.ArrayList<String>();
         for (final String arg : args) {
             if (!arg.startsWith("-")) {
-            	docPaths.add(arg);// We add any filepaths. 
+                docPaths.add(arg);// We add any filepaths.
             } else {
                 switch (arg) {
                 case "-r":
-                case "--run":                
+                case "--run":
                     runOnFinishedLaunching = true;
                     break;
                 case "-h":
@@ -97,8 +97,8 @@ public class Main extends ApplicationAdaptor {
             }
         }
     }
-    
-    
+
+
     /** Convenient method for printing command line options help for user. */
     private static void printHelp() {
         System.out.println("Usage:virtualaccelerator [options] [files]\r\n"
@@ -118,48 +118,48 @@ public class Main extends ApplicationAdaptor {
     public void applicationFinishedLaunching() {
         if (runOnFinishedLaunching) {
             for(VADocument document:Application.getApp().<VADocument>getDocumentsCopy()){
-                document.commander.getAction("run-va").actionPerformed(new ActionEvent(this, 0, "Run"));    
-            }      
+                document.commander.getAction("run-va").actionPerformed(new ActionEvent(this, 0, "Run"));
+            }
         }
 
     }
-    
+
     /**
      * Callback method to destroy all servers when application is exiting.
      */
     public void applicationWillQuit() {
-		try {
-			final List<VADocument> documents = Application.getApp().<VADocument>getDocumentsCopy();
+        try {
+            final List<VADocument> documents = Application.getApp().<VADocument>getDocumentsCopy();
             for ( final VADocument document : documents ) {
-				try {
-					document.destroyServer();
-				}
-				catch( Exception exception ) {
-					System.err.println( exception.getMessage() );					
-				}
-			}
-		} 
-		catch ( Exception exception ) {
-			System.err.println( exception.getMessage() ); 
-		}
+                try {
+                    document.destroyServer();
+                }
+                catch( Exception exception ) {
+                    System.err.println( exception.getMessage() );
+                }
+            }
+        }
+        catch ( Exception exception ) {
+            System.err.println( exception.getMessage() );
+        }
     }
-	
+
     public String applicationName() {
         return "Virtual Accelerator";
     }
-    
+
     public XalDocument newDocument(java.net.URL url) {
         return new VADocument(url);
     }
-    
+
     public XalDocument newEmptyDocument() {
         return new VADocument();
     }
-    
+
     public String[] writableDocumentTypes() {
         return new String[] {"va"};
     }
-    
+
     public String[] readableDocumentTypes() {
         return new String[] {"va", "xml"};
     }

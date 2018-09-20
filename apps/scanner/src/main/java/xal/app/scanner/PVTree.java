@@ -33,6 +33,7 @@
 package xal.app.scanner;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import javafx.fxml.FXMLLoader;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -60,9 +61,9 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import org.apache.commons.lang3.StringUtils;
+import xal.ca.BatchGetValueRequest;
 import xal.ca.Channel;
 import xal.ca.ChannelFactory;
-import xal.ca.ConnectionException;
 import xal.smf.Accelerator;
 import xal.smf.AcceleratorNode;
 import xal.smf.AcceleratorSeq;
@@ -100,10 +101,6 @@ public class PVTree extends SplitPane {
     @FXML // fx:id="pvCheckManualButton"
     private Button pvCheckManualButton; // Value injected by FXMLLoader
 
-
-    @FXML // fx:id="pvTree"
-    private TreeView<?> pvTree; // Value injected by FXMLLoader
-
     @FXML // fx:id="epicsTable"
     private TableView<HandleWrapper> epicsTable; // Value injected by FXMLLoader
 
@@ -120,7 +117,6 @@ public class PVTree extends SplitPane {
     void initialize() {
         assert elementSearch != null : "fx:id=\"elementSearch\" was not injected: check your FXML file 'PVTree.fxml'.";
         assert elementTree != null : "fx:id=\"elementTree\" was not injected: check your FXML file 'PVTree.fxml'.";
-        assert pvTree != null : "fx:id=\"pvTree\" was not injected: check your FXML file 'PVTree.fxml'.";
         assert pvAddButton != null : "fx:id=\"pvAddButton\" was not injected: check your FXML file 'PVTree.fxml'.";
 
         Model.getInstance().getAccelerator().getRoot().getAllNodes().stream().map(n -> n.getType()).distinct().sorted().forEachOrdered(t -> addTypeMenuItem(t));
@@ -166,33 +162,17 @@ public class PVTree extends SplitPane {
 
     private void addOneChannel(Channel channel) {
         ChannelWrapper newChannelWrapper = new ChannelWrapper(channel);
-        try {
-            Logger.getLogger(PVTree.class.getName()).log(Level.FINER, "Channel {0} has write access {1}", new Object[]{channel.getId(), channel.writeAccess()});
-            if (channel.writeAccess())
-            {
-                if (!FXMLController.pvScannablelist.contains(newChannelWrapper)) {
-                    Logger.getLogger(PVTree.class.getName()).log(Level.FINEST, "Adding channel {0} to scannable list", new Object[]{channel.getId()});
-                    FXMLController.pvScannablelist.add(newChannelWrapper);
-                } else
-                    Logger.getLogger(PVTree.class.getName()).log(Level.INFO, "Channel {0} has already been added", channel.getId());
-            }
-            else
-            {
-                if (!FXMLController.pvReadablelist.contains(newChannelWrapper)) {
-                    Logger.getLogger(PVTree.class.getName()).log(Level.FINEST, "Adding channel {0} to readable list", new Object[]{channel.getId()});
-                    FXMLController.pvReadablelist.add(newChannelWrapper);
-                } else
-                    Logger.getLogger(PVTree.class.getName()).log(Level.INFO, "Channel {0} has already been added", channel.getId());
-            }
-        } catch (ConnectionException ex) {
-            Logger.getLogger(PVTree.class.getName()).log(Level.SEVERE, "Failed to check channel access", ex);
-        }
+        if (!MainFunctions.mainDocument.pvChannels.contains(newChannelWrapper)) {
+            Logger.getLogger(PVTree.class.getName()).log(Level.FINEST, "Adding channel {0} to channel list", new Object[]{channel.getId()});
+            MainFunctions.mainDocument.pvChannels.add(newChannelWrapper);
+        } else
+            Logger.getLogger(PVTree.class.getName()).log(Level.INFO, "Channel {0} has already been added", channel.getId());
     }
 
     @FXML
     void addSelectedPV(ActionEvent event) {
         Logger.getLogger(PVTree.class.getName()).log(Level.INFO, "Adding selected channels");
-        int count = FXMLController.pvScannablelist.size() + FXMLController.pvReadablelist.size();
+        int count = MainFunctions.mainDocument.pvChannels.size();
 
         if (epicsTable.getSelectionModel().getSelectedItems().size()>0) {
             epicsTable.getSelectionModel().getSelectedItems().forEach((HandleWrapper hw) -> {
@@ -216,8 +196,8 @@ public class PVTree extends SplitPane {
         } else {
             Logger.getLogger(PVTree.class.getName()).log(Level.WARNING, "Nothing to add");
         }
-        Logger.getLogger(PVTree.class.getName()).log(Level.INFO, "Added {0} channels.", FXMLController.pvScannablelist.size() + FXMLController.pvReadablelist.size() - count);
-
+        Logger.getLogger(PVTree.class.getName()).log(Level.INFO, "Added {0} channels.", MainFunctions.mainDocument.pvChannels.size() - count);
+        Logger.getLogger(PVTree.class.getName()).log(Level.FINEST, "Channels: {0}",MainFunctions.mainDocument.pvChannels );
     }
 
 
@@ -330,16 +310,23 @@ public class PVTree extends SplitPane {
 
             // First we initiate the updated list
             elementTree.getSelectionModel().getSelectedItems().forEach(value -> {
-                AcceleratorNode node = value.getValue();
-                node.getHandles()
-                    .stream()
-                    .sorted(( h1, h2 ) -> String.CASE_INSENSITIVE_ORDER.compare(h1, h2))
-                    .forEach(h -> addHandleToList(new HandleWrapper(node, h)));
+                if (value != null) {
+                    AcceleratorNode node = value.getValue();
+                    node.getHandles()
+                        .stream()
+                        .sorted(( h1, h2 ) -> String.CASE_INSENSITIVE_ORDER.compare(h1, h2))
+                        .forEach(h -> addHandleToList(new HandleWrapper(node, h)));
+                }
             });
 
-            Logger.getLogger(PVTree.class.getName()).log(Level.FINEST, "Connecting handles...");
-            // Then we make connections in parallell (otherwise it will be slow when we don't find PV's on the network)
-            epicsChannels.parallelStream().forEach(h -> h.initConnection());
+
+
+            ArrayList<Channel> channels = new ArrayList<>();
+            epicsChannels.forEach(h -> channels.add(h.getChannel()));
+            final BatchGetValueRequest request = new BatchGetValueRequest( channels );
+            Logger.getLogger(PVTree.class.getName()).log(Level.FINER, "Connecting {0} channels...", channels.size());
+            request.submitAndWait(2);
+            epicsChannels.parallelStream().forEach(h -> h.updateAfterConnected());
 
             Logger.getLogger(PVTree.class.getName()).log(Level.FINEST, "Epics table updated");
         }

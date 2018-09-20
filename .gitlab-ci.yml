@@ -8,12 +8,8 @@ test:
         - master
         - /^site.sns.*$/
 test.maven:
+    image: registry.esss.lu.se/yngvelevinsen/dockers/oracle-jdk-maven:1.8
     script:
-        - yum install maven -y
-        - git clone https://bitbucket.org/europeanspallationsource/ess-java-config.git
-        - cd ess-java-config
-        - mvn install -B
-        - cd ../
         - mvn package -B
     only:
         - /^site.ess.*$/

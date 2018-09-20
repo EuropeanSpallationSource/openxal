@@ -397,7 +397,7 @@ public class QuadTest extends SingleElementTest {
                 description = "rotation fx";
                 probe = setupOpenXALProbe(3e6, frequency, current);
                 elementMapping = JElsElementMapping.getInstance();
-                sequence = quad(70., -16., 15., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0., 0.);
+                sequence = quad(70., -16., 15., 0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 0.);
 
                 // TW transfer matrix
                 TWTransferMatrix = new double[][]{

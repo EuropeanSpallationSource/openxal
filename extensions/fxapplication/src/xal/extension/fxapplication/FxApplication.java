@@ -71,7 +71,6 @@ abstract public class FxApplication extends Application {
 
     /**
      * Application constructor.
-     * @param adaptor The application adaptor used for customization.
      */
     protected FxApplication( ) {
         this( new URL[]{} );

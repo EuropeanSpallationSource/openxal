@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.xal</groupId>
         <artifactId>openxal</artifactId>
-        <version>1.2.3-SNAPSHOT</version>
+        <version>1.2.4-SNAPSHOT</version>
     </parent>
 
     <artifactId>openxal.apps</artifactId>
@@ -13,6 +13,7 @@
     <packaging>pom</packaging>
     
     <modules>
+        <module>configurator</module>
         <module>launcher</module>
         <module>lebt</module>
         <module>scanner</module>
@@ -26,7 +27,6 @@
         <module>bpmviewer</module>
         <module>bricks</module>
         <module>bsmanalysis</module>
-        <module>configurator</module>
         <module>dbbrowser</module>
         <module>diagtiming</module>
         <module>ema</module>

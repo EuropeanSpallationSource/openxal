@@ -99,7 +99,7 @@ public class CorrectionMatrix {
 
     public void setPairs(Accelerator accl, List<BPM> BPMList, List<HDipoleCorr> HCList, List<VDipoleCorr> VCList) throws ConnectionException, GetException, IOException {
 
-        //Get list of bpm and correctors    
+        //Get list of bpm and correctors
         List<BPM> allBPMs = accl.getAllNodesOfType("BPM");
         RunSimulationService simulService;
         AcceleratorSeq iniSeq;
@@ -240,7 +240,7 @@ public class CorrectionMatrix {
     }
 
     public void getHCalibration(BPM bpmKey, double Dk) throws ConnectionException, GetException, PutException, InterruptedException {
-        /* make +Dk and -Dk increments in the corrector strength and 
+        /* make +Dk and -Dk increments in the corrector strength and
         * calculate the offset and slope
          */
 
@@ -253,7 +253,7 @@ public class CorrectionMatrix {
 
         //restart the array before linear fit
         result = new LinearFit();
-        //measure response 
+        //measure response
         HC_val = HC.get(bpmKey).getField();
         BPM_val = bpmKey.getXAvg();
         result.addSample(0.0, 0.0);
@@ -271,14 +271,14 @@ public class CorrectionMatrix {
         //restore the original field
         HC.get(bpmKey).setField(HC_val);
         Thread.sleep(2000);
-        //calculate parameters from line fit 
+        //calculate parameters from line fit
         fitresult[0] = result.getIntercept();
         fitresult[1] = result.getSlope();
         HorParam.put(bpmKey, fitresult);
     }
 
     public void getVCalibration(BPM bpmKey, double Dk) throws ConnectionException, GetException, PutException, InterruptedException {
-        /* make +Dk and -Dk increments in the corrector strength and 
+        /* make +Dk and -Dk increments in the corrector strength and
         * calculate the offset and slope
          */
 
@@ -291,7 +291,7 @@ public class CorrectionMatrix {
 
         //restart the array before linear fit
         result = new LinearFit();
-        //measure response 
+        //measure response
         VC_val = VC.get(bpmKey).getField();
         BPM_val = bpmKey.getYAvg();
         result.addSample(0.0, 0.0);
@@ -309,7 +309,7 @@ public class CorrectionMatrix {
         //restore the original field
         VC.get(bpmKey).setField(VC_val);
         Thread.sleep(2000);
-        //calculate parameters from line fit 
+        //calculate parameters from line fit
         fitresult[0] = result.getIntercept();
         fitresult[1] = result.getSlope();
         VertParam.put(bpmKey, fitresult);
@@ -317,7 +317,7 @@ public class CorrectionMatrix {
     }
 
     public void simulHCalibration(BPM bpmKey, double Dk, String synchronizationMode) throws ConnectionException, GetException, PutException, InterruptedException {
-        /* make +Dk and -Dk increments in the corrector strength and 
+        /* make +Dk and -Dk increments in the corrector strength and
         * simulate the offset and slope
          */
 
@@ -351,7 +351,7 @@ public class CorrectionMatrix {
         HC.keySet().forEach(bpm -> BPMList.add(bpm));
         BPMList.sort((bpm1, bpm2) -> Double.compare(bpm1.getSDisplay(), bpm2.getSDisplay()));
 
-        //measure response 
+        //measure response
         HC_val = HC.get(bpmKey).getDfltField();
         try {
             trajectory = simulService.runTrajectorySimulation(BPMList, "X");
@@ -382,14 +382,14 @@ public class CorrectionMatrix {
         result.addSample(-Dk, bpm_auxval);
         //restore the original field
         HC.get(bpmKey).setDfltField(HC_val);
-        //calculate parameters from line fit 
+        //calculate parameters from line fit
         fitresult[0] = result.getIntercept();
         fitresult[1] = result.getSlope();
         HorParam.put(bpmKey, fitresult);
     }
 
     public void simulVCalibration(BPM bpmKey, double Dk, String synchronizationMode) throws ConnectionException, GetException, PutException, InterruptedException {
-        /* make +Dk and -Dk increments in the corrector strength and 
+        /* make +Dk and -Dk increments in the corrector strength and
         * simulate the offset and slope
          */
 
@@ -422,7 +422,7 @@ public class CorrectionMatrix {
         VC.keySet().forEach(bpm -> BPMList.add(bpm));
         BPMList.sort((bpm1, bpm2) -> Double.compare(bpm1.getSDisplay(), bpm2.getSDisplay()));
 
-        //measure response 
+        //measure response
         VC_val = VC.get(bpmKey).getDfltField();
         try {
             trajectory = simulService.runTrajectorySimulation(BPMList, "Y");
@@ -452,7 +452,7 @@ public class CorrectionMatrix {
         result.addSample(-Dk, bpm_auxval);
         //restore the original field
         VC.get(bpmKey).setDfltField(VC_val);
-        //calculate parameters from line fit 
+        //calculate parameters from line fit
         fitresult[0] = result.getIntercept();
         fitresult[1] = result.getSlope();
         VertParam.put(bpmKey, fitresult);

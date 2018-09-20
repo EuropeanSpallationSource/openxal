@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.application.HostServices;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -46,20 +46,14 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.SeparatorMenuItem;
-import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
-import javafx.scene.image.WritableImage;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
-import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.jfree.chart.JFreeChart;
@@ -78,21 +72,20 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import xal.ca.ConnectionException;
 import xal.ca.GetException;
-import xal.extension.jelog.PostEntryDialog;
 import xal.smf.Accelerator;
-import xal.smf.AcceleratorSeq;
-import xal.smf.AcceleratorSeqCombo;
-import xal.smf.data.XMLDataManager;
 import xal.smf.impl.BPM;
 
 public class FXMLController implements Initializable {
 
     //Creates the Accelerator
     //public xal.smf.Accelerator accl = xal.smf.data.XMLDataManager.acceleratorWithPath("/Users/nataliamilas/projects/openxal/site/optics/design/main.xal");
-    public Accelerator accl = XMLDataManager.loadDefaultAccelerator();
-    public TrajectoryArray DisplayTraj = new TrajectoryArray();//Trajectory to be displayed on the plot
-    private final ObservableList<URL> refTrajData = FXCollections.observableArrayList();// holds info about reference trajectories       
-    
+    //public Accelerator accl = XMLDataManager.loadDefaultAccelerator();
+    //Trajectory to be displayed on the plot
+    public TrajectoryArray DisplayTraj = new TrajectoryArray();
+
+    // holds info about reference trajectories
+    private final ObservableList<URL> refTrajData = FXCollections.observableArrayList();
+
     //set plot update timer
     private StatusAnimationTimer timerPlotUpdate;
 
@@ -123,12 +116,6 @@ public class FXMLController implements Initializable {
     private Label labelBPM;
     @FXML
     private AnchorPane anchorPaneChart;
-
-    //Menu settings
-    @FXML
-    private MenuItem menuExit;
-    @FXML
-    private Menu menuSequence;
     @FXML
     private AnchorPane mainAnchor1;
     @FXML
@@ -137,88 +124,131 @@ public class FXMLController implements Initializable {
     private Label labelTrajectoryStatus;
 
     @Override
-    public void initialize(URL url, ResourceBundle rb) {                    
-                
+    public void initialize(URL url, ResourceBundle rb) {
+
         //Populate the Accelerator Menu with the sequences of the machine
-        List<AcceleratorSeq> seqItem = accl.getSequences();
-        int k = 0;
+        //Accelerator accl = MainFunctions.mainDocument.getAccelerator();
+        //Listener for Accelerator changes
+        MainFunctions.mainDocument.getAcceleratorProperty().addChangeListener((ChangeListener) (ObservableValue o, Object oldVal, Object newVal) -> {
+            //turn off plot update timer
+            boolean timerisRunning = false;
+            if (timerPlotUpdate != null) {
+                timerisRunning = timerPlotUpdate.isRunning();
+                timerPlotUpdate.stop();
+            }
+        });
 
-        //remove LEBT and RFQ
-        seqItem.remove(accl.getSequence("LEBT"));
-        seqItem.remove(accl.getSequence("RFQ"));
+        //TrajectoryMenu
+        MainFunctions.mainDocument.saveTrajectoryFile.addListener((ChangeListener) (ObservableValue o, Object oldVal, Object newVal) -> {
 
-        for (AcceleratorSeq item : seqItem) { //AddSequences
-            menuSequence.getItems().add(new RadioMenuItem(item.toString()));
-            RadioMenuItem addedItem = (RadioMenuItem) menuSequence.getItems().get(k);
-            addedItem.setToggleGroup(groupSequence);
-            //if(k==0){
-            //    groupSequence.selectToggle(addedItem);
-            //}
-            k++;
-        }
-        gridpaneCursor.setVisible(false);
-        menuSequence.getItems().add(new SeparatorMenuItem());
+            URL urlselectedfile = null;
+            File selectedFile = new File(MainFunctions.mainDocument.saveTrajectoryFile.getValue());
 
-        List<AcceleratorSeqCombo> seqCombo = accl.getComboSequences();
-        k++;
-        for (AcceleratorSeqCombo item : seqCombo) { //AddCombos
-            menuSequence.getItems().add(new RadioMenuItem(item.toString()));
-            RadioMenuItem addedItem = (RadioMenuItem) menuSequence.getItems().get(k);
-            addedItem.setToggleGroup(groupSequence);
-            //if(k==0){
-            //    groupSequence.selectToggle(addedItem);
-            //}
-            k++;
-        }
-
-        menuSequence.getItems().add(new SeparatorMenuItem());
-
-        MenuItem addCombo = new MenuItem("Add new Combo Sequence");
-        menuSequence.getItems().add(addCombo);
-
-        addCombo.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-
-                Stage stage;
-                Parent root;
-                URL url = null;
-                String sceneFile = "/fxml/CreateComboSequence.fxml";
+            try {
+                urlselectedfile = selectedFile.toURI().toURL();
+            } catch (MalformedURLException ex) {
+                Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            if (urlselectedfile != null) {
+                if (!refTrajData.contains(urlselectedfile)) {
+                    refTrajData.add(urlselectedfile);
+                }
                 try {
-                    stage = new Stage();
-                    url = getClass().getResource(sceneFile);
-                    FXMLLoader loader = new FXMLLoader();
-                    loader.setLocation(MainApp.class.getResource(sceneFile));
-                    root = loader.load();
-                    //root.getStylesheets().add("/styles/Styles.css");
-                    stage.setScene(new Scene(root));
-                    stage.setTitle("Create a Combo Sequence");
-                    stage.initModality(Modality.APPLICATION_MODAL);
-                    stage.initOwner(labelXrms.getScene().getWindow());
-                    CreateComboSequenceController loginController = loader.getController();
-                    loginController.setProperties(accl);
-                    loginController.loggedInProperty().addListener((ObservableValue<? extends Boolean> obs, Boolean wasLoggedIn, Boolean isNowLoggedIn) -> {
-                        if (isNowLoggedIn) {
-                            if (loginController.getComboName() != null) {
-                                AcceleratorSeqCombo comboSequence = new AcceleratorSeqCombo(loginController.getComboName(), loginController.getNewComboSequence());
-                                accl.addComboSequence(comboSequence);
-                                int index = menuSequence.getItems().size() - 2;
-                                RadioMenuItem addedItem = new RadioMenuItem(loginController.getComboName());
-                                addedItem.setToggleGroup(groupSequence);
-                                menuSequence.getItems().add(index, addedItem);
-                                groupSequence.selectToggle(addedItem);
-                            }
-                            stage.close();
-                        }
-                    });
-                    stage.showAndWait();
-                } catch (IOException ex) {
-                    System.out.println("Exception on FXMLLoader.load()");
-                    System.out.println("  * url: " + url);
-                    System.out.println("  * " + ex);
-                    System.out.println("    ----------------------------------------\n");
+                    //Save Trajectory of the whole machine
+                    DisplayTraj.saveTrajectory(MainFunctions.mainDocument.getAccelerator(), urlselectedfile);
+                    comboBoxRefTrajectory.setValue(urlselectedfile);
+                } catch (ConnectionException | GetException ex) {
+                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
+
+        });
+
+        MainFunctions.mainDocument.refTrajectoryFile.addListener((ChangeListener) (ObservableValue o, Object oldVal, Object newVal) -> {
+
+            File selectedFile = new File(MainFunctions.mainDocument.refTrajectoryFile.getValue());
+
+            if (selectedFile.exists()) {
+                try {
+                    refTrajData.add(selectedFile.toURI().toURL());
+                    comboBoxRefTrajectory.setValue(selectedFile.toURI().toURL());
+                } catch (MalformedURLException ex) {
+                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+
+        });
+
+        MainFunctions.mainDocument.displayTrajectoryFile.addListener((ChangeListener) (ObservableValue o, Object oldVal, Object newVal) -> {
+
+            //turn off plot update timer
+            if (timerPlotUpdate != null) {
+                timerPlotUpdate.stop();
+            }
+
+            File selectedFile = new File(MainFunctions.mainDocument.displayTrajectoryFile.getValue());
+
+            String getSeqName = MainFunctions.mainDocument.getSequence();
+            Accelerator accelerator = MainFunctions.mainDocument.getAccelerator();
+
+            if (selectedFile.exists()) {
+                labelTrajectoryStatus.setText("Trajectory : " + selectedFile.getPath());
+                if (getSeqName != null) {
+                    try {
+                        if (accelerator.getSequence(getSeqName) != null) {
+                            DisplayTraj.loadTrajectory(accelerator.getSequence(getSeqName).getAllNodesOfType("BPM"), selectedFile);
+                        } else if (accelerator.getComboSequence(getSeqName) != null) {
+                            DisplayTraj.loadTrajectory(accelerator.getComboSequence(getSeqName).getAllNodesOfType("BPM"), selectedFile);
+                        }
+                    } catch (IOException ex) {
+                        Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    updateDataset(DisplayTraj);
+                    anchorPaneChart.setDisable(false);
+                }
+            }
+        });
+
+        MainFunctions.mainDocument.liveTrajectory.addListener((ChangeListener) (ObservableValue o, Object oldVal, Object newVal) -> {
+
+            if (((SimpleBooleanProperty) newVal).getValue()) {
+                // Initializes bpm channels
+                DisplayTraj.initBPMs(MainFunctions.mainDocument.getAccelerator());
+
+                if (DisplayTraj.isMinChannelConnected()) {
+
+                    timerPlotUpdate = new StatusAnimationTimer() {
+
+                        @Override
+                        public void handle(long now) {
+                            String getSeqName = MainFunctions.mainDocument.getSequence();
+                            Accelerator accelerator = MainFunctions.mainDocument.getAccelerator();
+                            if (getSeqName != null) {
+                                //reads trajecotry
+                                try {
+                                    DisplayTraj.readTrajectory(accelerator, getSeqName);
+                                } catch (ConnectionException | GetException ex) {
+                                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+                                //updates the dataset
+                                updateDataset(DisplayTraj);
+                            }
+                        }
+
+                    };
+
+                    labelTrajectoryStatus.setText("Trajectory : LIVE");
+                    timerPlotUpdate.start();
+                } else {
+                    Alert alert = new Alert(AlertType.WARNING);
+                    alert.setTitle("BPM Connection Warning");
+                    alert.setHeaderText("Minimum number of connected channels not reached!");
+                    alert.setContentText("Most of the BPM channels are disconected. Display of LIVE trajectory not possible ");
+
+                    alert.showAndWait();
+                }
+            }
+
         });
 
         //Load reference and zero trajectories
@@ -246,7 +276,7 @@ public class FXMLController implements Initializable {
 
         //read new reference trajectory file
         try {
-            DisplayTraj.readReferenceTrajectory(accl, comboBoxRefTrajectory.getSelectionModel().getSelectedItem());
+            DisplayTraj.readReferenceTrajectory(MainFunctions.mainDocument.getAccelerator(), comboBoxRefTrajectory.getSelectionModel().getSelectedItem());
         } catch (IOException ex) {
             Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -308,14 +338,14 @@ public class FXMLController implements Initializable {
 
                 gridpaneCursor.setVisible(true);
                 //Find the closest data point
-                RadioMenuItem getSeqName = (RadioMenuItem) groupSequence.getSelectedToggle();
+                String getSeqName = MainFunctions.mainDocument.getSequence();
                 List<BPM> bpm = new ArrayList<>();
-                if (accl.getSequences().toString().contains(getSeqName.getText())) {
-                    bpm = accl.getSequence(getSeqName.getText()).getAllNodesOfType("BPM");
-                } else if (accl.getComboSequences().toString().contains(getSeqName.getText())) {
-                    bpm = accl.getComboSequence(getSeqName.getText()).getAllNodesOfType("BPM");
+                if (MainFunctions.mainDocument.getAccelerator().getSequences().toString().contains(getSeqName)) {
+                    bpm = MainFunctions.mainDocument.getAccelerator().getSequence(getSeqName).getAllNodesOfType("BPM");
+                } else if (MainFunctions.mainDocument.getAccelerator().getComboSequences().toString().contains(getSeqName)) {
+                    bpm = MainFunctions.mainDocument.getAccelerator().getComboSequence(getSeqName).getAllNodesOfType("BPM");
                 } else {
-                    bpm = accl.getAllNodesOfType("BPM");
+                    bpm = MainFunctions.mainDocument.getAccelerator().getAllNodesOfType("BPM");
                 }
 
                 double dist = Math.abs(plotXvalue - (bpm.get(0).getSDisplay()));
@@ -446,95 +476,60 @@ public class FXMLController implements Initializable {
             }
         });
 
-        groupSequence.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
-            @Override
-            public void changed(ObservableValue<? extends Toggle> ov, Toggle old_toggle, Toggle new_toggle) {
+        MainFunctions.mainDocument.getSequenceProperty().addListener((ChangeListener) (ObservableValue o, Object oldVal, Object newVal) -> {
 
-                if (groupSequence.getSelectedToggle() != null) {
-                    //turn off plot update timer
-                    boolean timerisRunning = false;
-                    if (timerPlotUpdate != null) {
-                        timerisRunning = (timerPlotUpdate.isRunning() && DisplayTraj.isMinChannelConnected());
-                        timerPlotUpdate.stop();
-                    }
+            if (MainFunctions.mainDocument.getSequence() != null) {
+                //turn off plot update timer
+                if (timerPlotUpdate != null) {
+                    timerPlotUpdate.stop();
+                }
 
-                    gridpaneCursor.setVisible(false);
+                gridpaneCursor.setVisible(false);
 
-                    HorizontalMarker.getData().clear();
-                    VerticalMarker.getData().clear();
-                    ChargeMarker.getData().clear();
+                HorizontalMarker.getData().clear();
+                VerticalMarker.getData().clear();
+                ChargeMarker.getData().clear();
 
-                    //clear the initial values
-                    horizontalSeries.clear();
-                    verticalSeries.clear();
-                    chargeSeries.clear();
+                //clear the initial values
+                horizontalSeries.clear();
+                verticalSeries.clear();
+                chargeSeries.clear();
 
-                    //remove crosshair markers
-                    chartHorizontal.setDomainCrosshairVisible(false);
-                    chartHorizontal.setRangeCrosshairVisible(false);
-                    chartVertical.setDomainCrosshairVisible(false);
-                    chartVertical.setRangeCrosshairVisible(false);
-                    chartCharge.setDomainCrosshairVisible(false);
-                    chartCharge.setRangeCrosshairVisible(false);
-                    combinedXYplot.getDomainAxis().setAutoRange(true);
+                //remove crosshair markers
+                chartHorizontal.setDomainCrosshairVisible(false);
+                chartHorizontal.setRangeCrosshairVisible(false);
+                chartVertical.setDomainCrosshairVisible(false);
+                chartVertical.setRangeCrosshairVisible(false);
+                chartCharge.setDomainCrosshairVisible(false);
+                chartCharge.setRangeCrosshairVisible(false);
+                combinedXYplot.getDomainAxis().setAutoRange(true);
 
-                    RadioMenuItem getSeqName = (RadioMenuItem) groupSequence.getSelectedToggle();
-                    //turn on timer
-                    if (timerisRunning) {
-                        //if (accl.getSequence(getSeqName.getText()) != null) {
-                        //    DisplayTraj.connectCheckBPMs(accl.getSequence(getSeqName.getText()));
-                        //} else if (accl.getComboSequence(getSeqName.getText()) != null) {
-                        //    DisplayTraj.connectCheckBPMs(accl.getComboSequence(getSeqName.getText()));
-                        //}
-                        timerPlotUpdate.start();
-                    } else if (labelTrajectoryStatus.getText().length() > 13) {
-                        File selectedFile = new File(labelTrajectoryStatus.getText().substring(13));
-                        if (selectedFile != null) {
-                            try {
-                                if (accl.getSequence(getSeqName.getText()) != null) {
-                                    DisplayTraj.loadTrajectory(accl.getSequence(getSeqName.getText()).getAllNodesOfType("BPM"), selectedFile);
-                                } else if (accl.getComboSequence(getSeqName.getText()) != null) {
-                                    DisplayTraj.loadTrajectory(accl.getComboSequence(getSeqName.getText()).getAllNodesOfType("BPM"), selectedFile);
-                                }
-                            } catch (IOException ex) {
-                                Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                String getSeqName = MainFunctions.mainDocument.getSequence();
+
+//turn on timer
+                if (MainFunctions.mainDocument.liveTrajectory.getValue()) {
+                    timerPlotUpdate.start();
+                } else if (labelTrajectoryStatus.getText().length() > 13) {
+                    File selectedFile = new File(labelTrajectoryStatus.getText().substring(13));
+                    if (selectedFile != null) {
+                        try {
+                            if (MainFunctions.mainDocument.getAccelerator().getSequence(getSeqName) != null) {
+                                DisplayTraj.loadTrajectory(MainFunctions.mainDocument.getAccelerator().getSequence(getSeqName).getAllNodesOfType("BPM"), selectedFile);
+                            } else if (MainFunctions.mainDocument.getAccelerator().getComboSequence(getSeqName) != null) {
+                                DisplayTraj.loadTrajectory(MainFunctions.mainDocument.getAccelerator().getComboSequence(getSeqName).getAllNodesOfType("BPM"), selectedFile);
                             }
-                            updateDataset(DisplayTraj);
+                        } catch (IOException ex) {
+                            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                         }
+                        updateDataset(DisplayTraj);
                     }
-
                 }
 
             }
+
         });
 
-        anchorPaneChart.setDisable(true);                
-
-    }   
-
-    @FXML
-    private void handleExitMenu(ActionEvent event) {
-        System.exit(0);
-    }
-
-    public void updateDataset(TrajectoryArray Traj) {
-
-        horizontalSeries.clear();
-        verticalSeries.clear();
-        chargeSeries.clear();
-
-        DisplayTraj.Pos.keySet().stream().forEach((item) -> {
-            horizontalSeries.add(Traj.Pos.get(item), Traj.XDiff.get(item));
-            verticalSeries.add(Traj.Pos.get(item), Traj.YDiff.get(item));
-            chargeSeries.add(Traj.Pos.get(item), Traj.AvgAmpl.get(item));
-        });
-
-        //Create label values
-        String nameHor = "x_rms = " + String.format("%.3f", Traj.getXrms()) + " mm";
-        String nameVer = "y_rms = " + String.format("%.3f", Traj.getYrms()) + " mm";
-
-        labelXrms.setText(nameHor);
-        labelYrms.setText(nameVer);
+        anchorPaneChart.setDisable(true);
 
     }
 
@@ -592,282 +587,33 @@ public class FXMLController implements Initializable {
 
     }
 
-    @FXML
-    private void handleLoadDefaultAccelerator(ActionEvent event) {
-        //turn off plot update timer
-        boolean timerisRunning = false;
-        if (timerPlotUpdate != null) {
-            timerisRunning = timerPlotUpdate.isRunning();
-            timerPlotUpdate.stop();
-        }
+    public void updateDataset(TrajectoryArray Traj) {
 
-        accl = XMLDataManager.loadDefaultAccelerator();
+        horizontalSeries.clear();
+        verticalSeries.clear();
+        chargeSeries.clear();
 
-        int menu_num = menuSequence.getItems().size();
+        DisplayTraj.Pos.keySet().stream().forEach((item) -> {
+            horizontalSeries.add(Traj.Pos.get(item), Traj.XDiff.get(item));
+            verticalSeries.add(Traj.Pos.get(item), Traj.YDiff.get(item));
+            chargeSeries.add(Traj.Pos.get(item), Traj.AvgAmpl.get(item));
+        });
 
-        menuSequence.getItems().remove(0, menu_num - 1);
-        System.out.print(menuSequence.getItems().toString());
-        groupSequence.getToggles().clear();
+        //Create label values
+        String nameHor = "x_rms = " + String.format("%.3f", Traj.getXrms()) + " mm";
+        String nameVer = "y_rms = " + String.format("%.3f", Traj.getYrms()) + " mm";
 
-        //Populate the Accelerator Menu with the sequences of the machine
-        List<AcceleratorSeq> seqItem = accl.getSequences();
+        labelXrms.setText(nameHor);
+        labelYrms.setText(nameVer);
 
-        //remove LEBT and RFQ
-        seqItem.remove(accl.getSequence("LEBT"));
-        seqItem.remove(accl.getSequence("RFQ"));
-
-        int k = 0;
-        for (AcceleratorSeq item : seqItem) { //AddSequences
-            menuSequence.getItems().add(k, new RadioMenuItem(item.toString()));
-            RadioMenuItem addedItem = (RadioMenuItem) menuSequence.getItems().get(k);
-            addedItem.setToggleGroup(groupSequence);
-            //if(k==0){
-            //    groupSequence.selectToggle(addedItem);
-            //}
-            k++;
-        }
-
-        menuSequence.getItems().add(k, new SeparatorMenuItem());
-        k++;
-        List<AcceleratorSeqCombo> seqCombo = accl.getComboSequences();
-
-        for (AcceleratorSeqCombo item : seqCombo) { //AddCombos
-            menuSequence.getItems().add(k, new RadioMenuItem(item.toString()));
-            RadioMenuItem addedItem = (RadioMenuItem) menuSequence.getItems().get(k);
-            addedItem.setToggleGroup(groupSequence);
-            //if(k==0){
-            //    groupSequence.selectToggle(addedItem);
-            //}
-            k++;
-        }
-
-        menuSequence.getItems().add(k, new SeparatorMenuItem());
-        //if(timerisRunning){
-        //    timerPlotUpdate.start();
-        //}
-
-    }
-
-    @FXML
-    private void handleLoadAccelerator(ActionEvent event) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Load Accelerator");
-
-        //Set extension filter
-        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("XAL files (*.xal)", "*.xal");
-        fileChooser.getExtensionFilters().add(extFilter);
-
-        //Show save file dialog
-        File selectedFile = fileChooser.showOpenDialog(null);
-        if (selectedFile != null) {
-
-            //turn off plot update timer
-            boolean timerisRunning = false;
-            if (timerPlotUpdate != null) {
-                timerisRunning = timerPlotUpdate.isRunning();
-                timerPlotUpdate.stop();
-            }
-
-            accl = XMLDataManager.acceleratorWithPath(selectedFile.getAbsolutePath());
-
-            int menu_num = menuSequence.getItems().size();
-
-            menuSequence.getItems().remove(0, menu_num - 1);
-            System.out.print(menuSequence.getItems().toString());
-            groupSequence.getToggles().clear();
-
-            //Populate the Accelerator Menu with the sequences of the machine
-            List<AcceleratorSeq> seqItem = accl.getSequences();
-            //remove LEBT and RFQ
-            seqItem.remove(accl.getSequence("LEBT"));
-            seqItem.remove(accl.getSequence("RFQ"));
-
-            int k = 0;
-            for (AcceleratorSeq item : seqItem) { //AddSequences
-                menuSequence.getItems().add(k, new RadioMenuItem(item.toString()));
-                RadioMenuItem addedItem = (RadioMenuItem) menuSequence.getItems().get(k);
-                addedItem.setToggleGroup(groupSequence);
-                //if(k==0){
-                //    groupSequence.selectToggle(addedItem);
-                //}
-                k++;
-            }
-
-            menuSequence.getItems().add(k, new SeparatorMenuItem());
-            k++;
-            List<AcceleratorSeqCombo> seqCombo = accl.getComboSequences();
-
-            for (AcceleratorSeqCombo item : seqCombo) { //AddCombos
-                menuSequence.getItems().add(k, new RadioMenuItem(item.toString()));
-                RadioMenuItem addedItem = (RadioMenuItem) menuSequence.getItems().get(k);
-                addedItem.setToggleGroup(groupSequence);
-                //if(k==0){
-                //    groupSequence.selectToggle(addedItem);
-                //}
-                k++;
-            }
-
-            menuSequence.getItems().add(k, new SeparatorMenuItem());
-
-            if (timerisRunning) {
-                timerPlotUpdate.start();
-            }
-        }
-    }
-
-    //handles table context menu for saving a new reference
-    @FXML
-    public void handleTrajectoryMenuSave(ActionEvent event) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Save Trajectory File");
-
-        //Set extension filter
-        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("XML files (*.xml)", "*.xml");
-        fileChooser.getExtensionFilters().add(extFilter);
-
-        //Show save file dialog
-        File selectedFile = fileChooser.showSaveDialog(null);
-        URL urlselectedfile = null;
-        try {
-            urlselectedfile = selectedFile.toURI().toURL();
-        } catch (MalformedURLException ex) {
-            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        if (urlselectedfile != null) {
-            if (!refTrajData.contains(urlselectedfile)) {
-                refTrajData.add(urlselectedfile);
-            }
-            try {
-                //Save Trajectory of the whole machine
-                DisplayTraj.saveTrajectory(accl, urlselectedfile);
-                comboBoxRefTrajectory.setValue(urlselectedfile);
-            } catch (ConnectionException | GetException ex) {
-                Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-    }
-
-    //handles table context menu for loading a new reference orbit
-    @FXML
-    public void handleTrajectoryMenuLoad(ActionEvent event) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Load Trajectory File");
-
-        //Set extension filter
-        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("XML files (*.xml)", "*.xml");
-        fileChooser.getExtensionFilters().add(extFilter);
-
-        //Show save file dialog
-        File selectedFile = fileChooser.showOpenDialog(null);
-        if (selectedFile != null) {
-            try {
-                refTrajData.add(selectedFile.toURI().toURL());
-                comboBoxRefTrajectory.setValue(selectedFile.toURI().toURL());
-            } catch (MalformedURLException ex) {
-                Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-    }
-
-    @FXML
-    private void openHelpURL(ActionEvent event) {
-        final Hyperlink hyperlink = new Hyperlink("https://confluence.esss.lu.se/display/BPCRS/User+documentation+for+Trajectory+Correction+application");
-        HostServices hostServices = (HostServices) this.mainAnchor1.getScene().getWindow().getProperties().get("hostServices");
-        hostServices.showDocument(hyperlink.getText());
     }
 
     @FXML
     private void handleChooseRefTrajectory(ActionEvent event) {
         //read new reference trajectory file
         try {
-            DisplayTraj.readReferenceTrajectory(accl, comboBoxRefTrajectory.getSelectionModel().getSelectedItem());
+            DisplayTraj.readReferenceTrajectory(MainFunctions.mainDocument.getAccelerator(), comboBoxRefTrajectory.getSelectionModel().getSelectedItem());
         } catch (IOException ex) {
-            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    @FXML
-    private void handleMenuLiveTrajectory(ActionEvent event) {
-        // Initializes bpm channels
-        DisplayTraj.initBPMs(accl);
-        
-        if(DisplayTraj.isMinChannelConnected()){
-        
-            timerPlotUpdate = new StatusAnimationTimer() {
-
-                @Override
-                public void handle(long now) {
-                    RadioMenuItem getSeqName = (RadioMenuItem) groupSequence.getSelectedToggle();
-                    if (getSeqName != null) {
-                        //reads trajecotry
-                        try {
-                            DisplayTraj.readTrajectory(accl, getSeqName.getText());
-                        } catch (ConnectionException | GetException ex) {
-                            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                        //updates the dataset
-                        updateDataset(DisplayTraj);
-                    }
-                }
-
-            };
-
-            labelTrajectoryStatus.setText("Trajectory : LIVE");
-            timerPlotUpdate.start();
-        } else {
-            Alert alert = new Alert(AlertType.WARNING);
-            alert.setTitle("BPM Connection Warning");
-            alert.setHeaderText("Minimum number of connected channels not reached!");
-            alert.setContentText("Most of the BPM channels are disconected. Display of LIVE trajectory not possible ");
-
-            alert.showAndWait();            
-        }
-    }
-
-    @FXML
-    private void handleMenuTrajectoryfromFile(ActionEvent event) {
-        //turn off plot update timer
-        boolean timerisRunning = false;
-        if (timerPlotUpdate != null) {
-            timerisRunning = timerPlotUpdate.isRunning();
-            timerPlotUpdate.stop();
-        }
-
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Load Trajectory File");
-
-        //Set extension filter
-        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("XML files (*.xml)", "*.xml");
-        fileChooser.getExtensionFilters().add(extFilter);
-
-        //Show save file dialog
-        File selectedFile = fileChooser.showOpenDialog(null);
-        RadioMenuItem getSeqName = (RadioMenuItem) groupSequence.getSelectedToggle();
-        if (selectedFile != null) {
-            labelTrajectoryStatus.setText("Trajectory : " + selectedFile.getPath());
-            if (getSeqName != null) {
-                try {
-                    if (accl.getSequence(getSeqName.getText()) != null) {
-                        DisplayTraj.loadTrajectory(accl.getSequence(getSeqName.getText()).getAllNodesOfType("BPM"), selectedFile);
-                    } else if (accl.getComboSequence(getSeqName.getText()) != null) {
-                        DisplayTraj.loadTrajectory(accl.getComboSequence(getSeqName.getText()).getAllNodesOfType("BPM"), selectedFile);
-                    }
-                } catch (IOException ex) {
-                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                updateDataset(DisplayTraj);
-                anchorPaneChart.setDisable(false);
-            }
-        }
-    }
-
-    @FXML
-    private void handleELog(ActionEvent event) {
-        try {
-            WritableImage[] snapshots = new WritableImage[1];
-            mainAnchor1.getScene().snapshot(snapshots[0]);  
-            PostEntryDialog.post(snapshots);
-        } catch (Exception ex) {
             Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

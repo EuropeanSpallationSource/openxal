@@ -25,24 +25,24 @@ import java.util.Date;
 public class Timestamp implements Comparable<Timestamp> {
 	/** date formatter */
     static final SimpleDateFormat TIME_FORMATTER;
-	
+
 	/** format an integer to have nine digits including leading zeros as necessary   */
 	static final DecimalFormat NANOSECOND_FORMATTER;
-	
+
 	/** constant for 1000 */
 	static final BigDecimal THOUSAND = new BigDecimal( 1000 );
-	
+
 	/** the timestamp information */
 	protected BigDecimal _timestamp;
-	
-    
+
+
 	// static initializer
     static {
         TIME_FORMATTER = new SimpleDateFormat( "MMM d, yyyy HH:mm:ss" );
 		NANOSECOND_FORMATTER = new DecimalFormat( "000000000" );
     }
-	
-	
+
+
 	/**
 	 * Primary constructor from the full precision seconds since the Java epoch.
 	 * @param timestamp the number of seconds since the Java epoch
@@ -50,8 +50,8 @@ public class Timestamp implements Comparable<Timestamp> {
 	public Timestamp( final BigDecimal timestamp ) {
 		_timestamp = timestamp;
 	}
-	
-	
+
+
 	/**
 	 * Construct a Timestamp from a java.sql.Timestamp
 	 * @param timestamp an SQL timestamp
@@ -59,8 +59,8 @@ public class Timestamp implements Comparable<Timestamp> {
 	public Timestamp( final java.sql.Timestamp timestamp ) {
 		this( toBigDecimal( timestamp ) );
 	}
-    
-    
+
+
     /**
      * Get the times tamp as a Java Date.
      * Some precision is lost since the Date class only supports millisecond resolution.
@@ -69,17 +69,17 @@ public class Timestamp implements Comparable<Timestamp> {
     public Date getDate() {
         return new Date( getTime() );
     }
-    
-    
+
+
     /**
      * Get the timestamp in milliseconds relative to the Java epoch.
      * @return The time in milliseconds since the Java epoch.
      */
     public long getTime() {
-        return ( _timestamp.multiply(THOUSAND) ).longValue();        
+        return ( _timestamp.multiply(THOUSAND) ).longValue();
     }
-	
-	
+
+
 	/**
 	 * Get the time in seconds since the Java epoch.
 	 * @return the time in seconds since the Java epoch.
@@ -87,8 +87,8 @@ public class Timestamp implements Comparable<Timestamp> {
 	public double getSeconds() {
 		return _timestamp.doubleValue();
 	}
-	
-	
+
+
 	/**
 	 * Get the time in seconds with full precision since the Java epoch.
 	 * @return the time in seconds since the Java epoch.
@@ -96,8 +96,8 @@ public class Timestamp implements Comparable<Timestamp> {
 	public BigDecimal getFullSeconds() {
 		return _timestamp;
 	}
-	
-	
+
+
 	/**
 	 * Get the SQL Timestamp equivalent of this instance.
 	 * @return the SQL Timestamp equivalent of this instance.
@@ -106,11 +106,11 @@ public class Timestamp implements Comparable<Timestamp> {
 		java.sql.Timestamp sqlTimestamp = new java.sql.Timestamp( getTime() );
 		int nanoseconds = _timestamp.subtract( _timestamp.setScale(0, BigDecimal.ROUND_DOWN) ).movePointRight(9).intValue();
 		sqlTimestamp.setNanos(nanoseconds);
-		
+
 		return sqlTimestamp;
 	}
-	
-	
+
+
 	/**
 	 * Convert a java.sql.Timestamp to BigDecimal time.
 	 * @param timestamp The timestamp as a java.sql.Timestamp
@@ -121,10 +121,10 @@ public class Timestamp implements Comparable<Timestamp> {
 		BigDecimal nanoSeconds = new BigDecimal( timestamp.getNanos() );
 		return seconds.add( nanoSeconds.movePointLeft(9) ).setScale( 9, BigDecimal.ROUND_HALF_UP );
 	}
-	
-	
-	/** 
-	 * Generate a string representation of this timestamp using the specified time format for the time format up to seconds. Subsecond time is appended using a decimal point. 
+
+
+	/**
+	 * Generate a string representation of this timestamp using the specified time format for the time format up to seconds. Subsecond time is appended using a decimal point.
 	 * @param timeFormat format for which to generate the string
 	 * @return formatted string representation
 	 */
@@ -132,8 +132,8 @@ public class Timestamp implements Comparable<Timestamp> {
 		final long nanoseconds = _timestamp.subtract( _timestamp.setScale( 0, BigDecimal.ROUND_DOWN ) ).movePointRight(9).longValue();
 		return timeFormat.format( getDate() ) + "." + NANOSECOND_FORMATTER.format( nanoseconds );
 	}
-	
-	
+
+
 	/**
 	 * Get a string representation of the Timestamp.
 	 * @return a string representation of the Timestamp
@@ -141,8 +141,8 @@ public class Timestamp implements Comparable<Timestamp> {
 	public String toString() {
 		return toString( TIME_FORMATTER );
 	}
-	
-	
+
+
 	/**
 	 * Determine if the specified timestamp equals this one.
 	 * @return true if they are equals and false if not
@@ -161,8 +161,8 @@ public class Timestamp implements Comparable<Timestamp> {
 	public int hashCode() {
 		return _timestamp.hashCode();
 	}
-	
-	
+
+
 	/**
 	 * Compare this timestamp with another timestamp.
 	 * @param otherTimestamp The timestamp with which to compare this one
@@ -172,4 +172,3 @@ public class Timestamp implements Comparable<Timestamp> {
 		return _timestamp.compareTo( otherTimestamp._timestamp );
 	}
 }
-

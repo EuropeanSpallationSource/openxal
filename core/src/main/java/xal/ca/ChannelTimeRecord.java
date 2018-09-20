@@ -6,10 +6,6 @@
 
 package xal.ca;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.text.SimpleDateFormat;
-import java.text.FieldPosition;
 
 /**
  * ChannelTimeRecord is a wrapper for channel data that has a value along with 
