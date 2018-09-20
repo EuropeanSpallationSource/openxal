@@ -6,16 +6,17 @@
 
 package xal.extension.fxapplication;
 
-
 import java.io.File;
 import java.io.IOException;
 import javafx.application.Application;
 import java.net.URL;
+import java.util.Date;
 import javafx.beans.property.SimpleStringProperty;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.Event;
@@ -37,29 +38,34 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.FileChooser;
+import xal.extension.application.ApplicationStatus;
+import xal.extension.service.ServiceDirectory;
+import xal.extension.service.ServiceException;
 import xal.smf.Accelerator;
 import xal.smf.AcceleratorSeq;
 import xal.smf.AcceleratorSeqCombo;
 import xal.smf.data.XMLDataManager;
 
-
 /**
- * The Application class handles defines the core of an application.  It is often
- * the first handler of application wide events and typically forwards those events
- * to the custom application adaptor for further processing.  Every application has
- * exactly one instance of this class.
+ * The Application class handles defines the core of an application. It is often
+ * the first handler of application wide events and typically forwards those
+ * events to the custom application adaptor for further processing. Every
+ * application has exactly one instance of this class.
  *
- * For now the FxApplication does nothing (except inheriting all from Application)
+ * For now the FxApplication does nothing (except inheriting all from
+ * Application)
  *
  * @author Yngve Levinsen <yngve.levinsen@esss.se>
  */
 abstract public class FxApplication extends Application {
 
-
     protected String MAIN_SCENE = "/fxml/Scene.fxml";
     protected String CSS_STYLE = "/styles/Styles.css";
-    protected String STAGE_TITLE = "Demo Application";
+    private String STAGE_TITLE = "Demo Application";
+
     protected XalFxDocument DOCUMENT;
+
+    final private Date LAUNCH_TIME;
 
     // Set to false if this application doesn't save/load xml files
     protected boolean HAS_DOCUMENTS = true;
@@ -69,20 +75,40 @@ abstract public class FxApplication extends Application {
 
     protected MenuBar MENU_BAR;
 
+    private static Stage stage; // **Declare static Stage**
+
     /**
      * Application constructor.
-     * @param adaptor The application adaptor used for customization.
      */
-    protected FxApplication( ) {
-        this( new URL[]{} );
+    protected FxApplication() {
+        this(new URL[]{});
     }
 
     /**
      * Application constructor.
+     *
      * @param urls An array of document URLs to open upon startup.
      */
-    protected FxApplication( final URL[] urls ) {
+    protected FxApplication(final URL[] urls) {
         super();
+
+        LAUNCH_TIME = new Date();
+    }
+
+    private void setStage(Stage stage) {
+        this.stage = stage;
+    }
+
+    static public Stage getStage() {
+        return stage;
+    }
+
+    public String getApplicationName() {
+        return STAGE_TITLE;
+    }
+
+    public void setApplicationName(String applicationName) {
+        this.STAGE_TITLE = applicationName;
     }
 
     // Call this before start() (so that you can add items to MENU_BAR etc after)
@@ -103,11 +129,11 @@ abstract public class FxApplication extends Application {
             saveAsFileMenu.setOnAction(new SaveFileMenu(DOCUMENT, true));
             final MenuItem loadFileMenu = new MenuItem("Load");
             loadFileMenu.setOnAction(new LoadFileMenu(DOCUMENT));
-            fileMenu.getItems().addAll( newFileMenu, saveFileMenu, saveAsFileMenu, loadFileMenu);
+            fileMenu.getItems().addAll(newFileMenu, saveFileMenu, saveAsFileMenu, loadFileMenu);
         }
         final MenuItem exitMenu = new MenuItem("Exit");
         exitMenu.setOnAction(new ExitMenu());
-        fileMenu.getItems().addAll( exitMenu);
+        fileMenu.getItems().addAll(exitMenu);
 
         final Menu editMenu = new Menu("Edit");
 
@@ -116,16 +142,15 @@ abstract public class FxApplication extends Application {
         loadDefaultAcceleratorMenu.setOnAction(new LoadDefaultAcceleratorMenu(DOCUMENT));
         final MenuItem loadAcceleratorMenu = new MenuItem("Load Accelerator ...");
         loadAcceleratorMenu.setOnAction(new LoadAcceleratorMenu(DOCUMENT));
-        acceleratorMenu.getItems().addAll(loadDefaultAcceleratorMenu,loadAcceleratorMenu);
+        acceleratorMenu.getItems().addAll(loadDefaultAcceleratorMenu, loadAcceleratorMenu);
         final Menu sequenceMenu = new Menu("Sequence");
         final ToggleGroup groupSequence = new ToggleGroup();
 
-
-        if(HAS_SEQUENCE && DOCUMENT.accelerator.getAccelerator()!=null){
-            buildSequenceMenu(DOCUMENT.accelerator.getAccelerator(),sequenceMenu,groupSequence);
-            acceleratorMenu.getItems().addAll(new SeparatorMenuItem(),sequenceMenu);
+        if (HAS_SEQUENCE && DOCUMENT.accelerator.getAccelerator() != null) {
+            buildSequenceMenu(DOCUMENT.accelerator.getAccelerator(), sequenceMenu, groupSequence);
+            acceleratorMenu.getItems().addAll(new SeparatorMenuItem(), sequenceMenu);
             final MenuItem addCombo = new MenuItem("Add new Combo Sequence");
-            addCombo.setOnAction(new AddCombo(DOCUMENT,groupSequence));
+            addCombo.setOnAction(new AddCombo(DOCUMENT, groupSequence));
             sequenceMenu.getItems().add(addCombo);
         }
 
@@ -134,29 +159,32 @@ abstract public class FxApplication extends Application {
         openLogMenu.setOnAction(new UrlMenu(DOCUMENT));
         final MenuItem makePostMenu = new MenuItem("Post");
         makePostMenu.setOnAction(new ELogMenu(DOCUMENT));
-        eLogMenu.getItems().addAll(openLogMenu,makePostMenu);
+        eLogMenu.getItems().addAll(openLogMenu, makePostMenu);
 
         final Menu helpMenu = new Menu("Help");
         final MenuItem aboutMenu = new MenuItem("About");
         aboutMenu.setOnAction(new HelpMenu(DOCUMENT));
         helpMenu.getItems().add(aboutMenu);
 
-        MENU_BAR.getMenus().addAll( fileMenu, editMenu, acceleratorMenu, eLogMenu, helpMenu);
+        MENU_BAR.getMenus().addAll(fileMenu, editMenu, acceleratorMenu, eLogMenu, helpMenu);
 
         DOCUMENT.accelerator.addChangeListener((ChangeListener) (ObservableValue o, Object oldVal, Object newVal) -> {
-            if(HAS_SEQUENCE && DOCUMENT.accelerator.getAccelerator()!=null){
-                int menu_num = sequenceMenu.getItems().size()-1;
+            if (HAS_SEQUENCE && DOCUMENT.accelerator.getAccelerator() != null) {
+                int menu_num = sequenceMenu.getItems().size() - 1;
                 sequenceMenu.getItems().remove(0, menu_num);
                 groupSequence.getToggles().clear();
-                buildSequenceMenu(DOCUMENT.accelerator.getAccelerator(),sequenceMenu,groupSequence);
+                buildSequenceMenu(DOCUMENT.accelerator.getAccelerator(), sequenceMenu, groupSequence);
                 Logger.getLogger(FxApplication.class.getName()).log(Level.INFO, "Rebuilding Sequence Menu.");
             }
         });
+
+        registerApplicationStatusService();
 
     }
 
     @Override
     public void start(Stage stage) throws IOException {
+        setStage(stage);
 
         VBox root = new VBox();
 
@@ -174,44 +202,94 @@ abstract public class FxApplication extends Application {
         stage.setScene(scene);
         //YIL It is probably very bad to set this here but I am a stupid person.
         DOCUMENT.sourceString = new SimpleStringProperty(DOCUMENT.DEFAULT_FILENAME);
-        DOCUMENT.sourceString.addListener((observable, oldValue, newValue) -> stage.setTitle(STAGE_TITLE+": "+newValue));
+        DOCUMENT.sourceString.addListener((observable, oldValue, newValue) -> stage.setTitle(STAGE_TITLE + ": " + newValue));
         stage.show();
     }
 
-
-
-    public void buildSequenceMenu(Accelerator accelerator, Menu sequenceMenu, ToggleGroup groupSequence){
+    public void buildSequenceMenu(Accelerator accelerator, Menu sequenceMenu, ToggleGroup groupSequence) {
         //Populate the Sequence Menu with the sequences of the machine
         List<AcceleratorSeq> seqItem = accelerator.getSequences();
         int k = 0;
 
         for (AcceleratorSeq item : seqItem) { //AddSequences
             RadioMenuItem addedItem = new RadioMenuItem(item.toString());
-            sequenceMenu.getItems().add(k,addedItem);
+            sequenceMenu.getItems().add(k, addedItem);
             addedItem.setToggleGroup(groupSequence);
             addedItem.setOnAction(new SelectSequenceMenu(DOCUMENT));
             k++;
         }
 
-        sequenceMenu.getItems().add(k,new SeparatorMenuItem());
+        sequenceMenu.getItems().add(k, new SeparatorMenuItem());
 
         List<AcceleratorSeqCombo> seqCombo = accelerator.getComboSequences();
         k++;
         for (AcceleratorSeqCombo item : seqCombo) { //AddCombos
             RadioMenuItem addedItem = new RadioMenuItem(item.toString());
-            sequenceMenu.getItems().add(k,addedItem);
+            sequenceMenu.getItems().add(k, addedItem);
             addedItem.setToggleGroup(groupSequence);
             addedItem.setOnAction(new SelectSequenceMenu(DOCUMENT));
             k++;
         }
 
-        sequenceMenu.getItems().add(k,new SeparatorMenuItem());
+        sequenceMenu.getItems().add(k, new SeparatorMenuItem());
 
+    }
+
+    /**
+     * Register the application status service so clients on the network can
+     * query the status of this application instance.
+     */
+    final protected void registerApplicationStatusService() {
+        // check to see if the startup flag has disabled application services
+        Boolean shouldRegister = Boolean.valueOf(System.getProperty("registerApplicationService", "true"));
+
+        if (shouldRegister.booleanValue()) {
+            try {
+                ServiceDirectory.defaultDirectory().registerService(ApplicationStatus.class, STAGE_TITLE, new FxApplicationStatusService(this));
+                System.out.println("Registered application services...");
+                Logger.getLogger("xal.extension.fxapplication").log(Level.INFO, "Registered application services...");
+            } catch (ServiceException exception) {
+                System.err.println("Service registration failed due to " + exception);
+                Logger.getLogger("xal.extension.fxapplication").log(Level.SEVERE, "Service registration failed...", exception);
+            }
+        } else {
+            Logger.getLogger("global").log(Level.CONFIG, "Application services disabled.");
+            System.out.println("Application services not registerd because of startup flag...");
+        }
+    }
+
+    void showAllWindows() {
+        Platform.runLater(getStage()::toFront);
+    }
+
+    /**
+     * Overriding the stop method to ensure that applications close properly
+     * after calling Platform.exit(). In case some application need to perform
+     * some preparation before exiting, this method should be overridden.
+     */
+    @Override
+    public void stop() {
+        System.exit(0);
+    }
+
+    void quit() {
+        Platform.exit();
+    }
+
+    /**
+     * Get the launch time which is the time at which the Application instance
+     * was instantiated.
+     *
+     * @return The launch time
+     */
+    public Date getLaunchTime() {
+        return LAUNCH_TIME;
     }
 
 }
 
 abstract class FileMenuItem implements EventHandler {
+
     protected XalFxDocument document;
 
     public FileMenuItem(XalFxDocument document) {
@@ -238,6 +316,7 @@ class NewFileMenu extends FileMenuItem {
 }
 
 class SaveFileMenu extends FileMenuItem {
+
     private final boolean saveAs;
 
     public SaveFileMenu(XalFxDocument document, boolean saveAs) {
@@ -253,7 +332,7 @@ class SaveFileMenu extends FileMenuItem {
             fileChooser.setInitialFileName(document.DEFAULT_FILENAME);
 
             //Set extension filter
-            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(document.FILETYPE_DESCRIPTION+" ("+document.WILDCARD_FILE_EXTENSION+")", document.WILDCARD_FILE_EXTENSION);
+            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(document.FILETYPE_DESCRIPTION + " (" + document.WILDCARD_FILE_EXTENSION + ")", document.WILDCARD_FILE_EXTENSION);
             fileChooser.getExtensionFilters().add(extFilter);
 
             //Show save file dialog
@@ -261,7 +340,7 @@ class SaveFileMenu extends FileMenuItem {
             if (selectedFile != null) {
                 document.setSource(selectedFile);
             } else {
-                Logger.getLogger(SaveFileMenu.class.getName()).log(Level.WARNING, "Selected file is null {0}",selectedFile);
+                Logger.getLogger(SaveFileMenu.class.getName()).log(Level.WARNING, "Selected file is null {0}", selectedFile);
             }
         } else {
             Logger.getLogger(SaveFileMenu.class.getName()).log(Level.FINER, "Using existing file path {0}", document.source);
@@ -290,20 +369,20 @@ class LoadFileMenu extends FileMenuItem {
         //fileChooser.setInitialFileName(document.DEFAULT_FILENAME);
 
         //Set extension filter
-        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(document.FILETYPE_DESCRIPTION+" ("+document.WILDCARD_FILE_EXTENSION+")", document.WILDCARD_FILE_EXTENSION);
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(document.FILETYPE_DESCRIPTION + " (" + document.WILDCARD_FILE_EXTENSION + ")", document.WILDCARD_FILE_EXTENSION);
         fileChooser.getExtensionFilters().add(extFilter);
 
         //Show save file dialog
         File selectedFile = fileChooser.showOpenDialog(null);
-        if (selectedFile==null)
+        if (selectedFile == null) {
             Logger.getLogger(LoadFileMenu.class.getName()).log(Level.INFO, "No file selected for loading");
-        else {
+        } else {
             if (selectedFile.exists() && selectedFile.canRead()) {
                 document.setSource(selectedFile);
                 document.loadDocument(document.source);
-            }
-            else
+            } else {
                 Logger.getLogger(LoadFileMenu.class.getName()).log(Level.SEVERE, "Could not open {0}", document.source);
+            }
         }
     }
 
@@ -368,7 +447,7 @@ class LoadAcceleratorMenu implements EventHandler {
 
             Optional<ButtonType> result = alert.showAndWait();
 
-            if (result.get() == buttonTypeLoad){
+            if (result.get() == buttonTypeLoad) {
                 Logger.getLogger(LoadAcceleratorMenu.class.getName()).log(Level.INFO, "Loading default accelerator.");
                 document.accelerator.setAccelerator(XMLDataManager.loadDefaultAccelerator());
             } else {
@@ -386,8 +465,8 @@ class SelectSequenceMenu implements EventHandler {
 
     /*
     * CONTRUCTOR
-    */
-    public SelectSequenceMenu(XalFxDocument DOCUMENT){
+     */
+    public SelectSequenceMenu(XalFxDocument DOCUMENT) {
         this.document = DOCUMENT;
     }
 
@@ -399,7 +478,6 @@ class SelectSequenceMenu implements EventHandler {
     }
 }
 
-
 class AddCombo implements EventHandler {
 
     protected final XalFxDocument document;
@@ -407,8 +485,8 @@ class AddCombo implements EventHandler {
 
     /*
     * CONTRUCTOR
-    */
-    public AddCombo(XalFxDocument DOCUMENT,ToggleGroup groupSequence){
+     */
+    public AddCombo(XalFxDocument DOCUMENT, ToggleGroup groupSequence) {
         this.document = DOCUMENT;
         this.groupSequence = groupSequence;
     }
@@ -459,11 +537,11 @@ class AddCombo implements EventHandler {
 
 }
 
-
 class ELogMenu implements EventHandler {
+
     protected XalFxDocument document;
 
-    public ELogMenu(XalFxDocument document){
+    public ELogMenu(XalFxDocument document) {
         this.document = document;
     }
 
@@ -474,9 +552,10 @@ class ELogMenu implements EventHandler {
 }
 
 class HelpMenu implements EventHandler {
+
     protected XalFxDocument document;
 
-    public HelpMenu(XalFxDocument document){
+    public HelpMenu(XalFxDocument document) {
         this.document = document;
     }
 
@@ -487,9 +566,10 @@ class HelpMenu implements EventHandler {
 }
 
 class UrlMenu implements EventHandler {
+
     protected XalFxDocument document;
 
-    public UrlMenu(XalFxDocument document){
+    public UrlMenu(XalFxDocument document) {
         this.document = document;
     }
 

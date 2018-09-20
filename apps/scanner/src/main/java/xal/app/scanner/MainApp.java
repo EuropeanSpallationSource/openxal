@@ -29,7 +29,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
 package xal.app.scanner;
 
 import java.io.IOException;
@@ -45,18 +44,18 @@ public class MainApp extends FxApplication {
     @Override
     public void start(Stage stage) throws IOException {
 
-    MAIN_SCENE = "/fxml/ScannerScene.fxml";
-    CSS_STYLE = "/styles/Styles.css";
-    STAGE_TITLE = "Scanner Application";
-    Logger.getLogger(MainApp.class.getName()).log(Level.WARNING, "Ignoring useDefaultAccelerator: {0} .. ", Boolean.getBoolean( "useDefaultAccelerator" ));
-    DOCUMENT = new ScannerDocument(stage);
-    // Initialize some static functions (this is probably bad design..)
-    MainFunctions.initialize((ScannerDocument)DOCUMENT);
+        MAIN_SCENE = "/fxml/ScannerScene.fxml";
+        CSS_STYLE = "/styles/Styles.css";
+        setApplicationName("Scanner Application");
+        Logger.getLogger(MainApp.class.getName()).log(Level.WARNING, "Ignoring useDefaultAccelerator: {0} .. ", Boolean.getBoolean("useDefaultAccelerator"));
+        DOCUMENT = new ScannerDocument(stage);
+        // Initialize some static functions (this is probably bad design..)
+        MainFunctions.initialize((ScannerDocument) DOCUMENT);
 
-    HAS_SEQUENCE=false;
+        HAS_SEQUENCE = false;
 
-    super.initialize();
-    super.start(stage);
+        super.initialize();
+        super.start(stage);
     }
 
     /**
