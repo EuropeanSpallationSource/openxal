@@ -46,7 +46,6 @@ public class MainApp extends FxApplication {
     public void start(Stage stage) throws IOException {
 
     MAIN_SCENE = "/fxml/ScannerScene.fxml";
-    CSS_STYLE = "/styles/Styles.css";
     STAGE_TITLE = "Scanner Application";
     Logger.getLogger(MainApp.class.getName()).log(Level.WARNING, "Ignoring useDefaultAccelerator: {0} .. ", Boolean.getBoolean( "useDefaultAccelerator" ));
     DOCUMENT = new ScannerDocument(stage);

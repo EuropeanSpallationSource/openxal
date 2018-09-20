@@ -34,14 +34,12 @@ package xal.app.scanner;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Comparator;
 import java.util.ResourceBundle;
 import java.util.function.UnaryOperator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import javafx.application.Platform;
-import javafx.beans.InvalidationListener;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -80,19 +78,13 @@ public class FXMLController implements Initializable {
     private URL location;
 
     @FXML
-    private TableView<ChannelWrapper> scanTable;
+    private TableView<ChannelWrapper> pvTable;
 
     @FXML
-    private TableColumn<ChannelWrapper, String> scanColumnPV;
+    private TableColumn<ChannelWrapper, String> pvNameColumn;
 
     @FXML
     private TableColumn<ChannelWrapper, Boolean> scanColumnSelect;
-
-    @FXML
-    private TableView<ChannelWrapper> readTable;
-
-    @FXML
-    private TableColumn<ChannelWrapper, String> readColumnPV;
 
     @FXML
     private TableColumn<ChannelWrapper, Boolean> readColumnSelect;
@@ -152,6 +144,9 @@ public class FXMLController implements Initializable {
     private Text textFieldTimeEstimate;
 
     @FXML
+    private Text textFieldWarnSave;
+
+    @FXML
     private Button stopButton;
 
     @FXML
@@ -176,6 +171,8 @@ public class FXMLController implements Initializable {
 
     public static ObservableList<ChannelWrapper> PVscanList;
 
+    private static final Logger logger = Logger.getLogger(FXMLController.class.getName());
+
     @FXML
     private void handleScanAddPV(ActionEvent event) {
         try {
@@ -185,21 +182,20 @@ public class FXMLController implements Initializable {
             stage.setTitle("Add PV");
             stage.setScene(new Scene(root));
             stage.show();
-            Logger.getLogger(FXMLController.class.getName()).log(Level.FINER, "Add PV Window opened");
+            logger.log(Level.FINER, "Add PV Window opened");
         }
         catch (IOException e) {
-            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, "Error opening Add PV window", e);
+            logger.log(Level.SEVERE, "Error opening Add PV window", e);
         }
     }
 
     @FXML
     private void handleScanRemovePV(ActionEvent event) {
-            readTable.getSelectionModel().getSelectedItems().forEach(cW ->
-                    Logger.getLogger(FXMLController.class.getName()).log(Level.INFO, "Parameter {0} removed from readback channel list",cW.getChannelName()));
-            readTable.getSelectionModel().getSelectedItems().forEach(cW -> readTable.getItems().remove(cW));
-            scanTable.getSelectionModel().getSelectedItems().forEach(cW ->
-                    Logger.getLogger(FXMLController.class.getName()).log(Level.INFO, "Parameter {0} removed from writeable channel list",cW.getChannelName()));
-            scanTable.getSelectionModel().getSelectedItems().forEach(cW -> scanTable.getItems().remove(cW));
+            pvTable.getSelectionModel().getSelectedItems().forEach(cW -> {
+                    logger.log(Level.INFO, "Parameter {0} removed from channel list",cW.getChannelName());
+                    pvTable.getItems().remove(cW);
+                    listOfWriteables.getItems().remove(cW);
+            });
     }
 
     // Extend the the first dimension of the double array to length newLength
@@ -216,6 +212,8 @@ public class FXMLController implements Initializable {
     @FXML
     void handlePreCalculate(ActionEvent event) {
         int nPoints = MainFunctions.calculateNumMeas();
+        // Trigger update of Execute button
+        MainFunctions.isCombosUpdated.set(true);
         int nDone = MainFunctions.mainDocument.nCombosDone;
         textFieldNumMeas.setText("Number of measurement points: "+nPoints);
         if (nDone==0) {
@@ -223,6 +221,8 @@ public class FXMLController implements Initializable {
         } else {
             textFieldTimeEstimate.setText((nPoints-nDone) +" remaining, this will take "+MainFunctions.getTimeString(nPoints-nDone));
         }
+        if (!MainFunctions.mainDocument.sourceSetAndValid())
+            textFieldWarnSave.setText("Remember to save document first!");
     }
 
     @FXML
@@ -277,7 +277,7 @@ public class FXMLController implements Initializable {
     @FXML
     void setDelayEdited(KeyEvent event) {
         if (!delayBetweenMeas.getText().equals("")) {
-            Logger.getLogger(FXMLController.class.getName()).log(Level.FINER, "Delay edited to {0}", delayBetweenMeas.getText());
+            logger.log(Level.FINER, "Delay edited to {0}", delayBetweenMeas.getText());
             if((long) (Float.parseFloat(delayBetweenMeas.getText())*1000)!=MainFunctions.mainDocument.delayBetweenMeasurements.get())
                 measDelaySetButton.setDisable(false);
             else
@@ -288,7 +288,7 @@ public class FXMLController implements Initializable {
     @FXML
     void setMeasPerPointEdited(KeyEvent event) {
         if (!measPerPoint.getText().equals("")) {
-            Logger.getLogger(FXMLController.class.getName()).log(Level.FINER, "Measurements per point edited to {0}", measPerPoint.getText());
+            logger.log(Level.FINER, "Measurements per point edited to {0}", measPerPoint.getText());
             if(Integer.parseInt(measPerPoint.getText())!=MainFunctions.mainDocument.numberMeasurementsPerCombo.get())
                 nMeasPerSettingSetButton.setDisable(false);
             else
@@ -300,7 +300,7 @@ public class FXMLController implements Initializable {
     @FXML
     void setMeasurementDelay(ActionEvent event) {
         MainFunctions.mainDocument.delayBetweenMeasurements.set((long) (Float.parseFloat(delayBetweenMeas.getText())*1000));
-        Logger.getLogger(FXMLController.class.getName()).log(Level.INFO, "Measurement delay set to {0} ms", MainFunctions.mainDocument.delayBetweenMeasurements.get());
+        logger.log(Level.INFO, "Measurement delay set to {0} ms", MainFunctions.mainDocument.delayBetweenMeasurements.get());
         // If combos are already calculated we trigger a quick refresh of the calculation
         if (MainFunctions.isCombosUpdated.getValue())
             handlePreCalculate(event);
@@ -310,7 +310,7 @@ public class FXMLController implements Initializable {
     @FXML
     void setNumberOfMeasPerSetting(ActionEvent event) {
         MainFunctions.mainDocument.numberMeasurementsPerCombo.set(Integer.parseInt(measPerPoint.getText()));
-        Logger.getLogger(FXMLController.class.getName()).log(Level.INFO, "Measurements per point set to {0}", MainFunctions.mainDocument.numberMeasurementsPerCombo.get());
+        logger.log(Level.INFO, "Measurements per point set to {0}", MainFunctions.mainDocument.numberMeasurementsPerCombo.get());
         // If combos are already calculated we trigger a quick refresh of the calculation
         if (MainFunctions.isCombosUpdated.getValue())
             handlePreCalculate(event);
@@ -319,11 +319,9 @@ public class FXMLController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        assert scanTable != null : "fx:id=\"scanTable\" was not injected: check your FXML file 'ScannerScene.fxml'.";
-        assert scanColumnPV != null : "fx:id=\"scanColumnPV\" was not injected: check your FXML file 'ScannerScene.fxml'.";
+        assert pvTable != null : "fx:id=\"scanTable\" was not injected: check your FXML file 'ScannerScene.fxml'.";
+        assert pvNameColumn != null : "fx:id=\"scanColumnPV\" was not injected: check your FXML file 'ScannerScene.fxml'.";
         assert scanColumnSelect != null : "fx:id=\"scanColumnSelect\" was not injected: check your FXML file 'ScannerScene.fxml'.";
-        assert readTable != null : "fx:id=\"readTable\" was not injected: check your FXML file 'ScannerScene.fxml'.";
-        assert readColumnPV != null : "fx:id=\"readColumnPV\" was not injected: check your FXML file 'ScannerScene.fxml'.";
         assert readColumnSelect != null : "fx:id=\"readColumnSelect\" was not injected: check your FXML file 'ScannerScene.fxml'.";
         assert tabConfigure != null : "fx:id=\"tabConfigure\" was not injected: check your FXML file 'ScannerScene.fxml'.";
         assert delayBetweenMeas != null : "fx:id=\"delayBetweenMeas\" was not injected: check your FXML file 'ScannerScene.fxml'.";
@@ -384,7 +382,11 @@ public class FXMLController implements Initializable {
 
         // Only allow to push execute when the combo list is up to date..
         executeButton.setDisable(!MainFunctions.isCombosUpdated.getValue());
-        MainFunctions.isCombosUpdated.addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> executeButton.setDisable(!newValue));
+        MainFunctions.isCombosUpdated.addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
+            boolean executeAllowed = newValue;
+            logger.log(Level.FINEST, "Execute allowed: {0}", new Object[]{executeAllowed});
+            executeButton.setDisable(!executeAllowed);
+            });
 
 
         MainFunctions.mainDocument.numberOfScans.addListener((observable, oldValue, newValue) -> updateAnalysisList());
@@ -431,6 +433,7 @@ public class FXMLController implements Initializable {
                     if(!newValue) {
                         textFieldNumMeas.setText("");
                         textFieldTimeEstimate.setText("");
+                        textFieldWarnSave.setText("");
                     }
                 });
 
@@ -491,62 +494,48 @@ public class FXMLController implements Initializable {
     private void initializeSelectionTables() {
         // Initialize the list of scan variables..
         PVscanList = FXCollections.observableArrayList();
-        scanTable.setItems(MainFunctions.mainDocument.pvWriteables);
-        readTable.setItems(MainFunctions.mainDocument.pvReadbacks);
+        pvTable.setItems(MainFunctions.mainDocument.pvChannels);
 
-        scanColumnPV.setCellValueFactory(new PropertyValueFactory<>("channelName"));
-        readColumnPV.setCellValueFactory(new PropertyValueFactory<>("channelName"));
+        pvNameColumn.setCellValueFactory(new PropertyValueFactory<>("channelName"));
 
         readColumnSelect.setCellFactory(CheckBoxTableCell.forTableColumn((Integer param) -> {
-            Logger.getLogger(FXMLController.class.getName()).log(Level.FINEST, "Selection trigger for {0}", MainFunctions.mainDocument.pvReadbacks.get(param));
-            if (MainFunctions.mainDocument.pvReadbacks.get(param).getIsRead()) {
-                MainFunctions.actionAddPV(MainFunctions.mainDocument.pvReadbacks.get(param), true, false);
-                if (MainFunctions.checkSufficientParams()) {
-                    tabConfigure.setDisable(false);
-                    tabRun.setDisable(false);
-                }
+            logger.log(Level.FINEST, "Selection trigger for {0}", MainFunctions.mainDocument.pvChannels.get(param));
+            if (MainFunctions.mainDocument.pvChannels.get(param).getIsRead()) {
+                MainFunctions.actionAddPV(MainFunctions.mainDocument.pvChannels.get(param), true, false);
+                checkSufficientParams();
             } else {
-                MainFunctions.actionRemovePV(MainFunctions.mainDocument.pvReadbacks.get(param), true, false);
-                if (!MainFunctions.checkSufficientParams()) {
-                    tabConfigure.setDisable(true);
-                    tabRun.setDisable(true);
-                }
+                MainFunctions.actionRemovePV(MainFunctions.mainDocument.pvChannels.get(param), true, false);
+                checkSufficientParams();
             }
-            return MainFunctions.mainDocument.pvReadbacks.get(param).isReadProperty();
+            return MainFunctions.mainDocument.pvChannels.get(param).isReadProperty();
         }));
         readColumnSelect.setCellValueFactory((CellDataFeatures<ChannelWrapper, Boolean> param) -> param.getValue().isReadProperty());
 
         scanColumnSelect.setCellFactory(CheckBoxTableCell.forTableColumn((Integer param) -> {
-            Logger.getLogger(FXMLController.class.getName()).log(Level.FINEST, "Selection trigger for {0}", MainFunctions.mainDocument.pvWriteables.get(param));
-            if (MainFunctions.mainDocument.pvWriteables.get(param).getIsScanned()) {
-                Logger.getLogger(FXMLController.class.getName()).log(Level.FINEST, "Will scan {0}",MainFunctions.mainDocument.pvWriteables.get(param).getChannel().channelName());
-                MainFunctions.mainDocument.pvWriteables.get(param).setInstance();
-                if (MainFunctions.actionAddPV(MainFunctions.mainDocument.pvWriteables.get(param), false, true)) {
-                    if (!PVscanList.contains(MainFunctions.mainDocument.pvWriteables.get(param))) {
-                        PVscanList.add(MainFunctions.mainDocument.pvWriteables.get(param));
+            logger.log(Level.FINEST, "Selection trigger for {0}", MainFunctions.mainDocument.pvChannels.get(param));
+            if (MainFunctions.mainDocument.pvChannels.get(param).getIsScanned()) {
+                logger.log(Level.FINEST, "Will scan {0}",MainFunctions.mainDocument.pvChannels.get(param).getChannel().channelName());
+                MainFunctions.mainDocument.pvChannels.get(param).setInstance();
+                if (MainFunctions.actionAddPV(MainFunctions.mainDocument.pvChannels.get(param), false, true)) {
+                    if (!PVscanList.contains(MainFunctions.mainDocument.pvChannels.get(param))) {
+                        PVscanList.add(MainFunctions.mainDocument.pvChannels.get(param));
                         PVscanList.sort(ChannelWrapper::compareTo);
                         MainFunctions.isCombosUpdated.set(false);
                         MainFunctions.mainDocument.setHasChanges(true);
                     }
                 }
-                if (MainFunctions.checkSufficientParams()) {
-                    tabConfigure.setDisable(false);
-                    tabRun.setDisable(false);
-                }
+                checkSufficientParams();
             }
             else {
-                Logger.getLogger(FXMLController.class.getName()).log(Level.FINEST, "Will remove {0}",MainFunctions.mainDocument.pvWriteables.get(param).getChannel().channelName());
+                logger.log(Level.FINEST, "Will remove {0}",MainFunctions.mainDocument.pvChannels.get(param).getChannel().channelName());
                 //MainFunctions.actionRemovePV(MainFunctions.mainDocument.pvWriteables.get(param), false, true);
-                if(PVscanList.removeAll(MainFunctions.mainDocument.pvWriteables.get(param))) {
+                if(PVscanList.removeAll(MainFunctions.mainDocument.pvChannels.get(param))) {
                     clearAllConstraints();
                     MainFunctions.isCombosUpdated.set(false);
                 }
-                if(PVscanList.isEmpty()) {
-                    tabConfigure.setDisable(true);
-                    tabRun.setDisable(true);
-                }
+                checkSufficientParams();
             }
-            return MainFunctions.mainDocument.pvWriteables.get(param).isScannedProperty();
+            return MainFunctions.mainDocument.pvChannels.get(param).isScannedProperty();
         }));
         scanColumnSelect.setCellValueFactory((CellDataFeatures<ChannelWrapper, Boolean> param) -> param.getValue().isScannedProperty());
 
@@ -554,8 +543,8 @@ public class FXMLController implements Initializable {
         //readTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         //scanTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
-        readTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> { if (newValue!=null) scanTable.getSelectionModel().clearSelection();});
-        scanTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> { if (newValue!=null) readTable.getSelectionModel().clearSelection();});
+        // Why did I need this again??
+        pvTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> { if (newValue!=null) pvTable.getSelectionModel().clearSelection();});
     }
 
     private void clearAllConstraints() {
@@ -573,8 +562,25 @@ public class FXMLController implements Initializable {
                 MainFunctions.mainDocument.getDataSets().entrySet().forEach(dataSet -> measurements.add(dataSet.getKey()));
                 if (measurements.size() >0 )
                     tabDisplay.setDisable(false);
-                Logger.getLogger(FXMLController.class.getName()).log(Level.FINER, "Analysis list updated");
+                logger.log(Level.FINER, "Analysis list updated");
             }
           );
+    }
+
+    /**
+     * Check if we have selected enough parameters to do a scan
+     *
+     * @return true if we have at least one parameter listed to scan
+     */
+    private boolean checkSufficientParams() {
+        boolean sufficient = !(PVscanList.isEmpty());
+        if ( sufficient ) {
+            tabConfigure.setDisable(false);
+            tabRun.setDisable(false);
+        } else {
+            tabConfigure.setDisable(true);
+            tabRun.setDisable(true);
+        }
+        return sufficient;
     }
 }
