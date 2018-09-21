@@ -171,6 +171,7 @@ abstract public class AbstractBatchGetRequest<RecordType extends ChannelRecord> 
 	 */
 	public boolean submitAndWait( final double timeout ) {
 		submit();
+                waitForCompletion( timeout );
                 Channel.pendIO(timeout);
                 return isComplete();
 	}
