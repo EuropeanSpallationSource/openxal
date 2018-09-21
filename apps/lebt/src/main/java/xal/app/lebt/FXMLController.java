@@ -78,6 +78,10 @@ import xal.smf.AcceleratorNode;
 import xal.smf.AcceleratorSeq;
 import xal.smf.AcceleratorSeqCombo;
 import xal.smf.impl.CurrentMonitor;
+import xal.smf.impl.HDipoleCorr;
+import xal.smf.impl.MagnetMainSupply;
+import xal.smf.impl.MagnetPowerSupply;
+import xal.smf.impl.VDipoleCorr;
 import xal.tools.data.DataAdaptor;
 import xal.tools.math.Complex;
 import xal.tools.xml.XmlDataAdaptor;
@@ -871,15 +875,10 @@ public class FXMLController implements Initializable {
         
             if(sequence.getNodesOfType("SFM").size()>1 || sequence.getNodesOfType("MFM").size()>1){
                 AcceleratorNode Solenoid1 = sequence.getNodeWithId("LEBT-010:BMD-Sol-01");
-                displayValues.put(Solenoid1.getChannel("I"),label_sol1currentRB);
+                displayValues.put(Solenoid1.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE),label_sol1currentRB);
                 displayValues.put(Solenoid1.getChannel("fieldRB"),label_sol1fieldRB);                              
-                displayValues.put(Solenoid1.getChannel("I_Set"),label_sol1current);  
-                //label_sol1fieldRB.textProperty().addListener((obs, oldVal, newVal) ->{
-                //    if(newVal!=oldVal){
-                //        UpdateSimulation();
-                //    }
-                //});  
-                setValues.put(Solenoid1.getChannel("fieldSet"),textField_sol1field);
+                displayValues.put(Solenoid1.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),label_sol1current);                 
+                setValues.put(Solenoid1.getChannel(MagnetMainSupply.FIELD_SET_HANDLE),textField_sol1field);
                 textField_sol1field.focusedProperty().addListener((obs, oldVal, newVal) ->{
                     if(!newVal){
                         if(MainFunctions.mainDocument.getModel().get().matches("LIVE")){
@@ -899,15 +898,10 @@ public class FXMLController implements Initializable {
                     }
                 });
                 AcceleratorNode  Solenoid2 = sequence.getNodeWithId("LEBT-010:BMD-Sol-02");
-                displayValues.put(Solenoid2.getChannel("I"),label_sol2currentRB);
-                displayValues.put(Solenoid2.getChannel("I_Set"),label_sol2current);
-                displayValues.put(Solenoid2.getChannel("fieldRB"),label_sol2fieldRB);
-                //label_sol2fieldRB.textProperty().addListener((obs, oldVal, newVal) ->{
-                //    if(newVal!=oldVal){
-                //        UpdateSimulation();
-                //    }
-                //});
-                setValues.put(Solenoid2.getChannel("fieldSet"),textField_sol2field);
+                displayValues.put(Solenoid2.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE),label_sol2currentRB);
+                displayValues.put(Solenoid2.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),label_sol2current);
+                displayValues.put(Solenoid2.getChannel("fieldRB"),label_sol2fieldRB);               
+                setValues.put(Solenoid2.getChannel(MagnetMainSupply.FIELD_SET_HANDLE),textField_sol2field);
                 textField_sol2field.focusedProperty().addListener((obs, oldVal, newVal) ->{
                     if(!newVal){ 
                         if(MainFunctions.mainDocument.getModel().get().matches("LIVE")){
@@ -939,15 +933,10 @@ public class FXMLController implements Initializable {
             
             if(sequence.getNodesOfType("DCV").size()>3){
                 AcceleratorNode CV1 = sequence.getNodesOfType("DCV").get(0);
-                displayValues.put(CV1.getChannel("I"),label_CV1currentRB);
-                displayValues.put(CV1.getChannel("I_Set"),label_CV1current);
-                displayValues.put(CV1.getChannel("fieldRB"),label_CV1fieldRB);
-                //label_CV1fieldRB.textProperty().addListener((obs, oldVal, newVal) ->{
-                //    if(newVal!=oldVal){
-                //        UpdateSimulation();
-                //    }
-                //});
-                setValues.put(CV1.getChannel("fieldSet"),textField_CV1field);
+                displayValues.put(CV1.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE),label_CV1currentRB);
+                displayValues.put(CV1.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),label_CV1current);
+                displayValues.put(CV1.getChannel(VDipoleCorr.FIELD_RB_HANDLE),label_CV1fieldRB);                
+                setValues.put(CV1.getChannel(MagnetMainSupply.FIELD_SET_HANDLE),textField_CV1field);
                 textField_CV1field.focusedProperty().addListener((obs, oldVal, newVal) ->{
                     if(!newVal){ 
                         if(MainFunctions.mainDocument.getModel().get().matches("LIVE")){
@@ -956,7 +945,7 @@ public class FXMLController implements Initializable {
                                 if(val<0.09 && val>-0.09){
                                     CV1.getChannel("fieldSet").putVal(val);
                                 } else {
-                                    textField_CV1field.setText(Double.toString(CV1.getChannel("fieldRB").getValDbl()));
+                                    textField_CV1field.setText(Double.toString(CV1.getChannel(VDipoleCorr.FIELD_RB_HANDLE).getValDbl()));
                                 }
                             } catch (ConnectionException | PutException | GetException ex) {
                                 Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
@@ -967,15 +956,10 @@ public class FXMLController implements Initializable {
                     }
                 });
                 AcceleratorNode CV2 = sequence.getNodesOfType("DCV").get(3);
-                displayValues.put(CV2.getChannel("I"),label_CV2currentRB);
-                displayValues.put(CV2.getChannel("I_Set"),label_CV2current);
-                displayValues.put(CV2.getChannel("fieldRB"),label_CV2fieldRB);
-                //label_CV2fieldRB.textProperty().addListener((obs, oldVal, newVal) ->{
-                //    if(newVal!=oldVal){
-                //        UpdateSimulation();
-                //    }
-                //});
-                setValues.put(CV2.getChannel("fieldSet"),textField_CV2field);
+                displayValues.put(CV2.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE),label_CV2currentRB);
+                displayValues.put(CV2.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),label_CV2current);
+                displayValues.put(CV2.getChannel(VDipoleCorr.FIELD_RB_HANDLE),label_CV2fieldRB);               
+                setValues.put(CV2.getChannel(MagnetMainSupply.FIELD_SET_HANDLE),textField_CV2field);
                 textField_CV2field.focusedProperty().addListener((obs, oldVal, newVal) ->{
                     if(!newVal){ 
                         if(MainFunctions.mainDocument.getModel().get().matches("LIVE")){
@@ -984,7 +968,7 @@ public class FXMLController implements Initializable {
                                 if(val<0.09 && val>-0.09){
                                     CV2.getChannel("fieldSet").putVal(val);
                                 } else {
-                                    textField_CV2field.setText(Double.toString(CV2.getChannel("fieldRB").getValDbl()));
+                                    textField_CV2field.setText(Double.toString(CV2.getChannel(VDipoleCorr.FIELD_RB_HANDLE).getValDbl()));
                                 }
                             } catch (ConnectionException | PutException | GetException ex) {
                                 Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
@@ -1007,15 +991,10 @@ public class FXMLController implements Initializable {
             
             if(sequence.getNodesOfType("DCH").size()>3){
                 AcceleratorNode CH1 = sequence.getNodesOfType("DCH").get(0);
-                displayValues.put(CH1.getChannel("I"),label_CH1currentRB);
-                displayValues.put(CH1.getChannel("I_Set"),label_CH1current);
-                displayValues.put(CH1.getChannel("fieldRB"),label_CH1fieldRB);
-                //label_CH1fieldRB.textProperty().addListener((obs, oldVal, newVal) ->{
-                //    if(newVal!=oldVal){
-                //        UpdateSimulation();
-                //    }
-                //});
-                setValues.put(CH1.getChannel("fieldSet"),textField_CH1field);
+                displayValues.put(CH1.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE),label_CH1currentRB);
+                displayValues.put(CH1.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),label_CH1current);
+                displayValues.put(CH1.getChannel(HDipoleCorr.FIELD_RB_HANDLE),label_CH1fieldRB);               
+                setValues.put(CH1.getChannel(MagnetMainSupply.FIELD_SET_HANDLE),textField_CH1field);
                 textField_CH1field.focusedProperty().addListener((obs, oldVal, newVal) ->{
                     if(!newVal){ 
                         if(MainFunctions.mainDocument.getModel().get().matches("LIVE")){
@@ -1024,7 +1003,7 @@ public class FXMLController implements Initializable {
                                 if(val<0.12 && val>-0.12){
                                     CH1.getChannel("fieldSet").putVal(val);
                                 } else {
-                                    textField_CH1field.setText(Double.toString(CH1.getChannel("fieldRB").getValDbl()));
+                                    textField_CH1field.setText(Double.toString(CH1.getChannel(HDipoleCorr.FIELD_RB_HANDLE).getValDbl()));
                                 }
                             } catch (ConnectionException | PutException | GetException ex) {
                                 Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
@@ -1035,15 +1014,10 @@ public class FXMLController implements Initializable {
                     }
                 });
                 AcceleratorNode CH2 = sequence.getNodesOfType("DCH").get(3);
-                displayValues.put(CH2.getChannel("I"),label_CH2currentRB);
-                displayValues.put(CH2.getChannel("I_Set"),label_CH2current);
-                displayValues.put(CH2.getChannel("fieldRB"),label_CH2fieldRB);
-                //label_CH2fieldRB.textProperty().addListener((obs, oldVal, newVal) ->{
-                //    if(newVal!=oldVal){
-                //        UpdateSimulation();
-                //    }
-                //});
-                setValues.put(CH2.getChannel("fieldSet"),textField_CH2field);
+                displayValues.put(CH2.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE),label_CH2currentRB);
+                displayValues.put(CH2.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),label_CH2current);
+                displayValues.put(CH2.getChannel(HDipoleCorr.FIELD_RB_HANDLE),label_CH2fieldRB);              
+                setValues.put(CH2.getChannel(MagnetMainSupply.FIELD_SET_HANDLE),textField_CH2field);
                 textField_CH2field.focusedProperty().addListener((obs, oldVal, newVal) ->{
                     if(!newVal){ 
                         if(MainFunctions.mainDocument.getModel().get().matches("LIVE")){
@@ -1052,7 +1026,7 @@ public class FXMLController implements Initializable {
                                 if(val<0.12 && val>-0.12){
                                     CH2.getChannel("fieldSet").putVal(val);
                                 } else {
-                                    textField_CH2field.setText(Double.toString(CH2.getChannel("fieldRB").getValDbl()));
+                                    textField_CH2field.setText(Double.toString(CH2.getChannel(HDipoleCorr.FIELD_RB_HANDLE).getValDbl()));
                                 }
                             } catch (ConnectionException | PutException | GetException ex) {
                                 Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
