@@ -266,6 +266,7 @@ public class BatchConnectionRequest extends java.lang.Object {
 	 */
 	public boolean submitAndWait( final double timeout ) {
 		submit();
+                await( timeout );
                 Channel.pendIO(timeout);
 		return isComplete();
 	}
