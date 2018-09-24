@@ -82,10 +82,10 @@ public class FXMLController implements Initializable {
     //public Accelerator accl = XMLDataManager.loadDefaultAccelerator();
     //Trajectory to be displayed on the plot
     public TrajectoryArray DisplayTraj = new TrajectoryArray();
-
-    // holds info about reference trajectories
-    private final ObservableList<URL> refTrajData = FXCollections.observableArrayList();
-
+    
+    // holds info about reference trajectories  
+    private final ObservableList<URL> refTrajData = FXCollections.observableArrayList();     
+    
     //set plot update timer
     private StatusAnimationTimer timerPlotUpdate;
 
@@ -124,9 +124,9 @@ public class FXMLController implements Initializable {
     private Label labelTrajectoryStatus;
 
     @Override
-    public void initialize(URL url, ResourceBundle rb) {
-
-        //Populate the Accelerator Menu with the sequences of the machine
+    public void initialize(URL url, ResourceBundle rb) {                    
+                
+        //Populate the Accelerator Menu with the sequences of the machine      
         //Accelerator accl = MainFunctions.mainDocument.getAccelerator();
         //Listener for Accelerator changes
         MainFunctions.mainDocument.getAcceleratorProperty().addChangeListener((ChangeListener) (ObservableValue o, Object oldVal, Object newVal) -> {

@@ -12,35 +12,52 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
+import javafx.scene.control.cell.CheckBoxTableCell;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.InputMethodEvent;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.stage.Stage;
 import javafx.util.StringConverter;
-import xal.ca.BatchGetValueRequest;
+import xal.ca.BatchConnectionRequest;
 import xal.ca.Channel;
 import xal.ca.ConnectionException;
 import xal.ca.GetException;
@@ -54,15 +71,18 @@ import xal.extension.jels.smf.impl.ESSIonSourceMagnetron;
 import xal.extension.jels.smf.impl.Iris;
 import xal.extension.jels.smf.impl.NPM;
 import xal.extension.jels.smf.impl.RepellerElectrode;
+import xal.extension.jels.smf.impl.SpaceChargeCompensation;
 import xal.model.ModelException;
 import xal.smf.Accelerator;
 import xal.smf.AcceleratorNode;
 import xal.smf.AcceleratorSeq;
 import xal.smf.AcceleratorSeqCombo;
 import xal.smf.impl.CurrentMonitor;
+import xal.smf.impl.HDipoleCorr;
+import xal.smf.impl.MagnetMainSupply;
+import xal.smf.impl.MagnetPowerSupply;
+import xal.smf.impl.VDipoleCorr;
 import xal.tools.data.DataAdaptor;
-import xal.tools.dispatch.DispatchQueue;
-import xal.tools.dispatch.DispatchTimer;
 import xal.tools.math.Complex;
 import xal.tools.xml.XmlDataAdaptor;
 
@@ -89,16 +109,10 @@ public class FXMLController implements Initializable {
     private XYChart.Series[] seriesSigmaOffsetY;
     private XYChart.Series[] seriesSigmaOffsetR;
     private XYChart.Series[] seriesSurroundings;
-    private Object range;
 
     //defining simulation
     private SimulationRunner newRun;
-    private double[][] surroundings;
-    /** timer to synch the readbacks with the setpoints and also sync the model */
-    private DispatchTimer MODEL_SYNC_TIMER;
-
-    /** model sync period in milliseconds */
-    private long _modelSyncPeriod;
+    private double[][] surroundings;   
 
     //defining data
     private ArrayList<Double>[] sigmaX;
@@ -114,17 +128,15 @@ public class FXMLController implements Initializable {
     private ArrayList posPhi;
 
     //input beam parameters
-    //private double[] initPos;
-    private double beamCurrent;
-    //private double[] TwissX;
-    //private double[] TwissY;
+    private double beamCurrent;   
     private double spaceChargeComp;
     private double spaceChargeCompElectrode;
 
     //Map the live machine values
-    private HashMap<Channel,Label> displayValues;
+    private HashMap<Channel,Object> displayValues;
     private HashMap<Channel,TextField> setValues;
-    private BatchGetValueRequest request;
+    private BatchConnectionRequest request;
+    private final ChannelMonitor monitor = new ChannelMonitor();        
 
     @FXML private LineChart<Double, Double> plot1;
     @FXML private NumberAxis yAxis;
@@ -198,14 +210,11 @@ public class FXMLController implements Initializable {
     @FXML private Label label_sol2fieldRB;
     @FXML private Label label_CV2fieldRB;
     @FXML private Label label_CH2fieldRB;
-    @FXML private Label label_FC;
-    @FXML private Label label_BCM;
     @FXML private Label label_Doppler;
     @FXML private CheckBox checkBox_electrode;
     @FXML private Circle electrodeStatus;
     @FXML private TextField textField_sccelectrode;
     @FXML private ToggleGroup toggleGroup_currentBI;
-    @FXML private CheckBox checkBox_chopper;
     @FXML private TextField textField_chopperDelay;
     @FXML private Label label_chopperDelayRB;
     @FXML private TextField textField_chopperLength;
@@ -213,8 +222,17 @@ public class FXMLController implements Initializable {
     @FXML private TextField textField_N2flow;
     @FXML private Label label_N2flowRB;
     @FXML private ComboBox<InputParameters> comboBox_inputSimul;
+    @FXML private Circle chopperStatus;    
+    @FXML private RadioButton rb_CurrentMeasurement1;
+    @FXML private RadioButton rb_CurrentMeasurement2;
+    @FXML private Label label_CurrentMeasurement1;
+    @FXML private Label label_CurrentMeasurement2;
     @FXML
-    private Circle chopperStatus;
+    private AnchorPane mainPane;
+    @FXML
+    private TabPane mainTabPane;
+    @FXML
+    private Label label_transmission;
 
 
     @Override
@@ -222,7 +240,7 @@ public class FXMLController implements Initializable {
 
         //Check if the accelerator file contains the LEBT and Ion Source sequences
         if(MainFunctions.mainDocument.getAccelerator().findSequence("LEBT")==null || MainFunctions.mainDocument.getAccelerator().findSequence("ISRC")==null){
-             Alert alert = new Alert(AlertType.ERROR);
+            Alert alert = new Alert(AlertType.ERROR);
             alert.setTitle("Error!");
             alert.setHeaderText("Accelerator file has no LEBT and/or Ion Source sequence.");
             alert.setContentText("Check inputs and try again");
@@ -230,14 +248,7 @@ public class FXMLController implements Initializable {
             Logger.getLogger(FXMLController.class.getName()).log(Level.FINER, "Accelerator file has no LEBT and/or Ion Source sequence.");
             System.exit(0);
         }
-
-        // timer to synchronize readbacks with setpoints as well as the online model
-        MODEL_SYNC_TIMER = DispatchTimer.getCoalescingInstance( DispatchQueue.createSerialQueue( "" ), getOnlineModelSynchronizer() );
-
-        // set the default model sync period to 1 second
-        _modelSyncPeriod = 1000;
-
-
+                       
         //initializing toggle groups
         coordinateGroup = new ToggleGroup();
         offsetGroup = new ToggleGroup();
@@ -329,19 +340,12 @@ public class FXMLController implements Initializable {
         plot1.getStylesheets().add(this.getClass().getResource("/styles/TrajectoryPlot.css").toExternalForm());
         plot2.getStylesheets().add(this.getClass().getResource("/styles/EnvelopePlot.css").toExternalForm());
 
-         //remove surrounding legend
+        //remove surrounding legend
         Legend legend = (Legend)plot2.lookup(".chart-legend");
-        legend.getItems().remove(0, 2);
-
-        //xAxis.setUpperBound(xAxis1.getUpperBound());
-        //xAxis.setLowerBound(xAxis1.getLowerBound());
-
+        legend.getItems().remove(0, 2);     
 
         scale = 1;
-        //initPos = new double[4];
-        //TwissX = new double[3];
-        //TwissY = new double[3];
-
+        
         //Set textField formatting
         StringConverter<Double> formatter2d;
         StringConverter<Double> formatter3d;
@@ -390,9 +394,7 @@ public class FXMLController implements Initializable {
                   return "0.0000";
                return String.format("%.2f",object);
             }
-        };
-
-
+        };        
 
         //Ion Source
         textField_magnetron.setTextFormatter(new TextFormatter<Double>(formatter3d));
@@ -414,6 +416,7 @@ public class FXMLController implements Initializable {
         textField_irisY.setTextFormatter(new TextFormatter<Double>(formatter3d));
         textField_chopperDelay.setTextFormatter(new TextFormatter<Double>(formatter3d));
         textField_chopperLength.setTextFormatter(new TextFormatter<Double>(formatter3d));
+        textField_N2flow.setTextFormatter(new TextFormatter<Double>(formatter3d));
 
         //input values
         textField_x.setTextFormatter(new TextFormatter<Double>(formatter4d));
@@ -429,7 +432,7 @@ public class FXMLController implements Initializable {
         textField_bc.setTextFormatter(new TextFormatter<Double>(formatter3d));
         textField_scc.setTextFormatter(new TextFormatter<Double>(formatter2d));
         textField_sccelectrode.setTextFormatter(new TextFormatter<Double>(formatter2d));
-        textFieldSigmaScale.setTextFormatter(new TextFormatter<Double>(formatter2d));
+        textFieldSigmaScale.setTextFormatter(new TextFormatter<Double>(formatter2d));        
 
         textFieldSigmaScale.focusedProperty().addListener((obs, oldVal, newVal) ->{
                 if(!newVal){
@@ -439,575 +442,21 @@ public class FXMLController implements Initializable {
                     catch(NumberFormatException e){
                         scale = 1.0;
                     }
+                    textFieldSigmaScale.fireEvent(new RunEvent(true));
                 }
             });
 
         //Map the channels to the label or textfield it belongs
-        displayValues = new HashMap<Channel,Label>();
+        displayValues = new HashMap<Channel,Object>();
         setValues = new HashMap<Channel,TextField>();
-        Accelerator accl = MainFunctions.mainDocument.getAccelerator();
-
-        //Ion Source
-        AcceleratorSeq sequence = accl.getSequence("ISRC");
-        AcceleratorNode Magnetron = sequence.getNodesOfType("ISM").get(0);
-        displayValues.put(Magnetron.getChannel(ESSIonSourceMagnetron.FORWD_PRW_RB_HANDLE),label_magnetronRB);
-        setValues.put(Magnetron.getChannel(ESSIonSourceMagnetron.FORWD_PRW_S_HANDLE),textField_magnetron);
-        textField_magnetron.focusedProperty().addListener((obs, oldVal, newVal) ->{
-            if(!newVal){
-                try {
-                    double val = Double.parseDouble(textField_magnetron.getText());
-                    if(val>=0 && val<=1500){
-                        Magnetron.getChannel(ESSIonSourceMagnetron.FORWD_PRW_S_HANDLE).putVal(val);
-                    } else {
-                        textField_magnetron.setText(Double.toString(Magnetron.getChannel(ESSIonSourceMagnetron.FORWD_PRW_S_HANDLE).getValDbl()));
-                    }
-                } catch (ConnectionException | PutException | GetException ex) {
-                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        });
-        AcceleratorNode HighVoltage = sequence.getNodesOfType("ISMFC").get(0);
-        displayValues.put(HighVoltage.getChannel(ESSIonSourceMFC.VOLTAGE_RB_HANDLE),label_highVoltageRB);
-        setValues.put(HighVoltage.getChannel(ESSIonSourceMFC.VOLTAGE_SET_HANDLE),textField_highVoltage);
-        textField_highVoltage.focusedProperty().addListener((obs, oldVal, newVal) ->{
-            if(!newVal){
-                try {
-                    double val = Double.parseDouble(textField_highVoltage.getText());
-                    if(val>=70 && val<=80){
-                        HighVoltage.getChannel(ESSIonSourceMFC.VOLTAGE_SET_HANDLE).putVal(val);
-                    } else {
-                        textField_highVoltage.setText(Double.toString(HighVoltage.getChannel(ESSIonSourceMFC.VOLTAGE_SET_HANDLE).getValDbl()));
-                    }
-                } catch (ConnectionException | PutException | GetException ex) {
-                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        });
-        displayValues.put(HighVoltage.getChannel(ESSIonSourceMFC.H_2_FLOW_RB_HANDLE),label_H2flowRB);
-        setValues.put(HighVoltage.getChannel(ESSIonSourceMFC.H_2_FLOW_S_HANDLE),textField_H2flow);
-        textField_H2flow.focusedProperty().addListener((obs, oldVal, newVal) ->{
-            if(!newVal){
-                try {
-                    double val = Double.parseDouble(textField_H2flow.getText());
-                    if(val>=0 && val <=5){
-                        HighVoltage.getChannel(ESSIonSourceMFC.H_2_FLOW_S_HANDLE).putVal(val);
-                    } else {
-                        textField_H2flow.setText(Double.toString(HighVoltage.getChannel(ESSIonSourceMFC.H_2_FLOW_S_HANDLE).getValDbl()));
-                    }
-                } catch (ConnectionException | PutException | GetException ex) {
-                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        });
-        AcceleratorNode Coil1 = sequence.getNodesOfType("ISC").get(0);
-        displayValues.put(Coil1.getChannel(ESSIonSourceCoil.I_HANDLE),label_coil1RB);
-        setValues.put(Coil1.getChannel(ESSIonSourceCoil.I_SET_HANDLE),textField_coil1);
-        textField_coil1.focusedProperty().addListener((obs, oldVal, newVal) ->{
-            if(!newVal){
-                try {
-                    double val = Double.parseDouble(textField_coil1.getText());
-                    if(val>=0 && val <=300){
-                        Coil1.getChannel(ESSIonSourceCoil.I_SET_HANDLE).putVal(val);
-                    } else {
-                        textField_coil1.setText(Double.toString(Coil1.getChannel(ESSIonSourceCoil.I_SET_HANDLE).getValDbl()));
-                    }
-                } catch (ConnectionException | PutException | GetException ex) {
-                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        });
-        AcceleratorNode Coil2 = sequence.getNodesOfType("ISC").get(1);
-        displayValues.put(Coil2.getChannel(ESSIonSourceCoil.I_HANDLE),label_coil2RB);
-        setValues.put(Coil2.getChannel(ESSIonSourceCoil.I_SET_HANDLE),textField_coil2);
-        textField_coil2.focusedProperty().addListener((obs, oldVal, newVal) ->{
-            if(!newVal){
-                try {
-                    double val = Double.parseDouble(textField_coil2.getText());
-                    if(val>=0 && val <=300){
-                        Coil2.getChannel(ESSIonSourceCoil.I_SET_HANDLE).putVal(val);
-                    } else {
-                        textField_coil2.setText(Double.toString(Coil2.getChannel(ESSIonSourceCoil.I_SET_HANDLE).getValDbl()));
-                    }
-                } catch (ConnectionException | PutException | GetException ex) {
-                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        });
-        AcceleratorNode Coil3 = sequence.getNodesOfType("ISC").get(2);
-        displayValues.put(Coil3.getChannel(ESSIonSourceCoil.I_HANDLE),label_coil3RB);
-        setValues.put(Coil3.getChannel(ESSIonSourceCoil.I_SET_HANDLE),textField_coil3);
-        textField_coil3.focusedProperty().addListener((obs, oldVal, newVal) ->{
-            if(!newVal){
-                try {
-                    double val = Double.parseDouble(textField_coil3.getText());
-                    if(val>=0 && val <=300){
-                        Coil3.getChannel(ESSIonSourceCoil.I_SET_HANDLE).putVal(val);
-                    } else {
-                        textField_coil3.setText(Double.toString(Coil3.getChannel(ESSIonSourceCoil.I_SET_HANDLE).getValDbl()));
-                    }
-                } catch (ConnectionException | PutException | GetException ex) {
-                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        });
-        //LEBT
-        sequence = accl.getSequence("LEBT");
-        AcceleratorNode Solenoid1 = sequence.getNodeWithId("LEBT-010:BMD-Sol-01");
-        displayValues.put(Solenoid1.getChannel("I"),label_sol1currentRB);
-        displayValues.put(Solenoid1.getChannel("fieldRB"),label_sol1fieldRB);
-        displayValues.put(Solenoid1.getChannel("I_Set"),label_sol1current);
-        setValues.put(Solenoid1.getChannel("fieldSet"),textField_sol1field);
-        textField_sol1field.focusedProperty().addListener((obs, oldVal, newVal) ->{
-            if(!newVal){
-                try {
-                    double val = Double.parseDouble(textField_sol1field.getText());
-                    if(val>=0 && val<450){
-                        Solenoid1.getChannel("fieldSet").putVal(val);
-                    } else {
-                        textField_sol1field.setText(Double.toString(Solenoid1.getChannel("fieldRB").getValDbl()));
-                    }
-                } catch (ConnectionException | PutException | GetException ex) {
-                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        });
-        AcceleratorNode  Solenoid2 = sequence.getNodeWithId("LEBT-010:BMD-Sol-02");
-        displayValues.put(Solenoid2.getChannel("I"),label_sol2currentRB);
-        displayValues.put(Solenoid2.getChannel("I_Set"),label_sol2current);
-        displayValues.put(Solenoid2.getChannel("fieldRB"),label_sol2fieldRB);
-        setValues.put(Solenoid2.getChannel("fieldSet"),textField_sol2field);
-        textField_sol2field.focusedProperty().addListener((obs, oldVal, newVal) ->{
-            if(!newVal){
-                try {
-                    double val = Double.parseDouble(textField_sol2field.getText());
-                    if(val>=0 && val<450){
-                        Solenoid2.getChannel("fieldSet").putVal(val);
-                    } else {
-                        textField_sol2field.setText(Double.toString(Solenoid2.getChannel("fieldRB").getValDbl()));
-                    }
-                } catch (ConnectionException | PutException | GetException ex) {
-                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        });
-        AcceleratorNode CV1 = sequence.getNodeWithId("LEBT-010:BMD-CV-01:1");
-        displayValues.put(CV1.getChannel("I"),label_CV1currentRB);
-        displayValues.put(CV1.getChannel("I_Set"),label_CV1current);
-        displayValues.put(CV1.getChannel("fieldRB"),label_CV1fieldRB);
-        setValues.put(CV1.getChannel("fieldSet"),textField_CV1field);
-        textField_CV1field.focusedProperty().addListener((obs, oldVal, newVal) ->{
-            if(!newVal){
-                try {
-                    double val = Double.parseDouble(textField_CV1field.getText());
-                    if(val>=0){
-                        CV1.getChannel("fieldSet").putVal(val);
-                    } else {
-                        textField_CV1field.setText(Double.toString(CV1.getChannel("fieldRB").getValDbl()));
-                    }
-                } catch (ConnectionException | PutException | GetException ex) {
-                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        });
-        AcceleratorNode CV2 = sequence.getNodeWithId("LEBT-010:BMD-CV-02:1");
-        displayValues.put(CV2.getChannel("I"),label_CV2currentRB);
-        displayValues.put(CV2.getChannel("I_Set"),label_CV2current);
-        displayValues.put(CV2.getChannel("fieldRB"),label_CV2fieldRB);
-        setValues.put(CV2.getChannel("fieldSet"),textField_CV2field);
-        textField_CV2field.focusedProperty().addListener((obs, oldVal, newVal) ->{
-            if(!newVal){
-                try {
-                    double val = Double.parseDouble(textField_CV2field.getText());
-                    if(val>=0){
-                        CV2.getChannel("fieldSet").putVal(val);
-                    } else {
-                        textField_CV2field.setText(Double.toString(CV2.getChannel("fieldRB").getValDbl()));
-                    }
-                } catch (ConnectionException | PutException | GetException ex) {
-                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        });
-        AcceleratorNode CH1 = sequence.getNodeWithId("LEBT-010:BMD-CH-01:1");
-        displayValues.put(CH1.getChannel("I"),label_CH1currentRB);
-        displayValues.put(CH1.getChannel("I_Set"),label_CH1current);
-        displayValues.put(CH1.getChannel("fieldRB"),label_CH1fieldRB);
-        setValues.put(CH1.getChannel("fieldSet"),textField_CH1field);
-        textField_CH1field.focusedProperty().addListener((obs, oldVal, newVal) ->{
-            if(!newVal){
-                try {
-                    double val = Double.parseDouble(textField_CH1field.getText());
-                    if(val>=0){
-                        CH1.getChannel("fieldSet").putVal(val);
-                    } else {
-                        textField_CH1field.setText(Double.toString(CH1.getChannel("fieldRB").getValDbl()));
-                    }
-                } catch (ConnectionException | PutException | GetException ex) {
-                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        });
-        AcceleratorNode CH2 = sequence.getNodeWithId("LEBT-010:BMD-CH-02:1");
-        displayValues.put(CH2.getChannel("I"),label_CH2currentRB);
-        displayValues.put(CH2.getChannel("I_Set"),label_CH2current);
-        displayValues.put(CH2.getChannel("fieldRB"),label_CH2fieldRB);
-        setValues.put(CH2.getChannel("fieldSet"),textField_CH2field);
-        textField_CH2field.focusedProperty().addListener((obs, oldVal, newVal) ->{
-            if(!newVal){
-                try {
-                    double val = Double.parseDouble(textField_CH2field.getText());
-                    if(val>=0){
-                        CH2.getChannel("fieldSet").putVal(val);
-                    } else {
-                        textField_CH2field.setText(Double.toString(CH2.getChannel("fieldRB").getValDbl()));
-                    }
-                } catch (ConnectionException | PutException | GetException ex) {
-                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        });
-
-        AcceleratorNode IrisEquip = sequence.getNodesOfType("IRIS").get(0);
-        displayValues.put(IrisEquip.getChannel(Iris.APERTURE_RB_HANDLE),label_irisApertureRB);
-        setValues.put(IrisEquip.getChannel(Iris.APERTURE_SET_HANDLE),textField_irisAperture);
-        textField_irisAperture.focusedProperty().addListener((obs, oldVal, newVal) ->{
-            if(!newVal){
-                try {
-                    double val = Double.parseDouble(textField_irisAperture.getText());
-                    if(val>=0){
-                        IrisEquip.getChannel(Iris.APERTURE_SET_HANDLE).putVal(val);
-                    } else {
-                        textField_irisAperture.setText(Double.toString(IrisEquip.getChannel(Iris.APERTURE_RB_HANDLE).getValDbl()));
-                    }
-                } catch (ConnectionException | PutException | GetException ex) {
-                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        });
-
-
-        displayValues.put(IrisEquip.getChannel(Iris.OFFSET_X_RB_HANDLE),label_irisXRB);
-        setValues.put(IrisEquip.getChannel(Iris.OFFSET_X_SET_HANDLE),textField_irisX);
-        textField_irisX.focusedProperty().addListener((obs, oldVal, newVal) ->{
-            if(!newVal){
-                try {
-                    double val = Double.parseDouble(textField_irisX.getText());
-                    if(val>=-50 && val<=50){
-                        IrisEquip.getChannel(Iris.APERTURE_SET_HANDLE).putVal(val);
-                    } else {
-                        textField_irisX.setText(Double.toString(IrisEquip.getChannel(Iris.OFFSET_X_RB_HANDLE).getValDbl()));
-                    }
-                } catch (ConnectionException | PutException | GetException ex) {
-                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        });
-
-        displayValues.put(IrisEquip.getChannel(Iris.OFFSET_Y_RB_HANDLE),label_irisYRB);
-        setValues.put(IrisEquip.getChannel(Iris.OFFSET_Y_SET_HANDLE),textField_irisY);
-        textField_irisY.focusedProperty().addListener((obs, oldVal, newVal) ->{
-            if(!newVal){
-                 try {
-                    double val = Double.parseDouble(textField_irisY.getText());
-                    if(val>=-50 && val<=50){
-                        IrisEquip.getChannel(Iris.OFFSET_Y_SET_HANDLE).putVal(val);
-                    } else {
-                        textField_irisY.setText(Double.toString(IrisEquip.getChannel(Iris.OFFSET_Y_RB_HANDLE).getValDbl()));
-                    }
-                } catch (ConnectionException | PutException | GetException ex) {
-                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        });
-
-
-        AcceleratorNode Chop = sequence.getNodesOfType("CHP").get(0);
-        displayValues.put(Chop.getChannel(Chopper.DELAY_RB_HANDLE),label_chopperDelayRB);
-        setValues.put(Chop.getChannel(Chopper.DELAY_SET_HANDLE),textField_chopperDelay);
-        displayValues.put(Chop.getChannel(Chopper.LENGTH_RB_HANDLE),label_chopperLengthRB);
-        setValues.put(Chop.getChannel(Chopper.LENGTH_SET_HANDLE),textField_chopperLength);
-        displayValues.put(Chop.getChannel(Chopper.STATUS_RB_HANDLE),null);
-        setValues.put(Chop.getChannel(Chopper.STATUS_SET_HANDLE),null);
-        textField_chopperDelay.focusedProperty().addListener((obs, oldVal, newVal) ->{
-            if(!newVal){
-                try {
-                    double val = Double.parseDouble(textField_chopperDelay.getText());
-                    if(val > 0){
-                        Chop.getChannel(Chopper.DELAY_SET_HANDLE).putVal(val);
-                    } else {
-                        textField_chopperDelay.setText(Double.toString(Chop.getChannel(Chopper.DELAY_RB_HANDLE).getValDbl()));
-                    }
-                } catch (ConnectionException | PutException | GetException ex) {
-                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        });
-        textField_chopperLength.focusedProperty().addListener((obs, oldVal, newVal) ->{
-            if(!newVal){
-                try {
-                    double val = Double.parseDouble(textField_chopperLength.getText());
-                    if(val > 0){
-                        Chop.getChannel(Chopper.LENGTH_SET_HANDLE).putVal(val);
-                    } else {
-                        textField_chopperLength.setText(Double.toString(Chop.getChannel(Chopper.LENGTH_RB_HANDLE).getValDbl()));
-                    }
-                } catch (ConnectionException | PutException | GetException ex) {
-                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        });
-
-        AcceleratorNode Electrode = sequence.getNodesOfType("REP").get(0);
-        displayValues.put(Electrode.getChannel(RepellerElectrode.STATUS_RB_HANDLE),null);
-
-        //define electrode properties
-        checkBox_chopper.setTooltip(new Tooltip("Turns Chopper On and OFF."));
-        checkBox_chopper.selectedProperty().addListener((obs, oldVal, newVal) ->{
-            if(newVal){
-                checkBox_chopper.setText("ON");
-                try {
-                    Chop.getChannel(Chopper.STATUS_SET_HANDLE).putVal(1);
-                } catch (ConnectionException | PutException ex) {
-                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            } else {
-                checkBox_chopper.setText("OFF");
-                try {
-                    Chop.getChannel(Chopper.STATUS_SET_HANDLE).putVal(0);
-                } catch (ConnectionException | PutException ex) {
-                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        });
-
-        //define electrode properties
-        checkBox_electrode.setTooltip(new Tooltip("Turns RFQ reppeler electrode On and OFF in the simulation only."));
-        checkBox_electrode.selectedProperty().addListener((obs, oldVal, newVal) ->{
-            if(newVal){
-                checkBox_electrode.setText("ON");
-                textField_sccelectrode.setDisable(false);
-                textField_sccelectrode.setText(Double.toString(spaceChargeCompElectrode));
-            } else {
-                checkBox_electrode.setText("OFF");
-                textField_sccelectrode.setDisable(true);
-                textField_sccelectrode.setText(Double.toString(spaceChargeComp));
-            }
-        });
-
-        //Disgnostics equipment
-        AcceleratorNode FC = sequence.getNodeWithId("LEBT-010:PBI-FC-001");
-        AcceleratorNode BCM = sequence.getNodeWithId("LEBT-010:PBI-BCM-001");
-        AcceleratorNode DopplerElem = sequence.getNodeWithId("LEBT-010:PBI-Dpl-001");
-        displayValues.put(FC.getChannel(CurrentMonitor.I_AVG_HANDLE),label_FC);
-        displayValues.put(BCM.getChannel(CurrentMonitor.I_AVG_HANDLE),label_BCM);
-        displayValues.put(DopplerElem.getChannel(Doppler.FRACTION_H_R_HANDLE),label_Doppler);
-
-        //Set scale text Field
-        textFieldSigmaScale.setText(Double.toString(scale));
-
-        //Create listener for intial parameters
-        textField_x.focusedProperty().addListener((obs, oldVal, newVal) ->{
-                if(!newVal){
-                    try {
-                        comboBox_inputSimul.getSelectionModel().getSelectedItem().setX(Double.parseDouble(textField_x.getText().trim())*1e-3);
-                    } catch(NumberFormatException ex) {
-                        textField_x.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getX()));
-                    }
-                }
-            });
-
-        textField_xp.focusedProperty().addListener((obs, oldVal, newVal) ->{
-                if(!newVal){
-                    try {
-                        comboBox_inputSimul.getSelectionModel().getSelectedItem().setXP(Double.parseDouble(textField_xp.getText().trim())*1e-3);
-                    } catch(NumberFormatException ex) {
-                        textField_xp.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getXP()));
-                    }
-                }
-            });
-
-        textField_y.focusedProperty().addListener((obs, oldVal, newVal) ->{
-                if(!newVal){
-                    try {
-                        comboBox_inputSimul.getSelectionModel().getSelectedItem().setY(Double.parseDouble(textField_y.getText().trim())*1e-3);
-                    } catch(NumberFormatException ex) {
-                        textField_y.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getY()));
-                    }
-                }
-            });
-
-        textField_yp.focusedProperty().addListener((obs, oldVal, newVal) ->{
-                if(!newVal){
-                    try {
-                        comboBox_inputSimul.getSelectionModel().getSelectedItem().setYP(Double.parseDouble(textField_yp.getText().trim())*1e-3);
-                    } catch(NumberFormatException ex) {
-                        textField_yp.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getYP()));
-                    }
-                }
-            });
-
-        textField_betax.focusedProperty().addListener((obs, oldVal, newVal) ->{
-                if(!newVal){
-                    try {
-                        double val = Double.parseDouble(textField_betax.getText().trim());
-                        if(val>=0){
-                            comboBox_inputSimul.getSelectionModel().getSelectedItem().setBETAX(val);
-                        } else {
-                            textField_betax.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getBETAX()));
-                        }
-                    } catch(NumberFormatException ex) {
-                        textField_betax.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getBETAX()));
-                    }
-                }
-            });
-
-        textField_alphax.focusedProperty().addListener((obs, oldVal, newVal) ->{
-                if(!newVal){
-                    try {
-                        double val = Double.parseDouble(textField_alphax.getText().trim());
-                        comboBox_inputSimul.getSelectionModel().getSelectedItem().setALPHAX(val);
-                    } catch(NumberFormatException ex) {
-                        textField_alphax.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getALPHAX()));
-                    }
-                }
-            });
-
-        textField_emittx.focusedProperty().addListener((obs, oldVal, newVal) ->{
-                if(!newVal){
-                    try {
-                        double val = Double.parseDouble(textField_emittx.getText().trim());
-                        if(val>=0){
-                            comboBox_inputSimul.getSelectionModel().getSelectedItem().setEMITTX(val*1e-6);
-                        } else {
-                            textField_emittx.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getEMITTX()*1e6));
-                        }
-                    } catch(NumberFormatException ex) {
-                        textField_emittx.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getEMITTX()*1e6));
-                    }
-                }
-            });
-
-        textField_betay.focusedProperty().addListener((obs, oldVal, newVal) ->{
-                if(!newVal){
-                    try {
-                        double val = Double.parseDouble(textField_betay.getText().trim());
-                        if(val>=0){
-                            comboBox_inputSimul.getSelectionModel().getSelectedItem().setBETAY(val);
-                        } else {
-                            textField_betay.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getBETAY()));
-                        }
-                    } catch(NumberFormatException ex) {
-                        textField_betay.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getBETAY()));
-                    }
-                }
-            });
-
-        textField_alphay.focusedProperty().addListener((obs, oldVal, newVal) ->{
-                if(!newVal){
-                    try {
-                        double val = Double.parseDouble(textField_alphay.getText().trim());
-                        comboBox_inputSimul.getSelectionModel().getSelectedItem().setALPHAY(val);
-                    } catch(NumberFormatException ex) {
-                        textField_alphay.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getALPHAY()));
-                    }
-                }
-            });
-
-        textField_emitty.focusedProperty().addListener((obs, oldVal, newVal) ->{
-                if(!newVal){
-                    try {
-                        double val = Double.parseDouble(textField_emitty.getText().trim());
-                        if(val>=0){
-                            comboBox_inputSimul.getSelectionModel().getSelectedItem().setEMITTY(val*1e-6);
-                        } else {
-                            textField_emitty.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getEMITTY()*1e6));
-                        }
-                    } catch(NumberFormatException ex) {
-                        textField_emitty.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getEMITTY()*1e6));
-                    }
-                }
-            });
-
-        textField_bc.focusedProperty().addListener((obs, oldVal, newVal) ->{
-                if(!newVal){
-                    try {
-                        double val = Double.parseDouble(textField_bc.getText().trim());
-                        if(val>=0){
-                            beamCurrent=val;
-                        } else {
-                            textField_bc.setText(Double.toString(beamCurrent));
-                        }
-                    } catch(NumberFormatException ex) {
-                        textField_bc.setText(Double.toString(beamCurrent));
-                    }
-                }
-            });
-
-        textField_scc.focusedProperty().addListener((obs, oldVal, newVal) ->{
-                if(!newVal){
-                    try {
-                        double val = Double.parseDouble(textField_scc.getText().trim());
-                        if(val>=0 && val<=1.0){
-                            spaceChargeComp=Double.parseDouble(textField_scc.getText().trim());
-                        } else {
-                            textField_scc.setText(Double.toString(spaceChargeComp));
-                        }
-                    } catch(NumberFormatException ex) {
-                        textField_scc.setText(Double.toString(spaceChargeComp));
-                    }
-                }
-            });
-
-        textField_sccelectrode.focusedProperty().addListener((obs, oldVal, newVal) ->{
-                if(!newVal){
-                    try {
-                        double val = Double.parseDouble(textField_sccelectrode.getText().trim());
-                        if(val>=0 && val<=1.0){
-                            spaceChargeCompElectrode=Double.parseDouble(textField_sccelectrode.getText().trim());
-                        } else {
-                            textField_sccelectrode.setText(Double.toString(spaceChargeCompElectrode));
-                        }
-                    } catch(NumberFormatException ex) {
-                        textField_sccelectrode.setText(Double.toString(spaceChargeCompElectrode));
-                    }
-                }
-            });
-
+        
+        //Define Channel signals attached to textFields and displayFields
+        setupCHannelSignals();
+        setupInitialConditions();
+        
         yAxis1.setAutoRanging(true);
         yAxis.setAutoRanging(true);
-
-        //Creates a batch of channels to request when updating GUI
-        List<Channel> channels = new ArrayList<>();
-        displayValues.keySet().forEach(channel -> channels.add(channel));
-        setValues.keySet().forEach(channel -> channels.add(channel));
-        //Add NPM channels
-        List<NPM> npms = new ArrayList<>();
-        List<EMU> emus = new ArrayList<>();
-        npms = MainFunctions.mainDocument.getAccelerator().getAllNodesOfType("NPM");
-        npms.forEach(monitor->{
-            channels.add(monitor.getChannel(NPM.X_AVG_HANDLE));
-            channels.add(monitor.getChannel(NPM.Y_AVG_HANDLE));
-            channels.add(monitor.getChannel(NPM.X_P_AVG_HANDLE));
-            channels.add(monitor.getChannel(NPM.Y_P_AVG_HANDLE));
-            channels.add(monitor.getChannel(NPM.SIGMA_X_AVG_HANDLE));
-            channels.add(monitor.getChannel(NPM.SIGMA_Y_AVG_HANDLE));
-            channels.add(monitor.getChannel(NPM.ALPHA_X_TWISS_HANDLE));
-            channels.add(monitor.getChannel(NPM.ALPHA_Y_TWISS_HANDLE));
-            channels.add(monitor.getChannel(NPM.BETA_X_TWISS_HANDLE));
-            channels.add(monitor.getChannel(NPM.BETA_Y_TWISS_HANDLE));
-        });
-        emus = MainFunctions.mainDocument.getAccelerator().getAllNodesOfType("EMU");
-        emus.forEach(monitor->{
-            channels.add(monitor.getChannel(EMU.EMITT_X_HANDLE));
-            channels.add(monitor.getChannel(EMU.EMITT_Y_HANDLE));
-            channels.add(monitor.getChannel(EMU.ALPHA_X_TWISS_HANDLE));
-            channels.add(monitor.getChannel(EMU.ALPHA_Y_TWISS_HANDLE));
-            channels.add(monitor.getChannel(EMU.BETA_X_TWISS_HANDLE));
-            channels.add(monitor.getChannel(EMU.BETA_Y_TWISS_HANDLE));
-        });
-        request = new BatchGetValueRequest( channels );
-        request.submitAndWait(5.0);
-
+        
         //Initialize arrays
         sigmaX = new ArrayList[2];
         sigmaY = new ArrayList[2];
@@ -1030,8 +479,6 @@ public class FXMLController implements Initializable {
             sigmaOffsetY[i] = new ArrayList<Double>();
         }
 
-        MODEL_SYNC_TIMER.setEventHandler( getOnlineModelSynchronizer() );
-
         MainFunctions.mainDocument.getSequenceProperty().addListener((obs, oldVal, newVal) ->{
 
             if(newVal != null && !newVal.matches("ISRC")){
@@ -1048,13 +495,13 @@ public class FXMLController implements Initializable {
                 if (Sequence.contains(sequenceName)) {
                     newRun = new SimulationRunner(MainFunctions.mainDocument.getAccelerator().getSequence(sequenceName),MainFunctions.mainDocument.getModel().get());
                     options.add(new InputParameters(newRun.getProbe()));
-                    MainFunctions.mainDocument.getAccelerator().getSequence(sequenceName).getAllNodesOfType("NPM").forEach(monitor -> options.add(new InputParameters(monitor)));
-                    MainFunctions.mainDocument.getAccelerator().getSequence(sequenceName).getAllNodesOfType("EMU").forEach(monitor -> options.add(new InputParameters(monitor)));
+                    MainFunctions.mainDocument.getAccelerator().getSequence(sequenceName).getAllNodesOfType("NPM").forEach(mon -> options.add(new InputParameters(mon)));
+                    MainFunctions.mainDocument.getAccelerator().getSequence(sequenceName).getAllNodesOfType("EMU").forEach(mon -> options.add(new InputParameters(mon)));
                 } else if (ComboSequence.contains(sequenceName)) {
                     newRun = new SimulationRunner(MainFunctions.mainDocument.getAccelerator().getComboSequence(sequenceName),MainFunctions.mainDocument.getModel().get());
                     options.add(new InputParameters(newRun.getProbe()));
-                    MainFunctions.mainDocument.getAccelerator().getComboSequence(sequenceName).getAllNodesOfType("NPM").forEach(monitor -> options.add(new InputParameters(monitor)));
-                    MainFunctions.mainDocument.getAccelerator().getComboSequence(sequenceName).getAllNodesOfType("EMU").forEach(monitor -> options.add(new InputParameters(monitor)));
+                    MainFunctions.mainDocument.getAccelerator().getComboSequence(sequenceName).getAllNodesOfType("NPM").forEach(mon -> options.add(new InputParameters(mon)));
+                    MainFunctions.mainDocument.getAccelerator().getComboSequence(sequenceName).getAllNodesOfType("EMU").forEach(mon -> options.add(new InputParameters(mon)));
                 }
 
                 comboBox_inputSimul.setItems(options);
@@ -1062,17 +509,42 @@ public class FXMLController implements Initializable {
 
                 //assigning initial parameters
                 getParameters();
+                
+                //Initializes Plots
+                UpdateSimulation();           
+
+                mainPane.addEventHandler(RunEvent.RUN_SIMULATION, new RunSimulationHandler(){
+                    @Override
+                    public void onRunEvent(Boolean param0) {
+                        if(param0){UpdateSimulation();}
+                    }                
+                });   
+                
+                mainTabPane.setDisable(false);
 
             }
-
-            if(MODEL_SYNC_TIMER.isSuspended()){
-                MODEL_SYNC_TIMER.resume();
-            } else {
-                MODEL_SYNC_TIMER.startNowWithInterval( _modelSyncPeriod, 0 );
+                                               
+        });
+        
+        MainFunctions.mainDocument.getAcceleratorProperty().addChangeListener((obs, oldVal, newVal) ->{
+                
+            //Check if the accelerator file contains the LEBT and Ion Source sequences
+            if(MainFunctions.mainDocument.getAccelerator().findSequence("LEBT")==null || MainFunctions.mainDocument.getAccelerator().findSequence("ISRC")==null){
+                 Alert alert = new Alert(AlertType.ERROR);
+                alert.setTitle("Error!");
+                alert.setHeaderText("Accelerator file has no LEBT and/or Ion Source sequence.");
+                alert.setContentText("Check inputs and try again");
+                alert.showAndWait();
+                Logger.getLogger(FXMLController.class.getName()).log(Level.FINER, "Accelerator file has no LEBT and/or Ion Source sequence.");
+                System.exit(0);
             }
+            //Define Channel signals attached to textFields and displayFields
+            setupCHannelSignals();
+            setupInitialConditions();
+            mainTabPane.setDisable(true);
 
         });
-
+        
         //Set input parameter for Simulation
         comboBox_inputSimul.setCellFactory(listview -> {
             return new ListCell<InputParameters>() {
@@ -1116,73 +588,938 @@ public class FXMLController implements Initializable {
             }
         });
 
-        //Initializes TextField
-        initTextFields();
+        //Disable text field in case Model type chages to Design
+        MainFunctions.mainDocument.getModel().addListener((ObservableValue<? extends String> obs, String oldVal, String newVal) ->{
+
+            if(newVal.matches("DESIGN")){
+                setValues.forEach((channel,textField)->{
+                    textField.setDisable(true);
+                });
+                textField_sol1field.setDisable(false);
+                textField_sol2field.setDisable(false);
+                textField_CV1field.setDisable(false);
+                textField_CV2field.setDisable(false);
+                textField_CH1field.setDisable(false);
+                textField_CH2field.setDisable(false);
+                //MODEL_SYNC_TIMER.resume();
+            } else if (newVal.matches("LIVE")){
+                //set the magnets values as the readbacks from the channels
+                Button applyButton = new Button("Apply Selection");
+                Button cancelButton = new Button("Keep Old Fields");
+
+                HBox hbox = new HBox(8);
+                hbox.setPadding(new Insets(5, 10, 10, 5));
+                hbox.setAlignment(Pos.CENTER_RIGHT);
+                hbox.getChildren().addAll(applyButton,cancelButton);
+
+                TableView<Magnet> table = new TableView<Magnet>();
+                TableColumn<Magnet,Boolean> booleanColumn = new TableColumn<Magnet, Boolean>("Set?");
+                TableColumn<Magnet,String> elementColumn = new TableColumn<Magnet, String>("Element");
+                TableColumn<Magnet,String> newFieldColumn = new TableColumn<Magnet, String>("New Field");
+                TableColumn<Magnet,String> oldFieldColumn = new TableColumn<Magnet, String>("Old Field");
+
+                ObservableList<Magnet> inputMagnets = FXCollections.observableArrayList();
+
+                inputMagnets.add(new Magnet("LEBT-010:BMD-Sol-01",textField_sol1field.getText(),label_sol1fieldRB.getText(),false));
+                inputMagnets.add(new Magnet("LEBT-010:BMD-Sol-02",textField_sol2field.getText(),label_sol2fieldRB.getText(),false));
+                inputMagnets.add(new Magnet("LEBT-010:BMD-CV-01:1",textField_CV1field.getText(),label_CV1fieldRB.getText(),false));
+                inputMagnets.add(new Magnet("LEBT-010:BMD-CH-01:1",textField_CH1field.getText(),label_CH1fieldRB.getText(),false));
+                inputMagnets.add(new Magnet("LEBT-010:BMD-CV-02:1",textField_CV2field.getText(),label_CV2fieldRB.getText(),false));
+                inputMagnets.add(new Magnet("LEBT-010:BMD-CH-02:1",textField_CH2field.getText(),label_CH2fieldRB.getText(),false));
+
+                elementColumn.setCellValueFactory(new PropertyValueFactory<>("magnetName"));
+                newFieldColumn.setCellValueFactory(new PropertyValueFactory<>("newField"));
+                oldFieldColumn.setCellValueFactory(new PropertyValueFactory<>("oldField"));
+                booleanColumn.setCellValueFactory( new PropertyValueFactory<>( "selected" ));
+                booleanColumn.setCellFactory(tc -> new CheckBoxTableCell<>());
+
+                table.setItems(inputMagnets);
+                table.setEditable(true);
+                table.getColumns().addAll(booleanColumn,elementColumn,newFieldColumn,oldFieldColumn);
+
+                BorderPane secondaryLayout = new BorderPane();
+                secondaryLayout.setTop(new Label("Choose magnets to restore new fields to machine:"));
+                secondaryLayout.setCenter(table);
+                secondaryLayout.setBottom(hbox);
+
+                Scene secondScene = new Scene(secondaryLayout, 375, 258);
+                Stage newWindow = new Stage();
+                newWindow.setTitle("Magnets Settings");
+                newWindow.setScene(secondScene);
+
+                applyButton.setOnMouseClicked((MouseEvent event) -> {
+                    inputMagnets.forEach(mag->{
+                        AcceleratorNode node = MainFunctions.mainDocument.getAccelerator().getNode(mag.getMagnetName());
+                        if(mag.selectedProperty().get()){
+                            double val = Double.parseDouble(mag.getNewField());
+                            try {
+                                node.getChannel("fieldSet").putVal(val);
+                            } catch (ConnectionException | PutException ex) {
+                                Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        } else {
+                            setValues.get(node.getChannel("fieldSet")).setText(mag.getOldField());
+                        }
+                    });
+                    newWindow.close();
+                });
+
+                cancelButton.setOnMouseClicked((MouseEvent event) -> {
+                    textField_sol1field.setText(label_sol1fieldRB.getText());
+                    textField_sol2field.setText(label_sol2fieldRB.getText());
+                    textField_CV1field.setText(label_CV1fieldRB.getText());
+                    textField_CH1field.setText(label_CH1fieldRB.getText());
+                    textField_CV2field.setText(label_CV2fieldRB.getText());
+                    textField_CH2field.setText(label_CH2fieldRB.getText());
+                    newWindow.close();
+                });
+
+                setValues.forEach((channel,textField)->{
+                    textField.setDisable(false);
+                });
+
+                newWindow.show();
+                UpdateSimulation();
+            }
+
+        });
+
+        //Initializes TextField       
+        initBIElements();   
+        initDisplayFields();    
 
         //Initializes Plots
         addTrajectorySeriesToPlot();
         addEnvelopeSeriesToPlot();
         displayPlots();
-
-
+        
+        //set the magnets Readback display as change listener for changes -> run Model
+        label_sol1fieldRB.textProperty().addListener((obs, oldVal, newVal) ->{
+            if(!newVal.equals(oldVal)){
+                UpdateSimulation();
+            }
+        });
+        label_sol2fieldRB.textProperty().addListener((obs, oldVal, newVal) ->{
+            if(!newVal.equals(oldVal)){
+                UpdateSimulation();
+            }
+        });
+        label_CV1fieldRB.textProperty().addListener((obs, oldVal, newVal) ->{
+            if(!newVal.equals(oldVal)){
+                UpdateSimulation();
+            }
+        });
+        label_CV2fieldRB.textProperty().addListener((obs, oldVal, newVal) ->{
+            if(!newVal.equals(oldVal)){
+                UpdateSimulation();
+            }
+        });
+        label_CH1fieldRB.textProperty().addListener((obs, oldVal, newVal) ->{
+            if(!newVal.equals(oldVal)){
+                UpdateSimulation();
+            }
+        });
+        label_CH2fieldRB.textProperty().addListener((obs, oldVal, newVal) ->{
+            if(!newVal.equals(oldVal)){
+                UpdateSimulation();
+            }
+        });
+                
     }
+    
+    //------------------------INIT METHODS -------------------------------------
+    private void setupCHannelSignals(){
+        Accelerator accl = MainFunctions.mainDocument.getAccelerator();
+        AcceleratorSeq sequence;
+
+        //Ion Source
+        if(accl.findSequence("ISRC") != null){
+            sequence = accl.getSequence("ISRC");            
+            if(sequence.getNodesOfType("ISM").size()>0){
+                AcceleratorNode Magnetron = sequence.getNodesOfType("ISM").get(0);
+                displayValues.put(Magnetron.getChannel(ESSIonSourceMagnetron.FORWD_PRW_RB_HANDLE),label_magnetronRB);
+                setValues.put(Magnetron.getChannel(ESSIonSourceMagnetron.FORWD_PRW_S_HANDLE),textField_magnetron);
+                textField_magnetron.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                    if(!newVal){
+                        try {
+                            double val = Double.parseDouble(textField_magnetron.getText());
+                            if(val>=0 && val<=1500){
+                                Magnetron.getChannel(ESSIonSourceMagnetron.FORWD_PRW_S_HANDLE).putVal(val);
+                            } else {
+                                textField_magnetron.setText(Double.toString(Magnetron.getChannel(ESSIonSourceMagnetron.FORWD_PRW_S_HANDLE).getValDbl()));
+                            }
+                        } catch (ConnectionException | PutException | GetException ex) {
+                            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                });
+            } else {
+                label_magnetronRB.setDisable(true);
+                textField_magnetron.setDisable(true);
+            }    
+            
+            if(sequence.getNodesOfType("ISMFC").size()>0){
+                AcceleratorNode HighVoltage = sequence.getNodesOfType("ISMFC").get(0);
+                displayValues.put(HighVoltage.getChannel(ESSIonSourceMFC.VOLTAGE_RB_HANDLE),label_highVoltageRB);
+                setValues.put(HighVoltage.getChannel(ESSIonSourceMFC.VOLTAGE_SET_HANDLE),textField_highVoltage);
+                textField_highVoltage.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                    if(!newVal){
+                        try {
+                            double val = Double.parseDouble(textField_highVoltage.getText());
+                            if(val>=70 && val<=80){
+                                HighVoltage.getChannel(ESSIonSourceMFC.VOLTAGE_SET_HANDLE).putVal(val);
+                            } else {
+                                textField_highVoltage.setText(Double.toString(HighVoltage.getChannel(ESSIonSourceMFC.VOLTAGE_SET_HANDLE).getValDbl()));
+                            }
+                        } catch (ConnectionException | PutException | GetException ex) {
+                            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                });
+                displayValues.put(HighVoltage.getChannel(ESSIonSourceMFC.H_2_FLOW_RB_HANDLE),label_H2flowRB);
+                setValues.put(HighVoltage.getChannel(ESSIonSourceMFC.H_2_FLOW_S_HANDLE),textField_H2flow);
+                textField_H2flow.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                    if(!newVal){
+                        try {
+                            double val = Double.parseDouble(textField_H2flow.getText());
+                            if(val>=0 && val <=5){
+                                HighVoltage.getChannel(ESSIonSourceMFC.H_2_FLOW_S_HANDLE).putVal(val);
+                            } else {
+                                textField_H2flow.setText(Double.toString(HighVoltage.getChannel(ESSIonSourceMFC.H_2_FLOW_S_HANDLE).getValDbl()));
+                            }
+                        } catch (ConnectionException | PutException | GetException ex) {
+                            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                });
+            } else {
+                label_highVoltageRB.setDisable(true);
+                textField_highVoltage.setDisable(true);
+                label_H2flowRB.setDisable(true);
+                textField_H2flow.setDisable(true);
+            }          
+             
+            if(sequence.getNodesOfType("ISC").size()>0){
+                AcceleratorNode Coil1 = sequence.getNodesOfType("ISC").get(0);
+                displayValues.put(Coil1.getChannel(ESSIonSourceCoil.I_HANDLE),label_coil1RB);
+                setValues.put(Coil1.getChannel(ESSIonSourceCoil.I_SET_HANDLE),textField_coil1);
+                textField_coil1.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                    if(!newVal){
+                        try {
+                            double val = Double.parseDouble(textField_coil1.getText());
+                            if(val>=0 && val <=300){
+                                Coil1.getChannel(ESSIonSourceCoil.I_SET_HANDLE).putVal(val);
+                            } else {
+                                textField_coil1.setText(Double.toString(Coil1.getChannel(ESSIonSourceCoil.I_SET_HANDLE).getValDbl()));
+                            }
+                        } catch (ConnectionException | PutException | GetException ex) {
+                            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                });
+            } else {                
+                label_coil2RB.setDisable(true);
+                textField_coil2.setDisable(true);                
+            }       
+            
+            if(sequence.getNodesOfType("ISC").size()>1){
+                AcceleratorNode Coil2 = sequence.getNodesOfType("ISC").get(1);
+                displayValues.put(Coil2.getChannel(ESSIonSourceCoil.I_HANDLE),label_coil2RB);
+                setValues.put(Coil2.getChannel(ESSIonSourceCoil.I_SET_HANDLE),textField_coil2);
+                textField_coil2.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                    if(!newVal){
+                        try {
+                            double val = Double.parseDouble(textField_coil2.getText());
+                            if(val>=0 && val <=300){
+                                Coil2.getChannel(ESSIonSourceCoil.I_SET_HANDLE).putVal(val);
+                            } else {
+                                textField_coil2.setText(Double.toString(Coil2.getChannel(ESSIonSourceCoil.I_SET_HANDLE).getValDbl()));
+                            }
+                        } catch (ConnectionException | PutException | GetException ex) {
+                            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                });
+            } else {                
+                label_coil2RB.setDisable(true);
+                textField_coil2.setDisable(true);                
+            }    
+            
+            if(sequence.getNodesOfType("ISC").size()>2){
+                AcceleratorNode Coil3 = sequence.getNodesOfType("ISC").get(2);
+                displayValues.put(Coil3.getChannel(ESSIonSourceCoil.I_HANDLE),label_coil3RB);
+                setValues.put(Coil3.getChannel(ESSIonSourceCoil.I_SET_HANDLE),textField_coil3);
+                textField_coil3.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                    if(!newVal){
+                        try {
+                            double val = Double.parseDouble(textField_coil3.getText());
+                            if(val>=0 && val <=300){
+                                Coil3.getChannel(ESSIonSourceCoil.I_SET_HANDLE).putVal(val);
+                            } else {
+                                textField_coil3.setText(Double.toString(Coil3.getChannel(ESSIonSourceCoil.I_SET_HANDLE).getValDbl()));
+                            }
+                        } catch (ConnectionException | PutException | GetException ex) {
+                            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                });
+            } else {                
+                label_coil3RB.setDisable(true);
+                textField_coil3.setDisable(true);
+            }    
+        }    
+            
+        //LEBT
+        if(accl.findSequence("LEBT") != null){
+            sequence = accl.getSequence("LEBT");
+        
+            if(sequence.getNodesOfType("SFM").size()>1 || sequence.getNodesOfType("MFM").size()>1){
+                AcceleratorNode Solenoid1 = sequence.getNodeWithId("LEBT-010:BMD-Sol-01");
+                displayValues.put(Solenoid1.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE),label_sol1currentRB);
+                displayValues.put(Solenoid1.getChannel("fieldRB"),label_sol1fieldRB);                              
+                displayValues.put(Solenoid1.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),label_sol1current);                 
+                setValues.put(Solenoid1.getChannel(MagnetMainSupply.FIELD_SET_HANDLE),textField_sol1field);
+                textField_sol1field.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                    if(!newVal){
+                        if(MainFunctions.mainDocument.getModel().get().matches("LIVE")){
+                            try {
+                                double val = Double.parseDouble(textField_sol1field.getText());
+                                if(val>=0 && val<450){
+                                    Solenoid1.getChannel("fieldSet").putVal(val);                                
+                                } else {
+                                    textField_sol1field.setText(Double.toString(Solenoid1.getChannel("fieldRB").getValDbl()));
+                                }
+                            } catch (ConnectionException | PutException | GetException ex) {
+                                Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        } else {
+                            textField_sol1field.fireEvent(new RunEvent(true));
+                        }
+                    }
+                });
+                AcceleratorNode  Solenoid2 = sequence.getNodeWithId("LEBT-010:BMD-Sol-02");
+                displayValues.put(Solenoid2.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE),label_sol2currentRB);
+                displayValues.put(Solenoid2.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),label_sol2current);
+                displayValues.put(Solenoid2.getChannel("fieldRB"),label_sol2fieldRB);               
+                setValues.put(Solenoid2.getChannel(MagnetMainSupply.FIELD_SET_HANDLE),textField_sol2field);
+                textField_sol2field.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                    if(!newVal){ 
+                        if(MainFunctions.mainDocument.getModel().get().matches("LIVE")){
+                            try {
+                                double val = Double.parseDouble(textField_sol2field.getText());
+                                if(val>=0 && val<450){
+                                    Solenoid2.getChannel("fieldSet").putVal(val);
+                                } else {
+                                    textField_sol2field.setText(Double.toString(Solenoid2.getChannel("fieldRB").getValDbl()));
+                                }
+                            } catch (ConnectionException | PutException | GetException ex) {
+                                Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        } else {
+                            textField_sol2field.fireEvent(new RunEvent(true));
+                        }
+                    }
+                });
+            } else {                
+                label_sol1currentRB.setDisable(true);
+                label_sol1fieldRB.setDisable(true);
+                label_sol1current.setDisable(true);
+                textField_sol1field.setDisable(true);
+                label_sol2currentRB.setDisable(true);
+                label_sol2fieldRB.setDisable(true);
+                label_sol2current.setDisable(true);
+                textField_sol2field.setDisable(true);
+            }    
+            
+            if(sequence.getNodesOfType("DCV").size()>3){
+                AcceleratorNode CV1 = sequence.getNodesOfType("DCV").get(0);
+                displayValues.put(CV1.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE),label_CV1currentRB);
+                displayValues.put(CV1.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),label_CV1current);
+                displayValues.put(CV1.getChannel(VDipoleCorr.FIELD_RB_HANDLE),label_CV1fieldRB);                
+                setValues.put(CV1.getChannel(MagnetMainSupply.FIELD_SET_HANDLE),textField_CV1field);
+                textField_CV1field.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                    if(!newVal){ 
+                        if(MainFunctions.mainDocument.getModel().get().matches("LIVE")){
+                            try {
+                                double val = Double.parseDouble(textField_CV1field.getText());
+                                if(val<0.09 && val>-0.09){
+                                    CV1.getChannel("fieldSet").putVal(val);
+                                } else {
+                                    textField_CV1field.setText(Double.toString(CV1.getChannel(VDipoleCorr.FIELD_RB_HANDLE).getValDbl()));
+                                }
+                            } catch (ConnectionException | PutException | GetException ex) {
+                                Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        } else {
+                            textField_CV1field.fireEvent(new RunEvent(true));
+                        }
+                    }
+                });
+                AcceleratorNode CV2 = sequence.getNodesOfType("DCV").get(3);
+                displayValues.put(CV2.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE),label_CV2currentRB);
+                displayValues.put(CV2.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),label_CV2current);
+                displayValues.put(CV2.getChannel(VDipoleCorr.FIELD_RB_HANDLE),label_CV2fieldRB);               
+                setValues.put(CV2.getChannel(MagnetMainSupply.FIELD_SET_HANDLE),textField_CV2field);
+                textField_CV2field.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                    if(!newVal){ 
+                        if(MainFunctions.mainDocument.getModel().get().matches("LIVE")){
+                            try {
+                                double val = Double.parseDouble(textField_CV2field.getText());
+                                if(val<0.09 && val>-0.09){
+                                    CV2.getChannel("fieldSet").putVal(val);
+                                } else {
+                                    textField_CV2field.setText(Double.toString(CV2.getChannel(VDipoleCorr.FIELD_RB_HANDLE).getValDbl()));
+                                }
+                            } catch (ConnectionException | PutException | GetException ex) {
+                                Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        } else {
+                            textField_CV2field.fireEvent(new RunEvent(true));
+                        }
+                    }
+                });
+            } else {                
+                label_CV1currentRB.setDisable(true);
+                label_CV1current.setDisable(true);
+                label_CV1fieldRB.setDisable(true);
+                textField_CV1field.setDisable(true);
+                label_CV2currentRB.setDisable(true);
+                label_CV2current.setDisable(true);
+                label_CV2fieldRB.setDisable(true);
+                textField_CV2field.setDisable(true);
+            }    
+            
+            if(sequence.getNodesOfType("DCH").size()>3){
+                AcceleratorNode CH1 = sequence.getNodesOfType("DCH").get(0);
+                displayValues.put(CH1.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE),label_CH1currentRB);
+                displayValues.put(CH1.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),label_CH1current);
+                displayValues.put(CH1.getChannel(HDipoleCorr.FIELD_RB_HANDLE),label_CH1fieldRB);               
+                setValues.put(CH1.getChannel(MagnetMainSupply.FIELD_SET_HANDLE),textField_CH1field);
+                textField_CH1field.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                    if(!newVal){ 
+                        if(MainFunctions.mainDocument.getModel().get().matches("LIVE")){
+                            try {
+                                double val = Double.parseDouble(textField_CH1field.getText());
+                                if(val<0.12 && val>-0.12){
+                                    CH1.getChannel("fieldSet").putVal(val);
+                                } else {
+                                    textField_CH1field.setText(Double.toString(CH1.getChannel(HDipoleCorr.FIELD_RB_HANDLE).getValDbl()));
+                                }
+                            } catch (ConnectionException | PutException | GetException ex) {
+                                Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        } else {
+                            textField_CH1field.fireEvent(new RunEvent(true));
+                        }
+                    }
+                });
+                AcceleratorNode CH2 = sequence.getNodesOfType("DCH").get(3);
+                displayValues.put(CH2.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE),label_CH2currentRB);
+                displayValues.put(CH2.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),label_CH2current);
+                displayValues.put(CH2.getChannel(HDipoleCorr.FIELD_RB_HANDLE),label_CH2fieldRB);              
+                setValues.put(CH2.getChannel(MagnetMainSupply.FIELD_SET_HANDLE),textField_CH2field);
+                textField_CH2field.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                    if(!newVal){ 
+                        if(MainFunctions.mainDocument.getModel().get().matches("LIVE")){
+                            try {
+                                double val = Double.parseDouble(textField_CH2field.getText());
+                                if(val<0.12 && val>-0.12){
+                                    CH2.getChannel("fieldSet").putVal(val);
+                                } else {
+                                    textField_CH2field.setText(Double.toString(CH2.getChannel(HDipoleCorr.FIELD_RB_HANDLE).getValDbl()));
+                                }
+                            } catch (ConnectionException | PutException | GetException ex) {
+                                Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        } else {
+                            textField_CH2field.fireEvent(new RunEvent(true));
+                        }
+                    }
+                });
+            } else {                
+                label_CH1currentRB.setDisable(true);
+                label_CH1current.setDisable(true);
+                label_CH1fieldRB.setDisable(true);
+                textField_CH1field.setDisable(true);
+                label_CH2currentRB.setDisable(true);
+                label_CH2current.setDisable(true);
+                label_CH2fieldRB.setDisable(true);
+                textField_CH2field.setDisable(true);
+            }    
+
+            if(sequence.getNodesOfType("IRIS").size()>0){
+                AcceleratorNode IrisEquip = sequence.getNodesOfType("IRIS").get(0);
+                displayValues.put(IrisEquip.getChannel(Iris.APERTURE_RB_HANDLE),label_irisApertureRB);
+                setValues.put(IrisEquip.getChannel(Iris.APERTURE_SET_HANDLE),textField_irisAperture);
+                textField_irisAperture.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                    if(!newVal){
+                        try {
+                            double val = Double.parseDouble(textField_irisAperture.getText());
+                            if(val>=0){
+                                IrisEquip.getChannel(Iris.APERTURE_SET_HANDLE).putVal(val);
+                            } else {
+                                textField_irisAperture.setText(Double.toString(IrisEquip.getChannel(Iris.APERTURE_RB_HANDLE).getValDbl()));
+                            }
+                        } catch (ConnectionException | PutException | GetException ex) {
+                            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                });
+            
+
+                displayValues.put(IrisEquip.getChannel(Iris.OFFSET_X_RB_HANDLE),label_irisXRB);
+                setValues.put(IrisEquip.getChannel(Iris.OFFSET_X_SET_HANDLE),textField_irisX);
+                textField_irisX.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                    if(!newVal){
+                        try {
+                            double val = Double.parseDouble(textField_irisX.getText());
+                            if(val>=-50 && val<=50){
+                                IrisEquip.getChannel(Iris.APERTURE_SET_HANDLE).putVal(val);
+                            } else {
+                                textField_irisX.setText(Double.toString(IrisEquip.getChannel(Iris.OFFSET_X_RB_HANDLE).getValDbl()));
+                            }
+                        } catch (ConnectionException | PutException | GetException ex) {
+                            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                });
+
+                displayValues.put(IrisEquip.getChannel(Iris.OFFSET_Y_RB_HANDLE),label_irisYRB);
+                setValues.put(IrisEquip.getChannel(Iris.OFFSET_Y_SET_HANDLE),textField_irisY);
+                textField_irisY.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                    if(!newVal){
+                         try {
+                            double val = Double.parseDouble(textField_irisY.getText());
+                            if(val>=-50 && val<=50){
+                                IrisEquip.getChannel(Iris.OFFSET_Y_SET_HANDLE).putVal(val);
+                            } else {
+                                textField_irisY.setText(Double.toString(IrisEquip.getChannel(Iris.OFFSET_Y_RB_HANDLE).getValDbl()));
+                            }
+                        } catch (ConnectionException | PutException | GetException ex) {
+                            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                });
+            } else {                
+                label_irisApertureRB.setDisable(true);
+                textField_irisAperture.setDisable(true);
+                label_irisXRB.setDisable(true);
+                textField_irisX.setDisable(true);
+                label_irisYRB.setDisable(true);
+                textField_irisY.setDisable(true);                
+            }    
+
+            if(sequence.getNodesOfType("CHP").size()>0){
+                AcceleratorNode Chop = sequence.getNodesOfType("CHP").get(0);
+                displayValues.put(Chop.getChannel(Chopper.DELAY_RB_HANDLE),label_chopperDelayRB);
+                setValues.put(Chop.getChannel(Chopper.DELAY_SET_HANDLE),textField_chopperDelay);
+                displayValues.put(Chop.getChannel(Chopper.LENGTH_RB_HANDLE),label_chopperLengthRB);
+                setValues.put(Chop.getChannel(Chopper.LENGTH_SET_HANDLE),textField_chopperLength);
+                displayValues.put(Chop.getChannel(Chopper.STATUS_RB_HANDLE),chopperStatus);                
+                textField_chopperDelay.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                    if(!newVal){
+                        try {
+                            double val = Double.parseDouble(textField_chopperDelay.getText());
+                            if(val > 0){
+                                Chop.getChannel(Chopper.DELAY_SET_HANDLE).putVal(val);
+                            } else {
+                                textField_chopperDelay.setText(Double.toString(Chop.getChannel(Chopper.DELAY_RB_HANDLE).getValDbl()));
+                            }
+                        } catch (ConnectionException | PutException | GetException ex) {
+                            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                });
+                textField_chopperLength.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                    if(!newVal){
+                        try {
+                            double val = Double.parseDouble(textField_chopperLength.getText());
+                            if(val > 0){
+                                Chop.getChannel(Chopper.LENGTH_SET_HANDLE).putVal(val);
+                            } else {
+                                textField_chopperLength.setText(Double.toString(Chop.getChannel(Chopper.LENGTH_RB_HANDLE).getValDbl()));
+                            }
+                        } catch (ConnectionException | PutException | GetException ex) {
+                            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                });
+            } else {                
+                label_chopperDelayRB.setDisable(true);
+                textField_chopperDelay.setDisable(true);
+                label_chopperLengthRB.setDisable(true);
+                textField_chopperLength.setDisable(true); 
+                chopperStatus.setFill(Color.GRAY);
+            }    
+
+            if(sequence.getNodesOfType("REP").size()>0){
+                AcceleratorNode Electrode = sequence.getNodesOfType("REP").get(0);
+                displayValues.put(Electrode.getChannel(RepellerElectrode.STATUS_RB_HANDLE),electrodeStatus);
+                electrodeStatus.setFill(Color.GRAY);
+            } 
+
+            if(sequence.getNodesOfType("SCC").size()>0){
+                AcceleratorNode n2FlowSCC = sequence.getNodesOfType("SCC").get(0);
+                displayValues.put(n2FlowSCC.getChannel(SpaceChargeCompensation.N2FLOW_RB_HANDLE),label_N2flowRB);
+                setValues.put(n2FlowSCC.getChannel(SpaceChargeCompensation.N2FLOW_SET_HANDLE),textField_N2flow);
+                textField_N2flow.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                    if(!newVal){
+                        try {
+                            double val = Double.parseDouble(textField_N2flow.getText());
+                            if(val > 0){
+                                n2FlowSCC.getChannel(SpaceChargeCompensation.N2FLOW_SET_HANDLE).putVal(val);
+                            } else {
+                                textField_N2flow.setText(Double.toString(n2FlowSCC.getChannel(SpaceChargeCompensation.N2FLOW_SET_HANDLE).getValDbl()));
+                            }
+                        } catch (ConnectionException | PutException | GetException ex) {
+                            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                });
+            } else {
+                label_N2flowRB.setDisable(true);
+                textField_N2flow.setDisable(true);
+            }
+
+            //define electrode properties
+            checkBox_electrode.setTooltip(new Tooltip("Turns RFQ reppeler electrode On and OFF in the simulation only."));
+            checkBox_electrode.selectedProperty().addListener((obs, oldVal, newVal) ->{
+                if(newVal){
+                    checkBox_electrode.setText("ON");
+                    textField_sccelectrode.setDisable(false);
+                    textField_sccelectrode.setText(Double.toString(spaceChargeCompElectrode));                    
+                } else {
+                    checkBox_electrode.setText("OFF");
+                    textField_sccelectrode.setDisable(true);
+                    textField_sccelectrode.setText(Double.toString(spaceChargeComp));
+                }
+                checkBox_electrode.fireEvent(new RunEvent(true));
+            });
+            
+            if(sequence.getNodesOfType("DPL").size()>0){
+                AcceleratorNode DopplerElem = sequence.getNodesOfType("DPL").get(0);
+                displayValues.put(DopplerElem.getChannel(Doppler.FRACTION_H_R_HANDLE),label_Doppler);        
+            } else {
+                label_Doppler.setDisable(true);
+            }
+
+            //Disgnostics equipment
+            if(accl.getAllNodesOfType("BCM").size()>0){
+                List<AcceleratorNode> BCM = accl.getAllNodesOfType("BCM");                
+                displayValues.put(BCM.get(0).getChannel(CurrentMonitor.I_AVG_HANDLE),label_CurrentMeasurement1);
+                rb_CurrentMeasurement1.setText(BCM.get(0).toString());
+                if(BCM.size()>1){
+                    displayValues.put(BCM.get(1).getChannel(CurrentMonitor.I_AVG_HANDLE),label_CurrentMeasurement2);
+                    rb_CurrentMeasurement2.setText(BCM.get(1).toString());
+                } else {
+                    label_CurrentMeasurement2.setDisable(true);
+                    rb_CurrentMeasurement2.setDisable(true);
+                }
+            } else {
+                label_CurrentMeasurement1.setDisable(true);
+                rb_CurrentMeasurement1.setDisable(true);
+                label_CurrentMeasurement2.setDisable(true);
+                rb_CurrentMeasurement2.setDisable(true);
+            } 
+        }
+    }    
+    
+    private void setupInitialConditions(){
+        //Set scale text Field
+        textFieldSigmaScale.setText(Double.toString(scale));
+
+        //Create listener for intial parameters
+        textField_x.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                if(!newVal){
+                    try {
+                        comboBox_inputSimul.getSelectionModel().getSelectedItem().setX(Double.parseDouble(textField_x.getText().trim())*1e-3);
+                    } catch(NumberFormatException ex) {
+                        textField_x.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getX()));
+                    }
+                    textField_x.fireEvent(new RunEvent(true));
+                }
+            });
+
+        textField_xp.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                if(!newVal){
+                    try {
+                        comboBox_inputSimul.getSelectionModel().getSelectedItem().setXP(Double.parseDouble(textField_xp.getText().trim())*1e-3);
+                    } catch(NumberFormatException ex) {
+                        textField_xp.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getXP()));
+                    }
+                    textField_xp.fireEvent(new RunEvent(true));
+                }
+            });
+
+        textField_y.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                if(!newVal){
+                    try {
+                        comboBox_inputSimul.getSelectionModel().getSelectedItem().setY(Double.parseDouble(textField_y.getText().trim())*1e-3);
+                    } catch(NumberFormatException ex) {
+                        textField_y.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getY()));
+                    }
+                    textField_y.fireEvent(new RunEvent(true));
+                }
+            });
+
+        textField_yp.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                if(!newVal){
+                    try {
+                        comboBox_inputSimul.getSelectionModel().getSelectedItem().setYP(Double.parseDouble(textField_yp.getText().trim())*1e-3);
+                    } catch(NumberFormatException ex) {
+                        textField_yp.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getYP()));
+                    }
+                    textField_yp.fireEvent(new RunEvent(true));
+                }
+            });
+
+        textField_betax.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                if(!newVal){
+                    try {
+                        double val = Double.parseDouble(textField_betax.getText().trim());
+                        if(val>=0){
+                            comboBox_inputSimul.getSelectionModel().getSelectedItem().setBETAX(val);
+                        } else {
+                            textField_betax.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getBETAX()));
+                        }
+                    } catch(NumberFormatException ex) {
+                        textField_betax.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getBETAX()));
+                    }
+                    textField_betax.fireEvent(new RunEvent(true));
+                }
+            });
+
+        textField_alphax.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                if(!newVal){
+                    try {
+                        double val = Double.parseDouble(textField_alphax.getText().trim());
+                        comboBox_inputSimul.getSelectionModel().getSelectedItem().setALPHAX(val);
+                    } catch(NumberFormatException ex) {
+                        textField_alphax.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getALPHAX()));
+                    }
+                    textField_alphax.fireEvent(new RunEvent(true));
+                }
+            });
+
+        textField_emittx.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                if(!newVal){
+                    try {
+                        double val = Double.parseDouble(textField_emittx.getText().trim());
+                        if(val>=0){
+                            comboBox_inputSimul.getSelectionModel().getSelectedItem().setEMITTX(val*1e-6);
+                        } else {
+                            textField_emittx.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getEMITTX()*1e6));
+                        }
+                    } catch(NumberFormatException ex) {
+                        textField_emittx.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getEMITTX()*1e6));
+                    }
+                    textField_emittx.fireEvent(new RunEvent(true));
+                }
+            });
+
+        textField_betay.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                if(!newVal){
+                    try {
+                        double val = Double.parseDouble(textField_betay.getText().trim());
+                        if(val>=0){
+                            comboBox_inputSimul.getSelectionModel().getSelectedItem().setBETAY(val);
+                        } else {
+                            textField_betay.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getBETAY()));
+                        }
+                    } catch(NumberFormatException ex) {
+                        textField_betay.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getBETAY()));
+                    }
+                    textField_betay.fireEvent(new RunEvent(true));
+                }
+            });
+
+        textField_alphay.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                if(!newVal){
+                    try {
+                        double val = Double.parseDouble(textField_alphay.getText().trim());
+                        comboBox_inputSimul.getSelectionModel().getSelectedItem().setALPHAY(val);
+                    } catch(NumberFormatException ex) {
+                        textField_alphay.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getALPHAY()));
+                    }
+                    textField_alphax.fireEvent(new RunEvent(true));
+                }
+            });
+
+        textField_emitty.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                if(!newVal){
+                    try {
+                        double val = Double.parseDouble(textField_emitty.getText().trim());
+                        if(val>=0){
+                            comboBox_inputSimul.getSelectionModel().getSelectedItem().setEMITTY(val*1e-6);
+                        } else {
+                            textField_emitty.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getEMITTY()*1e6));
+                        }
+                    } catch(NumberFormatException ex) {
+                        textField_emitty.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getEMITTY()*1e6));
+                    }
+                    textField_emitty.fireEvent(new RunEvent(true));
+                }
+            });
+
+        textField_bc.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                if(!newVal){
+                    try {
+                        double val = Double.parseDouble(textField_bc.getText().trim());
+                        if(val>=0){
+                            beamCurrent=val;
+                        } else {
+                            textField_bc.setText(Double.toString(beamCurrent));
+                        }
+                    } catch(NumberFormatException ex) {
+                        textField_bc.setText(Double.toString(beamCurrent));
+                    }
+                    textField_bc.fireEvent(new RunEvent(true));
+                }
+            });
+
+        textField_scc.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                if(!newVal){
+                    try {
+                        double val = Double.parseDouble(textField_scc.getText().trim());
+                        if(val>=0 && val<=1.0){
+                            spaceChargeComp=Double.parseDouble(textField_scc.getText().trim());
+                        } else {
+                            textField_scc.setText(Double.toString(spaceChargeComp));
+                        }
+                    } catch(NumberFormatException ex) {
+                        textField_scc.setText(Double.toString(spaceChargeComp));
+                    }
+                    textField_scc.fireEvent(new RunEvent(true));
+                }
+            });
+
+        textField_sccelectrode.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                if(!newVal){
+                    try {
+                        double val = Double.parseDouble(textField_sccelectrode.getText().trim());
+                        if(val>=0 && val<=1.0){
+                            spaceChargeCompElectrode=Double.parseDouble(textField_sccelectrode.getText().trim());
+                        } else {
+                            textField_sccelectrode.setText(Double.toString(spaceChargeCompElectrode));
+                        }
+                    } catch(NumberFormatException ex) {
+                        textField_sccelectrode.setText(Double.toString(spaceChargeCompElectrode));
+                    }
+                    textField_sccelectrode.fireEvent(new RunEvent(true));
+                }
+            });
+    }
+    
+    /**
+     * Initializes the values in the displayFields and TextFields
+     */
+    private void initDisplayFields(){
+                
+        //Creates a batch of channels to request when updating GUI
+        HashMap<Channel,Object> inputChannels = new HashMap<>();    
+        setValues.keySet().forEach(channel -> inputChannels.put(channel,setValues.get(channel)));        
+        
+        //Creates a batch of channels to request when updating GUI
+        displayValues.keySet().forEach(channel -> inputChannels.put(channel,displayValues.get(channel)));                
+        
+        monitor.connectAndMonitor(inputChannels);
+        
+        setValues.keySet().forEach(channel ->{
+            if (setValues.get(channel)!=null){
+                if (channel.isConnected()){
+                    try {
+                        setValues.get(channel).setText(String.format("%.3f",channel.getValDbl()));
+                        setValues.get(channel).setStyle("-fx-background-color: white;");
+                        setValues.get(channel).setDisable(false);
+                    } catch (ConnectionException | GetException ex) {
+                        Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                } else {
+                    setValues.get(channel).setStyle("-fx-background-color: magenta;");
+                    setValues.get(channel).setDisable(true);
+                }
+            }
+        });          
+        
+        displayValues.keySet().forEach(channel ->{
+            if (displayValues.get(channel) instanceof Label){
+                if (channel.isConnected()){
+                    try {
+                        ((Label) displayValues.get(channel)).setText(String.format("%.3f",channel.getValDbl()));
+                        ((Label) displayValues.get(channel)).setStyle("-fx-background-color: white;");
+                        ((Label) displayValues.get(channel)).setDisable(false);
+                    } catch (ConnectionException | GetException ex) {
+                        Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                } else {
+                    ((Label) displayValues.get(channel)).setStyle("-fx-background-color: magenta;");
+                    ((Label) displayValues.get(channel)).setDisable(true);
+                }
+            } if (displayValues.get(channel) instanceof Circle){
+                try {
+                int val = (int) Math.round(channel.getValDbl());
+                    switch (val) {
+                        case 1:
+                            ((Circle) displayValues.get(channel)).setFill(Color.GREEN);
+                            break;
+                        case 0:
+                            ((Circle) displayValues.get(channel)).setFill(Color.RED);
+                            break;
+                        default:
+                            ((Circle) displayValues.get(channel)).setFill(Color.GRAY);
+                            break;
+                    }
+                } catch (ConnectionException | GetException ex) {
+                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });                
+        
+    }    
+    
+    /**
+     * Initializes diagnostics elements
+     */
+    private void initBIElements(){
+        //Creates a batch of channels to request when updating GUI
+        List<Channel> channels = new ArrayList<>();        
+        //Add NPM channels
+        List<NPM> npms = new ArrayList<>();
+        List<EMU> emus = new ArrayList<>();
+        npms = MainFunctions.mainDocument.getAccelerator().getAllNodesOfType("NPM");
+        npms.forEach(mon->{
+            channels.add(mon.getChannel(NPM.X_AVG_HANDLE));
+            channels.add(mon.getChannel(NPM.Y_AVG_HANDLE));
+            channels.add(mon.getChannel(NPM.X_P_AVG_HANDLE));
+            channels.add(mon.getChannel(NPM.Y_P_AVG_HANDLE));
+            channels.add(mon.getChannel(NPM.SIGMA_X_AVG_HANDLE));
+            channels.add(mon.getChannel(NPM.SIGMA_Y_AVG_HANDLE));
+            channels.add(mon.getChannel(NPM.ALPHA_X_TWISS_HANDLE));
+            channels.add(mon.getChannel(NPM.ALPHA_Y_TWISS_HANDLE));
+            channels.add(mon.getChannel(NPM.BETA_X_TWISS_HANDLE));
+            channels.add(mon.getChannel(NPM.BETA_Y_TWISS_HANDLE));
+        });
+        emus = MainFunctions.mainDocument.getAccelerator().getAllNodesOfType("EMU");
+        emus.forEach(mon->{
+            channels.add(mon.getChannel(EMU.EMITT_X_HANDLE));
+            channels.add(mon.getChannel(EMU.EMITT_Y_HANDLE));
+            channels.add(mon.getChannel(EMU.ALPHA_X_TWISS_HANDLE));
+            channels.add(mon.getChannel(EMU.ALPHA_Y_TWISS_HANDLE));
+            channels.add(mon.getChannel(EMU.BETA_X_TWISS_HANDLE));
+            channels.add(mon.getChannel(EMU.BETA_Y_TWISS_HANDLE));
+        });
+        request = new BatchConnectionRequest( channels );
+        request.submitAndWait(5.0);
+
+    }                   
+    
     //------------------------HANDLE METHODS------------------------------------
 
     /**
      * Update the GUI values from the Live machine
      */
     private void updateGUI(){
-
-        displayValues.keySet().forEach(channel ->{
-            if (displayValues.get(channel)!=null){
-                if (channel.isConnected()){
-                    try {
-                        displayValues.get(channel).setText(String.format("%.3f",channel.getValDbl()));
-                    } catch (ConnectionException | GetException ex) {
-                        Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                    displayValues.get(channel).setStyle("-fx-background-color: white;");
-                } else {
-                    displayValues.get(channel).setStyle("-fx-background-color: magenta;");
-                }
-            } else {
-                if (channel.isConnected()){
-                    try {
-                        Integer val = channel.getValInt();
-                        if(channel.channelName().contains("Chop")){
-                            if(val==1){
-                                chopperStatus.setFill(Color.GREEN);
-                            } else {
-                                chopperStatus.setFill(Color.RED);
-                            }
-                        }
-                        if(channel.channelName().contains("Rep")){
-                            if(val==1){
-                                electrodeStatus.setFill(Color.GREEN);
-                            } else {
-                                electrodeStatus.setFill(Color.RED);
-                            }
-                        }
-                    } catch (ConnectionException | GetException ex) {
-                        Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
-            }
-
-        });
-
-        setValues.keySet().forEach(channel ->{
-            if(setValues.get(channel)!=null){
-                if (channel.isConnected()){
-                    setValues.get(channel).setStyle("-fx-background-color: white;");
-                    setValues.get(channel).setDisable(false);
-                } else {
-                    setValues.get(channel).setStyle("-fx-background-color: magenta;");
-                    setValues.get(channel).setDisable(true);
-                }
-            }
-        });
-
+      
         //Display Current if combo box is selected
         if (comboBox_currentFC.isSelected()){
             RadioButton currentBI = (RadioButton) toggleGroup_currentBI.getSelectedToggle();
@@ -1235,15 +1572,15 @@ public class FXMLController implements Initializable {
             seriesNPMposCyl[1].getData().clear();
             seriesNPMsigmaCyl.getData().clear();
 
-            npms.forEach((monitor) -> {
-                if(monitor.getChannel(NPM.X_AVG_HANDLE).isConnected() && monitor.getChannel(NPM.Y_AVG_HANDLE).isConnected()){
+            npms.forEach((mon) -> {
+                if(mon.getChannel(NPM.X_AVG_HANDLE).isConnected() && mon.getChannel(NPM.Y_AVG_HANDLE).isConnected()){
                     try {
-                        seriesNPMpos[0].getData().add(new XYChart.Data(monitor.getSDisplay(),monitor.getXAvg()));
-                        seriesNPMpos[1].getData().add(new XYChart.Data(monitor.getSDisplay(),monitor.getYAvg()));
-                        Complex phi = new Complex(monitor.getXAvg(),monitor.getYAvg());
+                        seriesNPMpos[0].getData().add(new XYChart.Data(mon.getSDisplay(),mon.getXAvg()));
+                        seriesNPMpos[1].getData().add(new XYChart.Data(mon.getSDisplay(),mon.getYAvg()));
+                        Complex phi = new Complex(mon.getXAvg(),mon.getYAvg());
                         long scale2 = getScaleAxis(posPhi,posR);
-                        seriesNPMposCyl[0].getData().add(new XYChart.Data(monitor.getSDisplay(),phi.modulus()));
-                        seriesNPMposCyl[1].getData().add(new XYChart.Data(monitor.getSDisplay(),scale2*phi.phase()/Math.PI));
+                        seriesNPMposCyl[0].getData().add(new XYChart.Data(mon.getSDisplay(),phi.modulus()));
+                        seriesNPMposCyl[1].getData().add(new XYChart.Data(mon.getSDisplay(),scale2*phi.phase()/Math.PI));
                     } catch (ConnectionException | GetException ex) {
                         Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -1253,15 +1590,15 @@ public class FXMLController implements Initializable {
 
 
             if(radioButtonOffsetOff.isSelected()){
-                npms.forEach((monitor) -> {
-                    if(monitor.getChannel(NPM.SIGMA_X_AVG_HANDLE).isConnected() && monitor.getChannel(NPM.SIGMA_Y_AVG_HANDLE).isConnected()){
+                npms.forEach((NPM mon) -> {
+                    if(mon.getChannel(NPM.SIGMA_X_AVG_HANDLE).isConnected() && mon.getChannel(NPM.SIGMA_Y_AVG_HANDLE).isConnected()){
                         try {
-                            seriesNPMsigma[0].getData().add(new XYChart.Data(monitor.getSDisplay(),scale*monitor.getXSigmaAvg()*1.0e+3));
-                            seriesNPMsigma[0].getData().add(new XYChart.Data(monitor.getSDisplay(),scale*monitor.getXSigmaAvg()*-1.0e+3));
-                            seriesNPMsigma[1].getData().add(new XYChart.Data(monitor.getSDisplay(),scale*monitor.getYSigmaAvg()*1.0e+3));
-                            seriesNPMsigma[1].getData().add(new XYChart.Data(monitor.getSDisplay(),scale*monitor.getYSigmaAvg()*-1.0e+3));
-                            seriesNPMsigmaCyl.getData().add(new XYChart.Data(monitor.getSDisplay(),scale*Math.max(monitor.getXSigmaAvg(), monitor.getYSigmaAvg())*1.0e+3));
-                            seriesNPMsigmaCyl.getData().add(new XYChart.Data(monitor.getSDisplay(),scale*Math.min(monitor.getXSigmaAvg(), monitor.getYSigmaAvg())*-1.0e+3));
+                            seriesNPMsigma[0].getData().add(new XYChart.Data(mon.getSDisplay(),scale*mon.getXSigmaAvg()*1.0e+3));
+                            seriesNPMsigma[0].getData().add(new XYChart.Data(mon.getSDisplay(),scale*mon.getXSigmaAvg()*-1.0e+3));
+                            seriesNPMsigma[1].getData().add(new XYChart.Data(mon.getSDisplay(),scale*mon.getYSigmaAvg()*1.0e+3));
+                            seriesNPMsigma[1].getData().add(new XYChart.Data(mon.getSDisplay(),scale*mon.getYSigmaAvg()*-1.0e+3));
+                            seriesNPMsigmaCyl.getData().add(new XYChart.Data(mon.getSDisplay(),scale*Math.max(mon.getXSigmaAvg(), mon.getYSigmaAvg())*1.0e+3));
+                            seriesNPMsigmaCyl.getData().add(new XYChart.Data(mon.getSDisplay(),scale*Math.min(mon.getXSigmaAvg(), mon.getYSigmaAvg())*-1.0e+3));
                         } catch (ConnectionException | GetException ex) {
                             Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                         }
@@ -1269,17 +1606,17 @@ public class FXMLController implements Initializable {
                 });
             }
             if(radioButtonOffsetOn.isSelected()){
-                npms.forEach((monitor) -> {
-                    if(monitor.getChannel(NPM.SIGMA_X_AVG_HANDLE).isConnected() && monitor.getChannel(NPM.SIGMA_Y_AVG_HANDLE).isConnected()){
+                npms.forEach((NPM mon) -> {
+                    if (mon.getChannel(NPM.SIGMA_X_AVG_HANDLE).isConnected() && mon.getChannel(NPM.SIGMA_Y_AVG_HANDLE).isConnected()) {
                         try {
-                            seriesNPMsigma[0].getData().add(new XYChart.Data(monitor.getSDisplay(),scale*monitor.getXSigmaAvg()*1.0e+3+monitor.getXAvg()));
-                            seriesNPMsigma[0].getData().add(new XYChart.Data(monitor.getSDisplay(),scale*monitor.getXSigmaAvg()*-1.0e+3+monitor.getXAvg()));
-                            seriesNPMsigma[1].getData().add(new XYChart.Data(monitor.getSDisplay(),scale*monitor.getYSigmaAvg()*1.0e+3+monitor.getYAvg()));
-                            seriesNPMsigma[1].getData().add(new XYChart.Data(monitor.getSDisplay(),scale*monitor.getYSigmaAvg()*-1.0e+3+monitor.getYAvg()));
-                            double posR = new Complex(monitor.getXAvg(),monitor.getYAvg()).modulus();
-                            seriesNPMsigmaCyl.getData().add(new XYChart.Data(monitor.getSDisplay(),scale*Math.max(monitor.getXSigmaAvg(), monitor.getYSigmaAvg())*1.0e+3+posR));
-                            seriesNPMsigmaCyl.getData().add(new XYChart.Data(monitor.getSDisplay(),scale*Math.max(monitor.getXSigmaAvg(), monitor.getYSigmaAvg())*-1.0e+3+posR));
-                        } catch (ConnectionException | GetException ex) {
+                            seriesNPMsigma[0].getData().add(new XYChart.Data(mon.getSDisplay(),scale*mon.getXSigmaAvg()*1.0e+3+mon.getXAvg()));
+                            seriesNPMsigma[0].getData().add(new XYChart.Data(mon.getSDisplay(),scale*mon.getXSigmaAvg()*-1.0e+3+mon.getXAvg()));
+                            seriesNPMsigma[1].getData().add(new XYChart.Data(mon.getSDisplay(),scale*mon.getYSigmaAvg()*1.0e+3+mon.getYAvg()));
+                            seriesNPMsigma[1].getData().add(new XYChart.Data(mon.getSDisplay(),scale*mon.getYSigmaAvg()*-1.0e+3+mon.getYAvg()));
+                            double posR1 = new Complex(mon.getXAvg(),mon.getYAvg()).modulus();
+                            seriesNPMsigmaCyl.getData().add(new XYChart.Data(mon.getSDisplay(), scale*Math.max(mon.getXSigmaAvg(), mon.getYSigmaAvg())*1.0e+3 + posR1));
+                            seriesNPMsigmaCyl.getData().add(new XYChart.Data(mon.getSDisplay(), scale*Math.max(mon.getXSigmaAvg(), mon.getYSigmaAvg())*-1.0e+3 + posR1));
+                        }catch (ConnectionException | GetException ex) {
                             Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     }
@@ -1288,78 +1625,28 @@ public class FXMLController implements Initializable {
         }
 
     }
+    
+    private void UpdateSimulation(){
 
-    /**
-     * Initializes the values in the textFields
-     */
-    private void initTextFields(){
+        setParameters();
+        try {
+            newRun.runSimulation();
+        } catch (ModelException | InstantiationException ex) {
+            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
-        setValues.keySet().forEach(channel ->{
-            if (setValues.get(channel)!=null){
-                if (channel.isConnected()){
-                    try {
-                        setValues.get(channel).setText(String.format("%.3f",channel.getValDbl()));
-                        setValues.get(channel).setStyle("-fx-background-color: white;");
-                        setValues.get(channel).setDisable(false);
-                    } catch (ConnectionException | GetException ex) {
-                        Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                } else {
-                    setValues.get(channel).setStyle("-fx-background-color: magenta;");
-                    setValues.get(channel).setDisable(true);
-                }
-            }
-        });
-
-    }
-
-    /** get the model sync period in milliseconds
-     * @return the sync period for the model timer */
-    public long getModelSyncPeriod() {
-        return _modelSyncPeriod;
-    }
-
-    /** update the model sync period in milliseconds
-     * @param period the sync period */
-    public void setModelSyncPeriod( final long period ) {
-        _modelSyncPeriod = period;
-        MODEL_SYNC_TIMER.startNowWithInterval( _modelSyncPeriod, 0 );
-    }
-
-    /** Get a runnable that syncs the online model */
-    private Runnable getOnlineModelSynchronizer() {
-        return () -> {
-            try {
-                setParameters();
-                newRun.runSimulation();
-            } catch (ModelException ex ) {
-                MODEL_SYNC_TIMER.suspend();
-                Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (InstantiationException ex) {
-                MODEL_SYNC_TIMER.suspend();
-                Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (Exception ex) {
-                MODEL_SYNC_TIMER.suspend();
-                Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-
-            }
-
-            //Display if successful run
-            if(newRun.hasRun()) {
-                retrieveData(newRun);
-                Platform.runLater(
-                () -> {
-                  updateGUI();
-                  displayPlots();
-                });
-                //newRun.sethasRun(false);
-            }
-        };
+        //Display if successful run
+        if(newRun.hasRun()) {
+            retrieveData(newRun);            
+            updateGUI();
+            displayPlots();
+        }
+        
     }
 
     @FXML
     private void handleGetCurrentfromFC(ActionEvent event) {
-        if(comboBox_currentFC.isSelected()){
+        if(comboBox_currentFC.isSelected() && !comboBox_currentFC.isDisabled()){
             textField_bc.setDisable(true);
         } else {
             textField_bc.setDisable(false);
@@ -1378,6 +1665,7 @@ public class FXMLController implements Initializable {
             setLabels();
             setBounds();
         }
+        displayPlots();
     }
 
     @FXML
@@ -1386,10 +1674,12 @@ public class FXMLController implements Initializable {
         if (newRun.hasRun()){
             addEnvelopeSeriesToPlot();
             npmSigHandler(new ActionEvent());
+            label_transmission.setText(String.format("%.3f",newRun.getTransmission(radioButtonOffsetOn.isSelected())*100));
         } else {
             setLabels();
             setBounds();
         }
+        displayPlots();  
     }
 
     @FXML
@@ -1584,7 +1874,7 @@ public class FXMLController implements Initializable {
                         }
                     });
 
-                    MODEL_SYNC_TIMER.resume();
+                    //MODEL_SYNC_TIMER.resume();
 
                 }
 
@@ -1596,7 +1886,7 @@ public class FXMLController implements Initializable {
 
         Thread calibrate = new Thread(task);
         calibrate.setDaemon(true); // thread will not prevent application shutdown
-        MODEL_SYNC_TIMER.suspend();
+        //MODEL_SYNC_TIMER.suspend();
         calibrate.start();
 
 
@@ -1633,7 +1923,7 @@ public class FXMLController implements Initializable {
         beamCurrent = newRun.getBeamCurrent();
         textField_bc.setText(Double.toString(beamCurrent));
         spaceChargeComp = newRun.getSpaceChargeCompensation();
-        spaceChargeCompElectrode = newRun.getSpaceChargeCompensationElectrode();;
+        spaceChargeCompElectrode = newRun.getSpaceChargeCompensationElectrode();
         textField_scc.setText(Double.toString(spaceChargeComp));
         textField_sccelectrode.setText(Double.toString(spaceChargeCompElectrode));
     }
@@ -1660,6 +1950,15 @@ public class FXMLController implements Initializable {
             newRun.setSpaceChargeCompensation(spaceChargeComp,spaceChargeCompElectrode);
             newRun.setElectrode(checkBox_electrode.isSelected());
             newRun.setModelSync(MainFunctions.mainDocument.getModel().get());
+
+            //Set fields: if model changes from Live to DESIGN the defaults fileds will be up-to-date
+            newRun.setSolenoid1Field(Double.parseDouble(textField_sol1field.getText()));
+            newRun.setSolenoid2Field(Double.parseDouble(textField_sol2field.getText()));
+            newRun.setVsteerer1Field(Double.parseDouble(textField_CV1field.getText()));
+            newRun.setVsteerer2Field(Double.parseDouble(textField_CV2field.getText()));
+            newRun.setHsteerer1Field(Double.parseDouble(textField_CH1field.getText()));
+            newRun.setHsteerer2Field(Double.parseDouble(textField_CH2field.getText()));
+
         }
         catch(NumberFormatException e){
             Alert alert = new Alert(AlertType.ERROR);
@@ -1704,8 +2003,10 @@ public class FXMLController implements Initializable {
         for(int i = 0; i < positions.size() ; i++) {
             positions.set(i, (Double) positions.get(i) + pos_ini);
         }
-
-    }
+        
+        label_transmission.setText(String.format("%.3f",newRun.getTransmission(radioButtonOffsetOn.isSelected())*100));
+        
+    }        
 
     /**
      * Retrieves and displays trajectory plots
@@ -2064,6 +2365,48 @@ public class FXMLController implements Initializable {
             seriesSigmaOffsetY[i].getData().clear();
             seriesSigmaOffsetR[i].getData().clear();
         }
+    }
+
+    public class Magnet{
+
+        private String magnetName;
+        private String newField;
+        private String oldField;
+        private final BooleanProperty selected = new SimpleBooleanProperty();
+
+        public Magnet(String magnetName, String newField, String oldField, boolean selected) {
+            this.magnetName = magnetName;
+            this.newField = newField;
+            this.oldField = oldField;
+            this.selected.set(selected);
+        }
+
+        public BooleanProperty selectedProperty() { return selected; }
+
+        public String getMagnetName() {
+            return magnetName;
+        }
+
+        public void setMagnetName(String magnetName) {
+            this.magnetName = magnetName;
+        }
+
+        public String getNewField() {
+            return newField;
+        }
+
+        public void setNewField(String newField) {
+            this.newField = newField;
+        }
+
+        public String getOldField() {
+            return oldField;
+        }
+
+        public void setOldField(String oldField) {
+            this.oldField = oldField;
+        }
+
     }
 
 }

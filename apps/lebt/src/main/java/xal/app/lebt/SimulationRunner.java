@@ -7,8 +7,11 @@ package xal.app.lebt;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import xal.extension.jels.smf.impl.ESSMagFieldMap3D;
+import xal.extension.jels.smf.impl.ESSSolFieldMap;
 import xal.model.ModelException;
 import xal.model.alg.EnvTrackerAdapt;
 import xal.model.probe.EnvelopeProbe;
@@ -24,6 +27,9 @@ import xal.sim.sync.SynchronizationException;
 import xal.smf.AcceleratorNode;
 import xal.smf.AcceleratorSeq;
 import xal.smf.AcceleratorSeqCombo;
+import xal.smf.impl.HDipoleCorr;
+import xal.smf.impl.Solenoid;
+import xal.smf.impl.VDipoleCorr;
 import xal.tools.math.Complex;
 
 /**
@@ -35,8 +41,11 @@ public class SimulationRunner {
 
     private final double[] init;
     private double continuos_bc;
+    private double transmission;
+    private double transmission_offset;
     private final double[] solenoidFields;
-    private final double[] correctorFields;
+    private final double[] correctorVFields;
+    private final double[] correctorHFields;
     private final double beta_gamma;
     private boolean electrode;
 
@@ -78,10 +87,13 @@ public class SimulationRunner {
 
         init = new double[4];
         solenoidFields = new double[2];
-        correctorFields = new double[4];
+        correctorVFields = new double[2];
+        correctorHFields = new double[2];
         electrode = false;
         sequence = seq;
         model_sync = modelSync;
+        transmission = 1;
+        transmission_offset = 1;
         final_pos_simul = "";
 
         try {
@@ -115,13 +127,15 @@ public class SimulationRunner {
             init[3] = iniPos.getyp();
 
             Arrays.fill(solenoidFields,288.23);
-            Arrays.fill(correctorFields,0);
+            Arrays.fill(correctorVFields,0);
+            Arrays.fill(correctorHFields,0);
 
         } else {
 
             Arrays.fill(init,0);
             Arrays.fill(solenoidFields,288.23);
-            Arrays.fill(correctorFields,0);
+            Arrays.fill(correctorVFields,0);
+            Arrays.fill(correctorHFields,0);
             continuos_bc = 74;
 
             beta_gamma = 0.0126439470187;
@@ -135,10 +149,10 @@ public class SimulationRunner {
     //                      Set/get functions
     public void setSolenoid1Field(double field){solenoidFields[0] = field;}
     public void setSolenoid2Field(double field){solenoidFields[1] = field;}
-    public void setVsteerer1Field(double field){correctorFields[0] = field;}
-    public void setHsteerer1Field(double field){correctorFields[1] = field;}
-    public void setVsteerer2Field(double field){correctorFields[2] = field;}
-    public void setHsteerer2Field(double field){correctorFields[3] = field;}
+    public void setVsteerer1Field(double field){correctorVFields[0] = field;}
+    public void setHsteerer1Field(double field){correctorHFields[0] = field;}
+    public void setVsteerer2Field(double field){correctorVFields[1] = field;}
+    public void setHsteerer2Field(double field){correctorHFields[1] = field;}
     public void setBeamCurrent(double current){continuos_bc = current;}
     public void setBeamTwissX(double alpha, double beta, double emitt){TWISSX[0] = alpha;TWISSX[1] = beta;TWISSX[2] = emitt;}
     public void setBeamTwissY(double alpha, double beta, double emitt){TWISSY[0] = alpha;TWISSY[1] = beta;TWISSY[2] = emitt;}
@@ -153,10 +167,10 @@ public class SimulationRunner {
 
     public double getSolenoid1Field(){return solenoidFields[0];}
     public double getSolenoid2Field(){return solenoidFields[1];}
-    public double getVsteerer1Field(){return correctorFields[0];}
-    public double getHsteerer1Field(){return correctorFields[1];}
-    public double getVsteerer2Field(){return correctorFields[2];}
-    public double getHsteerer2Field(){return correctorFields[3];}
+    public double getVsteerer1Field(){return correctorVFields[0];}
+    public double getHsteerer1Field(){return correctorHFields[0];}
+    public double getVsteerer2Field(){return correctorVFields[1];}
+    public double getHsteerer2Field(){return correctorHFields[1];}
     public double getBeamCurrent(){return continuos_bc;}
     public boolean getElectrode(boolean val){return electrode;}
     public double getSpaceChargeCompensation(){return SPACE_CHARGE;}
@@ -175,6 +189,11 @@ public class SimulationRunner {
     public ArrayList getPosY(){return posY;}
     public ArrayList getPosR(){return posR;}
     public ArrayList getPosPhi(){return posPhi;}
+    public double getTransmission(boolean hasOffset){ if(hasOffset){
+                                                        return transmission_offset;
+                                                    }else{ 
+                                                        return transmission;
+                                                    }}
     public EnvelopeProbe getProbe(){return probe;}
     public EnvelopeProbe getFinalProbe(){return (EnvelopeProbe) model.getProbe();}
     public boolean hasRun(){return hasRun;}
@@ -219,6 +238,7 @@ public class SimulationRunner {
             AcceleratorNode start_simul = seq.getNodeWithId(ini_pos_simul);
             AcceleratorNode start_seq = seq.getAllNodes().get(0);
             AcceleratorNode end_simul = seq.getAllNodes().get(seq.getNodeCount()-1);
+            if(model_sync.matches("DESIGN")){setMagnetFields(seq);}
             if(final_pos_simul!=""){
                 end_simul =  seq.getNodeWithId(final_pos_simul);
             }
@@ -258,6 +278,7 @@ public class SimulationRunner {
             AcceleratorNode start_simul = seq.getNodeWithId(ini_pos_simul);
             AcceleratorNode start_seq = seq.getAllNodes().get(0);
             AcceleratorNode end_simul = seq.getAllNodes().get(seq.getNodeCount()-1);
+            if(model_sync.matches("DESIGN")){setMagnetFields(seq);}
             if(final_pos_simul!=""){
                 end_simul =  seq.getNodeWithId(final_pos_simul);
             }
@@ -369,9 +390,8 @@ public class SimulationRunner {
         probe.setCovariance(cov);
     }
 
-
     /**
-     * Sets the initial covariance matrix
+     * Gets the initial covariance matrix
      */
     private CovarianceMatrix getElectrodeCovarianceMatrix(){
 
@@ -386,6 +406,83 @@ public class SimulationRunner {
         covmat = stateElement.get(index[0]).getCovarianceMatrix();
 
         return covmat;
+    }
+    
+    /**
+     * Sets magnets
+     */
+    private void setMagnetFields(AcceleratorSeq sequence){
+        
+        AcceleratorNode solenoid1 = sequence.getNodeWithId("LEBT-010:BMD-Sol-01");
+        AcceleratorNode solenoid2 = sequence.getNodeWithId("LEBT-010:BMD-Sol-02");
+        List<VDipoleCorr> CV = sequence.getNodesOfType("DCV");
+        List<HDipoleCorr> CH = sequence.getNodesOfType("DCH");
+        
+        if(solenoid1 instanceof ESSSolFieldMap){
+            ((ESSSolFieldMap)solenoid1).setDfltField(solenoidFields[0]);
+        } else if (solenoid1 instanceof ESSMagFieldMap3D){
+            ((ESSMagFieldMap3D)solenoid1).setDfltField(solenoidFields[0]);
+        } else if (solenoid1 instanceof Solenoid){
+            ((Solenoid)solenoid1).setDfltField(solenoidFields[0]);
+        }
+        
+        if(solenoid2 instanceof ESSSolFieldMap){
+            ((ESSSolFieldMap)solenoid2).setDfltField(solenoidFields[0]);
+        } else if (solenoid2 instanceof ESSMagFieldMap3D){
+            ((ESSMagFieldMap3D)solenoid2).setDfltField(solenoidFields[0]);
+        } else if (solenoid2 instanceof Solenoid){
+            ((Solenoid)solenoid2).setDfltField(solenoidFields[0]);
+        }
+        
+        for(int i=0; i<CV.size(); i++){
+            if(i<3){
+                CV.get(i).setDfltField(correctorVFields[0]);
+                CH.get(i).setDfltField(correctorHFields[0]);
+            } else {
+                CV.get(i).setDfltField(correctorVFields[1]);
+                CH.get(i).setDfltField(correctorHFields[1]);
+            }
+            
+        }        
+    }
+    
+    /**
+     * Sets magnets
+     */
+    private void setMagnetFields(AcceleratorSeqCombo sequence){
+        
+        AcceleratorNode solenoid1 = sequence.getNodeWithId("LEBT-010:BMD-Sol-01");
+        AcceleratorNode solenoid2 = sequence.getNodeWithId("LEBT-010:BMD-Sol-02");
+        List<VDipoleCorr> CV = sequence.getNodesOfType("DCV");
+        List<HDipoleCorr> CH = sequence.getNodesOfType("DCH");
+        
+        if(solenoid1 instanceof ESSSolFieldMap){
+            ((ESSSolFieldMap)solenoid1).setDfltField(solenoidFields[0]);
+        } else if (solenoid1 instanceof ESSMagFieldMap3D){
+            ((ESSMagFieldMap3D)solenoid1).setDfltField(solenoidFields[0]);
+        } else if (solenoid1 instanceof Solenoid){
+            ((Solenoid)solenoid1).setDfltField(solenoidFields[0]);
+        }
+        
+        if(solenoid2 instanceof ESSSolFieldMap){
+            ((ESSSolFieldMap)solenoid2).setDfltField(solenoidFields[1]);
+        } else if (solenoid2 instanceof ESSMagFieldMap3D){
+            ((ESSMagFieldMap3D)solenoid2).setDfltField(solenoidFields[1]);
+        } else if (solenoid2 instanceof Solenoid){
+            ((Solenoid)solenoid2).setDfltField(solenoidFields[1]);
+        }
+        
+        for(int i=0; i<CV.size(); i++){
+            if(i<3){
+                CV.get(i).setDfltField(correctorVFields[0]*CV.get(i).getPolarity());
+                CH.get(i).setDfltField(correctorHFields[0]*CH.get(i).getPolarity());
+            } else {
+                CV.get(i).setDfltField(correctorVFields[1]*CV.get(i).getPolarity());
+                CH.get(i).setDfltField(correctorHFields[1]*CH.get(i).getPolarity());
+            }
+            
+        }        
+        
     }
 
     /**
@@ -436,6 +533,7 @@ public class SimulationRunner {
 
         ArrayList<EnvelopeProbeState> stateElement = (ArrayList<EnvelopeProbeState>) trajectory.getStatesViaIndexer();
         CovarianceMatrix covmat;
+        int[] index = trajectory.indicesForElement("END-LEBT");
 
         //retrieve trajectory
         for(int i=0; i<trajectory.numStates(); i++){
@@ -461,8 +559,29 @@ public class SimulationRunner {
                 sigmaOffsetY[k].add(sigmaY[k].get(i)+posY.get(i));
                 sigmaOffsetR[k].add(sigmaR[k].get(i)+posR.get(i));
             }
+            
+            if(index.length>0){
+                if(i==index[0]){
+                    double x0 = (0.007-covmat.getMeanX())/(Math.sqrt(2.0)*covmat.getSigmaX());
+                    double x1 = (-0.007-covmat.getMeanX())/(Math.sqrt(2.0)*covmat.getSigmaX());
+                    double y0 = (0.007-covmat.getMeanY())/(Math.sqrt(2.0)*covmat.getSigmaY());
+                    double y1 = (-0.007-covmat.getMeanY())/(Math.sqrt(2.0)*covmat.getSigmaY());                   
+                    transmission_offset = 0.25*Math.abs(erf(x0)-erf(x1))*Math.abs(erf(y0)-erf(y1));
 
-        }
+                    x0 = 0.007/(Math.sqrt(2.0)*covmat.getSigmaX());
+                    y0 = 0.007/(Math.sqrt(2.0)*covmat.getSigmaY());
+                    transmission = erf(x0)*erf(y0);
+                }
+            }
+
+        }                        
+        
+    }    
+    
+    private double erf(double x){
+        return Math.signum(x)*Math.sqrt((1-Math.exp(-1.0*x*x)))*(1+0.1749*Math.exp(-1.0*x*x)-0.0481*Math.exp(-2.0*x*x));
     }
+   
+    
 }
 
