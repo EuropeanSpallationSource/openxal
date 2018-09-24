@@ -113,6 +113,7 @@ abstract public class XalFxDocument {
         if ( sourceSetAndValid() ) {
             Logger.getLogger(XalFxDocument.class.getName()).log(Level.FINER, "Saving document using source {0}",source);
             saveDocumentAs( source );
+            sourceString.set( source.toString() );
         }
     }
 
