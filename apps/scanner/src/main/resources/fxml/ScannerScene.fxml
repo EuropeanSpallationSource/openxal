@@ -76,15 +76,15 @@
                            <content>
                               <AnchorPane>
                                  <children>
-                                    <Button layoutX="101.0" layoutY="47.0" mnemonicParsing="false" onAction="#handlePreCalculate" prefHeight="41.0" prefWidth="198.0" text="Pre-calculate" />
-                                    <Text fx:id="textFieldNumMeas" layoutX="100.0" layoutY="155.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" />
+                                    <Button layoutX="136.0" layoutY="47.0" mnemonicParsing="false" onAction="#handlePreCalculate" prefHeight="41.0" prefWidth="198.0" text="Pre-calculate" />
+                                    <Text fx:id="textFieldNumMeas" layoutX="120.0" layoutY="155.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" />
                                     <Text fx:id="textFieldTimeEstimate" layoutX="145.0" layoutY="185.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" />
                                     <Text fx:id="textFieldWarnSave" id="text-warning" layoutX="110.0" layoutY="215.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" />
-                                    <Button fx:id="executeButton" layoutX="105.0" layoutY="269.0" mnemonicParsing="false" onAction="#handleRunExecute" prefHeight="64.0" prefWidth="191.0" text="Execute" />
-                                    <ProgressBar fx:id="runProgressBar" layoutX="24.0" layoutY="345.0" prefHeight="20.0" prefWidth="358.0" progress="0.0" />
-                                    <Button fx:id="pauseButton" layoutX="37.0" layoutY="234.0" mnemonicParsing="false" onAction="#handleRunPause" prefHeight="54.0" prefWidth="109.0" text="Pause" visible="false" />
-                                    <Button fx:id="stopButton" layoutX="289.0" layoutY="234.0" mnemonicParsing="false" onAction="#handleRunStop" prefHeight="54.0" prefWidth="109.0" text="Stop" visible="false" />
-                                    <Button fx:id="restartButton" layoutX="160.0" layoutY="396.0" mnemonicParsing="false" onAction="#handleRunRestart" prefHeight="54.0" prefWidth="109.0" text="Restart" visible="false" />
+                                    <Button fx:id="executeButton" layoutX="150.0" layoutY="269.0" mnemonicParsing="false" onAction="#handleRunExecute" prefHeight="55.0" prefWidth="170.0" text="Execute" />
+                                    <Button fx:id="pauseButton" layoutX="20.0" layoutY="269.0" mnemonicParsing="false" onAction="#handleRunPause" prefHeight="55.0" prefWidth="110.0" text="Pause" visible="false" />
+                                    <Button fx:id="stopButton" layoutX="340.0" layoutY="269.0" mnemonicParsing="false" onAction="#handleRunStop" prefHeight="55.0" prefWidth="110.0" text="Stop" visible="false" />
+                                    <ProgressBar fx:id="runProgressBar" layoutX="56.0" layoutY="345.0" prefHeight="20.0" prefWidth="358.0" progress="0.0" />
+                                    <Button fx:id="restartButton" layoutX="180.0" layoutY="396.0" mnemonicParsing="false" onAction="#handleRunRestart" prefHeight="54.0" prefWidth="110.0" text="Restart" visible="false" />
                                  </children>
                               </AnchorPane>
                            </content>
