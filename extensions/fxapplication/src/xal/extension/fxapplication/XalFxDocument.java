@@ -13,8 +13,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.HostServices;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.WritableImage;
 import javafx.stage.Stage;
+import se.esss.jelog.Attachment;
 import xal.extension.jelog.PostEntryDialog;
 import xal.smf.Accelerator;
 
@@ -120,12 +123,25 @@ abstract public class XalFxDocument {
     /**
     * Method for creating an eLog Post.
     */
-    public void eLogPost(){
+    public void eLogPost(String docType){
         Logger.getLogger(XalFxDocument.class.getName()).log(Level.FINER, "New e-log entry");
         try {
-            WritableImage[] snapshots = new WritableImage[1];
-            snapshots[0] = mainStage.getScene().snapshot(null);
-            PostEntryDialog.post(snapshots, "Studies");
+            if(docType.equals("image")){
+                WritableImage[] snapshots = new WritableImage[1];
+                snapshots[0] = mainStage.getScene().snapshot(null);
+                PostEntryDialog.post(snapshots, "Studies");
+            } else if (docType.equals("file") && sourceSetAndValid()){   
+                Attachment[] dataFile = new Attachment[1];
+                dataFile[0] = new Attachment(new File(source.getPath()));
+                PostEntryDialog.post(dataFile, "Studies");
+            } if (docType.equals("file") && !sourceSetAndValid()){ 
+                Alert alert = new Alert(AlertType.WARNING);
+                alert.setTitle("Error");
+                alert.setHeaderText("No data file specified!");
+                alert.setContentText("Be sure to save a data file from this application \n before posting data to the logbook.");
+
+                alert.showAndWait();
+            }
         } catch (Exception ex) {
             Logger.getLogger(XalFxDocument.class.getName()).log(Level.SEVERE, null, ex);
         }
