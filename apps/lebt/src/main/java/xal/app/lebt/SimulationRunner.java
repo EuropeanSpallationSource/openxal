@@ -5,9 +5,14 @@
  */
 package xal.app.lebt;
 
+import java.io.FileNotFoundException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import xal.extension.jels.smf.impl.ESSMagFieldMap3D;
@@ -30,7 +35,9 @@ import xal.smf.AcceleratorSeqCombo;
 import xal.smf.impl.HDipoleCorr;
 import xal.smf.impl.Solenoid;
 import xal.smf.impl.VDipoleCorr;
+import xal.tools.data.DataAdaptor;
 import xal.tools.math.Complex;
+import xal.tools.xml.XmlDataAdaptor;
 
 /**
  * The class handling running the simulation.
@@ -46,6 +53,7 @@ public class SimulationRunner {
     private final double[] solenoidFields;
     private final double[] correctorVFields;
     private final double[] correctorHFields;
+    private HashMap<Double,Double> vacuumChamber;
     private final double beta_gamma;
     private boolean electrode;
 
@@ -89,12 +97,18 @@ public class SimulationRunner {
         solenoidFields = new double[2];
         correctorVFields = new double[2];
         correctorHFields = new double[2];
+        vacuumChamber = new HashMap<>();
         electrode = false;
         sequence = seq;
         model_sync = modelSync;
         transmission = 1;
         transmission_offset = 1;
         final_pos_simul = "";
+        try {
+            readVacuumChamber(vacuumChamber);
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(SimulationRunner.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         try {
             //get inital parameters from file
@@ -223,6 +237,9 @@ public class SimulationRunner {
         posR = new ArrayList<Double>();
         posPhi = new ArrayList<Double>();
         positions = new ArrayList<Double>();
+        //Initialize transmission
+        transmission_offset = 1.0;
+        transmission = 1.0;
 
         for(int i = 0; i < sigmaR.length;i++){
             sigmaR[i] = new ArrayList<Double>();
@@ -532,9 +549,9 @@ public class SimulationRunner {
         Trajectory trajectory = probeResult.getTrajectory();
 
         ArrayList<EnvelopeProbeState> stateElement = (ArrayList<EnvelopeProbeState>) trajectory.getStatesViaIndexer();
-        CovarianceMatrix covmat;
-        int[] index = trajectory.indicesForElement("END-LEBT");
-
+        CovarianceMatrix covmat;        
+        double aperture=0.0;        
+        
         //retrieve trajectory
         for(int i=0; i<trajectory.numStates(); i++){
             positions.add(stateElement.get(i).getPosition());
@@ -559,27 +576,57 @@ public class SimulationRunner {
                 sigmaOffsetY[k].add(sigmaY[k].get(i)+posY.get(i));
                 sigmaOffsetR[k].add(sigmaR[k].get(i)+posR.get(i));
             }
+                      
+            aperture = getAperture(stateElement.get(i).getPosition());
+            double x0 = (aperture-covmat.getMeanX())/(Math.sqrt(2.0)*covmat.getSigmaX());
+            double x1 = (-aperture-covmat.getMeanX())/(Math.sqrt(2.0)*covmat.getSigmaX());
+            double y0 = (aperture-covmat.getMeanY())/(Math.sqrt(2.0)*covmat.getSigmaY());
+            double y1 = (-aperture-covmat.getMeanY())/(Math.sqrt(2.0)*covmat.getSigmaY());                   
+            transmission_offset = Math.min(transmission_offset,(0.25*Math.abs(erf(x0)-erf(x1))*Math.abs(erf(y0)-erf(y1))));
+
+            x0 = aperture/(Math.sqrt(2.0)*covmat.getSigmaX());
+            y0 = aperture/(Math.sqrt(2.0)*covmat.getSigmaY());
+            transmission = Math.min(transmission,(erf(x0)*erf(y0)));
             
-            if(index.length>0){
-                if(i==index[0]){
-                    double x0 = (0.007-covmat.getMeanX())/(Math.sqrt(2.0)*covmat.getSigmaX());
-                    double x1 = (-0.007-covmat.getMeanX())/(Math.sqrt(2.0)*covmat.getSigmaX());
-                    double y0 = (0.007-covmat.getMeanY())/(Math.sqrt(2.0)*covmat.getSigmaY());
-                    double y1 = (-0.007-covmat.getMeanY())/(Math.sqrt(2.0)*covmat.getSigmaY());                   
-                    transmission_offset = 0.25*Math.abs(erf(x0)-erf(x1))*Math.abs(erf(y0)-erf(y1));
-
-                    x0 = 0.007/(Math.sqrt(2.0)*covmat.getSigmaX());
-                    y0 = 0.007/(Math.sqrt(2.0)*covmat.getSigmaY());
-                    transmission = erf(x0)*erf(y0);
-                }
-            }
-
         }                        
         
     }    
     
     private double erf(double x){
         return Math.signum(x)*Math.sqrt((1-Math.exp(-1.0*x*x)))*(1+0.1749*Math.exp(-1.0*x*x)-0.0481*Math.exp(-2.0*x*x));
+    }
+    
+    private double getAperture(double pos){
+        double posArray = vacuumChamber.keySet().stream().min(Comparator.comparingDouble(val -> Math.abs(val - pos))).orElseThrow(() -> new NoSuchElementException("No value present"));
+        return vacuumChamber.get(posArray);
+    }    
+    
+    /**
+     * Retrieves and displays trajectory plots
+     * @param newRun the simulation
+     */
+    private void readVacuumChamber(HashMap<Double,Double> vacuumChamber) throws FileNotFoundException{
+
+        DataAdaptor readAdp = null;
+        URL file;
+
+        try {
+            file = this.getClass().getResource("/vacuum_chamber/VacuumChamber.xml");
+            readAdp = XmlDataAdaptor.adaptorForUrl(file,false);
+            DataAdaptor blockheader = readAdp.childAdaptor("LEBTboundaries");
+            DataAdaptor blockPoints = blockheader.childAdaptor("points");
+            int num= blockPoints.intValue("numpoints");
+            DataAdaptor blockPosition = blockheader.childAdaptor("position");
+            double[] pos=blockPosition.doubleArray("data");
+            DataAdaptor blockAperture = blockheader.childAdaptor("chamber");
+            double[] aperture=blockAperture.doubleArray("data");
+            for (int i = 0; i < num ; i++) {
+                vacuumChamber.put(pos[i], aperture[i]);
+            }
+        } catch (XmlDataAdaptor.ParseException | XmlDataAdaptor.ResourceNotFoundException ex) {
+            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }
    
     
