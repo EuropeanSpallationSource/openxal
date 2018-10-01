@@ -157,9 +157,15 @@ abstract public class FxApplication extends Application {
         final Menu eLogMenu = new Menu("eLog");
         final MenuItem openLogMenu = new MenuItem("Open");
         openLogMenu.setOnAction(new UrlMenu(DOCUMENT));
-        final MenuItem makePostMenu = new MenuItem("Post");
-        makePostMenu.setOnAction(new ELogMenu(DOCUMENT));
-        eLogMenu.getItems().addAll(openLogMenu, makePostMenu);
+        final MenuItem makePostMenu = new MenuItem("Post Screen Shot");
+        makePostMenu.setOnAction(new ELogMenu(DOCUMENT,"image"));
+        final MenuItem makePostDataMenu = new MenuItem("Post Data");
+        makePostDataMenu.setOnAction(new ELogMenu(DOCUMENT,"file"));
+        if (HAS_DOCUMENTS) {
+            eLogMenu.getItems().addAll(openLogMenu, makePostMenu,makePostDataMenu);
+        } else {
+            eLogMenu.getItems().addAll(openLogMenu, makePostMenu);
+        }    
 
         final Menu helpMenu = new Menu("Help");
         final MenuItem aboutMenu = new MenuItem("About");
@@ -540,15 +546,17 @@ class AddCombo implements EventHandler {
 class ELogMenu implements EventHandler {
 
     protected XalFxDocument document;
+    protected String docType;
 
-    public ELogMenu(XalFxDocument document) {
+    public ELogMenu(XalFxDocument document, String docType) {
         this.document = document;
+        this.docType = docType;
     }
 
     @Override
     public void handle(Event t) {
-        document.eLogPost();
-    }
+        document.eLogPost(docType);
+    }    
 }
 
 class HelpMenu implements EventHandler {
