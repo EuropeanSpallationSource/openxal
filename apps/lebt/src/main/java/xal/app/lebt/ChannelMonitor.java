@@ -64,21 +64,24 @@ class ChannelMonitor implements IEventSinkValue, ConnectionListener {
                 if(chan.channelName().contains("PolR")){
                     Platform.runLater(
                     () -> {
-                        if(record.doubleValue()==1){
+                        if(record.stringValue().equals("0")){
                             ((Label) inputChannels.get(chan)).setText("NEG");
-                            ((Label) inputChannels.get(chan)).setId("negative");             
-                        } else if (record.doubleValue()==0){
+                            ((Label) inputChannels.get(chan)).setStyle("-fx-background-color: linear-gradient(#ff5400, #be1d00);");       
+                            //((Label) inputChannels.get(chan)).setId("negative");             
+                        } else if (record.stringValue().equals("1")){
                             ((Label) inputChannels.get(chan)).setText("POS");
-                            ((Label) inputChannels.get(chan)).setId("positive");              
+                            ((Label) inputChannels.get(chan)).setStyle("-fx-background-color: linear-gradient(#5ee825, #206802);");
+                            //((Label) inputChannels.get(chan)).setId("positive");              
                         } else {
                             ((Label) inputChannels.get(chan)).setText("-");
-                            ((Label) inputChannels.get(chan)).setId("disconected");             
+                            ((Label) inputChannels.get(chan)).setStyle("-fx-background-color: magenta;");
+                            //((Label) inputChannels.get(chan)).setId("disconected");             
                         }                                                    
                     });               
                 } else {
                     Platform.runLater(
                     () -> {
-                        ((Label) inputChannels.get(chan)).setText(String.format("%2.3e",record.doubleValue()));
+                        ((Label) inputChannels.get(chan)).setText(String.format("%.4f",record.doubleValue()));
                         //((Label) inputChannels.get(chan)).setStyle("-fx-background-color: white;");                                         
                         ((Label) inputChannels.get(chan)).setId("connected");
                     });
@@ -102,7 +105,7 @@ class ChannelMonitor implements IEventSinkValue, ConnectionListener {
             } else if (inputChannels.get(chan) instanceof TextField){
                 Platform.runLater(
                 () -> {                    
-                    ((TextField) inputChannels.get(chan)).setText(String.format("%.3f",record.doubleValue()));
+                    ((TextField) inputChannels.get(chan)).setText(String.format("%.4f",record.doubleValue()));
                     //((TextField) inputChannels.get(chan)).setStyle("-fx-background-color: white;");                     
                     ((TextField) inputChannels.get(chan)).setId("connected");
                 });                                                          

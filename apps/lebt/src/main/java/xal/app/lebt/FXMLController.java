@@ -427,12 +427,12 @@ public class FXMLController implements Initializable {
         textField_highVoltage.setTextFormatter(new TextFormatter<Double>(formatter3d));
 
         //LEBT
-        textField_sol1field.setTextFormatter(new TextFormatter<Double>(scientific3d));
-        textField_sol2field.setTextFormatter(new TextFormatter<Double>(scientific3d));
-        textField_CV1field.setTextFormatter(new TextFormatter<Double>(scientific3d));
-        textField_CH1field.setTextFormatter(new TextFormatter<Double>(scientific3d));
-        textField_CV2field.setTextFormatter(new TextFormatter<Double>(scientific3d));
-        textField_CH2field.setTextFormatter(new TextFormatter<Double>(scientific3d));
+        textField_sol1field.setTextFormatter(new TextFormatter<Double>(formatter4d));
+        textField_sol2field.setTextFormatter(new TextFormatter<Double>(formatter4d));
+        textField_CV1field.setTextFormatter(new TextFormatter<Double>(formatter4d));
+        textField_CH1field.setTextFormatter(new TextFormatter<Double>(formatter4d));
+        textField_CV2field.setTextFormatter(new TextFormatter<Double>(formatter4d));
+        textField_CH2field.setTextFormatter(new TextFormatter<Double>(formatter4d));
         textField_irisAperture.setTextFormatter(new TextFormatter<Double>(formatter3d));
         textField_irisX.setTextFormatter(new TextFormatter<Double>(formatter3d));
         textField_irisY.setTextFormatter(new TextFormatter<Double>(formatter3d));
@@ -767,22 +767,38 @@ public class FXMLController implements Initializable {
         
         label_CV1currentRB.textProperty().addListener((obs, oldVal, newVal) ->{
             if(!newVal.equals(oldVal)){
-                label_CV1fieldRB.setText(String.format("%2.3e", 8.5833e-05*Double.parseDouble(label_CV1currentRB.getText())));
+                if(label_CV1pol.getText().equals("POS")){
+                    label_CV1fieldRB.setText(String.format("%2.3e", 8.5833e-05*Double.parseDouble(label_CV1currentRB.getText())));
+                } else if (label_CV1pol.getText().equals("NEG")){
+                    label_CV1fieldRB.setText(String.format("%2.3e", -1*8.5833e-05*Double.parseDouble(label_CV1currentRB.getText())));
+                }   
             }
         });
         label_CV2currentRB.textProperty().addListener((obs, oldVal, newVal) ->{
             if(!newVal.equals(oldVal)){
-                label_CV2fieldRB.setText(String.format("%2.3e", 8.5833e-05*Double.parseDouble(label_CV2currentRB.getText())));
+                if(label_CV2pol.getText().equals("POS")){
+                    label_CV2fieldRB.setText(String.format("%2.3e", 8.5833e-05*Double.parseDouble(label_CV2currentRB.getText())));
+                } else if (label_CV2pol.getText().equals("NEG")){
+                    label_CV2fieldRB.setText(String.format("%2.3e", -1*8.5833e-05*Double.parseDouble(label_CV2currentRB.getText())));
+                }   
             }
         });
         label_CH1currentRB.textProperty().addListener((obs, oldVal, newVal) ->{
             if(!newVal.equals(oldVal)){
-                label_CH1fieldRB.setText(String.format("%2.3e", 7.1667e-05*Double.parseDouble(label_CH1currentRB.getText())));
+                if(label_CH1pol.getText().equals("POS")){
+                    label_CH1fieldRB.setText(String.format("%2.3e", 7.1667e-05*Double.parseDouble(label_CH1currentRB.getText())));
+                } else if (label_CH1pol.getText().equals("NEG")){
+                    label_CH1fieldRB.setText(String.format("%2.3e", -1*7.1667e-05*Double.parseDouble(label_CH1currentRB.getText())));
+                }      
             }
         });
         label_CH2currentRB.textProperty().addListener((obs, oldVal, newVal) ->{
             if(!newVal.equals(oldVal)){
-                label_CH2fieldRB.setText(String.format("%2.3e", 7.1667e-05*Double.parseDouble(label_CH2currentRB.getText())));
+                if(label_CH2pol.getText().equals("POS")){
+                    label_CH2fieldRB.setText(String.format("%2.3e", 7.1667e-05*Double.parseDouble(label_CH2currentRB.getText())));
+                } else if (label_CH2pol.getText().equals("NEG")){
+                    label_CH2fieldRB.setText(String.format("%2.3e", -1*7.1667e-05*Double.parseDouble(label_CH2currentRB.getText())));
+                }    
             }
         });                
     }
@@ -1022,7 +1038,7 @@ public class FXMLController implements Initializable {
                                 double val = Double.parseDouble(textField_CV1field.getText());
                                 if(val<0.09 && val>-0.09){
                                     //CV1.getChannel("fieldSet").putVal(val);
-                                    setCorrector("LEBT-010:BMD-CV-01",val);
+                                    setCorrector("LEBT-010:BMD-CV-01","LEBT-010:PwrC-PSCV-01",val);
                                 } else {
                                     textField_CV1field.setText(Double.toString(CV1.getChannel(VDipoleCorr.FIELD_RB_HANDLE).getValDbl()));
                                 }
@@ -1047,7 +1063,7 @@ public class FXMLController implements Initializable {
                                 double val = Double.parseDouble(textField_CV2field.getText());
                                 if(val<0.09 && val>-0.09){
                                     //CV2.getChannel("fieldSet").putVal(val);
-                                    setCorrector("LEBT-010:BMD-CV-02",val);
+                                    setCorrector("LEBT-010:BMD-CV-02","LEBT-010:PwrC-PSCV-02",val);
                                 } else {
                                     textField_CV2field.setText(Double.toString(CV2.getChannel(VDipoleCorr.FIELD_RB_HANDLE).getValDbl()));
                                 }
@@ -1084,7 +1100,7 @@ public class FXMLController implements Initializable {
                                 double val = Double.parseDouble(textField_CH1field.getText());
                                 if(val<0.12 && val>-0.12){
                                     //CH1.getChannel("fieldSet").putVal(val);
-                                    setCorrector("LEBT-010:BMD-CH-01",val);
+                                    setCorrector("LEBT-010:BMD-CH-01","LEBT-010:PwrC-PSCH-01",val);
                                 } else {
                                     textField_CH1field.setText(Double.toString(CH1.getChannel(HDipoleCorr.FIELD_RB_HANDLE).getValDbl()));
                                 }
@@ -1109,7 +1125,7 @@ public class FXMLController implements Initializable {
                                 double val = Double.parseDouble(textField_CH2field.getText());
                                 if(val<0.12 && val>-0.12){
                                     //CH2.getChannel("fieldSet").putVal(val);
-                                    setCorrector("LEBT-010:BMD-CH-02",val);
+                                    setCorrector("LEBT-010:BMD-CH-02","LEBT-010:PwrC-PSCH-02",val);
                                 } else {
                                     textField_CH2field.setText(Double.toString(CH2.getChannel(HDipoleCorr.FIELD_RB_HANDLE).getValDbl()));
                                 }
@@ -2458,7 +2474,7 @@ public class FXMLController implements Initializable {
         }
     }
     
-    private void setCorrector(String signalCorr, double val){
+    private void setCorrector(String signalCorr, String signalField, double val){
        Task<Void> task;
         task = new Task<Void>() {
 
@@ -2471,38 +2487,40 @@ public class FXMLController implements Initializable {
                 ChannelFactory CHANNEL_FACTORY = ChannelFactory.defaultFactory();
                 try {
                     //Get the current value set in the corrector
-                    valOld = CHANNEL_FACTORY.getChannel(signalCorr+":FldS").getValDbl();
-                    switch (CHANNEL_FACTORY.getChannel(signalCorr+":PolR").getValInt()){
-                        case 0:
+                    valOld = CHANNEL_FACTORY.getChannel(signalField+":FldS").getValDbl();
+                    switch (CHANNEL_FACTORY.getChannel(signalCorr+":PolR").getValString()){
+                        case "Negative":
                             pol = -1;
-                        case 1:
+                        case "Positive":
                             pol = 1;
                     }
                     if(pol*valOld*val >= 0){
                         try {
-                            CHANNEL_FACTORY.getChannel(signalCorr+":FldS").putVal(val);
+                            CHANNEL_FACTORY.getChannel(signalField+":FldS").putVal(val);
                         } catch (PutException ex) {
                             Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     } else {
                          try {
-                            CHANNEL_FACTORY.getChannel(signalCorr+":FldS").putVal(0.0);
+                            CHANNEL_FACTORY.getChannel(signalField+":FldS").putVal(0.0);
                         } catch (PutException ex) {
                             Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                         }
-                        Thread.sleep(2000);
+                        Thread.sleep(4000);
                         try {
-                            if(val>0){
+                            //if(val>0){
+                                // for positive
                                 CHANNEL_FACTORY.getChannel(signalCorr+":PolPosCmd").putVal(1);
-                            } else if (val<0){
-                                CHANNEL_FACTORY.getChannel(signalCorr+":PolNegCmd").putVal(0);
-                            }
+                            //} else if (val<0){
+                                //for negative
+                              //  CHANNEL_FACTORY.getChannel(signalCorr+":PolPosCmd").putVal("0");
+                            //}
                         } catch (PutException ex) {
                             Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                         }
-                        Thread.sleep(2000);
+                        Thread.sleep(4000);
                         try {
-                            CHANNEL_FACTORY.getChannel(signalCorr+":FldS").putVal(val);
+                            CHANNEL_FACTORY.getChannel(signalField+":FldS").putVal(Math.abs(val));
                         } catch (PutException ex) {
                             Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                         }                
