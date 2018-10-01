@@ -59,6 +59,7 @@ import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import xal.ca.BatchConnectionRequest;
 import xal.ca.Channel;
+import xal.ca.ChannelFactory;
 import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.ca.PutException;
@@ -227,12 +228,17 @@ public class FXMLController implements Initializable {
     @FXML private RadioButton rb_CurrentMeasurement2;
     @FXML private Label label_CurrentMeasurement1;
     @FXML private Label label_CurrentMeasurement2;
+    @FXML private AnchorPane mainPane;
+    @FXML private TabPane mainTabPane;
+    @FXML private Label label_transmission;   
     @FXML
-    private AnchorPane mainPane;
+    private Label label_CV1pol;
     @FXML
-    private TabPane mainTabPane;
+    private Label label_CH1pol;
     @FXML
-    private Label label_transmission;
+    private Label label_CV2pol;
+    @FXML
+    private Label label_CH2pol;
 
 
     @Override
@@ -350,6 +356,7 @@ public class FXMLController implements Initializable {
         StringConverter<Double> formatter2d;
         StringConverter<Double> formatter3d;
         StringConverter<Double> formatter4d;
+        StringConverter<Double> scientific3d;
         formatter4d = new StringConverter<Double>(){
             @Override
             public Double fromString(String string)
@@ -376,7 +383,7 @@ public class FXMLController implements Initializable {
             public String toString(Double object)
             {
                if (object == null)
-                  return "0.0000";
+                  return "0.000";
                return String.format("%.3f",object);
             }
         };
@@ -391,10 +398,25 @@ public class FXMLController implements Initializable {
             public String toString(Double object)
             {
                if (object == null)
-                  return "0.0000";
+                  return "0.00";
                return String.format("%.2f",object);
             }
-        };        
+        };
+        scientific3d = new StringConverter<Double>(){
+            @Override
+            public Double fromString(String string)
+            {
+               return Double.parseDouble(string);
+            }
+
+            @Override
+            public String toString(Double object)
+            {
+               if (object == null)
+                  return "0.000";
+               return String.format("%2.3e",object);
+            }
+        };
 
         //Ion Source
         textField_magnetron.setTextFormatter(new TextFormatter<Double>(formatter3d));
@@ -405,12 +427,12 @@ public class FXMLController implements Initializable {
         textField_highVoltage.setTextFormatter(new TextFormatter<Double>(formatter3d));
 
         //LEBT
-        textField_sol1field.setTextFormatter(new TextFormatter<Double>(formatter3d));
-        textField_sol2field.setTextFormatter(new TextFormatter<Double>(formatter3d));
-        textField_CV1field.setTextFormatter(new TextFormatter<Double>(formatter3d));
-        textField_CH1field.setTextFormatter(new TextFormatter<Double>(formatter3d));
-        textField_CV2field.setTextFormatter(new TextFormatter<Double>(formatter3d));
-        textField_CH2field.setTextFormatter(new TextFormatter<Double>(formatter3d));
+        textField_sol1field.setTextFormatter(new TextFormatter<Double>(scientific3d));
+        textField_sol2field.setTextFormatter(new TextFormatter<Double>(scientific3d));
+        textField_CV1field.setTextFormatter(new TextFormatter<Double>(scientific3d));
+        textField_CH1field.setTextFormatter(new TextFormatter<Double>(scientific3d));
+        textField_CV2field.setTextFormatter(new TextFormatter<Double>(scientific3d));
+        textField_CH2field.setTextFormatter(new TextFormatter<Double>(scientific3d));
         textField_irisAperture.setTextFormatter(new TextFormatter<Double>(formatter3d));
         textField_irisX.setTextFormatter(new TextFormatter<Double>(formatter3d));
         textField_irisY.setTextFormatter(new TextFormatter<Double>(formatter3d));
@@ -451,7 +473,7 @@ public class FXMLController implements Initializable {
         setValues = new HashMap<Channel,TextField>();
         
         //Define Channel signals attached to textFields and displayFields
-        setupCHannelSignals();
+        setupChannelSignals();
         setupInitialConditions();
         
         yAxis1.setAutoRanging(true);
@@ -478,7 +500,7 @@ public class FXMLController implements Initializable {
             sigmaOffsetX[i] = new ArrayList<Double>();
             sigmaOffsetY[i] = new ArrayList<Double>();
         }
-
+                
         MainFunctions.mainDocument.getSequenceProperty().addListener((obs, oldVal, newVal) ->{
 
             if(newVal != null && !newVal.matches("ISRC")){
@@ -506,6 +528,11 @@ public class FXMLController implements Initializable {
 
                 comboBox_inputSimul.setItems(options);
                 comboBox_inputSimul.getSelectionModel().select(0);
+                
+                //Initializes TextField 
+                setConnectAndMonitor();
+                initBIElements();   
+                initDisplayFields();
 
                 //assigning initial parameters
                 getParameters();
@@ -520,7 +547,9 @@ public class FXMLController implements Initializable {
                     }                
                 });   
                 
-                mainTabPane.setDisable(false);
+                mainTabPane.setDisable(false);                
+                setTempFldRB();
+                
 
             }
                                                
@@ -539,8 +568,13 @@ public class FXMLController implements Initializable {
                 System.exit(0);
             }
             //Define Channel signals attached to textFields and displayFields
-            setupCHannelSignals();
+            setupChannelSignals();
             setupInitialConditions();
+                            
+            //Initializes TextField 
+            setConnectAndMonitor();
+            initBIElements();   
+            initDisplayFields();    
             mainTabPane.setDisable(true);
 
         });
@@ -586,7 +620,7 @@ public class FXMLController implements Initializable {
                     textField_emitty.setText(String.format("%.3f",getItem().getEMITTY()*1e06));
                 }
             }
-        });
+        });        
 
         //Disable text field in case Model type chages to Design
         MainFunctions.mainDocument.getModel().addListener((ObservableValue<? extends String> obs, String oldVal, String newVal) ->{
@@ -682,16 +716,16 @@ public class FXMLController implements Initializable {
                 UpdateSimulation();
             }
 
-        });
+        });      
 
-        //Initializes TextField       
-        initBIElements();   
-        initDisplayFields();    
-
+        //Lock main Pane before a Sequence is chosen
+        mainTabPane.setDisable(true);                
+        
         //Initializes Plots
         addTrajectorySeriesToPlot();
         addEnvelopeSeriesToPlot();
-        displayPlots();
+        displayPlots();                  
+                
         
         //set the magnets Readback display as change listener for changes -> run Model
         label_sol1fieldRB.textProperty().addListener((obs, oldVal, newVal) ->{
@@ -699,6 +733,7 @@ public class FXMLController implements Initializable {
                 UpdateSimulation();
             }
         });
+        
         label_sol2fieldRB.textProperty().addListener((obs, oldVal, newVal) ->{
             if(!newVal.equals(oldVal)){
                 UpdateSimulation();
@@ -727,10 +762,52 @@ public class FXMLController implements Initializable {
                 
     }
     
+    private void setTempFldRB(){
+        //Connect the Current RB values with the fileds
+        
+        label_CV1currentRB.textProperty().addListener((obs, oldVal, newVal) ->{
+            if(!newVal.equals(oldVal)){
+                label_CV1fieldRB.setText(String.format("%2.3e", 8.5833e-05*Double.parseDouble(label_CV1currentRB.getText())));
+            }
+        });
+        label_CV2currentRB.textProperty().addListener((obs, oldVal, newVal) ->{
+            if(!newVal.equals(oldVal)){
+                label_CV2fieldRB.setText(String.format("%2.3e", 8.5833e-05*Double.parseDouble(label_CV2currentRB.getText())));
+            }
+        });
+        label_CH1currentRB.textProperty().addListener((obs, oldVal, newVal) ->{
+            if(!newVal.equals(oldVal)){
+                label_CH1fieldRB.setText(String.format("%2.3e", 7.1667e-05*Double.parseDouble(label_CH1currentRB.getText())));
+            }
+        });
+        label_CH2currentRB.textProperty().addListener((obs, oldVal, newVal) ->{
+            if(!newVal.equals(oldVal)){
+                label_CH2fieldRB.setText(String.format("%2.3e", 7.1667e-05*Double.parseDouble(label_CH2currentRB.getText())));
+            }
+        });                
+    }
+    
     //------------------------INIT METHODS -------------------------------------
-    private void setupCHannelSignals(){
+    
+    private void setConnectAndMonitor(){
+        
+        //Initializes TextField 
+        monitor.disconnectAndClearAll();        
+        //Creates a batch of channels to request when updating GUI
+        HashMap<Channel,Object> inputChannels = new HashMap<>();    
+        setValues.keySet().forEach(channel -> inputChannels.put(channel,setValues.get(channel)));        
+        
+        //Creates a batch of channels to request when updating GUI
+        displayValues.keySet().forEach(channel -> inputChannels.put(channel,displayValues.get(channel))); 
+        
+        monitor.connectAndMonitor(inputChannels);
+    }
+    
+    
+    private void setupChannelSignals(){
         Accelerator accl = MainFunctions.mainDocument.getAccelerator();
         AcceleratorSeq sequence;
+        ChannelFactory CHANNEL_FACTORY = ChannelFactory.defaultFactory();
 
         //Ion Source
         if(accl.findSequence("ISRC") != null){
@@ -935,7 +1012,8 @@ public class FXMLController implements Initializable {
                 AcceleratorNode CV1 = sequence.getNodesOfType("DCV").get(0);
                 displayValues.put(CV1.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE),label_CV1currentRB);
                 displayValues.put(CV1.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),label_CV1current);
-                displayValues.put(CV1.getChannel(VDipoleCorr.FIELD_RB_HANDLE),label_CV1fieldRB);                
+                //displayValues.put(CV1.getChannel(VDipoleCorr.FIELD_RB_HANDLE),label_CV1fieldRB);                
+                displayValues.put(CHANNEL_FACTORY.getChannel("LEBT-010:BMD-CV-01:PolR"),label_CV1pol);
                 setValues.put(CV1.getChannel(MagnetMainSupply.FIELD_SET_HANDLE),textField_CV1field);
                 textField_CV1field.focusedProperty().addListener((obs, oldVal, newVal) ->{
                     if(!newVal){ 
@@ -943,11 +1021,12 @@ public class FXMLController implements Initializable {
                             try {
                                 double val = Double.parseDouble(textField_CV1field.getText());
                                 if(val<0.09 && val>-0.09){
-                                    CV1.getChannel("fieldSet").putVal(val);
+                                    //CV1.getChannel("fieldSet").putVal(val);
+                                    setCorrector("LEBT-010:BMD-CV-01",val);
                                 } else {
                                     textField_CV1field.setText(Double.toString(CV1.getChannel(VDipoleCorr.FIELD_RB_HANDLE).getValDbl()));
                                 }
-                            } catch (ConnectionException | PutException | GetException ex) {
+                            } catch (ConnectionException | GetException ex) {
                                 Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                             }
                         } else {
@@ -958,7 +1037,8 @@ public class FXMLController implements Initializable {
                 AcceleratorNode CV2 = sequence.getNodesOfType("DCV").get(3);
                 displayValues.put(CV2.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE),label_CV2currentRB);
                 displayValues.put(CV2.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),label_CV2current);
-                displayValues.put(CV2.getChannel(VDipoleCorr.FIELD_RB_HANDLE),label_CV2fieldRB);               
+                //displayValues.put(CV2.getChannel(VDipoleCorr.FIELD_RB_HANDLE),label_CV2fieldRB);               
+                displayValues.put(CHANNEL_FACTORY.getChannel("LEBT-010:BMD-CV-02:PolR"),label_CV2pol);
                 setValues.put(CV2.getChannel(MagnetMainSupply.FIELD_SET_HANDLE),textField_CV2field);
                 textField_CV2field.focusedProperty().addListener((obs, oldVal, newVal) ->{
                     if(!newVal){ 
@@ -966,11 +1046,12 @@ public class FXMLController implements Initializable {
                             try {
                                 double val = Double.parseDouble(textField_CV2field.getText());
                                 if(val<0.09 && val>-0.09){
-                                    CV2.getChannel("fieldSet").putVal(val);
+                                    //CV2.getChannel("fieldSet").putVal(val);
+                                    setCorrector("LEBT-010:BMD-CV-02",val);
                                 } else {
                                     textField_CV2field.setText(Double.toString(CV2.getChannel(VDipoleCorr.FIELD_RB_HANDLE).getValDbl()));
                                 }
-                            } catch (ConnectionException | PutException | GetException ex) {
+                            } catch (ConnectionException | GetException ex) {
                                 Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                             }
                         } else {
@@ -993,7 +1074,8 @@ public class FXMLController implements Initializable {
                 AcceleratorNode CH1 = sequence.getNodesOfType("DCH").get(0);
                 displayValues.put(CH1.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE),label_CH1currentRB);
                 displayValues.put(CH1.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),label_CH1current);
-                displayValues.put(CH1.getChannel(HDipoleCorr.FIELD_RB_HANDLE),label_CH1fieldRB);               
+                //displayValues.put(CH1.getChannel(HDipoleCorr.FIELD_RB_HANDLE),label_CH1fieldRB);               
+                displayValues.put(CHANNEL_FACTORY.getChannel("LEBT-010:BMD-CH-01:PolR"),label_CH1pol);
                 setValues.put(CH1.getChannel(MagnetMainSupply.FIELD_SET_HANDLE),textField_CH1field);
                 textField_CH1field.focusedProperty().addListener((obs, oldVal, newVal) ->{
                     if(!newVal){ 
@@ -1001,11 +1083,12 @@ public class FXMLController implements Initializable {
                             try {
                                 double val = Double.parseDouble(textField_CH1field.getText());
                                 if(val<0.12 && val>-0.12){
-                                    CH1.getChannel("fieldSet").putVal(val);
+                                    //CH1.getChannel("fieldSet").putVal(val);
+                                    setCorrector("LEBT-010:BMD-CH-01",val);
                                 } else {
                                     textField_CH1field.setText(Double.toString(CH1.getChannel(HDipoleCorr.FIELD_RB_HANDLE).getValDbl()));
                                 }
-                            } catch (ConnectionException | PutException | GetException ex) {
+                            } catch (ConnectionException | GetException ex) {
                                 Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                             }
                         } else {
@@ -1016,7 +1099,8 @@ public class FXMLController implements Initializable {
                 AcceleratorNode CH2 = sequence.getNodesOfType("DCH").get(3);
                 displayValues.put(CH2.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE),label_CH2currentRB);
                 displayValues.put(CH2.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),label_CH2current);
-                displayValues.put(CH2.getChannel(HDipoleCorr.FIELD_RB_HANDLE),label_CH2fieldRB);              
+                //displayValues.put(CH2.getChannel(HDipoleCorr.FIELD_RB_HANDLE),label_CH2fieldRB);              
+                displayValues.put(CHANNEL_FACTORY.getChannel("LEBT-010:BMD-CH-02:PolR"),label_CH2pol);
                 setValues.put(CH2.getChannel(MagnetMainSupply.FIELD_SET_HANDLE),textField_CH2field);
                 textField_CH2field.focusedProperty().addListener((obs, oldVal, newVal) ->{
                     if(!newVal){ 
@@ -1024,11 +1108,12 @@ public class FXMLController implements Initializable {
                             try {
                                 double val = Double.parseDouble(textField_CH2field.getText());
                                 if(val<0.12 && val>-0.12){
-                                    CH2.getChannel("fieldSet").putVal(val);
+                                    //CH2.getChannel("fieldSet").putVal(val);
+                                    setCorrector("LEBT-010:BMD-CH-02",val);
                                 } else {
                                     textField_CH2field.setText(Double.toString(CH2.getChannel(HDipoleCorr.FIELD_RB_HANDLE).getValDbl()));
                                 }
-                            } catch (ConnectionException | PutException | GetException ex) {
+                            } catch (ConnectionException | GetException ex) {
                                 Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                             }
                         } else {
@@ -1413,16 +1498,7 @@ public class FXMLController implements Initializable {
     /**
      * Initializes the values in the displayFields and TextFields
      */
-    private void initDisplayFields(){
-                
-        //Creates a batch of channels to request when updating GUI
-        HashMap<Channel,Object> inputChannels = new HashMap<>();    
-        setValues.keySet().forEach(channel -> inputChannels.put(channel,setValues.get(channel)));        
-        
-        //Creates a batch of channels to request when updating GUI
-        displayValues.keySet().forEach(channel -> inputChannels.put(channel,displayValues.get(channel)));                
-        
-        monitor.connectAndMonitor(inputChannels);
+    private void initDisplayFields(){                                                      
         
         setValues.keySet().forEach(channel ->{
             if (setValues.get(channel)!=null){
@@ -1510,6 +1586,19 @@ public class FXMLController implements Initializable {
         });
         request = new BatchConnectionRequest( channels );
         request.submitAndWait(5.0);
+        
+        comboBox_currentFC.selectedProperty().addListener((obs, oldVal, newVal) ->{
+                if(comboBox_currentFC.isSelected()){
+                    RadioButton currentBI = (RadioButton) toggleGroup_currentBI.getSelectedToggle();
+                    String nodeBI = currentBI.getText();
+                    Channel currentMonitor = MainFunctions.mainDocument.getAccelerator().getNode(nodeBI).getChannel(CurrentMonitor.I_AVG_HANDLE);
+                    textField_bc.textProperty().bind(((Label)displayValues.get(currentMonitor)).textProperty());
+                    textField_bc.setDisable(true);
+                } else {
+                    textField_bc.textProperty().unbind();
+                    textField_bc.setDisable(false);
+                }
+            });
 
     }                   
     
@@ -1521,14 +1610,14 @@ public class FXMLController implements Initializable {
     private void updateGUI(){
       
         //Display Current if combo box is selected
-        if (comboBox_currentFC.isSelected()){
+        /**if (comboBox_currentFC.isSelected()){
             RadioButton currentBI = (RadioButton) toggleGroup_currentBI.getSelectedToggle();
             String nodeBI = currentBI.getText();
             if(nodeBI!=null){
                 Channel currentMonitor = MainFunctions.mainDocument.getAccelerator().getNode(nodeBI).getChannel(CurrentMonitor.I_AVG_HANDLE);
                 if (currentMonitor.isConnected()){
                     try {
-                        double val = 1000*MainFunctions.mainDocument.getAccelerator().getNode(nodeBI).getChannel(CurrentMonitor.I_AVG_HANDLE).getValDbl();
+                        double val = MainFunctions.mainDocument.getAccelerator().getNode(nodeBI).getChannel(CurrentMonitor.I_AVG_HANDLE).getValDbl();
                         if(val>0){
                             textField_bc.setText(Double.toString(val));
                             beamCurrent = val;
@@ -1548,7 +1637,7 @@ public class FXMLController implements Initializable {
                 textField_bc.setDisable(false);
             }
 
-        }
+        }**/
 
         //Add NPM data to the chart series
         String sequenceName = MainFunctions.mainDocument.getSequence();
@@ -1933,17 +2022,19 @@ public class FXMLController implements Initializable {
      */
     private void setParameters(){
 
-        double[] initPos = new double[4];
-        double[] TwissX = new double[3];
-        double[] TwissY = new double[3];
-
-        initPos = comboBox_inputSimul.getSelectionModel().getSelectedItem().getInit();
-        TwissX = comboBox_inputSimul.getSelectionModel().getSelectedItem().getTwissX();
-        TwissY = comboBox_inputSimul.getSelectionModel().getSelectedItem().getTwissY();
+        double[] initPos = {0.0,0.0,0.0,0.0};
+        double[] TwissX = {0.0,0.0,0.0};
+        double[] TwissY = {0.0,0.0,0.0};
+        
+        if(comboBox_inputSimul.getSelectionModel().getSelectedItem() != null){
+            initPos = comboBox_inputSimul.getSelectionModel().getSelectedItem().getInit();
+            TwissX = comboBox_inputSimul.getSelectionModel().getSelectedItem().getTwissX();
+            TwissY = comboBox_inputSimul.getSelectionModel().getSelectedItem().getTwissY();
+        } 
 
         try{
             newRun.setInitialBeamParameters(initPos[0],initPos[1],initPos[2],initPos[3]);
-            newRun.setBeamCurrent(beamCurrent);
+            newRun.setBeamCurrent(Double.parseDouble(textField_bc.getText()));
             newRun.setBeamTwissX(TwissX[0],TwissX[1],TwissX[2]);
             newRun.setBeamTwissY(TwissY[0],TwissY[1],TwissY[2]);
             newRun.setInitSimulPos(comboBox_inputSimul.getSelectionModel().getSelectedItem().getName());
@@ -2365,6 +2456,69 @@ public class FXMLController implements Initializable {
             seriesSigmaOffsetY[i].getData().clear();
             seriesSigmaOffsetR[i].getData().clear();
         }
+    }
+    
+    private void setCorrector(String signalCorr, double val){
+       Task<Void> task;
+        task = new Task<Void>() {
+
+            @Override
+            protected Void call() throws Exception {
+        
+        
+                double valOld = 0.0;
+                int pol= 0;
+                ChannelFactory CHANNEL_FACTORY = ChannelFactory.defaultFactory();
+                try {
+                    //Get the current value set in the corrector
+                    valOld = CHANNEL_FACTORY.getChannel(signalCorr+":FldS").getValDbl();
+                    switch (CHANNEL_FACTORY.getChannel(signalCorr+":PolR").getValInt()){
+                        case 0:
+                            pol = -1;
+                        case 1:
+                            pol = 1;
+                    }
+                    if(pol*valOld*val >= 0){
+                        try {
+                            CHANNEL_FACTORY.getChannel(signalCorr+":FldS").putVal(val);
+                        } catch (PutException ex) {
+                            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    } else {
+                         try {
+                            CHANNEL_FACTORY.getChannel(signalCorr+":FldS").putVal(0.0);
+                        } catch (PutException ex) {
+                            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        Thread.sleep(2000);
+                        try {
+                            if(val>0){
+                                CHANNEL_FACTORY.getChannel(signalCorr+":PolPosCmd").putVal(1);
+                            } else if (val<0){
+                                CHANNEL_FACTORY.getChannel(signalCorr+":PolNegCmd").putVal(0);
+                            }
+                        } catch (PutException ex) {
+                            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        Thread.sleep(2000);
+                        try {
+                            CHANNEL_FACTORY.getChannel(signalCorr+":FldS").putVal(val);
+                        } catch (PutException ex) {
+                            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                        }                
+                    }
+                } catch (ConnectionException | GetException ex) {
+                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                } 
+                return null;
+            };    
+
+        };
+       
+        Thread correct = new Thread(task);
+        correct.setDaemon(true); // thread will not prevent application shutdown
+        correct.start();
+
     }
 
     public class Magnet{

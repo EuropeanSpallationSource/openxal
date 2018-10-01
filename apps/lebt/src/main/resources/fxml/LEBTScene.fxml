@@ -46,7 +46,7 @@
       <TextField fx:id="textFieldSigmaScale" layoutX="214.0" layoutY="346.0" onInputMethodTextChanged="#scaleButtonHandler" prefHeight="29.0" prefWidth="50.0" text="1" AnchorPane.bottomAnchor="618.0" AnchorPane.leftAnchor="214.0" />
       <Label layoutX="83.0" layoutY="351.0" text="# sigmas (n) to plot :" AnchorPane.bottomAnchor="625.0" />
       <Label layoutX="397.0" layoutY="14.0" text="Plot coordinate system :" AnchorPane.leftAnchor="397.0" AnchorPane.topAnchor="14.0" />
-      <TabPane fx:id="mainTabPane" disable="true" layoutY="656.0" prefHeight="322.0" prefWidth="1138.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+      <TabPane fx:id="mainTabPane" layoutY="656.0" prefHeight="322.0" prefWidth="1138.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
         <tabs>
             <Tab text="Beam Input Parameters">
               <content>
@@ -165,6 +165,7 @@
                             <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="181.0" minWidth="10.0" prefWidth="90.0" />
                               <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="181.0" minWidth="5.0" prefWidth="5.0" />
                               <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="181.0" minWidth="10.0" prefWidth="90.0" />
+                              <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="181.0" minWidth="10.0" prefWidth="100.0" />
                           </columnConstraints>
                           <rowConstraints>
                             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -176,7 +177,7 @@
                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                           </rowConstraints>
                            <children>
-                              <Label text="Field (T)" GridPane.columnIndex="1" />
+                              <Label text="Field (mT)" GridPane.columnIndex="1" />
                               <Label text="Current (A)" GridPane.columnIndex="5" />
                               <Label text="Solenoid 1 : " GridPane.rowIndex="1" />
                               <TextField fx:id="textField_sol1field" prefHeight="27.0" prefWidth="92.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
@@ -203,13 +204,18 @@
                               <Label fx:id="label_CV2currentRB" prefHeight="27.0" prefWidth="92.0" style="-fx-background-color: ffffff;" GridPane.columnIndex="7" GridPane.rowIndex="5" />
                               <Label fx:id="label_CH2current" prefHeight="27.0" prefWidth="92.0" style="-fx-background-color: ffffff;" GridPane.columnIndex="5" GridPane.rowIndex="6" />
                               <Label fx:id="label_CH2currentRB" prefHeight="27.0" prefWidth="92.0" style="-fx-background-color: ffffff;" GridPane.columnIndex="7" GridPane.rowIndex="6" />
-                              <Label text="Field RB (T)" GridPane.columnIndex="3" />
+                              <Label text="Field RB (mT)" GridPane.columnIndex="3" />
                               <Label fx:id="label_sol1fieldRB" layoutX="290.0" layoutY="72.0" prefHeight="27.0" prefWidth="92.0" style="-fx-background-color: ffffff;" GridPane.columnIndex="3" GridPane.rowIndex="1" />
                               <Label fx:id="label_CV1fieldRB" layoutX="195.0" layoutY="72.0" prefHeight="27.0" prefWidth="92.0" style="-fx-background-color: ffffff;" GridPane.columnIndex="3" GridPane.rowIndex="2" />
                               <Label fx:id="label_CH1fieldRB" layoutX="195.0" layoutY="102.0" prefHeight="27.0" prefWidth="92.0" style="-fx-background-color: ffffff;" GridPane.columnIndex="3" GridPane.rowIndex="3" />
                               <Label fx:id="label_sol2fieldRB" layoutX="195.0" layoutY="132.0" prefHeight="27.0" prefWidth="92.0" style="-fx-background-color: ffffff;" GridPane.columnIndex="3" GridPane.rowIndex="4" />
                               <Label fx:id="label_CV2fieldRB" layoutX="195.0" layoutY="162.0" prefHeight="27.0" prefWidth="92.0" style="-fx-background-color: ffffff;" GridPane.columnIndex="3" GridPane.rowIndex="5" />
                               <Label fx:id="label_CH2fieldRB" layoutX="195.0" layoutY="192.0" prefHeight="27.0" prefWidth="92.0" style="-fx-background-color: ffffff;" GridPane.columnIndex="3" GridPane.rowIndex="6" />
+                              <Label text="Polarity" GridPane.columnIndex="8" />
+                              <Label id="disconected" fx:id="label_CV1pol" stylesheets="@../styles/PolaritySwitch.css" text="-" GridPane.columnIndex="8" GridPane.rowIndex="2" />
+                              <Label id="disconected" fx:id="label_CH1pol" accessibleHelp="polarity" stylesheets="@../styles/PolaritySwitch.css" text="-" GridPane.columnIndex="8" GridPane.rowIndex="3" />
+                              <Label id="disconected" fx:id="label_CV2pol" accessibleHelp="polarity" stylesheets="@../styles/PolaritySwitch.css" text="-" GridPane.columnIndex="8" GridPane.rowIndex="5" />
+                              <Label id="disconected" fx:id="label_CH2pol" accessibleHelp="polarity" stylesheets="@../styles/PolaritySwitch.css" text="-" GridPane.columnIndex="8" GridPane.rowIndex="6" />
                            </children>
                         </GridPane>
                         <Label layoutX="9.0" layoutY="5.0" text="Magnets:" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="10.0">
@@ -217,22 +223,22 @@
                               <Font size="16.0" />
                            </font>
                         </Label>
-                        <Label layoutX="533.0" layoutY="5.0" text="RFQ Reppeler Electrode:" AnchorPane.leftAnchor="530.0" AnchorPane.topAnchor="10.0">
+                        <Label layoutX="533.0" layoutY="5.0" text="RFQ Reppeler Electrode:" AnchorPane.leftAnchor="630.0" AnchorPane.topAnchor="10.0">
                            <font>
                               <Font size="16.0" />
                            </font>
                         </Label>
-                        <Circle fx:id="electrodeStatus" fill="GREEN" layoutX="618.0" layoutY="53.0" radius="8.0" stroke="#9e9c9c" strokeType="INSIDE" AnchorPane.topAnchor="45.0" />
-                        <CheckBox fx:id="checkBox_electrode" contentDisplay="RIGHT" layoutX="536.0" layoutY="44.0" mnemonicParsing="false" selected="true" stylesheets="@../styles/ToggleSwitch.css" text="ON" AnchorPane.leftAnchor="530.0" AnchorPane.topAnchor="44.0" />
-                        <Label layoutX="634.0" layoutY="45.0" text="PS Status" AnchorPane.topAnchor="45.0" />
-                        <TextField fx:id="textField_sccelectrode" layoutX="533.0" layoutY="66.0" prefWidth="65.0" AnchorPane.leftAnchor="530.0" AnchorPane.topAnchor="75.0" />
-                        <Label layoutX="602.0" layoutY="79.0" text="Space charge compensation" AnchorPane.topAnchor="79.0" />
-                        <Label layoutX="533.0" layoutY="150.0" text="Chopper:" AnchorPane.leftAnchor="530.0" AnchorPane.topAnchor="145.0">
+                        <Circle fx:id="electrodeStatus" fill="GREEN" layoutX="618.0" layoutY="53.0" radius="8.0" stroke="#9e9c9c" strokeType="INSIDE" AnchorPane.leftAnchor="710.0" AnchorPane.topAnchor="45.0" />
+                        <CheckBox fx:id="checkBox_electrode" contentDisplay="RIGHT" layoutX="536.0" layoutY="44.0" mnemonicParsing="false" selected="true" stylesheets="@../styles/ToggleSwitch.css" text="ON" AnchorPane.leftAnchor="630.0" AnchorPane.topAnchor="44.0" />
+                        <Label layoutX="634.0" layoutY="45.0" text="PS Status" AnchorPane.leftAnchor="734.0" AnchorPane.topAnchor="45.0" />
+                        <TextField fx:id="textField_sccelectrode" layoutX="533.0" layoutY="66.0" prefWidth="65.0" AnchorPane.leftAnchor="630.0" AnchorPane.topAnchor="75.0" />
+                        <Label layoutX="602.0" layoutY="79.0" text="Space charge compensation" AnchorPane.leftAnchor="702.0" AnchorPane.topAnchor="79.0" />
+                        <Label layoutX="533.0" layoutY="150.0" text="Chopper:" AnchorPane.leftAnchor="630.0" AnchorPane.topAnchor="145.0">
                            <font>
                               <Font size="16.0" />
                            </font>
                         </Label>
-                        <GridPane layoutX="864.0" layoutY="105.0" AnchorPane.leftAnchor="530.0" AnchorPane.topAnchor="170.0">
+                        <GridPane layoutX="864.0" layoutY="105.0" AnchorPane.leftAnchor="630.0" AnchorPane.topAnchor="170.0">
                           <columnConstraints>
                             <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="58.0" />
                               <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="90.0" />
@@ -255,8 +261,8 @@
                               <Label text="RB (ms)" GridPane.columnIndex="3" />
                            </children>
                         </GridPane>
-                        <Circle fx:id="chopperStatus" fill="GREEN" layoutX="618.0" layoutY="156.0" radius="8.0" stroke="#9e9c9c" strokeType="INSIDE" />
-                        <Label layoutX="634.0" layoutY="147.0" text="PS Status" />
+                        <Circle fx:id="chopperStatus" fill="GREEN" layoutX="618.0" layoutY="156.0" radius="8.0" stroke="#9e9c9c" strokeType="INSIDE" AnchorPane.leftAnchor="710.0" AnchorPane.topAnchor="148.0" />
+                        <Label layoutX="634.0" layoutY="147.0" text="PS Status" AnchorPane.leftAnchor="734.0" AnchorPane.topAnchor="147.0" />
                      </children>
                   </AnchorPane>
             </content>
@@ -317,7 +323,7 @@
                         <Label fx:id="label_CurrentMeasurement1" layoutX="20.0" layoutY="129.0" prefHeight="27.0" prefWidth="90.0" style="-fx-background-color: ffffff;" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="141.0" />
                         <Label fx:id="label_CurrentMeasurement2" layoutX="29.0" layoutY="171.0" prefHeight="27.0" prefWidth="90.0" style="-fx-background-color: ffffff;" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="171.0" />
                         <Label fx:id="label_Doppler" layoutX="20.0" layoutY="230.0" prefHeight="27.0" prefWidth="90.0" style="-fx-background-color: ffffff;" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="240.0" />
-                        <Label layoutX="65.0" layoutY="110.0" text="(A)" AnchorPane.leftAnchor="65.0" AnchorPane.topAnchor="120.0" />
+                        <Label layoutX="64.0" layoutY="120.0" text="(mA)" AnchorPane.leftAnchor="64.0" AnchorPane.topAnchor="120.0" />
                         <Label layoutX="10.0" layoutY="199.0" text="Doppler:" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="210.0">
                            <font>
                               <Font size="16.0" />
