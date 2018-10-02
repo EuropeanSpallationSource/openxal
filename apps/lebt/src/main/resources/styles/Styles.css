@@ -7,9 +7,9 @@
 }
 
 #disconected{
-    -fx-background-color: linear-gradient(lightgrey, gray);    
+    -fx-background-color: magenta;    
 }
 
 #connected{
-    -fx-background-color: linear-gradient(lightgrey, gray);    
+    -fx-background-color: white;    
 }

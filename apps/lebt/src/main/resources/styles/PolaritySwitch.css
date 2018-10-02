@@ -50,7 +50,7 @@ and open the template in the editor.
  *                                                                             *
  ******************************************************************************/
 
-.label{    
+.button{    
     -fx-background-color: blue;
     -fx-background-radius: 30;
     -fx-background-insets: 0;

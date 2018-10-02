@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -79,10 +80,7 @@ import xal.smf.AcceleratorNode;
 import xal.smf.AcceleratorSeq;
 import xal.smf.AcceleratorSeqCombo;
 import xal.smf.impl.CurrentMonitor;
-import xal.smf.impl.HDipoleCorr;
-import xal.smf.impl.MagnetMainSupply;
 import xal.smf.impl.MagnetPowerSupply;
-import xal.smf.impl.VDipoleCorr;
 import xal.tools.data.DataAdaptor;
 import xal.tools.math.Complex;
 import xal.tools.xml.XmlDataAdaptor;
@@ -113,6 +111,7 @@ public class FXMLController implements Initializable {
 
     //defining simulation
     private SimulationRunner newRun;
+    private SimpleBooleanProperty runNow;
     private double[][] surroundings;   
 
     //defining data
@@ -177,23 +176,11 @@ public class FXMLController implements Initializable {
     @FXML private TextField textField_H2flow;
     @FXML private Label label_H2flowRB;
     @FXML private TextField textField_highVoltage;
-    @FXML private TextField textField_sol1field;
-    @FXML private Label label_sol1current;
     @FXML private Label label_sol1currentRB;
-    @FXML private TextField textField_sol2field;
-    @FXML private Label label_sol2current;
     @FXML private Label label_sol2currentRB;
-    @FXML private TextField textField_CV1field;
-    @FXML private Label label_CV1current;
     @FXML private Label label_CV1currentRB;
-    @FXML private TextField textField_CH1field;
-    @FXML private Label label_CH1current;
     @FXML private Label label_CH1currentRB;
-    @FXML private TextField textField_CV2field;
-    @FXML private Label label_CV2current;
     @FXML private Label label_CV2currentRB;
-    @FXML private TextField textField_CH2field;
-    @FXML private Label label_CH2current;
     @FXML private Label label_CH2currentRB;
     @FXML private TextField textField_irisAperture;
     @FXML private Label label_irisApertureRB;
@@ -230,15 +217,24 @@ public class FXMLController implements Initializable {
     @FXML private Label label_CurrentMeasurement2;
     @FXML private AnchorPane mainPane;
     @FXML private TabPane mainTabPane;
-    @FXML private Label label_transmission;   
-    @FXML
-    private Label label_CV1pol;
-    @FXML
-    private Label label_CH1pol;
-    @FXML
-    private Label label_CV2pol;
-    @FXML
-    private Label label_CH2pol;
+    @FXML private Label label_transmission;       
+    @FXML private TextField textField_sol1current;
+    @FXML private TextField textField_CV1current;
+    @FXML private TextField textField_CH1current;
+    @FXML private TextField textField_sol2current;
+    @FXML private TextField textField_CV2current;
+    @FXML private TextField textField_CH2current;
+    @FXML private Button button_CV1pol;
+    @FXML private Button button_CH1pol;
+    @FXML private Button button_CV2pol;
+    @FXML private Button button_CH2pol;
+    @FXML private TextField textField_sol1field;
+    @FXML private TextField textField_CV1field;
+    @FXML private TextField textField_CH1field;
+    @FXML private TextField textField_sol2field;
+    @FXML private TextField textField_CV2field;
+    @FXML private TextField textField_CH2field;
+    @FXML private Label label_Field;
 
 
     @Override
@@ -254,7 +250,11 @@ public class FXMLController implements Initializable {
             Logger.getLogger(FXMLController.class.getName()).log(Level.FINER, "Accelerator file has no LEBT and/or Ion Source sequence.");
             System.exit(0);
         }
-                       
+        
+        //Initializes simulations running and false
+        runNow = new SimpleBooleanProperty();
+        runNow.set(false);
+                
         //initializing toggle groups
         coordinateGroup = new ToggleGroup();
         offsetGroup = new ToggleGroup();
@@ -427,6 +427,12 @@ public class FXMLController implements Initializable {
         textField_highVoltage.setTextFormatter(new TextFormatter<Double>(formatter3d));
 
         //LEBT
+        textField_sol1current.setTextFormatter(new TextFormatter<Double>(formatter4d));
+        textField_sol2current.setTextFormatter(new TextFormatter<Double>(formatter4d));
+        textField_CV1current.setTextFormatter(new TextFormatter<Double>(formatter4d));
+        textField_CH1current.setTextFormatter(new TextFormatter<Double>(formatter4d));
+        textField_CV2current.setTextFormatter(new TextFormatter<Double>(formatter4d));
+        textField_CH2current.setTextFormatter(new TextFormatter<Double>(formatter4d));
         textField_sol1field.setTextFormatter(new TextFormatter<Double>(formatter4d));
         textField_sol2field.setTextFormatter(new TextFormatter<Double>(formatter4d));
         textField_CV1field.setTextFormatter(new TextFormatter<Double>(formatter4d));
@@ -464,7 +470,7 @@ public class FXMLController implements Initializable {
                     catch(NumberFormatException e){
                         scale = 1.0;
                     }
-                    textFieldSigmaScale.fireEvent(new RunEvent(true));
+                    textFieldSigmaScale.fireEvent(new RunEvent(runNow.get()));
                 }
             });
 
@@ -527,18 +533,7 @@ public class FXMLController implements Initializable {
                 }
 
                 comboBox_inputSimul.setItems(options);
-                comboBox_inputSimul.getSelectionModel().select(0);
-                
-                //Initializes TextField 
-                setConnectAndMonitor();
-                initBIElements();   
-                initDisplayFields();
-
-                //assigning initial parameters
-                getParameters();
-                
-                //Initializes Plots
-                UpdateSimulation();           
+                comboBox_inputSimul.getSelectionModel().select(0);                                                      
 
                 mainPane.addEventHandler(RunEvent.RUN_SIMULATION, new RunSimulationHandler(){
                     @Override
@@ -547,10 +542,19 @@ public class FXMLController implements Initializable {
                     }                
                 });   
                 
-                mainTabPane.setDisable(false);                
-                setTempFldRB();
+                mainTabPane.setDisable(false);
+                textField_sol1field.setVisible(false);
+                textField_sol2field.setVisible(false);
+                textField_CV1field.setVisible(false);
+                textField_CV2field.setVisible(false);
+                textField_CH1field.setVisible(false);
+                textField_CH2field.setVisible(false);
+                label_Field.setVisible(false);
                 
-
+                //assigning initial parameters and run the fisrt simulation
+                getParameters();
+                runNow.set(true);
+                mainTabPane.fireEvent(new RunEvent(runNow.get()));                  
             }
                                                
         });
@@ -570,12 +574,14 @@ public class FXMLController implements Initializable {
             //Define Channel signals attached to textFields and displayFields
             setupChannelSignals();
             setupInitialConditions();
-                            
+            
+            //stop simulation and disables inputs until sequence is chosen
+            mainTabPane.setDisable(true);
+            runNow.set(false);
             //Initializes TextField 
             setConnectAndMonitor();
             initBIElements();   
-            initDisplayFields();    
-            mainTabPane.setDisable(true);
+            initDisplayFields();                
 
         });
         
@@ -629,13 +635,20 @@ public class FXMLController implements Initializable {
                 setValues.forEach((channel,textField)->{
                     textField.setDisable(true);
                 });
-                textField_sol1field.setDisable(false);
-                textField_sol2field.setDisable(false);
-                textField_CV1field.setDisable(false);
-                textField_CV2field.setDisable(false);
-                textField_CH1field.setDisable(false);
-                textField_CH2field.setDisable(false);
-                //MODEL_SYNC_TIMER.resume();
+                textField_sol1field.setVisible(true);
+                textField_sol2field.setVisible(true);
+                textField_CV1field.setVisible(true);
+                textField_CV2field.setVisible(true);
+                textField_CH1field.setVisible(true);
+                textField_CH2field.setVisible(true);
+                label_Field.setVisible(true);
+                textField_sol1field.setText(label_sol1fieldRB.getText());
+                textField_sol2field.setText(label_sol2fieldRB.getText());
+                textField_CV1field.setText(label_CV1fieldRB.getText());
+                textField_CV2field.setText(label_CV2fieldRB.getText());
+                textField_CH1field.setText(label_CH1fieldRB.getText());
+                textField_CH2field.setText(label_CH2fieldRB.getText());
+                
             } else if (newVal.matches("LIVE")){
                 //set the magnets values as the readbacks from the channels
                 Button applyButton = new Button("Apply Selection");
@@ -691,113 +704,84 @@ public class FXMLController implements Initializable {
                             } catch (ConnectionException | PutException ex) {
                                 Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                             }
-                        } else {
-                            setValues.get(node.getChannel("fieldSet")).setText(mag.getOldField());
                         }
                     });
                     newWindow.close();
                 });
 
-                cancelButton.setOnMouseClicked((MouseEvent event) -> {
-                    textField_sol1field.setText(label_sol1fieldRB.getText());
-                    textField_sol2field.setText(label_sol2fieldRB.getText());
-                    textField_CV1field.setText(label_CV1fieldRB.getText());
-                    textField_CH1field.setText(label_CH1fieldRB.getText());
-                    textField_CV2field.setText(label_CV2fieldRB.getText());
-                    textField_CH2field.setText(label_CH2fieldRB.getText());
+                cancelButton.setOnMouseClicked((MouseEvent event) -> {                                        
                     newWindow.close();
                 });
-
+                
+                newWindow.show();
+                
                 setValues.forEach((channel,textField)->{
                     textField.setDisable(false);
                 });
-
-                newWindow.show();
-                UpdateSimulation();
+                
+                textField_sol1field.setVisible(false);
+                textField_sol2field.setVisible(false);
+                textField_CV1field.setVisible(false);
+                textField_CV2field.setVisible(false);
+                textField_CH1field.setVisible(false);
+                textField_CH2field.setVisible(false);
+                label_Field.setVisible(false);
+                                                
+                mainTabPane.fireEvent(new RunEvent(runNow.get())); 
             }
 
         });      
 
         //Lock main Pane before a Sequence is chosen
-        mainTabPane.setDisable(true);                
+        mainTabPane.setDisable(true);   
+        //Initializes TextField 
+        setConnectAndMonitor();
+        initBIElements();
+        setTempFldRB();
+        //initDisplayFields();
         
         //Initializes Plots
         addTrajectorySeriesToPlot();
         addEnvelopeSeriesToPlot();
-        displayPlots();                  
-                
-        
-        //set the magnets Readback display as change listener for changes -> run Model
-        label_sol1fieldRB.textProperty().addListener((obs, oldVal, newVal) ->{
-            if(!newVal.equals(oldVal)){
-                UpdateSimulation();
-            }
-        });
-        
-        label_sol2fieldRB.textProperty().addListener((obs, oldVal, newVal) ->{
-            if(!newVal.equals(oldVal)){
-                UpdateSimulation();
-            }
-        });
-        label_CV1fieldRB.textProperty().addListener((obs, oldVal, newVal) ->{
-            if(!newVal.equals(oldVal)){
-                UpdateSimulation();
-            }
-        });
-        label_CV2fieldRB.textProperty().addListener((obs, oldVal, newVal) ->{
-            if(!newVal.equals(oldVal)){
-                UpdateSimulation();
-            }
-        });
-        label_CH1fieldRB.textProperty().addListener((obs, oldVal, newVal) ->{
-            if(!newVal.equals(oldVal)){
-                UpdateSimulation();
-            }
-        });
-        label_CH2fieldRB.textProperty().addListener((obs, oldVal, newVal) ->{
-            if(!newVal.equals(oldVal)){
-                UpdateSimulation();
-            }
-        });
+        displayPlots();                                                  
                 
     }
     
-    private void setTempFldRB(){
-        //Connect the Current RB values with the fileds
+    private void setTempFldRB(){       
         
         label_CV1currentRB.textProperty().addListener((obs, oldVal, newVal) ->{
             if(!newVal.equals(oldVal)){
-                if(label_CV1pol.getText().equals("POS")){
-                    label_CV1fieldRB.setText(String.format("%2.3e", 8.5833e-05*Double.parseDouble(label_CV1currentRB.getText())));
-                } else if (label_CV1pol.getText().equals("NEG")){
-                    label_CV1fieldRB.setText(String.format("%2.3e", -1*8.5833e-05*Double.parseDouble(label_CV1currentRB.getText())));
+                if(button_CV1pol.getText().equals("POS")){
+                    label_CV1fieldRB.setText(String.format("%.4f", 8.5833e-05*Double.parseDouble(label_CV1currentRB.getText())));
+                } else if (button_CV1pol.getText().equals("NEG")){
+                    label_CV1fieldRB.setText(String.format("%.4f", -1*8.5833e-05*Double.parseDouble(label_CV1currentRB.getText())));
                 }   
             }
         });
         label_CV2currentRB.textProperty().addListener((obs, oldVal, newVal) ->{
             if(!newVal.equals(oldVal)){
-                if(label_CV2pol.getText().equals("POS")){
-                    label_CV2fieldRB.setText(String.format("%2.3e", 8.5833e-05*Double.parseDouble(label_CV2currentRB.getText())));
-                } else if (label_CV2pol.getText().equals("NEG")){
-                    label_CV2fieldRB.setText(String.format("%2.3e", -1*8.5833e-05*Double.parseDouble(label_CV2currentRB.getText())));
+                if(button_CV2pol.getText().equals("POS")){
+                    label_CV2fieldRB.setText(String.format("%.4f", 8.5833e-05*Double.parseDouble(label_CV2currentRB.getText())));
+                } else if (button_CV2pol.getText().equals("NEG")){
+                    label_CV2fieldRB.setText(String.format("%.4f", -1*8.5833e-05*Double.parseDouble(label_CV2currentRB.getText())));
                 }   
             }
         });
         label_CH1currentRB.textProperty().addListener((obs, oldVal, newVal) ->{
             if(!newVal.equals(oldVal)){
-                if(label_CH1pol.getText().equals("POS")){
-                    label_CH1fieldRB.setText(String.format("%2.3e", 7.1667e-05*Double.parseDouble(label_CH1currentRB.getText())));
-                } else if (label_CH1pol.getText().equals("NEG")){
-                    label_CH1fieldRB.setText(String.format("%2.3e", -1*7.1667e-05*Double.parseDouble(label_CH1currentRB.getText())));
+                if(button_CH1pol.getText().equals("POS")){
+                    label_CH1fieldRB.setText(String.format("%.4f", 7.1667e-05*Double.parseDouble(label_CH1currentRB.getText())));
+                } else if (button_CH1pol.getText().equals("NEG")){
+                    label_CH1fieldRB.setText(String.format("%.4f", -1*7.1667e-05*Double.parseDouble(label_CH1currentRB.getText())));
                 }      
             }
         });
         label_CH2currentRB.textProperty().addListener((obs, oldVal, newVal) ->{
             if(!newVal.equals(oldVal)){
-                if(label_CH2pol.getText().equals("POS")){
-                    label_CH2fieldRB.setText(String.format("%2.3e", 7.1667e-05*Double.parseDouble(label_CH2currentRB.getText())));
-                } else if (label_CH2pol.getText().equals("NEG")){
-                    label_CH2fieldRB.setText(String.format("%2.3e", -1*7.1667e-05*Double.parseDouble(label_CH2currentRB.getText())));
+                if(button_CH2pol.getText().equals("POS")){
+                    label_CH2fieldRB.setText(String.format("%.4f", 7.1667e-05*Double.parseDouble(label_CH2currentRB.getText())));
+                } else if (button_CH2pol.getText().equals("NEG")){
+                    label_CH2fieldRB.setText(String.format("%.4f", -1*7.1667e-05*Double.parseDouble(label_CH2currentRB.getText())));
                 }    
             }
         });                
@@ -970,182 +954,243 @@ public class FXMLController implements Initializable {
                 AcceleratorNode Solenoid1 = sequence.getNodeWithId("LEBT-010:BMD-Sol-01");
                 displayValues.put(Solenoid1.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE),label_sol1currentRB);
                 displayValues.put(Solenoid1.getChannel("fieldRB"),label_sol1fieldRB);                              
-                displayValues.put(Solenoid1.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),label_sol1current);                 
-                setValues.put(Solenoid1.getChannel(MagnetMainSupply.FIELD_SET_HANDLE),textField_sol1field);
-                textField_sol1field.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                //displayValues.put(Solenoid1.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),label_sol1current);                 
+                setValues.put(Solenoid1.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),textField_sol1current);
+                textField_sol1current.focusedProperty().addListener((obs, oldVal, newVal) ->{
                     if(!newVal){
                         if(MainFunctions.mainDocument.getModel().get().matches("LIVE")){
                             try {
-                                double val = Double.parseDouble(textField_sol1field.getText());
+                                double val = Double.parseDouble(textField_sol1current.getText());
                                 if(val>=0 && val<450){
-                                    Solenoid1.getChannel("fieldSet").putVal(val);                                
+                                    Solenoid1.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE).putVal(val);                                
                                 } else {
-                                    textField_sol1field.setText(Double.toString(Solenoid1.getChannel("fieldRB").getValDbl()));
+                                    textField_sol1current.setText(Double.toString(Solenoid1.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE).getValDbl()));
                                 }
                             } catch (ConnectionException | PutException | GetException ex) {
                                 Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                             }
                         } else {
-                            textField_sol1field.fireEvent(new RunEvent(true));
+                            textField_sol1current.fireEvent(new RunEvent(runNow.get()));
                         }
                     }
                 });
+                textField_sol1field.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                    if(!newVal){
+                        textField_sol1field.fireEvent(new RunEvent(runNow.get()));
+                    }
+                });
+                //set the magnets Readback display as change listener for changes -> run Model
+                label_sol1fieldRB.textProperty().addListener((obs, oldVal, newVal) ->{
+                    if(!newVal.equals(oldVal)){
+                        label_sol1fieldRB.fireEvent(new RunEvent(runNow.get()));
+                    }
+                });                
+                
                 AcceleratorNode  Solenoid2 = sequence.getNodeWithId("LEBT-010:BMD-Sol-02");
-                displayValues.put(Solenoid2.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE),label_sol2currentRB);
-                displayValues.put(Solenoid2.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),label_sol2current);
+                displayValues.put(Solenoid2.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE),label_sol2currentRB);                
                 displayValues.put(Solenoid2.getChannel("fieldRB"),label_sol2fieldRB);               
-                setValues.put(Solenoid2.getChannel(MagnetMainSupply.FIELD_SET_HANDLE),textField_sol2field);
-                textField_sol2field.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                //displayValues.put(Solenoid2.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),label_sol2current);
+                setValues.put(Solenoid2.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),textField_sol2current);
+                textField_sol2current.focusedProperty().addListener((obs, oldVal, newVal) ->{
                     if(!newVal){ 
                         if(MainFunctions.mainDocument.getModel().get().matches("LIVE")){
                             try {
-                                double val = Double.parseDouble(textField_sol2field.getText());
+                                double val = Double.parseDouble(textField_sol2current.getText());
                                 if(val>=0 && val<450){
-                                    Solenoid2.getChannel("fieldSet").putVal(val);
+                                    Solenoid2.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE).putVal(val);
                                 } else {
-                                    textField_sol2field.setText(Double.toString(Solenoid2.getChannel("fieldRB").getValDbl()));
+                                    textField_sol2current.setText(Double.toString(Solenoid2.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE).getValDbl()));
                                 }
                             } catch (ConnectionException | PutException | GetException ex) {
                                 Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                             }
                         } else {
-                            textField_sol2field.fireEvent(new RunEvent(true));
+                            textField_sol2field.fireEvent(new RunEvent(runNow.get()));
                         }
                     }
                 });
+                textField_sol2field.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                    if(!newVal){
+                        textField_sol2field.fireEvent(new RunEvent(runNow.get()));
+                    }
+                });
+                label_sol2fieldRB.textProperty().addListener((obs, oldVal, newVal) ->{
+                    if(!newVal.equals(oldVal)){
+                        label_sol2fieldRB.fireEvent(new RunEvent(runNow.get()));
+                    }
+                });
+        
             } else {                
                 label_sol1currentRB.setDisable(true);
-                label_sol1fieldRB.setDisable(true);
-                label_sol1current.setDisable(true);
-                textField_sol1field.setDisable(true);
+                label_sol1fieldRB.setDisable(true);                
+                textField_sol1current.setDisable(true);
                 label_sol2currentRB.setDisable(true);
                 label_sol2fieldRB.setDisable(true);
-                label_sol2current.setDisable(true);
-                textField_sol2field.setDisable(true);
+                textField_sol2current.setDisable(true);
             }    
             
             if(sequence.getNodesOfType("DCV").size()>3){
                 AcceleratorNode CV1 = sequence.getNodesOfType("DCV").get(0);
                 displayValues.put(CV1.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE),label_CV1currentRB);
-                displayValues.put(CV1.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),label_CV1current);
+                //displayValues.put(CV1.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),label_CV1current);
                 //displayValues.put(CV1.getChannel(VDipoleCorr.FIELD_RB_HANDLE),label_CV1fieldRB);                
-                displayValues.put(CHANNEL_FACTORY.getChannel("LEBT-010:BMD-CV-01:PolR"),label_CV1pol);
-                setValues.put(CV1.getChannel(MagnetMainSupply.FIELD_SET_HANDLE),textField_CV1field);
-                textField_CV1field.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                displayValues.put(CHANNEL_FACTORY.getChannel("LEBT-010:BMD-CV-01:PolR"),button_CV1pol);
+                setValues.put(CV1.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),textField_CV1current);
+                textField_CV1current.focusedProperty().addListener((obs, oldVal, newVal) ->{
                     if(!newVal){ 
                         if(MainFunctions.mainDocument.getModel().get().matches("LIVE")){
                             try {
-                                double val = Double.parseDouble(textField_CV1field.getText());
-                                if(val<0.09 && val>-0.09){
-                                    //CV1.getChannel("fieldSet").putVal(val);
-                                    setCorrector("LEBT-010:BMD-CV-01","LEBT-010:PwrC-PSCV-01",val);
+                                double val = Double.parseDouble(textField_CV1current.getText());
+                                if(val<120 && val>0){
+                                    CV1.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE).putVal(val);                                    
                                 } else {
-                                    textField_CV1field.setText(Double.toString(CV1.getChannel(VDipoleCorr.FIELD_RB_HANDLE).getValDbl()));
+                                    textField_CV1current.setText(Double.toString(CV1.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE).getValDbl()));
                                 }
-                            } catch (ConnectionException | GetException ex) {
+                            } catch (ConnectionException | GetException | PutException ex) {
                                 Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                             }
                         } else {
-                            textField_CV1field.fireEvent(new RunEvent(true));
+                            textField_CV1current.fireEvent(new RunEvent(runNow.get()));
                         }
                     }
                 });
+                textField_CV1field.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                    if(!newVal){
+                        textField_CV1field.fireEvent(new RunEvent(runNow.get()));
+                    }
+                });
+                label_CV1fieldRB.textProperty().addListener((obs, oldVal, newVal) ->{
+                    if(!newVal.equals(oldVal)){
+                        label_CV1fieldRB.fireEvent(new RunEvent(runNow.get()));
+                    }
+                });
+        
+                
+                
                 AcceleratorNode CV2 = sequence.getNodesOfType("DCV").get(3);
                 displayValues.put(CV2.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE),label_CV2currentRB);
-                displayValues.put(CV2.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),label_CV2current);
+                //displayValues.put(CV2.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),label_CV2current);
                 //displayValues.put(CV2.getChannel(VDipoleCorr.FIELD_RB_HANDLE),label_CV2fieldRB);               
-                displayValues.put(CHANNEL_FACTORY.getChannel("LEBT-010:BMD-CV-02:PolR"),label_CV2pol);
-                setValues.put(CV2.getChannel(MagnetMainSupply.FIELD_SET_HANDLE),textField_CV2field);
-                textField_CV2field.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                displayValues.put(CHANNEL_FACTORY.getChannel("LEBT-010:BMD-CV-02:PolR"),button_CV2pol);
+                setValues.put(CV2.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),textField_CV2current);
+                textField_CV2current.focusedProperty().addListener((obs, oldVal, newVal) ->{
                     if(!newVal){ 
                         if(MainFunctions.mainDocument.getModel().get().matches("LIVE")){
                             try {
-                                double val = Double.parseDouble(textField_CV2field.getText());
-                                if(val<0.09 && val>-0.09){
-                                    //CV2.getChannel("fieldSet").putVal(val);
-                                    setCorrector("LEBT-010:BMD-CV-02","LEBT-010:PwrC-PSCV-02",val);
+                                double val = Double.parseDouble(textField_CV2current.getText());
+                                if(val<120 && val>0){
+                                    CV2.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE).putVal(val);                                    
                                 } else {
-                                    textField_CV2field.setText(Double.toString(CV2.getChannel(VDipoleCorr.FIELD_RB_HANDLE).getValDbl()));
+                                    textField_CV2current.setText(Double.toString(CV2.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE).getValDbl()));
                                 }
-                            } catch (ConnectionException | GetException ex) {
+                            } catch (ConnectionException | GetException | PutException ex) {
                                 Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                             }
                         } else {
-                            textField_CV2field.fireEvent(new RunEvent(true));
+                            textField_CV2current.fireEvent(new RunEvent(runNow.get()));
                         }
                     }
                 });
+                textField_CV2field.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                    if(!newVal){
+                        textField_CV2field.fireEvent(new RunEvent(runNow.get()));
+                    }
+                });
+                label_CV2fieldRB.textProperty().addListener((obs, oldVal, newVal) ->{
+                    if(!newVal.equals(oldVal)){
+                        label_CV2fieldRB.fireEvent(new RunEvent(runNow.get()));
+                    }
+                });
+        
+                
             } else {                
                 label_CV1currentRB.setDisable(true);
-                label_CV1current.setDisable(true);
                 label_CV1fieldRB.setDisable(true);
-                textField_CV1field.setDisable(true);
+                textField_CV1current.setDisable(true);
                 label_CV2currentRB.setDisable(true);
-                label_CV2current.setDisable(true);
                 label_CV2fieldRB.setDisable(true);
-                textField_CV2field.setDisable(true);
+                textField_CV2current.setDisable(true);
             }    
             
             if(sequence.getNodesOfType("DCH").size()>3){
                 AcceleratorNode CH1 = sequence.getNodesOfType("DCH").get(0);
                 displayValues.put(CH1.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE),label_CH1currentRB);
-                displayValues.put(CH1.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),label_CH1current);
+                //displayValues.put(CH1.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),label_CH1current);
                 //displayValues.put(CH1.getChannel(HDipoleCorr.FIELD_RB_HANDLE),label_CH1fieldRB);               
-                displayValues.put(CHANNEL_FACTORY.getChannel("LEBT-010:BMD-CH-01:PolR"),label_CH1pol);
-                setValues.put(CH1.getChannel(MagnetMainSupply.FIELD_SET_HANDLE),textField_CH1field);
-                textField_CH1field.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                displayValues.put(CHANNEL_FACTORY.getChannel("LEBT-010:BMD-CH-01:PolR"),button_CH1pol);
+                setValues.put(CH1.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),textField_CH1current);
+                textField_CH1current.focusedProperty().addListener((obs, oldVal, newVal) ->{
                     if(!newVal){ 
                         if(MainFunctions.mainDocument.getModel().get().matches("LIVE")){
                             try {
-                                double val = Double.parseDouble(textField_CH1field.getText());
-                                if(val<0.12 && val>-0.12){
-                                    //CH1.getChannel("fieldSet").putVal(val);
-                                    setCorrector("LEBT-010:BMD-CH-01","LEBT-010:PwrC-PSCH-01",val);
+                                double val = Double.parseDouble(textField_CH1current.getText());
+                                if(val<120 && val>0){
+                                    CH1.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE).putVal(val);                                    
                                 } else {
-                                    textField_CH1field.setText(Double.toString(CH1.getChannel(HDipoleCorr.FIELD_RB_HANDLE).getValDbl()));
+                                    textField_CH1current.setText(Double.toString(CH1.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE).getValDbl()));
                                 }
-                            } catch (ConnectionException | GetException ex) {
+                            } catch (ConnectionException | GetException | PutException ex) {
                                 Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                             }
                         } else {
-                            textField_CH1field.fireEvent(new RunEvent(true));
+                            textField_CH1current.fireEvent(new RunEvent(runNow.get()));
                         }
                     }
                 });
+                textField_CH1field.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                    if(!newVal){
+                        textField_CH1field.fireEvent(new RunEvent(runNow.get()));
+                    }
+                });
+                label_CH1fieldRB.textProperty().addListener((obs, oldVal, newVal) ->{
+                    if(!newVal.equals(oldVal)){
+                        label_CH1fieldRB.fireEvent(new RunEvent(runNow.get()));
+                    }
+                });
+        
+                
                 AcceleratorNode CH2 = sequence.getNodesOfType("DCH").get(3);
                 displayValues.put(CH2.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE),label_CH2currentRB);
-                displayValues.put(CH2.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),label_CH2current);
+                //displayValues.put(CH2.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),label_CH2current);
                 //displayValues.put(CH2.getChannel(HDipoleCorr.FIELD_RB_HANDLE),label_CH2fieldRB);              
-                displayValues.put(CHANNEL_FACTORY.getChannel("LEBT-010:BMD-CH-02:PolR"),label_CH2pol);
-                setValues.put(CH2.getChannel(MagnetMainSupply.FIELD_SET_HANDLE),textField_CH2field);
+                displayValues.put(CHANNEL_FACTORY.getChannel("LEBT-010:BMD-CH-02:PolR"),button_CH2pol);
+                setValues.put(CH2.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),textField_CH2current);
                 textField_CH2field.focusedProperty().addListener((obs, oldVal, newVal) ->{
                     if(!newVal){ 
                         if(MainFunctions.mainDocument.getModel().get().matches("LIVE")){
                             try {
-                                double val = Double.parseDouble(textField_CH2field.getText());
-                                if(val<0.12 && val>-0.12){
-                                    //CH2.getChannel("fieldSet").putVal(val);
-                                    setCorrector("LEBT-010:BMD-CH-02","LEBT-010:PwrC-PSCH-02",val);
+                                double val = Double.parseDouble(textField_CH2current.getText());
+                                if(val<120 && val>0){
+                                    CH2.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE).putVal(val);                                    
                                 } else {
-                                    textField_CH2field.setText(Double.toString(CH2.getChannel(HDipoleCorr.FIELD_RB_HANDLE).getValDbl()));
+                                    textField_CH2current.setText(Double.toString(CH2.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE).getValDbl()));
                                 }
-                            } catch (ConnectionException | GetException ex) {
+                            } catch (ConnectionException | GetException | PutException ex) {
                                 Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                             }
                         } else {
-                            textField_CH2field.fireEvent(new RunEvent(true));
+                            textField_CH2current.fireEvent(new RunEvent(runNow.get()));
                         }
                     }
                 });
+                textField_CH2field.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                    if(!newVal){
+                        textField_CH2field.fireEvent(new RunEvent(runNow.get()));
+                    }
+                });
+                label_CH2fieldRB.textProperty().addListener((obs, oldVal, newVal) ->{
+                    if(!newVal.equals(oldVal)){
+                        label_CH2fieldRB.fireEvent(new RunEvent(runNow.get()));
+                    }
+                });
+                
             } else {                
                 label_CH1currentRB.setDisable(true);
-                label_CH1current.setDisable(true);
                 label_CH1fieldRB.setDisable(true);
-                textField_CH1field.setDisable(true);
+                textField_CH1current.setDisable(true);
                 label_CH2currentRB.setDisable(true);
-                label_CH2current.setDisable(true);
                 label_CH2fieldRB.setDisable(true);
-                textField_CH2field.setDisable(true);
+                textField_CH2current.setDisable(true);
             }    
 
             if(sequence.getNodesOfType("IRIS").size()>0){
@@ -1294,7 +1339,7 @@ public class FXMLController implements Initializable {
                     textField_sccelectrode.setDisable(true);
                     textField_sccelectrode.setText(Double.toString(spaceChargeComp));
                 }
-                checkBox_electrode.fireEvent(new RunEvent(true));
+                checkBox_electrode.fireEvent(new RunEvent(runNow.get()));
             });
             
             if(sequence.getNodesOfType("DPL").size()>0){
@@ -1337,7 +1382,7 @@ public class FXMLController implements Initializable {
                     } catch(NumberFormatException ex) {
                         textField_x.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getX()));
                     }
-                    textField_x.fireEvent(new RunEvent(true));
+                    textField_x.fireEvent(new RunEvent(runNow.get()));
                 }
             });
 
@@ -1348,7 +1393,7 @@ public class FXMLController implements Initializable {
                     } catch(NumberFormatException ex) {
                         textField_xp.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getXP()));
                     }
-                    textField_xp.fireEvent(new RunEvent(true));
+                    textField_xp.fireEvent(new RunEvent(runNow.get()));
                 }
             });
 
@@ -1359,7 +1404,7 @@ public class FXMLController implements Initializable {
                     } catch(NumberFormatException ex) {
                         textField_y.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getY()));
                     }
-                    textField_y.fireEvent(new RunEvent(true));
+                    textField_y.fireEvent(new RunEvent(runNow.get()));
                 }
             });
 
@@ -1370,7 +1415,7 @@ public class FXMLController implements Initializable {
                     } catch(NumberFormatException ex) {
                         textField_yp.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getYP()));
                     }
-                    textField_yp.fireEvent(new RunEvent(true));
+                    textField_yp.fireEvent(new RunEvent(runNow.get()));
                 }
             });
 
@@ -1386,7 +1431,7 @@ public class FXMLController implements Initializable {
                     } catch(NumberFormatException ex) {
                         textField_betax.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getBETAX()));
                     }
-                    textField_betax.fireEvent(new RunEvent(true));
+                    textField_betax.fireEvent(new RunEvent(runNow.get()));
                 }
             });
 
@@ -1398,7 +1443,7 @@ public class FXMLController implements Initializable {
                     } catch(NumberFormatException ex) {
                         textField_alphax.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getALPHAX()));
                     }
-                    textField_alphax.fireEvent(new RunEvent(true));
+                    textField_alphax.fireEvent(new RunEvent(runNow.get()));
                 }
             });
 
@@ -1414,7 +1459,7 @@ public class FXMLController implements Initializable {
                     } catch(NumberFormatException ex) {
                         textField_emittx.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getEMITTX()*1e6));
                     }
-                    textField_emittx.fireEvent(new RunEvent(true));
+                    textField_emittx.fireEvent(new RunEvent(runNow.get()));
                 }
             });
 
@@ -1430,7 +1475,7 @@ public class FXMLController implements Initializable {
                     } catch(NumberFormatException ex) {
                         textField_betay.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getBETAY()));
                     }
-                    textField_betay.fireEvent(new RunEvent(true));
+                    textField_betay.fireEvent(new RunEvent(runNow.get()));
                 }
             });
 
@@ -1442,7 +1487,7 @@ public class FXMLController implements Initializable {
                     } catch(NumberFormatException ex) {
                         textField_alphay.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getALPHAY()));
                     }
-                    textField_alphax.fireEvent(new RunEvent(true));
+                    textField_alphax.fireEvent(new RunEvent(runNow.get()));
                 }
             });
 
@@ -1458,7 +1503,7 @@ public class FXMLController implements Initializable {
                     } catch(NumberFormatException ex) {
                         textField_emitty.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getEMITTY()*1e6));
                     }
-                    textField_emitty.fireEvent(new RunEvent(true));
+                    textField_emitty.fireEvent(new RunEvent(runNow.get()));
                 }
             });
 
@@ -1474,7 +1519,7 @@ public class FXMLController implements Initializable {
                     } catch(NumberFormatException ex) {
                         textField_bc.setText(Double.toString(beamCurrent));
                     }
-                    textField_bc.fireEvent(new RunEvent(true));
+                    textField_bc.fireEvent(new RunEvent(runNow.get()));
                 }
             });
 
@@ -1490,7 +1535,7 @@ public class FXMLController implements Initializable {
                     } catch(NumberFormatException ex) {
                         textField_scc.setText(Double.toString(spaceChargeComp));
                     }
-                    textField_scc.fireEvent(new RunEvent(true));
+                    textField_scc.fireEvent(new RunEvent(runNow.get()));
                 }
             });
 
@@ -1506,7 +1551,7 @@ public class FXMLController implements Initializable {
                     } catch(NumberFormatException ex) {
                         textField_sccelectrode.setText(Double.toString(spaceChargeCompElectrode));
                     }
-                    textField_sccelectrode.fireEvent(new RunEvent(true));
+                    textField_sccelectrode.fireEvent(new RunEvent(runNow.get()));
                 }
             });
     }
@@ -1625,36 +1670,6 @@ public class FXMLController implements Initializable {
      */
     private void updateGUI(){
       
-        //Display Current if combo box is selected
-        /**if (comboBox_currentFC.isSelected()){
-            RadioButton currentBI = (RadioButton) toggleGroup_currentBI.getSelectedToggle();
-            String nodeBI = currentBI.getText();
-            if(nodeBI!=null){
-                Channel currentMonitor = MainFunctions.mainDocument.getAccelerator().getNode(nodeBI).getChannel(CurrentMonitor.I_AVG_HANDLE);
-                if (currentMonitor.isConnected()){
-                    try {
-                        double val = MainFunctions.mainDocument.getAccelerator().getNode(nodeBI).getChannel(CurrentMonitor.I_AVG_HANDLE).getValDbl();
-                        if(val>0){
-                            textField_bc.setText(Double.toString(val));
-                            beamCurrent = val;
-                        } else {
-                            textField_bc.setText(Double.toString(beamCurrent));
-                            comboBox_currentFC.setSelected(false);
-                        }
-                    } catch (ConnectionException | GetException ex) {
-                        Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                } else {
-                    comboBox_currentFC.setSelected(false);
-                    textField_bc.setDisable(false);
-                }
-            } else {
-                comboBox_currentFC.setSelected(false);
-                textField_bc.setDisable(false);
-            }
-
-        }**/
-
         //Add NPM data to the chart series
         String sequenceName = MainFunctions.mainDocument.getSequence();
         String Sequence = MainFunctions.mainDocument.getAccelerator().getSequences().toString();
@@ -2473,72 +2488,27 @@ public class FXMLController implements Initializable {
             seriesSigmaOffsetR[i].getData().clear();
         }
     }
-    
-    private void setCorrector(String signalCorr, String signalField, double val){
-       Task<Void> task;
-        task = new Task<Void>() {
 
-            @Override
-            protected Void call() throws Exception {
+    @FXML
+    private void handlePolarityChange(ActionEvent event) {
         
+        ChannelFactory CHANNEL_FACTORY = ChannelFactory.defaultFactory();
         
-                double valOld = 0.0;
-                int pol= 0;
-                ChannelFactory CHANNEL_FACTORY = ChannelFactory.defaultFactory();
+        displayValues.forEach((chan, obj)->{
+            if(Objects.equals(obj, event.getSource())){
+                Channel channel = chan; 
+                String[] channelName = channel.channelName().split(":");
+                String channelPolName = channelName[0]+":"+channelName[1]+":PolPosCmd";        
                 try {
-                    //Get the current value set in the corrector
-                    valOld = CHANNEL_FACTORY.getChannel(signalField+":FldS").getValDbl();
-                    switch (CHANNEL_FACTORY.getChannel(signalCorr+":PolR").getValString()){
-                        case "Negative":
-                            pol = -1;
-                        case "Positive":
-                            pol = 1;
-                    }
-                    if(pol*valOld*val >= 0){
-                        try {
-                            CHANNEL_FACTORY.getChannel(signalField+":FldS").putVal(val);
-                        } catch (PutException ex) {
-                            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    } else {
-                         try {
-                            CHANNEL_FACTORY.getChannel(signalField+":FldS").putVal(0.0);
-                        } catch (PutException ex) {
-                            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                        Thread.sleep(4000);
-                        try {
-                            //if(val>0){
-                                // for positive
-                                CHANNEL_FACTORY.getChannel(signalCorr+":PolPosCmd").putVal(1);
-                            //} else if (val<0){
-                                //for negative
-                              //  CHANNEL_FACTORY.getChannel(signalCorr+":PolPosCmd").putVal("0");
-                            //}
-                        } catch (PutException ex) {
-                            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                        Thread.sleep(4000);
-                        try {
-                            CHANNEL_FACTORY.getChannel(signalField+":FldS").putVal(Math.abs(val));
-                        } catch (PutException ex) {
-                            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-                        }                
-                    }
-                } catch (ConnectionException | GetException ex) {
+                    CHANNEL_FACTORY.getChannel(channelPolName).putVal(1);
+                } catch (ConnectionException | PutException ex) {
                     Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-                } 
-                return null;
-            };    
-
-        };
-       
-        Thread correct = new Thread(task);
-        correct.setDaemon(true); // thread will not prevent application shutdown
-        correct.start();
-
+                }
+            }
+        });                                
+                
     }
-
+    
     public class Magnet{
 
         private String magnetName;

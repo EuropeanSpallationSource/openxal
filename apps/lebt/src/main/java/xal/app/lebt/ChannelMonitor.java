@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
@@ -61,31 +62,13 @@ class ChannelMonitor implements IEventSinkValue, ConnectionListener {
     public void eventValue(ChannelRecord record, Channel chan) {
         if (chan.isConnected()) {
             if(inputChannels.get(chan) instanceof Label){
-                if(chan.channelName().contains("PolR")){
-                    Platform.runLater(
-                    () -> {
-                        if(record.stringValue().equals("0")){
-                            ((Label) inputChannels.get(chan)).setText("NEG");
-                            ((Label) inputChannels.get(chan)).setStyle("-fx-background-color: linear-gradient(#ff5400, #be1d00);");       
-                            //((Label) inputChannels.get(chan)).setId("negative");             
-                        } else if (record.stringValue().equals("1")){
-                            ((Label) inputChannels.get(chan)).setText("POS");
-                            ((Label) inputChannels.get(chan)).setStyle("-fx-background-color: linear-gradient(#5ee825, #206802);");
-                            //((Label) inputChannels.get(chan)).setId("positive");              
-                        } else {
-                            ((Label) inputChannels.get(chan)).setText("-");
-                            ((Label) inputChannels.get(chan)).setStyle("-fx-background-color: magenta;");
-                            //((Label) inputChannels.get(chan)).setId("disconected");             
-                        }                                                    
-                    });               
-                } else {
-                    Platform.runLater(
-                    () -> {
-                        ((Label) inputChannels.get(chan)).setText(String.format("%.4f",record.doubleValue()));
-                        //((Label) inputChannels.get(chan)).setStyle("-fx-background-color: white;");                                         
-                        ((Label) inputChannels.get(chan)).setId("connected");
-                    });
-                }
+                Platform.runLater(
+                () -> {
+                    ((Label) inputChannels.get(chan)).setText(String.format("%.4f",record.doubleValue()));
+                    //((Label) inputChannels.get(chan)).setStyle("-fx-background-color: white;");                                         
+                    ((Label) inputChannels.get(chan)).setId("connected");
+                });
+                
             } else if (inputChannels.get(chan) instanceof Circle){
                 Platform.runLater(
                 () -> {
@@ -109,7 +92,21 @@ class ChannelMonitor implements IEventSinkValue, ConnectionListener {
                     //((TextField) inputChannels.get(chan)).setStyle("-fx-background-color: white;");                     
                     ((TextField) inputChannels.get(chan)).setId("connected");
                 });                                                          
-            } 
+            } else if (inputChannels.get(chan) instanceof Button){                
+                Platform.runLater(
+                () -> {
+                    if(record.stringValue().equals("0")){
+                        ((Button) inputChannels.get(chan)).setText("NEG");
+                        ((Button) inputChannels.get(chan)).setId("negative");             
+                    } else if (record.stringValue().equals("1")){
+                        ((Button) inputChannels.get(chan)).setText("POS");                        
+                        ((Button) inputChannels.get(chan)).setId("positive");              
+                    } else {
+                        ((Button) inputChannels.get(chan)).setText("-");                        
+                        ((Button) inputChannels.get(chan)).setId("disconected");             
+                    }                                                    
+                });        
+            }
         }
     }
 
