@@ -20,8 +20,8 @@ package xal.extension.jelog;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Logger;
-import javafx.scene.image.WritableImage;
 import se.esss.jelog.Attachment;
 import se.esss.jelog.Jelog;
 
@@ -46,22 +46,13 @@ public class PostEntry {
     }
 
     public static int post(HashMap<String, String> fields, String textBody, String logbook) throws IOException, Exception {
-        return post(fields, textBody, logbook, null, null);
+        return post(fields, textBody, logbook, null);
     }
 
-    public static int post(HashMap<String, String> fields, String textBody, String logbook, WritableImage[] snapshots) throws IOException, Exception {
-        return post(fields, textBody, logbook, snapshots, null);
-    }
-
-    public static int post(HashMap<String, String> fields, String textBody, String logbook, Attachment[] attachments) throws IOException, Exception {
-        return post(fields, textBody, logbook, null, attachments);
-
-    }
-
-    public static int post(HashMap<String, String> fields, String textBody, String logbook, WritableImage[] snapshots, Attachment[] attachments) throws IOException, Exception {
+    public static int post(HashMap<String, String> fields, String textBody, String logbook, List<Attachment> attachments) throws IOException, Exception {
         Jelog.setTrustAllCerts();
-        
-        if (elogServer == null){
+
+        if (elogServer == null) {
             elogServer = ElogServer.getElogURL();
         }
 
@@ -81,7 +72,7 @@ public class PostEntry {
         // the user's name returned from elog.
         fields.replace("Author", author);
 
-        return Jelog.submit(fields, textBody, null, snapshots, attachments,
+        return Jelog.submit(fields, textBody, null, attachments,
                 logbook, elogServer, userName, userPasswordHash);
     }
 

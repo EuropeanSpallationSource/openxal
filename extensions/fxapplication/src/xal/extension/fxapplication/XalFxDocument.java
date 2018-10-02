@@ -9,13 +9,14 @@ package xal.extension.fxapplication;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.HostServices;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.image.WritableImage;
 import javafx.stage.Stage;
 import se.esss.jelog.Attachment;
 import xal.extension.jelog.PostEntryDialog;
@@ -121,20 +122,19 @@ abstract public class XalFxDocument {
     }
 
     /**
-    * Method for creating an eLog Post.
-    */
-    public void eLogPost(String docType){
+     * Method for creating an eLog Post.
+     */
+    public void eLogPost(String docType) {
         Logger.getLogger(XalFxDocument.class.getName()).log(Level.FINER, "New e-log entry");
         try {
-            if(docType.equals("image")){
-                WritableImage[] snapshots = new WritableImage[1];
-                snapshots[0] = mainStage.getScene().snapshot(null);
-                PostEntryDialog.post(snapshots, "Studies");
-            } else if (docType.equals("file") && sourceSetAndValid()){   
-                Attachment[] dataFile = new Attachment[1];
-                dataFile[0] = new Attachment(new File(source.getPath()));
-                PostEntryDialog.post(dataFile, "Studies");
-            } if (docType.equals("file") && !sourceSetAndValid()){ 
+            List<Attachment> attachments = new ArrayList<>();
+            if (docType.equals("image")) {
+                attachments.add(new Attachment("screenshot.png", mainStage.getScene().snapshot(null)));
+                PostEntryDialog.post(attachments, "Studies");
+            } else if (docType.equals("file") && sourceSetAndValid()) {
+                attachments.add(new Attachment(new File(source.getPath())));
+                PostEntryDialog.post(attachments, "Studies");
+            } else if (docType.equals("file") && !sourceSetAndValid()) {
                 Alert alert = new Alert(AlertType.WARNING);
                 alert.setTitle("Error");
                 alert.setHeaderText("No data file specified!");
