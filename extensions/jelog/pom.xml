@@ -23,7 +23,18 @@
             <groupId>se.esss</groupId>
             <artifactId>jelog</artifactId>
             <version>1.5</version>
-            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <version>11-ea+25</version>
+            <classifier>linux</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-fxml</artifactId>
+            <version>11-ea+25</version>
+            <classifier>linux</classifier>
         </dependency>
     </dependencies>
 </project>
