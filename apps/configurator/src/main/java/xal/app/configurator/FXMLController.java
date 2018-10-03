@@ -17,9 +17,18 @@
  */
 package xal.app.configurator;
 
+import com.cosylab.epics.caj.CAJContext;
+import gov.aps.jca.JCALibrary;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Paths;
+import java.util.Properties;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -79,8 +88,6 @@ public class FXMLController implements Initializable {
     private TextField pendIOTimeoutTextField;
     @FXML
     private TextField pendEventTimeoutTextField;
-    @FXML
-    private Button timeoutsButton;
 
     // Property names
     private static final String DEF_TIME_IO = "c_dblDefTimeIO";
@@ -88,6 +95,10 @@ public class FXMLController implements Initializable {
 
     private double m_dblTmIO;
     private double m_dblTmEvt;
+    @FXML
+    private TextField AddrListTextField;
+    @FXML
+    private Button epicsButton;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -114,6 +125,8 @@ public class FXMLController implements Initializable {
         initialParametersChoiceBox.getSelectionModel().select(0);
 
         elogServerTextField.setText(ElogServer.getElogURL());
+
+        getAddrList();
 
         refreshTimouts();
     }
@@ -227,7 +240,7 @@ public class FXMLController implements Initializable {
     }
 
     @FXML
-    private void timeoutsHandler(ActionEvent event) {
+    private void epicsButtonHandler(ActionEvent event) {
         // Load default timeouts from preferences if available, otherwise use hardcoded values.
         java.util.prefs.Preferences defaults = Preferences.nodeForPackage(Channel.class);
 
@@ -252,5 +265,42 @@ public class FXMLController implements Initializable {
         }
 
         refreshTimouts();
+        
+        // Save EPICS address list if neccessary.
+        setAddrList();
+    }
+
+    private void getAddrList() {
+        JCALibrary jcaLibrary = JCALibrary.getInstance();
+        AddrListTextField.setText(jcaLibrary.getProperty(CAJContext.class.getName() + ".addr_list"));
+    }
+
+    private void setAddrList() {
+        JCALibrary jcaLibrary = JCALibrary.getInstance();
+        String addrList = jcaLibrary.getProperty(CAJContext.class.getName() + ".addr_list");
+        // Only edit the properties file if the configuration is changed.
+        if (!addrList.equals(AddrListTextField.getText())) {
+            FileInputStream in = null;
+            try {
+                // Find property file
+                String fileSep = System.getProperty("file.separator");
+                String userPropertiesPath = System.getProperty("gov.aps.jca.JCALibrary.properties", null);
+                if (userPropertiesPath == null) {
+                    userPropertiesPath = System.getProperty("user.home") + fileSep + ".JCALibrary" + fileSep
+                            + "JCALibrary.properties";
+                }
+                // Load properties
+                Properties properties = new Properties();
+                properties.load(new FileInputStream(userPropertiesPath));
+                //Save new properties
+                FileOutputStream out = new FileOutputStream(userPropertiesPath);
+                properties.setProperty(CAJContext.class.getName() + ".addr_list", AddrListTextField.getText());
+                properties.store(out, null);
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
 }
