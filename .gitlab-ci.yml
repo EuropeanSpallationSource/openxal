@@ -87,4 +87,8 @@ pages:
         paths:
             - public
     only:
+<<<<<<< HEAD
         - site.ess.stable
+=======
+        - site.ess.master
+>>>>>>> Using Java 11 docker image
