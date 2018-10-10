@@ -14,8 +14,11 @@
     
     <modules>
         <module>configurator</module>
+        <module>knobs</module>
         <module>launcher</module>
         <module>lebt</module>
+        <module>modelbrowser</module>
+        <module>pvhistogram</module>
         <module>scanner</module>
         <module>scan1d</module>
         <module>scan2d</module>
@@ -35,19 +38,16 @@
         <module>experimentautomator</module>
         <module>extlatgenerator</module>
         <module>injdumpwizard</module>
-        <module>knobs</module>
         <module>labbook</module>
         <module>machinerecorder</module>
         <module>machinesimulator</module>
         <module>magnetcycling</module>
-        <module>modelbrowser</module>
         <module>mtv</module>
         <module>opticseditor</module>
         <module>opticsswitcher</module>
         <module>orbitcorrect</module>
         <module>pasta</module>
         <module>pta</module>
-        <module>pvhistogram</module>
         <module>pvlogger</module>
         <module>pvserver</module>
         <module>quadshaker</module>
