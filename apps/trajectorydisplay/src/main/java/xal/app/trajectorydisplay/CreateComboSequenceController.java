@@ -1,14 +1,24 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (C) 2018 European Spallation Source ERIC
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 package xal.app.trajectorydisplay;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ResourceBundle;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -17,18 +27,12 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
+import xal.smf.Accelerator;
 import xal.smf.AcceleratorSeq;
-import xal.smf.AcceleratorSeqCombo;
 
-/**
- * FXML Controller class
- *
- * @author nataliamilas
- */
-public class CreateComboSequenceController{
+public class CreateComboSequenceController {
 
     private final BooleanProperty loggedIn = new SimpleBooleanProperty();
     private final StringProperty comboName = new SimpleStringProperty();
@@ -43,9 +47,9 @@ public class CreateComboSequenceController{
     private Button buttonOK;
     @FXML
     private Button buttonCancel;
-    
+
     public BooleanProperty loggedInProperty() {
-        return loggedIn ;
+        return loggedIn;
     }
 
     public final boolean isLoggedIn() {
@@ -54,8 +58,8 @@ public class CreateComboSequenceController{
 
     public final void setLoggedIn(boolean loggedIn) {
         loggedInProperty().set(loggedIn);
-    } 
-    
+    }
+
     public StringProperty newComboNameProperty() {
         return comboName;
     }
@@ -66,25 +70,25 @@ public class CreateComboSequenceController{
 
     public final void setComboName(String comboName) {
         newComboNameProperty().set(comboName);
-    } 
-    
-    public List<AcceleratorSeq>  getNewComboSequence() {
+    }
+
+    public List<AcceleratorSeq> getNewComboSequence() {
         return newComboSequence;
     }
 
-    public void setNewComboSequence(List<AcceleratorSeq>  newComboSequence) {
+    public void setNewComboSequence(List<AcceleratorSeq> newComboSequence) {
         this.newComboSequence = newComboSequence;
     }
-    
-    public void setProperties(xal.smf.Accelerator accl){
-        
+
+    public void setProperties(Accelerator accl) {
+
         sequence = accl.getSequences();
         ObservableList<String> items = FXCollections.observableArrayList();
-        
-        for(AcceleratorSeq seqItem: sequence){
+
+        sequence.forEach((seqItem) -> {
             items.add(seqItem.toString());
-        }
-        
+        });
+
         listStart.setItems(items);
         listEnd.setItems(items);
 
@@ -92,17 +96,17 @@ public class CreateComboSequenceController{
 
     @FXML
     private void handleOkButton(ActionEvent event) {
-        
+
         int startSeq = listStart.getSelectionModel().getSelectedIndex();
         int endSeq = listEnd.getSelectionModel().getSelectedIndex();
         List<AcceleratorSeq> newCombo = new ArrayList<>();
-        
-        for(int i=startSeq; i<=endSeq; i++){
-           newCombo.add(sequence.get(i));
+
+        for (int i = startSeq; i <= endSeq; i++) {
+            newCombo.add(sequence.get(i));
         }
-        
+
         setNewComboSequence(newCombo);
-        setComboName(listStart.getSelectionModel().getSelectedItem()+"-"+listEnd.getSelectionModel().getSelectedItem()); 
+        setComboName(listStart.getSelectionModel().getSelectedItem() + "-" + listEnd.getSelectionModel().getSelectedItem());
         setLoggedIn(true);
     }
 

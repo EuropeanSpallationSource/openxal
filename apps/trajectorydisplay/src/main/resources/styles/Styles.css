@@ -6,7 +6,7 @@
 #plotHorizontal *.default-color1.chart-series-line { -fx-stroke: black; }
 #plotVertical *.default-color0.chart-series-line { -fx-stroke: blue; }
 #plotVertical *.default-color1.chart-series-line { -fx-stroke: black; }
-#plotCharge *.default-color0.chart-series-line { -fx-stroke: green; }
+#plotCharge *.default-color0.chart-series-line { -fx-stroke: blue; }
 #plotCharge *.default-color1.chart-series-line { -fx-stroke: black; }
 
 
@@ -16,3 +16,4 @@
 #plotVertical *.default-color1.chart-line-symbol { -fx-background-color: transparent; }
 #plotCharge *.default-color0.chart-line-symbol { -fx-background-color: green, white; }
 #plotCharge *.default-color1.chart-line-symbol { -fx-background-color: transparent; }
+

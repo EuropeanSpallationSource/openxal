@@ -5,18 +5,18 @@
     <parent>
         <groupId>org.xal</groupId>
         <artifactId>openxal</artifactId>
-        <version>1.1.2-SNAPSHOT</version>
+        <version>1.2.4-SNAPSHOT</version>
     </parent>
 
     <artifactId>openxal.dist</artifactId>
-    <version>1.1.2-SNAPSHOT</version>
-
-    <packaging>jar</packaging>
+    
+    <packaging>pom</packaging>
+    
     <pluginRepositories>
-      <pluginRepository>
-        <id>jcenter</id>
-        <url>https://jcenter.bintray.com</url>
-      </pluginRepository>
+        <pluginRepository>
+            <id>jcenter</id>
+            <url>https://jcenter.bintray.com</url>
+        </pluginRepository>
     </pluginRepositories>
 
     <build>
@@ -24,9 +24,13 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.1.0</version>
                 <configuration>
-                    <descriptor>assembly.xml</descriptor>
+                    <descriptors>
+                        <descriptor>assembly.xml</descriptor>
+                    </descriptors>
                     <finalName>openxal-${project.version}</finalName>
+                    <tarLongFileMode>posix</tarLongFileMode>
                 </configuration>
                 <executions>
                     <execution>
@@ -68,12 +72,4 @@
             </plugin>
         </plugins>
     </build>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.xal</groupId>
-            <artifactId>openxal.library</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-    </dependencies>
 </project>

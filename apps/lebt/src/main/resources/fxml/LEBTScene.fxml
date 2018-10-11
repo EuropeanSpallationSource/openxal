@@ -1,0 +1,443 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" fx:id="mainPane" prefHeight="993.0" prefWidth="1138.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xal.app.lebt.FXMLController">
+    <children>
+      <LineChart fx:id="plot1" layoutX="21.0" layoutY="42.0" prefHeight="300.0" prefWidth="1098.0" title="Centroid" AnchorPane.bottomAnchor="650.0" AnchorPane.leftAnchor="21.0" AnchorPane.rightAnchor="19.0" AnchorPane.topAnchor="42.0">
+        <xAxis>
+          <NumberAxis label="Position (m)" side="BOTTOM" fx:id="xAxis" />
+        </xAxis>
+        <yAxis>
+          <NumberAxis fx:id="yAxis" label="Offset (mm)" side="LEFT" />
+        </yAxis>
+      </LineChart>
+      <LineChart fx:id="plot2" layoutX="21.0" layoutY="342.0" prefHeight="314.0" prefWidth="1098.0" title="Envelope" AnchorPane.bottomAnchor="337.0" AnchorPane.leftAnchor="21.0" AnchorPane.rightAnchor="19.0">
+         <xAxis>
+            <NumberAxis label="Position (m)" side="BOTTOM" fx:id="xAxis1" />
+         </xAxis>
+         <yAxis>
+            <NumberAxis fx:id="yAxis1" animated="false" forceZeroInRange="false" label="n * σ (mm)" side="LEFT" />
+         </yAxis>
+      </LineChart>
+      <NumberAxis fx:id="yAxis2" label="Angle (pi*rad)" layoutX="1071.0" layoutY="105.0" prefHeight="178.0" prefWidth="39.0" side="RIGHT" visible="false" AnchorPane.rightAnchor="28.0" />
+      <RadioButton fx:id="radioButtonCart" layoutX="563.0" layoutY="14.0" mnemonicParsing="false" onAction="#coordinateHandler" selected="true" text="Cartesian" AnchorPane.leftAnchor="563.0" AnchorPane.topAnchor="14.0" />
+      <RadioButton fx:id="radioButtonCyl" layoutX="654.0" layoutY="14.0" mnemonicParsing="false" onAction="#coordinateHandler" text="Cylindrical" AnchorPane.leftAnchor="654.0" AnchorPane.topAnchor="14.0" />
+      <RadioButton fx:id="radioButtonOffsetOff" layoutX="1070.0" layoutY="350.0" mnemonicParsing="false" onAction="#offsetHandler" selected="true" text="off" AnchorPane.bottomAnchor="625.0" AnchorPane.rightAnchor="26.0" />
+      <RadioButton fx:id="radioButtonOffsetOn" layoutX="1022.0" layoutY="350.0" mnemonicParsing="false" onAction="#offsetHandler" text="on" AnchorPane.bottomAnchor="625.0" AnchorPane.rightAnchor="76.0" />
+      <Label layoutX="857.0" layoutY="351.0" text="Include trajectory offset :" AnchorPane.bottomAnchor="625.0" AnchorPane.rightAnchor="126.0" />
+      <TextField fx:id="textFieldSigmaScale" layoutX="214.0" layoutY="346.0" onInputMethodTextChanged="#scaleButtonHandler" prefHeight="29.0" prefWidth="50.0" text="1" AnchorPane.bottomAnchor="618.0" AnchorPane.leftAnchor="214.0" />
+      <Label layoutX="83.0" layoutY="351.0" text="# sigmas (n) to plot :" AnchorPane.bottomAnchor="625.0" />
+      <Label layoutX="397.0" layoutY="14.0" text="Plot coordinate system :" AnchorPane.leftAnchor="397.0" AnchorPane.topAnchor="14.0" />
+      <TabPane fx:id="mainTabPane" disable="true" layoutY="656.0" prefHeight="322.0" prefWidth="1138.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+        <tabs>
+            <Tab text="Beam Input Parameters">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="289.0" prefWidth="822.0">
+                     <children>
+                        <GridPane layoutX="119.0" layoutY="111.0" AnchorPane.leftAnchor="300.0" AnchorPane.topAnchor="35.0">
+                          <columnConstraints>
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="30.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="90.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="5.0" prefWidth="5.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="40.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="10.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="121.3333740234375" minWidth="10.0" prefWidth="30.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="176.0" minWidth="10.0" prefWidth="90.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="176.0" minWidth="5.0" prefWidth="5.0" />
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="40.0" />
+                          </columnConstraints>
+                          <rowConstraints>
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                          </rowConstraints>
+                           <children>
+                              <Label text="x" />
+                              <Label text="x'" GridPane.rowIndex="1" />
+                              <TextField fx:id="textField_x" prefHeight="27.0" prefWidth="85.0" GridPane.columnIndex="1" />
+                              <TextField fx:id="textField_xp" prefHeight="27.0" prefWidth="85.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                              <Label prefHeight="17.0" prefWidth="29.0" text="mm" GridPane.columnIndex="3" />
+                              <Label prefHeight="17.0" prefWidth="44.0" text="mrad" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                              <Label text="y" GridPane.columnIndex="5" />
+                              <Label text="y'" GridPane.columnIndex="5" GridPane.rowIndex="1" />
+                              <TextField fx:id="textField_y" prefHeight="27.0" prefWidth="85.0" GridPane.columnIndex="6" />
+                              <TextField fx:id="textField_yp" prefHeight="27.0" prefWidth="85.0" GridPane.columnIndex="6" GridPane.rowIndex="1" />
+                              <Label prefHeight="17.0" prefWidth="29.0" text="mm" GridPane.columnIndex="8" />
+                              <Label prefHeight="17.0" prefWidth="44.0" text="mrad" GridPane.columnIndex="8" GridPane.rowIndex="1" />
+                           </children>
+                        </GridPane>
+                        <Label layoutX="12.0" layoutY="5.0" text="- Initial coordinates" AnchorPane.leftAnchor="300.0" AnchorPane.topAnchor="5.0">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Label>
+                        <GridPane layoutX="85.0" layoutY="151.0" AnchorPane.leftAnchor="300.0" AnchorPane.topAnchor="130.0">
+                          <columnConstraints>
+                              <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="60.0" />
+                              <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="90.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="5.0" prefWidth="5.0" />
+                              <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="90.0" />
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="5.0" prefWidth="5.0" />
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="65.0" />
+                          </columnConstraints>
+                          <rowConstraints>
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                          </rowConstraints>
+                           <children>
+                              <Label text="beta" GridPane.rowIndex="1" />
+                              <Label text="alpha" GridPane.rowIndex="2" />
+                              <Label text="emmit" GridPane.rowIndex="3" />
+                              <TextField fx:id="textField_betax" prefHeight="27.0" prefWidth="85.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                              <TextField fx:id="textField_alphax" prefWidth="85.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                              <TextField fx:id="textField_emittx" prefHeight="27.0" prefWidth="85.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                              <Label text="X" GridPane.columnIndex="1" />
+                              <Label text="Y" GridPane.columnIndex="3" />
+                              <TextField fx:id="textField_betay" prefHeight="27.0" prefWidth="85.0" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                              <TextField fx:id="textField_alphay" prefWidth="85.0" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+                              <TextField fx:id="textField_emitty" prefWidth="85.0" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+                              <Label text="m" GridPane.columnIndex="5" GridPane.rowIndex="1" />
+                              <Label text="mm mrad" GridPane.columnIndex="5" GridPane.rowIndex="3" />
+                           </children>
+                        </GridPane>
+                        <Label layoutX="24.0" layoutY="131.0" text="- Initial Twiss" AnchorPane.leftAnchor="300.0" AnchorPane.topAnchor="115.0">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Label>
+                        <Separator layoutX="273.0" orientation="VERTICAL" prefHeight="278.0" prefWidth="4.0" AnchorPane.leftAnchor="260.0" AnchorPane.topAnchor="5.0" />
+                        <Label layoutX="754.0" layoutY="18.0" text="- Initial current" AnchorPane.leftAnchor="700.0" AnchorPane.topAnchor="5.0">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="textField_bc" layoutX="781.0" layoutY="36.0" prefHeight="27.0" prefWidth="85.0" AnchorPane.leftAnchor="755.0" AnchorPane.topAnchor="35.0" />
+                        <Label layoutX="727.0" layoutY="41.0" text="Current" AnchorPane.leftAnchor="700.0" AnchorPane.topAnchor="40.0" />
+                        <Label layoutX="873.0" layoutY="41.0" text="mA" AnchorPane.leftAnchor="845.0" AnchorPane.topAnchor="40.0" />
+                        <CheckBox fx:id="comboBox_currentFC" layoutX="915.0" layoutY="41.0" mnemonicParsing="false" onAction="#handleGetCurrentfromFC" text="Get current from BI" AnchorPane.leftAnchor="885.0" AnchorPane.topAnchor="40.0" />
+                        <Label layoutX="711.0" layoutY="102.0" text="- Space charge compensation" AnchorPane.leftAnchor="700.0" AnchorPane.topAnchor="100.0">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="textField_scc" layoutX="899.0" layoutY="95.0" prefWidth="92.0" AnchorPane.leftAnchor="935.0" AnchorPane.topAnchor="95.0" />
+                        <Label layoutX="29.0" layoutY="13.0" text="Initial simulation point:" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="15.0">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Label>
+                        <ComboBox fx:id="comboBox_inputSimul" layoutX="40.0" layoutY="52.0" prefWidth="240.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="52.0" />
+                        <Button layoutX="47.0" layoutY="102.0" mnemonicParsing="false" onAction="#handleMatchParameters" text="Match Initial Parameters" />
+                     </children>
+                  </AnchorPane>
+              </content>
+            </Tab>
+          <Tab closable="false" text="LEBT Magnets">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="177.0" prefWidth="1138.0">
+                     <children>
+                        <GridPane layoutX="14.0" layoutY="14.0" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="30.0">
+                          <columnConstraints>
+                            <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="90.0" />
+                              <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="90.0" />
+                              <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="94.0" minWidth="5.0" prefWidth="5.0" />
+                              <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="181.0" minWidth="10.0" prefWidth="90.0" />
+                              <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="181.0" minWidth="5.0" prefWidth="5.0" />
+                            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="181.0" minWidth="10.0" prefWidth="90.0" />
+                              <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="181.0" minWidth="5.0" prefWidth="5.0" />
+                              <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="181.0" minWidth="10.0" prefWidth="90.0" />
+                          </columnConstraints>
+                          <rowConstraints>
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                          </rowConstraints>
+                           <children>
+                              <Label text="Field (T)" GridPane.columnIndex="1" />
+                              <Label text="Current (A)" GridPane.columnIndex="5" />
+                              <Label text="Solenoid 1 : " GridPane.rowIndex="1" />
+                              <TextField fx:id="textField_sol1field" prefHeight="27.0" prefWidth="92.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                              <Label fx:id="label_sol1current" prefHeight="27.0" prefWidth="92.0" style="-fx-background-color: ffffff;" GridPane.columnIndex="5" GridPane.rowIndex="1" />
+                              <Label text="V-steerer 1 : " GridPane.rowIndex="2" />
+                              <TextField fx:id="textField_CV1field" prefHeight="27.0" prefWidth="91.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                              <Label fx:id="label_CV1current" prefHeight="27.0" prefWidth="92.0" style="-fx-background-color: ffffff;" GridPane.columnIndex="5" GridPane.rowIndex="2" />
+                              <Label text="H-steerer 1 : " GridPane.rowIndex="3" />
+                              <TextField fx:id="textField_CH1field" prefHeight="27.0" prefWidth="91.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                              <Label text="Solenoid 2 : " GridPane.rowIndex="4" />
+                              <Label text="V-steerer 2 : " GridPane.rowIndex="5" />
+                              <Label prefHeight="17.0" prefWidth="83.0" text="H-steerer 2 : " GridPane.rowIndex="6" />
+                              <TextField fx:id="textField_sol2field" prefHeight="27.0" prefWidth="92.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                              <TextField fx:id="textField_CV2field" prefHeight="27.0" prefWidth="92.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                              <TextField fx:id="textField_CH2field" prefHeight="27.0" prefWidth="91.0" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                              <Label text="Current RB (A)" GridPane.columnIndex="7" />
+                              <Label fx:id="label_sol1currentRB" prefHeight="27.0" prefWidth="92.0" style="-fx-background-color: ffffff;" GridPane.columnIndex="7" GridPane.rowIndex="1" />
+                              <Label fx:id="label_CV1currentRB" prefHeight="27.0" prefWidth="92.0" style="-fx-background-color: ffffff;" GridPane.columnIndex="7" GridPane.rowIndex="2" />
+                              <Label fx:id="label_CH1current" prefHeight="27.0" prefWidth="92.0" style="-fx-background-color: ffffff;" GridPane.columnIndex="5" GridPane.rowIndex="3" />
+                              <Label fx:id="label_CH1currentRB" prefHeight="27.0" prefWidth="92.0" style="-fx-background-color: ffffff;" GridPane.columnIndex="7" GridPane.rowIndex="3" />
+                              <Label fx:id="label_sol2current" prefHeight="27.0" prefWidth="92.0" style="-fx-background-color: ffffff;" GridPane.columnIndex="5" GridPane.rowIndex="4" />
+                              <Label fx:id="label_sol2currentRB" prefHeight="27.0" prefWidth="92.0" style="-fx-background-color: ffffff;" GridPane.columnIndex="7" GridPane.rowIndex="4" />
+                              <Label fx:id="label_CV2current" prefHeight="27.0" prefWidth="92.0" style="-fx-background-color: ffffff;" GridPane.columnIndex="5" GridPane.rowIndex="5" />
+                              <Label fx:id="label_CV2currentRB" prefHeight="27.0" prefWidth="92.0" style="-fx-background-color: ffffff;" GridPane.columnIndex="7" GridPane.rowIndex="5" />
+                              <Label fx:id="label_CH2current" prefHeight="27.0" prefWidth="92.0" style="-fx-background-color: ffffff;" GridPane.columnIndex="5" GridPane.rowIndex="6" />
+                              <Label fx:id="label_CH2currentRB" prefHeight="27.0" prefWidth="92.0" style="-fx-background-color: ffffff;" GridPane.columnIndex="7" GridPane.rowIndex="6" />
+                              <Label text="Field RB (T)" GridPane.columnIndex="3" />
+                              <Label fx:id="label_sol1fieldRB" layoutX="290.0" layoutY="72.0" prefHeight="27.0" prefWidth="92.0" style="-fx-background-color: ffffff;" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                              <Label fx:id="label_CV1fieldRB" layoutX="195.0" layoutY="72.0" prefHeight="27.0" prefWidth="92.0" style="-fx-background-color: ffffff;" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+                              <Label fx:id="label_CH1fieldRB" layoutX="195.0" layoutY="102.0" prefHeight="27.0" prefWidth="92.0" style="-fx-background-color: ffffff;" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+                              <Label fx:id="label_sol2fieldRB" layoutX="195.0" layoutY="132.0" prefHeight="27.0" prefWidth="92.0" style="-fx-background-color: ffffff;" GridPane.columnIndex="3" GridPane.rowIndex="4" />
+                              <Label fx:id="label_CV2fieldRB" layoutX="195.0" layoutY="162.0" prefHeight="27.0" prefWidth="92.0" style="-fx-background-color: ffffff;" GridPane.columnIndex="3" GridPane.rowIndex="5" />
+                              <Label fx:id="label_CH2fieldRB" layoutX="195.0" layoutY="192.0" prefHeight="27.0" prefWidth="92.0" style="-fx-background-color: ffffff;" GridPane.columnIndex="3" GridPane.rowIndex="6" />
+                           </children>
+                        </GridPane>
+                        <Label layoutX="9.0" layoutY="5.0" text="Magnets:" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="10.0">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="533.0" layoutY="5.0" text="RFQ Reppeler Electrode:" AnchorPane.leftAnchor="530.0" AnchorPane.topAnchor="10.0">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Label>
+                        <Circle fx:id="electrodeStatus" fill="GREEN" layoutX="618.0" layoutY="53.0" radius="8.0" stroke="#9e9c9c" strokeType="INSIDE" AnchorPane.topAnchor="45.0" />
+                        <CheckBox fx:id="checkBox_electrode" contentDisplay="RIGHT" layoutX="536.0" layoutY="44.0" mnemonicParsing="false" selected="true" stylesheets="@../styles/ToggleSwitch.css" text="ON" AnchorPane.leftAnchor="530.0" AnchorPane.topAnchor="44.0" />
+                        <Label layoutX="634.0" layoutY="45.0" text="PS Status" AnchorPane.topAnchor="45.0" />
+                        <TextField fx:id="textField_sccelectrode" layoutX="533.0" layoutY="66.0" prefWidth="65.0" AnchorPane.leftAnchor="530.0" AnchorPane.topAnchor="75.0" />
+                        <Label layoutX="602.0" layoutY="79.0" text="Space charge compensation" AnchorPane.topAnchor="79.0" />
+                        <Label layoutX="533.0" layoutY="150.0" text="Chopper:" AnchorPane.leftAnchor="530.0" AnchorPane.topAnchor="145.0">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Label>
+                        <GridPane layoutX="864.0" layoutY="105.0" AnchorPane.leftAnchor="530.0" AnchorPane.topAnchor="170.0">
+                          <columnConstraints>
+                            <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="58.0" />
+                              <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="90.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="5.0" prefWidth="5.0" />
+                            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="90.0" />
+                          </columnConstraints>
+                          <rowConstraints>
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                          </rowConstraints>
+                           <children>
+                              <Label text="Delay: " GridPane.rowIndex="1" />
+                              <Label text="Length: " GridPane.rowIndex="2" />
+                              <TextField fx:id="textField_chopperDelay" prefHeight="27.0" prefWidth="91.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                              <Label fx:id="label_chopperDelayRB" prefHeight="27.0" prefWidth="92.0" style="-fx-background-color: ffffff;" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                              <TextField fx:id="textField_chopperLength" prefHeight="27.0" prefWidth="91.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                              <Label fx:id="label_chopperLengthRB" prefHeight="27.0" prefWidth="92.0" style="-fx-background-color: ffffff;" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+                              <Label text="set (ms)" GridPane.columnIndex="1" />
+                              <Label text="RB (ms)" GridPane.columnIndex="3" />
+                           </children>
+                        </GridPane>
+                        <Circle fx:id="chopperStatus" fill="GREEN" layoutX="618.0" layoutY="156.0" radius="8.0" stroke="#9e9c9c" strokeType="INSIDE" />
+                        <Label layoutX="634.0" layoutY="147.0" text="PS Status" />
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+            <Tab text="LEBT Equipment">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <GridPane AnchorPane.leftAnchor="320.0" AnchorPane.topAnchor="20.0">
+                           <columnConstraints>
+                              <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="90.0" />
+                              <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="90.0" />
+                              <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="94.0" minWidth="5.0" prefWidth="5.0" />
+                              <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="181.0" minWidth="10.0" prefWidth="90.0" />
+                           </columnConstraints>
+                           <rowConstraints>
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                           </rowConstraints>
+                           <children>
+                              <Label text="set (mm)" GridPane.columnIndex="1" />
+                              <Label text="RB (mm)" GridPane.columnIndex="3" />
+                              <Label text="Aperture : " GridPane.rowIndex="1" />
+                              <TextField fx:id="textField_irisAperture" prefHeight="27.0" prefWidth="92.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                              <Label fx:id="label_irisApertureRB" prefHeight="27.0" prefWidth="92.0" style="-fx-background-color: ffffff;" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                              <TextField fx:id="textField_irisX" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                              <TextField fx:id="textField_irisY" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                              <Label text="X center : " GridPane.rowIndex="2" />
+                              <Label text="Y center : " GridPane.rowIndex="3" />
+                              <Label fx:id="label_irisXRB" layoutX="195.0" layoutY="72.0" prefHeight="27.0" prefWidth="92.0" style="-fx-background-color: ffffff;" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+                              <Label fx:id="label_irisYRB" layoutX="195.0" layoutY="72.0" prefHeight="27.0" prefWidth="92.0" style="-fx-background-color: ffffff;" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+                           </children>
+                        </GridPane>
+                        <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" layoutX="311.0" layoutY="5.0" text="Iris:" AnchorPane.leftAnchor="350.0" AnchorPane.topAnchor="5.0">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Label>
+                        <CheckBox fx:id="comboBox_sigmaNPM" layoutX="14.0" layoutY="55.0" mnemonicParsing="false" onAction="#npmSigHandler" text="Show sigmas on envelope plot." AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="65.0" />
+                        <CheckBox fx:id="comboBox_posNPM" layoutX="14.0" layoutY="30.0" mnemonicParsing="false" onAction="#npmPosHandler" text="Show positions on trajectory plot." AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="40.0" />
+                        <Label layoutX="14.0" layoutY="4.0" text="NPMs:" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="10.0">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="15.0" layoutY="87.0" text="Use current in simulation:" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="100.0">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Label>
+                        <RadioButton fx:id="rb_CurrentMeasurement1" layoutX="116.0" layoutY="133.0" mnemonicParsing="false" selected="true" AnchorPane.leftAnchor="125.0" AnchorPane.topAnchor="145.0">
+                           <toggleGroup>
+                              <ToggleGroup fx:id="toggleGroup_currentBI" />
+                           </toggleGroup></RadioButton>
+                        <RadioButton fx:id="rb_CurrentMeasurement2" layoutX="116.0" layoutY="162.0" mnemonicParsing="false" toggleGroup="$toggleGroup_currentBI" AnchorPane.leftAnchor="125.0" AnchorPane.topAnchor="175.0" />
+                        <Label fx:id="label_CurrentMeasurement1" layoutX="20.0" layoutY="129.0" prefHeight="27.0" prefWidth="90.0" style="-fx-background-color: ffffff;" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="141.0" />
+                        <Label fx:id="label_CurrentMeasurement2" layoutX="29.0" layoutY="171.0" prefHeight="27.0" prefWidth="90.0" style="-fx-background-color: ffffff;" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="171.0" />
+                        <Label fx:id="label_Doppler" layoutX="20.0" layoutY="230.0" prefHeight="27.0" prefWidth="90.0" style="-fx-background-color: ffffff;" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="240.0" />
+                        <Label layoutX="65.0" layoutY="110.0" text="(A)" AnchorPane.leftAnchor="65.0" AnchorPane.topAnchor="120.0" />
+                        <Label layoutX="10.0" layoutY="199.0" text="Doppler:" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="210.0">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="128.0" layoutY="245.0" text="Proton fraction (%)" AnchorPane.leftAnchor="125.0" AnchorPane.topAnchor="245.0" />
+                        <GridPane layoutX="479.0" layoutY="30.0" AnchorPane.leftAnchor="320.0" AnchorPane.topAnchor="200.0">
+                           <columnConstraints>
+                              <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="90.0" />
+                              <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="90.0" />
+                              <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="94.0" minWidth="5.0" prefWidth="5.0" />
+                              <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="181.0" minWidth="10.0" prefWidth="90.0" />
+                           </columnConstraints>
+                           <rowConstraints>
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                           </rowConstraints>
+                           <children>
+                              <Label text="set (sccm)" GridPane.columnIndex="1" />
+                              <Label text="RB (sccm)" GridPane.columnIndex="3" />
+                              <Label text="Flow : " GridPane.rowIndex="1" />
+                              <TextField fx:id="textField_N2flow" prefHeight="27.0" prefWidth="92.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                              <Label fx:id="label_N2flowRB" prefHeight="27.0" prefWidth="92.0" style="-fx-background-color: ffffff;" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                           </children>
+                        </GridPane>
+                        <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" layoutX="311.0" layoutY="183.0" text="N2 flow:" AnchorPane.leftAnchor="350.0" AnchorPane.topAnchor="183.0">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </AnchorPane>
+              </content>
+            </Tab>
+            <Tab closable="false" text="Ion Source Parameters">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="289.0" prefWidth="749.0">
+                     <children>
+                        <GridPane layoutX="37.0" layoutY="5.0" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="10.0">
+                           <columnConstraints>
+                              <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="80.0" />
+                              <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="90.0" />
+                              <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="94.0" minWidth="5.0" prefWidth="5.0" />
+                              <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="181.0" minWidth="10.0" prefWidth="100.0" />
+                           </columnConstraints>
+                           <rowConstraints>
+                              <RowConstraints maxHeight="30.0" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints maxHeight="30.0" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="10.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                           </rowConstraints>
+                           <children>
+                              <Label text="Current (A)" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                              <Label text="Coil 1 : " GridPane.rowIndex="2" />
+                              <TextField fx:id="textField_coil1" prefHeight="27.0" prefWidth="92.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                              <Label text="Coil 2 : " GridPane.rowIndex="3" />
+                              <TextField fx:id="textField_coil2" prefHeight="27.0" prefWidth="91.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                              <Label text="Coil 3 : " GridPane.rowIndex="4" />
+                              <TextField fx:id="textField_coil3" prefHeight="27.0" prefWidth="91.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                              <Label text="Current RB (A)" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                              <Label fx:id="label_coil1RB" prefHeight="27.0" prefWidth="92.0" style="-fx-background-color: ffffff;" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+                              <Label fx:id="label_coil2RB" prefHeight="27.0" prefWidth="92.0" style="-fx-background-color: ffffff;" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+                              <Label text="Magnets">
+                                 <font>
+                                    <Font size="16.0" />
+                                 </font>
+                              </Label>
+                              <Label text="Power (W)" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                              <Label text="Power RB (W)" GridPane.columnIndex="3" GridPane.rowIndex="6" />
+                              <TextField fx:id="textField_magnetron" prefWidth="92.0" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+                              <Label fx:id="label_magnetronRB" prefHeight="27.0" prefWidth="92.0" style="-fx-background-color: ffffff;" GridPane.columnIndex="3" GridPane.rowIndex="7" />
+                              <Label text="Magnetron : " GridPane.rowIndex="7" />
+                              <Label fx:id="label_coil3RB" prefHeight="27.0" prefWidth="92.0" style="-fx-background-color: ffffff;" GridPane.columnIndex="3" GridPane.rowIndex="4" />
+                           </children>
+                        </GridPane>
+                        <GridPane layoutX="333.0" layoutY="5.0" AnchorPane.leftAnchor="350.0" AnchorPane.topAnchor="10.0">
+                           <columnConstraints>
+                              <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="70.0" />
+                              <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="90.0" />
+                              <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="94.0" minWidth="5.0" prefWidth="5.0" />
+                              <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="181.0" minWidth="10.0" prefWidth="100.0" />
+                           </columnConstraints>
+                           <rowConstraints>
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="10.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                           </rowConstraints>
+                           <children>
+                              <Label text="set (sccm)" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                              <Label text="H2 flow : " GridPane.rowIndex="2" />
+                              <TextField fx:id="textField_H2flow" prefHeight="27.0" prefWidth="92.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                              <Label text="RB (sccm)" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                              <Label fx:id="label_H2flowRB" prefHeight="27.0" prefWidth="92.0" style="-fx-background-color: ffffff;" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+                              <Label text="set (kV)" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                              <Label text="RB (kV)" GridPane.columnIndex="3" GridPane.rowIndex="4" />
+                              <TextField fx:id="textField_highVoltage" prefWidth="92.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                              <Label fx:id="label_highVoltageRB" prefHeight="27.0" prefWidth="92.0" style="-fx-background-color: ffffff;" GridPane.columnIndex="3" GridPane.rowIndex="5" />
+                              <Label text="Voltage : " GridPane.rowIndex="5" />
+                           </children>
+                        </GridPane>
+                        <Label layoutX="675.0" layoutY="18.0" text="High voltage" AnchorPane.leftAnchor="350.0" AnchorPane.topAnchor="15.0">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </AnchorPane>
+              </content>
+            </Tab>
+        </tabs>
+      </TabPane>
+      <Separator layoutY="655.0" prefHeight="0.0" prefWidth="1138.0" AnchorPane.bottomAnchor="320.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+      <Label layoutX="857.0" layoutY="324.0" text="Transmission (%)" AnchorPane.leftAnchor="857.0" AnchorPane.topAnchor="324.0" />
+      <Label fx:id="label_transmission" layoutX="966.0" layoutY="319.0" prefHeight="27.0" prefWidth="92.0" style="-fx-background-color: ffffff;" AnchorPane.leftAnchor="966.0" AnchorPane.topAnchor="319.0" />
+    </children>
+</AnchorPane>

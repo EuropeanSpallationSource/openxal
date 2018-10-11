@@ -7,14 +7,27 @@ pipeline {
     }
 
     environment {
-        GIT_TAG = sh(returnStdout: true, script: 'git describe --exact-match || true').trim()
+        GIT_TAG    = sh(returnStdout: true, script: 'git describe --exact-match || true').trim()
+        GIT_BRANCH = sh(returnStdout: true, script: 'git rev-parse --abbrev-ref HEAD').trim()
     }
 
     stages {
         stage('Build') {
             steps {
                 timestamps {
-                    sh 'mvn -Dmaven.test.failure.ignore clean install'
+                    sh 'mvn -DskipTests -Dmaven.javadoc.skip=true -Dmaven.test.failure.ignore clean install'
+                }
+            }
+        }
+        stage('Test') {
+            steps {
+                timestamps {
+                    sh 'mvn test'
+                }
+            }
+            post {
+                always {
+                  junit '**/target/surefire-reports/*.xml'
                 }
             }
         }
@@ -22,19 +35,55 @@ pipeline {
             steps {
                 timestamps {
                     withCredentials([string(credentialsId: 'sonarqube', variable: 'TOKEN')]) {
-                        sh 'mvn -Dsonar.login=${TOKEN} sonar:sonar'
+                        sh 'mvn -Dsonar.login=${TOKEN} -Dsonar.branch=${BRANCH_NAME} sonar:sonar'
                     }
                 }
             }
         }
         stage('Publish') {
+            steps {
+                timestamps {
+                    withCredentials([usernamePassword(credentialsId: 'artifactory', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                        sh 'mvn deploy -pl dist -Dartifactory.username=${USERNAME} -Dartifactory.password=${PASSWORD}'
+                    }
+                }
+            }
+            when {
+                anyOf {
+                    branch 'site.ess.master'
+                }
+            }
+        }
+        stage('Generate JavaDoc') {
+            environment {
+                OXALDOC_GIT_PATH = 'oxal_documentation-deploy'
+                OXALDOC_TOP_DIR = '${PWD}' + "/${OXALDOC_GIT_PATH}"
+                OXALDOC_DEPLOY_DIR = 'apidoc/openxal'
+                DOC_BUILD_TARGET = '${PWD}/target/site/apidocs'
+                OXALDOC_GITURL = 'https://bitbucket.org/europeanspallationsource/europeanspallationsource.bitbucket.org.git'
+                OXALDOC_GITUSER = 'benjaminbertrand-noemail-bitbucket'
+                OXALDOC_COMMIT_MSG = "Automatic Commit: Added documentation from latest OpenXAL ${GIT_BRANCH} branch, tagged ${GIT_TAG}, build ${BUILD_DISPLAY_NAME}."
+            }
             when {
                 not { environment name: 'GIT_TAG', value: '' }
             }
             steps {
                 timestamps {
-                    withCredentials([usernamePassword(credentialsId: 'artifactory', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                        sh 'mvn deploy -pl dist -Dartifactory.username=${USERNAME} -Dartifactory.password=${PASSWORD}'
+                    // Create javadoc target directory as a softlink to actual destination
+                    sh "if [ -L ${DOC_BUILD_TARGET} ]; then rm ${DOC_BUILD_TARGET}; elif [ -e ${DOC_BUILD_TARGET} ]; then rm -rf ${DOC_BUILD_TARGET}; fi"
+                    sh "mkdir -p \$(dirname ${DOC_BUILD_TARGET}) && ln -s ${OXALDOC_TOP_DIR}/${OXALDOC_DEPLOY_DIR} ${DOC_BUILD_TARGET}"
+                    dir ("${OXALDOC_GIT_PATH}") {
+                        git url: OXALDOC_GITURL, credentialsId: OXALDOC_GITUSER
+                    }
+                    // dir('foo') inside "docker.image().inside{}" does not affect CWD of launched sh processes
+                    // https://issues.jenkins-ci.org/browse/JENKINS-33510
+                    // Delete everything in prior javadoc release root
+                    sh "cd ${OXALDOC_TOP_DIR} && git rm -qrf -- \"${OXALDOC_DEPLOY_DIR}\" && mkdir -p ${OXALDOC_DEPLOY_DIR}"
+                    sh 'mvn javadoc:aggregate'
+                    sh "cd ${OXALDOC_TOP_DIR}/${OXALDOC_DEPLOY_DIR} && git add . && git commit -m '${OXALDOC_COMMIT_MSG}'"
+                    // https://issues.jenkins-ci.org/browse/JENKINS-28335 GitPublisher not possible to use
+                    withCredentials([usernamePassword(credentialsId: OXALDOC_GITUSER, usernameVariable: 'OXALDOC_GITUSER_USR', passwordVariable: 'OXALDOC_GITUSER_PSW')]) {
+                        sh "cd ${OXALDOC_TOP_DIR} && git push https://${OXALDOC_GITUSER_USR}:${OXALDOC_GITUSER_PSW}@bitbucket.org/europeanspallationsource/europeanspallationsource.bitbucket.org.git HEAD:refs/heads/master"
                     }
                 }
             }
@@ -55,4 +104,4 @@ pipeline {
     }
 }
 
-// vim: et ts=4 sw=4 :
+// vim: et ts=4 sw=4 syntax=groovy :

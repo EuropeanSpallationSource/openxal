@@ -1,45 +1,37 @@
 /*
- * FXMLPlotPropertiesController.java
+ * Copyright (C) 2018 European Spallation Source ERIC
  *
- * Created by Natalia Milas on 07.07.2017
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
  *
- * Copyright (c) 2017 European Spallation Source ERIC
- * Tunavägen 20
- * Lund, Sweden
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-
 package xal.app.trajectorydisplay;
-
-/**
- * Plot properties dialog. 
- * @author nataliamilas
- * 06-2017
- */
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.chart.NumberAxis;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
-import javafx.scene.input.MouseEvent;
+import org.jfree.chart.plot.CombinedDomainXYPlot;
+import org.jfree.chart.plot.XYPlot;
 
 /**
  * Secondary Controller that creates a window to modify the axis of a plot
- * @author nataliamilas
- * 06-2017
+ *
+ * @author nataliamilas 06-2017
  */
-
-public class PlotPropertiesController{
+public class PlotPropertiesController {
 
     private final BooleanProperty loggedIn = new SimpleBooleanProperty();
     private double yMax;
@@ -78,9 +70,9 @@ public class PlotPropertiesController{
     private TextField textPMin;
     @FXML
     private TextField textPMax;
- 
+
     public BooleanProperty loggedInProperty() {
-        return loggedIn ;
+        return loggedIn;
     }
 
     public final boolean isLoggedIn() {
@@ -89,7 +81,7 @@ public class PlotPropertiesController{
 
     public final void setLoggedIn(boolean loggedIn) {
         loggedInProperty().set(loggedIn);
-    } 
+    }
 
     public double getcMax() {
         return cMax;
@@ -142,7 +134,7 @@ public class PlotPropertiesController{
     public double getyMax() {
         return yMax;
     }
-    
+
     public void setyMax(double yMax) {
         this.yMax = yMax;
     }
@@ -188,7 +180,7 @@ public class PlotPropertiesController{
     }
 
     @FXML
-    public void handleButtonOK(){
+    public void handleButtonOK() {
         this.xMax = Double.parseDouble(textXMax.getText());
         this.xMin = Double.parseDouble(textXMin.getText());
         this.xAutoscale = checkBoxX.isSelected();
@@ -202,52 +194,56 @@ public class PlotPropertiesController{
         this.pMin = Double.parseDouble(textPMin.getText());
         this.pAutoscale = checkBoxP.isSelected();
         setLoggedIn(true);
-      
-    } 
-    
+
+    }
+
     @FXML
-    public void handleButtonCancel(){
+    public void handleButtonCancel() {
         setLoggedIn(true);
     }
-    
-    public void setPlotProperties(NumberAxis axisX, NumberAxis axisY, NumberAxis axisC, NumberAxis axisPos){
-        this.xAutoscale = axisX.isAutoRanging();
-        this.xMax = axisX.getUpperBound();
-        this.xMin = axisX.getLowerBound();
-        this.yAutoscale = axisY.isAutoRanging();
-        this.yMax = axisY.getUpperBound();
-        this.yMin = axisY.getLowerBound();
-        this.cAutoscale = axisC.isAutoRanging();
-        this.cMax = axisC.getUpperBound();
-        this.cMin = axisC.getLowerBound();
-        this.pAutoscale = axisPos.isAutoRanging();
-        this.pMax = axisPos.getUpperBound();
-        this.pMin = axisPos.getLowerBound();
-        
-        if(this.xAutoscale){
+
+    public void setPlotProperties(CombinedDomainXYPlot Combinedplot) {
+
+        XYPlot plot = (XYPlot) Combinedplot.getSubplots().get(0);
+        this.xAutoscale = plot.getRangeAxis().isAutoRange();
+        this.xMax = plot.getRangeAxis().getUpperBound();
+        this.xMin = plot.getRangeAxis().getLowerBound();
+        plot = (XYPlot) Combinedplot.getSubplots().get(1);
+        this.yAutoscale = plot.getRangeAxis().isAutoRange();
+        this.yMax = plot.getRangeAxis().getUpperBound();
+        this.yMin = plot.getRangeAxis().getLowerBound();
+        plot = (XYPlot) Combinedplot.getSubplots().get(2);
+        this.cAutoscale = plot.getRangeAxis().isAutoRange();
+        this.cMax = plot.getRangeAxis().getUpperBound();
+        this.cMin = plot.getRangeAxis().getLowerBound();
+        this.pAutoscale = plot.getDomainAxis().isAutoRange();
+        this.pMax = plot.getDomainAxis().getUpperBound();
+        this.pMin = plot.getDomainAxis().getLowerBound();
+
+        if (this.xAutoscale) {
             textXMax.setDisable(true);
             textXMin.setDisable(true);
             checkBoxX.setSelected(true);
         }
-        
-        if(this.yAutoscale){
+
+        if (this.yAutoscale) {
             textYMax.setDisable(true);
             textYMin.setDisable(true);
             checkBoxY.setSelected(true);
         }
-        
-        if(this.cAutoscale){
+
+        if (this.cAutoscale) {
             textCMax.setDisable(true);
             textCMin.setDisable(true);
             checkBoxC.setSelected(true);
         }
-        
-        if(this.pAutoscale){
+
+        if (this.pAutoscale) {
             textPMax.setDisable(true);
             textPMin.setDisable(true);
             checkBoxP.setSelected(true);
         }
-        
+
         textYMax.setText(String.valueOf(yMax));
         textYMin.setText(String.valueOf(yMin));
         textXMax.setText(String.valueOf(xMax));
@@ -256,13 +252,13 @@ public class PlotPropertiesController{
         textCMin.setText(String.valueOf(cMin));
         textPMax.setText(String.valueOf(pMax));
         textPMin.setText(String.valueOf(pMin));
-        
+
     }
 
     @FXML
     private void handleSetAutoscale(ActionEvent event) {
-        
-        if(checkBoxX.isSelected()){
+
+        if (checkBoxX.isSelected()) {
             textXMax.setDisable(true);
             textXMin.setDisable(true);
             this.setxAutoscale(true);
@@ -271,8 +267,8 @@ public class PlotPropertiesController{
             textXMin.setDisable(false);
             this.setxAutoscale(false);
         }
-        
-        if(checkBoxY.isSelected()){
+
+        if (checkBoxY.isSelected()) {
             textYMax.setDisable(true);
             textYMin.setDisable(true);
             this.setyAutoscale(true);
@@ -281,8 +277,8 @@ public class PlotPropertiesController{
             textYMin.setDisable(false);
             this.setyAutoscale(false);
         }
-        
-        if(checkBoxC.isSelected()){
+
+        if (checkBoxC.isSelected()) {
             textCMax.setDisable(true);
             textCMin.setDisable(true);
             this.setyAutoscale(true);
@@ -291,8 +287,8 @@ public class PlotPropertiesController{
             textCMin.setDisable(false);
             this.setyAutoscale(false);
         }
-        
-        if(checkBoxP.isSelected()){
+
+        if (checkBoxP.isSelected()) {
             textPMax.setDisable(true);
             textPMin.setDisable(true);
             this.setyAutoscale(true);
@@ -301,7 +297,7 @@ public class PlotPropertiesController{
             textPMin.setDisable(false);
             this.setyAutoscale(false);
         }
-        
+
     }
-    
+
 }

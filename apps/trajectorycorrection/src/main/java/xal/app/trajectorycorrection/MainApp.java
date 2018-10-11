@@ -1,45 +1,40 @@
 /*
- * MainApp.java
+ * Copyright (C) 2018 European Spallation Source ERIC
  *
- * Created by Natalia Milas on 07.07.2017
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
  *
- * Copyright (c) 2017 European Spallation Source ERIC
- * Tunavägen 20
- * Lund, Sweden
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-
 package xal.app.trajectorycorrection;
 
-import javafx.application.Application;
+import java.io.IOException;
 import static javafx.application.Application.launch;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import xal.extension.fxapplication.FxApplication;
 
-public class MainApp extends Application {
+public class MainApp extends FxApplication {
 
     @Override
-    public void start(Stage stage) throws Exception { 
-        Parent root = FXMLLoader.load(getClass().getResource("/fxml/MainPanel.fxml"));
-        
-        Scene scene = new Scene(root);
-        scene.getStylesheets().add("/styles/Styles.css");
-        
-        stage.setOnCloseRequest(e -> System.exit(0));
-        
-        stage.setTitle("Trajectory Correction");
-        stage.setScene(scene);
-        stage.show();
+    public void start(Stage stage) throws IOException {
+
+        MAIN_SCENE = "/fxml/MainPanel.fxml";
+        CSS_STYLE = "/styles/Styles.css";
+        setApplicationName("Trajectory Correction");
+        DOCUMENT = new TrajectoryCorrectionDocument(stage);
+
+        super.initialize();
+        super.start(stage);
     }
 
     /**
