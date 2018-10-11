@@ -1,0 +1,71 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Mar 2, 2018, 2:41:47 PM
+    Author     : nataliamilas
+*/
+
+/*******************************************************************************
+ *                                                                             *
+ * Root					 				                       				   *
+ *                                                                             *
+ ******************************************************************************/
+.root {
+	/* Swatch Colors - Blue*/
+	-swatch-100: #BBDEFB;
+	-swatch-200: #90CAF9;
+	-swatch-300: #64BEF6;
+	-swatch-400: #42A5F5;
+	-swatch-500: #2196F3;
+	-fx-text-base-color: rgb(100.0, 100.0, 100.0);
+	/* Text defaults */
+	-fx-font-family: 'Roboto Medium';
+	-fx-font-size: 14.0px;
+	-fx-disabled-opacity: 0.6;
+	-fx-text-fill: -fx-text-base-color;
+}
+
+/*******************************************************************************
+ *                                                                             *
+ * Text, Text field & Text area                                                *
+ *                                                                             *
+ ******************************************************************************/
+.text {
+	-fx-font-smoothing-type: gray;
+	-fx-fill: white;
+}
+
+/*******************************************************************************
+ *                                                                             *
+ * CheckBox -> Material ToggleSwitch                                           *
+ *                                                                             *
+ ******************************************************************************/
+
+/*******************************************************************************
+ *                                                                             *
+ * CheckBox -> Material ToggleSwitch                                           *
+ *                                                                             *
+ ******************************************************************************/
+
+.button{    
+    -fx-background-color: blue;
+    -fx-background-radius: 30;
+    -fx-background-insets: 0;
+    -fx-text-fill: white;
+    -fx-padding: 5 10 5 10;
+}
+
+#positive{    
+    -fx-background-color: linear-gradient(#5ee825, #206802);    
+}
+
+#negative{    
+    -fx-background-color: linear-gradient(#ff5400, #be1d00);    
+}
+
+#disconected{    
+    -fx-background-color: magenta;
+}

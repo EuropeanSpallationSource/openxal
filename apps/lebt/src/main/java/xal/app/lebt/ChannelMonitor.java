@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
@@ -21,7 +22,6 @@ import xal.ca.ConnectionListener;
 import xal.ca.IEventSinkValue;
 import xal.ca.Monitor;
 import xal.ca.MonitorException;
-import xal.smf.impl.Magnet;
 
 /**
  *
@@ -47,6 +47,16 @@ class ChannelMonitor implements IEventSinkValue, ConnectionListener {
             channel.addConnectionListener(this);
         });
     }
+    
+    public void disconnectAndClearAll(){
+        inputChannels.keySet().forEach(channel->{
+            channel.removeConnectionListener(this);
+            monitor.clear();
+        });
+        
+        inputChannels.clear();
+                
+    }            
 
     @Override
     public void eventValue(ChannelRecord record, Channel chan) {
@@ -54,9 +64,11 @@ class ChannelMonitor implements IEventSinkValue, ConnectionListener {
             if(inputChannels.get(chan) instanceof Label){
                 Platform.runLater(
                 () -> {
-                    ((Label) inputChannels.get(chan)).setText(String.format("%.3f",record.doubleValue()));
-                    ((Label) inputChannels.get(chan)).setStyle("-fx-background-color: white;");                                         
+                    ((Label) inputChannels.get(chan)).setText(String.format("%.4f",record.doubleValue()));
+                    //((Label) inputChannels.get(chan)).setStyle("-fx-background-color: white;");                                         
+                    ((Label) inputChannels.get(chan)).setId("connected");
                 });
+                
             } else if (inputChannels.get(chan) instanceof Circle){
                 Platform.runLater(
                 () -> {
@@ -76,10 +88,25 @@ class ChannelMonitor implements IEventSinkValue, ConnectionListener {
             } else if (inputChannels.get(chan) instanceof TextField){
                 Platform.runLater(
                 () -> {                    
-                    ((TextField) inputChannels.get(chan)).setText(String.format("%.3f",record.doubleValue()));
-                    ((TextField) inputChannels.get(chan)).setStyle("-fx-background-color: white;");                     
+                    ((TextField) inputChannels.get(chan)).setText(String.format("%.4f",record.doubleValue()));
+                    //((TextField) inputChannels.get(chan)).setStyle("-fx-background-color: white;");                     
+                    ((TextField) inputChannels.get(chan)).setId("connected");
                 });                                                          
-            }      
+            } else if (inputChannels.get(chan) instanceof Button){                
+                Platform.runLater(
+                () -> {
+                    if(record.stringValue().equals("0")){
+                        ((Button) inputChannels.get(chan)).setText("NEG");
+                        ((Button) inputChannels.get(chan)).setId("negative");             
+                    } else if (record.stringValue().equals("1")){
+                        ((Button) inputChannels.get(chan)).setText("POS");                        
+                        ((Button) inputChannels.get(chan)).setId("positive");              
+                    } else {
+                        ((Button) inputChannels.get(chan)).setText("-");                        
+                        ((Button) inputChannels.get(chan)).setId("disconected");             
+                    }                                                    
+                });        
+            }
         }
     }
 
@@ -97,11 +124,13 @@ class ChannelMonitor implements IEventSinkValue, ConnectionListener {
     @Override
     public void connectionDropped(Channel chan) {
         if(inputChannels.get(chan) instanceof Label){
-            ((Label) inputChannels.get(chan)).setStyle("-fx-background-color: magenta;");
+            //((Label) inputChannels.get(chan)).setStyle("-fx-background-color: magenta;");
+            ((Label) inputChannels.get(chan)).setId("disconected");
         } else if (inputChannels.get(chan) instanceof Circle){
             ((Circle) inputChannels.get(chan)).setFill(Color.GRAY);
         } if(inputChannels.get(chan) instanceof TextField){
-            ((TextField) inputChannels.get(chan)).setStyle("-fx-background-color: magenta;");
+            //((TextField) inputChannels.get(chan)).setStyle("-fx-background-color: magenta;");
+            ((TextField) inputChannels.get(chan)).setId("disconected");
         }
         monitor.clear();
     }
