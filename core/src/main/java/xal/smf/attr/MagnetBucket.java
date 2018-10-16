@@ -39,7 +39,8 @@ public class MagnetBucket extends AttributeBucket {
                                                     "pathLength",   // path length
                                                     "dipoleEntrRotAngle",  // dipole rotation angle for entrance pole face
                                                     "dipoleExitRotAngle",  // dipole rotation angle for exit pole face
-						    "dipoleQuadComponent" // quadrupole component for bend dipole
+						    "dipoleQuadComponent", // quadrupole component for bend dipole
+                                                    "slices" // number of slices in which thin correctors are split
                                     };
     
     
@@ -64,6 +65,7 @@ public class MagnetBucket extends AttributeBucket {
         m_attDipoleEntrRotAngle = new Attribute(0.0 );
         m_attDipoleExitRotAngle = new Attribute(0.0 );
         m_attDipoleQuadComponent = new Attribute(0.0 );
+        m_attSlices = new Attribute(1);
 	
         super.registerAttribute(c_arrNames[0], m_attLenEff);
         super.registerAttribute(c_arrNames[1], m_attFldDflt);
@@ -75,6 +77,7 @@ public class MagnetBucket extends AttributeBucket {
         super.registerAttribute(c_arrNames[7], m_attDipoleEntrRotAngle);
         super.registerAttribute(c_arrNames[8], m_attDipoleExitRotAngle);
 	super.registerAttribute(c_arrNames[9], m_attDipoleQuadComponent);
+	super.registerAttribute(c_arrNames[10], m_attSlices);
     }
     
      
@@ -96,6 +99,8 @@ public class MagnetBucket extends AttributeBucket {
     public double   getDipoleExitRotAngle() { return m_attDipoleExitRotAngle.getDouble(); };
     /** return the quadrupole component for bend dipole */
     public double   getDipoleQuadComponent() { return m_attDipoleQuadComponent.getDouble(); };
+    /** return the number of slices in which thin correctors are split */
+    public int      getSlices() { return m_attSlices.getInteger(); };
     
     /** set the magnetic length (in m) 
      * @param dblVal magnetic length in meters
@@ -127,7 +132,12 @@ public class MagnetBucket extends AttributeBucket {
     /** set the quadrupole component for bend dipole
      * @param dblVal quadrupole component for bend dipole
      */
-    public void setDipoleQuadComponent(double dblVal)    { m_attDipoleQuadComponent.set(dblVal); };    
+    public void setDipoleQuadComponent(double dblVal)    { m_attDipoleQuadComponent.set(dblVal); };  
+    
+    /** set the number of slices in which thin correctors are split
+     * @param intVal number of slices
+     */
+    public void setSlices(int intVal) { m_attSlices.set(intVal); }
     
     /*
      *  Local Attributes
@@ -153,4 +163,6 @@ public class MagnetBucket extends AttributeBucket {
     private Attribute       m_attDipoleExitRotAngle;
     /** quadrupole component for bend dipole */
     private Attribute       m_attDipoleQuadComponent;
+    /** number of slices in which thin correctors are split */
+    private Attribute       m_attSlices;
 }
