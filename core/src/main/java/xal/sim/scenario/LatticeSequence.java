@@ -24,6 +24,7 @@ import xal.sim.sync.SynchronizationManager;
 import xal.smf.Accelerator;
 import xal.smf.AcceleratorNode;
 import xal.smf.AcceleratorSeq;
+import xal.smf.impl.DipoleCorr;
 import xal.smf.impl.Magnet;
 import xal.smf.impl.Marker;
 import xal.smf.impl.RfCavity;
@@ -670,6 +671,34 @@ public class LatticeSequence extends LatticeElement implements Iterable<LatticeE
                 LatticeElement  latCtrElem  = new LatticeElement(smfCntrMrkr, dblPosCtr, clsMrkrTyp, 0); 
                 latCtrElem.setModelingElementId("CENTER:" + smfNodeCurr.getId());    // CKA Sep 5, 2014: dashes seem to break lookups
                 this.addLatticeElement(latCtrElem);
+            }
+
+            // We need to split steering magnets and place a center marker.
+            if (smfNodeCurr instanceof DipoleCorr && ((Magnet) smfNodeCurr).getMagBucket().getSlices() != 1) {
+                // Adding a center marker
+                String strNodeId = smfNodeCurr.getId();
+                double dblPosCtr = latElem.getCenterPosition();
+                Class<? extends IComponent> clsMrkrTyp = this.mapNodeToMdl.getDefaultElementType();
+                AcceleratorNode smfCntrMrkr = new Marker(strNodeId + "-Center");
+
+                LatticeElement latCtrElem = new LatticeElement(smfCntrMrkr, dblPosCtr, clsMrkrTyp, 0);
+                latCtrElem.setModelingElementId("CENTER:" + smfNodeCurr.getId());
+                this.addLatticeElement(latCtrElem);
+
+                // Spliting the element in equally long slices.
+                int numberOfSlices = ((Magnet) smfNodeCurr).getMagBucket().getSlices();
+                double length = ((Magnet) smfNodeCurr).getEffLength();
+                double sliceLength = length / numberOfSlices;
+
+                // Move first slice
+                latElem.dblElemCntrPos -= length / 2.0 - sliceLength / 2.0;
+                latElem.dblElemEntrPos = latElem.dblElemExitPos = latElem.dblElemCntrPos;
+                // Create other slices
+                for (int i = 1; i < numberOfSlices; i++) {
+                    LatticeElement elemSplitPart = latElem.splitElementAt(latElem.dblElemCntrPos + sliceLength);
+                    this.addLatticeElement(elemSplitPart);
+                    latElem = elemSplitPart;
+                }
             }
         }
         
