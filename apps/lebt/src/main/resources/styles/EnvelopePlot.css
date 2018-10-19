@@ -17,13 +17,43 @@
     -fx-background-radius: 5px;
     -fx-padding: 5px;
 }
-.default-color0.chart-line-symbol { -fx-background-color: transparent, transparent;  }
-.default-color1.chart-line-symbol { -fx-background-color: transparent, transparent;  }
-.default-color2.chart-line-symbol { -fx-background-color: transparent, transparent;  }
-.default-color3.chart-line-symbol { -fx-background-color: transparent, transparent;  }
-.default-color4.chart-line-symbol { -fx-background-color: transparent, transparent;  }
-.default-color5.chart-line-symbol { -fx-background-color: transparent, transparent;  }
+.default-color0.chart-line-symbol { -fx-background-color: transparent, transparent; }
+.default-color1.chart-line-symbol { -fx-background-color: transparent, transparent; }
+.default-color2.chart-line-symbol { -fx-background-color: transparent, transparent; }
+.default-color3.chart-line-symbol { -fx-background-color: transparent, transparent; }
+.default-color4.chart-line-symbol { -fx-background-color: transparent, transparent; }
+.default-color5.chart-line-symbol { -fx-background-color: transparent, transparent; }
 .default-color6.chart-line-symbol { -fx-background-color: #ff9999, white; }
 .default-color7.chart-line-symbol { -fx-background-color: #99ccff, white; }
 
+.chart-legend {
+    -fx-background-color: transparent, transparent;      
+}
 
+.default-color0.chart-legend { -fx-background-color: transparent, transparent; visibility: hidden}        
+.default-color1.chart-legend { -fx-background-color: transparent, transparent; visibility: hidden}       
+.default-color2.chart-legend { -fx-background-color: #ff0000, white;}
+.default-color3.chart-legend { -fx-background-color: #006ddb, white;} 
+.default-color0.chart-legend { -fx-background-color: transparent, transparent; visibility: hidden}        
+.default-color1.chart-legend { -fx-background-color: transparent, transparent; visibility: hidden}     
+.default-color4.chart-legend { -fx-background-color: #ff9999, white;}
+.default-color5.chart-legend { -fx-background-color: #99ccff, white;}        
+.default-color6.chart-legend { -fx-background-color: transparent, transparent; visibility: hidden}       
+.default-color7.chart-legend { -fx-background-color: transparent, transparent; visibility: hidden}   
+
+.chart-legend-item-symbol {
+    -fx-background-color: transparent, transparent;    
+    -fx-background-insets: 0, 2;
+    -fx-background-radius: 5px;
+    -fx-padding: 5px;
+}
+
+.default-color0.chart-legend-item-symbol { -fx-background-color: transparent, transparent; visibility: hidden}        
+.default-color1.chart-legend-item-symbol { -fx-background-color: transparent, transparent; visibility: hidden}       
+.default-color2.chart-legend-item-symbol { -fx-background-color: #ff0000, white;}
+.default-color3.chart-legend-item-symbol { -fx-background-color: #006ddb, white;} 
+.default-color4.chart-legend-item-symbol { -fx-background-color: transparent, transparent; visibility: hidden}        
+.default-color5.chart-legend-item-symbol { -fx-background-color: transparent, transparent; visibility: hidden}     
+.default-color6.chart-legend-item-symbol { -fx-background-color: #ff9999, white;}
+.default-color7.chart-legend-item-symbol { -fx-background-color: #99ccff, white;}        
+.default-color9.chart-legend-item-symbol { -fx-background-color: transparent, transparent; visibility: hidden}       

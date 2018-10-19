@@ -1,6 +1,6 @@
 package xal.app.lebt;
 
-import com.sun.javafx.charts.Legend;
+//import com.sun.javafx.charts.Legend;
 import java.io.FileNotFoundException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -347,8 +347,8 @@ public class FXMLController implements Initializable {
         plot2.getStylesheets().add(this.getClass().getResource("/styles/EnvelopePlot.css").toExternalForm());
 
         //remove surrounding legend
-        Legend legend = (Legend)plot2.lookup(".chart-legend");
-        legend.getItems().remove(0, 2);     
+        //Legend legend = (Legend)plot2.lookup(".chart-legend");
+        //legend.getItems().remove(0, 2);     
 
         scale = 1;
         
@@ -1827,18 +1827,18 @@ public class FXMLController implements Initializable {
             if(comboBox_posNPM.isSelected()){
                 plot1.getData().add(seriesNPMpos[0]);
                 plot1.getData().add(seriesNPMpos[1]);
-                Legend legend = (Legend)plot1.lookup(".chart-legend");
-                legend.getItems().get(0).getSymbol().setStyle("-fx-background-color: #ff0000, white;");
-                legend.getItems().get(1).getSymbol().setStyle("-fx-background-color: #006ddb, white;");
-                legend.getItems().get(2).getSymbol().setStyle("-fx-background-color: #ff9999, white;");
-                legend.getItems().get(3).getSymbol().setStyle("-fx-background-color: #99ccff, white;");
+                //Legend legend = (Legend)plot1.lookup(".chart-legend");
+                //legend.getItems().get(0).getSymbol().setStyle("-fx-background-color: #ff0000, white;");
+                //legend.getItems().get(1).getSymbol().setStyle("-fx-background-color: #006ddb, white;");
+                //legend.getItems().get(2).getSymbol().setStyle("-fx-background-color: #ff9999, white;");
+                //legend.getItems().get(3).getSymbol().setStyle("-fx-background-color: #99ccff, white;");
 
             } else {
                 plot1.getData().remove(seriesNPMpos[0]);
                 plot1.getData().remove(seriesNPMpos[1]);
-                Legend legend = (Legend)plot1.lookup(".chart-legend");
-                legend.getItems().get(0).getSymbol().setStyle("-fx-background-color: #ff0000, white;");
-                legend.getItems().get(1).getSymbol().setStyle("-fx-background-color: #006ddb, white;");
+                //Legend legend = (Legend)plot1.lookup(".chart-legend");
+                //legend.getItems().get(0).getSymbol().setStyle("-fx-background-color: #ff0000, white;");
+                //legend.getItems().get(1).getSymbol().setStyle("-fx-background-color: #006ddb, white;");
             }
         }
 
@@ -1846,18 +1846,18 @@ public class FXMLController implements Initializable {
             if(comboBox_posNPM.isSelected()){
                 plot1.getData().add(seriesNPMposCyl[0]);
                 plot1.getData().add(seriesNPMposCyl[1]);
-                Legend legend = (Legend)plot1.lookup(".chart-legend");
-                legend.getItems().get(0).getSymbol().setStyle("-fx-background-color: #006400, white;");
-                legend.getItems().get(1).getSymbol().setStyle("-fx-background-color: #DAA520, white;");
-                legend.getItems().get(2).getSymbol().setStyle("-fx-background-color: #99ff99, white;");
-                legend.getItems().get(3).getSymbol().setStyle("-fx-background-color: #f2dca6, white;");
+                //Legend legend = (Legend)plot1.lookup(".chart-legend");
+                //legend.getItems().get(0).getSymbol().setStyle("-fx-background-color: #006400, white;");
+                //legend.getItems().get(1).getSymbol().setStyle("-fx-background-color: #DAA520, white;");
+                //legend.getItems().get(2).getSymbol().setStyle("-fx-background-color: #99ff99, white;");
+                //legend.getItems().get(3).getSymbol().setStyle("-fx-background-color: #f2dca6, white;");
 
             } else {
                 plot1.getData().remove(seriesNPMposCyl[0]);
                 plot1.getData().remove(seriesNPMposCyl[1]);
-                Legend legend = (Legend)plot1.lookup(".chart-legend");
-                legend.getItems().get(0).getSymbol().setStyle("-fx-background-color: #006400, white;");
-                legend.getItems().get(1).getSymbol().setStyle("-fx-background-color: #DAA520, white;");
+                //Legend legend = (Legend)plot1.lookup(".chart-legend");
+                //legend.getItems().get(0).getSymbol().setStyle("-fx-background-color: #006400, white;");
+                //legend.getItems().get(1).getSymbol().setStyle("-fx-background-color: #DAA520, white;");
             }
         }
 
@@ -1870,36 +1870,36 @@ public class FXMLController implements Initializable {
             if(comboBox_sigmaNPM.isSelected()){
                 plot2.getData().add(seriesNPMsigma[0]);
                 plot2.getData().add(seriesNPMsigma[1]);
-                Legend legend = (Legend)plot2.lookup(".chart-legend");
-                legend.getItems().remove(0, 4);
-                legend.getItems().get(0).getSymbol().setStyle("-fx-background-color: #ff0000, white;");
-                legend.getItems().get(1).getSymbol().setStyle("-fx-background-color: #006ddb, white;");
-                legend.getItems().get(2).getSymbol().setStyle("-fx-background-color: #ff9999, white;");
-                legend.getItems().get(3).getSymbol().setStyle("-fx-background-color: #99ccff, white;");
+                //Legend legend = (Legend)plot2.lookup(".chart-legend");
+                //legend.getItems().remove(0, 4);
+                //legend.getItems().get(0).getSymbol().setStyle("-fx-background-color: #ff0000, white;");
+                //legend.getItems().get(1).getSymbol().setStyle("-fx-background-color: #006ddb, white;");
+                //legend.getItems().get(2).getSymbol().setStyle("-fx-background-color: #ff9999, white;");
+                //legend.getItems().get(3).getSymbol().setStyle("-fx-background-color: #99ccff, white;");
             } else {
                 plot2.getData().remove(seriesNPMsigma[0]);
                 plot2.getData().remove(seriesNPMsigma[1]);
-                Legend legend = (Legend)plot2.lookup(".chart-legend");
-                int leg_size = legend.getItems().size();
-                legend.getItems().remove(0, leg_size-2);
-                legend.getItems().get(0).getSymbol().setStyle("-fx-background-color: #ff0000, white;");
-                legend.getItems().get(1).getSymbol().setStyle("-fx-background-color: #006ddb, white;");
+                //Legend legend = (Legend)plot2.lookup(".chart-legend");
+                //int leg_size = legend.getItems().size();
+                //legend.getItems().remove(0, leg_size-2);
+                //legend.getItems().get(0).getSymbol().setStyle("-fx-background-color: #ff0000, white;");
+                //legend.getItems().get(1).getSymbol().setStyle("-fx-background-color: #006ddb, white;");
             }
         }
 
         if(radioButtonCyl.isSelected()){
             if(comboBox_sigmaNPM.isSelected()){
                 plot2.getData().add(seriesNPMsigmaCyl);
-                Legend legend = (Legend)plot2.lookup(".chart-legend");
-                legend.getItems().remove(0, 3);
-                legend.getItems().get(0).getSymbol().setStyle("-fx-background-color: #006400, white;");
-                legend.getItems().get(1).getSymbol().setStyle("-fx-background-color: #99ff99, white;");
+                //Legend legend = (Legend)plot2.lookup(".chart-legend");
+                //legend.getItems().remove(0, 3);
+                //legend.getItems().get(0).getSymbol().setStyle("-fx-background-color: #006400, white;");
+                //legend.getItems().get(1).getSymbol().setStyle("-fx-background-color: #99ff99, white;");
             } else {
                 plot2.getData().remove(seriesNPMsigmaCyl);
-                Legend legend = (Legend)plot2.lookup(".chart-legend");
-                int leg_size = legend.getItems().size();
-                legend.getItems().remove(0, leg_size-1);
-                legend.getItems().get(0).getSymbol().setStyle("-fx-background-color: #006400, white;");
+                //Legend legend = (Legend)plot2.lookup(".chart-legend");
+                //int leg_size = legend.getItems().size();
+                //legend.getItems().remove(0, leg_size-1);
+                //legend.getItems().get(0).getSymbol().setStyle("-fx-background-color: #006400, white;");
 
             }
         }
@@ -2384,9 +2384,9 @@ public class FXMLController implements Initializable {
             plot1.getStylesheets().remove(0);
             plot1.getStylesheets().add(this.getClass().getResource("/styles/TrajectoryPlot.css").toExternalForm());
             //set colors
-            Legend legend = (Legend)plot1.lookup(".chart-legend");
-            legend.getItems().get(0).getSymbol().setStyle("-fx-background-color: #ff0000, white;");
-            legend.getItems().get(1).getSymbol().setStyle("-fx-background-color: #006ddb, white;");
+            //Legend legend = (Legend)plot1.lookup(".chart-legend");
+            //legend.getItems().get(0).getSymbol().setStyle("-fx-background-color: #ff0000, white;");
+            //legend.getItems().get(1).getSymbol().setStyle("-fx-background-color: #006ddb, white;");
         }
         else if (radioButtonCyl.isSelected()){
             plot1.getData().add(seriesR);
@@ -2395,9 +2395,9 @@ public class FXMLController implements Initializable {
             plot1.getStylesheets().remove(0);
             plot1.getStylesheets().add(this.getClass().getResource("/styles/TrajectoryPlotCyl.css").toExternalForm());
             //set colors
-            Legend legend = (Legend)plot1.lookup(".chart-legend");
-            legend.getItems().get(0).getSymbol().setStyle("-fx-background-color: #006400, white;");
-            legend.getItems().get(1).getSymbol().setStyle("-fx-background-color: #DAA520, white;");
+            //Legend legend = (Legend)plot1.lookup(".chart-legend");
+            //legend.getItems().get(0).getSymbol().setStyle("-fx-background-color: #006400, white;");
+            //legend.getItems().get(1).getSymbol().setStyle("-fx-background-color: #DAA520, white;");
         }
 
 
@@ -2435,10 +2435,10 @@ public class FXMLController implements Initializable {
             plot2.getStylesheets().remove(0);
             plot2.getStylesheets().add(this.getClass().getResource("/styles/EnvelopePlot.css").toExternalForm());
             //set legend colors
-            Legend legend = (Legend)plot2.lookup(".chart-legend");
-            legend.getItems().remove(0, 4);
-            legend.getItems().get(0).getSymbol().setStyle("-fx-background-color: #ff0000, white;");
-            legend.getItems().get(1).getSymbol().setStyle("-fx-background-color: #006ddb, white;");
+            //Legend legend = (Legend)plot2.lookup(".chart-legend");
+            //legend.getItems().remove(0, 4);
+            //legend.getItems().get(0).getSymbol().setStyle("-fx-background-color: #ff0000, white;");
+            //legend.getItems().get(1).getSymbol().setStyle("-fx-background-color: #006ddb, white;");
 
         }
         else if (radioButtonCyl.isSelected()){
@@ -2456,9 +2456,9 @@ public class FXMLController implements Initializable {
             plot2.getStylesheets().remove(0);
             plot2.getStylesheets().add(this.getClass().getResource("/styles/EnvelopePlotCyl.css").toExternalForm());
             //set legend colors
-            Legend legend = (Legend)plot2.lookup(".chart-legend");
-            legend.getItems().remove(0, 3);
-            legend.getItems().get(0).getSymbol().setStyle("-fx-background-color: #006400, white;");
+            //Legend legend = (Legend)plot2.lookup(".chart-legend");
+            //legend.getItems().remove(0, 3);
+            //legend.getItems().get(0).getSymbol().setStyle("-fx-background-color: #006400, white;");
         }
 
     }
