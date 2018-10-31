@@ -55,7 +55,7 @@ public class Hdf5Writer {
     private H5Node document;
     private File file;
 
-    H5File h5File;
+    private H5File h5File;
 
     private Hdf5Writer(H5Node document, File file) {
         this.document = document;
@@ -83,7 +83,7 @@ public class Hdf5Writer {
     }
 
     /**
-     * Writes a DataAdaptor to an HDF5 file especified by a File object.
+     * Writes a DataAdaptor to an HDF5 file specified by a File object.
      */
     static void writeToFile(H5Node document, final File file) throws IOException {
         Hdf5Writer hdf5Writer = new Hdf5Writer(document, file);
@@ -95,7 +95,7 @@ public class Hdf5Writer {
     }
 
     private void write() throws Exception {
-        // retrieve an instance of H5File
+        // retrieve an instance of H5File.
         FileFormat fileFormat = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
 
         if (fileFormat == null) {
@@ -111,7 +111,7 @@ public class Hdf5Writer {
             throw new RuntimeException();
         }
 
-        // open the file and retrieve the root group
+        // open the file.
         h5File.open();
 
         writeNode(document, null);
@@ -128,7 +128,7 @@ public class Hdf5Writer {
      * @throws Exception
      */
     private void writeNode(H5Node node, Group group) throws Exception {
-        // First writes all attributes as HDF% DataSets
+        // First writes all attributes as HDF5 DataSets
         for (Map.Entry<String, Attribute> entry : node.getAttributes().entrySet()) {
             createAttribute(entry.getKey(), entry.getValue(), group);
         }
@@ -155,7 +155,7 @@ public class Hdf5Writer {
 
         switch (attribute.getType()) {
             case Attribute.iBoolean:
-                dtype = h5File.createDatatype(Datatype.CLASS_INTEGER, 1, Datatype.NATIVE, Datatype.NATIVE);
+                dtype = h5File.createDatatype(Datatype.CLASS_CHAR, Byte.BYTES, Datatype.NATIVE, Datatype.NATIVE);
                 h5File.createScalarDS(attributeName, group, dtype, new long[]{1}, null, null, 0, new int[]{(attribute.getBoolean() ? 1 : 0)});
                 break;
             case Attribute.iInteger:

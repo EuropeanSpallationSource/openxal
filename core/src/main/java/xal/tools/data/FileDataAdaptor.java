@@ -48,15 +48,15 @@ public interface FileDataAdaptor extends DataAdaptor {
     /**
      * Convenience method for writing a DataAdaptor to a file
      */
-    void writeTo(File file) throws IOException;
+    public void writeTo(File file) throws IOException;
 
     /**
      * Write DataAdaptor to the specified url
      */
-    void writeToUrl(URL url) throws IOException;
+    public void writeToUrl(URL url) throws IOException;
 
     /**
      * Write DataAdaptor to the specified url
      */
-    void writeToUrlSpec(String urlSpec) throws IOException;
+    public void writeToUrlSpec(String urlSpec) throws IOException;
 }

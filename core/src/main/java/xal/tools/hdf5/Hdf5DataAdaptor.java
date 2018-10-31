@@ -33,6 +33,7 @@ package xal.tools.hdf5;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -75,7 +76,8 @@ public class Hdf5DataAdaptor implements FileDataAdaptor {
 
     /**
      * get the tag name for the main node
-     * @return 
+     *
+     * @return
      */
     @Override
     public String name() {
@@ -84,6 +86,7 @@ public class Hdf5DataAdaptor implements FileDataAdaptor {
 
     /**
      * check whether the main node has the specified attribute
+     *
      * @param attribute Name of the attribute to find.
      * @return Boolean specifying if the attribute exists.
      */
@@ -203,7 +206,7 @@ public class Hdf5DataAdaptor implements FileDataAdaptor {
 
     @Override
     public String[] attributes() {
-        return (String[]) mainNode.getAttributes().keySet().toArray();
+        return mainNode.getAttributes().keySet().toArray(new String[mainNode.getAttributes().size()]);
     }
 
     /**
@@ -258,6 +261,7 @@ public class Hdf5DataAdaptor implements FileDataAdaptor {
         Hdf5DataAdaptor childAdaptor = newAdaptor(node);
 
         mainNode.appendChild(node);
+        childNodes.add(node);
 
         return childAdaptor;
     }
