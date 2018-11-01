@@ -64,7 +64,8 @@ public class Hdf5DataAdaptor implements FileDataAdaptor {
     private Hdf5DataAdaptor(H5Node newNode) {
         mainNode = newNode;
         document = mainNode.getOwnerDocument();
-        childNodes = mainNode.getChildNodes();
+        childNodes = new ArrayList<>();
+        childNodes.addAll(newNode.getChildNodes());
     }
 
     /**
@@ -303,7 +304,7 @@ public class Hdf5DataAdaptor implements FileDataAdaptor {
         Hdf5DataAdaptor adaptor;
 
         adaptor = Hdf5DataAdaptor.newEmptyDocumentAdaptor();
-        
+
         Hdf5Reader.readFromUrlSpec(adaptor, urlPath);
 
         return adaptor;

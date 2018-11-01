@@ -134,8 +134,15 @@ public class Hdf5Writer {
         }
 
         // Then recursively writes the children nodes, creating new groups.
+        int i = 0;
         for (H5Node childNode : node.getChildNodes()) {
-            Group childGroup = h5File.createGroup(childNode.getNodeName(), group);
+            Group childGroup = h5File.createGroup(Integer.toString(i++)+"-"+childNode.getNodeName(), group);   
+            // Add tag name to the metadata
+            Datatype dtype = h5File.createDatatype(Datatype.CLASS_STRING, childNode.getNodeName().length()+1, Datatype.NATIVE, Datatype.NATIVE);
+            hdf.object.Attribute attr = new hdf.object.Attribute("tag", dtype, new long[] {1});
+            attr.setValue(new String[]{childNode.getNodeName()});
+            childGroup.writeMetadata(attr);
+            
             writeNode(childNode, childGroup);
         }
 

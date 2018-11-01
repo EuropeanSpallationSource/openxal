@@ -39,6 +39,7 @@ import hdf.object.FileFormat;
 import hdf.object.Group;
 import hdf.object.HObject;
 import hdf.object.h5.H5File;
+import java.net.URL;
 import javax.swing.tree.DefaultMutableTreeNode;
 import xal.tools.data.DataAdaptor;
 
@@ -81,7 +82,7 @@ public class Hdf5Reader {
         }
 
         // Open the HDF5 file with a given file name.
-        h5File = (H5File) fileFormat.createInstance(fileUrl, FileFormat.READ);
+        h5File = (H5File) fileFormat.createInstance(new URL(fileUrl).getFile(), FileFormat.READ);
 
         if (h5File == null) {
             Logger.getLogger(Hdf5Writer.class.getName()).log(Level.SEVERE, "Failed to create file:{0}", fileUrl);
@@ -108,7 +109,8 @@ public class Hdf5Reader {
             if (object instanceof Dataset) {
                 readAttribute(adaptor, (Dataset) object);
             } else if (object instanceof Group) {
-                DataAdaptor childAdaptor = adaptor.createChild(object.getName());
+                String tagName = ((String[]) ((hdf.object.Attribute) object.getMetadata().get(0)).getValue())[0];
+                DataAdaptor childAdaptor = adaptor.createChild(tagName);
                 readNode(childAdaptor, (Group) object);
             }
         }
