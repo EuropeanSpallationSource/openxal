@@ -297,6 +297,33 @@ public class Hdf5DataAdaptor implements FileDataAdaptor {
     }
 
     /**
+     * Generate an Hdf5DataAdaptor from a urlPath.
+     */
+    static public Hdf5DataAdaptor adaptorForUrl(final String urlPath) {
+        Hdf5DataAdaptor adaptor;
+
+        adaptor = Hdf5DataAdaptor.newEmptyDocumentAdaptor();
+        
+        Hdf5Reader.readFromUrlSpec(adaptor, urlPath);
+
+        return adaptor;
+    }
+
+    /**
+     * Generate an Hdf5DataAdaptor from a URL.
+     */
+    static public Hdf5DataAdaptor adaptorForUrl(final URL url) {
+        return Hdf5DataAdaptor.adaptorForUrl(url.toString());
+    }
+
+    /**
+     * Generate an Hdf5DataAdaptor from a File.
+     */
+    static public Hdf5DataAdaptor adaptorForFile(final File file) throws MalformedURLException {
+        return Hdf5DataAdaptor.adaptorForUrl(file.toURI().toURL());
+    }
+
+    /**
      * Create an empty HDF5 document
      *
      * @return DataAdaptor containing the root document node.
