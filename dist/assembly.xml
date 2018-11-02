@@ -30,7 +30,7 @@
             <directory>${basedir}/../third-party-libs/lib</directory>
             <outputDirectory>lib</outputDirectory>
             <includes>
-                <include>libjhdf5*</include>
+                <include>*hdf5_java*</include>
             </includes>
         </fileSet>
         <!-- Open XAL optics files -->

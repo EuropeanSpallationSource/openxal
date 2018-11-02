@@ -82,7 +82,7 @@ public class Hdf5Reader {
         }
 
         // Open the HDF5 file with a given file name.
-        h5File = (H5File) fileFormat.createInstance(new URL(fileUrl).getFile(), FileFormat.READ);
+        h5File = new H5File(new URL(fileUrl).getFile(), FileFormat.READ);
 
         if (h5File == null) {
             Logger.getLogger(Hdf5Writer.class.getName()).log(Level.SEVERE, "Failed to create file:{0}", fileUrl);
@@ -91,7 +91,8 @@ public class Hdf5Reader {
 
         // open the file and retrieve the root group
         h5File.open();
-        Group root = (Group) ((DefaultMutableTreeNode) h5File.getRootNode()).getUserObject();
+
+        Group root = (Group) h5File.getRootObject();
 
         readNode(adaptor, root);
 
@@ -109,7 +110,7 @@ public class Hdf5Reader {
             if (object instanceof Dataset) {
                 readAttribute(adaptor, (Dataset) object);
             } else if (object instanceof Group) {
-                String tagName = ((String[]) ((hdf.object.Attribute) object.getMetadata().get(0)).getValue())[0];
+                String tagName = ((String[]) ((hdf.object.Attribute) ((Group) object).getMetadata().get(0)).read())[0];
                 DataAdaptor childAdaptor = adaptor.createChild(tagName);
                 readNode(childAdaptor, (Group) object);
             }
@@ -126,13 +127,13 @@ public class Hdf5Reader {
      */
     private void readAttribute(DataAdaptor adaptor, Dataset dataset) throws Exception {
         dataset.init();
-
+        
         switch (dataset.getDatatype().getDatatypeClass()) {
-            case Datatype.CLASS_CHAR:
-                adaptor.setValue(dataset.getName(), (((byte[]) dataset.getData())[0] != 0));
-                break;
             case Datatype.CLASS_INTEGER:
-                switch (dataset.getDatatype().getDatatypeSize()) {
+                switch ((int) dataset.getDatatype().getDatatypeSize()) {
+                    case Byte.BYTES:
+                        adaptor.setValue(dataset.getName(), (((byte[]) dataset.getData())[0] != 0));
+                        break;
                     case Integer.BYTES:
                         adaptor.setValue(dataset.getName(), ((int[]) dataset.getData())[0]);
                         break;

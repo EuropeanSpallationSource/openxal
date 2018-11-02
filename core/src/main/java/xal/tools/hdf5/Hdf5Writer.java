@@ -42,12 +42,15 @@ import java.util.logging.Logger;
 import hdf.object.Datatype;
 import hdf.object.FileFormat;
 import hdf.object.Group;
+import hdf.object.h5.H5Datatype;
 import hdf.object.h5.H5File;
+import hdf.object.h5.H5Group;
+import hdf.object.h5.H5ScalarDS;
 import xal.smf.attr.Attribute;
 
 /**
  * Class that handles the writing of FileDataAdaptors to HDF5 files.
- * 
+ *
  * @author Juan F. Esteban Müller <JuanF.EstebanMuller@esss.se>
  */
 public class Hdf5Writer {
@@ -104,17 +107,16 @@ public class Hdf5Writer {
         }
 
         // create a new file with a given file name.
-        h5File = (H5File) fileFormat.createFile(file.getAbsolutePath(), FileFormat.FILE_CREATE_DELETE);
+        h5File = new H5File(file.getAbsolutePath(), FileFormat.CREATE);
+
+        h5File.open();
 
         if (h5File == null) {
             Logger.getLogger(Hdf5Writer.class.getName()).log(Level.SEVERE, "Failed to create file:{0}", file.getName());
             throw new RuntimeException();
         }
 
-        // open the file.
-        h5File.open();
-
-        writeNode(document, null);
+        writeNode(document, (Group) h5File.getRootObject());
 
         h5File.close();
     }
@@ -136,13 +138,12 @@ public class Hdf5Writer {
         // Then recursively writes the children nodes, creating new groups.
         int i = 0;
         for (H5Node childNode : node.getChildNodes()) {
-            Group childGroup = h5File.createGroup(Integer.toString(i++)+"-"+childNode.getNodeName(), group);   
+            Group childGroup = H5Group.create(Integer.toString(i++) + "-" + childNode.getNodeName(), group);
             // Add tag name to the metadata
-            Datatype dtype = h5File.createDatatype(Datatype.CLASS_STRING, childNode.getNodeName().length()+1, Datatype.NATIVE, Datatype.NATIVE);
-            hdf.object.Attribute attr = new hdf.object.Attribute("tag", dtype, new long[] {1});
-            attr.setValue(new String[]{childNode.getNodeName()});
+            Datatype dtype = new H5Datatype(Datatype.CLASS_STRING, childNode.getNodeName().length() + 1, Datatype.NATIVE, Datatype.NATIVE);
+            hdf.object.Attribute attr = new hdf.object.Attribute(childGroup, "tag", dtype, new long[]{1}, new String[]{childNode.getNodeName()});
             childGroup.writeMetadata(attr);
-            
+
             writeNode(childNode, childGroup);
         }
 
@@ -162,28 +163,28 @@ public class Hdf5Writer {
 
         switch (attribute.getType()) {
             case Attribute.iBoolean:
-                dtype = h5File.createDatatype(Datatype.CLASS_CHAR, Byte.BYTES, Datatype.NATIVE, Datatype.NATIVE);
-                h5File.createScalarDS(attributeName, group, dtype, new long[]{1}, null, null, 0, new int[]{(attribute.getBoolean() ? 1 : 0)});
+                dtype = new H5Datatype(Datatype.CLASS_INTEGER, Byte.BYTES, Datatype.NATIVE, Datatype.NATIVE);
+                H5ScalarDS.create(attributeName, group, dtype, new long[]{1}, null, null, 0, new int[]{(attribute.getBoolean() ? 1 : 0)});
                 break;
             case Attribute.iInteger:
-                dtype = h5File.createDatatype(Datatype.CLASS_INTEGER, Integer.BYTES, Datatype.NATIVE, Datatype.NATIVE);
-                h5File.createScalarDS(attributeName, group, dtype, new long[]{1}, null, null, 0, new long[]{attribute.getInteger()});
+                dtype = new H5Datatype(Datatype.CLASS_INTEGER, Integer.BYTES, Datatype.NATIVE, Datatype.NATIVE);
+                H5ScalarDS.create(attributeName, group, dtype, new long[]{1}, null, null, 0, new long[]{attribute.getInteger()});
                 break;
             case Attribute.iLong:
-                dtype = h5File.createDatatype(Datatype.CLASS_INTEGER, Long.BYTES, Datatype.NATIVE, Datatype.NATIVE);
-                h5File.createScalarDS(attributeName, group, dtype, new long[]{1}, null, null, 0, new long[]{attribute.getLong()});
+                dtype = new H5Datatype(Datatype.CLASS_INTEGER, Long.BYTES, Datatype.NATIVE, Datatype.NATIVE);
+                H5ScalarDS.create(attributeName, group, dtype, new long[]{1}, null, null, 0, new long[]{attribute.getLong()});
                 break;
             case Attribute.iDouble:
-                dtype = h5File.createDatatype(Datatype.CLASS_FLOAT, Double.BYTES, Datatype.NATIVE, Datatype.NATIVE);
-                h5File.createScalarDS(attributeName, group, dtype, new long[]{1}, null, null, 0, new double[]{attribute.getDouble()});
+                dtype = new H5Datatype(Datatype.CLASS_FLOAT, Double.BYTES, Datatype.NATIVE, Datatype.NATIVE);
+                H5ScalarDS.create(attributeName, group, dtype, new long[]{1}, null, null, 0, new double[]{attribute.getDouble()});
                 break;
             case Attribute.iString:
-                dtype = h5File.createDatatype(Datatype.CLASS_STRING, attribute.getString().length(), Datatype.NATIVE, Datatype.NATIVE);
-                h5File.createScalarDS(attributeName, group, dtype, new long[]{1}, null, null, 0, new String[]{attribute.getString()});
+                dtype = new H5Datatype(Datatype.CLASS_STRING, attribute.getString().length(), Datatype.NATIVE, Datatype.NATIVE);
+                H5ScalarDS.create(attributeName, group, dtype, new long[]{1}, null, null, 0, new String[]{attribute.getString()});
                 break;
             case Attribute.iArrDbl:
-                dtype = h5File.createDatatype(Datatype.CLASS_FLOAT, Double.BYTES, Datatype.NATIVE, Datatype.NATIVE);
-                h5File.createScalarDS(attributeName, group, dtype, new long[]{attribute.getArrDbl().length}, null, null, 0, attribute.getArrDbl());
+                dtype = new H5Datatype(Datatype.CLASS_FLOAT, Double.BYTES, Datatype.NATIVE, Datatype.NATIVE);
+                H5ScalarDS.create(attributeName, group, dtype, new long[]{attribute.getArrDbl().length}, null, null, 0, attribute.getArrDbl());
                 break;
         }
     }
