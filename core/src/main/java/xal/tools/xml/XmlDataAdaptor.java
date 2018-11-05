@@ -99,7 +99,7 @@ import xal.tools.StringJoiner;
  * 
  * @author  tap
  */
-public class XmlDataAdaptor implements DataAdaptor {
+public class XmlDataAdaptor implements FileDataAdaptor {
     private Document document;  // root document
     private Node mainNode;      // could be a document or an element
     private NodeList nodeList;  // child nodes
