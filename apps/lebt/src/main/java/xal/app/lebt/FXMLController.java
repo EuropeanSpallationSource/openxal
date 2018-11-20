@@ -2090,9 +2090,12 @@ public class FXMLController implements Initializable {
         nodeList = MainFunctions.mainDocument.getAccelerator().getSequence(sequenceName).getAllNodes();
         vacuumChamber = new double[2][nodeList.size()];
         for (AcceleratorNode node : nodeList) {
-            if(node.getAper() != null){
-              //  vacuumChamber[0][i]= pos[i];
-              //  vacuumChamber[1][i]= aperture[i];
+            if(node.getType().equals("VC")){
+                vacuumChamber[0][count]= node.getAper().getAperX();
+                vacuumChamber[1][count]= node.getAper().getAperY();
+                count+=1;
+            } else {
+                
             }
         }    
 
