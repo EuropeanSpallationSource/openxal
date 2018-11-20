@@ -175,7 +175,7 @@ public class SolFieldMap extends ThickElectromagnet {
         }
         
         //Add misalignement error
-        transferMatrix = applySolenoidErrors(transferMatrix, probe, dblLen);
+        transferMatrix = applySliceErrors(transferMatrix, probe, dblLen);
         
         return new PhaseMap(transferMatrix);
     }

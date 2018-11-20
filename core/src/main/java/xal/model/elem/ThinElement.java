@@ -212,7 +212,7 @@ public abstract class ThinElement extends Element {
      * @see PhaseMatrix
      * @see PhaseMatrix#translation(PhaseVector)
      */
-    protected PhaseMatrix applyErrors(PhaseMatrix matPhi)
+ /**   protected PhaseMatrix applyErrors(PhaseMatrix matPhi)
     {		
 			double px = getPhiX();
 		    double py = getPhiY();
@@ -239,6 +239,67 @@ public abstract class ThinElement extends Element {
 	        }
 		  		   
 	        return matPhi;
-    }
+    }**/
+    
+    /**
+     * <h2>Add Rotation and Displacement Error to Transfer Matrix</h2>
+     * <p>
+     * Method to add the effects of a spatial rotation and displacement to the
+     * beamline element represented by the given transfer matrix.
+     * 
+     * Method is optimized to add transformation only to the first and last sub-slice of
+     * the element. Besides reducing number of matrix multiplications, there is also less
+     * numerical error.
+     *
+     * @param   matPhi      transfer matrix <b>&Phi;</b> to be processed
+     * @param   probe       instance of the probe
+     * @param   length      element length
+     * @return  transfer matrix <b>&Phi;</b> after applying displacement
+     * 
+     * @author  Natalia Milas
+     * 
+     * @see PhaseMatrix
+     * @see PhaseMatrix#translation(PhaseVector)
+     */
+    protected PhaseMatrix applyErrors(PhaseMatrix matPhi, double length)
+    {
+        double px = getPhiX();
+        double py = getPhiY();
+        double pz = getPhiZ();
+        double dx = getAlignX();
+        double dy = getAlignY();
+        double dz = getAlignZ();
+        if (px != 0. || py != 0.|| dx !=0 || dy != 0) {
+            PhaseMatrix T = PhaseMatrix.translation(new PhaseVector(py*length/2-dx, -py, px*length/2-dy, -px, 0., 0.));		    	
+            matPhi = matPhi.times(T);
+        }
+
+        if (pz != 0.) {		   
+            PhaseMatrix R = PhaseMatrix.rotationProduct(R3x3.newRotationZ(-pz));		    
+            matPhi = matPhi.times(R);
+        }	
+        if ((dx != 0)) {
+            PhaseMatrix T = PhaseMatrix.spatialTranslation(new R3(0.0, 0.0, -dz));
+            matPhi = matPhi.times(T);
+        }
+
+
+        if (px != 0. || py != 0. || dx !=0 || dy != 0) {
+            PhaseMatrix T = PhaseMatrix.translation(new PhaseVector(-py*length/2+dx, py, -px*length/2+dy, px, 0., 0.)); 		    
+            matPhi = T.times(matPhi);
+        }
+
+        if (pz != 0.) {		   
+            PhaseMatrix R = PhaseMatrix.rotationProduct(R3x3.newRotationZ(pz));
+            matPhi = R.times(matPhi);	    		    
+        }
+
+        if ((dx != 0)) {
+            PhaseMatrix T = PhaseMatrix.spatialTranslation(new R3(0.0,0.0,dz));
+             matPhi = T.times(matPhi);
+        } 
+        
+        return matPhi;    
+    }   
     
 };

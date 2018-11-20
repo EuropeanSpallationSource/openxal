@@ -189,13 +189,12 @@ public class IdealMagSolenoid  extends ThickElectromagnet {
         matPhi.setSubMatrix( 4, 5, 4, 5, arr0 ); // a drift space longitudinally       
         matPhi.setElem( 6, 6, 1.0 ); // homogeneous coordinates      
         
-        // apply alignment and rotation errors
+        // apply alignment and rotation errors taking care of the think matrix entrance and exit slices
         // 2018-07-02 Natalia Milas
-	matPhi = applySolenoidErrors(matPhi, probe, length);	
-        //matPhi = applyErrors2(matPhi, probe, length);	
-        //matPhi = applyErrors(matPhi, probe, length);	
+	matPhi = applySliceErrors(matPhi, probe, length);	
+      
         if (isLastSubslice(probe.getPosition() + length)) {
-            Mexit = applySolenoidErrors(Mexit, probe, 0);
+            Mexit = applySliceErrors(Mexit, probe, 0);
             matPhi = Mexit.times(matPhi);
         }
         

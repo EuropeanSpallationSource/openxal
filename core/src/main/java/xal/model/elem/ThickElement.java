@@ -188,6 +188,8 @@ public abstract class ThickElement extends Element {
      * numerical error.
      *
      * @param   matPhi      transfer matrix <b>&Phi;</b> to be processed
+     * @param   probe       instance of the probe
+     * @param   length      element length
      * @return  transfer matrix <b>&Phi;</b> after applying displacement
      * 
      * @author  Ivo List
@@ -257,13 +259,14 @@ public abstract class ThickElement extends Element {
      *
      * @param   matPhi      transfer matrix <b>&Phi;</b> to be processed
      * @param   probe       instance of the probe     
+     * @param   length      total think element length
      * @return              transfer matrix <b>&Phi;</b> after applying displacement and rotation
      * 
      * @author  Natalia Milas
      * 
      * @see PhaseMatrix
      */
-    protected PhaseMatrix applySolenoidErrors(PhaseMatrix matPhi, IProbe probe, double length)
+    protected PhaseMatrix applySliceErrors(PhaseMatrix matPhi, IProbe probe, double length)
     {
             double px = getPhiX();
             double py = getPhiY();

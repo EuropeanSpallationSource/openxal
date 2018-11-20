@@ -251,6 +251,10 @@ public class MagFieldMap3D extends ThickElectromagnet {
 
             transferMatrix = fieldMapIntegrator(probe, spacingZ, Bx0, By0, Bz0, dBx_dx, dBx_dy, dBx_dz, dBy_dx, dBy_dy, dBy_dz).times(transferMatrix);            
         }
+        
+        //Add misalignement error
+        transferMatrix = applySliceErrors(transferMatrix, probe, dblLen);
+        
         return new PhaseMap(transferMatrix);
     }
 

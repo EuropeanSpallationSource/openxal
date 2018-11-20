@@ -38,7 +38,8 @@ public abstract class SectionEndpoint extends ThinElement {
 	protected double energyGain(IProbe probe) {
 		return 0;
 	}
-
+       
+        
 	public static class SectionStart extends SectionEndpoint {
 		/** string type identifier for all SectionEndpoint objects */
 	    public static final String s_strType = "BeginSection";
@@ -50,10 +51,11 @@ public abstract class SectionEndpoint extends ThinElement {
 		/**
 		 * @see xal.model.elem.ThinElement#transferMap(xal.model.IProbe)
 		 */
+                
 		@Override
 		protected PhaseMap transferMap(IProbe probe) throws ModelException {
 			PhaseMatrix matPhi = PhaseMatrix.identity();
-			
+			/**
 			double px = getPhiX();
 		    double py = getPhiY();
 		    double pz = getPhiZ();
@@ -74,7 +76,7 @@ public abstract class SectionEndpoint extends ThinElement {
 	        if ((dx != 0)||(dy != 0)||(dz !=0)) {
 	            PhaseMatrix T = PhaseMatrix.spatialTranslation(new R3(-dx, -dy, -dz));
 	        	matPhi = matPhi.times(T);
-	        }			
+	        }**/			
 			
 			return new PhaseMap(matPhi);
 		}
@@ -92,10 +94,11 @@ public abstract class SectionEndpoint extends ThinElement {
 		/**
 		 * @see xal.model.elem.ThinElement#transferMap(xal.model.IProbe)
 		 */
+                
 		@Override
 		protected PhaseMap transferMap(IProbe probe) throws ModelException {
 			PhaseMatrix matPhi = PhaseMatrix.identity();
-
+                        /** 
 			double px = getPhiX();
 		    double py = getPhiY();
 		    double pz = getPhiZ();
@@ -117,7 +120,7 @@ public abstract class SectionEndpoint extends ThinElement {
 	        	 PhaseMatrix T = PhaseMatrix.spatialTranslation(new R3(dx,dy,dz));
 	             matPhi = T.times(matPhi);
 	        } 
-			   		   
+		**/	   		   
 			return new PhaseMap(matPhi);
 		}
 		

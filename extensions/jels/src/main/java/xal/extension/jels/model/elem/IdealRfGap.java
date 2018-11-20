@@ -405,7 +405,7 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
         }
 
         matPhi.setElem(6, 6, 1);
-        matPhi = applyErrors(matPhi);
+        matPhi = applyErrors(matPhi,cellLength);
 
         return new PhaseMap(matPhi);
     }
