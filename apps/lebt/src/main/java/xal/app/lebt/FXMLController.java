@@ -1,7 +1,6 @@
 package xal.app.lebt;
 
 //import com.sun.javafx.charts.Legend;
-import java.io.FileNotFoundException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -80,7 +79,9 @@ import xal.smf.AcceleratorNode;
 import xal.smf.AcceleratorSeq;
 import xal.smf.AcceleratorSeqCombo;
 import xal.smf.impl.CurrentMonitor;
+import xal.smf.impl.HDipoleCorr;
 import xal.smf.impl.MagnetPowerSupply;
+import xal.smf.impl.VDipoleCorr;
 import xal.tools.data.DataAdaptor;
 import xal.tools.math.Complex;
 import xal.tools.xml.XmlDataAdaptor;
@@ -223,11 +224,7 @@ public class FXMLController implements Initializable {
     @FXML private TextField textField_CH1current;
     @FXML private TextField textField_sol2current;
     @FXML private TextField textField_CV2current;
-    @FXML private TextField textField_CH2current;
-    @FXML private Button button_CV1pol;
-    @FXML private Button button_CH1pol;
-    @FXML private Button button_CV2pol;
-    @FXML private Button button_CH2pol;
+    @FXML private TextField textField_CH2current;   
     @FXML private TextField textField_sol1field;
     @FXML private TextField textField_CV1field;
     @FXML private TextField textField_CH1field;
@@ -267,11 +264,7 @@ public class FXMLController implements Initializable {
         radioButtonOffsetOn.setToggleGroup(offsetGroup);
         radioButtonOffsetOff.setSelected(true);
 
-        try {
-            surroundings = readVacuumChamber();
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        surroundings = getVacuumChamber("LEBT");        
 
         //initializing series
         seriesX = new XYChart.Series();
@@ -736,8 +729,7 @@ public class FXMLController implements Initializable {
         mainTabPane.setDisable(true);   
         //Initializes TextField 
         setConnectAndMonitor();
-        initBIElements();
-        setTempFldRB();
+        initBIElements();        
         //initDisplayFields();
         
         //Initializes Plots
@@ -745,46 +737,6 @@ public class FXMLController implements Initializable {
         addEnvelopeSeriesToPlot();
         displayPlots();                                                  
                 
-    }
-    
-    private void setTempFldRB(){       
-        
-        label_CV1currentRB.textProperty().addListener((obs, oldVal, newVal) ->{
-            if(!newVal.equals(oldVal)){
-                if(button_CV1pol.getText().equals("POS")){
-                    label_CV1fieldRB.setText(String.format("%.4f", 8.5833e-05*Double.parseDouble(label_CV1currentRB.getText())));
-                } else if (button_CV1pol.getText().equals("NEG")){
-                    label_CV1fieldRB.setText(String.format("%.4f", -1*8.5833e-05*Double.parseDouble(label_CV1currentRB.getText())));
-                }   
-            }
-        });
-        label_CV2currentRB.textProperty().addListener((obs, oldVal, newVal) ->{
-            if(!newVal.equals(oldVal)){
-                if(button_CV2pol.getText().equals("POS")){
-                    label_CV2fieldRB.setText(String.format("%.4f", 8.5833e-05*Double.parseDouble(label_CV2currentRB.getText())));
-                } else if (button_CV2pol.getText().equals("NEG")){
-                    label_CV2fieldRB.setText(String.format("%.4f", -1*8.5833e-05*Double.parseDouble(label_CV2currentRB.getText())));
-                }   
-            }
-        });
-        label_CH1currentRB.textProperty().addListener((obs, oldVal, newVal) ->{
-            if(!newVal.equals(oldVal)){
-                if(button_CH1pol.getText().equals("POS")){
-                    label_CH1fieldRB.setText(String.format("%.4f", 7.1667e-05*Double.parseDouble(label_CH1currentRB.getText())));
-                } else if (button_CH1pol.getText().equals("NEG")){
-                    label_CH1fieldRB.setText(String.format("%.4f", -1*7.1667e-05*Double.parseDouble(label_CH1currentRB.getText())));
-                }      
-            }
-        });
-        label_CH2currentRB.textProperty().addListener((obs, oldVal, newVal) ->{
-            if(!newVal.equals(oldVal)){
-                if(button_CH2pol.getText().equals("POS")){
-                    label_CH2fieldRB.setText(String.format("%.4f", 7.1667e-05*Double.parseDouble(label_CH2currentRB.getText())));
-                } else if (button_CH2pol.getText().equals("NEG")){
-                    label_CH2fieldRB.setText(String.format("%.4f", -1*7.1667e-05*Double.parseDouble(label_CH2currentRB.getText())));
-                }    
-            }
-        });                
     }
     
     //------------------------INIT METHODS -------------------------------------
@@ -1029,12 +981,11 @@ public class FXMLController implements Initializable {
                 textField_sol2current.setDisable(true);
             }    
             
-            if(sequence.getNodesOfType("DCV").size()>3){
+            if(sequence.getNodesOfType("DCV").size()>1){
                 AcceleratorNode CV1 = sequence.getNodesOfType("DCV").get(0);
                 displayValues.put(CV1.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE),label_CV1currentRB);
                 //displayValues.put(CV1.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),label_CV1current);
-                //displayValues.put(CV1.getChannel(VDipoleCorr.FIELD_RB_HANDLE),label_CV1fieldRB);                
-                displayValues.put(CHANNEL_FACTORY.getChannel("LEBT-010:BMD-CV-01:PolR"),button_CV1pol);
+                displayValues.put(CV1.getChannel(VDipoleCorr.FIELD_RB_HANDLE),label_CV1fieldRB);                
                 setValues.put(CV1.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),textField_CV1current);
                 textField_CV1current.focusedProperty().addListener((obs, oldVal, newVal) ->{
                     if(!newVal){ 
@@ -1067,11 +1018,10 @@ public class FXMLController implements Initializable {
         
                 
                 
-                AcceleratorNode CV2 = sequence.getNodesOfType("DCV").get(3);
+                AcceleratorNode CV2 = sequence.getNodesOfType("DCV").get(1);
                 displayValues.put(CV2.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE),label_CV2currentRB);
                 //displayValues.put(CV2.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),label_CV2current);
-                //displayValues.put(CV2.getChannel(VDipoleCorr.FIELD_RB_HANDLE),label_CV2fieldRB);               
-                displayValues.put(CHANNEL_FACTORY.getChannel("LEBT-010:BMD-CV-02:PolR"),button_CV2pol);
+                displayValues.put(CV2.getChannel(VDipoleCorr.FIELD_RB_HANDLE),label_CV2fieldRB);               
                 setValues.put(CV2.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),textField_CV2current);
                 textField_CV2current.focusedProperty().addListener((obs, oldVal, newVal) ->{
                     if(!newVal){ 
@@ -1112,12 +1062,11 @@ public class FXMLController implements Initializable {
                 textField_CV2current.setDisable(true);
             }    
             
-            if(sequence.getNodesOfType("DCH").size()>3){
+            if(sequence.getNodesOfType("DCH").size()>1){
                 AcceleratorNode CH1 = sequence.getNodesOfType("DCH").get(0);
                 displayValues.put(CH1.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE),label_CH1currentRB);
                 //displayValues.put(CH1.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),label_CH1current);
-                //displayValues.put(CH1.getChannel(HDipoleCorr.FIELD_RB_HANDLE),label_CH1fieldRB);               
-                displayValues.put(CHANNEL_FACTORY.getChannel("LEBT-010:BMD-CH-01:PolR"),button_CH1pol);
+                displayValues.put(CH1.getChannel(HDipoleCorr.FIELD_RB_HANDLE),label_CH1fieldRB);               
                 setValues.put(CH1.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),textField_CH1current);
                 textField_CH1current.focusedProperty().addListener((obs, oldVal, newVal) ->{
                     if(!newVal){ 
@@ -1149,11 +1098,10 @@ public class FXMLController implements Initializable {
                 });
         
                 
-                AcceleratorNode CH2 = sequence.getNodesOfType("DCH").get(3);
+                AcceleratorNode CH2 = sequence.getNodesOfType("DCH").get(1);
                 displayValues.put(CH2.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE),label_CH2currentRB);
                 //displayValues.put(CH2.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),label_CH2current);
-                //displayValues.put(CH2.getChannel(HDipoleCorr.FIELD_RB_HANDLE),label_CH2fieldRB);              
-                displayValues.put(CHANNEL_FACTORY.getChannel("LEBT-010:BMD-CH-02:PolR"),button_CH2pol);
+                displayValues.put(CH2.getChannel(HDipoleCorr.FIELD_RB_HANDLE),label_CH2fieldRB);              
                 setValues.put(CH2.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),textField_CH2current);
                 textField_CH2field.focusedProperty().addListener((obs, oldVal, newVal) ->{
                     if(!newVal){ 
@@ -2131,33 +2079,22 @@ public class FXMLController implements Initializable {
     }        
 
     /**
-     * Retrieves and displays trajectory plots
-     * @param newRun the simulation
+     * Retrieves and displays vaccum chamber apertures
      */
-    private double[][] readVacuumChamber() throws FileNotFoundException{
+    private double[][] getVacuumChamber(String sequenceName){
 
-        double[][] vacuumChamber = null;
-        DataAdaptor readAdp = null;
-        URL file;
+        double[][] vacuumChamber = null;    
+        List<AcceleratorNode> nodeList;
+        Integer count = 0;
 
-        try {
-            file = this.getClass().getResource("/vacuum_chamber/VacuumChamber.xml");
-            readAdp = XmlDataAdaptor.adaptorForUrl(file,false);
-            DataAdaptor blockheader = readAdp.childAdaptor("LEBTboundaries");
-            DataAdaptor blockPoints = blockheader.childAdaptor("points");
-            int num= blockPoints.intValue("numpoints");
-            DataAdaptor blockPosition = blockheader.childAdaptor("position");
-            double[] pos=blockPosition.doubleArray("data");
-            DataAdaptor blockAperture = blockheader.childAdaptor("chamber");
-            double[] aperture=blockAperture.doubleArray("data");
-            vacuumChamber = new double[2][num];
-            for (int i = 0; i < num ; i++) {
-                vacuumChamber[0][i]= pos[i];
-                vacuumChamber[1][i]= aperture[i];
+        nodeList = MainFunctions.mainDocument.getAccelerator().getSequence(sequenceName).getAllNodes();
+        vacuumChamber = new double[2][nodeList.size()];
+        for (AcceleratorNode node : nodeList) {
+            if(node.getAper() != null){
+              //  vacuumChamber[0][i]= pos[i];
+              //  vacuumChamber[1][i]= aperture[i];
             }
-        } catch (XmlDataAdaptor.ParseException | XmlDataAdaptor.ResourceNotFoundException ex) {
-            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        }    
 
         return vacuumChamber;
 
@@ -2489,7 +2426,6 @@ public class FXMLController implements Initializable {
         }
     }
 
-    @FXML
     private void handlePolarityChange(ActionEvent event) {
         
         ChannelFactory CHANNEL_FACTORY = ChannelFactory.defaultFactory();

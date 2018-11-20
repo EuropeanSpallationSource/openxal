@@ -155,7 +155,7 @@
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="177.0" prefWidth="1138.0">
                      <children>
-                        <GridPane layoutX="14.0" layoutY="14.0" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="30.0">
+                        <GridPane layoutX="14.0" layoutY="14.0" AnchorPane.leftAnchor="50.0" AnchorPane.topAnchor="30.0">
                           <columnConstraints>
                             <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="90.0" />
                               <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="90.0" />
@@ -163,8 +163,6 @@
                               <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="181.0" minWidth="10.0" prefWidth="90.0" />
                               <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="181.0" minWidth="5.0" prefWidth="5.0" />
                               <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="181.0" minWidth="10.0" prefWidth="90.0" />
-                              <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="181.0" minWidth="5.0" prefWidth="5.0" />
-                              <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="181.0" minWidth="10.0" prefWidth="80.0" />
                               <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="181.0" minWidth="5.0" prefWidth="5.0" />
                               <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="181.0" minWidth="10.0" prefWidth="90.0" />
                           </columnConstraints>
@@ -205,18 +203,13 @@
                               <Label fx:id="label_sol2fieldRB" layoutX="195.0" layoutY="132.0" prefHeight="27.0" prefWidth="90.0" style="-fx-background-color: ffffff;" GridPane.columnIndex="5" GridPane.rowIndex="4" />
                               <Label fx:id="label_CV2fieldRB" layoutX="195.0" layoutY="162.0" prefHeight="27.0" prefWidth="90.0" style="-fx-background-color: ffffff;" GridPane.columnIndex="5" GridPane.rowIndex="5" />
                               <Label fx:id="label_CH2fieldRB" layoutX="195.0" layoutY="192.0" prefHeight="27.0" prefWidth="90.0" style="-fx-background-color: ffffff;" GridPane.columnIndex="5" GridPane.rowIndex="6" />
-                              <Label text="Polarity" GridPane.columnIndex="7" />
-                              <Button id="disconected" fx:id="button_CV1pol" mnemonicParsing="false" onAction="#handlePolarityChange" stylesheets="@../styles/PolaritySwitch.css" text="POS" GridPane.columnIndex="7" GridPane.rowIndex="2" />
-                              <Button id="disconected" fx:id="button_CH1pol" mnemonicParsing="false" onAction="#handlePolarityChange" stylesheets="@../styles/PolaritySwitch.css" text="POS" GridPane.columnIndex="7" GridPane.rowIndex="3" />
-                              <Button id="disconected" fx:id="button_CV2pol" mnemonicParsing="false" onAction="#handlePolarityChange" stylesheets="@../styles/PolaritySwitch.css" text="POS" GridPane.columnIndex="7" GridPane.rowIndex="5" />
-                              <Button id="disconected" fx:id="button_CH2pol" mnemonicParsing="false" onAction="#handlePolarityChange" stylesheets="@../styles/PolaritySwitch.css" text="POS" GridPane.columnIndex="7" GridPane.rowIndex="6" />
-                              <Label fx:id="label_Field" text="Field (T)" GridPane.columnIndex="9" />
-                              <TextField fx:id="textField_sol1field" prefWidth="90.0" GridPane.columnIndex="9" GridPane.rowIndex="1" />
-                              <TextField fx:id="textField_CV1field" prefWidth="90.0" GridPane.columnIndex="9" GridPane.rowIndex="2" />
-                              <TextField fx:id="textField_CH1field" prefWidth="90.0" GridPane.columnIndex="9" GridPane.rowIndex="3" />
-                              <TextField fx:id="textField_sol2field" prefWidth="90.0" GridPane.columnIndex="9" GridPane.rowIndex="4" />
-                              <TextField fx:id="textField_CV2field" prefWidth="90.0" GridPane.columnIndex="9" GridPane.rowIndex="5" />
-                              <TextField fx:id="textField_CH2field" prefWidth="90.0" GridPane.columnIndex="9" GridPane.rowIndex="6" />
+                              <Label fx:id="label_Field" text="Field (T)" GridPane.columnIndex="7" />
+                              <TextField fx:id="textField_sol1field" prefWidth="90.0" GridPane.columnIndex="7" GridPane.rowIndex="1" />
+                              <TextField fx:id="textField_CV1field" prefWidth="90.0" GridPane.columnIndex="7" GridPane.rowIndex="2" />
+                              <TextField fx:id="textField_CH1field" prefWidth="90.0" GridPane.columnIndex="7" GridPane.rowIndex="3" />
+                              <TextField fx:id="textField_sol2field" prefWidth="90.0" GridPane.columnIndex="7" GridPane.rowIndex="4" />
+                              <TextField fx:id="textField_CV2field" prefWidth="90.0" GridPane.columnIndex="7" GridPane.rowIndex="5" />
+                              <TextField fx:id="textField_CH2field" prefWidth="90.0" GridPane.columnIndex="7" GridPane.rowIndex="6" />
                            </children>
                         </GridPane>
                         <Label layoutX="9.0" layoutY="5.0" text="Magnets:" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="10.0">

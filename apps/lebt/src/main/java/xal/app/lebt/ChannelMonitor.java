@@ -92,21 +92,7 @@ class ChannelMonitor implements IEventSinkValue, ConnectionListener {
                     //((TextField) inputChannels.get(chan)).setStyle("-fx-background-color: white;");                     
                     ((TextField) inputChannels.get(chan)).setId("connected");
                 });                                                          
-            } else if (inputChannels.get(chan) instanceof Button){                
-                Platform.runLater(
-                () -> {
-                    if(record.stringValue().equals("0")){
-                        ((Button) inputChannels.get(chan)).setText("NEG");
-                        ((Button) inputChannels.get(chan)).setId("negative");             
-                    } else if (record.stringValue().equals("1")){
-                        ((Button) inputChannels.get(chan)).setText("POS");                        
-                        ((Button) inputChannels.get(chan)).setId("positive");              
-                    } else {
-                        ((Button) inputChannels.get(chan)).setText("-");                        
-                        ((Button) inputChannels.get(chan)).setId("disconected");             
-                    }                                                    
-                });        
-            }
+            } 
         }
     }
 
