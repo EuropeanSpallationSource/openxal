@@ -212,7 +212,7 @@ public class DynacGenerator {
                     devStr = "";
                 
                 // magnet aperture
-                double aper = element.getAcceleratorNode().getAper().getAperX();
+                double aper = element.getAcceleratorNode().getAper().getAperX()[0];
                 
                 // for PM quads, i.e. always use design field
                 if (element.getAcceleratorNode().getType().equals("PMQH") ||

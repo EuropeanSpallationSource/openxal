@@ -35,7 +35,7 @@ pipeline {
             steps {
                 timestamps {
                     withCredentials([string(credentialsId: 'sonarqube', variable: 'TOKEN')]) {
-                        sh 'mvn -Dsonar.login=${TOKEN} sonar:sonar'
+                        sh 'mvn -Dsonar.login=${TOKEN} -Dsonar.branch=${BRANCH_NAME} sonar:sonar'
                     }
                 }
             }

@@ -18,10 +18,10 @@
 package xal.extension.jelog;
 
 import java.io.IOException;
+import java.util.List;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.image.WritableImage;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import se.esss.jelog.Attachment;
@@ -36,30 +36,18 @@ import se.esss.jelog.PostEntryController;
 public class PostEntryDialog {
 
     public static void post() throws IOException, Exception {
-        post(null, null, null);
+        post(null, null);
     }
 
     public static void post(String defaultLogbook) throws IOException, Exception {
-        post(null, null, defaultLogbook);
+        post(null, defaultLogbook);
     }
 
-    public static void post(WritableImage[] snapshots) throws IOException, Exception {
-        post(snapshots, null, null);
+    public static void post(List<Attachment> attachments) throws IOException, Exception {
+        post(attachments, null);
     }
 
-    public static void post(Attachment[] attachments) throws IOException, Exception {
-        post(null, attachments, null);
-    }
-
-    public static void post(WritableImage[] snapshots, String defaultLogbook) throws IOException, Exception {
-        post(snapshots, null, defaultLogbook);
-    }
-
-    public static void post(Attachment[] attachments, String defaultLogbook) throws IOException, Exception {
-        post(null, attachments, defaultLogbook);
-    }
-
-    public static void post(WritableImage[] snapshots, Attachment[] attachments, String defaultLogbook) throws IOException, Exception {
+    public static void post(List<Attachment> attachments, String defaultLogbook) throws IOException, Exception {
         FXMLLoader fxmlLoader = new FXMLLoader(PostEntryController.class.getResource("/fxml/PostEntryScene.fxml"));
 
         Parent root = (Parent) fxmlLoader.load();
@@ -67,13 +55,12 @@ public class PostEntryDialog {
         PostEntryController controller = fxmlLoader.<PostEntryController>getController();
 
         controller.setElogServer(ElogServer.getElogURL());
-        
+
         if (defaultLogbook != null) {
             controller.setDefaultLogbook(defaultLogbook);
         }
 
         if (controller.login()) {
-            controller.setSnapshots(snapshots);
             controller.setAttachments(attachments);
 
             Scene scene = new Scene(root);

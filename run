@@ -35,7 +35,7 @@ execute() {
     openxal_version
     echo "Executing $1"
     JAR_FILE=dist/target/openxal-${OPENXAL_VERSION}-dist/openxal-${OPENXAL_VERSION}/apps/openxal.apps.$1-${OPENXAL_VERSION}.jar
-    
+
     # Adding extra platform specific arguments for Java
     unameOut="$(uname -s)"
     case "${unameOut}" in
@@ -43,10 +43,12 @@ execute() {
         *)          EXTRA_ARGS="";;
     esac
 
+    HDF5_LIB=-Djava.library.path=dist/target/openxal-${OPENXAL_VERSION}-dist/openxal-${OPENXAL_VERSION}/lib/
+
     if [ -f $JAR_FILE ]
     then
-        echo java -ea -DuseDefaultAccelerator=true -Djava.util.logging.config.file="logging.properties" $EXTRA_ARGS -jar $JAR_FILE
-        java -ea -DuseDefaultAccelerator=true -Djava.util.logging.config.file="logging.properties" $EXTRA_ARGS -jar $JAR_FILE
+        echo java -ea -DuseDefaultAccelerator=true -Djava.util.logging.config.file="logging.properties" $EXTRA_ARGS $HDF5_LIB -jar $JAR_FILE
+        java -ea -DuseDefaultAccelerator=true -Djava.util.logging.config.file="logging.properties" $EXTRA_ARGS $HDF5_LIB -jar $JAR_FILE
     else
         compile_instructions $@
     fi

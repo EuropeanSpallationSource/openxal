@@ -1023,6 +1023,12 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
 
         probe.setResponseMatrix( matRes2 );
         probe.setCovariance( this.compInternExtrap(matRes, matChi2) );
+        
+        // Update the response matrix without space charge
+        PhaseMatrix matRnsp0 = probe.getResponseMatrixNoSpaceCharge();
+        PhaseMatrix matPhi_op = elem.transferMap(probe, h).getFirstOrder();
+        PhaseMatrix matRnsp1 =  matPhi_op.times( matRnsp0 );
+        probe.setResponseMatrixNoSpaceCharge(matRnsp1);
 
         // update the twiss info stored in the probe & state objects
 //        probe.advanceTwiss(matPhi2, elem.energyGain(probe, h/2.));
