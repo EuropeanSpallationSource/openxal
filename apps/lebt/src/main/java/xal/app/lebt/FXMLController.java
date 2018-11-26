@@ -264,8 +264,7 @@ public class FXMLController implements Initializable {
         radioButtonOffsetOn.setToggleGroup(offsetGroup);
         radioButtonOffsetOff.setSelected(true);
 
-        surroundings = getVacuumChamber("LEBT");        
-
+        
         //initializing series
         seriesX = new XYChart.Series();
         seriesY = new XYChart.Series();
@@ -304,18 +303,22 @@ public class FXMLController implements Initializable {
             seriesNPMposCyl[i] = new XYChart.Series();
         }
 
+        getVacuumChamber(null);        
+        //seriesSurroundings[0].getData().add(new XYChart.Data(0.0, 0.0));
+        //seriesSurroundings[1].getData().add(new XYChart.Data(0.0, 0.0));
+        
         seriesSigmaX[0].setName("σx");
         seriesSigmaY[0].setName("σy");
         seriesSigmaR[0].setName("σr");
         seriesSigmaOffsetR[0].setName("σr");
         seriesSigmaOffsetX[0].setName("σx");
         seriesSigmaOffsetY[0].setName("σy");
-        seriesSigmaX[1].setName("σx");
-        seriesSigmaY[1].setName("σy");
-        seriesSigmaR[1].setName("σr");
-        seriesSigmaOffsetR[1].setName("σr");
-        seriesSigmaOffsetX[1].setName("σx");
-        seriesSigmaOffsetY[1].setName("σy");
+        //seriesSigmaX[1].setName("σx");
+        //seriesSigmaY[1].setName("σy");
+        //seriesSigmaR[1].setName("σr");
+        //seriesSigmaOffsetR[1].setName("σr");
+        //seriesSigmaOffsetX[1].setName("σx");
+        //seriesSigmaOffsetY[1].setName("σy");
 
         seriesNPMpos[0].setName("NPM_x");
         seriesNPMpos[1].setName("NPM_y");
@@ -323,13 +326,7 @@ public class FXMLController implements Initializable {
         seriesNPMsigma[1].setName("NPM_σy");
         seriesNPMposCyl[0].setName("NPM_r");
         seriesNPMposCyl[1].setName("NPM_φ");
-        seriesNPMsigmaCyl.setName("NPM_σr");
-
-       //Showing surroundings
-        for (int i = 0; i < surroundings[0].length ; i++) {
-            seriesSurroundings[0].getData().add(new XYChart.Data(surroundings[0][i], surroundings[1][i]*1000));
-            seriesSurroundings[1].getData().add(new XYChart.Data(surroundings[0][i], -surroundings[1][i]*1000));
-        }
+        seriesNPMsigmaCyl.setName("NPM_σr");        
 
         //Add surroundings
         plot1.setAnimated(false);
@@ -506,19 +503,23 @@ public class FXMLController implements Initializable {
                 //get Sequence
                 String sequenceName = MainFunctions.mainDocument.getSequence();
                 String Sequence = MainFunctions.mainDocument.getAccelerator().getSequences().toString();
-                String ComboSequence = MainFunctions.mainDocument.getAccelerator().getComboSequences().toString();
-
+                String ComboSequence = MainFunctions.mainDocument.getAccelerator().getComboSequences().toString();                                
+                
                 //reset input values for Simulation
                 ObservableList<InputParameters> options = FXCollections.observableArrayList();
                 comboBox_inputSimul.getItems().clear();
 
                 //initializing simulation
                 if (Sequence.contains(sequenceName)) {
+                    //Update Vacuum chamber                
+                    getVacuumChamber(MainFunctions.mainDocument.getAccelerator().getSequence(sequenceName));
                     newRun = new SimulationRunner(MainFunctions.mainDocument.getAccelerator().getSequence(sequenceName),MainFunctions.mainDocument.getModel().get());
                     options.add(new InputParameters(newRun.getProbe()));
                     MainFunctions.mainDocument.getAccelerator().getSequence(sequenceName).getAllNodesOfType("NPM").forEach(mon -> options.add(new InputParameters(mon)));
                     MainFunctions.mainDocument.getAccelerator().getSequence(sequenceName).getAllNodesOfType("EMU").forEach(mon -> options.add(new InputParameters(mon)));
                 } else if (ComboSequence.contains(sequenceName)) {
+                    //Update Vacuum chamber                
+                    getVacuumChamber(MainFunctions.mainDocument.getAccelerator().getComboSequence(sequenceName));
                     newRun = new SimulationRunner(MainFunctions.mainDocument.getAccelerator().getComboSequence(sequenceName),MainFunctions.mainDocument.getModel().get());
                     options.add(new InputParameters(newRun.getProbe()));
                     MainFunctions.mainDocument.getAccelerator().getComboSequence(sequenceName).getAllNodesOfType("NPM").forEach(mon -> options.add(new InputParameters(mon)));
@@ -2081,26 +2082,47 @@ public class FXMLController implements Initializable {
     /**
      * Retrieves and displays vaccum chamber apertures
      */
-    private double[][] getVacuumChamber(String sequenceName){
+    private void getVacuumChamber(Object Sequence){
 
         double[][] vacuumChamber = null;    
-        List<AcceleratorNode> nodeList;
+        List<AcceleratorNode> nodeList = new ArrayList<>();
         Integer count = 0;
-
-        nodeList = MainFunctions.mainDocument.getAccelerator().getSequence(sequenceName).getAllNodes();
-        vacuumChamber = new double[2][nodeList.size()];
-        for (AcceleratorNode node : nodeList) {
-            if(node.getType().equals("VC")){
-                vacuumChamber[0][count]= node.getAper().getAperX();
-                vacuumChamber[1][count]= node.getAper().getAperY();
-                count+=1;
-            } else {
-                
+        double[] pos;
+        double[] aperX;
+        //double[] aperY;
+        
+        seriesSurroundings[0].getData().clear();
+        seriesSurroundings[1].getData().clear();
+        
+        if(Sequence != null){
+            if(Sequence instanceof AcceleratorSeq){
+                nodeList = ((AcceleratorSeq) Sequence).getAllNodes();
+            } else if(Sequence instanceof AcceleratorSeqCombo){
+                nodeList = ((AcceleratorSeqCombo) Sequence).getAllNodes();
             }
-        }    
+                        
 
-        return vacuumChamber;
-
+            for (AcceleratorNode node : nodeList) {
+                if(node.getAper().getAperPos().length>1){
+                    pos = node.getAper().getAperPos();
+                    aperX = node.getAper().getAperX();
+                    //aperY = node.getAper().getAperY();
+                    for (int i = 0; i < pos.length ; i++) {
+                        seriesSurroundings[0].getData().add(new XYChart.Data(pos[i]+node.getSDisplay()-node.getLength()/2, aperX[i]*1e3));
+                        seriesSurroundings[1].getData().add(new XYChart.Data(pos[i]+node.getSDisplay()-node.getLength()/2, -1*aperX[i]*1e3));                        
+                        count+=1;
+                    }
+                } else if(node.getAper().getAperX()[0]!=0 && node.getAper().getAperY()[0]!=0 ) {
+                    seriesSurroundings[0].getData().add(new XYChart.Data(node.getSDisplay(), node.getAper().getAperX()[0]*1e3));
+                    seriesSurroundings[1].getData().add(new XYChart.Data(node.getSDisplay(), -1*node.getAper().getAperX()[0]*1e3));                        
+                    count+=1;
+                }
+            } 
+        } else {
+            seriesSurroundings[0].getData().add(new XYChart.Data(0.0, 0.0));
+            seriesSurroundings[1].getData().add(new XYChart.Data(0.0, 0.0));
+        }               
+        
     }
 
     /**
@@ -2427,25 +2449,6 @@ public class FXMLController implements Initializable {
             seriesSigmaOffsetY[i].getData().clear();
             seriesSigmaOffsetR[i].getData().clear();
         }
-    }
-
-    private void handlePolarityChange(ActionEvent event) {
-        
-        ChannelFactory CHANNEL_FACTORY = ChannelFactory.defaultFactory();
-        
-        displayValues.forEach((chan, obj)->{
-            if(Objects.equals(obj, event.getSource())){
-                Channel channel = chan; 
-                String[] channelName = channel.channelName().split(":");
-                String channelPolName = channelName[0]+":"+channelName[1]+":PolPosCmd";        
-                try {
-                    CHANNEL_FACTORY.getChannel(channelPolName).putVal(1);
-                } catch (ConnectionException | PutException ex) {
-                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        });                                
-                
     }
     
     public class Magnet{

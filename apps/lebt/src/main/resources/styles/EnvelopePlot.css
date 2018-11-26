@@ -34,11 +34,11 @@
 .default-color1.chart-legend { -fx-background-color: transparent, transparent; visibility: hidden}       
 .default-color2.chart-legend { -fx-background-color: #ff0000, white;}
 .default-color3.chart-legend { -fx-background-color: #006ddb, white;} 
-.default-color0.chart-legend { -fx-background-color: transparent, transparent; visibility: hidden}        
-.default-color1.chart-legend { -fx-background-color: transparent, transparent; visibility: hidden}     
-.default-color4.chart-legend { -fx-background-color: #ff9999, white;}
-.default-color5.chart-legend { -fx-background-color: #99ccff, white;}        
-.default-color6.chart-legend { -fx-background-color: transparent, transparent; visibility: hidden}       
+.default-color4.chart-legend { -fx-background-color: transparent, transparent; visibility: hidden}        
+.default-color5.chart-legend { -fx-background-color: transparent, transparent; visibility: hidden}     
+.default-color6.chart-legend { -fx-background-color: #ff9999, white;}
+.default-color7.chart-legend { -fx-background-color: #99ccff, white;}        
+.default-color9.chart-legend { -fx-background-color: transparent, transparent; visibility: hidden}       
 .default-color7.chart-legend { -fx-background-color: transparent, transparent; visibility: hidden}   
 
 .chart-legend-item-symbol {
