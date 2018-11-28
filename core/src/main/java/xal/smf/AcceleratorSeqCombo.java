@@ -494,7 +494,48 @@ public class AcceleratorSeqCombo extends AcceleratorSeq {
 	public int hashCode() {
 		// hashCode must be consistent with equality which is based on base constituents
 		return _baseConstituents.hashCode();
-	}
+	}   
+        
+    /** 
+    * Get all nodes in the specified sequence and gets the aperture bucket values.
+    * @return a map with the position and a coordinate set {ApertureX, ApertureY}
+    * 
+    * @author Natalia Milas - 2018-11
+    * 
+    */
+    public ApertureProfile getAperProfile(){
+
+        ApertureProfile aperProfile = new ApertureProfile();    
+        double[] pos;
+        double[] aperX;
+        double[] aperY;
+                
+        if(getNodes().size()>0){           
+            for (AcceleratorNode node : getNodes()) {
+                if(node.getAper().getAperPos().length>1){
+                    pos = node.getAper().getAperPos();
+                    aperX = node.getAper().getAperX();
+                    aperY = node.getAper().getAperY();
+                    for (int i = 0; i < pos.length ; i++) {
+                        aperProfile.addProfilePosData(pos[i]+node.getSDisplay()-node.getLength()/2);
+                        aperProfile.addProfileXData(aperX[i]);                       
+                        aperProfile.addProfileYData(aperY[i]);
+                        aperProfile.addShapeData(node.getAper().getShape());
+                    }
+                } else if(node.getAper().getAperX()[0]!=0 && node.getAper().getAperY()[0]!=0 ) {
+                    aperProfile.addProfilePosData(node.getSDisplay());
+                    aperProfile.addProfileXData(node.getAper().getAperX()[0]);  
+                    aperProfile.addProfileYData(node.getAper().getAperY()[0]);  
+                    aperProfile.addShapeData(node.getAper().getShape());  
+                }
+            } 
+        }            
+        
+        return aperProfile;        
+    }
+    
+    
+        
 }
 
 

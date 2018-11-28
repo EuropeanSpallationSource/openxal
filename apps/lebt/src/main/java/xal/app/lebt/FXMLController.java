@@ -2083,41 +2083,26 @@ public class FXMLController implements Initializable {
      * Retrieves and displays vaccum chamber apertures
      */
     private void getVacuumChamber(Object Sequence){
-
-        double[][] vacuumChamber = null;    
-        List<AcceleratorNode> nodeList = new ArrayList<>();
-        Integer count = 0;
-        double[] pos;
-        double[] aperX;
-        //double[] aperY;
+        
+        double[][] vacuumChamber;
         
         seriesSurroundings[0].getData().clear();
         seriesSurroundings[1].getData().clear();
         
         if(Sequence != null){
-            if(Sequence instanceof AcceleratorSeq){
-                nodeList = ((AcceleratorSeq) Sequence).getAllNodes();
-            } else if(Sequence instanceof AcceleratorSeqCombo){
-                nodeList = ((AcceleratorSeqCombo) Sequence).getAllNodes();
-            }
-                        
-
-            for (AcceleratorNode node : nodeList) {
-                if(node.getAper().getAperPos().length>1){
-                    pos = node.getAper().getAperPos();
-                    aperX = node.getAper().getAperX();
-                    //aperY = node.getAper().getAperY();
-                    for (int i = 0; i < pos.length ; i++) {
-                        seriesSurroundings[0].getData().add(new XYChart.Data(pos[i]+node.getSDisplay()-node.getLength()/2, aperX[i]*1e3));
-                        seriesSurroundings[1].getData().add(new XYChart.Data(pos[i]+node.getSDisplay()-node.getLength()/2, -1*aperX[i]*1e3));                        
-                        count+=1;
-                    }
-                } else if(node.getAper().getAperX()[0]!=0 && node.getAper().getAperY()[0]!=0 ) {
-                    seriesSurroundings[0].getData().add(new XYChart.Data(node.getSDisplay(), node.getAper().getAperX()[0]*1e3));
-                    seriesSurroundings[1].getData().add(new XYChart.Data(node.getSDisplay(), -1*node.getAper().getAperX()[0]*1e3));                        
-                    count+=1;
-                }
-            } 
+            if(Sequence instanceof AcceleratorSeqCombo){
+                vacuumChamber = ((AcceleratorSeqCombo) Sequence).getAperProfile().getProfileXArray();
+                for (int i = 0; i < vacuumChamber[0].length ; i++) {
+                    seriesSurroundings[0].getData().add(new XYChart.Data(vacuumChamber[0][i], vacuumChamber[1][i]*1e3));
+                    seriesSurroundings[1].getData().add(new XYChart.Data(vacuumChamber[0][i], -1*vacuumChamber[1][i]*1e3));                     
+                }  
+            } else if(Sequence instanceof AcceleratorSeq){
+                vacuumChamber = ((AcceleratorSeq) Sequence).getAperProfile().getProfileXArray();
+                for (int i = 0; i < vacuumChamber[0].length ; i++) {
+                    seriesSurroundings[0].getData().add(new XYChart.Data(vacuumChamber[0][i], vacuumChamber[1][i]*1e3));
+                    seriesSurroundings[1].getData().add(new XYChart.Data(vacuumChamber[0][i], -1*vacuumChamber[1][i]*1e3));                     
+                }  
+            }                                  
         } else {
             seriesSurroundings[0].getData().add(new XYChart.Data(0.0, 0.0));
             seriesSurroundings[1].getData().add(new XYChart.Data(0.0, 0.0));
