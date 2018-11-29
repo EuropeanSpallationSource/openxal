@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -14,7 +13,7 @@ import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ObservableValue;
+import javafx.beans.value.ObservableValue; 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -82,9 +81,7 @@ import xal.smf.impl.CurrentMonitor;
 import xal.smf.impl.HDipoleCorr;
 import xal.smf.impl.MagnetPowerSupply;
 import xal.smf.impl.VDipoleCorr;
-import xal.tools.data.DataAdaptor;
 import xal.tools.math.Complex;
-import xal.tools.xml.XmlDataAdaptor;
 
 /**
  * The class handling the LEBT trajectory prediction.
