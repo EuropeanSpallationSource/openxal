@@ -58,6 +58,7 @@
                      <children>
                         <TextField fx:id="manualTextField" layoutX="10.0" layoutY="39.0" prefHeight="27.0" prefWidth="250.0" />
                         <Label layoutX="10.0" layoutY="14.0" text="Manually enter PV:" />
+                        <Label fx:id="manualChannelFoundStatus" layoutX="10.0" layoutY="119.0" text="" />
                         <Button fx:id="pvCheckManualButton" layoutX="10.0" layoutY="81.0" mnemonicParsing="false" onAction="#checkManualPV" text="Check" />
                      </children>
                   </AnchorPane>
