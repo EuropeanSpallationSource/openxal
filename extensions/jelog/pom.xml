@@ -22,7 +22,7 @@
         <dependency>
             <groupId>se.esss</groupId>
             <artifactId>jelog</artifactId>
-            <version>1.4</version>
+            <version>1.5</version>
             <type>jar</type>
         </dependency>
     </dependencies>
