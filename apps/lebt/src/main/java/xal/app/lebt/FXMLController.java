@@ -420,12 +420,12 @@ public class FXMLController implements Initializable {
         textField_CH1current.setTextFormatter(new TextFormatter<Double>(formatter4d));
         textField_CV2current.setTextFormatter(new TextFormatter<Double>(formatter4d));
         textField_CH2current.setTextFormatter(new TextFormatter<Double>(formatter4d));
-        textField_sol1field.setTextFormatter(new TextFormatter<Double>(formatter4d));
-        textField_sol2field.setTextFormatter(new TextFormatter<Double>(formatter4d));
-        textField_CV1field.setTextFormatter(new TextFormatter<Double>(formatter4d));
-        textField_CH1field.setTextFormatter(new TextFormatter<Double>(formatter4d));
-        textField_CV2field.setTextFormatter(new TextFormatter<Double>(formatter4d));
-        textField_CH2field.setTextFormatter(new TextFormatter<Double>(formatter4d));
+        textField_sol1field.setTextFormatter(new TextFormatter<Double>(scientific3d));
+        textField_sol2field.setTextFormatter(new TextFormatter<Double>(scientific3d));
+        textField_CV1field.setTextFormatter(new TextFormatter<Double>(scientific3d));
+        textField_CH1field.setTextFormatter(new TextFormatter<Double>(scientific3d));
+        textField_CV2field.setTextFormatter(new TextFormatter<Double>(scientific3d));
+        textField_CH2field.setTextFormatter(new TextFormatter<Double>(scientific3d));
         textField_irisAperture.setTextFormatter(new TextFormatter<Double>(formatter3d));
         textField_irisX.setTextFormatter(new TextFormatter<Double>(formatter3d));
         textField_irisY.setTextFormatter(new TextFormatter<Double>(formatter3d));
@@ -990,7 +990,7 @@ public class FXMLController implements Initializable {
                         if(MainFunctions.mainDocument.getModel().get().matches("LIVE")){
                             try {
                                 double val = Double.parseDouble(textField_CV1current.getText());
-                                if(val<120 && val>0){
+                                if(val<120 && val>-120){
                                     CV1.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE).putVal(val);                                    
                                 } else {
                                     textField_CV1current.setText(Double.toString(CV1.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE).getValDbl()));
@@ -1026,7 +1026,7 @@ public class FXMLController implements Initializable {
                         if(MainFunctions.mainDocument.getModel().get().matches("LIVE")){
                             try {
                                 double val = Double.parseDouble(textField_CV2current.getText());
-                                if(val<120 && val>0){
+                                if(val<120 && val>-120){
                                     CV2.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE).putVal(val);                                    
                                 } else {
                                     textField_CV2current.setText(Double.toString(CV2.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE).getValDbl()));
@@ -1071,7 +1071,7 @@ public class FXMLController implements Initializable {
                         if(MainFunctions.mainDocument.getModel().get().matches("LIVE")){
                             try {
                                 double val = Double.parseDouble(textField_CH1current.getText());
-                                if(val<120 && val>0){
+                                if(val<120 && val>-120){
                                     CH1.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE).putVal(val);                                    
                                 } else {
                                     textField_CH1current.setText(Double.toString(CH1.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE).getValDbl()));
@@ -1106,7 +1106,7 @@ public class FXMLController implements Initializable {
                         if(MainFunctions.mainDocument.getModel().get().matches("LIVE")){
                             try {
                                 double val = Double.parseDouble(textField_CH2current.getText());
-                                if(val<120 && val>0){
+                                if(val<120 && val>-120){
                                     CH2.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE).putVal(val);                                    
                                 } else {
                                     textField_CH2current.setText(Double.toString(CH2.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE).getValDbl()));
