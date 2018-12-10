@@ -569,6 +569,24 @@ public class FXMLController implements Initializable {
             //stop simulation and disables inputs until sequence is chosen
             mainTabPane.setDisable(true);
             runNow.set(false);
+            
+            //clear plots
+            for(int i = 0; i<seriesSurroundings.length;i++){
+                seriesSigmaX[i].getData().clear();
+                seriesSigmaY[i].getData().clear();
+                seriesSigmaR[i].getData().clear();
+                seriesSigmaOffsetX[i].getData().clear();
+                seriesSigmaOffsetY[i].getData().clear();
+                seriesSigmaOffsetR[i].getData().clear();
+                seriesSurroundings[i].getData().clear();
+                seriesNPMpos[i].getData().clear();
+                seriesNPMsigma[i].getData().clear();
+                seriesNPMposCyl[i].getData().clear();
+            }
+            comboBox_posNPM.setSelected(false);
+            comboBox_sigmaNPM.setSelected(false);
+            comboBox_currentFC.setSelected(false);
+            
             //Initializes TextField 
             setConnectAndMonitor();
             initBIElements();   
