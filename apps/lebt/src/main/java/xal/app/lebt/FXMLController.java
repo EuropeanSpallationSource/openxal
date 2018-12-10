@@ -1367,6 +1367,7 @@ public class FXMLController implements Initializable {
                 rb_CurrentMeasurement1.setDisable(true);
                 label_CurrentMeasurement2.setDisable(true);
                 rb_CurrentMeasurement2.setDisable(true);
+                comboBox_currentFC.setDisable(true);
             } 
         }
     }    
