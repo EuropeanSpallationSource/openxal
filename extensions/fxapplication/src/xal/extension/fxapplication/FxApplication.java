@@ -180,6 +180,7 @@ abstract public class FxApplication extends Application {
                 sequenceMenu.getItems().remove(0, menu_num);
                 groupSequence.getToggles().clear();
                 buildSequenceMenu(DOCUMENT.accelerator.getAccelerator(), sequenceMenu, groupSequence);
+                DOCUMENT.sequence.set(null);
                 Logger.getLogger(FxApplication.class.getName()).log(Level.INFO, "Rebuilding Sequence Menu.");
             }
         });
