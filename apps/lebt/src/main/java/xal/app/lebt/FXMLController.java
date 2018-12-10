@@ -23,6 +23,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.DepthTest;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
@@ -676,13 +677,25 @@ public class FXMLController implements Initializable {
                 TableColumn<Magnet,String> oldFieldColumn = new TableColumn<Magnet, String>("Old Field");
 
                 ObservableList<Magnet> inputMagnets = FXCollections.observableArrayList();
-
-                inputMagnets.add(new Magnet("LEBT-010:BMD-Sol-01",textField_sol1field.getText(),label_sol1fieldRB.getText(),false));
-                inputMagnets.add(new Magnet("LEBT-010:BMD-Sol-02",textField_sol2field.getText(),label_sol2fieldRB.getText(),false));
-                inputMagnets.add(new Magnet("LEBT-010:BMD-CV-01:1",textField_CV1field.getText(),label_CV1fieldRB.getText(),false));
-                inputMagnets.add(new Magnet("LEBT-010:BMD-CH-01:1",textField_CH1field.getText(),label_CH1fieldRB.getText(),false));
-                inputMagnets.add(new Magnet("LEBT-010:BMD-CV-02:1",textField_CV2field.getText(),label_CV2fieldRB.getText(),false));
-                inputMagnets.add(new Magnet("LEBT-010:BMD-CH-02:1",textField_CH2field.getText(),label_CH2fieldRB.getText(),false));
+                
+                if(!label_sol1fieldRB.isDisable()){
+                    inputMagnets.add(new Magnet("LEBT-010:BMD-Sol-01",textField_sol1field.getText(),label_sol1fieldRB.getText(),false));
+                }
+                if(!label_sol2fieldRB.isDisable()){
+                    inputMagnets.add(new Magnet("LEBT-010:BMD-Sol-02",textField_sol2field.getText(),label_sol2fieldRB.getText(),false));
+                }
+                if(!label_CV1fieldRB.isDisable()){
+                    inputMagnets.add(new Magnet("LEBT-010:BMD-CV-01:1",textField_CV1field.getText(),label_CV1fieldRB.getText(),false));
+                }
+                if(!label_CH1fieldRB.isDisable()){
+                    inputMagnets.add(new Magnet("LEBT-010:BMD-CH-01:1",textField_CH1field.getText(),label_CH1fieldRB.getText(),false));
+                }
+                if(!label_CV2fieldRB.isDisable()){
+                    inputMagnets.add(new Magnet("LEBT-010:BMD-CV-02:1",textField_CV2field.getText(),label_CV2fieldRB.getText(),false));
+                }
+                if(!label_CH2fieldRB.isDisable()){
+                    inputMagnets.add(new Magnet("LEBT-010:BMD-CH-02:1",textField_CH2field.getText(),label_CH2fieldRB.getText(),false));
+                }
 
                 elementColumn.setCellValueFactory(new PropertyValueFactory<>("magnetName"));
                 newFieldColumn.setCellValueFactory(new PropertyValueFactory<>("newField"));
@@ -964,7 +977,8 @@ public class FXMLController implements Initializable {
                 } else {                
                     label_sol1currentRB.setDisable(true);
                     label_sol1fieldRB.setDisable(true);                
-                    textField_sol1current.setDisable(true);                  
+                    textField_sol1current.setDisable(true); 
+                    textField_sol1field.setDisable(true); 
                 }    
                 
                 AcceleratorNode  Solenoid2 = sequence.getNodeWithId("LEBT-010:BMD-Sol-02");
@@ -1005,6 +1019,7 @@ public class FXMLController implements Initializable {
                     label_sol2currentRB.setDisable(true);
                     label_sol2fieldRB.setDisable(true);
                     textField_sol2current.setDisable(true);
+                    textField_sol2field.setDisable(true); 
                 }    
         
             } 
@@ -1047,7 +1062,8 @@ public class FXMLController implements Initializable {
                 } else {                
                     label_CV1currentRB.setDisable(true);
                     label_CV1fieldRB.setDisable(true);
-                    textField_CV1current.setDisable(true);                    
+                    textField_CV1current.setDisable(true);
+                    textField_CV1field.setDisable(true);                     
                 }                          
                 
                 AcceleratorNode CV2 = sequence.getNodesOfType("DCV").get(1);
@@ -1088,6 +1104,7 @@ public class FXMLController implements Initializable {
                     label_CV2currentRB.setDisable(true);
                     label_CV2fieldRB.setDisable(true);
                     textField_CV2current.setDisable(true);
+                    textField_CV2field.setDisable(true);
                 }           
                 
             } 
@@ -1130,7 +1147,8 @@ public class FXMLController implements Initializable {
                 } else {                
                     label_CH1currentRB.setDisable(true);
                     label_CH1fieldRB.setDisable(true);
-                    textField_CH1current.setDisable(true);                    
+                    textField_CH1current.setDisable(true); 
+                    textField_CH1field.setDisable(true);
                 }    
                         
                 AcceleratorNode CH2 = sequence.getNodesOfType("DCH").get(1);
@@ -1171,6 +1189,7 @@ public class FXMLController implements Initializable {
                     label_CH2currentRB.setDisable(true);
                     label_CH2fieldRB.setDisable(true);
                     textField_CH2current.setDisable(true);
+                    textField_CH2field.setDisable(true);
                 }    
                 
             } 
