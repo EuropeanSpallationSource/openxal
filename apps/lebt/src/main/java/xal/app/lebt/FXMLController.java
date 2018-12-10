@@ -2044,7 +2044,6 @@ public class FXMLController implements Initializable {
             newRun.setVsteerer2Field(Double.parseDouble(textField_CV2field.getText()));
             newRun.setHsteerer1Field(Double.parseDouble(textField_CH1field.getText()));
             newRun.setHsteerer2Field(Double.parseDouble(textField_CH2field.getText()));
-
         }
         catch(NumberFormatException e){
             Alert alert = new Alert(AlertType.ERROR);
