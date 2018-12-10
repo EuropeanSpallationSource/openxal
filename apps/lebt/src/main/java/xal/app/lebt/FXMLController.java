@@ -18,6 +18,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
@@ -846,22 +847,24 @@ public class FXMLController implements Initializable {
              
             if(sequence.getNodesOfType("ISC").size()>0){
                 AcceleratorNode Coil1 = sequence.getNodesOfType("ISC").get(0);
-                displayValues.put(Coil1.getChannel(ESSIonSourceCoil.I_HANDLE),label_coil1RB);
-                setValues.put(Coil1.getChannel(ESSIonSourceCoil.I_SET_HANDLE),textField_coil1);
-                textField_coil1.focusedProperty().addListener((obs, oldVal, newVal) ->{
-                    if(!newVal){
-                        try {
-                            double val = Double.parseDouble(textField_coil1.getText());
-                            if(val>=0 && val <=300){
-                                Coil1.getChannel(ESSIonSourceCoil.I_SET_HANDLE).putVal(val);
-                            } else {
-                                textField_coil1.setText(Double.toString(Coil1.getChannel(ESSIonSourceCoil.I_SET_HANDLE).getValDbl()));
+                if(Coil1.getStatus()){
+                    displayValues.put(Coil1.getChannel(ESSIonSourceCoil.I_HANDLE),label_coil1RB);
+                    setValues.put(Coil1.getChannel(ESSIonSourceCoil.I_SET_HANDLE),textField_coil1);
+                    textField_coil1.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                        if(!newVal){
+                            try {
+                                double val = Double.parseDouble(textField_coil1.getText());
+                                if(val>=0 && val <=300){
+                                    Coil1.getChannel(ESSIonSourceCoil.I_SET_HANDLE).putVal(val);
+                                } else {
+                                    textField_coil1.setText(Double.toString(Coil1.getChannel(ESSIonSourceCoil.I_SET_HANDLE).getValDbl()));
+                                }
+                            } catch (ConnectionException | PutException | GetException ex) {
+                                Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                             }
-                        } catch (ConnectionException | PutException | GetException ex) {
-                            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                         }
-                    }
-                });
+                    });
+                }
             } else {                
                 label_coil2RB.setDisable(true);
                 textField_coil2.setDisable(true);                
@@ -869,22 +872,24 @@ public class FXMLController implements Initializable {
             
             if(sequence.getNodesOfType("ISC").size()>1){
                 AcceleratorNode Coil2 = sequence.getNodesOfType("ISC").get(1);
-                displayValues.put(Coil2.getChannel(ESSIonSourceCoil.I_HANDLE),label_coil2RB);
-                setValues.put(Coil2.getChannel(ESSIonSourceCoil.I_SET_HANDLE),textField_coil2);
-                textField_coil2.focusedProperty().addListener((obs, oldVal, newVal) ->{
-                    if(!newVal){
-                        try {
-                            double val = Double.parseDouble(textField_coil2.getText());
-                            if(val>=0 && val <=300){
-                                Coil2.getChannel(ESSIonSourceCoil.I_SET_HANDLE).putVal(val);
-                            } else {
-                                textField_coil2.setText(Double.toString(Coil2.getChannel(ESSIonSourceCoil.I_SET_HANDLE).getValDbl()));
+                if(Coil2.getStatus()){
+                    displayValues.put(Coil2.getChannel(ESSIonSourceCoil.I_HANDLE),label_coil2RB);
+                    setValues.put(Coil2.getChannel(ESSIonSourceCoil.I_SET_HANDLE),textField_coil2);
+                    textField_coil2.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                        if(!newVal){
+                            try {
+                                double val = Double.parseDouble(textField_coil2.getText());
+                                if(val>=0 && val <=300){
+                                    Coil2.getChannel(ESSIonSourceCoil.I_SET_HANDLE).putVal(val);
+                                } else {
+                                    textField_coil2.setText(Double.toString(Coil2.getChannel(ESSIonSourceCoil.I_SET_HANDLE).getValDbl()));
+                                }
+                            } catch (ConnectionException | PutException | GetException ex) {
+                                Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                             }
-                        } catch (ConnectionException | PutException | GetException ex) {
-                            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                         }
-                    }
-                });
+                    });
+                }
             } else {                
                 label_coil2RB.setDisable(true);
                 textField_coil2.setDisable(true);                
@@ -892,22 +897,24 @@ public class FXMLController implements Initializable {
             
             if(sequence.getNodesOfType("ISC").size()>2){
                 AcceleratorNode Coil3 = sequence.getNodesOfType("ISC").get(2);
-                displayValues.put(Coil3.getChannel(ESSIonSourceCoil.I_HANDLE),label_coil3RB);
-                setValues.put(Coil3.getChannel(ESSIonSourceCoil.I_SET_HANDLE),textField_coil3);
-                textField_coil3.focusedProperty().addListener((obs, oldVal, newVal) ->{
-                    if(!newVal){
-                        try {
-                            double val = Double.parseDouble(textField_coil3.getText());
-                            if(val>=0 && val <=300){
-                                Coil3.getChannel(ESSIonSourceCoil.I_SET_HANDLE).putVal(val);
-                            } else {
-                                textField_coil3.setText(Double.toString(Coil3.getChannel(ESSIonSourceCoil.I_SET_HANDLE).getValDbl()));
+                if(Coil3.getStatus()){
+                    displayValues.put(Coil3.getChannel(ESSIonSourceCoil.I_HANDLE),label_coil3RB);
+                    setValues.put(Coil3.getChannel(ESSIonSourceCoil.I_SET_HANDLE),textField_coil3);
+                    textField_coil3.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                        if(!newVal){
+                            try {
+                                double val = Double.parseDouble(textField_coil3.getText());
+                                if(val>=0 && val <=300){
+                                    Coil3.getChannel(ESSIonSourceCoil.I_SET_HANDLE).putVal(val);
+                                } else {
+                                    textField_coil3.setText(Double.toString(Coil3.getChannel(ESSIonSourceCoil.I_SET_HANDLE).getValDbl()));
+                                }
+                            } catch (ConnectionException | PutException | GetException ex) {
+                                Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                             }
-                        } catch (ConnectionException | PutException | GetException ex) {
-                            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                         }
-                    }
-                });
+                    });
+                }
             } else {                
                 label_coil3RB.setDisable(true);
                 textField_coil3.setDisable(true);
@@ -918,244 +925,255 @@ public class FXMLController implements Initializable {
         if(accl.findSequence("LEBT") != null){
             sequence = accl.getSequence("LEBT");
         
-            if(sequence.getNodesOfType("SFM").size()>1 || sequence.getNodesOfType("MFM").size()>1){
+            if(sequence.getNodesOfType("SFM").size()>0 || sequence.getNodesOfType("MFM").size()>0){
                 AcceleratorNode Solenoid1 = sequence.getNodeWithId("LEBT-010:BMD-Sol-01");
-                displayValues.put(Solenoid1.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE),label_sol1currentRB);
-                displayValues.put(Solenoid1.getChannel("fieldRB"),label_sol1fieldRB);                              
-                //displayValues.put(Solenoid1.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),label_sol1current);                 
-                setValues.put(Solenoid1.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),textField_sol1current);
-                textField_sol1current.focusedProperty().addListener((obs, oldVal, newVal) ->{
-                    if(!newVal){
-                        if(MainFunctions.mainDocument.getModel().get().matches("LIVE")){
-                            try {
-                                double val = Double.parseDouble(textField_sol1current.getText());
-                                if(val>=0 && val<450){
-                                    Solenoid1.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE).putVal(val);                                
-                                } else {
-                                    textField_sol1current.setText(Double.toString(Solenoid1.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE).getValDbl()));
+                if(Solenoid1.getStatus()){
+                    displayValues.put(Solenoid1.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE),label_sol1currentRB);
+                    displayValues.put(Solenoid1.getChannel("fieldRB"),label_sol1fieldRB);                              
+                    //displayValues.put(Solenoid1.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),label_sol1current);                 
+                    setValues.put(Solenoid1.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),textField_sol1current);
+                    textField_sol1current.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                        if(!newVal){
+                            if(MainFunctions.mainDocument.getModel().get().matches("LIVE")){
+                                try {
+                                    double val = Double.parseDouble(textField_sol1current.getText());
+                                    if(val>=0 && val<450){
+                                        Solenoid1.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE).putVal(val);                                
+                                    } else {
+                                        textField_sol1current.setText(Double.toString(Solenoid1.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE).getValDbl()));
+                                    }
+                                } catch (ConnectionException | PutException | GetException ex) {
+                                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                                 }
-                            } catch (ConnectionException | PutException | GetException ex) {
-                                Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                            } else {
+                                textField_sol1current.fireEvent(new RunEvent(runNow.get()));
                             }
-                        } else {
-                            textField_sol1current.fireEvent(new RunEvent(runNow.get()));
                         }
-                    }
-                });
-                textField_sol1field.focusedProperty().addListener((obs, oldVal, newVal) ->{
-                    if(!newVal){
-                        textField_sol1field.fireEvent(new RunEvent(runNow.get()));
-                    }
-                });
-                //set the magnets Readback display as change listener for changes -> run Model
-                label_sol1fieldRB.textProperty().addListener((obs, oldVal, newVal) ->{
-                    if(!newVal.equals(oldVal)){
-                        label_sol1fieldRB.fireEvent(new RunEvent(runNow.get()));
-                    }
-                });                
+                    });
+                    textField_sol1field.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                        if(!newVal){
+                            textField_sol1field.fireEvent(new RunEvent(runNow.get()));
+                        }
+                    });
+                    //set the magnets Readback display as change listener for changes -> run Model
+                    label_sol1fieldRB.textProperty().addListener((obs, oldVal, newVal) ->{
+                        if(!newVal.equals(oldVal)){
+                            label_sol1fieldRB.fireEvent(new RunEvent(runNow.get()));
+                        }
+                    });
+                } else {                
+                    label_sol1currentRB.setDisable(true);
+                    label_sol1fieldRB.setDisable(true);                
+                    textField_sol1current.setDisable(true);                  
+                }    
                 
                 AcceleratorNode  Solenoid2 = sequence.getNodeWithId("LEBT-010:BMD-Sol-02");
-                displayValues.put(Solenoid2.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE),label_sol2currentRB);                
-                displayValues.put(Solenoid2.getChannel("fieldRB"),label_sol2fieldRB);               
-                //displayValues.put(Solenoid2.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),label_sol2current);
-                setValues.put(Solenoid2.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),textField_sol2current);
-                textField_sol2current.focusedProperty().addListener((obs, oldVal, newVal) ->{
-                    if(!newVal){ 
-                        if(MainFunctions.mainDocument.getModel().get().matches("LIVE")){
-                            try {
-                                double val = Double.parseDouble(textField_sol2current.getText());
-                                if(val>=0 && val<450){
-                                    Solenoid2.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE).putVal(val);
-                                } else {
-                                    textField_sol2current.setText(Double.toString(Solenoid2.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE).getValDbl()));
+                if(Solenoid2.getStatus()){
+                    displayValues.put(Solenoid2.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE),label_sol2currentRB);                
+                    displayValues.put(Solenoid2.getChannel("fieldRB"),label_sol2fieldRB);               
+                    //displayValues.put(Solenoid2.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),label_sol2current);
+                    setValues.put(Solenoid2.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),textField_sol2current);
+                    textField_sol2current.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                        if(!newVal){ 
+                            if(MainFunctions.mainDocument.getModel().get().matches("LIVE")){
+                                try {
+                                    double val = Double.parseDouble(textField_sol2current.getText());
+                                    if(val>=0 && val<450){
+                                        Solenoid2.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE).putVal(val);
+                                    } else {
+                                        textField_sol2current.setText(Double.toString(Solenoid2.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE).getValDbl()));
+                                    }
+                                } catch (ConnectionException | PutException | GetException ex) {
+                                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                                 }
-                            } catch (ConnectionException | PutException | GetException ex) {
-                                Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                            } else {
+                                textField_sol2field.fireEvent(new RunEvent(runNow.get()));
                             }
-                        } else {
+                        }
+                    });
+                    textField_sol2field.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                        if(!newVal){
                             textField_sol2field.fireEvent(new RunEvent(runNow.get()));
                         }
-                    }
-                });
-                textField_sol2field.focusedProperty().addListener((obs, oldVal, newVal) ->{
-                    if(!newVal){
-                        textField_sol2field.fireEvent(new RunEvent(runNow.get()));
-                    }
-                });
-                label_sol2fieldRB.textProperty().addListener((obs, oldVal, newVal) ->{
-                    if(!newVal.equals(oldVal)){
-                        label_sol2fieldRB.fireEvent(new RunEvent(runNow.get()));
-                    }
-                });
-        
-            } else {                
-                label_sol1currentRB.setDisable(true);
-                label_sol1fieldRB.setDisable(true);                
-                textField_sol1current.setDisable(true);
-                label_sol2currentRB.setDisable(true);
-                label_sol2fieldRB.setDisable(true);
-                textField_sol2current.setDisable(true);
-            }    
-            
-            if(sequence.getNodesOfType("DCV").size()>1){
-                AcceleratorNode CV1 = sequence.getNodesOfType("DCV").get(0);
-                displayValues.put(CV1.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE),label_CV1currentRB);
-                //displayValues.put(CV1.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),label_CV1current);
-                displayValues.put(CV1.getChannel(VDipoleCorr.FIELD_RB_HANDLE),label_CV1fieldRB);                
-                setValues.put(CV1.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),textField_CV1current);
-                textField_CV1current.focusedProperty().addListener((obs, oldVal, newVal) ->{
-                    if(!newVal){ 
-                        if(MainFunctions.mainDocument.getModel().get().matches("LIVE")){
-                            try {
-                                double val = Double.parseDouble(textField_CV1current.getText());
-                                if(val<120 && val>-120){
-                                    CV1.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE).putVal(val);                                    
-                                } else {
-                                    textField_CV1current.setText(Double.toString(CV1.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE).getValDbl()));
-                                }
-                            } catch (ConnectionException | GetException | PutException ex) {
-                                Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-                            }
-                        } else {
-                            textField_CV1current.fireEvent(new RunEvent(runNow.get()));
+                    });
+                    label_sol2fieldRB.textProperty().addListener((obs, oldVal, newVal) ->{
+                        if(!newVal.equals(oldVal)){
+                            label_sol2fieldRB.fireEvent(new RunEvent(runNow.get()));
                         }
-                    }
-                });
-                textField_CV1field.focusedProperty().addListener((obs, oldVal, newVal) ->{
-                    if(!newVal){
-                        textField_CV1field.fireEvent(new RunEvent(runNow.get()));
-                    }
-                });
-                label_CV1fieldRB.textProperty().addListener((obs, oldVal, newVal) ->{
-                    if(!newVal.equals(oldVal)){
-                        label_CV1fieldRB.fireEvent(new RunEvent(runNow.get()));
-                    }
-                });
+                    });
+                } else {                                    
+                    label_sol2currentRB.setDisable(true);
+                    label_sol2fieldRB.setDisable(true);
+                    textField_sol2current.setDisable(true);
+                }    
         
-                
+            } 
+            
+            if(sequence.getNodesOfType("DCV").size()>0){
+                AcceleratorNode CV1 = sequence.getNodesOfType("DCV").get(0);
+                if(CV1.getStatus()){
+                    displayValues.put(CV1.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE),label_CV1currentRB);
+                    //displayValues.put(CV1.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),label_CV1current);
+                    displayValues.put(CV1.getChannel(VDipoleCorr.FIELD_RB_HANDLE),label_CV1fieldRB);                
+                    setValues.put(CV1.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),textField_CV1current);
+                    textField_CV1current.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                        if(!newVal){ 
+                            if(MainFunctions.mainDocument.getModel().get().matches("LIVE")){
+                                try {
+                                    double val = Double.parseDouble(textField_CV1current.getText());
+                                    if(val<120 && val>-120){
+                                        CV1.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE).putVal(val);                                    
+                                    } else {
+                                        textField_CV1current.setText(Double.toString(CV1.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE).getValDbl()));
+                                    }
+                                } catch (ConnectionException | GetException | PutException ex) {
+                                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+                            } else {
+                                textField_CV1current.fireEvent(new RunEvent(runNow.get()));
+                            }
+                        }
+                    });
+                    textField_CV1field.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                        if(!newVal){
+                            textField_CV1field.fireEvent(new RunEvent(runNow.get()));
+                        }
+                    });
+                    label_CV1fieldRB.textProperty().addListener((obs, oldVal, newVal) ->{
+                        if(!newVal.equals(oldVal)){
+                            label_CV1fieldRB.fireEvent(new RunEvent(runNow.get()));
+                        }
+                    });
+                } else {                
+                    label_CV1currentRB.setDisable(true);
+                    label_CV1fieldRB.setDisable(true);
+                    textField_CV1current.setDisable(true);                    
+                }                          
                 
                 AcceleratorNode CV2 = sequence.getNodesOfType("DCV").get(1);
-                displayValues.put(CV2.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE),label_CV2currentRB);
-                //displayValues.put(CV2.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),label_CV2current);
-                displayValues.put(CV2.getChannel(VDipoleCorr.FIELD_RB_HANDLE),label_CV2fieldRB);               
-                setValues.put(CV2.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),textField_CV2current);
-                textField_CV2current.focusedProperty().addListener((obs, oldVal, newVal) ->{
-                    if(!newVal){ 
-                        if(MainFunctions.mainDocument.getModel().get().matches("LIVE")){
-                            try {
-                                double val = Double.parseDouble(textField_CV2current.getText());
-                                if(val<120 && val>-120){
-                                    CV2.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE).putVal(val);                                    
-                                } else {
-                                    textField_CV2current.setText(Double.toString(CV2.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE).getValDbl()));
+                if(CV2.getStatus()){
+                    displayValues.put(CV2.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE),label_CV2currentRB);
+                    //displayValues.put(CV2.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),label_CV2current);
+                    displayValues.put(CV2.getChannel(VDipoleCorr.FIELD_RB_HANDLE),label_CV2fieldRB);               
+                    setValues.put(CV2.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),textField_CV2current);
+                    textField_CV2current.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                        if(!newVal){ 
+                            if(MainFunctions.mainDocument.getModel().get().matches("LIVE")){
+                                try {
+                                    double val = Double.parseDouble(textField_CV2current.getText());
+                                    if(val<120 && val>-120){
+                                        CV2.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE).putVal(val);                                    
+                                    } else {
+                                        textField_CV2current.setText(Double.toString(CV2.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE).getValDbl()));
+                                    }
+                                } catch (ConnectionException | GetException | PutException ex) {
+                                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                                 }
-                            } catch (ConnectionException | GetException | PutException ex) {
-                                Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                            } else {
+                                textField_CV2current.fireEvent(new RunEvent(runNow.get()));
                             }
-                        } else {
-                            textField_CV2current.fireEvent(new RunEvent(runNow.get()));
                         }
-                    }
-                });
-                textField_CV2field.focusedProperty().addListener((obs, oldVal, newVal) ->{
-                    if(!newVal){
-                        textField_CV2field.fireEvent(new RunEvent(runNow.get()));
-                    }
-                });
-                label_CV2fieldRB.textProperty().addListener((obs, oldVal, newVal) ->{
-                    if(!newVal.equals(oldVal)){
-                        label_CV2fieldRB.fireEvent(new RunEvent(runNow.get()));
-                    }
-                });
-        
+                    });
+                    textField_CV2field.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                        if(!newVal){
+                            textField_CV2field.fireEvent(new RunEvent(runNow.get()));
+                        }
+                    });
+                    label_CV2fieldRB.textProperty().addListener((obs, oldVal, newVal) ->{
+                        if(!newVal.equals(oldVal)){
+                            label_CV2fieldRB.fireEvent(new RunEvent(runNow.get()));
+                        }
+                    });
+                } else {                                    
+                    label_CV2currentRB.setDisable(true);
+                    label_CV2fieldRB.setDisable(true);
+                    textField_CV2current.setDisable(true);
+                }           
                 
-            } else {                
-                label_CV1currentRB.setDisable(true);
-                label_CV1fieldRB.setDisable(true);
-                textField_CV1current.setDisable(true);
-                label_CV2currentRB.setDisable(true);
-                label_CV2fieldRB.setDisable(true);
-                textField_CV2current.setDisable(true);
-            }    
+            } 
             
-            if(sequence.getNodesOfType("DCH").size()>1){
+            if(sequence.getNodesOfType("DCH").size()>0){
                 AcceleratorNode CH1 = sequence.getNodesOfType("DCH").get(0);
-                displayValues.put(CH1.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE),label_CH1currentRB);
-                //displayValues.put(CH1.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),label_CH1current);
-                displayValues.put(CH1.getChannel(HDipoleCorr.FIELD_RB_HANDLE),label_CH1fieldRB);               
-                setValues.put(CH1.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),textField_CH1current);
-                textField_CH1current.focusedProperty().addListener((obs, oldVal, newVal) ->{
-                    if(!newVal){ 
-                        if(MainFunctions.mainDocument.getModel().get().matches("LIVE")){
-                            try {
-                                double val = Double.parseDouble(textField_CH1current.getText());
-                                if(val<120 && val>-120){
-                                    CH1.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE).putVal(val);                                    
-                                } else {
-                                    textField_CH1current.setText(Double.toString(CH1.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE).getValDbl()));
+                if(CH1.getStatus()){
+                    displayValues.put(CH1.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE),label_CH1currentRB);
+                    //displayValues.put(CH1.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),label_CH1current);
+                    displayValues.put(CH1.getChannel(HDipoleCorr.FIELD_RB_HANDLE),label_CH1fieldRB);               
+                    setValues.put(CH1.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),textField_CH1current);
+                    textField_CH1current.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                        if(!newVal){ 
+                            if(MainFunctions.mainDocument.getModel().get().matches("LIVE")){
+                                try {
+                                    double val = Double.parseDouble(textField_CH1current.getText());
+                                    if(val<120 && val>-120){
+                                        CH1.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE).putVal(val);                                    
+                                    } else {
+                                        textField_CH1current.setText(Double.toString(CH1.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE).getValDbl()));
+                                    }
+                                } catch (ConnectionException | GetException | PutException ex) {
+                                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                                 }
-                            } catch (ConnectionException | GetException | PutException ex) {
-                                Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                            } else {
+                                textField_CH1current.fireEvent(new RunEvent(runNow.get()));
                             }
-                        } else {
-                            textField_CH1current.fireEvent(new RunEvent(runNow.get()));
                         }
-                    }
-                });
-                textField_CH1field.focusedProperty().addListener((obs, oldVal, newVal) ->{
-                    if(!newVal){
-                        textField_CH1field.fireEvent(new RunEvent(runNow.get()));
-                    }
-                });
-                label_CH1fieldRB.textProperty().addListener((obs, oldVal, newVal) ->{
-                    if(!newVal.equals(oldVal)){
-                        label_CH1fieldRB.fireEvent(new RunEvent(runNow.get()));
-                    }
-                });
-        
-                
+                    });
+                    textField_CH1field.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                        if(!newVal){
+                            textField_CH1field.fireEvent(new RunEvent(runNow.get()));
+                        }
+                    });
+                    label_CH1fieldRB.textProperty().addListener((obs, oldVal, newVal) ->{
+                        if(!newVal.equals(oldVal)){
+                            label_CH1fieldRB.fireEvent(new RunEvent(runNow.get()));
+                        }
+                    });
+                } else {                
+                    label_CH1currentRB.setDisable(true);
+                    label_CH1fieldRB.setDisable(true);
+                    textField_CH1current.setDisable(true);                    
+                }    
+                        
                 AcceleratorNode CH2 = sequence.getNodesOfType("DCH").get(1);
-                displayValues.put(CH2.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE),label_CH2currentRB);
-                //displayValues.put(CH2.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),label_CH2current);
-                displayValues.put(CH2.getChannel(HDipoleCorr.FIELD_RB_HANDLE),label_CH2fieldRB);              
-                setValues.put(CH2.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),textField_CH2current);
-                textField_CH2field.focusedProperty().addListener((obs, oldVal, newVal) ->{
-                    if(!newVal){ 
-                        if(MainFunctions.mainDocument.getModel().get().matches("LIVE")){
-                            try {
-                                double val = Double.parseDouble(textField_CH2current.getText());
-                                if(val<120 && val>-120){
-                                    CH2.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE).putVal(val);                                    
-                                } else {
-                                    textField_CH2current.setText(Double.toString(CH2.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE).getValDbl()));
+                if(CH2.getStatus()){               
+                    displayValues.put(CH2.getChannel(MagnetPowerSupply.CURRENT_RB_HANDLE),label_CH2currentRB);
+                    //displayValues.put(CH2.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),label_CH2current);
+                    displayValues.put(CH2.getChannel(HDipoleCorr.FIELD_RB_HANDLE),label_CH2fieldRB);              
+                    setValues.put(CH2.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE),textField_CH2current);
+                    textField_CH2field.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                        if(!newVal){ 
+                            if(MainFunctions.mainDocument.getModel().get().matches("LIVE")){
+                                try {
+                                    double val = Double.parseDouble(textField_CH2current.getText());
+                                    if(val<120 && val>-120){
+                                        CH2.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE).putVal(val);                                    
+                                    } else {
+                                        textField_CH2current.setText(Double.toString(CH2.getChannel(MagnetPowerSupply.CURRENT_SET_HANDLE).getValDbl()));
+                                    }
+                                } catch (ConnectionException | GetException | PutException ex) {
+                                    Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                                 }
-                            } catch (ConnectionException | GetException | PutException ex) {
-                                Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+                            } else {
+                                textField_CH2current.fireEvent(new RunEvent(runNow.get()));
                             }
-                        } else {
-                            textField_CH2current.fireEvent(new RunEvent(runNow.get()));
                         }
-                    }
-                });
-                textField_CH2field.focusedProperty().addListener((obs, oldVal, newVal) ->{
-                    if(!newVal){
-                        textField_CH2field.fireEvent(new RunEvent(runNow.get()));
-                    }
-                });
-                label_CH2fieldRB.textProperty().addListener((obs, oldVal, newVal) ->{
-                    if(!newVal.equals(oldVal)){
-                        label_CH2fieldRB.fireEvent(new RunEvent(runNow.get()));
-                    }
-                });
+                    });
+                    textField_CH2field.focusedProperty().addListener((obs, oldVal, newVal) ->{
+                        if(!newVal){
+                            textField_CH2field.fireEvent(new RunEvent(runNow.get()));
+                        }
+                    });
+                    label_CH2fieldRB.textProperty().addListener((obs, oldVal, newVal) ->{
+                        if(!newVal.equals(oldVal)){
+                            label_CH2fieldRB.fireEvent(new RunEvent(runNow.get()));
+                        }
+                    });
+                } else {                                    
+                    label_CH2currentRB.setDisable(true);
+                    label_CH2fieldRB.setDisable(true);
+                    textField_CH2current.setDisable(true);
+                }    
                 
-            } else {                
-                label_CH1currentRB.setDisable(true);
-                label_CH1fieldRB.setDisable(true);
-                textField_CH1current.setDisable(true);
-                label_CH2currentRB.setDisable(true);
-                label_CH2fieldRB.setDisable(true);
-                textField_CH2current.setDisable(true);
-            }    
+            } 
 
             if(sequence.getNodesOfType("IRIS").size()>0){
                 AcceleratorNode IrisEquip = sequence.getNodesOfType("IRIS").get(0);
