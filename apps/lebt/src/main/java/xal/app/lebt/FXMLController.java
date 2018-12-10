@@ -231,6 +231,8 @@ public class FXMLController implements Initializable {
     @FXML private TextField textField_CV2field;
     @FXML private TextField textField_CH2field;
     @FXML private Label label_Field;
+    @FXML private RadioButton rb_CurrentMeasurement3;
+    @FXML private Label label_CurrentMeasurement3;
 
 
     @Override
@@ -1352,23 +1354,31 @@ public class FXMLController implements Initializable {
 
             //Disgnostics equipment
             if(accl.getAllNodesOfType("BCM").size()>0){
-                List<AcceleratorNode> BCM = accl.getAllNodesOfType("BCM");                
-                displayValues.put(BCM.get(0).getChannel(CurrentMonitor.I_AVG_HANDLE),label_CurrentMeasurement1);
-                rb_CurrentMeasurement1.setText(BCM.get(0).toString());
-                if(BCM.size()>1){
-                    displayValues.put(BCM.get(1).getChannel(CurrentMonitor.I_AVG_HANDLE),label_CurrentMeasurement2);
-                    rb_CurrentMeasurement2.setText(BCM.get(1).toString());
-                } else {
-                    label_CurrentMeasurement2.setDisable(true);
-                    rb_CurrentMeasurement2.setDisable(true);
-                }
+                displayValues.put(accl.getAllNodesOfType("BCM").get(0).getChannel(CurrentMonitor.I_AVG_HANDLE),label_CurrentMeasurement1);
+                rb_CurrentMeasurement1.setText(accl.getAllNodesOfType("BCM").get(0).toString());                
             } else {
                 label_CurrentMeasurement1.setDisable(true);
-                rb_CurrentMeasurement1.setDisable(true);
+                rb_CurrentMeasurement1.setDisable(true);                               
+            } 
+            if(accl.getAllNodesOfType("BCM").size()>1){
+                displayValues.put(accl.getAllNodesOfType("BCM").get(1).getChannel(CurrentMonitor.I_AVG_HANDLE),label_CurrentMeasurement2);
+                rb_CurrentMeasurement2.setText(accl.getAllNodesOfType("BCM").get(1).toString());
+            } else {
                 label_CurrentMeasurement2.setDisable(true);
                 rb_CurrentMeasurement2.setDisable(true);
+            }   
+            if(accl.getAllNodesOfType("BCM").size()>2){
+                displayValues.put(accl.getAllNodesOfType("BCM").get(2).getChannel(CurrentMonitor.I_AVG_HANDLE),label_CurrentMeasurement3);
+                rb_CurrentMeasurement3.setText(accl.getAllNodesOfType("BCM").get(2).toString());
+            } else {
+                label_CurrentMeasurement3.setDisable(true);
+                rb_CurrentMeasurement3.setDisable(true);
+            }   
+            
+            if(accl.getAllNodesOfType("BCM").size()==0){
                 comboBox_currentFC.setDisable(true);
-            } 
+            }
+            
         }
     }    
     
