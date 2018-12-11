@@ -307,6 +307,10 @@ public class IdealMagSteeringDipole extends ThinElectromagnet {
 	public void initializeFrom(LatticeElement element) {
 		super.initializeFrom(element);
 		Magnet magnet = (Magnet) element.getHardwareNode();
-		setEffLength(magnet.getEffLength() / magnet.getMagBucket().getSlices());		
+                if(magnet.getMagBucket().getSlices()!=1){
+                    setEffLength(element.getLength());
+                } else {
+                    setEffLength(magnet.getEffLength());		
+                }
 	}
 }

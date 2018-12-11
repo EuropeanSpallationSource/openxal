@@ -104,11 +104,7 @@ public class SimulationRunner {
         transmission = 1;
         transmission_offset = 1;
         final_pos_simul = "";
-        try {
-            readVacuumChamber(vacuumChamber);
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(SimulationRunner.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        readVacuumChamber(vacuumChamber);        
 
         try {
             //get inital parameters from file
@@ -578,15 +574,17 @@ public class SimulationRunner {
             }
                       
             aperture = getAperture(stateElement.get(i).getPosition());
-            double x0 = (aperture-covmat.getMeanX())/(Math.sqrt(2.0)*covmat.getSigmaX());
-            double x1 = (-aperture-covmat.getMeanX())/(Math.sqrt(2.0)*covmat.getSigmaX());
-            double y0 = (aperture-covmat.getMeanY())/(Math.sqrt(2.0)*covmat.getSigmaY());
-            double y1 = (-aperture-covmat.getMeanY())/(Math.sqrt(2.0)*covmat.getSigmaY());                   
-            transmission_offset = Math.min(transmission_offset,(0.25*Math.abs(erf(x0)-erf(x1))*Math.abs(erf(y0)-erf(y1))));
+            if(Double.isFinite(aperture)){
+                double x0 = (aperture-covmat.getMeanX())/(Math.sqrt(2.0)*covmat.getSigmaX());
+                double x1 = (-aperture-covmat.getMeanX())/(Math.sqrt(2.0)*covmat.getSigmaX());
+                double y0 = (aperture-covmat.getMeanY())/(Math.sqrt(2.0)*covmat.getSigmaY());
+                double y1 = (-aperture-covmat.getMeanY())/(Math.sqrt(2.0)*covmat.getSigmaY());                   
+                transmission_offset = Math.min(transmission_offset,(0.25*Math.abs(erf(x0)-erf(x1))*Math.abs(erf(y0)-erf(y1))));
 
-            x0 = aperture/(Math.sqrt(2.0)*covmat.getSigmaX());
-            y0 = aperture/(Math.sqrt(2.0)*covmat.getSigmaY());
-            transmission = Math.min(transmission,(erf(x0)*erf(y0)));
+                x0 = aperture/(Math.sqrt(2.0)*covmat.getSigmaX());
+                y0 = aperture/(Math.sqrt(2.0)*covmat.getSigmaY());
+                transmission = Math.min(transmission,(erf(x0)*erf(y0)));
+            }
             
         }                        
         
@@ -598,34 +596,35 @@ public class SimulationRunner {
     
     private double getAperture(double pos){
         double posArray = vacuumChamber.keySet().stream().min(Comparator.comparingDouble(val -> Math.abs(val - pos))).orElseThrow(() -> new NoSuchElementException("No value present"));
-        return vacuumChamber.get(posArray);
+        if(Double.isFinite(posArray)){
+            return vacuumChamber.get(posArray);
+        } else {
+            return Double.NaN;
+        }
     }    
     
     /**
      * Retrieves and displays trajectory plots
      * @param newRun the simulation
      */
-    private void readVacuumChamber(HashMap<Double,Double> vacuumChamber) throws FileNotFoundException{
-
-        DataAdaptor readAdp = null;
-        URL file;
-
-        try {
-            file = this.getClass().getResource("/vacuum_chamber/VacuumChamber.xml");
-            readAdp = XmlDataAdaptor.adaptorForUrl(file,false);
-            DataAdaptor blockheader = readAdp.childAdaptor("LEBTboundaries");
-            DataAdaptor blockPoints = blockheader.childAdaptor("points");
-            int num= blockPoints.intValue("numpoints");
-            DataAdaptor blockPosition = blockheader.childAdaptor("position");
-            double[] pos=blockPosition.doubleArray("data");
-            DataAdaptor blockAperture = blockheader.childAdaptor("chamber");
-            double[] aperture=blockAperture.doubleArray("data");
-            for (int i = 0; i < num ; i++) {
-                vacuumChamber.put(pos[i], aperture[i]);
+    private void readVacuumChamber(HashMap<Double,Double> vacuumChamber) {
+        
+        double[][] profile;
+                        
+        if(sequence != null){            
+            vacuumChamber.clear();
+            if(sequence instanceof AcceleratorSeqCombo){
+                profile = ((AcceleratorSeqCombo) sequence).getAperProfile().getProfileXArray();
+                for (int i = 0; i < profile[0].length ; i++) {
+                    vacuumChamber.put(profile[0][i], profile[1][i]);
+                }  
+            } else if(sequence instanceof AcceleratorSeq){
+                profile = ((AcceleratorSeq) sequence).getAperProfile().getProfileXArray();
+                for (int i = 0; i < profile[0].length ; i++) {
+                    vacuumChamber.put(profile[0][i], profile[1][i]);
+                }  
             }
-        } catch (XmlDataAdaptor.ParseException | XmlDataAdaptor.ResourceNotFoundException ex) {
-            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        }    
 
     }
    
