@@ -28,7 +28,7 @@ import xal.extension.jels.model.elem.FieldMapPoint;
 public class RfFieldMap1D extends FieldMap {
 
     public RfFieldMap1D(String path, String filename) {
-        FieldComponent<double[]> fieldComponent = loadFile1D(path, filename+".edz");
+        FieldComponent<double[]> fieldComponent = loadFile1D(path, filename + ".edz");
 
         // Normalizing the field map.
         double[] field = fieldComponent.getField();
@@ -108,7 +108,7 @@ public class RfFieldMap1D extends FieldMap {
     @Override
     public double getLength() {
         FieldComponent<double[]> fieldComponent = fieldComponents.get("z");
-        
+
         return fieldComponent.getMax();
     }
 
@@ -116,9 +116,9 @@ public class RfFieldMap1D extends FieldMap {
     public double getSliceLength() {
         FieldComponent<double[]> fieldComponent = fieldComponents.get("z");
         double[] field = fieldComponent.getField();
-        
+
         int numberOfPoints = field.length;
-        
+
         return fieldComponent.getMax() / (numberOfPoints - 1);
     }
 
