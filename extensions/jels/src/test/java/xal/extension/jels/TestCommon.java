@@ -160,7 +160,7 @@ public abstract class TestCommon {
             IComponent comp = it.next();
             if (comp instanceof IElement) {
                 IElement el = (IElement) comp;
-                //el.transferMap(probe, el.getLength()).getFirstOrder().print();
+                System.out.println(el.transferMap(probe, el.getLength()).getFirstOrder().toStringMatrix());
                 pm = pm.compose(el.transferMap(probe, el.getLength()));
                 if (el instanceof xal.model.elem.IdealRfGap) {
                     xal.model.elem.IdealRfGap gap = (xal.model.elem.IdealRfGap) el;
@@ -172,9 +172,9 @@ public abstract class TestCommon {
                 }
             }
         }
-//        PrintWriter pw = new PrintWriter(System.out);
-//        pm.getFirstOrder().print(pw);
-//        pw.flush();
+        PrintWriter pw = new PrintWriter(System.out);
+        pm.getFirstOrder().print(pw);
+        pw.flush();
     }
 
     public void checkTWTransferMatrix(double T[][], double errTolerance) throws ModelException {

@@ -9,8 +9,6 @@
     </parent>
 
     <artifactId>openxal.extensions.jels</artifactId>
-    
-    <packaging>jar</packaging>
 
     <dependencies>
         <dependency>
