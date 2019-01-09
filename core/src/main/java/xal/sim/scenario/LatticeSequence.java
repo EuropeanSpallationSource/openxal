@@ -689,13 +689,26 @@ public class LatticeSequence extends LatticeElement implements Iterable<LatticeE
                 int numberOfSlices = ((Magnet) smfNodeCurr).getMagBucket().getSlices();
                 double length = ((Magnet) smfNodeCurr).getEffLength();
                 double sliceLength = length / numberOfSlices;
+                double[] sliceEffLength = ((Magnet) smfNodeCurr).getMagBucket().getSlicesEffLength();                
 
                 // Move first slice
                 latElem.dblElemCntrPos -= length / 2.0 - sliceLength / 2.0;
-                latElem.dblElemEntrPos = latElem.dblElemExitPos = latElem.dblElemCntrPos;
+                latElem.dblElemEntrPos = latElem.dblElemExitPos = latElem.dblElemCntrPos;                                
+                //set element effective length
+                if(sliceEffLength.length==numberOfSlices){
+                    latElem.dblElemLen = sliceEffLength[0];  
+                } else {
+                    latElem.dblElemLen = sliceLength;
+                }
                 // Create other slices
                 for (int i = 1; i < numberOfSlices; i++) {
                     LatticeElement elemSplitPart = latElem.splitElementAt(latElem.dblElemCntrPos + sliceLength);
+                    //set element effective length
+                    if(sliceEffLength.length==numberOfSlices){
+                        elemSplitPart.dblElemLen = sliceEffLength[i];                     
+                    } else {
+                        elemSplitPart.dblElemLen = sliceLength;
+                    }    
                     this.addLatticeElement(elemSplitPart);
                     latElem = elemSplitPart;
                 }
