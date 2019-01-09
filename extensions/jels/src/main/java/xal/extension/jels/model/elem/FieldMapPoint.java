@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 European Spallation Source ERIC.
+ * Copyright (C) 2019 European Spallation Source ERIC.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -26,6 +26,9 @@ package xal.extension.jels.model.elem;
  * @author Juan F. Esteban Müller <JuanF.EstebanMuller@esss.se>
  */
 public class FieldMapPoint {
+
+    private double amplitudeFactorE = 1.0;
+    private double amplitudeFactorB = 1.0;
 
     // Electric field
     private double Ex = 0;
@@ -109,100 +112,108 @@ public class FieldMapPoint {
         this.dBzdz = dBzdz;
     }
 
+    public void setAmplitudeFactorE(double amplitudeFactorE) {
+        this.amplitudeFactorE = amplitudeFactorE;
+    }
+
+    public void setAmplitudeFactorB(double amplitudeFactorB) {
+        this.amplitudeFactorB = amplitudeFactorB;
+    }
+
     public double getEx() {
-        return Ex;
+        return Ex * amplitudeFactorE;
     }
 
     public double getEy() {
-        return Ey;
+        return Ey * amplitudeFactorE;
     }
 
     public double getEz() {
-        return Ez;
+        return Ez * amplitudeFactorE;
     }
 
     public double getdExdx() {
-        return dExdx;
+        return dExdx * amplitudeFactorE;
     }
 
     public double getdExdy() {
-        return dExdy;
+        return dExdy * amplitudeFactorE;
     }
 
     public double getdExdz() {
-        return dExdz;
+        return dExdz * amplitudeFactorE;
     }
 
     public double getdEydx() {
-        return dEydx;
+        return dEydx * amplitudeFactorE;
     }
 
     public double getdEydy() {
-        return dEydy;
+        return dEydy * amplitudeFactorE;
     }
 
     public double getdEydz() {
-        return dEydz;
+        return dEydz * amplitudeFactorE;
     }
 
     public double getdEzdx() {
-        return dEzdx;
+        return dEzdx * amplitudeFactorE;
     }
 
     public double getdEzdy() {
-        return dEzdy;
+        return dEzdy * amplitudeFactorE;
     }
 
     public double getdEzdz() {
-        return dEzdz;
+        return dEzdz * amplitudeFactorE;
     }
 
     public double getBx() {
-        return Bx;
+        return Bx * amplitudeFactorB;
     }
 
     public double getBy() {
-        return By;
+        return By * amplitudeFactorB;
     }
 
     public double getBz() {
-        return Bz;
+        return Bz * amplitudeFactorB;
     }
 
     public double getdBxdx() {
-        return dBxdx;
+        return dBxdx * amplitudeFactorB;
     }
 
     public double getdBxdy() {
-        return dBxdy;
+        return dBxdy * amplitudeFactorB;
     }
 
     public double getdBxdz() {
-        return dBxdz;
+        return dBxdz * amplitudeFactorB;
     }
 
     public double getdBydx() {
-        return dBydx;
+        return dBydx * amplitudeFactorB;
     }
 
     public double getdBydy() {
-        return dBydy;
+        return dBydy * amplitudeFactorB;
     }
 
     public double getdBydz() {
-        return dBydz;
+        return dBydz * amplitudeFactorB;
     }
 
     public double getdBzdx() {
-        return dBzdx;
+        return dBzdx * amplitudeFactorB;
     }
 
     public double getdBzdy() {
-        return dBzdy;
+        return dBzdy * amplitudeFactorB;
     }
 
     public double getdBzdz() {
-        return dBzdz;
+        return dBzdz * amplitudeFactorB;
     }
 
     public void setEx(double Ex) {
