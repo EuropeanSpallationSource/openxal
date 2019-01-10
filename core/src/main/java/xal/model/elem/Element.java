@@ -77,7 +77,7 @@ public abstract class Element implements IElement {
     /** the parent composite structure that owns this element */
     private IComposite  cpsParent;
     
-//  sako
+    //  sako
     //position in s (m)
     /** This is the center position of the element with the lattice - CKA */
     private double      dblPos;
@@ -267,29 +267,29 @@ public abstract class Element implements IElement {
         return alignz;
     }
         
-	public double getPhiX() {
-		return phix;
-	}
+    public double getPhiX() {
+        return phix;
+    }
 
-	public double getPhiY() {
-		return phiy;
-	}
+    public double getPhiY() {
+        return phiy;
+    }
 
-	public double getPhiZ() {
-		return phiz;
-	}
+    public double getPhiZ() {
+        return phiz;
+    }
 
-	public void setPhiX(double phix) {
-		this.phix = phix;
-	}
+    public void setPhiX(double phix) {
+        this.phix = phix;
+    }
 
-	public void setPhiY(double phiy) {
-		this.phiy = phiy;
-	}
+    public void setPhiY(double phiy) {
+        this.phiy = phiy;
+    }
 
-	public void setPhiZ(double phiz) {
-		this.phiz = phiz;
-	};
+    public void setPhiZ(double phiz) {
+        this.phiz = phiz;
+    };
 
     
     

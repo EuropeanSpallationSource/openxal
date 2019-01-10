@@ -250,19 +250,20 @@ public class IdealMagQuad extends ThickElectromagnet {
         matPhi.setSubMatrix( 4, 5, 4, 5, arr0 ); // a drift space longitudinally
         matPhi.setElem( 6, 6, 1.0 ); // homogeneous coordinates
 		
-		if ( k >= 0.0 ) {
-			matPhi.setSubMatrix( 0, 1, 0, 1, arrF );
-			matPhi.setSubMatrix( 2, 3, 2, 3, arrD );			
-		}
-		else if ( k < 0.0 ) {
-			matPhi.setSubMatrix( 0, 1, 0, 1, arrD );
-			matPhi.setSubMatrix( 2, 3, 2, 3, arrF );			
-		}
-				
-		// apply alignment and rotation errors
-		matPhi = applyErrors(matPhi, probe, length);			
+        if ( k >= 0.0 ) {
+                matPhi.setSubMatrix( 0, 1, 0, 1, arrF );
+                matPhi.setSubMatrix( 2, 3, 2, 3, arrD );			
+        }
+        else if ( k < 0.0 ) {
+                matPhi.setSubMatrix( 0, 1, 0, 1, arrD );
+                matPhi.setSubMatrix( 2, 3, 2, 3, arrF );			
+        }
+
+        // Jan 2019 - Natalia Milas
+        // apply alignment and rotation errors
+        matPhi = applySliceErrors(matPhi, probe, length);			
 		
-	    return new PhaseMap( matPhi );
+        return new PhaseMap( matPhi );
    }
     
     /*

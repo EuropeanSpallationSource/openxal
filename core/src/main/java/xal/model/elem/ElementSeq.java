@@ -21,6 +21,8 @@ import xal.model.IProbe;
 import xal.model.ModelException;
 import xal.model.probe.EnvelopeProbe;
 import xal.sim.scenario.LatticeElement;
+import xal.smf.attr.AlignmentBucket;
+import xal.tools.math.r3.R3;
 
 
 
@@ -99,6 +101,16 @@ public abstract class ElementSeq implements IComposite {
     private List<IComponent>        m_lstCompsBackward;
     
 
+    /** Alignment variable */
+    private double alignx = 0.0;
+    private double aligny = 0.0;
+    private double alignz = 0.0;
+    
+    private double phix = 0.0;
+    private double phiy = 0.0;
+    private double phiz = 0.0;
+    
+    
     /*
      * Initialization
      */    
@@ -253,6 +265,110 @@ public abstract class ElementSeq implements IComposite {
         return lstCmps;
     }
     
+    /**
+     * Set the alignment parameters all at once.
+     * 
+     * @param vecAlign  (dx,dy,dz)
+     * 
+     * @author Christopher K. Allen
+     */
+    public void setAlign(R3 vecAlign)    {
+        alignx = vecAlign.getx();
+        aligny = vecAlign.gety();
+        alignz = vecAlign.getz();
+    }
+    
+    
+    /**
+     * Set the horizontal misalignment
+     * 
+     * @param x     misalignment (in m)
+     *
+     * @since  Dec 17, 2014   by Christopher K. Allen
+     */
+    public void setAlignX(double x) {
+        alignx = x;
+    }
+
+    /**
+     * Set the vertical misalignment
+     * 
+     * @param y     misalignment (in m)
+     *
+     * @since  Dec 17, 2014   by Christopher K. Allen
+     */
+    public void setAlignY(double y) {
+        aligny = y;
+    }
+
+    /**
+     * Set the longitudinal misalignment
+     * 
+     * @param z     misalignment (in m)
+     *
+     * @since  Dec 17, 2014   by Christopher K. Allen
+     */
+    public void setAlignZ(double z) {
+        alignz = z;
+    }
+    
+    /**
+     * Get the horizontal misalignment
+     * 
+     * @return  the misalignment (in meters)
+     *
+     * @since  Dec 17, 2014   by Christopher K. Allen
+     */
+    public double getAlignX() {
+        return alignx;
+    }
+
+    /**
+     * Get the vertical misalignment
+     * 
+     * @return  the misalignment (in meters)
+     *
+     * @since  Dec 17, 2014   by Christopher K. Allen
+     */
+    public double getAlignY() {
+        return aligny;
+    }
+    
+    /**
+     * Get the longitudinal misalignment
+     * 
+     * @return  the misalignment (in meters)
+     *
+     * @since  Dec 17, 2014   by Christopher K. Allen
+     */
+    public double getAlignZ() {
+        return alignz;
+    }
+      
+    public double getPhiX() {
+        return phix;
+    }
+
+    public double getPhiY() {
+        return phiy;
+    }
+
+    public double getPhiZ() {
+        return phiz;
+    }
+
+    public void setPhiX(double phix) {
+        this.phix = phix;
+    }
+
+    public void setPhiY(double phiy) {
+        this.phiy = phiy;
+    }
+
+    public void setPhiZ(double phiz) {
+        this.phiz = phiz;
+    };
+
     
     /*
      *  Operations
@@ -459,6 +575,15 @@ public abstract class ElementSeq implements IComposite {
         setId( strElemId != null ? strElemId : strSmfId);
         setHardwareNodeId(strSmfId);
 //      setId(latticeElement.getNode().getId());
+
+        AlignmentBucket alignmentBucket = latticeElement.getHardwareNode().getAlign(); 
+        setAlignX(alignmentBucket.getX());
+        setAlignY(alignmentBucket.getY());
+        setAlignZ(alignmentBucket.getZ());
+        
+        setPhiX(alignmentBucket.getPitch());
+        setPhiY(alignmentBucket.getYaw());
+        setPhiZ(alignmentBucket.getRoll());
                 
     }
     

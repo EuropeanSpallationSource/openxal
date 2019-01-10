@@ -658,7 +658,9 @@ public double calcK(IProbe probe, double dblLen) {
                 matPhi.setSubMatrix(2, 3, 2, 3, arrF);
          }
 
-        matPhi = applyErrors(matPhi, probe, dblLen);
+        // Jan 2019 - Natalia Milas
+        // apply alignment and rotation errors
+        matPhi = applySliceErrors(matPhi, probe, dblLen);
 
         return new PhaseMap(matPhi);
     }

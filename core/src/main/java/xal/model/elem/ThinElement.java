@@ -269,6 +269,21 @@ public abstract class ThinElement extends Element {
         double dx = getAlignX();
         double dy = getAlignY();
         double dz = getAlignZ();
+        
+        //check if the element is contained in a sequence which has its own misalignements
+        if(this.getParent() instanceof ElementSeq){
+            double Dx = (getPosition()-this.getParent().getLength()/2)*((ElementSeq)this.getParent()).getPhiY();
+            double Dy = (getPosition()-this.getParent().getLength()/2)*((ElementSeq)this.getParent()).getPhiX();
+            
+            px = px + ((ElementSeq)this.getParent()).getPhiX();
+            py = py + ((ElementSeq)this.getParent()).getPhiY();
+            pz = pz + ((ElementSeq)this.getParent()).getPhiZ();
+            
+            dx = dx + Dx + ((ElementSeq)this.getParent()).getAlignX();
+            dy = dy + Dy + ((ElementSeq)this.getParent()).getAlignY() ;
+            dz = dz + ((ElementSeq)this.getParent()).getAlignZ() ;            
+        }
+        
         if (px != 0. || py != 0.|| dx !=0 || dy != 0) {
             PhaseMatrix T = PhaseMatrix.translation(new PhaseVector(py*length/2-dx, -py, px*length/2-dy, -px, 0., 0.));		    	
             matPhi = matPhi.times(T);
