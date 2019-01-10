@@ -97,20 +97,7 @@ public class IdealMagFringeQuad extends ElectromagnetSeq {
         this.getMagBody().setId(strId + "Body");
         this.getFaceEntr().setId(strId + "Entr");
         this.getFaceExit().setId(strId + "Exit");
-    }
-
-    /**
-     * Set the alignment parameters for the magnet.
-     * 
-     * I don't know what they are or how they are used.
-     * 
-     * @param   vecAlign    (dx,dy,dz)
-     */
-    public void setAlignment(R3 vecAlign)   {
-        this.getMagBody().setAlign(vecAlign);
-        this.getFaceEntr().setAlign(vecAlign);
-        this.getFaceExit().setAlign(vecAlign);
-    }
+    }    
     
     /**
      * <p>Set the position of the magnet along the design path within the
@@ -238,6 +225,19 @@ public class IdealMagFringeQuad extends ElectromagnetSeq {
     	this.getFaceEntr().setFieldPathFlag(dblFlag);
     	this.getMagBody().setFieldPathFlag(dblFlag);
     	this.getFaceExit().setFieldPathFlag(dblFlag);
+    }
+    
+    /**
+     * Set the alignment parameters for the magnet.
+     * 
+     * I don't know what they are or how they are used.
+     * 
+     * @param   vecAlign    (dx,dy,dz)
+     */
+    public void setAlignment(R3 vecAlign)   {
+        this.getMagBody().setAlign(vecAlign);
+        this.getFaceEntr().setAlign(vecAlign);
+        this.getFaceExit().setAlign(vecAlign);
     }
 
     /**

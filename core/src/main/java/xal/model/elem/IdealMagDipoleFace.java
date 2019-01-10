@@ -284,7 +284,7 @@ public class IdealMagDipoleFace extends ThinElectromagnet {
                 throw new ModelException("IdealMagDipoleFace#transferMap() - bad magnet orientation.");
         }
 
-        matPhi = applyAlignError(matPhi);
+        //matPhi = applyAlignError(matPhi);
 
         return new PhaseMap(matPhi);
 

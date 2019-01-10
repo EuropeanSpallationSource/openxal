@@ -418,10 +418,12 @@ public class IdealMagDipoleFace2 extends ThinElectromagnet {
         }
         
         
-        //4 Feb 08, sako try to apply align erro be careful.
-      
- 	   PhaseMatrix Phidx = applyAlignError(matPhi);	
-	   matPhi = Phidx;
+        //4 Feb 08, sako try to apply align erro be careful.      
+ 	//PhaseMatrix Phidx = applyAlignError(matPhi);	
+        
+        //Jan 2019 Apply the slice error form the Thick element
+        PhaseMatrix Phidx = applyErrors(matPhi,0.0);
+        matPhi = Phidx;
 
         return new PhaseMap(matPhi);
 

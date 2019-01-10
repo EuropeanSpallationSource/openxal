@@ -311,6 +311,9 @@ public abstract class Element implements IElement {
     }
     
     /**
+     * 
+     * Removed in Jan 2019 - Natalia Milas
+     * 
      * <h2>Add Displacement Error to Transfer Matrix</h2>
      * <p>
      * Method to add the effects of a spatially displaced to the
@@ -341,7 +344,7 @@ public abstract class Element implements IElement {
      * 
      * @since Feb 20, 2009, version 2
      */
-    protected PhaseMatrix applyAlignError(PhaseMatrix matPhi) {
+    /*protected PhaseMatrix applyAlignError(PhaseMatrix matPhi) {
     	double dx = getAlignX();
         double dy = getAlignY();
         double dz = getAlignZ();
@@ -366,7 +369,7 @@ public abstract class Element implements IElement {
 
         return matPhi;
 	}
-
+    /*
      
     /**
      * <p>This method is intended to return the location of the probe within
