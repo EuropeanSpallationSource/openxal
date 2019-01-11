@@ -230,7 +230,8 @@ public class FieldMap extends ThickElement implements IRfGap, IRfCavityCell {
         T.setSubMatrix(2, 3, 2, 3, transversalTransferMatrix.getArrayCopy());
         T.setSubMatrix(4, 5, 4, 5, longitudinalTransferMatrix.getArrayCopy());
         
-        //Add misalignement error
+        // Jan 2019 - Natalia Milas
+        // apply alignment and rotation errors
         T = applySliceErrors(T, probe, dblLen);
 
         return new PhaseMap(T);

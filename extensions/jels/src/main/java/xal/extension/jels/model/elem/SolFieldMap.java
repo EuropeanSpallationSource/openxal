@@ -174,7 +174,8 @@ public class SolFieldMap extends ThickElectromagnet {
             transferMatrix = fieldMapIntegrator(probe, spacingZ, Bz0, dBr_dr).times(transferMatrix);
         }
         
-        //Add misalignement error
+        //Jan 2019 - Natalia Milas
+        //Add ThickElement misalignement error
         transferMatrix = applySliceErrors(transferMatrix, probe, dblLen);
         
         return new PhaseMap(transferMatrix);

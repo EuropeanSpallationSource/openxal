@@ -393,6 +393,10 @@ public class IdealMagDipoleFace2 extends ThinElectromagnet {
 
         matPhi.setElem(4, 4, 1);
         matPhi.setElem(5, 5, 1);
+        
+        //Jan 2019 Apply the slice error form the ThinElement
+        PhaseMatrix Phidx = applyErrors(matPhi,0.0);
+        matPhi = Phidx;
 
         return new PhaseMap(matPhi);
     }

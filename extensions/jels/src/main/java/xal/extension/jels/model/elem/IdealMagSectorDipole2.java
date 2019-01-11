@@ -474,6 +474,10 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
             matPhi.setElem(3, 5, Math.pow(gamma, 2) * h * Math.sin(kx * Deltas) / kx);
         }
 
+        //Jan 2019 Appliy the slice error form the Thick element
+        PhaseMatrix Phidx = applySliceErrors(matPhi,probe,dblLen);	
+	matPhi = Phidx;
+        
         return new PhaseMap(matPhi);
     }
 

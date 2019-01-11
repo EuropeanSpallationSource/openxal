@@ -218,6 +218,10 @@ public class FieldMapExpInt extends ThickElement implements IRfGap, IRfCavityCel
         T.setSubMatrix(2, 3, 2, 3, transversalTransferMatrix.getArrayCopy());
         T.setSubMatrix(4, 5, 4, 5, longitudinalTransferMatrix.getArrayCopy());
 
+        // Jan 2019 - Natalia Milas
+        // apply alignment and rotation errors
+        T = applySliceErrors(T, probe, dblLen);
+        
         return new PhaseMap(T);
     }
 
