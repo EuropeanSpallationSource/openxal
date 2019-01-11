@@ -236,7 +236,7 @@ public class IdealMagQuad extends ThickElectromagnet {
     	   k = K1;
        }
        */
-		double kSqrt = Math.sqrt( Math.abs( k ) );
+        double kSqrt = Math.sqrt( Math.abs( k ) );
 
         // Compute the transfer matrix components		
         final double[][] arrF = QuadrupoleLens.transferFocPlane( kSqrt, length );

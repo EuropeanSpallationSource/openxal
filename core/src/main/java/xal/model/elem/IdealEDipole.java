@@ -738,7 +738,11 @@ public class IdealEDipole extends ThickElectrostatic
       matProd2 = rotMat.times(matProd2);
 
     }
-
+    
+    // Jan 2019 - Natalia Milas
+    // apply alignment and rotation errors
+    matProd2 = applySliceErrors(matProd2,probe,dL);
+    
     return new PhaseMap( matProd2 );
   }
 

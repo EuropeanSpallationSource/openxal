@@ -242,6 +242,10 @@ public class IdealEQuad extends ThickElectrostatic {
         matPhi.setSubMatrix( 4, 5, 4, 5, arrZ ); // a drift space longitudinally
         matPhi.setElem( 6, 6, 1.0 ); // homogeneous coordinates
 
+        // Jan 2019 - Natalia Milas
+        // apply alignment and rotation errors
+        matPhi = applySliceErrors(matPhi,probe,length);
+        
         return new PhaseMap( matPhi );
     }
 

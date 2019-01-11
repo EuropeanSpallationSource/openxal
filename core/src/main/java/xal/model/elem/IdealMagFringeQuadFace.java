@@ -321,7 +321,7 @@ public class IdealMagFringeQuadFace extends ThinElectromagnet {
         //PhaseMatrix Phidx = applyAlignError(matPhi);	
         
         
-        //Jan 2019 Apply the slice error form the Thick element
+        //Jan 2019 Apply the slice error form the ThinElement
         PhaseMatrix Phidx = applyErrors(matPhi,0.0);
         matPhi = Phidx;
  	   

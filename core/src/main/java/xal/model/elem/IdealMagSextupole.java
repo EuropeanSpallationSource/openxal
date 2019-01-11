@@ -68,15 +68,19 @@ public class IdealMagSextupole extends ThickElement {
         // Build transfer matrix
         PhaseMatrix  matPhi  = new PhaseMatrix();
         
-		// one dimensional drift matrix
+        // one dimensional drift matrix
         double mat0[][] = new double [][] { { 1.0, length }, { 0.0, 1.0 } };
 		
-		// set the block diagonals to the one dimensional drift matricies
+        // set the block diagonals to the one dimensional drift matricies
         matPhi.setSubMatrix( 0, 1, 0, 1, mat0 );
         matPhi.setSubMatrix( 2, 3, 2 ,3, mat0 );
         matPhi.setSubMatrix( 4, 5, 4, 5, mat0 );
         matPhi.setElem( 6, 6, 1.0 );	// inhomogeneous term is always 1.0
-		
+	
+        // Jan 2019 - Natalia Milas
+        // apply alignment and rotation errors
+        matPhi = applySliceErrors(matPhi, probe, length);
+        
         return new PhaseMap( matPhi );
 	}
 }
