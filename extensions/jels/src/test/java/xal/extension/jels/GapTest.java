@@ -339,7 +339,9 @@ public class GapTest extends SingleElementTest {
                 probe = setupOpenXALProbe(2.5e6, frequency, current);
                 elementMapping = JElsElementMapping.getInstance();
                 // GAP 78019.7 -80 14.5 0 0 0 0 0 0 0
-                sequence = gap(4.025e8, 78019.7, -80, 14.5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0);
+                //sequence = gap(4.025e8, 78019.7, -80, 14.5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0);
+                //swapping x and y angles
+                sequence = gap(4.025e8, 78019.7, -80, 14.5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
 
                 // TW transfer matrix
                 TWTransferMatrix = new double[][]{
@@ -372,7 +374,9 @@ public class GapTest extends SingleElementTest {
                 probe = setupOpenXALProbe(2.5e6, frequency, current);
                 elementMapping = JElsElementMapping.getInstance();
                 // GAP 78019.7 -80 14.5 0 0 0 0 0 0 0
-                sequence = gap(4.025e8, 78019.7, -80, 14.5, 0, 0, 0, 0, 0, 0, 0, 1., 2., 0, 3., 4.);
+                //sequence = gap(4.025e8, 78019.7, -80, 14.5, 0, 0, 0, 0, 0, 0, 0, 1., 2., 0, 3., 4.);
+                //swapping x and y angles
+                sequence = gap(4.025e8, 78019.7, -80, 14.5, 0, 0, 0, 0, 0, 0, 0, 1., 2., 0, 4., 3.);
 
                 // TW transfer matrix
                 TWTransferMatrix = new double[][]{
