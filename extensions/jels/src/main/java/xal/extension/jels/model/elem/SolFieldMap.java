@@ -99,7 +99,8 @@ public class SolFieldMap extends ThickElectromagnet {
     @Override
     public PhaseMap transferMap(IProbe probe, double dblLen)
             throws ModelException {
-        if (firstSliceFieldmap != null) {
+        
+        if (firstSliceFieldmap != null) {            
             return firstSliceFieldmap.transferMap(probe, dblLen);
         }
         int nPointsZ = fieldZ.length - 1;

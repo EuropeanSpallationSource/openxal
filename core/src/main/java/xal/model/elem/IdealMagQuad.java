@@ -198,24 +198,24 @@ public class IdealMagQuad extends ThickElectromagnet {
      */
     @Override
     public PhaseMap transferMap( final IProbe probe, final double length ) {
-		double charge = probe.getSpeciesCharge();
+        double charge = probe.getSpeciesCharge();
         double Er = probe.getSpeciesRestEnergy();
 //        double beta = probe.getBeta();
- //       double gamma = probe.getGamma();
+//        double gamma = probe.getGamma();
         double w = probe.getKineticEnergy();
         double p = Math.sqrt(w*(w+2*Er));
         
         double bPathFlag = getFieldPathFlag();
         if (bPathFlag == 1) {//if bpathflag =1, then use nominal k0 from nominal kine energy
-        	double w0 = getNominalKineEnergy();
-        	if (w0==0.) {
-        		w0 = probe.getKineticEnergy();
-        		setNominalKineEnergy(w0);
-        	}
-        	double p0 = Math.sqrt(w0*(w0+2*Er));
-		
-			setBRhoScaling(p/p0);//save brho scaling. when nominalKineEnergy = 0, set 1.
-		}
+            double w0 = getNominalKineEnergy();
+            if (w0==0.) {
+                    w0 = probe.getKineticEnergy();
+                    setNominalKineEnergy(w0);
+            }
+            double p0 = Math.sqrt(w0*(w0+2*Er));
+
+            setBRhoScaling(p/p0);//save brho scaling. when nominalKineEnergy = 0, set 1.
+        }
 	    
         
         // focusing constant (radians/meter)
@@ -260,9 +260,8 @@ public class IdealMagQuad extends ThickElectromagnet {
         }
 
         // Jan 2019 - Natalia Milas
-        // apply alignment and rotation errors
-        matPhi = applySliceErrors(matPhi, probe, length);			
-        //matPhi = applyErrors(matPhi, probe, length);			
+        // apply alignment and rotation errors        
+        matPhi = applySliceErrors(matPhi, probe, length);			        
 		
         return new PhaseMap( matPhi );
    }
