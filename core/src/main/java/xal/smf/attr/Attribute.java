@@ -109,7 +109,7 @@ public final class Attribute extends Object implements java.io.Serializable {
     
 
     // Get Methods
-    public boolean  getBoolean()    { return ((Boolean)m_objValue).booleanValue(); };
+    public boolean  getBoolean()    { return ((Boolean)m_objValue); };
     public int      getInteger()    { return ((Integer)m_objValue).intValue(); };
     public long     getLong()       { return ((Long)m_objValue).longValue(); };
     public float    getFloat()      { return ((Float)m_objValue).floatValue(); };
@@ -124,7 +124,7 @@ public final class Attribute extends Object implements java.io.Serializable {
     
     
     //  Set Methods
-    public void set(boolean newVal)     { m_objValue = Boolean.valueOf(newVal); m_intTypeId = iBoolean; };
+    public void set(boolean newVal)     { m_objValue = newVal; m_intTypeId = iBoolean; };
     public void set(int newVal)         { m_objValue = Integer.valueOf(newVal); m_intTypeId = iInteger; };
     public void set(long newVal)        { m_objValue = Long.valueOf(newVal);    m_intTypeId = iLong; };
     public void set(float newVal)       { m_objValue = Float.valueOf(newVal);   m_intTypeId = iFloat; };
@@ -158,6 +158,10 @@ public final class Attribute extends Object implements java.io.Serializable {
 				break;
 			case iString:
 				m_objValue = strVal;
+				break;
+		
+			case iBoolean:
+				m_objValue = Boolean.valueOf(strVal);
 				break;
 			
 			case iArrDbl:
