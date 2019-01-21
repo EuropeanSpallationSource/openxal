@@ -65,19 +65,13 @@ public class FieldMapPoint {
     private double dBydy = 0;
     private double dBydz = 0;
 
-    // Derivatives of Bz
-    private double dBzdx = 0;
-    private double dBzdy = 0;
-    private double dBzdz = 0;
-
     public FieldMapPoint() {
     }
 
     public FieldMapPoint(double Ex, double Ey, double Ez, double dExdx, double dExdy, double dExdz,
             double dEydx, double dEydy, double dEydz, double dEzdx, double dEzdy,
             double dEzdz, double Bx, double By, double Bz, double dBxdx, double dBxdy,
-            double dBxdz, double dBydx, double dBydy, double dBydz, double dBzdx,
-            double dBzdy, double dBzdz) {
+            double dBxdz, double dBydx, double dBydy, double dBydz) {
 
         this.Ex = Ex;
         this.Ey = Ey;
@@ -106,10 +100,6 @@ public class FieldMapPoint {
         this.dBydx = dBydx;
         this.dBydy = dBydy;
         this.dBydz = dBydz;
-
-        this.dBzdx = dBzdx;
-        this.dBzdy = dBzdy;
-        this.dBzdz = dBzdz;
     }
 
     public void setAmplitudeFactorE(double amplitudeFactorE) {
@@ -204,18 +194,6 @@ public class FieldMapPoint {
         return dBydz * amplitudeFactorB;
     }
 
-    public double getdBzdx() {
-        return dBzdx * amplitudeFactorB;
-    }
-
-    public double getdBzdy() {
-        return dBzdy * amplitudeFactorB;
-    }
-
-    public double getdBzdz() {
-        return dBzdz * amplitudeFactorB;
-    }
-
     public void setEx(double Ex) {
         this.Ex = Ex;
     }
@@ -298,17 +276,5 @@ public class FieldMapPoint {
 
     public void setdBydz(double dBydz) {
         this.dBydz = dBydz;
-    }
-
-    public void setdBzdx(double dBzdx) {
-        this.dBzdx = dBzdx;
-    }
-
-    public void setdBzdy(double dBzdy) {
-        this.dBzdy = dBzdy;
-    }
-
-    public void setdBzdz(double dBzdz) {
-        this.dBzdz = dBzdz;
     }
 }
