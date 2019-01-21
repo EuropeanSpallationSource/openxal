@@ -31,20 +31,39 @@ import xal.tools.beam.PhaseMatrix;
  */
 public class FieldMapIntegrator {
 
+    private static PhaseMatrix transferMatrix = PhaseMatrix.identity();
+
     private FieldMapIntegrator() {
     }
 
     public static PhaseMatrix transferMap(IProbe probe, double length, FieldMapPoint fieldMapPoint) {
+        return transferMap(probe, length, fieldMapPoint, 0.);
+    }
+
+    /**
+     * Computes the transfer map for a general electromagnetic field.
+     *
+     * @param probe
+     * @param length
+     * @param fieldMapPoint
+     * @param energyGain Accumulated energy gain not added to the probe kinetic
+     * energy property yet. To be used when the probe energy is not up-to-date,
+     * i.e., when calculating an RF cavity in several steps.
+     * @return
+     */
+    public static PhaseMatrix transferMap(IProbe probe, double length, FieldMapPoint fieldMapPoint, double energyGain) {
         // Get probe parameters
         double q = probe.getSpeciesCharge();
-        double kineticEnergy = probe.getKineticEnergy();
+        double kineticEnergy = probe.getKineticEnergy() + energyGain;
         double restEnergy = probe.getSpeciesRestEnergy();
-        double gamma = kineticEnergy / restEnergy + 1.0;
-        double beta = Math.sqrt(1.0 - 1.0 / (gamma * gamma));
+        double gammaStart = kineticEnergy / restEnergy + 1.0;
+        double beta = Math.sqrt(1.0 - 1.0 / (gammaStart * gammaStart));
 
-        double k = q * length / (gamma * beta * beta * restEnergy);
+        energyGain += fieldMapPoint.getEz() * length;
 
-        PhaseMatrix transferMatrix = PhaseMatrix.identity();
+        double gammaEnd = (probe.getKineticEnergy() + energyGain) / probe.getSpeciesRestEnergy() + 1.0;
+
+        double k = q * length / (gammaStart * beta * beta * restEnergy);
 
         // Horizontal plane
         transferMatrix.setElem(1, 0, k * (fieldMapPoint.getdExdx() - beta * LightSpeed * fieldMapPoint.getdBydx()));
@@ -52,7 +71,7 @@ public class FieldMapIntegrator {
         transferMatrix.setElem(1, 2, k * (fieldMapPoint.getdExdy() - beta * LightSpeed * fieldMapPoint.getdBydy()));
         transferMatrix.setElem(1, 3, k * beta * LightSpeed * fieldMapPoint.getBz());
         transferMatrix.setElem(1, 4, k * (fieldMapPoint.getdExdz() - beta * LightSpeed * fieldMapPoint.getdBydz()));
-        transferMatrix.setElem(1, 5, -k * gamma * gamma * (fieldMapPoint.getEx() + beta * LightSpeed * fieldMapPoint.getBy()));
+        transferMatrix.setElem(1, 5, -k * gammaStart * gammaStart * (fieldMapPoint.getEx() + beta * LightSpeed * fieldMapPoint.getBy()));
 
         // Vertical plane
         transferMatrix.setElem(3, 0, k * (fieldMapPoint.getdEydx() + beta * LightSpeed * fieldMapPoint.getdBxdx()));
@@ -60,15 +79,15 @@ public class FieldMapIntegrator {
         transferMatrix.setElem(3, 2, k * (fieldMapPoint.getdEydy() + beta * LightSpeed * fieldMapPoint.getdBxdy()));
         transferMatrix.setElem(3, 3, 1 - k * fieldMapPoint.getEz());
         transferMatrix.setElem(3, 4, k * (fieldMapPoint.getdEydz() + beta * LightSpeed * fieldMapPoint.getdBxdz()));
-        transferMatrix.setElem(3, 5, -k * gamma * gamma * (fieldMapPoint.getEy() - beta * LightSpeed * fieldMapPoint.getBx()));
+        transferMatrix.setElem(3, 5, -k * gammaStart * gammaStart * (fieldMapPoint.getEy() - beta * LightSpeed * fieldMapPoint.getBx()));
 
         // Longitudinal plane
-        transferMatrix.setElem(5, 0, k * fieldMapPoint.getdEzdx() / (gamma * gamma));
-        transferMatrix.setElem(5, 1, k * fieldMapPoint.getEx() / (gamma * gamma));
-        transferMatrix.setElem(5, 2, k * fieldMapPoint.getdEzdy() / (gamma * gamma));
-        transferMatrix.setElem(5, 3, k * fieldMapPoint.getEy() / (gamma * gamma));
-        transferMatrix.setElem(5, 4, k * fieldMapPoint.getdEzdz() / (gamma * gamma));
-        transferMatrix.setElem(5, 5, 1 - k * fieldMapPoint.getEz());
+        transferMatrix.setElem(5, 0, k * fieldMapPoint.getdEzdx() / (gammaEnd * gammaEnd));
+        transferMatrix.setElem(5, 1, k * fieldMapPoint.getEx() / (gammaEnd * gammaEnd));
+        transferMatrix.setElem(5, 2, k * fieldMapPoint.getdEzdy() / (gammaEnd * gammaEnd));
+        transferMatrix.setElem(5, 3, k * fieldMapPoint.getEy() / (gammaEnd * gammaEnd));
+        transferMatrix.setElem(5, 4, k * fieldMapPoint.getdEzdz() / (gammaEnd * gammaEnd));
+        transferMatrix.setElem(5, 5, (1 - k * fieldMapPoint.getEz()) * (gammaStart * gammaStart) / (gammaEnd * gammaEnd));
 
         // Dipole strengths
         double dph = k * (fieldMapPoint.getEx() - beta * LightSpeed * fieldMapPoint.getBy());
