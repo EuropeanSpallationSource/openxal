@@ -73,10 +73,6 @@ public class ThinMagFieldMap extends ThinElectromagnet {
 
         FieldMapPoint fieldMapPoint = magFieldmap.getFieldAt(position - startPosition);
 
-        if (fieldMapPoint == null) {
-            return new PhaseMap();
-        }
-
         fieldMapPoint.setAmplitudeFactorB(getMagField());
 
         PhaseMatrix transferMatrix = FieldMapIntegrator.transferMap(probe, sliceLength, fieldMapPoint);

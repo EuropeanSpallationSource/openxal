@@ -104,7 +104,7 @@ public class MagFieldMap2D extends FieldMap {
                 * (fieldZ[positionIndex + 1][0] - fieldZ[positionIndex][0]) / spacingZ;
         double dBrdr = fieldR[positionIndex][1] - fieldR[positionIndex][0] + (position - positionIndex * spacingZ)
                 * (fieldR[positionIndex + 1][1] - fieldR[positionIndex + 1][0] - (fieldR[positionIndex][1] - fieldR[positionIndex][0])) / spacingZ;
-
+       
         FieldMapPoint fieldMapPoint = new FieldMapPoint();
 
         fieldMapPoint.setBz(Bz0 / normZ);

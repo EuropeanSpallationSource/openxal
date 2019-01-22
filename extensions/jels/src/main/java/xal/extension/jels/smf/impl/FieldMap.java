@@ -116,19 +116,23 @@ public abstract class FieldMap {
         // Find the field map points included in the current slice.
         List<Double> fieldMapPointPositions = new ArrayList<>();
 
-        int i0 = (int) Math.round(start / getSliceLength());
+        if (start < 0) {
+            start = 0;
+        }
+
+        int i0 = (int) Math.ceil(start / getSliceLength());
         // To avoid repeated points in different slices, the last point of a
         // slice is not included, only the very last point.
-        int ie = (int) Math.round((start + dblLen) / getSliceLength());
+        int ie = (int) Math.floor((start + dblLen) / getSliceLength());
 
         if (ie >= i0) {
-            for (int i = i0; i < ie; i++) {
+            for (int i = i0; i <= ie; i++) {
                 fieldMapPointPositions.add(longitudinalPositions[i]);
             }
         }
 
         // If last point of the field map is not included, add it.
-        if (Math.abs(getLength() - (start + dblLen)) < 1e-6){
+        if (Math.abs(getLength() - (start + dblLen)) < 1e-6 && ie != numberOfPoints - 1) {
             fieldMapPointPositions.add(getLength());
         }
         return fieldMapPointPositions;
