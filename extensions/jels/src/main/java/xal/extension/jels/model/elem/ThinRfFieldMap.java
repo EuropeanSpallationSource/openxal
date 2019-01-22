@@ -18,6 +18,7 @@
 package xal.extension.jels.model.elem;
 
 import xal.extension.jels.smf.impl.FieldMap;
+import xal.extension.jels.smf.impl.RfFieldMap;
 import xal.model.IProbe;
 import xal.model.ModelException;
 import xal.model.elem.ThinElement;
@@ -45,6 +46,7 @@ public class ThinRfFieldMap extends ThinElement implements IRfGap, IRfCavityCell
     private double cellLength = 0;
     private double deltaPhi = 0;
     private double energyGain = 0;
+    private double startPosition = 0;
     private double position = 0;
 
     /**
@@ -97,8 +99,9 @@ public class ThinRfFieldMap extends ThinElement implements IRfGap, IRfCavityCell
     public void initializeFrom(LatticeElement element) {
         super.initializeFrom(element);
 
-        xal.extension.jels.smf.impl.RfFieldMap fieldmap = (xal.extension.jels.smf.impl.RfFieldMap) element.getHardwareNode();
-        
+        final RfFieldMap fieldmap = (RfFieldMap) element.getHardwareNode();
+
+        startPosition = fieldmap.getPosition() - fieldmap.getLength() / 2.0;
         position = element.getStartPosition();
         if (position == 0) {
             initialGap = true;
@@ -111,8 +114,9 @@ public class ThinRfFieldMap extends ThinElement implements IRfGap, IRfCavityCell
 
     /**
      * Method calculates transfer matrix for the field map for a given data
-     * point in the field map. Drift spaces are calculated separately.
+     * point in the field map.Drift spaces are calculated separately.
      *
+     * @param probe
      * @return
      * @throws xal.model.ModelException
      */
@@ -130,16 +134,20 @@ public class ThinRfFieldMap extends ThinElement implements IRfGap, IRfCavityCell
 
         double dz = getCellLength();
 
-        FieldMapPoint fieldMapPoint = rfFieldmap.getFieldAt(position);
+        FieldMapPoint fieldMapPoint = rfFieldmap.getFieldAt(position - startPosition);
+
+        if (fieldMapPoint == null) {
+            return new PhaseMap();
+        }
 
         fieldMapPoint.setAmplitudeFactorE(getE0() * Math.cos(phiS));
         fieldMapPoint.setAmplitudeFactorB(2.0 * Math.PI * getFrequency() / (LightSpeed * LightSpeed) * getE0() * Math.sin(phiS));
 
-        PhaseMatrix transferMatrix = FieldMapIntegrator.transferMap(probe, dz, fieldMapPoint);
-
         // Set energy gain and phase
         energyGain = fieldMapPoint.getEz() * dz;
         deltaPhi = 0;
+
+        PhaseMatrix transferMatrix = FieldMapIntegrator.transferMap(probe, dz, fieldMapPoint, energyGain);
 
         return new PhaseMap(transferMatrix);
     }

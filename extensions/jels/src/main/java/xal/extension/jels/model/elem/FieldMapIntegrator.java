@@ -59,9 +59,9 @@ public class FieldMapIntegrator {
         double gammaStart = kineticEnergy / restEnergy + 1.0;
         double beta = Math.sqrt(1.0 - 1.0 / (gammaStart * gammaStart));
 
-        energyGain += fieldMapPoint.getEz() * length;
+        kineticEnergy += fieldMapPoint.getEz() * length;
 
-        double gammaEnd = (probe.getKineticEnergy() + energyGain) / probe.getSpeciesRestEnergy() + 1.0;
+        double gammaEnd = kineticEnergy / probe.getSpeciesRestEnergy() + 1.0;
 
         double k = q * length / (gammaStart * beta * beta * restEnergy);
 

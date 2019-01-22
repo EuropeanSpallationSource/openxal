@@ -17,6 +17,10 @@
  */
 package xal.extension.jels.smf.impl;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import xal.smf.ISplittable;
 import xal.extension.jels.smf.attr.FieldMapBucket;
 import xal.ca.ChannelFactory;
@@ -145,18 +149,34 @@ public class RfFieldMap extends RfGap implements ISplittable {
     @Override
     public void update(DataAdaptor adaptor) {
         super.update(adaptor);
-        fieldMap = FieldMapFactory.getInstance(((XmlDataAdaptor) adaptor).document().getDocumentURI(),
-                getFieldMapFile(), m_bucFieldMap.getDynamic(),
-                m_bucFieldMap.getFieldType(), m_bucFieldMap.getDimensions());
+        String fieldMapPath = null;
+
+        try {
+            fieldMapPath = new URI(((XmlDataAdaptor) adaptor).document().getDocumentURI()).resolve(".").toString();
+        } catch (URISyntaxException ex) {
+            Logger.getLogger(RfFieldMap.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        fieldMap = FieldMapFactory.getInstance(fieldMapPath, getFieldMapFile(),
+                m_bucFieldMap.getDynamic(), m_bucFieldMap.getFieldType(),
+                m_bucFieldMap.getDimensions(), m_bucFieldMap.getNumberOfPoints());
     }
 
     @Override
     public double[] getLongitudinalPositions() {
         return fieldMap.getLongitudinalPositions();
     }
-    
+
     @Override
-    public double getSliceLength(){
+    public double getSliceLength() {
         return fieldMap.getSliceLength();
+    }
+
+    public void setDimensions(int i) {
+        m_bucFieldMap.setDimensions(i);
+    }
+
+    public void setDynamic(boolean b) {
+        m_bucFieldMap.setDynamic(b);
     }
 }

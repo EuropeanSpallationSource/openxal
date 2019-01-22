@@ -37,7 +37,8 @@ public class FieldMapBucket extends AttributeBucket {
         "fieldMapFile",
         "dynamic",
         "fieldType",
-        "dimensions"
+        "dimensions",
+        "numberOfPoints"
     };
 
     /**
@@ -57,6 +58,12 @@ public class FieldMapBucket extends AttributeBucket {
      * Number of dimensions of the field map (1, 2, or 3).
      */
     private Attribute m_attDimensions;
+    /**
+     * Number of points to used in the longitudinal direction. If different than
+     * the number of points of the field map, it will use interpolation. A value
+     * of 0 will use the number by default.
+     */
+    private Attribute m_attNumberOfPoints;
 
     /*
      *  User Interface
@@ -81,11 +88,13 @@ public class FieldMapBucket extends AttributeBucket {
         m_attDynamic = new Attribute(false);
         m_attFieldType = new Attribute("");
         m_attDimensions = new Attribute(0);
+        m_attNumberOfPoints = new Attribute(0);
 
         super.registerAttribute(c_arrNames[0], m_attFieldMapFile);
         super.registerAttribute(c_arrNames[1], m_attDynamic);
         super.registerAttribute(c_arrNames[2], m_attFieldType);
         super.registerAttribute(c_arrNames[3], m_attDimensions);
+        super.registerAttribute(c_arrNames[4], m_attNumberOfPoints);
     }
 
     public String getFieldMapFile() {
@@ -96,12 +105,12 @@ public class FieldMapBucket extends AttributeBucket {
         m_attFieldMapFile.set(strVal);
     }
 
-    public Boolean getDynamic() {
+    public boolean getDynamic() {
         return m_attDynamic.getBoolean();
     }
 
-    public void setDynamic(Boolean strVal) {
-        m_attDynamic.set(strVal);
+    public void setDynamic(boolean bolVal) {
+        m_attDynamic.set(bolVal);
     }
 
     public FieldType getFieldType() {
@@ -128,5 +137,13 @@ public class FieldMapBucket extends AttributeBucket {
 
     public void setDimensions(int intVal) {
         m_attDimensions.set(intVal);
+    }
+
+    public int getNumberOfPoints() {
+        return m_attNumberOfPoints.getInteger();
+    }
+
+    public void setNumberOfPoints(int intVal) {
+        m_attNumberOfPoints.set(intVal);
     }
 }

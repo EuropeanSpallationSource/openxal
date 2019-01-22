@@ -17,11 +17,11 @@
  */
 package xal.extension.jels.model.elem;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import xal.extension.jels.smf.impl.FieldMap;
+import xal.extension.jels.smf.impl.RfFieldMap;
 import xal.model.IProbe;
 import xal.model.ModelException;
 import xal.model.elem.ThickElement;
@@ -43,14 +43,15 @@ import xal.tools.beam.PhaseMatrix;
  */
 public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCell {
 
-    private static final Logger LOGGER = Logger.getLogger(ThickRfFieldMap.class.getName());
-
     private FieldMap rfFieldmap;
 
     private double cellLength = 0;
-    private double position = 0;
+    private double startPosition = 0;
     private double deltaPhi = 0;
     private double energyGain = 0;
+
+    private double[] a_deltaPhi = null;
+    private double[] a_energyGain = null;
 
     /**
      * ETL product of gap
@@ -73,6 +74,7 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
      * flag indicating that this is the leading gap of a cavity
      */
     private boolean initialGap = false;
+    private double sliceStartPosition;
 
     public ThickRfFieldMap() {
         this(null);
@@ -94,16 +96,78 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
     public void initializeFrom(LatticeElement element) {
         super.initializeFrom(element);
 
-        xal.extension.jels.smf.impl.RfFieldMap fieldmap = (xal.extension.jels.smf.impl.RfFieldMap) element.getHardwareNode();
-        // This position is the start of the element inside the current
-        // sequence. Using the first slice to be able to compute the probe 
-        // position from the element entrance and not from the slice start.
-        position = element.getFirstSlice().getStartPosition();
-        if (element.getStartPosition() == 0) {
+        final RfFieldMap fieldmap = (RfFieldMap) element.getHardwareNode();
+
+        if (Math.abs(element.getStartPosition() - (fieldmap.getPosition() - fieldmap.getLength() / 2.0)) < 1e-6) {
             initialGap = true;
         }
+        sliceStartPosition = element.getStartPosition() - (fieldmap.getPosition() - fieldmap.getLength() / 2.0);
         rfFieldmap = fieldmap.getFieldMap();
         cellLength = fieldmap.getSliceLength();
+    }
+
+    /**
+     * Method calculates the phase drift and the energy gain on the current
+     * range (i.e from probe.getPosition, and for dblLength).
+     *
+     * @throws xal.model.ModelException
+     */
+    public void computePhaseDriftAndEnergyGain(IProbe probe, double dblLen)
+            throws ModelException {
+
+        startPosition = getLatticePosition() - getLength() / 2. - sliceStartPosition;
+
+        double phiS;
+        if (Math.abs(probe.getPosition() - startPosition) < 1e-6 || !probe.getAlgorithm().getRfGapPhaseCalculation()) {
+            phiS = getPhase();
+        } else {
+            phiS = probe.getLongitinalPhase();
+        }
+
+        // Find the field map points included in the current slice.
+        List<Double> fieldMapPointPositions = rfFieldmap.getFieldMapPointPositions(probe.getPosition() - startPosition, dblLen);
+
+        int numberOfPoints = fieldMapPointPositions.size();
+
+        // First a drift from the slice start to the first point of the field 
+        // map. It could be the end point and only a drift space is calculated.
+        double dz = (numberOfPoints > 0 ? fieldMapPointPositions.get(0) - (probe.getPosition() - startPosition) : 0.0);
+
+        double gamma;
+        double beta;
+
+        a_deltaPhi = new double[numberOfPoints + 1];
+        a_energyGain = new double[numberOfPoints + 1];
+
+        a_deltaPhi[0] = 0;
+        a_energyGain[0] = 0;
+
+        for (int i = 0; i < numberOfPoints; i++) {
+            gamma = (probe.getKineticEnergy() + a_energyGain[i]) / probe.getSpeciesRestEnergy() + 1.0;
+            beta = Math.sqrt(1.0 - 1.0 / (gamma * gamma));
+
+            a_deltaPhi[i + 1] = a_deltaPhi[i] + 2 * Math.PI * getFrequency() * dz / (beta * LightSpeed);
+
+            // Set the length of the following drift spaces.
+            dz = getCellLength();
+
+            FieldMapPoint fieldMapPoint = rfFieldmap.getFieldAt(fieldMapPointPositions.get(i));
+
+            if (fieldMapPoint == null) {
+                a_energyGain[i + 1] = a_energyGain[i] + 0;
+                a_deltaPhi[i + 1] = a_deltaPhi[i] + 0;
+                continue;
+            }
+            a_energyGain[i + 1] = a_energyGain[i] + fieldMapPoint.getEz() * dz * getE0() * Math.cos(phiS + a_deltaPhi[i + 1]);
+        }
+
+        dz = (numberOfPoints > 0 ? probe.getPosition() - startPosition + dblLen - fieldMapPointPositions.get(numberOfPoints - 1) : dblLen);
+
+        gamma = (probe.getKineticEnergy() + a_energyGain[numberOfPoints]) / probe.getSpeciesRestEnergy() + 1.0;
+        beta = Math.sqrt(1.0 - 1.0 / (gamma * gamma));
+
+        deltaPhi = a_deltaPhi[numberOfPoints] + 2 * Math.PI * getFrequency() * dz / (beta * LightSpeed);
+        energyGain = a_energyGain[numberOfPoints];
     }
 
     /**
@@ -117,61 +181,54 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
     public PhaseMap transferMap(IProbe probe, double dblLen)
             throws ModelException {
 
+        computePhaseDriftAndEnergyGain(probe, dblLen);
+
         double phiS;
-        if (probe.getPosition() == position || !probe.getAlgorithm().getRfGapPhaseCalculation()) {
+        if (Math.abs(probe.getPosition() - startPosition) < 1e-6 || !probe.getAlgorithm().getRfGapPhaseCalculation()) {
             phiS = getPhase();
         } else {
             phiS = probe.getLongitinalPhase();
         }
-        
-        // Find the field map points included in the current slice.
-        List<Double> fieldMapPointPositions = getFieldMapPointPositions(probe, dblLen);
 
-        // Start building the transfer map
+        // Find the field map points included in the current slice.
+        List<Double> fieldMapPointPositions = rfFieldmap.getFieldMapPointPositions(probe.getPosition() - startPosition, dblLen);
+
+        int numberOfPoints = fieldMapPointPositions.size();
+        PhaseMatrix driftMatrix = PhaseMatrix.identity();
         PhaseMatrix transferMatrix = PhaseMatrix.identity();
 
-        // First a drift from the slice start to the first point of the field 
-        // map. It could be the end point and only a drift space is calculated.
-        double dz = fieldMapPointPositions.get(1) - fieldMapPointPositions.get(0);
-        transferMatrix.setElem(0, 1, dz);
-        transferMatrix.setElem(2, 3, dz);
-        transferMatrix.setElem(4, 5, dz);
+        // Calculating the length of the first drift from the slice start to the
+        // first point of the field map. It could be the end point and only a 
+        // drift space is calculated.
+        double dz = (numberOfPoints > 0 ? fieldMapPointPositions.get(0) - (probe.getPosition() - startPosition) : 0.0);
 
-        double gamma = probe.getKineticEnergy() / probe.getSpeciesRestEnergy() + 1.0;
-        double beta = Math.sqrt(1.0 - 1.0 / (gamma * gamma));
-        deltaPhi = 2 * Math.PI * getFrequency() * dz / (beta * LightSpeed);
-
-        energyGain = 0;
         // Add kicks and drifts for each intermediate point (could be none).
-        for (int i = 1; i < fieldMapPointPositions.size() - 1; i++) {
-            FieldMapPoint fieldMapPoint = rfFieldmap.getFieldAt(fieldMapPointPositions.get(i));
-
-            // Length to compute the kicks.
-            dz = getCellLength();
-
-            fieldMapPoint.setAmplitudeFactorE(getE0() * Math.cos(phiS + deltaPhi));
-            fieldMapPoint.setAmplitudeFactorB(2.0 * Math.PI * getFrequency() / (LightSpeed * LightSpeed) * getE0() * Math.sin(phiS + deltaPhi));
-
-            // Kick
-            transferMatrix = FieldMapIntegrator.transferMap(probe, dz, fieldMapPoint).times(transferMatrix);
-
-            energyGain += fieldMapPoint.getEz() * dz;
-
-            // Drift space (can be 0 length).
-            dz = fieldMapPointPositions.get(i + 1) - fieldMapPointPositions.get(i);
-
-            PhaseMatrix driftMatrix = PhaseMatrix.identity();
+        for (int i = 0; i < numberOfPoints; i++) {
             driftMatrix.setElem(0, 1, dz);
             driftMatrix.setElem(2, 3, dz);
             driftMatrix.setElem(4, 5, dz);
 
             transferMatrix = driftMatrix.times(transferMatrix);
 
-            gamma = (probe.getKineticEnergy() + energyGain) / probe.getSpeciesRestEnergy() + 1.0;
-            beta = Math.sqrt(1.0 - 1.0 / (gamma * gamma));
+            // Set the length of the following drift spaces.
+            dz = getCellLength();
 
-            deltaPhi += 2 * Math.PI * getFrequency() * dz / (beta * LightSpeed);
+            FieldMapPoint fieldMapPoint = rfFieldmap.getFieldAt(fieldMapPointPositions.get(i));
+
+            fieldMapPoint.setAmplitudeFactorE(getE0() * Math.cos(phiS + a_deltaPhi[i + 1]));
+            fieldMapPoint.setAmplitudeFactorB(2.0 * Math.PI * getFrequency() / (LightSpeed * LightSpeed) * getE0() * Math.sin(phiS + a_deltaPhi[i + 1]));
+
+            // Kick
+            transferMatrix = FieldMapIntegrator.transferMap(probe, dz, fieldMapPoint, a_energyGain[i]).times(transferMatrix);
         }
+
+        // Last drift space (if any).
+        dz = (numberOfPoints > 0 ? probe.getPosition() - startPosition + dblLen - fieldMapPointPositions.get(numberOfPoints - 1) : dblLen);
+        driftMatrix.setElem(0, 1, dz);
+        driftMatrix.setElem(2, 3, dz);
+        driftMatrix.setElem(4, 5, dz);
+
+        transferMatrix = driftMatrix.times(transferMatrix);
 
         return new PhaseMap(transferMatrix);
     }
@@ -179,24 +236,25 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
     @Override
     public double longitudinalPhaseAdvance(IProbe probe, double dblLen) {
         try {
-            transferMap(probe, dblLen);
+            computePhaseDriftAndEnergyGain(probe, dblLen);
         } catch (ModelException ex) {
             Logger.getLogger(ThickRfFieldMap.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         // WORKAROUND to set the initial phase
-        if (probe.getPosition() == position) {
-            double phi0 = this.getPhase();
+        if (Math.abs(probe.getPosition() - startPosition) < 1e-6) {
+            double phi0 = getPhase();
             double phi = probe.getLongitinalPhase();
             return deltaPhi - phi + phi0;
         }
+
         return deltaPhi;
     }
 
     @Override
     public double energyGain(IProbe probe, double dblLen) {
         try {
-            transferMap(probe, dblLen);
+            computePhaseDriftAndEnergyGain(probe, dblLen);
         } catch (ModelException ex) {
             Logger.getLogger(ThickRfFieldMap.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -282,25 +340,5 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
     @Override
     public boolean isFirstCell() {
         return initialGap;
-    }
-
-    private List<Double> getFieldMapPointPositions(IProbe probe, double dblLen) {
-        // Find the field map points included in the current slice.
-        List<Double> fieldMapPointPositions = new ArrayList<>();
-        // Initial point can be repeated to take into account the initial energy kick.
-        fieldMapPointPositions.add(probe.getPosition());
-        for (double pos : rfFieldmap.getLongitudinalPositions()) {
-            if (pos >= probe.getPosition() && pos < probe.getPosition() + dblLen) {
-                fieldMapPointPositions.add(pos);
-            }
-        }
-        fieldMapPointPositions.add(probe.getPosition() + dblLen);
-
-        // If last point of the field map is included, add the last point a
-        // second time to take into account for the energy kick.
-        if (position + rfFieldmap.getLength() == probe.getPosition() + dblLen) {
-            fieldMapPointPositions.add(probe.getPosition() + dblLen);
-        }
-        return fieldMapPointPositions;
     }
 }

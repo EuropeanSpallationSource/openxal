@@ -17,37 +17,67 @@
  */
 package xal.extension.jels.smf.impl;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import xal.extension.jels.model.elem.FieldMapPoint;
 
 /**
  * 1D FieldMap element for RF cavities, assuming a radial dependence similar to
  * pillbox cavity.
  *
- * @author juanfestebanmuller
+ * @author Juan F. Esteban Müller <JuanF.EstebanMuller@esss.se>
  */
 public class RfFieldMap1D extends FieldMap {
 
-    public RfFieldMap1D(String path, String filename) {
+    private double fieldIntegral;
+
+    public RfFieldMap1D(String path, String filename, int numberOfPoints) {
         FieldComponent<double[]> fieldComponent = loadFile1D(path, filename + ".edz");
 
         // Normalizing the field map.
         double[] field = fieldComponent.getField();
-        double fieldIntegral = 0;
+        fieldIntegral = 0;
         for (int i = 0; i < field.length; i++) {
             fieldIntegral += Math.abs(field[i]);
         }
-        fieldIntegral *= fieldComponent.getMax() / field.length;
+        fieldIntegral *= fieldComponent.getMax()[0] / field.length;
         for (int i = 0; i < field.length; i++) {
             field[i] /= fieldIntegral;
         }
         fieldComponent.setField(field);
 
         fieldComponents.put("z", fieldComponent);
+
+        // Compute other values.
+        length = fieldComponent.getMax()[0];
+        if (numberOfPoints == 0) {
+            numberOfPoints = field.length;
+        }
+        this.numberOfPoints = numberOfPoints;
+
+        sliceLength = length / (numberOfPoints - 1);
+
+        longitudinalPositions = new double[numberOfPoints];
+        for (int i = 0; i < numberOfPoints - 1; i++) {
+            longitudinalPositions[i] = i * length / (numberOfPoints - 1);
+        }
+        longitudinalPositions[numberOfPoints - 1] = length;
+    }
+
+    public double getFieldIntegral() {
+        return fieldIntegral;
+    }
+
+    @Override
+    public void saveFieldMap(String path, String filename) throws IOException, URISyntaxException {
+        FieldComponent<double[]> fieldComponentZ = fieldComponents.get("z");
+
+        saveFile1D(path, filename + ".edz", fieldComponentZ);
     }
 
     /**
-     * This method returns the amplitude of the field at the closest point. It
-     * does not perform any interpolation!
+     * This method returns the amplitude of the field at the given point. Linear
+     * interpolation is used.
      *
      * @param position
      * @return
@@ -56,70 +86,46 @@ public class RfFieldMap1D extends FieldMap {
     public FieldMapPoint getFieldAt(double position) {
         FieldComponent<double[]> fieldComponent = fieldComponents.get("z");
 
-        if (position < 0.0 || position > fieldComponent.getMax()) {
+        if (position < -1e-6 || position > fieldComponent.getMax()[0] + 1e-6) {
             return null;
         }
 
         double[] field = fieldComponent.getField();
 
-        int numberOfPoints = field.length;
-        int positionIndex = (int) (position / fieldComponent.getMax() * (numberOfPoints - 1));
+        int numberOfPointsZ = field.length;
+        double spacingZ = length / (numberOfPointsZ - 1);
 
-        double Ez0 = field[positionIndex];
-        double ds = fieldComponent.getMax() / (numberOfPoints - 1);
-        double dEz0ds;
+        // Interpolating the field at the given positon.
+        int positionIndex = (int) Math.floor(position / spacingZ);
+
+        if (positionIndex < 0) {
+            positionIndex = 0;
+        } else if (positionIndex >= numberOfPointsZ - 1) {
+            positionIndex = numberOfPointsZ - 2;
+        }
+
+        double Ez0 = field[positionIndex] + (position - positionIndex * spacingZ)
+                * (field[positionIndex + 1] - field[positionIndex]) / spacingZ;
+        double dEzds;
+        positionIndex = (int) Math.round(position / spacingZ);
         if (positionIndex == 0) {
-            dEz0ds = field[positionIndex + 1] / ds;
+            dEzds = field[positionIndex + 1] / spacingZ;
         } else if (positionIndex == field.length - 1) {
-            dEz0ds = field[positionIndex - 1] / ds;
+            dEzds = field[positionIndex - 1] / spacingZ;
         } else {
-            dEz0ds = (field[positionIndex + 1] - field[positionIndex - 1]) / (2 * ds);
+            dEzds = (field[positionIndex + 1] - field[positionIndex - 1]) / (2.0 * spacingZ);
         }
 
         FieldMapPoint fieldMapPoint = new FieldMapPoint();
 
         fieldMapPoint.setEz(Ez0);
-        fieldMapPoint.setdExdx(-0.5 * dEz0ds);
-        fieldMapPoint.setdEydy(-0.5 * dEz0ds);
-        fieldMapPoint.setdEzdz(dEz0ds);
+        fieldMapPoint.setdExdx(-0.5 * dEzds);
+        fieldMapPoint.setdEydy(-0.5 * dEzds);
+        fieldMapPoint.setdEzdz(dEzds);
         fieldMapPoint.setdBxdy(0.5 * Ez0);
         fieldMapPoint.setdBydx(-0.5 * Ez0);
         fieldMapPoint.setEz(Ez0);
 
         return fieldMapPoint;
     }
-
-    @Override
-    public double[] getLongitudinalPositions() {
-        FieldComponent<double[]> fieldComponent = fieldComponents.get("z");
-
-        double[] field = fieldComponent.getField();
-
-        int numberOfPoints = field.length;
-        double dz = fieldComponent.getMax() / (numberOfPoints - 1);
-
-        double[] longitudinalPositions = new double[numberOfPoints];
-        for (int i = 0; i < numberOfPoints; i++) {
-            longitudinalPositions[i] = i * dz;
-        }
-        return longitudinalPositions;
-    }
-
-    @Override
-    public double getLength() {
-        FieldComponent<double[]> fieldComponent = fieldComponents.get("z");
-
-        return fieldComponent.getMax();
-    }
-
-    @Override
-    public double getSliceLength() {
-        FieldComponent<double[]> fieldComponent = fieldComponents.get("z");
-        double[] field = fieldComponent.getField();
-
-        int numberOfPoints = field.length;
-
-        return fieldComponent.getMax() / (numberOfPoints - 1);
-    }
-
 }
