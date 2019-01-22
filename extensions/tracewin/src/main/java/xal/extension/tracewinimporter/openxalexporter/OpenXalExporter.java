@@ -25,7 +25,6 @@ import xal.extension.jels.smf.ESSElementFactory;
 import xal.extension.jels.smf.impl.ESSDTLTank;
 import xal.extension.jels.smf.impl.ESSRfCavity;
 import xal.extension.jels.smf.impl.ESSRfGap;
-import xal.extension.jels.smf.impl.FieldProfile;
 import xal.model.IElement;
 import xal.smf.AcceleratorNode;
 import xal.smf.AcceleratorSeq;
@@ -453,14 +452,14 @@ public class OpenXalExporter {
         ApertureBucket aper = generateApertureBucket(element);
 
         if (element.getGeom() == 100) {
-            FieldProfile profile = FieldProfile.getInstance(element.getBasePath() + "/" + element.getFileName() + ".edz");
-            return ESSElementFactory.createESSFieldMap(element.getName(), element.getLength(),
+            return ESSElementFactory.createRfFieldMap("R" + element.getName(), element.getLength(),
                     getFrequency(element) * 1e-6, element.getElectricIntensityFactor(), element.getRfPhase(),
-                    element.getFileName(), profile, aper, currentPosition);
+                    element.getFileName(), element.getBasePath(), aper, currentPosition, 0);
         } else if (element.getGeom() == 50) {
-            MagnetMainSupply ps = ElementFactory.createMainSupply(element.getName() + "-PS", acc);
-            return ESSElementFactory.createESSSolFieldMap(element.getName(), element.getLength(), element.getMagneticIntensityFactor(),
-                    element.getBasePath(), element.getFileName(), aper, ps, currentPosition);
+            MagnetMainSupply ps = ElementFactory.createMainSupply("M" + element.getName() + "-PS", acc);
+
+            return ESSElementFactory.createMagFieldMap("M" + element.getName(), element.getLength(), element.getMagneticIntensityFactor(),
+                    element.getBasePath(), element.getFileName(), aper, ps, currentPosition, 2, 0);
         }
 
         return null;

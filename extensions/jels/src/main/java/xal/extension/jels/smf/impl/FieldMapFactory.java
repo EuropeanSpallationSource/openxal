@@ -17,13 +17,14 @@
  */
 package xal.extension.jels.smf.impl;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class FieldMapFactory {
-
-    private static final Logger LOGGER = Logger.getLogger(FieldMap.class.getName());
 
     private static Map<String, FieldMap> instances = new HashMap<>();
 
@@ -40,11 +41,21 @@ public class FieldMapFactory {
      * @param dynamic whether the field changes over time or not
      * @param fieldType electric or magnetic
      * @param dimensions 1D, 2D, or 3D (only integer)
+     * @param numberOfPoints number of points to use for integration. It can be
+     * lower or higher than the number of points in the field map
      * @return field profile
      */
-    public static FieldMap getInstance(String path, String filename, boolean dynamic, FieldType fieldType, int dimensions) {
-        if (instances.containsKey(filename)) {
-            return instances.get(filename);
+    public static FieldMap getInstance(String path, String filename, boolean dynamic,
+            FieldType fieldType, int dimensions, int numberOfPoints) {
+        String key = null;
+        try {
+            key = new URI(path).resolve(filename).toString() + numberOfPoints;
+        } catch (URISyntaxException ex) {
+            Logger.getLogger(FieldMapFactory.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        if (instances.containsKey(key)) {
+            return instances.get(key);
         }
 
         FieldMap fieldMap = null;
@@ -54,42 +65,50 @@ public class FieldMapFactory {
                 switch (dimensions) {
                     case 1:
                         if (dynamic) {
-                            fieldMap = new RfFieldMap1D(path, filename);
+                            fieldMap = new RfFieldMap1D(path, filename, numberOfPoints);
                         }
                         break;
 //                    case 2:
 //                        if (dynamic) {
-//                            fieldMap = new RfFieldMap2D(path, filename);
+//                            fieldMap = new RfFieldMap2D(path, filename, numberOfPoints);
 //                        }
 //                        break;
 //                    case 3:
 //                        if (dynamic) {
-//                            fieldMap = new RfFieldMap3D(path, filename);
+//                            fieldMap = new RfFieldMap3D(path, filename, numberOfPoints);
 //                        }
 //                        break;
-//                }
-//            case MAGNETIC:
-//                switch (dimensions) {
+                    default:
+                        return null;
+                }
+                break;
+            case MAGNETIC:
+                switch (dimensions) {
 //                    case 1:
 //                        if (!dynamic) {
-//                            fieldMap = new MagFieldMap1D(path, filename);
+//                            fieldMap = new MagFieldMap1D(path, filename, numberOfPoints);
 //                        }
 //                        break;
-//                    case 2:
-//                        if (!dynamic) {
-//                            fieldMap = new MagFieldMap2D(path, filename);
-//                        }
-//                        break;
-//                    case 3:
-//                        if (!dynamic) {
-//                            fieldMap = new MagFieldMap3D(path, filename);
-//                        }
-//                        break;
+                    case 2:
+                        if (!dynamic) {
+                            fieldMap = new MagFieldMap2D(path, filename, numberOfPoints);
+                        }
+                        break;
+                    case 3:
+                        if (!dynamic) {
+                            fieldMap = new MagFieldMap3D(path, filename, numberOfPoints);
+                        }
+                        break;
+                    default:
+                        return null;
                 }
+                break;
+            default:
+                return null;
 
         }
 
-        instances.put(filename, fieldMap);
+        instances.put(key, fieldMap);
         return fieldMap;
     }
 }
