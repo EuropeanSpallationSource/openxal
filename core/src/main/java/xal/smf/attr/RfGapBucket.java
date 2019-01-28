@@ -113,7 +113,7 @@ public class RfGapBucket extends AttributeBucket {
         //  Instantiate the original attributes for RF gap
         m_attLength = new Attribute(0.0);
         m_attPhaseFactor = new Attribute(0.0);
-        m_attAmpFactor = new Attribute(0.0);
+        m_attAmpFactor = new Attribute(1.0);
         m_attTTF = new Attribute(0.0);
         m_attAmp = new Attribute(new double[] {} );
         m_attPhase = new Attribute(new double[] {} );

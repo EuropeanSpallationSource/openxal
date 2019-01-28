@@ -113,6 +113,9 @@ public class TraceWinImporter implements TraceWinTags {
         parentSubsystem.setName("Accelerator");
         try (BufferedReader tracewinInput = new BufferedReader(new InputStreamReader(sourceFileName.toURL().openStream()))) {
             parseFromBufferedReader(parentSubsystem, tracewinInput);
+        } catch (Exception e) {
+            e.printStackTrace(responseWriter);
+            throw new RuntimeException();
         }
 
         // Putting it all together
@@ -132,13 +135,13 @@ public class TraceWinImporter implements TraceWinTags {
         // Initializing
         initClassVariables();
         bledComponentFactory.setBasePath(basePath);
-        bledComponentFactory.setFieldmapPath(Paths.get("Field_Maps","1D").toString());
+        bledComponentFactory.setFieldmapPath(Paths.get("Field_Maps", "1D").toString());
         this.responseWriter = responseWriter;
 
         // Parsing
         Subsystem parentSubsystem = new Subsystem();
         parentSubsystem.setName("Accelerator");
-        for (int i=0; i<sourceFileNames.length; i++){
+        for (int i = 0; i < sourceFileNames.length; i++) {
             currentBeamline = bledComponentFactory.getBeamline(sequencesNames[i], "", lastSubsystem);
             currentBeamline.setParentSubsystem(parentSubsystem);
             section.addBeamline(currentBeamline);
@@ -146,6 +149,8 @@ public class TraceWinImporter implements TraceWinTags {
 
             try (BufferedReader tracewinInput = new BufferedReader(new InputStreamReader(sourceFileNames[i].toURL().openStream()))) {
                 parseFromBufferedReader(parentSubsystem, tracewinInput);
+            } catch (Exception e) {
+                e.printStackTrace(responseWriter);
             }
         }
 
@@ -440,7 +445,7 @@ public class TraceWinImporter implements TraceWinTags {
             || line.startsWith(COMMENT_MARKER + M_SLOT) || line.startsWith(COMMENT_MARKER + M_BEGINBEAMLINE)});
         line = line.toUpperCase();
         return line.startsWith(COMMENT_MARKER + M_BEAMLINE) || line.startsWith(COMMENT_MARKER + M_MARKER)
-            || line.startsWith(COMMENT_MARKER + M_SLOT) || line.startsWith(COMMENT_MARKER + M_BEGINBEAMLINE);
+                || line.startsWith(COMMENT_MARKER + M_SLOT) || line.startsWith(COMMENT_MARKER + M_BEGINBEAMLINE);
     }
 
     /**

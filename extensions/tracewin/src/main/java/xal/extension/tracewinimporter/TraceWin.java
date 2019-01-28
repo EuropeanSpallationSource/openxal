@@ -27,6 +27,7 @@ import eu.ess.bled.Subsystem;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import xal.extension.jels.ImporterHelpers;
@@ -96,10 +97,9 @@ public class TraceWin {
     }
     double beamCurrent;
     double kineticEnergy;
-    PhaseVector  initialCentroid;
+    PhaseVector initialCentroid;
     Twiss[] initialTwiss;
     int initialParametersMode = 0;
-
 
     public PhaseVector getInitialCentroids() {
         return initialCentroid;
@@ -108,7 +108,7 @@ public class TraceWin {
     public void setInitialCentroid(PhaseVector initialCentroid) {
         this.initialCentroid = initialCentroid;
     }
-    
+
     private ImportLogger logger;
 
     private String outputDir;
@@ -267,6 +267,8 @@ public class TraceWin {
         TraceWin tracewin = new TraceWin();
         tracewin.setLogger(new ImportLogger());
 
+        args = new String[]{"/Users/juanfestebanmuller/git/ess-lattice", "/Users/juanfestebanmuller/optics", "new"};
+
         // Checking commandline arguments
         if (args.length < 3) {
             System.out.println("Usage: TraceWin input outputDir outputName [initialParametersMode]");
@@ -289,7 +291,7 @@ public class TraceWin {
                 tracewin.bunchFrequency = 352.21;
                 tracewin.beamCurrent = 62.5e-3;
                 tracewin.kineticEnergy = 3.6217853e6;
-                
+
                 tracewin.initialCentroid = null;
 
                 tracewin.initialTwiss = new Twiss[]{new Twiss(-0.051805615, 0.20954703, 0.25288 * 1e-6),
@@ -380,9 +382,13 @@ public class TraceWin {
             } else {
                 throw new IOException();
             }
-        } catch (IOException e1) {
+        } catch (Exception e1) {
             logger.log("Error while trying to read input.");
-            System.exit(1);
+            for (StackTraceElement st : e1.getStackTrace()) {
+                logger.log(st.toString());
+            }
+            logger.close();
+            return;
         }
         logger.log("Parsing finished.");
 
@@ -421,11 +427,14 @@ public class TraceWin {
         AcceleratorExporter accExp = new AcceleratorExporter(accelerator, getOutputDir(), getOutputName());
         try {
             accExp.export();
-        } catch (IOException | URISyntaxException ex) {
+            logger.log("Finished exporting.");
+        } catch (Exception ex) {
             Logger.getLogger(TraceWin.class.getName()).log(Level.SEVERE, null, ex);
             logger.log("Error exporting.");
+            for (StackTraceElement st : ex.getStackTrace()) {
+                logger.log(st.toString());
+            }
         }
-        logger.log("Finished exporting.");
 
         report(accelerator);
 

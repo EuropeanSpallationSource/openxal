@@ -20,6 +20,7 @@ import xal.model.IComposite;
 import xal.model.IElement;
 import xal.model.Lattice;
 import xal.model.ModelException;
+import xal.model.elem.ThinElement;
 import xal.sim.sync.SynchronizationManager;
 import xal.smf.Accelerator;
 import xal.smf.AcceleratorNode;
@@ -28,6 +29,7 @@ import xal.smf.impl.DipoleCorr;
 import xal.smf.impl.Magnet;
 import xal.smf.impl.Marker;
 import xal.smf.impl.RfCavity;
+import xal.smf.ISplittable;
 
 /**
  * <p>
@@ -633,11 +635,34 @@ public class LatticeSequence extends LatticeElement implements Iterable<LatticeE
                 continue;
             }
             
+            // Find the model element corresponding to the SMF device.
+            Class<? extends IComponent> clsElemTyp = this.mapNodeToMdl.getModelElementType(smfNodeCurr);
+
+            // Check if the element can be split. Only ThinElements are split, while ThickElements aren't modified.
+            if (smfNodeCurr instanceof ISplittable && ThinElement.class.isAssignableFrom(clsElemTyp)) {
+                double dblNodePos = smfSeqRoot.getPosition(smfNodeCurr);
+                // Convert center position to entrance position.
+                dblNodePos -= smfNodeCurr.getLength() / 2.0;
+                double[] longitudinalPositions = ((ISplittable) smfNodeCurr).getLongitudinalPositions();
+                LatticeElement latElem = null;
+                for (double position : longitudinalPositions) {
+                    latElem = new LatticeElement(smfNodeCurr, dblNodePos + position, clsElemTyp, indSeqPosition);
+                    this.addLatticeElement(latElem);
+                }
+                indSeqPosition++;
+
+                if (latElem != null && latElem.getEndPosition() > dblLenSeq) {
+                    dblLenSeq = latElem.getEndPosition();
+                }
+
+                // Skip the rest and continue on to the next hardware node
+                continue;
+            }
+            
             // The current hardware node is atomic with no children.
             //  Create a new lattice element for the accelerator node and add it to the 
             //  this lattice sequence
             double                      dblNodePos = smfSeqRoot.getPosition(smfNodeCurr);
-            Class<? extends IComponent> clsElemTyp = this.mapNodeToMdl.getModelElementType(smfNodeCurr);
             LatticeElement              latElem    = new LatticeElement(smfNodeCurr, dblNodePos, clsElemTyp, indSeqPosition);
 
             this.addLatticeElement(latElem);
