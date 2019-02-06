@@ -74,14 +74,12 @@ public class JElsElementMapping extends ElementMapping {
     protected void initialize() {
         putMap("rfm", ThickRfFieldMap.class);
         putMap("mfm", ThinMagFieldMap.class);
-        putMap("dh", IdealMagWedgeDipole2.class);
-        putMap("dv", IdealMagWedgeDipole2.class);
+        putMap("d", IdealMagWedgeDipole.class);
         putMap("q", IdealMagQuad.class);
         putMap("qt", IdealMagQuad.class);
         putMap("pq", IdealMagQuad.class);
         putMap("rg", IdealRfGap.class);
-        putMap("dch", IdealMagSteeringDipole.class);
-        putMap("dcv", IdealMagSteeringDipole.class);
+        putMap("dc", IdealMagSteeringDipole.class);
         putMap("marker", Marker.class);
         putMap("rf", IdealRfCavity.class);
     }

@@ -115,9 +115,9 @@ public class FieldMapBucket extends AttributeBucket {
 
     public FieldType getFieldType() {
         String strFieldType = m_attFieldType.getString();
-        if ("electric".equals(strFieldType) || "Electric".equals(strFieldType) || "e".equals(strFieldType) || "E".equals(strFieldType)) {
+        if ("electric".equalsIgnoreCase(strFieldType) || "e".equalsIgnoreCase(strFieldType)) {
             return FieldType.ELECTRIC;
-        } else if ("magnetic".equals(strFieldType) || "Magnetic".equals(strFieldType) || "b".equals(strFieldType) || "B".equals(strFieldType)) {
+        } else if ("magnetic".equalsIgnoreCase(strFieldType) || "b".equalsIgnoreCase(strFieldType)) {
             return FieldType.MAGNETIC;
         }
         return null;

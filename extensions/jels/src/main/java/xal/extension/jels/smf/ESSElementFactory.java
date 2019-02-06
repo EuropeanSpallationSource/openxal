@@ -1,6 +1,7 @@
 package xal.extension.jels.smf;
 
-import xal.extension.jels.smf.impl.ESSBend;
+import xal.extension.jels.smf.impl.Bend;
+import xal.extension.jels.smf.impl.DipoleCorr;
 import xal.extension.jels.smf.impl.ESSDTLTank;
 import xal.extension.jels.smf.impl.RfFieldMap;
 import xal.extension.jels.smf.impl.ESSRfCavity;
@@ -15,7 +16,6 @@ import xal.smf.attr.ApertureBucket;
 import xal.smf.impl.Electromagnet;
 import xal.smf.impl.MagnetMainSupply;
 import xal.smf.impl.RfCavity;
-import xal.smf.impl.qualify.MagnetType;
 
 /**
  * Factory class for creation of ESS specific AcceleratorNode elements,
@@ -71,7 +71,7 @@ public final class ESSElementFactory {
      * @param position Position of the magnet in the accelerator.
      * @return Bend object.
      */
-    public static ESSBend createESSBend(String name, double alpha, double k, double rho, double entryAngle,
+    public static Bend createESSBend(String name, double alpha, double k, double rho, double entryAngle,
             double exitAngle, double quadComp, ApertureBucket aper, MagnetMainSupply ps, int orientation, double gap, double position) {
 
         return createESSBend(name, alpha, k, rho, entryAngle, exitAngle, 0.45, 2.8, 0.45, 2.8, quadComp, aper, ps, orientation,
@@ -97,16 +97,16 @@ public final class ESSElementFactory {
      * @param position Position of the magnet in the accelerator.
      * @return Bend object.
      */
-    public static ESSBend createESSBend(String name, double alpha, double k, double rho, double entryAngle,
+    public static Bend createESSBend(String name, double alpha, double k, double rho, double entryAngle,
             double exitAngle, double enterK1, double enterK2, double exitK1, double exitK2, double quadComp,
             ApertureBucket aper, MagnetMainSupply ps, int orientation, double gap, double position) {
 
         // calculations
         double len = Math.abs(rho * alpha * Math.PI / 180.0);
 
-        double B0 = k / rho * Math.signum(alpha);
-
-        ESSBend bend = new ESSBend(name, (orientation == MagnetType.HORIZONTAL) ? MagnetType.HORIZONTAL : MagnetType.VERTICAL);
+//        Field not used in computations.
+//        double B0 = k / rho * Math.signum(alpha);
+        Bend bend = new Bend(name, orientation);
         if (ps != null) {
             bend.setMainSupplyId(ps.getId());
         }
@@ -118,7 +118,7 @@ public final class ESSElementFactory {
         bend.getMagBucket().setDipoleEntrRotAngle(-entryAngle);
         bend.getMagBucket().setBendAngle(alpha);
         bend.getMagBucket().setDipoleExitRotAngle(-exitAngle);
-        bend.setDfltField(B0);
+//        bend.setDfltField(B0);
         bend.getMagBucket().setDipoleQuadComponent(quadComp);
 
         bend.setGap(gap);
@@ -130,6 +130,32 @@ public final class ESSElementFactory {
         bend.setAper(aper);
 
         return bend;
+    }
+
+    /**
+     * Creates the DipoleCorrector node with specified properties.
+     *
+     * @param name Name of the corrector.
+     * @param orientation Orientation of the corrector.
+     * @param length Length of the corrector in meters.
+     * @param aper Aperture details.
+     * @param ps Power supply for the magnet. Can be null.
+     * @param position Position of the corrector in the accelerator.
+     * @return Dipole correctors.
+     */
+    public static DipoleCorr createESSCorrector(String name, int orientation, double length,
+            ApertureBucket aper, MagnetMainSupply ps, double position) {
+        DipoleCorr corr = new DipoleCorr(name, orientation);
+        if (ps != null) {
+            corr.setMainSupplyId(ps.getId());
+        }
+        addElectromagnetChannels(name, "B", corr.channelSuite());
+        corr.setPosition(position);
+        corr.setLength(length);
+        double effLength = length == 0 ? 1 : length;
+        corr.getMagBucket().setEffLength(effLength);
+        corr.setAper(aper);
+        return corr;
     }
 
     /**
