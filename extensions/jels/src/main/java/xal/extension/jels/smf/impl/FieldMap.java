@@ -312,14 +312,14 @@ public abstract class FieldMap {
      * @throws URISyntaxException
      */
     protected final void saveFile1D(String path, String name, FieldComponent<double[]> fieldComponent) throws IOException, URISyntaxException {
-        File fieldMapfile = new File(new URI(path).resolve(name));
+        File fieldMapfile = new File(new URL(new URL(path), name).toURI());
         fieldMapfile.getParentFile().mkdirs();
         PrintWriter pw = new PrintWriter(new FileWriter(fieldMapfile));
 
         double[] field = fieldComponent.getField();
         pw.printf("%d %f%n%f%n", field.length - 1, fieldComponent.getMax()[0], 1.0);
         for (int i = 0; i < field.length; i++) {
-            pw.printf("%f%n", field[i]);
+            pw.printf("%e%n", field[i]);
         }
         pw.close();
     }
@@ -332,7 +332,7 @@ public abstract class FieldMap {
      * @throws URISyntaxException
      */
     protected final void saveFile2D(String path, String name, FieldComponent<double[][]> fieldComponent) throws IOException, URISyntaxException {
-        File fieldMapfile = new File(new URI(path).resolve(name));
+        File fieldMapfile = new File(new URL(new URL(path), name).toURI());
         fieldMapfile.getParentFile().mkdirs();
         PrintWriter pw = new PrintWriter(new FileWriter(fieldMapfile));
 
@@ -342,7 +342,7 @@ public abstract class FieldMap {
         pw.printf("%d %f%n%d %f%n%f%n", field.length - 1, zmax, field[0].length - 1, rmax, fieldComponent.getNorm());
         for (int i = 0; i < field.length; i++) {
             for (int j = 0; j < field[0].length; j++) {
-                pw.printf("%f%n", field[i][j]);
+                pw.printf("%e%n", field[i][j]);
             }
         }
         pw.close();
@@ -356,7 +356,7 @@ public abstract class FieldMap {
      * @throws URISyntaxException
      */
     protected final void saveFile3D(String path, String name, FieldComponent<double[][][]> fieldComponent) throws IOException, URISyntaxException {
-        File fieldMapfile = new File(new URI(path).resolve(name));
+        File fieldMapfile = new File(new URL(new URL(path), name).toURI());
         fieldMapfile.getParentFile().mkdirs();
         PrintWriter pw = new PrintWriter(new FileWriter(fieldMapfile));
 
