@@ -112,44 +112,52 @@ public class IdealMagWedgeDipole2 extends ElectromagnetSeq {
      *
      * @param vecAlign (dx,dy,dz)
      */
+    /**
     public void setAlignment(R3 vecAlign) {
         this.getMagBody().setAlign(vecAlign);
         this.getFaceEntr().setAlign(vecAlign);
         this.getFaceExit().setAlign(vecAlign);
     }
+    * /
 
     /**
      * set align x
      *
      * @param dx
      */
+    /**
     public void setAlignX(double dx) {
         this.getFaceEntr().setAlignX(dx);
         this.getMagBody().setAlignX(dx);
         this.getFaceExit().setAlignX(dx);
     }
+    * /
 
     /**
      * set align y
      *
      * @param dy
      */
+    /**
     public void setAlignY(double dy) {
         this.getFaceEntr().setAlignY(dy);
         this.getMagBody().setAlignY(dy);
         this.getFaceExit().setAlignY(dy);
     }
+    * /
 
     /**
      * set align z
      *
      * @param dz
      */
+    /**
     public void setAlignZ(double dz) {
         this.getFaceEntr().setAlignY(dz);
         this.getMagBody().setAlignY(dz);
         this.getFaceExit().setAlignY(dz);
     }
+    * /
 
     /**
      * <p>
@@ -180,9 +188,12 @@ public class IdealMagWedgeDipole2 extends ElectromagnetSeq {
      * @see IdealMagWedgeDipole2#setPhysicalLength(double)
      */
     public void setPosition(double dblPos, double dblLen) {
-        this.getMagBody().setPosition(dblPos);
-        this.getFaceEntr().setPosition(dblPos - dblLen / 2.0);
-        this.getFaceExit().setPosition(dblPos + dblLen / 2.0);
+        //this.getMagBody().setPosition(dblPos);
+        //this.getFaceEntr().setPosition(dblPos - dblLen / 2.0);
+        //this.getFaceExit().setPosition(dblPos + dblLen / 2.0);
+        this.getMagBody().setPosition(dblLen/2.0);
+        this.getFaceEntr().setPosition(0.0);
+        this.getFaceExit().setPosition(dblLen);
     }
 
     /**
@@ -551,7 +562,7 @@ public class IdealMagWedgeDipole2 extends ElectromagnetSeq {
     public void initializeFrom(LatticeElement element) {
         super.initializeFrom(element);
 
-        Bend magnet = (Bend) element.getHardwareNode();
+        Bend magnet = (Bend) element.getHardwareNode();        
         setPosition(element.getCenterPosition(), element.getLength());
 
         // First retrieve all the physical parameters for a bending dipole				
@@ -562,7 +573,7 @@ public class IdealMagWedgeDipole2 extends ElectromagnetSeq {
 
         // Now compute the dependent parameters
         double R_bend0 = len_path0 / ang_bend0;
-        double fld_ind0 = -k_quad0 * R_bend0 * R_bend0;
+        double fld_ind0 = - k_quad0 * R_bend0 * R_bend0;
 
         double ang_bend = ang_bend0 * (len_sect / len_path0);
         double len_path = R_bend0 * ang_bend;
@@ -571,7 +582,7 @@ public class IdealMagWedgeDipole2 extends ElectromagnetSeq {
         setPhysicalLength(len_sect);
         setDesignPathLength(len_path);
         setFieldIndex(fld_ind0);
-        setDesignBendAngle(ang_bend);
+        setDesignBendAngle(ang_bend);                
 
         // first piece
         if (element.isFirstSlice()) {
@@ -588,6 +599,7 @@ public class IdealMagWedgeDipole2 extends ElectromagnetSeq {
         if (magnet instanceof ESSBend) {
             ESSBend magnet2 = (ESSBend) magnet;
             setGapSize(magnet2.getGap());
+            //setOrientation(magnet2.getOrientation());
             // first piece
             if (element.isFirstSlice()) {
                 setEntrFringeIntegral(magnet2.getEntrK1());

@@ -252,7 +252,6 @@ public abstract class ThinElement extends Element {
      * numerical error.
      *
      * @param   matPhi      transfer matrix <b>&Phi;</b> to be processed
-     * @param   probe       instance of the probe
      * @param   length      element length
      * @return  transfer matrix <b>&Phi;</b> after applying displacement
      * 
@@ -284,6 +283,7 @@ public abstract class ThinElement extends Element {
             dz = dz + ((ElementSeq)this.getParent()).getAlignZ() ;            
         }
         
+        /**
         if (px != 0. || py != 0.|| dx !=0 || dy != 0) {
             PhaseMatrix T = PhaseMatrix.translation(new PhaseVector(py*length/2-dx, -py, px*length/2-dy, -px, 0., 0.));		    	
             matPhi = matPhi.times(T);
@@ -293,7 +293,7 @@ public abstract class ThinElement extends Element {
             PhaseMatrix R = PhaseMatrix.rotationProduct(R3x3.newRotationZ(-pz));		    
             matPhi = matPhi.times(R);
         }	
-        if ((dx != 0)) {
+        if ((dz != 0)) {
             PhaseMatrix T = PhaseMatrix.spatialTranslation(new R3(0.0, 0.0, -dz));
             matPhi = matPhi.times(T);
         }
@@ -309,10 +309,26 @@ public abstract class ThinElement extends Element {
             matPhi = R.times(matPhi);	    		    
         }
 
-        if ((dx != 0)) {
+        if ((dz != 0)) {
             PhaseMatrix T = PhaseMatrix.spatialTranslation(new R3(0.0,0.0,dz));
              matPhi = T.times(matPhi);
         } 
+        */
+        
+        if (pz != 0.) {		   
+            PhaseMatrix R = PhaseMatrix.rotationProduct(R3x3.newRotationZ(-pz));		    
+            matPhi = R.transpose().times(matPhi.times(R));
+        }
+
+        if (px != 0. || py != 0. || dz != 0. || dx != 0. || dy != 0.) {
+            PhaseMatrix T = PhaseMatrix.translation(new PhaseVector(py*length/2.0-dx, -py, px*length/2.0-dy, -px, -dz, 0.));		    	
+            matPhi = matPhi.times(T);
+        }
+
+        if (px != 0. || py != 0. || dz != 0.|| dx != 0. || dy != 0.) {
+            PhaseMatrix T = PhaseMatrix.translation(new PhaseVector(-py*length/2.0+dx, py, -px*length/2.0+dy, px, dz, 0.)); 		    
+            matPhi = T.times(matPhi);
+        }      
         
         return matPhi;    
     }   

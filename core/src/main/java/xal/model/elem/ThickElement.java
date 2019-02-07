@@ -299,7 +299,7 @@ public abstract class ThickElement extends Element {
                 pz = pz + ((ElementSeq)this.getParent()).getPhiZ();
 
                 dx = dx + Dx + ((ElementSeq)this.getParent()).getAlignX();
-                dy = dy + Dy + ((ElementSeq)this.getParent()).getAlignY() ;
+                dy = dy + Dy + ((ElementSeq)this.getParent()).getAlignY();
                 dz = dz + ((ElementSeq)this.getParent()).getAlignZ() ;            
             }
             
@@ -310,7 +310,7 @@ public abstract class ThickElement extends Element {
                 if(probe.getPosition() >= m_dblNodePos){
                     pos = pos + m_dblNodeLen/2.0;
                 }
-            }
+            }        
             
             if(length != 0.0){
                 

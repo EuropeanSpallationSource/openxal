@@ -1,6 +1,6 @@
 package xal.extension.jels.model.elem;
 
-import xal.extension.jels.model.elem.IdealDrift;
+import xal.model.elem.IdealDrift;
 import xal.extension.jels.smf.impl.ESSFieldMap;
 import xal.extension.jels.smf.impl.FieldProfile;
 import xal.extension.jels.tools.math.TTFIntegrator;

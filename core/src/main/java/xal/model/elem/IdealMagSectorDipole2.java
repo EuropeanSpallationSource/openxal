@@ -721,7 +721,7 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
         
         /**
          *
-         * Build the dipole body tranfer matrix.
+         * Build the dipole body transfer matrix.
          *
          */
         

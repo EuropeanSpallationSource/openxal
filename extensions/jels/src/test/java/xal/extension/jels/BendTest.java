@@ -32,7 +32,7 @@ public class BendTest extends TestCommon {
         probe.reset();
         System.out.println("Horizontal madx");
 
-        AcceleratorSeq sequence = bend(-5.5, -11, -5.5, 9375.67, 0., 0, 0., 0, 0., 0, 0, 0);
+        AcceleratorSeq sequence = bend(-5.5, -11, -5.5, 9375.67, 0., 0, 0., 0, 0., 0, 0, 0);        
 
         run(sequence);
 
@@ -49,7 +49,7 @@ public class BendTest extends TestCommon {
 		BEND -11 9375.67 0 50 1
 		EDGE -5.5 9375.67 50 0.45 2.8 50 1
          */
-        AcceleratorSeq sequence = bend(-5.5, -11, -5.5, 9375.67, 0., 50, 0.45, 2.80, 0.45, 2.80, 50, 1);
+        AcceleratorSeq sequence = bend(-5.5, -11, -5.5, 9375.67, 0., 50, 0.45, 2.80, 0.45, 2.80, 50, 1);       
 
         run(sequence);
 
@@ -211,7 +211,7 @@ public class BendTest extends TestCommon {
 		EDGE -5.5 9375.67 50 0.45 2.8 50 1
          */
         AcceleratorSeq sequence = bend(-5.5, -11, -5.5, 9375.67, 0.9, 50, 0.45, 2.80, 0.45, 2.80, 50, 1);
-
+        
         run(sequence);
 
         //printResults();
