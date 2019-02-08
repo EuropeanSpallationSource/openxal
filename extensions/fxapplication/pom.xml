@@ -10,16 +10,6 @@
 
     <artifactId>openxal.extensions.fxapplication</artifactId>
 
-    <build>
-        <sourceDirectory>src</sourceDirectory>
-        <resources>
-            <resource>
-                <directory>resources</directory>
-                <targetPath>xal/extension/fxapplication/resources</targetPath>
-            </resource>
-        </resources>
-    </build>
-    
     <dependencies>
         <dependency>
             <groupId>org.xal</groupId>

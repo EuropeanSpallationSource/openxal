@@ -3,7 +3,6 @@
  *
  * Created on January 19, 2018
  */
-
 package xal.extension.fxapplication;
 
 import java.io.File;
@@ -35,6 +34,7 @@ import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.FileChooser;
@@ -111,6 +111,21 @@ abstract public class FxApplication extends Application {
         this.STAGE_TITLE = applicationName;
     }
 
+    public static void loadFonts() {
+        Font.loadFont(FxApplication.class.getResource("/fonts/SourceSansPro-SemiBoldItalic.ttf").toExternalForm(), 10);
+        Font.loadFont(FxApplication.class.getResource("/fonts/SourceSansPro-Black.ttf").toExternalForm(), 10);
+        Font.loadFont(FxApplication.class.getResource("/fonts/SourceSansPro-BlackItalic.ttf").toExternalForm(), 10);
+        Font.loadFont(FxApplication.class.getResource("/fonts/SourceSansPro-Bold.ttf").toExternalForm(), 10);
+        Font.loadFont(FxApplication.class.getResource("/fonts/SourceSansPro-BoldItalic.ttf").toExternalForm(), 10);
+        Font.loadFont(FxApplication.class.getResource("/fonts/SourceSansPro-ExtraLight.ttf").toExternalForm(), 10);
+        Font.loadFont(FxApplication.class.getResource("/fonts/SourceSansPro-ExtraLightItalic.ttf").toExternalForm(), 10);
+        Font.loadFont(FxApplication.class.getResource("/fonts/SourceSansPro-Italic.ttf").toExternalForm(), 10);
+        Font.loadFont(FxApplication.class.getResource("/fonts/SourceSansPro-Light.ttf").toExternalForm(), 10);
+        Font.loadFont(FxApplication.class.getResource("/fonts/SourceSansPro-LightItalic.ttf").toExternalForm(), 10);
+        Font.loadFont(FxApplication.class.getResource("/fonts/SourceSansPro-Regular.ttf").toExternalForm(), 10);
+        Font.loadFont(FxApplication.class.getResource("/fonts/SourceSansPro-SemiBold.ttf").toExternalForm(), 10);
+    }
+
     // Call this before start() (so that you can add items to MENU_BAR etc after)
     protected void initialize() {
 
@@ -158,14 +173,14 @@ abstract public class FxApplication extends Application {
         final MenuItem openLogMenu = new MenuItem("Open");
         openLogMenu.setOnAction(new UrlMenu(DOCUMENT));
         final MenuItem makePostMenu = new MenuItem("Post Screen Shot");
-        makePostMenu.setOnAction(new ELogMenu(DOCUMENT,"image"));
+        makePostMenu.setOnAction(new ELogMenu(DOCUMENT, "image"));
         final MenuItem makePostDataMenu = new MenuItem("Post Data");
-        makePostDataMenu.setOnAction(new ELogMenu(DOCUMENT,"file"));
+        makePostDataMenu.setOnAction(new ELogMenu(DOCUMENT, "file"));
         if (HAS_DOCUMENTS) {
-            eLogMenu.getItems().addAll(openLogMenu, makePostMenu,makePostDataMenu);
+            eLogMenu.getItems().addAll(openLogMenu, makePostMenu, makePostDataMenu);
         } else {
             eLogMenu.getItems().addAll(openLogMenu, makePostMenu);
-        }    
+        }
 
         final Menu helpMenu = new Menu("Help");
         final MenuItem aboutMenu = new MenuItem("About");
@@ -197,9 +212,12 @@ abstract public class FxApplication extends Application {
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource(MAIN_SCENE));
 
+        loadFonts();
+        
         root.getChildren().add(MENU_BAR);
         root.getChildren().add(loader.load());
-
+        root.setStyle("-fx-font-family:'Source Sans Pro';");
+        
         Scene scene = new Scene(root);
         scene.getStylesheets().add(CSS_STYLE);
 
@@ -557,7 +575,7 @@ class ELogMenu implements EventHandler {
     @Override
     public void handle(Event t) {
         document.eLogPost(docType);
-    }    
+    }
 }
 
 class HelpMenu implements EventHandler {
