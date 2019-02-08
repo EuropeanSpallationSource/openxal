@@ -180,7 +180,6 @@ public class OpenXalExporter {
 
         AcceleratorSeq old_seq = null;
         Integer dtlTankNumber = 1;
-        double dtl_currentLength = 0;
         AcceleratorSeq dtlTank = null;
         AcceleratorNode prev_node = null;
         // Export according to class.
@@ -212,7 +211,6 @@ public class OpenXalExporter {
                     dtlTank = exportDTLTank((DTLCell) subsystem, currentPosition, "DTLTank" + dtlTankNumber.toString());
                     dtlTank.setPosition(currentPosition);
                     dtlTankNumber++;
-                    dtl_currentLength = 0;
                     node = dtlTank;
                     latticeCount++;
                 } else {
@@ -220,10 +218,9 @@ public class OpenXalExporter {
 
                     // Find the dtl tank
                     int i = 1;
-                    boolean dtlTankFound = false;
-                    while (!dtlTankFound) {
+                    dtlTank = null;
+                    while (dtlTank == null) {
                         if (seq.getNodeAt(seq.getNodeCount() - i).isKindOf("DTLTank")) {
-                            dtlTankFound = true;
                             dtlTank = (AcceleratorSeq) seq.getNodeAt(seq.getNodeCount() - i);
                         } else {
                             i++;
@@ -236,12 +233,10 @@ public class OpenXalExporter {
                         seq.removeNode(prev_node);
                         prev_node.setPosition(prev_node.getPosition() - dtlTank.getPosition());
                         dtlTank.addNode(prev_node);
-                        dtl_currentLength += prev_node.getLength();
-                        dtlTank.setLength(dtl_currentLength);
                     }
                 }
 
-                AcceleratorNode[] nodes = exportDTLCell((DTLCell) subsystem, dtl_currentLength, ((ESSDTLTank) dtlTank).getDfltCavAmp());
+                AcceleratorNode[] nodes = exportDTLCell((DTLCell) subsystem, currentPosition - dtlTank.getPosition(), ((ESSDTLTank) dtlTank).getDfltCavAmp());
                 // Extend the previous quadrupole if exists
                 if (dtlTank.getNodeCount() != 0 && dtlTank.getNodeAt(dtlTank.getNodeCount() - 1).getType().equals("PQ")) {
                     PermQuadrupole previous_PQ = (PermQuadrupole) dtlTank.getNodeAt(dtlTank.getNodeCount() - 1);
@@ -259,9 +254,13 @@ public class OpenXalExporter {
                     }
                 }
 
-                dtl_currentLength += ((DTLCell) subsystem).getLength();
-                dtlTank.setLength(dtl_currentLength);
-                currentPosition = dtlTank.getPosition() + dtl_currentLength;
+                // We need to take into account the length of any other element inside the DTL tank
+                if (node != null) {
+                    dtlTank.setLength(((DTLCell) subsystem).getLength());
+                } else {
+                    currentPosition += ((DTLCell) subsystem).getLength();
+                    dtlTank.setLength(currentPosition - dtlTank.getPosition());
+                }
             } else if (subsystem instanceof Corrector) {
                 if (((Corrector) subsystem).getInsideNext()) {
                     nextCorrector = (Corrector) subsystem;
@@ -389,13 +388,13 @@ public class OpenXalExporter {
 
         ApertureBucket vAper = generateApertureBucket(element);
         MagnetMainSupply vps = ElementFactory.createMainSupply(element.getName() + "-VC-PS", acc);
-        AcceleratorNode vcorr = ElementFactory.createCorrector(element.getName() + "-VC", MagnetType.VERTICAL,
+        AcceleratorNode vcorr = ESSElementFactory.createESSCorrector(element.getName() + "-VC", MagnetType.VERTICAL,
                 L, vAper, vps, currentPosition + L / 2);
         seq.addNode(vcorr);
 
         MagnetMainSupply hps = ElementFactory.createMainSupply(element.getName() + "-HC-PS", acc);
         ApertureBucket hAper = generateApertureBucket(element);
-        AcceleratorNode hcorr = ElementFactory.createCorrector(element.getName() + "-HC", MagnetType.HORIZONTAL,
+        AcceleratorNode hcorr = ESSElementFactory.createESSCorrector(element.getName() + "-HC", MagnetType.HORIZONTAL,
                 L, hAper, hps, currentPosition + L / 2);
         seq.addNode(hcorr);
         return seq;

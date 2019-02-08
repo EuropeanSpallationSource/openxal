@@ -3,6 +3,7 @@ package xal.extension.jels;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import xal.extension.jels.smf.ESSElementFactory;
 
 import xal.model.ModelException;
 import xal.model.probe.Probe;
@@ -28,7 +29,7 @@ public class SteererTest extends TestCommon {
         probe.reset();
         System.out.println("QUAD 70 -16 15 0 0 0 0 0");
         //QUAD 70 -16 15 0 0 0 0 0		
-        AcceleratorSeq sequence = quad_steerer(70., -16., 15., 0., 0., 0., 0., 0., 10, -20);
+        AcceleratorSeq sequence = quad_steerer(70., -16., 15., 10, -20);
 
         run(sequence);
 
@@ -84,14 +85,11 @@ public class SteererTest extends TestCommon {
      * @param L length
      * @param G field
      * @param R aperture
-     * @param Phi skew angle
-     * @param G3 sextupole gradient (T/m^2)
-     * @param G4 octupole gradient (T/m^2)
-     * @param G5 decapole gradient (T/m^2)
-     * @param G6 dodecapole gradient (T/m^2)
+     * @param Bx field for the vertical corrector
+     * @param By field for the horizontal corrector
      * @return
      */
-    public AcceleratorSeq quad_steerer(double L, double G, double R, double Phi, double G3, double G4, double G5, double G6, double Bx, double By) {
+    public AcceleratorSeq quad_steerer(double L, double G, double R, double Bx, double By) {
         ApertureBucket aper = new ApertureBucket();
         aper.setAperX(R * 1e-3);
         aper.setAperY(R * 1e-3);
@@ -101,13 +99,13 @@ public class SteererTest extends TestCommon {
                 null, L / 2. * 1e-3);
         sequence.addNode(quad);
 
-        DipoleCorr vcorr = ElementFactory.createCorrector("VC", MagnetType.VERTICAL, L * 1e-3, new ApertureBucket(), null, L / 2. * 1e-3);
-        // FIXME Bx is not in create corrector!
+        DipoleCorr vcorr = ESSElementFactory.createESSCorrector("VC", MagnetType.VERTICAL, L * 1e-3, new ApertureBucket(), null, L / 2. * 1e-3);
+        // Setting the field
         vcorr.setDfltField(-Bx);
         sequence.addNode(vcorr);
 
-        DipoleCorr hcorr = ElementFactory.createCorrector("HC", MagnetType.HORIZONTAL, L * 1e-3, new ApertureBucket(), null, L / 2. * 1e-3);
-        // FIXME Bx is not in create corrector!
+        DipoleCorr hcorr = ESSElementFactory.createESSCorrector("HC", MagnetType.HORIZONTAL, L * 1e-3, new ApertureBucket(), null, L / 2. * 1e-3);
+        // Setting the field
         hcorr.setDfltField(By);
         sequence.addNode(hcorr);
 

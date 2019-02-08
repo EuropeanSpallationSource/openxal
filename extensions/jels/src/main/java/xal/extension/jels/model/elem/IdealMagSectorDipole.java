@@ -51,7 +51,7 @@ import xal.tools.math.ElementaryFunction;
  * @see xal.model.elem.IdealMagSectorDipole2
  * @see xal.model.elem.ThickDipole
  */
-public class IdealMagSectorDipole2 extends ThickElectromagnet {
+public class IdealMagSectorDipole extends ThickElectromagnet {
 
     /*
      *  Global Attributes
@@ -136,7 +136,7 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
      * IdealMagSectorDipole. This is the constructor called in automatic lattice
      * generation. Thus, all element properties are set following construction.
      */
-    public IdealMagSectorDipole2() {
+    public IdealMagSectorDipole() {
         super(s_strType);
     }
 
@@ -146,7 +146,7 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
      * generation. Thus, all element properties are set following construction.
      * @param strId
      */
-    public IdealMagSectorDipole2(String strId) {
+    public IdealMagSectorDipole(String strId) {
         super(s_strType, strId);
     }
 
@@ -163,7 +163,7 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
      * Rogowski coil, or 0.7 for an unclamped Rogowski coil. (dimensionless)
      *
      */
-    public IdealMagSectorDipole2(String strId, double dblLen,
+    public IdealMagSectorDipole(String strId, double dblLen,
             int enmOrient, double dblFld,
             double dblGap, double dblFldInd) {
         super(s_strType, strId, dblLen);
@@ -338,7 +338,7 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
      *
      * @return the design bending radius R0 (in meters)
      *
-     * @see IdealMagSectorDipole2#compDesignCurvature()
+     * @see IdealMagSectorDipole#compDesignCurvature()
      */
     public double compDesignBendingRadius() {
         double L0 = this.getDesignPathLength();

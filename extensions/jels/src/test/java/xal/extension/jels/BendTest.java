@@ -5,7 +5,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import xal.extension.jels.smf.ESSElementFactory;
-import xal.extension.jels.smf.impl.ESSBend;
+import xal.extension.jels.smf.impl.Bend;
 import xal.model.ModelException;
 import xal.model.probe.Probe;
 import xal.sim.scenario.ElementMapping;
@@ -290,7 +290,7 @@ public class BendTest extends TestCommon {
         double k = b * gamma * Er / (e * c); // = -0.22862458629665997
         int orientation = HV == 0 ? MagnetType.HORIZONTAL : MagnetType.VERTICAL;
 
-        ESSBend bend = ESSElementFactory.createESSBend("b", alpha_deg, k, rho, entry_angle_deg, exit_angle_deg, entrK1, entrK2,
+        Bend bend = ESSElementFactory.createESSBend("b", alpha_deg, k, rho, entry_angle_deg, exit_angle_deg, entrK1, entrK2,
                 exitK1, exitK2, quadComp, new ApertureBucket(), null, orientation, G, len / 2.);
 
         sequence.addNode(bend);

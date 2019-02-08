@@ -1,32 +1,38 @@
+/*
+ * Copyright (C) 2019 European Spallation Source ERIC.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
 package xal.extension.jels.smf.impl;
 
-import xal.extension.jels.smf.attr.ESSMagnetBucket;
+import xal.extension.jels.smf.attr.MagnetBucket;
 import xal.ca.ChannelFactory;
-import xal.smf.impl.Bend;
 import xal.smf.impl.qualify.ElementTypeManager;
-import xal.tools.data.DataAdaptor;
 
 /**
  * Extends OpenXal Bend class with orientation and FringeField parameters.
  *
  * @author Ivo List
+ * @author Juan F. Esteban Müller <JuanF.EstebanMuller@esss.se>
  */
-public class ESSBend extends Bend {
+public class Bend extends xal.smf.impl.Bend {
 
     /**
-     * horizontal dipole type
+     * device type
      */
-    public static final String HORIZONTAL_TYPE = "DH";
-
-    /**
-     * vertical dipole type
-     */
-    public static final String VERTICAL_TYPE = "DV";
-
-    /**
-     * the type of dipole (horizontal or vertical)
-     */
-    protected String _type;
+    public static final String s_strType = "D";
 
     static {
         registerType();
@@ -37,17 +43,17 @@ public class ESSBend extends Bend {
      */
     private static void registerType() {
         ElementTypeManager typeManager = ElementTypeManager.defaultManager();
-        typeManager.registerType(ESSBend.class, "D");
+        typeManager.registerType(Bend.class, s_strType);
     }
 
-    private final ESSMagnetBucket magnet2Bucket = new ESSMagnetBucket();
+    private final MagnetBucket m_bucESSMagnet = new MagnetBucket();
 
     /**
      * Creates Bend with horizontal orientation.
      *
      * @param strId node id
      */
-    public ESSBend(String strId) {
+    public Bend(String strId) {
         this(strId, HORIZONTAL, null);
     }
 
@@ -57,7 +63,7 @@ public class ESSBend extends Bend {
      * @param strId node id
      * @param channelFactory
      */
-    public ESSBend(String strId, ChannelFactory channelFactory) {
+    public Bend(String strId, ChannelFactory channelFactory) {
         this(strId, HORIZONTAL, channelFactory);
     }
 
@@ -68,7 +74,7 @@ public class ESSBend extends Bend {
      * @param orientation orientation of the magnet, either HORIZONTAL or
      * VERTICAL as defined by MagnetType.
      */
-    public ESSBend(String strId, int orientation) {
+    public Bend(String strId, int orientation) {
         this(strId, orientation, null);
     }
 
@@ -80,10 +86,10 @@ public class ESSBend extends Bend {
      * VERTICAL as defined by MagnetType.
      * @param channelFactory
      */
-    public ESSBend(String strId, int orientation, ChannelFactory channelFactory) {
+    public Bend(String strId, int orientation, ChannelFactory channelFactory) {
         super(strId, channelFactory);
-        this._type = orientation == HORIZONTAL ? HORIZONTAL_TYPE : VERTICAL_TYPE;
-        setMagBucket(magnet2Bucket);
+        setOrientation(orientation);
+        setMagBucket(m_bucESSMagnet);
     }
 
     /**
@@ -95,7 +101,7 @@ public class ESSBend extends Bend {
      */
     @Override
     public String getType() {
-        return _type;
+        return s_strType;
     }
 
     /**
@@ -105,92 +111,77 @@ public class ESSBend extends Bend {
      * VERTICAL
      */
     public void setOrientation(int orientation) {
-        this._type = orientation == HORIZONTAL ? HORIZONTAL_TYPE : VERTICAL_TYPE;
-    }
-
-    /**
-     * Update the instance with data from the data adaptor. Overrides the
-     * default implementation to set the dipole type since a dipole type can be
-     * either "DH" or "DV".
-     *
-     * @param adaptor The data provider.
-     */
-    @Override
-    public void update(final DataAdaptor adaptor) {
-        if (adaptor.hasAttribute("type")) {
-            _type = adaptor.stringValue("type");
-        }
-        super.update(adaptor);
+        m_bucESSMagnet.setOrientation(orientation);
     }
 
     /**
      * @return total gap of magnet (m)
      */
     public double getGap() {
-        return magnet2Bucket.getGap();
+        return m_bucESSMagnet.getGap();
     }
 
     /**
      * @param value total gap of magnet (m)
      */
     public void setGap(double value) {
-        magnet2Bucket.setGap(value);
+        m_bucESSMagnet.setGap(value);
     }
 
     /**
      * @return Upstream edge face Fringe-field factor (default = 0.45)
      */
     public double getEntrK1() {
-        return magnet2Bucket.getEntrK1();
+        return m_bucESSMagnet.getEntrFringeFieldFactorK1();
     }
 
     /**
      * @param value Upstream edge face Fringe-field factor (default = 0.45)
      */
     public void setEntrK1(double value) {
-        magnet2Bucket.setEntrK1(value);
+        m_bucESSMagnet.setEntrFringeFieldFactorK1(value);
     }
 
     /**
      * @return Upstream edge face Fringe-field factor (default = 2.80)
      */
     public double getEntrK2() {
-        return magnet2Bucket.getEntrK2();
+        return m_bucESSMagnet.getEntrFringeFieldFactorK2();
     }
 
     /**
      * @param value Upstream edge face Fringe-field factor (default = 2.80)
      */
     public void setEntrK2(double value) {
-        magnet2Bucket.setEntrK2(value);
+        m_bucESSMagnet.setEntrFringeFieldFactorK2(value);
     }
 
     /**
      * @return Downstream edge face Fringe-field factor (default = 0.45)
      */
     public double getExitK1() {
-        return magnet2Bucket.getExitK1();
+        return m_bucESSMagnet.getExitFringeFieldFactorK1();
     }
 
     /**
      * @param value Downstream edge face Fringe-field factor (default = 0.45)
      */
     public void setExitK1(double value) {
-        magnet2Bucket.setExitK1(value);
+        m_bucESSMagnet.setExitFringeFieldFactorK1(value);
     }
 
     /**
      * @return Downstream edge face Fringe-field factor (default = 2.80)
      */
     public double getExitK2() {
-        return magnet2Bucket.getExitK2();
+        return m_bucESSMagnet.getExitFringeFieldFactorK2();
     }
 
     /**
      * @param value Downstream edge face Fringe-field factor (default = 2.80)
      */
     public void setExitK2(double value) {
-        magnet2Bucket.setExitK2(value);
+        m_bucESSMagnet.setExitFringeFieldFactorK2(value);
     }
 
     /**
@@ -201,7 +192,7 @@ public class ESSBend extends Bend {
      */
     @Override
     public int getOrientation() {
-        return _type.equalsIgnoreCase(HORIZONTAL_TYPE) ? HORIZONTAL : VERTICAL;
+        return m_bucESSMagnet.getOrientation();
     }
 
     /**
@@ -215,6 +206,6 @@ public class ESSBend extends Bend {
      */
     @Override
     public boolean isKindOf(final String type) {
-        return type.equalsIgnoreCase(_type) || super.isKindOf(type);
+        return type.equalsIgnoreCase(s_strType) || super.isKindOf(type);
     }
 }

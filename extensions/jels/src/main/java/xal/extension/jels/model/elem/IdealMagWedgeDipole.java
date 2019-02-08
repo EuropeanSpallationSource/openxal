@@ -6,10 +6,9 @@
  */
 package xal.extension.jels.model.elem;
 
-import xal.extension.jels.smf.impl.ESSBend;
+import xal.extension.jels.smf.impl.Bend;
 import xal.model.elem.ElectromagnetSeq;
 import xal.sim.scenario.LatticeElement;
-import xal.smf.impl.Bend;
 import xal.tools.math.r3.R3;
 
 /**
@@ -28,7 +27,7 @@ import xal.tools.math.r3.R3;
  * @see xal.model.elem#IdealMagDipoleFace
  *
  */
-public class IdealMagWedgeDipole2 extends ElectromagnetSeq {
+public class IdealMagWedgeDipole extends ElectromagnetSeq {
 
     /*
      *  Global Attributes
@@ -50,17 +49,17 @@ public class IdealMagWedgeDipole2 extends ElectromagnetSeq {
     /**
      * magnet body
      */
-    private IdealMagSectorDipole2 magBody = new IdealMagSectorDipole2();
+    private IdealMagSectorDipole magBody = new IdealMagSectorDipole();
 
     /**
      * magnet entrance pole face
      */
-    private IdealMagDipoleFace2 polEntr = new IdealMagDipoleFace2();
+    private IdealMagDipoleFace polEntr = new IdealMagDipoleFace();
 
     /**
      * magnet entrance pole face
      */
-    private IdealMagDipoleFace2 polExit = new IdealMagDipoleFace2();
+    private IdealMagDipoleFace polExit = new IdealMagDipoleFace();
 
     /*
      * Initialization
@@ -69,7 +68,7 @@ public class IdealMagWedgeDipole2 extends ElectromagnetSeq {
      * Default constructor - creates a new uninitialized instance of
      * <code>IdealMagWedgeDipole</code>.
      */
-    public IdealMagWedgeDipole2() {
+    public IdealMagWedgeDipole() {
         this(null);
     }
 
@@ -79,7 +78,7 @@ public class IdealMagWedgeDipole2 extends ElectromagnetSeq {
      *
      * @param strId instance identifier string
      */
-    public IdealMagWedgeDipole2(String strId) {
+    public IdealMagWedgeDipole(String strId) {
         super(s_strType, strId, s_szReserve);
 
         this.addChild(this.polEntr);
@@ -177,7 +176,7 @@ public class IdealMagWedgeDipole2 extends ElectromagnetSeq {
      * @param dblPos lattice position of element center (meters)
      * @param dblLen physical length of this element
      *
-     * @see IdealMagWedgeDipole2#setPhysicalLength(double)
+     * @see IdealMagWedgeDipole#setPhysicalLength(double)
      */
     public void setPosition(double dblPos, double dblLen) {
         this.getMagBody().setPosition(dblPos);
@@ -382,7 +381,7 @@ public class IdealMagWedgeDipole2 extends ElectromagnetSeq {
      *
      * @return fringe field integral (<b>unitless</b>)
      *
-     * @see IdealMagDipoleFace2#getFringeIntegral
+     * @see IdealMagDipoleFace#getFringeIntegral
      */
     public double getEntrFringeIntegral() {
         return this.getFaceEntr().getFringeIntegral();
@@ -421,7 +420,7 @@ public class IdealMagWedgeDipole2 extends ElectromagnetSeq {
      * where <i>R</i><sub>0</sub> is the radius of the design orbit,
      * <i>B</i><sub>0</sub>
      * is the field at the design orbit (see
-     * {@link IdealMagSectorDipole2#getFieldIndex()}), and <i>dB/dR</i> is the
+     * {@link IdealMagSectorDipole#getFieldIndex()}), and <i>dB/dR</i> is the
      * derivative of the field with respect to the path deflection - evaluated
      * at the design radius <i>R</i><sub>0</sub>.
      *
@@ -518,7 +517,7 @@ public class IdealMagWedgeDipole2 extends ElectromagnetSeq {
      *
      * @return entrance pole face
      */
-    private IdealMagDipoleFace2 getFaceEntr() {
+    private IdealMagDipoleFace getFaceEntr() {
         return this.polEntr;
     }
 
@@ -527,7 +526,7 @@ public class IdealMagWedgeDipole2 extends ElectromagnetSeq {
      *
      * @return exit pole face
      */
-    private IdealMagDipoleFace2 getFaceExit() {
+    private IdealMagDipoleFace getFaceExit() {
         return this.polExit;
     }
 
@@ -538,7 +537,7 @@ public class IdealMagWedgeDipole2 extends ElectromagnetSeq {
      *
      * @return magnet body
      */
-    private IdealMagSectorDipole2 getMagBody() {
+    private IdealMagSectorDipole getMagBody() {
         return this.magBody;
     }
 
@@ -551,7 +550,7 @@ public class IdealMagWedgeDipole2 extends ElectromagnetSeq {
     public void initializeFrom(LatticeElement element) {
         super.initializeFrom(element);
 
-        Bend magnet = (Bend) element.getHardwareNode();
+        xal.smf.impl.Bend magnet = (xal.smf.impl.Bend) element.getHardwareNode();
         setPosition(element.getCenterPosition(), element.getLength());
 
         // First retrieve all the physical parameters for a bending dipole				
@@ -585,8 +584,8 @@ public class IdealMagWedgeDipole2 extends ElectromagnetSeq {
             setExitPoleAngle(magnet.getExitRotAngle() * Math.PI / 180.);
         }
 
-        if (magnet instanceof ESSBend) {
-            ESSBend magnet2 = (ESSBend) magnet;
+        if (magnet instanceof Bend) {
+            Bend magnet2 = (Bend) magnet;
             setGapSize(magnet2.getGap());
             // first piece
             if (element.isFirstSlice()) {

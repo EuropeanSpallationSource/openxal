@@ -267,8 +267,6 @@ public class TraceWin {
         TraceWin tracewin = new TraceWin();
         tracewin.setLogger(new ImportLogger());
 
-        args = new String[]{"/Users/juanfestebanmuller/git/ess-lattice", "/Users/juanfestebanmuller/optics", "new"};
-
         // Checking commandline arguments
         if (args.length < 3) {
             System.out.println("Usage: TraceWin input outputDir outputName [initialParametersMode]");

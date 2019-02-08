@@ -33,6 +33,7 @@ import org.w3c.dom.Element;
 
 import xal.extension.jels.ImporterHelpers;
 import xal.extension.jels.smf.ESSAccelerator;
+import xal.extension.jels.smf.impl.FieldMap;
 import xal.extension.jels.smf.impl.MagFieldMap;
 import xal.extension.jels.smf.impl.RfFieldMap;
 import xal.smf.AcceleratorNode;
@@ -148,17 +149,27 @@ public class AcceleratorExporter {
 
         da.writeTo(opticsFile);
 
-        // Field Maps
+        // Field Maps - get a list of unique field maps.
         List<AcceleratorNode> fieldMapNodes = acc.getAllNodesOfType("RFM");
+        Map<String,FieldMap> fieldMaps = new HashMap<>();
         for (AcceleratorNode fieldMapNode : fieldMapNodes) {
             RfFieldMap fieldMap = (RfFieldMap) fieldMapNode;
-            fieldMap.getFieldMap().saveFieldMap(dir.toString(), fieldMap.getFieldMapFile());
+            if(!fieldMaps.containsValue(fieldMap.getFieldMap())){
+                fieldMaps.put(fieldMap.getFieldMapFile(),fieldMap.getFieldMap());
+            }
         }
         // Solenoid Field Maps
         fieldMapNodes = acc.getAllNodesOfType("MFM");
         for (AcceleratorNode fieldMapNode : fieldMapNodes) {
             MagFieldMap fieldMap = (MagFieldMap) fieldMapNode;
-            fieldMap.getFieldMap().saveFieldMap(dir.toString(), fieldMap.getFieldMapFile());
+            if(!fieldMaps.containsValue(fieldMap.getFieldMap())){
+                fieldMaps.put(fieldMap.getFieldMapFile(),fieldMap.getFieldMap());
+            }
+        }
+        
+        // Export each field map only once.
+        for (String fieldMapFile: fieldMaps.keySet()){
+            fieldMaps.get(fieldMapFile).saveFieldMap(dir.toURI().toURL().toString(), fieldMapFile);
         }
     }
 

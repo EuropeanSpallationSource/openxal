@@ -13,13 +13,10 @@
     <associations>
         <map smf="rfm" model="xal.extension.jels.model.elem.ThickRfFieldMap"/>
         <map smf="mfm" model="xal.extension.jels.model.elem.ThinMagFieldMap"/>
-        <map smf="dh" model="xal.extension.jels.model.elem.IdealMagWedgeDipole2"/>
-        <map smf="dv" model="xal.extension.jels.model.elem.IdealMagWedgeDipole2"/>
+        <map smf="d" model="xal.extension.jels.model.elem.IdealMagWedgeDipole"/>
         <map smf="q" model="xal.model.elem.IdealMagQuad"/>
-        <map smf="qt" model="xal.model.elem.IdealMagQuad"/>
         <map smf="pq" model="xal.model.elem.IdealMagQuad"/>
-        <map smf="dch" model="xal.model.elem.IdealMagSteeringDipole"/>
-        <map smf="dcv" model="xal.model.elem.IdealMagSteeringDipole"/>
+        <map smf="dc" model="xal.model.elem.IdealMagSteeringDipole"/>
         <map smf="rg" model="xal.extension.jels.model.elem.IdealRfGap"/>
         <map smf="marker" model="xal.model.elem.Marker"/>
         <map smf="rf" model="xal.model.elem.IdealRfCavity"/>

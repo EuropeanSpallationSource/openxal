@@ -32,7 +32,7 @@ import xal.tools.beam.PhaseMatrix;
  *
  * @author Christopher K. Allen
  */
-public class IdealMagDipoleFace2 extends ThinElectromagnet {
+public class IdealMagDipoleFace extends ThinElectromagnet {
 
     /*
      *  Global Attributes
@@ -110,7 +110,7 @@ public class IdealMagDipoleFace2 extends ThinElectromagnet {
      * IdealMagSectorDipole. This is the constructor called in automatic lattice
      * generation. Thus, all element properties are set following construction.
      */
-    public IdealMagDipoleFace2() {
+    public IdealMagDipoleFace() {
         super(s_strType);
     }
 
@@ -119,7 +119,7 @@ public class IdealMagDipoleFace2 extends ThinElectromagnet {
      *
      * @param strId string identifier for element
      */
-    public IdealMagDipoleFace2(String strId) {
+    public IdealMagDipoleFace(String strId) {
         super(s_strType, strId);
     }
 
@@ -256,7 +256,7 @@ public class IdealMagDipoleFace2 extends ThinElectromagnet {
      *
      * @return second-order integral of fringe field (<b>dimensionless</b>)
      *
-     * @see IdealMagDipoleFace2#setFringeIntegral(double)
+     * @see IdealMagDipoleFace#setFringeIntegral(double)
      */
     public double getFringeIntegral() {
         return this.dblFringeInt;
