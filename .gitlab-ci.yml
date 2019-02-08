@@ -9,7 +9,7 @@ test:
         - /^site.sns.*$/
 
 .maven: &maven
-    image: registry.esss.lu.se/yngvelevinsen/dockers/oracle-jdk-maven:1.8
+    image: europeanspallationsource/oracle-jdk-maven-jenkins:8
     only:
         - /^site.ess.*$/
 build.maven:
