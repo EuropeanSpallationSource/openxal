@@ -17,7 +17,7 @@
         <Button fx:id="changeOpticsButton" layoutX="433.0" layoutY="97.0" mnemonicParsing="false" onAction="#changeOpticsButtonHandler" text="Change" />
         <ListView fx:id="opticsListView" layoutX="14.0" layoutY="164.0" prefHeight="160.0" prefWidth="486.0" />
         <Button fx:id="setDefaultButton" layoutX="14.0" layoutY="332.0" mnemonicParsing="false" onAction="#setDefaultButtonHandler" text="Set as default Accelerator">
-            <style> -fx-font-family:'Source Sans Pro Bold'; </style>
+            <style> -fx-font-weight: bold; </style>
         </Button>
         <Button fx:id="revertButton" disable="true" layoutX="215.0" layoutY="332.0" mnemonicParsing="false" onAction="#revertButtonHandler" text="Revert" />
         <Button fx:id="refreshButton" layoutX="412.0" layoutY="332.0" mnemonicParsing="false" onAction="#refreshButtonHandler" text="Refresh list" />
@@ -27,27 +27,27 @@
         <TextField fx:id="outputNameTextField" layoutX="160.0" layoutY="571.0" onKeyReleased="#opticsPathTextFieldKeyReleased" prefHeight="27.0" prefWidth="147.0" />
         <ChoiceBox fx:id="initialParametersChoiceBox" layoutX="130.0" layoutY="609.0" prefHeight="27.0" prefWidth="178.0" />
         <Button fx:id="importButton" layoutX="440.0" layoutY="609.0" mnemonicParsing="false" onAction="#importHandler" text="Import" >
-            <style> -fx-font-family:'Source Sans Pro Bold'; </style>
+            <style> -fx-font-weight: bold; </style>
         </Button>
         <CheckBox fx:id="rbacCheckBox" layoutX="13.0" layoutY="675.0" mnemonicParsing="false" onAction="#rbacCheckBoxAction" text="RBAC" />
         <Label layoutX="14.0" layoutY="68.0" text="Optics path">
-            <style> -fx-font-family:'Source Sans Pro Bold'; </style>
+            <style> -fx-font-weight: bold; </style>
         </Label>
         <Line endX="485.0" layoutX="14.0" layoutY="87.0" />
         <Label layoutX="14.0" layoutY="134.0" text="Optics selection (default Accelerator)">
-            <style> -fx-font-family:'Source Sans Pro Bold'; </style>
+            <style> -fx-font-weight: bold; </style>
         </Label>
         <Line endX="485.0" layoutX="13.0" layoutY="153.0" />
         <Label layoutX="14.0" layoutY="432.0" text="TraceWin Importer">
-            <style> -fx-font-family:'Source Sans Pro Bold'; </style>
+            <style> -fx-font-weight: bold; </style>
         </Label>
         <Line endX="485.0" layoutX="14.0" layoutY="452.0" />
         <Label layoutX="14.0" layoutY="648.0" text="RBAC (Role Base Access Control) Switch">
-            <style> -fx-font-family:'Source Sans Pro Bold'; </style>
+            <style> -fx-font-weight: bold; </style>
         </Label>
         <Line endX="485.0" layoutX="14.0" layoutY="666.0" />
         <Label layoutX="14.0" layoutY="12.0" prefHeight="52.0" prefWidth="478.0" text="WARNING! This application is for admin use only.  DO NOT EDIT these settings without permission from software management!" textFill="FIREBRICK" wrapText="true">
-            <style> -fx-font-family:'Source Sans Pro Bold'; </style>
+            <style> -fx-font-weight: bold; </style>
         </Label>
         <Line endX="485.0" layoutX="14.0" layoutY="15.0" stroke="FIREBRICK" />
         <Line endX="485.0" layoutX="14.0" layoutY="60.0" stroke="FIREBRICK" />
@@ -58,11 +58,11 @@
         <TextField fx:id="elogServerTextField" layoutX="14.0" layoutY="398.0" onKeyReleased="#opticsPathTextFieldKeyReleased" prefHeight="27.0" prefWidth="408.0" />
         <Button fx:id="changeElogServerButton" layoutX="433.0" layoutY="398.0" mnemonicParsing="false" onAction="#changeElogServerButtonHandler" text="Change"/>
         <Label layoutX="14.0" layoutY="369.0" text="Elog server URL">
-            <style> -fx-font-family:'Source Sans Pro Bold'; </style>
+            <style> -fx-font-weight: bold; </style>
         </Label>
         <Line endX="485.0" layoutX="14.0" layoutY="388.0" />
         <Label layoutX="14.0" layoutY="706.0" text="EPICS configuration">
-            <style> -fx-font-family:'Source Sans Pro Bold'; </style>
+            <style> -fx-font-weight: bold; </style>
         </Label>
         <Line endX="485.0" layoutX="14.0" layoutY="724.0" />
         <TextField fx:id="pendIOTimeoutTextField" layoutX="139.0" layoutY="771.0" onKeyReleased="#opticsPathTextFieldKeyReleased" prefHeight="27.0" prefWidth="65.0" promptText="Not set">

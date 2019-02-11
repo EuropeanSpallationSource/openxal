@@ -5,6 +5,7 @@
  */
 package xal.extension.fxapplication;
 
+import com.sun.javafx.css.StyleManager;
 import java.io.File;
 import java.io.IOException;
 import javafx.application.Application;
@@ -111,7 +112,12 @@ abstract public class FxApplication extends Application {
         this.STAGE_TITLE = applicationName;
     }
 
-    public static void loadFonts() {
+    /**
+     * This method sets the default fonts for Open XAL applications (Source Sans
+     * Pro). It is public to be able to use it from application that don't
+     * extend FxApplication.
+     */
+    public static void setDefaultFonts() {
         Font.loadFont(FxApplication.class.getResource("/fonts/SourceSansPro-SemiBoldItalic.ttf").toExternalForm(), 10);
         Font.loadFont(FxApplication.class.getResource("/fonts/SourceSansPro-Black.ttf").toExternalForm(), 10);
         Font.loadFont(FxApplication.class.getResource("/fonts/SourceSansPro-BlackItalic.ttf").toExternalForm(), 10);
@@ -124,6 +130,8 @@ abstract public class FxApplication extends Application {
         Font.loadFont(FxApplication.class.getResource("/fonts/SourceSansPro-LightItalic.ttf").toExternalForm(), 10);
         Font.loadFont(FxApplication.class.getResource("/fonts/SourceSansPro-Regular.ttf").toExternalForm(), 10);
         Font.loadFont(FxApplication.class.getResource("/fonts/SourceSansPro-SemiBold.ttf").toExternalForm(), 10);
+
+        StyleManager.getInstance().addUserAgentStylesheet(FxApplication.class.getResource("/styles/DefaultFontStyle.css").toExternalForm());
     }
 
     // Call this before start() (so that you can add items to MENU_BAR etc after)
@@ -212,12 +220,12 @@ abstract public class FxApplication extends Application {
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource(MAIN_SCENE));
 
-        loadFonts();
-        
         root.getChildren().add(MENU_BAR);
         root.getChildren().add(loader.load());
-        root.setStyle("-fx-font-family:'Source Sans Pro';");
-        
+
+        // Loading and setting default font.
+        setDefaultFonts();
+
         Scene scene = new Scene(root);
         scene.getStylesheets().add(CSS_STYLE);
 

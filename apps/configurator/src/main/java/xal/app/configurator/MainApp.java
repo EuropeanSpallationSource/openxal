@@ -35,10 +35,10 @@ public class MainApp extends Application {
     public void start(Stage stage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("/fxml/Scene.fxml"));
 
-        FxApplication.loadFonts();
+        FxApplication.setDefaultFonts();
         
-        Scene scene = new Scene(root);
-        root.setStyle("-fx-font-family:'Source Sans Pro';");
+        Scene scene = new Scene(root);     
+
         stage.setTitle("OpenXAL Configurator");
         stage.setScene(scene);
         stage.show();
