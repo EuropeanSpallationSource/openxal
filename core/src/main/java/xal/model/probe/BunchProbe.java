@@ -194,6 +194,31 @@ public abstract class BunchProbe<S extends BunchProbeState<S>> extends Probe<S> 
     public double beamPerveance() {
         return this.stateCurrent.beamPerveance();
     }
+    
+    /** 
+     * <p>
+     *  Returns the generalized, two-dimensional beam perveance <i>K</i>.  
+     *  This value is defined to be
+     *  </p>
+     *  
+     *      K = (I/pi*e0)*(1/gamma^3*beta^3*c)*(|q|/ER) 
+     *  
+     *  <p>
+     *  where <i>I</i> is the current, <i>e0</i> is the permittivity
+     *  of free space, <i>gamma</i> is the relativitic factor, <i>beta</i> is 
+     *  the normalized design velocity, <i>q</i> is the charge of the beam
+     *  particles and <i>ER</i> is the rest energy of the beam partiles.
+     *  </p>
+     *  
+     *  <p>
+     *  
+     *  @return generalized DC beam perveance <b>Units: radians^2/meter</b>
+     *  
+     *  @author Christopher K. Allen
+     */
+    public double beamDCPerveance() {
+        return this.stateCurrent.beamDCPerveance();
+    }
 
     
     /*

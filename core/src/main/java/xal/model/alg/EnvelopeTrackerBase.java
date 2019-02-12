@@ -209,13 +209,15 @@ public abstract class EnvelopeTrackerBase extends Tracker {
     
     /** maximum distance to advance probe before applying space charge kick */
     private double dblMaxStep = 0.004;
-    
-    
+        
     /** flag for using space charge */
     private boolean bolScheff = true;
     
     /** flag for simulating emittance growth */
     private boolean bolEmitGrowth = false;
+    
+    /** flag for simulating a DC beam */
+    private boolean bolDCBeam = false;
     
     /** longitudinal emittance growth model - Default is TRACE3D */
     private EmitGrowthModel enmEmitGrowthModel = EmitGrowthModel.TRACE3D;
@@ -256,6 +258,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
         this.dblMaxStep = sourceTracker.dblMaxStep;
         this.bolScheff = sourceTracker.bolScheff;
         this.bolEmitGrowth = sourceTracker.bolEmitGrowth;
+        this.bolDCBeam = sourceTracker.bolDCBeam;
         this.enmEmitGrowthModel = sourceTracker.enmEmitGrowthModel;
     }
 
@@ -281,6 +284,16 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      */
     public void setUseSpacecharge(boolean tf) {
         bolScheff = tf;
+    }
+    
+    /** 
+     * <p>
+     * Method to toggle the flag to use/not the DC beam space charge kicks. 
+     * </p>
+     * @param tf    the truth flag 
+     */
+    public void setUseDCBeam(boolean tf) {
+        bolDCBeam = tf;
     }
 
     /**
@@ -380,6 +393,17 @@ public abstract class EnvelopeTrackerBase extends Tracker {
     public boolean getUseSpacecharge() {
     	return this.bolScheff;
     }
+    
+    /**
+     * Returns the flag determining whether or not space charge kick for DC beam is being
+     * considered
+     * 
+     * @return  true if space charge forces for DC beam is used, false otherwise
+     */
+    public boolean getUseDCBeam() {
+    	return this.bolDCBeam;
+    }
+    
     
     @Deprecated
     public boolean getSpaceChargeFlag() {
@@ -722,9 +746,8 @@ public abstract class EnvelopeTrackerBase extends Tracker {
 
         
         // Get probe parameters
-        double              gamma  = probe.getGamma();
-        double              K      = probe.beamPerveance();
-        CovarianceMatrix   tau0   = probe.getCovariance();
+        double              gamma  = probe.getGamma();        
+        CovarianceMatrix    tau0   = probe.getCovariance();
         
         
         // Compute the space charge matrix 
@@ -735,48 +758,82 @@ public abstract class EnvelopeTrackerBase extends Tracker {
         
         double covXY = tau0.computeCentralCovXY();
         double covXZ = tau0.computeCentralCovXZ();
-        double covYZ = tau0.computeCentralCovYZ();
-        
-        double corr = (covXY*covXY)/(covXX*covYY) 
-                    + (covXZ*covXZ)/(covXX*covZZ) 
-                    + (covYZ*covYZ)/(covYY*covZZ);
-
+        double covYZ = tau0.computeCentralCovYZ();                
         
         // Compute space charge matrix
         PhaseMatrix     matPhiSc;       // space charge transfer matrix for dblLen
         
-        if (corr < EnvelopeTrackerBase.TOLER_CORRELATION) { // beam is upright
-            double g_2 = gamma*gamma;
+        // Build the space charge transfer matrix in beam coordinates
+        matPhiSc = PhaseMatrix.identity();
+        
+        if(getUseDCBeam()){
+            
+            double corr = (covXY*covXY)/(covXX*covYY);
+            double K    = probe.beamDCPerveance();
+            
+            if (corr < EnvelopeTrackerBase.TOLER_CORRELATION) { // beam is upright                                
+                
+                // Compute defocusing constants in the laboratory frame
+                double kx = dblLen*K/(4*Math.sqrt(covXX)*(Math.sqrt(covXX)+Math.sqrt(covYY)));
+                double ky = dblLen*K/(4*Math.sqrt(covYY)*(Math.sqrt(covXX)+Math.sqrt(covYY)));
+                
+                matPhiSc.setElem(IND.Xp, IND.X, kx);
+                matPhiSc.setElem(IND.Yp, IND.Y, ky);
 
-            // Compute elliptic integrals
-            double RDx = EllipticIntegral.RD(covYY, g_2*covZZ, covXX)/EnvelopeTrackerBase.CONST_UNIFORM_BEAM;
-            double RDy = EllipticIntegral.RD(g_2*covZZ, covXX, covYY)/EnvelopeTrackerBase.CONST_UNIFORM_BEAM;
-            double RDz = EllipticIntegral.RD(covXX, covYY, g_2*covZZ)/EnvelopeTrackerBase.CONST_UNIFORM_BEAM;
-          
-            // Compute defocusing constants in the laboratory frame
-            double kx = gamma*dblLen*K*RDx;
-            double ky = gamma*dblLen*K*RDy;
-            double kz = gamma*dblLen*K*RDz;
-            
-            // Build the space charge transfer matrix in beam coordinates
-            matPhiSc = PhaseMatrix.identity();
-            
-            matPhiSc.setElem(IND.Xp, IND.X, kx);
-            matPhiSc.setElem(IND.Yp, IND.Y, ky);
-            matPhiSc.setElem(IND.Zp, IND.Z, kz);
-            
-            // Transform to laboratory coordinates
-            PhaseVector z  = tau0.getMean();
-            PhaseMatrix T  = PhaseMatrix.translation(z.negate());
-            PhaseMatrix Ti = PhaseMatrix.translation(z);
-            
-            matPhiSc = Ti.times( matPhiSc.times(T) );
-            
-        } else {    // Beam is tilted in configuration space
-            
-            // Compute the space charge matrix in the beam frame and transform back 
-            BeamEllipsoid   ellipsoid = new BeamEllipsoid(gamma, tau0);
-            matPhiSc                  = ellipsoid.computeScheffMatrix(dblLen, K);
+                // Transform to laboratory coordinates
+                PhaseVector z  = tau0.getMean();
+                PhaseMatrix T  = PhaseMatrix.translation(z.negate());
+                PhaseMatrix Ti = PhaseMatrix.translation(z);
+
+                matPhiSc = Ti.times( matPhiSc.times(T) );
+                
+            } else {
+                
+                // Beam is tilted in configuration space
+
+                // Compute the space charge matrix in the beam frame and transform back 
+                BeamEllipsoid   ellipsoid = new BeamEllipsoid(gamma, tau0);
+                matPhiSc                  = ellipsoid.computeDCScheffMatrix(dblLen, K);
+                
+            }
+                       
+        } else {
+        
+            double corr = (covXY*covXY)/(covXX*covYY) 
+                        + (covXZ*covXZ)/(covXX*covZZ) 
+                        + (covYZ*covYZ)/(covYY*covZZ);
+            double K    = probe.beamPerveance();
+
+            if (corr < EnvelopeTrackerBase.TOLER_CORRELATION) { // beam is upright
+                double g_2 = gamma*gamma;
+
+                // Compute elliptic integrals
+                double RDx = EllipticIntegral.RD(covYY, g_2*covZZ, covXX)/EnvelopeTrackerBase.CONST_UNIFORM_BEAM;
+                double RDy = EllipticIntegral.RD(g_2*covZZ, covXX, covYY)/EnvelopeTrackerBase.CONST_UNIFORM_BEAM;
+                double RDz = EllipticIntegral.RD(covXX, covYY, g_2*covZZ)/EnvelopeTrackerBase.CONST_UNIFORM_BEAM;
+
+                // Compute defocusing constants in the laboratory frame
+                double kx = gamma*dblLen*K*RDx;
+                double ky = gamma*dblLen*K*RDy;
+                double kz = gamma*dblLen*K*RDz;                
+
+                matPhiSc.setElem(IND.Xp, IND.X, kx);
+                matPhiSc.setElem(IND.Yp, IND.Y, ky);
+                matPhiSc.setElem(IND.Zp, IND.Z, kz);
+
+                // Transform to laboratory coordinates
+                PhaseVector z  = tau0.getMean();
+                PhaseMatrix T  = PhaseMatrix.translation(z.negate());
+                PhaseMatrix Ti = PhaseMatrix.translation(z);
+
+                matPhiSc = Ti.times( matPhiSc.times(T) );
+
+            } else {    // Beam is tilted in configuration space
+
+                // Compute the space charge matrix in the beam frame and transform back 
+                BeamEllipsoid   ellipsoid = new BeamEllipsoid(gamma, tau0);
+                matPhiSc                  = ellipsoid.computeScheffMatrix(dblLen, K);
+            }
         }
         
 

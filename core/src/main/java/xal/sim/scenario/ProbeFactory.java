@@ -67,8 +67,8 @@ public class ProbeFactory {
 	/** table name for phase coordinates */
 	protected final static String PHASECOORD_TABLE = "PhaseCoordinates";
 	
-    /** table name for phase coordinates */
-    protected final static String CENTRCOORD_TABLE = "CentroidCoordinates";
+        /** table name for phase coordinates */
+        protected final static String CENTRCOORD_TABLE = "CentroidCoordinates";
     
 	/** table name for the location records */
 	protected final static String LOCATION_TABLE = "location";
