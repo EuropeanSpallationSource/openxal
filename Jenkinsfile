@@ -51,7 +51,7 @@ pipeline {
             when {
 		anyOf { 
                     branch 'site.ess.master'; 
-                    branch 'site.ess.stable' }
+                    branch 'site.ess.stable'
                 }
             }
         }
