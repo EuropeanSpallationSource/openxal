@@ -5,13 +5,13 @@
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.shape.Line?>
-<?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="810.0" prefWidth="515.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xal.app.configurator.FXMLController">
+<AnchorPane id="AnchorPane" prefHeight="850.0" prefWidth="515.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xal.app.configurator.FXMLController">
     <children>
         <TextField fx:id="opticsPathTextField" layoutX="14.0" layoutY="97.0" onKeyReleased="#opticsPathTextFieldKeyReleased" prefHeight="27.0" prefWidth="408.0" />
         <Button fx:id="changeOpticsButton" layoutX="433.0" layoutY="97.0" mnemonicParsing="false" onAction="#changeOpticsButtonHandler" text="Change" />
@@ -65,24 +65,26 @@
             <style> -fx-font-weight: bold; </style>
         </Label>
         <Line endX="485.0" layoutX="14.0" layoutY="724.0" />
-        <TextField fx:id="pendIOTimeoutTextField" layoutX="139.0" layoutY="771.0" onKeyReleased="#opticsPathTextFieldKeyReleased" prefHeight="27.0" prefWidth="65.0" promptText="Not set">
+        <TextField fx:id="pendIOTimeoutTextField" layoutX="139.0" layoutY="805.0" onKeyReleased="#opticsPathTextFieldKeyReleased" prefHeight="27.0" prefWidth="65.0" promptText="Not set">
             <tooltip>
                 <Tooltip text="Set to -1 to unset the preference and used the default value." />
             </tooltip>
         </TextField>
-        <Label layoutX="14.0" layoutY="776.0" text="Pend IO timeout [s]" />
-        <Label layoutX="218.0" layoutY="776.0" text="Pend event timeout [s]" />
-        <TextField fx:id="pendEventTimeoutTextField" layoutX="367.0" layoutY="771.0" onKeyReleased="#opticsPathTextFieldKeyReleased" prefHeight="27.0" prefWidth="65.0" promptText="Not set">
+        <Label layoutX="14.0" layoutY="810.0" text="Pend IO timeout [s]" />
+        <Label layoutX="218.0" layoutY="810.0" text="Pend event timeout [s]" />
+        <TextField fx:id="pendEventTimeoutTextField" layoutX="367.0" layoutY="805.0" onKeyReleased="#opticsPathTextFieldKeyReleased" prefHeight="27.0" prefWidth="65.0" promptText="Not set">
             <tooltip>
                 <Tooltip text="Set to -1 to unset the preference and used the default value." />
             </tooltip>
         </TextField>
-        <Button fx:id="epicsButton" layoutX="448.0" layoutY="771.0" mnemonicParsing="false" onAction="#epicsButtonHandler" text="Apply" />
-        <TextField fx:id="AddrListTextField" layoutX="123.0" layoutY="734.0" onKeyReleased="#opticsPathTextFieldKeyReleased" prefHeight="27.0" prefWidth="378.0">
+        <Button fx:id="epicsButton" layoutX="448.0" layoutY="805.0" mnemonicParsing="false" onAction="#epicsButtonHandler" text="Apply" />
+        <TextField fx:id="AddrListTextField" layoutX="197.0" layoutY="768.0" onKeyReleased="#opticsPathTextFieldKeyReleased" prefHeight="27.0" prefWidth="304.0">
             <tooltip>
                 <Tooltip text="Set to -1 to unset the preference and used the default value." />
             </tooltip>
         </TextField>
-        <Label layoutX="16.0" layoutY="739.0" text="CA address list" />
+        <Label layoutX="17.0" layoutY="773.0" text="CA address list (JCALibrary)" />
+        <RadioButton fx:id="useEnvVarRB" layoutX="43.0" layoutY="737.0" mnemonicParsing="false" onAction="#useEnvVarRBHandler" text="Use environment variables" />
+        <RadioButton fx:id="useJCALibraryRB" layoutX="277.0" layoutY="737.0" mnemonicParsing="false" onAction="#useJCALibraryRBHandler" text="Use JCALibrary.properties" />
     </children>
 </AnchorPane>
