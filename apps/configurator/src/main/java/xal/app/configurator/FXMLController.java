@@ -38,11 +38,14 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListView;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import xal.ca.Channel;
 import xal.extension.jelog.ElogServer;
+import xal.plugin.jca.JcaChannelFactory;
 import xal.tools.apputils.Preferences;
 
 /**
@@ -99,6 +102,10 @@ public class FXMLController implements Initializable {
     private TextField AddrListTextField;
     @FXML
     private Button epicsButton;
+    @FXML
+    private RadioButton useEnvVarRB;
+    @FXML
+    private RadioButton useJCALibraryRB;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -126,9 +133,29 @@ public class FXMLController implements Initializable {
 
         elogServerTextField.setText(ElogServer.getElogURL());
 
-        getAddrList();
+        // Initialize a toogle group for EPICS configuration radio buttons.
+        ToggleGroup group = new ToggleGroup();
+        useEnvVarRB.setToggleGroup(group);
+        useJCALibraryRB.setToggleGroup(group);
+
+        updateJCAUseEnv();
 
         refreshTimouts();
+    }
+
+    private void updateJCAUseEnv() {
+        java.util.prefs.Preferences defaults = Preferences.nodeForPackage(JcaChannelFactory.class);
+        Boolean jca_use_env = defaults.getBoolean("jca.use_env", true);
+
+        if (jca_use_env) {
+            useEnvVarRB.setSelected(true);
+            useJCALibraryRB.setSelected(false);
+            useEnvVarRBHandler(null);
+        } else {
+            useEnvVarRB.setSelected(false);
+            useJCALibraryRB.setSelected(true);
+            useJCALibraryRBHandler(null);
+        }
     }
 
     private void refreshTimouts() {
@@ -265,9 +292,14 @@ public class FXMLController implements Initializable {
         }
 
         refreshTimouts();
-        
-        // Save EPICS address list if neccessary.
-        setAddrList();
+
+        defaults = Preferences.nodeForPackage(JcaChannelFactory.class);
+        boolean jca_use_env = useEnvVarRB.selectedProperty().getValue();
+        defaults.putBoolean("jca.use_env", jca_use_env);
+        if (!jca_use_env) {
+            // Save EPICS address list if neccessary.
+            setAddrList();
+        }
     }
 
     private void getAddrList() {
@@ -302,5 +334,17 @@ public class FXMLController implements Initializable {
                 Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+    }
+
+    @FXML
+    private void useEnvVarRBHandler(ActionEvent event) {
+        AddrListTextField.setText("");
+        AddrListTextField.setDisable(true);
+    }
+
+    @FXML
+    private void useJCALibraryRBHandler(ActionEvent event) {
+        AddrListTextField.setDisable(false);
+        getAddrList();
     }
 }
