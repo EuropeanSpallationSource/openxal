@@ -1,5 +1,12 @@
 variables:
     GIT_SSL_NO_VERIFY: "true"
+    MAVEN_CLI_OPTS: "--batch-mode"
+    MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
+
+cache:
+  paths:
+    - .m2/repository/
+
 test:
     script:
         - yum install ant junit ant-junit maven -y
@@ -16,13 +23,13 @@ build.maven:
     <<: *maven
     stage: build
     script:
-        - 'mvn -DskipTests -Dmaven.javadoc.skip=true install -B'
+        - 'mvn -DskipTests -Dmaven.javadoc.skip=true install'
 .maventest: &maventest
     <<: *maven
     stage: test
     script:
         - 'cd $SUBDIR'
-        - 'mvn verify -Dmaven.javadoc.skip=true -fn -B | tee std.out'
+        - 'mvn verify -Dmaven.javadoc.skip=true -fn | tee std.out'
         - '! grep "Build failures were ignored" std.out'
     artifacts:
         reports:
@@ -62,9 +69,8 @@ publish.maven:
 pages:
     <<: *maven
     script:
-        - 'mvn -Dmaven.javadoc.skip=true install -B'
-        - 'mvn javadoc:aggregate -B'
-        - 'mvn jacoco:report-aggregate -B'
+        - 'mvn javadoc:aggregate'
+        - 'mvn jacoco:report-aggregate'
         - 'mv report/target/site/jacoco-aggregate target/site/apidocs/coverage'
         - 'mv target/site/apidocs public'
     artifacts:
