@@ -638,12 +638,10 @@ public class ScannerDocument extends XalFxDocument {
         // Calculate the correct amount of combos..
         int ncombos=1;
         ncombos = getActivePVwritebacks().map( cw -> cw.getNpoints()).reduce(ncombos, (accumulator, _item) -> accumulator * _item);
-        System.out.println("DBG0 ncombos = "+ncombos);
         // Two extra for initial settings as first and last combo
         if (includeInitialSettings.get()) {
             ncombos+=2;
         }
-        System.out.println("DBG1 ncombos = "+ncombos);
         for (int i = 0;i<ncombos;i++)
             combos.add(new double[(int) getActivePVwritebacks().count()]);
 
