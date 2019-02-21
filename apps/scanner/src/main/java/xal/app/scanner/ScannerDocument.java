@@ -115,10 +115,18 @@ public class ScannerDocument extends XalFxDocument {
      */
     public SimpleIntegerProperty numberMeasurementsPerCombo;
 
+    /**
+     * If the initial parameter settings should be included as first and last
+     * point of the scan (default should be yes)
+     */
+    public static SimpleBooleanProperty includeInitialSettings;
+
     // The channels that may be scanned or only read
     public ObservableList<ChannelWrapper> pvChannels;
     // The combination of scan points (each double[] is equal to number of writeables)
     public List<double[]> combos;
+    // The initial list of PV values when the scan was initiated
+    public double[] initialCombo;
 
     // Save/restore parameters..
     private final String SCANNER_SR;
@@ -169,11 +177,12 @@ public class ScannerDocument extends XalFxDocument {
         combos = new ArrayList<>();
         constraints = FXCollections.observableArrayList("", "", "", "");
         numberOfScans = new SimpleIntegerProperty(0);
-
         numberMeasurementsPerCombo = new SimpleIntegerProperty(1);
         delayBetweenMeasurements = new SimpleLongProperty(1500);
 
         currentMeasurementWasLoaded = new SimpleBooleanProperty(false);
+
+        includeInitialSettings = new SimpleBooleanProperty(true);
 
         DEFAULT_FILENAME="Data.scan.xml";
         WILDCARD_FILE_EXTENSION = "*.scan.xml";
@@ -612,23 +621,39 @@ public class ScannerDocument extends XalFxDocument {
              nCombosDone = 0;
          }
 
+         // Calculate the initial combo if it is empty
+         if (initialCombo==null) {
+             Logger.getLogger(ScannerDocument.class.getName()).log(Level.FINER, "Reading initial PV values");
+             initialCombo = new double[(int) getActivePVwritebacks().count()];
+             for (int i=0;i<(int) getActivePVwritebacks().count();i++) {
+                 try {
+                     initialCombo[i] = getPVsetting(i);
+                 } catch (ConnectionException | GetException ex) {
+                    Logger.getLogger(MainFunctions.class.getName()).log(Level.WARNING, null, ex);
+                    initialCombo[i] = 0.0;
+                 }
+             }
+         }
+
         // Calculate the correct amount of combos..
         int ncombos=1;
         ncombos = getActivePVwritebacks().map( cw -> cw.getNpoints()).reduce(ncombos, (accumulator, _item) -> accumulator * _item);
-        for (int i = 0;i<ncombos+2;i++)
+        System.out.println("DBG0 ncombos = "+ncombos);
+        // Two extra for initial settings as first and last combo
+        if (includeInitialSettings.get()) {
+            ncombos+=2;
+        }
+        System.out.println("DBG1 ncombos = "+ncombos);
+        for (int i = 0;i<ncombos;i++)
             combos.add(new double[(int) getActivePVwritebacks().count()]);
 
-        // Read in all settings before any modifications..
-        // First and last measurement is at initial parameters
-        for (int i=0;i<(int) getActivePVwritebacks().count();i++) {
-             try {
-                 combos.get(0)[i] = getPVsetting(i);
-                 combos.get(ncombos+1)[i] = combos.get(0)[i];
-             } catch (ConnectionException | GetException ex) {
-                Logger.getLogger(MainFunctions.class.getName()).log(Level.WARNING, null, ex);
-                combos.get(0)[i] = 0.0;
-                combos.get(ncombos+1)[i] = 0.0;
-             }
+        if (includeInitialSettings.get()) {
+            // Read in all settings before any modifications..
+            // First and last measurement is at initial parameters
+            for (int i=0;i<(int) getActivePVwritebacks().count();i++) {
+                combos.get(0)[i] = initialCombo[i];
+                combos.get(ncombos-1)[i] = initialCombo[i];
+            }
         }
 
         // Insert all numbers..
@@ -639,7 +664,9 @@ public class ScannerDocument extends XalFxDocument {
         // Write out one parameter at the time
         for (int i=0; i<(int) getActivePVwritebacks().count();i++) {
             // The combo index we are currently inserting
-            int m = 1;
+            int m = 0;
+            if (includeInitialSettings.get()) m++;
+
             ChannelWrapper cw = getActivePVwriteback(i);
             n1/=cw.getNpoints();
             for (int l=0;l<n2;l++) {
