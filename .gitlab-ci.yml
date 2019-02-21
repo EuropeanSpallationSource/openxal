@@ -1,11 +1,11 @@
 variables:
     GIT_SSL_NO_VERIFY: "true"
     MAVEN_CLI_OPTS: "--batch-mode"
-    MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
+    MAVEN_OPTS: "-Dmaven.repo.local=./.m2/repository"
 
 cache:
   paths:
-    - .m2/repository/
+    - ./.m2/repository/
 
 test:
     script:
@@ -23,13 +23,13 @@ build.maven:
     <<: *maven
     stage: build
     script:
-        - 'mvn -DskipTests -Dmaven.javadoc.skip=true install'
+        - 'mvn $MAVEN_CLI_OPTS -DskipTests -Dmaven.javadoc.skip=true install'
 .maventest: &maventest
     <<: *maven
     stage: test
     script:
         - 'cd $SUBDIR'
-        - 'mvn verify -Dmaven.javadoc.skip=true -fn | tee std.out'
+        - 'mvn $MAVEN_CLI_OPTS verify -Dmaven.javadoc.skip=true -fn | tee std.out'
         - '! grep "Build failures were ignored" std.out'
     artifacts:
         reports:
@@ -56,21 +56,21 @@ sonarqube.maven:
     <<: *maven
     stage: deploy
     script:
-        - 'mvn -Dsonar.login={{SONAR_TOKEN}} sonar:sonar'
+        - 'mvn $MAVEN_CLI_OPTS -Dsonar.login={{SONAR_TOKEN}} sonar:sonar'
     only:
         - /^site.ess.*$/
 publish.maven:
     <<: *maven
     stage: deploy
     script:
-        - 'mvn deploy -pl dist -Dartifactory.username={{ARTIFACTORY_USERNAME}} -Dartifactory.password={{ARTIFACTORY_PASSWORD}}'
+        - 'mvn $MAVEN_CLI_OPTS deploy -pl dist -Dartifactory.username={{ARTIFACTORY_USERNAME}} -Dartifactory.password={{ARTIFACTORY_PASSWORD}}'
     only:
         - site.ess.master@ess-crs/openxal
 pages:
     <<: *maven
     script:
-        - 'mvn javadoc:aggregate'
-        - 'mvn jacoco:report-aggregate'
+        - 'mvn $MAVEN_CLI_OPTS javadoc:aggregate'
+        - 'mvn $MAVEN_CLI_OPTS jacoco:report-aggregate'
         - 'mv report/target/site/jacoco-aggregate target/site/apidocs/coverage'
         - 'mv target/site/apidocs public'
     artifacts:
