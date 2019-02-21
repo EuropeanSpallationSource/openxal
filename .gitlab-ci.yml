@@ -21,7 +21,6 @@ build.maven:
     <<: *maven
     stage: test
     script:
-        - 'mvn -DskipTests -Dmaven.javadoc.skip=true install -B'
         - 'cd $SUBDIR'
         - 'mvn verify -Dmaven.javadoc.skip=true -fn -B | tee std.out'
         - '! grep "Build failures were ignored" std.out'
@@ -52,14 +51,14 @@ sonarqube.maven:
     script:
         - 'mvn -Dsonar.login={{SONAR_TOKEN}} sonar:sonar'
     only:
-        - /^site.ess.never*$/
+        - /^site.ess.*$/
 publish.maven:
     <<: *maven
     stage: deploy
     script:
         - 'mvn deploy -pl dist -Dartifactory.username={{ARTIFACTORY_USERNAME}} -Dartifactory.password={{ARTIFACTORY_PASSWORD}}'
     only:
-        - site.ess.master.never@ess-crs/openxal
+        - site.ess.master@ess-crs/openxal
 pages:
     <<: *maven
     script:
@@ -73,4 +72,3 @@ pages:
             - public
     only:
         - site.ess.master
-
