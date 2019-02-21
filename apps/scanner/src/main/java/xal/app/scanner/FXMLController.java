@@ -162,6 +162,15 @@ public class FXMLController implements Initializable {
     private ListView<?> run_execute;
 
     @FXML
+    private TableView<SimpleOption> expertOptions;
+
+    @FXML
+    private TableColumn<SimpleOption, Boolean> expertOptionDesc;
+
+    @FXML
+    private TableColumn<SimpleOption, Boolean> expertOptionSelected;
+
+    @FXML
     private ListView<String> analyseList;
 
     @FXML
@@ -170,6 +179,8 @@ public class FXMLController implements Initializable {
     private static ObservableList<String> measurements;
 
     public static ObservableList<ChannelWrapper> PVscanList;
+
+    public static ObservableList<SimpleOption> runOptions;
 
     private static final Logger logger = Logger.getLogger(FXMLController.class.getName());
 
@@ -317,40 +328,51 @@ public class FXMLController implements Initializable {
         nMeasPerSettingSetButton.setDisable(true);
     }
 
+    void assertObject(Object obj, String name) {
+        assert obj != null : "fx:id=\""+name+"\" was not injected: check your FXML file 'ScannerScene.fxml'.";
+    }
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        assert pvTable != null : "fx:id=\"scanTable\" was not injected: check your FXML file 'ScannerScene.fxml'.";
-        assert pvNameColumn != null : "fx:id=\"scanColumnPV\" was not injected: check your FXML file 'ScannerScene.fxml'.";
-        assert scanColumnSelect != null : "fx:id=\"scanColumnSelect\" was not injected: check your FXML file 'ScannerScene.fxml'.";
-        assert readColumnSelect != null : "fx:id=\"readColumnSelect\" was not injected: check your FXML file 'ScannerScene.fxml'.";
-        assert tabConfigure != null : "fx:id=\"tabConfigure\" was not injected: check your FXML file 'ScannerScene.fxml'.";
-        assert delayBetweenMeas != null : "fx:id=\"delayBetweenMeas\" was not injected: check your FXML file 'ScannerScene.fxml'.";
-        assert measPerPoint != null : "fx:id=\"measPerPoint\" was not injected: check your FXML file 'ScannerScene.fxml'.";
-        assert measDelaySetButton != null : "fx:id=\"measDelaySetButton\" was not injected: check your FXML file 'ScannerScene.fxml'.";
-        assert nMeasPerSettingSetButton != null : "fx:id=\"nMeasPerSettingSetButton\" was not injected: check your FXML file 'ScannerScene.fxml'.";
-        assert listOfWriteables != null : "fx:id=\"listOfWriteables\" was not injected: check your FXML file 'ScannerScene.fxml'.";
-        assert listOfWriteablesShortVar != null : "fx:id=\"listOfWriteablesShortVar\" was not injected: check your FXML file 'ScannerScene.fxml'.";
-        assert listOfWriteablesPV != null : "fx:id=\"listOfWriteablesPV\" was not injected: check your FXML file 'ScannerScene.fxml'.";
-        assert listOfWriteablesUnit != null : "fx:id=\"listOfWriteablesUnit\" was not injected: check your FXML file 'ScannerScene.fxml'.";
-        assert listOfWriteablesMin != null : "fx:id=\"listOfWriteablesMin\" was not injected: check your FXML file 'ScannerScene.fxml'.";
-        assert listOfWriteablesMax != null : "fx:id=\"listOfWriteablesMax\" was not injected: check your FXML file 'ScannerScene.fxml'.";
-        assert listOfWriteablesNpoints != null : "fx:id=\"listOfWriteablesNpoints\" was not injected: check your FXML file 'ScannerScene.fxml'.";
-        assert constraintsList != null : "fx:id=\"constraintsList\" was not injected: check your FXML file 'ScannerScene.fxml'.";
-        assert tabRun != null : "fx:id=\"tabRun\" was not injected: check your FXML file 'ScannerScene.fxml'.";
-        assert executeButton != null : "fx:id=\"executeButton\" was not injected: check your FXML file 'ScannerScene.fxml'.";
-        assert runProgressBar != null : "fx:id=\"runProgressBar\" was not injected: check your FXML file 'ScannerScene.fxml'.";
-        assert textFieldNumMeas != null : "fx:id=\"textFieldNumMeas\" was not injected: check your FXML file 'ScannerScene.fxml'.";
-        assert textFieldTimeEstimate != null : "fx:id=\"textFieldTimeEstimate\" was not injected: check your FXML file 'ScannerScene.fxml'.";
-        assert pauseButton != null : "fx:id=\"pauseButton\" was not injected: check your FXML file 'ScannerScene.fxml'.";
-        assert stopButton != null : "fx:id=\"stopButton\" was not injected: check your FXML file 'ScannerScene.fxml'.";
-        assert restartButton != null : "fx:id=\"restartButton\" was not injected: check your FXML file 'ScannerScene.fxml'.";
-        assert tabDisplay != null : "fx:id=\"tabDisplay\" was not injected: check your FXML file 'ScannerScene.fxml'.";
-        assert analyseList != null : "fx:id=\"analyseList\" was not injected: check your FXML file 'ScannerScene.fxml'.";
-        assert plotArea != null : "fx:id=\"plotArea\" was not injected: check your FXML file 'ScannerScene.fxml'.";
+
+        assertObject(pvTable, "pvTable");
+        assertObject(pvNameColumn, "pvNameColumn");
+        assertObject(scanColumnSelect, "scanColumnSelect");
+        assertObject(readColumnSelect, "readColumnSelect");
+
+        assertObject(tabConfigure, "tabConfigure");
+        assertObject(delayBetweenMeas, "delayBetweenMeas");
+        assertObject(measPerPoint, "measPerPoint");
+        assertObject(measDelaySetButton, "measDelaySetButton");
+        assertObject(nMeasPerSettingSetButton, "nMeasPerSettingSetButton");
+        assertObject(listOfWriteables, "listOfWriteables");
+        assertObject(listOfWriteablesShortVar, "listOfWriteablesShortVar");
+        assertObject(listOfWriteablesPV, "listOfWriteablesPV");
+        assertObject(listOfWriteablesUnit, "listOfWriteablesUnit");
+        assertObject(listOfWriteablesMin, "listOfWriteablesMin");
+        assertObject(listOfWriteablesMax, "listOfWriteablesMax");
+        assertObject(listOfWriteablesNpoints, "listOfWriteablesNpoints");
+        assertObject(constraintsList, "constraintsList");
+
+        assertObject(tabRun, "tabRun");
+        assertObject(executeButton, "");
+        assertObject(runProgressBar, "runProgressBar");
+        assertObject(textFieldNumMeas, "textFieldNumMeas");
+        assertObject(textFieldTimeEstimate, "textFieldTimeEstimate");
+        assertObject(pauseButton, "pauseButton");
+        assertObject(stopButton, "stopButton");
+        assertObject(restartButton, "restartButton");
+        assertObject(expertOptions, "expertOptions");
+        assertObject(expertOptionDesc, "expertOptionDesc");
+        assertObject(expertOptionSelected, "expertOptionSelected");
+
+        assertObject(tabDisplay, "tabDisplay");
+        assertObject(analyseList, "analyseList");
+        assertObject(plotArea, "plotArea");
 
 
 
         initializeSelectionTables();
+        initializeExpertOptions();
 
         // Initialize the configurations list
 
@@ -545,6 +567,39 @@ public class FXMLController implements Initializable {
 
         // Why did I need this again??
         pvTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> { if (newValue!=null) pvTable.getSelectionModel().clearSelection();});
+
+    }
+
+    private void initializeExpertOptions() {
+        // Initialize extra options for the run
+        runOptions = FXCollections.observableArrayList();
+
+        // Add an option to not return back to original settings after scan (default is to return back)
+        SimpleOption returnHome = new SimpleOption("Return to initial setting after scan", true);
+        returnHome.isSelectedProperty().addListener((observable, oldValue, newValue) -> {
+            MainFunctions.returnHome.set(newValue);
+        });
+        runOptions.add(returnHome);
+
+        // Include the initial settings of each PV in the scan (as first and last measurement point)
+        SimpleOption includeInitial = new SimpleOption("Scan initial settings as first&last point", true);
+        includeInitial.isSelectedProperty().addListener((observable, oldValue, newValue) -> {
+            MainFunctions.mainDocument.includeInitialSettings.set(newValue);
+            MainFunctions.isCombosUpdated.set(false);
+        });
+        runOptions.add(includeInitial);
+
+
+        expertOptions.setItems(runOptions);
+        expertOptionDesc.setCellValueFactory(new PropertyValueFactory<>("description"));
+
+        expertOptionSelected.setCellFactory(CheckBoxTableCell.forTableColumn((Integer param) -> {
+            SimpleOption thisOption = expertOptions.getItems().get(param);
+            logger.log(Level.FINER, "Selected to flip \"{0}\", is now {1}", new Object[]{thisOption.getDescription().toString(), thisOption.isSelectedProperty().getValue()} );
+
+            return thisOption.isSelectedProperty();
+        }));
+        expertOptionSelected.setCellValueFactory((CellDataFeatures<SimpleOption, Boolean> param) -> param.getValue().isSelectedProperty());
     }
 
     private void clearAllConstraints() {
