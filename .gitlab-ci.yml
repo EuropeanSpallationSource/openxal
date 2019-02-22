@@ -28,6 +28,7 @@ build.maven:
             - .m2/repository/org/xal/
             - "*/target/classes"
             - "*/*/target/classes"
+            - "*/*/*/target/classes"
 
 .maventest: &maventest
     <<: *maven
