@@ -18,6 +18,11 @@
         <module>jca</module>
         <module>essrbac</module>
     </modules>
+    
+    <!-- For the local repository -->
+    <properties>
+        <main.basedir>${project.basedir}/..</main.basedir>
+    </properties>
 
     <dependencies>
         <dependency>
