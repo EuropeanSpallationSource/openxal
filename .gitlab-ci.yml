@@ -29,6 +29,9 @@ build.maven:
             - "*/target/classes"
             - "*/*/target/classes"
             - "*/*/*/target/classes"
+            - "*/target/test-classes"
+            - "*/*/target/test-classes"
+            - "*/*/*/target/test-classes"
 
 .maventest: &maventest
     <<: *maven
