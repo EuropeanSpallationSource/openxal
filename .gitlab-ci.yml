@@ -63,7 +63,7 @@ sonarqube.maven:
     <<: *maven
     stage: deploy
     script:
-        - 'mvn $MAVEN_CLI_OPTS -Dsonar.login=$SONARQUBE_TOKEN -Dsonar.branch.name=$CI_COMMIT_REF_SLUG sonar:sonar'
+        - 'mvn $MAVEN_CLI_OPTS -Dsonar.login=$SONARQUBE_TOKEN -Dsonar.branch=$CI_COMMIT_REF_SLUG sonar:sonar'
     only:
         - /^site.ess.*$/
 
