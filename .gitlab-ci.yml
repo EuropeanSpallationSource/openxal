@@ -1,11 +1,7 @@
 variables:
     GIT_SSL_NO_VERIFY: "true"
     MAVEN_CLI_OPTS: "--batch-mode"
-    MAVEN_OPTS: "-Dmaven.repo.local=./.m2/repository"
-
-cache:
-  paths:
-    - ./.m2/repository/
+    MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
 
 test:
     script:
@@ -24,6 +20,10 @@ build.maven:
     stage: build
     script:
         - 'mvn $MAVEN_CLI_OPTS -DskipTests -Dmaven.javadoc.skip=true install'
+    cache:
+        paths:
+            - .m2/repository/
+
 .maventest: &maventest
     <<: *maven
     stage: test
@@ -36,6 +36,11 @@ build.maven:
             junit:
                 - "$SUBDIR/target/surefire-reports/TEST-*.xml"
                 - "$SUBDIR/*/target/surefire-reports/TEST-*.xml"
+    cache:
+        paths:
+          - .m2/repository/
+        policy: pull
+
 test.maven.apps:
     <<: *maventest
     variables:
@@ -52,6 +57,7 @@ test.maven.plugins:
     <<: *maventest
     variables:
         SUBDIR: 'plugins'
+
 sonarqube.maven:
     <<: *maven
     stage: deploy
@@ -59,6 +65,7 @@ sonarqube.maven:
         - 'mvn $MAVEN_CLI_OPTS -Dsonar.login={{SONAR_TOKEN}} sonar:sonar'
     only:
         - /^site.ess.*$/
+
 publish.maven:
     <<: *maven
     stage: deploy
@@ -66,6 +73,11 @@ publish.maven:
         - 'mvn $MAVEN_CLI_OPTS deploy -pl dist -Dartifactory.username={{ARTIFACTORY_USERNAME}} -Dartifactory.password={{ARTIFACTORY_PASSWORD}}'
     only:
         - site.ess.master@ess-crs/openxal
+    cache:
+        paths:
+        - .m2/repository/
+        policy: pull
+
 pages:
     <<: *maven
     script:
