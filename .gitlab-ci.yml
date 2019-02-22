@@ -15,6 +15,9 @@ test:
     image: europeanspallationsource/oracle-jdk-maven-jenkins:8
     only:
         - /^site.ess.*$/
+    tags:
+        - docker
+
 build.maven:
     <<: *maven
     stage: build
