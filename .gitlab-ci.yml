@@ -20,9 +20,9 @@ build.maven:
     stage: build
     script:
         - 'mvn $MAVEN_CLI_OPTS -DskipTests -Dmaven.javadoc.skip=true install'
-    cache:
+    artifacts:
         paths:
-            - .m2/repository/
+            - .m2/repository/org/xal/
 
 .maventest: &maventest
     <<: *maven
@@ -36,10 +36,6 @@ build.maven:
             junit:
                 - "$SUBDIR/target/surefire-reports/TEST-*.xml"
                 - "$SUBDIR/*/target/surefire-reports/TEST-*.xml"
-    cache:
-        paths:
-          - .m2/repository/
-        policy: pull
 
 test.maven.apps:
     <<: *maventest
@@ -73,10 +69,6 @@ publish.maven:
         - 'mvn $MAVEN_CLI_OPTS deploy -pl dist -Dartifactory.username={{ARTIFACTORY_USERNAME}} -Dartifactory.password={{ARTIFACTORY_PASSWORD}}'
     only:
         - site.ess.master@ess-crs/openxal
-    cache:
-        paths:
-        - .m2/repository/
-        policy: pull
 
 pages:
     <<: *maven
