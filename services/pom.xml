@@ -16,6 +16,11 @@
         <module>pvlogger</module>
         <module>worker</module>
     </modules>
+    
+    <!-- For the local repository -->
+    <properties>
+        <main.basedir>${project.basedir}/..</main.basedir>
+    </properties>
 
     <dependencies>
         <dependency>

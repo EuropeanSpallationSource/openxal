@@ -35,13 +35,11 @@
         </plugins>
     </build>
     
-    <repositories>
-        <repository>
-            <id>project</id>
-            <url>file://${project.basedir}/lib</url>
-        </repository>
-    </repositories>
-
+    <!-- For the local repository -->
+    <properties>
+        <main.basedir>${project.basedir}/..</main.basedir>
+    </properties>
+    
     <dependencies>
 <!--        <dependency>
             <groupId>org.epics</groupId>
