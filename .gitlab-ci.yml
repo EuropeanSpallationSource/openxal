@@ -1,7 +1,7 @@
 variables:
     GIT_SSL_NO_VERIFY: "true"
     MAVEN_CLI_OPTS: "--batch-mode"
-    MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
+    MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
 
 test:
     script:
