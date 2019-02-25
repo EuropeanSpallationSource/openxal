@@ -274,6 +274,6 @@ public class IdealEQuad extends ThickElectrostatic {
 	@Override
 	public void initializeFrom(LatticeElement element) {
 		super.initializeFrom(element);				
-		setAperture(element.getHardwareNode().getAper().getAperX());
+		setAperture(element.getHardwareNode().getAper().getAperX()[0]);
 	}    
 };

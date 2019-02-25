@@ -91,7 +91,8 @@ public class LatticeElement implements Comparable<LatticeElement> {
     
 
     /** length of the modeling element */
-    private double dblElemLen;
+    //private double dblElemLen;
+    protected double dblElemLen;
     
     /** center position of the modeling element within its parent sequence */
 	protected double dblElemCntrPos;
@@ -253,7 +254,7 @@ public class LatticeElement implements Comparable<LatticeElement> {
 
     /**
      * <p>
-     * Returns the length associated with the <em>hardware node</em>.  This length is
+     * Returns the length associated with the <em>hardware node</em>.  This length
      * depends upon the length of the hardware node and how many times it has
      * been split to create the appropriate modeling element.
      * </p>
@@ -419,15 +420,29 @@ public class LatticeElement implements Comparable<LatticeElement> {
 	 */
 	public LatticeElement splitElementAt(final LatticeElement elemSplitPos) {
 		if (elemSplitPos.dblElemCntrPos == dblElemEntrPos || elemSplitPos.dblElemCntrPos == dblElemExitPos) return null;
-		LatticeElement secondPart = new LatticeElement(smfNode, elemSplitPos.dblElemCntrPos, dblElemExitPos, clsModElemType, indNodeOrigPos);
-		dblElemExitPos = elemSplitPos.dblElemCntrPos;
 
-		secondPart.firstSlice = firstSlice;
-		secondPart.nextSlice = nextSlice;
-		nextSlice = secondPart;
-
-		return secondPart;
+		return splitElementAt(elemSplitPos.dblElemCntrPos);
 	}
+
+        
+        public LatticeElement splitElementAt(final double splitPos) {
+            LatticeElement secondPart;
+            if (isThin()) {
+                // For thin magnets, splitPos is the center of the new part and 
+                // one should take care of moving the previous part to the right 
+                // location.
+                secondPart = new LatticeElement(smfNode, splitPos, clsModElemType, indNodeOrigPos);
+            } else {
+                secondPart = new LatticeElement(smfNode, splitPos, dblElemExitPos, clsModElemType, indNodeOrigPos);
+                dblElemExitPos = splitPos;
+            }
+
+            secondPart.firstSlice = firstSlice;
+            secondPart.nextSlice = nextSlice;
+            nextSlice = secondPart;
+
+            return secondPart;
+        }
 
 	/**
 	 * <p>

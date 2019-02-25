@@ -8,7 +8,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import xal.extension.jels.smf.ESSElementFactory;
 
-import xal.extension.jels.smf.impl.ESSBend;
+import xal.extension.jels.smf.impl.Bend;
 import xal.model.ModelException;
 import xal.smf.AcceleratorNode;
 import xal.smf.AcceleratorNodeFactory;
@@ -42,8 +42,8 @@ public class BendSerializationTest {
 		double B0 = 10;
 		double k = B0 / rho * Math.signum(alpha);
 		
-	    for (int HV = 0; HV <= 1; HV++) {
-			ESSBend bend = ESSElementFactory.createESSBend("b", alpha_deg, k, rho, entry_angle_deg,
+	    for (int HV = 1; HV <= 2; HV++) {
+			Bend bend = ESSElementFactory.createESSBend("b", alpha_deg, k, rho, entry_angle_deg,
 					exit_angle_deg, entrK1, entrK2, exitK1, exitK2, quadComp, new ApertureBucket(), null, HV, G, len/2);
 			
 			sequence.addNode(bend);
@@ -53,14 +53,14 @@ public class BendSerializationTest {
 			bend.write(da);
 			
 			AcceleratorNodeFactory factory = new AcceleratorNodeFactory();
-			factory.registerNodeClass("DV", null, ESSBend.class);
-			factory.registerNodeClass("DH", null, ESSBend.class);
+			factory.registerNodeClass("D", null, Bend.class);
+//			factory.registerNodeClass("DH", null, Bend.class);
 			AcceleratorNode node = factory.createNode(da);
 			node.update(da);
 			
-			assertTrue(node instanceof ESSBend);
+			assertTrue(node instanceof Bend);
 			
-			ESSBend bend2 = (ESSBend)node;
+			Bend bend2 = (Bend)node;
 			assertEquals(bend.getOrientation(), bend2.getOrientation());
 			assertEquals(bend.getGap(), bend2.getGap(), 1e-12);
 			assertEquals(bend.getEntrK1(), bend2.getEntrK1(), 1e-12);

@@ -17,7 +17,6 @@ import xal.model.IProbe;
 import xal.model.ModelException;
 import xal.model.elem.ChargeExchangeFoil;
 import xal.model.elem.IdealRfGap;
-import xal.model.elem.IdealRfGapUpgraded;
 import xal.model.probe.EnvelopeProbe;
 import xal.model.probe.traj.EnvelopeProbeState;
 import xal.tools.beam.CovarianceMatrix;
@@ -218,7 +217,6 @@ public class EnvelopeTracker extends EnvelopeTrackerBase {
         PhaseMatrix matPhi_op = iElem.transferMap(probe, dblLen).getFirstOrder(); 
         PhaseMatrix matPhi_sc = compTransferMatrix(dblLen, probe, iElem);
         
-        
         // Advance the probe states 
         PhaseMatrix matRnsp1 = matPhi_op.times( matRnsp0 );
         PhaseMatrix matResp1 = matPhi_sc.times( matResp0 );
@@ -309,14 +307,12 @@ public class EnvelopeTracker extends EnvelopeTrackerBase {
             
             
             // Advance probe a half step for position depend transfer maps
-            double            pos     = probe.getPosition() + dblLen/2.0;
             PhaseMatrix       matTau1 = covTau0.conjugateTrans(matPhi0);
             CovarianceMatrix covTau1 = new CovarianceMatrix(matTau1);
 
-            probe.setPosition(pos);
             probe.setCovariance(covTau1);
-            // TODO update energy of the probe
-            
+            advanceProbe(probe, ifcElem, dblLen / 2.0);
+
             // space charge transfer matrix
             PhaseMatrix matPhiSc = this.compScheffMatrix(dblLen, probe, ifcElem);   
             
@@ -324,7 +320,6 @@ public class EnvelopeTracker extends EnvelopeTrackerBase {
             // Compute half-step transfer matrix at new probe location
             PhaseMap    mapElem1 = ifcElem.transferMap(probe, dblLen/2.0);
             PhaseMatrix matPhi1  = mapElem1.getFirstOrder();
-            
             
             // Restore original probe state
             probe.applyState(state0);

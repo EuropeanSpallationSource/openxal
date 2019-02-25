@@ -74,7 +74,7 @@ public abstract class TestCommon {
         envelopeProbe.setAlgorithm(envelopeTracker);
         envelopeProbe.setSpeciesCharge(SpeciesCharge);
         envelopeProbe.setSpeciesRestEnergy(9.38272029e8);
-        envelopeProbe.setKineticEnergy(energy);//energy
+        envelopeProbe.setKineticEnergy(energy);
         envelopeProbe.setPosition(0.0);
         envelopeProbe.setTime(0.0);
 
@@ -137,17 +137,20 @@ public abstract class TestCommon {
         // Generates lattice from SMF accelerator
         //Scenario scenario = Scenario.newScenarioFor(sequence);
         //Scenario scenario = Scenario.newAndImprovedScenarioFor(sequence);
+        try {
+            scenario = Scenario.newScenarioFor(sequence, elementMapping);
 
-        scenario = Scenario.newScenarioFor(sequence, elementMapping);
+            // Outputting lattice elements
+            //new File("temp/").mkdirs();
+            //saveLattice(scenario.getLattice(), "temp/lattice.xml");
+            scenario.setProbe(probe);
+            scenario.setSynchronizationMode(Scenario.SYNC_MODE_DESIGN);
+            scenario.resync();
 
-        // Outputting lattice elements
-        //new File("temp/").mkdirs();
-        //saveLattice(scenario.getLattice(), "temp/lattice.xml");
-        scenario.setProbe(probe);
-        scenario.setSynchronizationMode(Scenario.SYNC_MODE_DESIGN);
-        scenario.resync();
-
-        scenario.run();
+            scenario.run();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
 //        // Prints transfer matrices
 //        printTransferMatrices(scenario);
@@ -160,7 +163,7 @@ public abstract class TestCommon {
             IComponent comp = it.next();
             if (comp instanceof IElement) {
                 IElement el = (IElement) comp;
-                //el.transferMap(probe, el.getLength()).getFirstOrder().print();
+                System.out.println(el.transferMap(probe, el.getLength()).getFirstOrder().toStringMatrix());
                 pm = pm.compose(el.transferMap(probe, el.getLength()));
                 if (el instanceof xal.model.elem.IdealRfGap) {
                     xal.model.elem.IdealRfGap gap = (xal.model.elem.IdealRfGap) el;
@@ -172,9 +175,9 @@ public abstract class TestCommon {
                 }
             }
         }
-//        PrintWriter pw = new PrintWriter(System.out);
-//        pm.getFirstOrder().print(pw);
-//        pw.flush();
+        PrintWriter pw = new PrintWriter(System.out);
+        pm.getFirstOrder().print(pw);
+        pw.flush();
     }
 
     public void checkTWTransferMatrix(double T[][], double errTolerance) throws ModelException {

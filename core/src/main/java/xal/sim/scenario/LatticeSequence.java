@@ -20,13 +20,16 @@ import xal.model.IComposite;
 import xal.model.IElement;
 import xal.model.Lattice;
 import xal.model.ModelException;
+import xal.model.elem.ThinElement;
 import xal.sim.sync.SynchronizationManager;
 import xal.smf.Accelerator;
 import xal.smf.AcceleratorNode;
 import xal.smf.AcceleratorSeq;
+import xal.smf.impl.DipoleCorr;
 import xal.smf.impl.Magnet;
 import xal.smf.impl.Marker;
 import xal.smf.impl.RfCavity;
+import xal.smf.ISplittable;
 
 /**
  * <p>
@@ -632,11 +635,34 @@ public class LatticeSequence extends LatticeElement implements Iterable<LatticeE
                 continue;
             }
             
+            // Find the model element corresponding to the SMF device.
+            Class<? extends IComponent> clsElemTyp = this.mapNodeToMdl.getModelElementType(smfNodeCurr);
+
+            // Check if the element can be split. Only ThinElements are split, while ThickElements aren't modified.
+            if (smfNodeCurr instanceof ISplittable && ThinElement.class.isAssignableFrom(clsElemTyp)) {
+                double dblNodePos = smfSeqRoot.getPosition(smfNodeCurr);
+                // Convert center position to entrance position.
+                dblNodePos -= smfNodeCurr.getLength() / 2.0;
+                double[] longitudinalPositions = ((ISplittable) smfNodeCurr).getLongitudinalPositions();
+                LatticeElement latElem = null;
+                for (double position : longitudinalPositions) {
+                    latElem = new LatticeElement(smfNodeCurr, dblNodePos + position, clsElemTyp, indSeqPosition);
+                    this.addLatticeElement(latElem);
+                }
+                indSeqPosition++;
+
+                if (latElem != null && latElem.getEndPosition() > dblLenSeq) {
+                    dblLenSeq = latElem.getEndPosition();
+                }
+
+                // Skip the rest and continue on to the next hardware node
+                continue;
+            }
+            
             // The current hardware node is atomic with no children.
             //  Create a new lattice element for the accelerator node and add it to the 
             //  this lattice sequence
             double                      dblNodePos = smfSeqRoot.getPosition(smfNodeCurr);
-            Class<? extends IComponent> clsElemTyp = this.mapNodeToMdl.getModelElementType(smfNodeCurr);
             LatticeElement              latElem    = new LatticeElement(smfNodeCurr, dblNodePos, clsElemTyp, indSeqPosition);
 
             this.addLatticeElement(latElem);
@@ -670,6 +696,47 @@ public class LatticeSequence extends LatticeElement implements Iterable<LatticeE
                 LatticeElement  latCtrElem  = new LatticeElement(smfCntrMrkr, dblPosCtr, clsMrkrTyp, 0); 
                 latCtrElem.setModelingElementId("CENTER:" + smfNodeCurr.getId());    // CKA Sep 5, 2014: dashes seem to break lookups
                 this.addLatticeElement(latCtrElem);
+            }
+
+            // We need to split steering magnets and place a center marker.
+            if (smfNodeCurr instanceof DipoleCorr && ((Magnet) smfNodeCurr).getMagBucket().getSlices() != 1) {
+                // Adding a center marker
+                String strNodeId = smfNodeCurr.getId();
+                double dblPosCtr = latElem.getCenterPosition();
+                Class<? extends IComponent> clsMrkrTyp = this.mapNodeToMdl.getDefaultElementType();
+                AcceleratorNode smfCntrMrkr = new Marker(strNodeId + "-Center");
+
+                LatticeElement latCtrElem = new LatticeElement(smfCntrMrkr, dblPosCtr, clsMrkrTyp, 0);
+                latCtrElem.setModelingElementId("CENTER:" + smfNodeCurr.getId());
+                this.addLatticeElement(latCtrElem);
+
+                // Spliting the element in equally long slices.
+                int numberOfSlices = ((Magnet) smfNodeCurr).getMagBucket().getSlices();
+                double length = ((Magnet) smfNodeCurr).getEffLength();
+                double sliceLength = length / numberOfSlices;
+                double[] sliceEffLength = ((Magnet) smfNodeCurr).getMagBucket().getSlicesEffLength();                
+
+                // Move first slice
+                latElem.dblElemCntrPos -= length / 2.0 - sliceLength / 2.0;
+                latElem.dblElemEntrPos = latElem.dblElemExitPos = latElem.dblElemCntrPos;                                
+                //set element effective length
+                if(sliceEffLength.length==numberOfSlices){
+                    latElem.dblElemLen = sliceEffLength[0];  
+                } else {
+                    latElem.dblElemLen = sliceLength;
+                }
+                // Create other slices
+                for (int i = 1; i < numberOfSlices; i++) {
+                    LatticeElement elemSplitPart = latElem.splitElementAt(latElem.dblElemCntrPos + sliceLength);
+                    //set element effective length
+                    if(sliceEffLength.length==numberOfSlices){
+                        elemSplitPart.dblElemLen = sliceEffLength[i];                     
+                    } else {
+                        elemSplitPart.dblElemLen = sliceLength;
+                    }    
+                    this.addLatticeElement(elemSplitPart);
+                    latElem = elemSplitPart;
+                }
             }
         }
         

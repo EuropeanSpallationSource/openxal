@@ -24,8 +24,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import static xal.extension.jels.TestCommon.setupOpenXALProbe;
 import xal.extension.jels.model.elem.JElsElementMapping;
-import static xal.extension.jels.smf.ESSElementFactory.createESSMagFieldMap3D;
-import xal.extension.jels.smf.impl.ESSMagFieldMap3D;
+import xal.extension.jels.model.elem.ThickMagFieldMap;
+import xal.extension.jels.smf.ESSElementFactory;
+import xal.extension.jels.smf.impl.MagFieldMap;
 import xal.smf.AcceleratorSeq;
 import xal.smf.attr.ApertureBucket;
 
@@ -42,38 +43,77 @@ public class MagFieldMap3DTest extends SingleElementTest {
 
     @Parameterized.Parameters(name = "Solenoid {index}: {0}")
     public static Collection<Object[]> tests() {
-        final double frequency = 352.21e8, current = 0;
+        final double frequency = 352.21e6, current = 0;
 
         List<Object[]> tests = new ArrayList<>();
 
         // 0: basic test, E=75keV		
         tests.add(new Object[]{new SingleElementTestData() {
             {
+                description = "ThinMagFieldMap";
                 probe = setupOpenXALProbe(75e3, frequency, current);
                 elementMapping = JElsElementMapping.getInstance();
-                sequence = solenoid(545.4e-3, 0.3);
+                sequence = solenoid(.8, 0.3);
 
                 // TW transfer matrix
                 TWTransferMatrix = new double[][]{
-                    {+3.711488e-01, +2.396342e-01, -4.938824e-01, -3.235277e-01, +0.000000e+00, -1.801775e-20,},
-                    {-2.159624e+00, -4.463207e-01, +1.574749e+00, -2.718368e-01, +0.000000e+00, -4.011616e-20,},
-                    {+4.938824e-01, +3.235277e-01, +3.711488e-01, +2.396342e-01, +0.000000e+00, +1.551051e-20,},
-                    {-1.574749e+00, +2.718368e-01, -2.159624e+00, -4.463207e-01, +0.000000e+00, +7.232521e-21,},
-                    {+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +1.000000e+00, +5.453128e-01,},
+                    {-2.516205e-02, +2.138554e-01, +4.407461e-02, -3.224342e-01, +0.000000e+00, +0.000000e+00,},
+                    {-1.424293e+00, -3.035165e-02, +2.148755e+00, +4.066776e-02, +0.000000e+00, +0.000000e+00,},
+                    {-4.407461e-02, +3.224342e-01, -2.516205e-02, +2.138554e-01, +0.000000e+00, +0.000000e+00,},
+                    {-2.148755e+00, -4.066776e-02, -1.424293e+00, -3.035165e-02, +0.000000e+00, +0.000000e+00,},
+                    {+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +1.000000e+00, +7.998721e-01,},
                     {+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +1.000000e+00,},};
 
                 // TW correlation matrix
                 TWGamma = 1.000079934;
                 TWCorrelationMatrix = new double[][]{
-                    {+1.323485e-05, -1.581888e-05, +8.204060e-07, +1.995334e-05, -5.409689e-25, -5.984660e-25,},
-                    {-1.581888e-05, +5.354963e-05, -1.477663e-05, -1.176775e-05, -1.204120e-24, -1.332100e-24,},
-                    {+8.204060e-07, -1.477663e-05, +1.375869e-05, -1.194482e-05, +4.657391e-25, +5.152403e-25,},
-                    {+1.995334e-05, -1.176775e-05, -1.194482e-05, +6.282459e-05, +2.176352e-25, +2.407666e-25,},
-                    {-5.409689e-25, -1.204120e-24, +4.657391e-25, +2.176352e-25, +4.244679e-05, +3.002580e-05,},
-                    {-5.984660e-25, -1.332100e-24, +5.152403e-25, +2.407666e-25, +3.002580e-05, +3.321710e-05,},};
+                    {+7.817754e-06, -4.889759e-06, +1.698966e-06, +7.649438e-07, +4.863598e-26, +4.198239e-26,},
+                    {-4.889759e-06, +3.989527e-05, +7.359725e-07, -7.983632e-06, +7.634988e-26, +6.590493e-26,},
+                    {+1.698966e-06, +7.359725e-07, +9.258501e-06, -4.250924e-06, -1.552141e-26, -1.339802e-26,},
+                    {+7.649438e-07, -7.983632e-06, -4.250924e-06, +3.317393e-05, +1.372236e-26, +1.184509e-26,},
+                    {+4.863598e-26, +7.634988e-26, -1.552141e-26, +1.372236e-26, +5.988596e-05, +3.848152e-05,},
+                    {+4.198239e-26, +6.590493e-26, -1.339802e-26, +1.184509e-26, +3.848152e-05, +3.321710e-05,},};
 
-                TMerrTolerance = 2e-2;
-                CMerrTolerance = 2e-2;
+                TMerrTolerance = 4e-3;
+                CMerrTolerance = 3e-3;
+            }
+        }});
+
+        tests.add(new Object[]{new SingleElementTestData() {
+            {
+                description = "ThickMagFieldMap";
+                probe = setupOpenXALProbe(75e3, frequency, current);
+                elementMapping = new JElsElementMapping() {
+                    @Override
+                    protected void initialize() {
+                        super.initialize();
+                        removeMap("mfm");
+                        putMap("mfm", ThickMagFieldMap.class);
+                    }
+                };
+                sequence = solenoid(.8, 0.3);
+
+                // TW transfer matrix
+                TWTransferMatrix = new double[][]{
+                    {-2.516205e-02, +2.138554e-01, +4.407461e-02, -3.224342e-01, +0.000000e+00, +0.000000e+00,},
+                    {-1.424293e+00, -3.035165e-02, +2.148755e+00, +4.066776e-02, +0.000000e+00, +0.000000e+00,},
+                    {-4.407461e-02, +3.224342e-01, -2.516205e-02, +2.138554e-01, +0.000000e+00, +0.000000e+00,},
+                    {-2.148755e+00, -4.066776e-02, -1.424293e+00, -3.035165e-02, +0.000000e+00, +0.000000e+00,},
+                    {+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +1.000000e+00, +7.998721e-01,},
+                    {+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +1.000000e+00,},};
+
+                // TW correlation matrix
+                TWGamma = 1.000079934;
+                TWCorrelationMatrix = new double[][]{
+                    {+7.817754e-06, -4.889759e-06, +1.698966e-06, +7.649438e-07, +4.863598e-26, +4.198239e-26,},
+                    {-4.889759e-06, +3.989527e-05, +7.359725e-07, -7.983632e-06, +7.634988e-26, +6.590493e-26,},
+                    {+1.698966e-06, +7.359725e-07, +9.258501e-06, -4.250924e-06, -1.552141e-26, -1.339802e-26,},
+                    {+7.649438e-07, -7.983632e-06, -4.250924e-06, +3.317393e-05, +1.372236e-26, +1.184509e-26,},
+                    {+4.863598e-26, +7.634988e-26, -1.552141e-26, +1.372236e-26, +5.988596e-05, +3.848152e-05,},
+                    {+4.198239e-26, +6.590493e-26, -1.339802e-26, +1.184509e-26, +3.848152e-05, +3.321710e-05,},};
+
+                TMerrTolerance = 4e-3;
+                CMerrTolerance = 3e-3;
             }
         }});
 
@@ -87,8 +127,8 @@ public class MagFieldMap3DTest extends SingleElementTest {
         fieldFile = fieldFile.substring(0, fieldFile.length() - 4);
         fieldMapPath = fieldMapPath.substring(0, fieldMapPath.indexOf(fieldFile));
 
-        ESSMagFieldMap3D solenoid = createESSMagFieldMap3D("test3DSolenoid", length, fieldStrength,
-                fieldMapPath, fieldFile, new ApertureBucket(), null, 0);
+        MagFieldMap solenoid = ESSElementFactory.createMagFieldMap("testSolenoid", length, fieldStrength,
+                fieldMapPath, fieldFile, new ApertureBucket(), null, 0., 3, 2000);
 
         AcceleratorSeq sequence = new AcceleratorSeq("SolenoidTest");
         sequence.addNode(solenoid);

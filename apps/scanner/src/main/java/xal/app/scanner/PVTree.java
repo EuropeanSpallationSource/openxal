@@ -51,6 +51,7 @@ import javafx.scene.control.MenuButton;
 import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Label;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableColumn;
@@ -97,6 +98,9 @@ public class PVTree extends SplitPane {
     @FXML // fx:id="manualTextField"
     private TextField manualTextField; // Value injected by FXMLLoader
     private Channel manualChannel;
+
+    @FXML // fx:id="manualChannelFoundStatus"
+    private Label manualChannelFoundStatus; // Value injected by FXMLLoader
 
     @FXML // fx:id="pvCheckManualButton"
     private Button pvCheckManualButton; // Value injected by FXMLLoader
@@ -240,8 +244,10 @@ public class PVTree extends SplitPane {
             if (manualChannel.isConnected()) {
                 pvAddButton.setDisable(false);
                 Logger.getLogger(PVTree.class.getName()).log(Level.FINER, "Connected to channel {0}", manualTextField.getText());
+                manualChannelFoundStatus.setText("Channel found, click Add button");
             } else {
                 Logger.getLogger(PVTree.class.getName()).log(Level.WARNING, "Did not manage to connect to channel {0}", manualTextField.getText());
+                manualChannelFoundStatus.setText("Channel NOT found, maybe wrong case?");
             }
 
         } catch (Exception exception) {
@@ -304,6 +310,7 @@ public class PVTree extends SplitPane {
         if ( newValue != null ) {
             // Clear manual text entry (we add EITHER manual entry OR selected entries)
             manualTextField.clear();
+            manualChannelFoundStatus.setText("");
 
             Logger.getLogger(PVTree.class.getName()).log(Level.FINEST, "Epics table updating...");
             epicsChannels.clear();

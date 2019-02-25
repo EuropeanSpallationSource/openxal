@@ -5,8 +5,7 @@
  */
 package xal.app.lebt;
 
-import java.io.FileNotFoundException;
-import java.net.URL;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -15,8 +14,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import xal.extension.jels.smf.impl.ESSMagFieldMap3D;
-import xal.extension.jels.smf.impl.ESSSolFieldMap;
+import xal.extension.jels.smf.impl.MagFieldMap;
 import xal.model.ModelException;
 import xal.model.alg.EnvTrackerAdapt;
 import xal.model.probe.EnvelopeProbe;
@@ -35,9 +33,7 @@ import xal.smf.AcceleratorSeqCombo;
 import xal.smf.impl.HDipoleCorr;
 import xal.smf.impl.Solenoid;
 import xal.smf.impl.VDipoleCorr;
-import xal.tools.data.DataAdaptor;
 import xal.tools.math.Complex;
-import xal.tools.xml.XmlDataAdaptor;
 
 /**
  * The class handling running the simulation.
@@ -104,11 +100,7 @@ public class SimulationRunner {
         transmission = 1;
         transmission_offset = 1;
         final_pos_simul = "";
-        try {
-            readVacuumChamber(vacuumChamber);
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(SimulationRunner.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        readVacuumChamber(vacuumChamber);        
 
         try {
             //get inital parameters from file
@@ -435,18 +427,14 @@ public class SimulationRunner {
         List<VDipoleCorr> CV = sequence.getNodesOfType("DCV");
         List<HDipoleCorr> CH = sequence.getNodesOfType("DCH");
         
-        if(solenoid1 instanceof ESSSolFieldMap){
-            ((ESSSolFieldMap)solenoid1).setDfltField(solenoidFields[0]);
-        } else if (solenoid1 instanceof ESSMagFieldMap3D){
-            ((ESSMagFieldMap3D)solenoid1).setDfltField(solenoidFields[0]);
+        if(solenoid1 instanceof MagFieldMap){
+            ((MagFieldMap)solenoid1).setDfltField(solenoidFields[0]);
         } else if (solenoid1 instanceof Solenoid){
             ((Solenoid)solenoid1).setDfltField(solenoidFields[0]);
         }
         
-        if(solenoid2 instanceof ESSSolFieldMap){
-            ((ESSSolFieldMap)solenoid2).setDfltField(solenoidFields[0]);
-        } else if (solenoid2 instanceof ESSMagFieldMap3D){
-            ((ESSMagFieldMap3D)solenoid2).setDfltField(solenoidFields[0]);
+        if(solenoid2 instanceof MagFieldMap){
+            ((MagFieldMap)solenoid2).setDfltField(solenoidFields[0]);
         } else if (solenoid2 instanceof Solenoid){
             ((Solenoid)solenoid2).setDfltField(solenoidFields[0]);
         }
@@ -473,18 +461,14 @@ public class SimulationRunner {
         List<VDipoleCorr> CV = sequence.getNodesOfType("DCV");
         List<HDipoleCorr> CH = sequence.getNodesOfType("DCH");
         
-        if(solenoid1 instanceof ESSSolFieldMap){
-            ((ESSSolFieldMap)solenoid1).setDfltField(solenoidFields[0]);
-        } else if (solenoid1 instanceof ESSMagFieldMap3D){
-            ((ESSMagFieldMap3D)solenoid1).setDfltField(solenoidFields[0]);
+        if(solenoid1 instanceof MagFieldMap){
+            ((MagFieldMap)solenoid1).setDfltField(solenoidFields[0]);
         } else if (solenoid1 instanceof Solenoid){
             ((Solenoid)solenoid1).setDfltField(solenoidFields[0]);
         }
         
-        if(solenoid2 instanceof ESSSolFieldMap){
-            ((ESSSolFieldMap)solenoid2).setDfltField(solenoidFields[1]);
-        } else if (solenoid2 instanceof ESSMagFieldMap3D){
-            ((ESSMagFieldMap3D)solenoid2).setDfltField(solenoidFields[1]);
+        if(solenoid2 instanceof MagFieldMap){
+            ((MagFieldMap)solenoid2).setDfltField(solenoidFields[1]);
         } else if (solenoid2 instanceof Solenoid){
             ((Solenoid)solenoid2).setDfltField(solenoidFields[1]);
         }
@@ -578,15 +562,17 @@ public class SimulationRunner {
             }
                       
             aperture = getAperture(stateElement.get(i).getPosition());
-            double x0 = (aperture-covmat.getMeanX())/(Math.sqrt(2.0)*covmat.getSigmaX());
-            double x1 = (-aperture-covmat.getMeanX())/(Math.sqrt(2.0)*covmat.getSigmaX());
-            double y0 = (aperture-covmat.getMeanY())/(Math.sqrt(2.0)*covmat.getSigmaY());
-            double y1 = (-aperture-covmat.getMeanY())/(Math.sqrt(2.0)*covmat.getSigmaY());                   
-            transmission_offset = Math.min(transmission_offset,(0.25*Math.abs(erf(x0)-erf(x1))*Math.abs(erf(y0)-erf(y1))));
+            if(Double.isFinite(aperture)){
+                double x0 = (aperture-covmat.getMeanX())/(Math.sqrt(2.0)*covmat.getSigmaX());
+                double x1 = (-aperture-covmat.getMeanX())/(Math.sqrt(2.0)*covmat.getSigmaX());
+                double y0 = (aperture-covmat.getMeanY())/(Math.sqrt(2.0)*covmat.getSigmaY());
+                double y1 = (-aperture-covmat.getMeanY())/(Math.sqrt(2.0)*covmat.getSigmaY());                   
+                transmission_offset = Math.min(transmission_offset,(0.25*Math.abs(erf(x0)-erf(x1))*Math.abs(erf(y0)-erf(y1))));
 
-            x0 = aperture/(Math.sqrt(2.0)*covmat.getSigmaX());
-            y0 = aperture/(Math.sqrt(2.0)*covmat.getSigmaY());
-            transmission = Math.min(transmission,(erf(x0)*erf(y0)));
+                x0 = aperture/(Math.sqrt(2.0)*covmat.getSigmaX());
+                y0 = aperture/(Math.sqrt(2.0)*covmat.getSigmaY());
+                transmission = Math.min(transmission,(erf(x0)*erf(y0)));
+            }
             
         }                        
         
@@ -598,34 +584,35 @@ public class SimulationRunner {
     
     private double getAperture(double pos){
         double posArray = vacuumChamber.keySet().stream().min(Comparator.comparingDouble(val -> Math.abs(val - pos))).orElseThrow(() -> new NoSuchElementException("No value present"));
-        return vacuumChamber.get(posArray);
+        if(Double.isFinite(posArray)){
+            return vacuumChamber.get(posArray);
+        } else {
+            return Double.NaN;
+        }
     }    
     
     /**
      * Retrieves and displays trajectory plots
      * @param newRun the simulation
      */
-    private void readVacuumChamber(HashMap<Double,Double> vacuumChamber) throws FileNotFoundException{
-
-        DataAdaptor readAdp = null;
-        URL file;
-
-        try {
-            file = this.getClass().getResource("/vacuum_chamber/VacuumChamber.xml");
-            readAdp = XmlDataAdaptor.adaptorForUrl(file,false);
-            DataAdaptor blockheader = readAdp.childAdaptor("LEBTboundaries");
-            DataAdaptor blockPoints = blockheader.childAdaptor("points");
-            int num= blockPoints.intValue("numpoints");
-            DataAdaptor blockPosition = blockheader.childAdaptor("position");
-            double[] pos=blockPosition.doubleArray("data");
-            DataAdaptor blockAperture = blockheader.childAdaptor("chamber");
-            double[] aperture=blockAperture.doubleArray("data");
-            for (int i = 0; i < num ; i++) {
-                vacuumChamber.put(pos[i], aperture[i]);
+    private void readVacuumChamber(HashMap<Double,Double> vacuumChamber) {
+        
+        double[][] profile;
+                        
+        if(sequence != null){            
+            vacuumChamber.clear();
+            if(sequence instanceof AcceleratorSeqCombo){
+                profile = ((AcceleratorSeqCombo) sequence).getAperProfile().getProfileXArray();
+                for (int i = 0; i < profile[0].length ; i++) {
+                    vacuumChamber.put(profile[0][i], profile[1][i]);
+                }  
+            } else if(sequence instanceof AcceleratorSeq){
+                profile = ((AcceleratorSeq) sequence).getAperProfile().getProfileXArray();
+                for (int i = 0; i < profile[0].length ; i++) {
+                    vacuumChamber.put(profile[0][i], profile[1][i]);
+                }  
             }
-        } catch (XmlDataAdaptor.ParseException | XmlDataAdaptor.ResourceNotFoundException ex) {
-            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        }    
 
     }
    

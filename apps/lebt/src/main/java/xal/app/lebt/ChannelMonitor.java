@@ -64,7 +64,11 @@ class ChannelMonitor implements IEventSinkValue, ConnectionListener {
             if(inputChannels.get(chan) instanceof Label){
                 Platform.runLater(
                 () -> {
-                    ((Label) inputChannels.get(chan)).setText(String.format("%.4f",record.doubleValue()));
+                    if(record.doubleValue()>0.01){
+                        ((Label) inputChannels.get(chan)).setText(String.format("%.4f",record.doubleValue()));
+                    } else {
+                        ((Label) inputChannels.get(chan)).setText(String.format("%3.2e",record.doubleValue()));
+                    }
                     //((Label) inputChannels.get(chan)).setStyle("-fx-background-color: white;");                                         
                     ((Label) inputChannels.get(chan)).setId("connected");
                 });
@@ -87,26 +91,16 @@ class ChannelMonitor implements IEventSinkValue, ConnectionListener {
                 });
             } else if (inputChannels.get(chan) instanceof TextField){
                 Platform.runLater(
-                () -> {                    
-                    ((TextField) inputChannels.get(chan)).setText(String.format("%.4f",record.doubleValue()));
+                () -> {
+                    if(record.doubleValue()>0.01){                                       
+                        ((TextField) inputChannels.get(chan)).setText(String.format("%.4f",record.doubleValue()));
+                    } else {
+                        ((TextField) inputChannels.get(chan)).setText(String.format("%3.2e",record.doubleValue()));
+                    }
                     //((TextField) inputChannels.get(chan)).setStyle("-fx-background-color: white;");                     
                     ((TextField) inputChannels.get(chan)).setId("connected");
                 });                                                          
-            } else if (inputChannels.get(chan) instanceof Button){                
-                Platform.runLater(
-                () -> {
-                    if(record.stringValue().equals("0")){
-                        ((Button) inputChannels.get(chan)).setText("NEG");
-                        ((Button) inputChannels.get(chan)).setId("negative");             
-                    } else if (record.stringValue().equals("1")){
-                        ((Button) inputChannels.get(chan)).setText("POS");                        
-                        ((Button) inputChannels.get(chan)).setId("positive");              
-                    } else {
-                        ((Button) inputChannels.get(chan)).setText("-");                        
-                        ((Button) inputChannels.get(chan)).setId("disconected");             
-                    }                                                    
-                });        
-            }
+            } 
         }
     }
 

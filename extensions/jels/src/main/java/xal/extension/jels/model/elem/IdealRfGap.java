@@ -21,8 +21,6 @@ import xal.tools.beam.PhaseMap;
 import xal.tools.beam.PhaseMatrix;
 
 /**
- * <p>
- *
  * Represents the action of an ideal RF gap. Gap is modeled as a thin element
  * whose accelerating action is given by the Panofsky formula. </p>
  * <p>
