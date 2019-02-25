@@ -230,6 +230,46 @@ public abstract class BunchProbeState<S extends BunchProbeState<S>> extends Prob
         
         return dblPermT*dblRelaT*dblEnerT;  
     }
+    
+    /** 
+     * <p>
+     *  Returns the generalized, two-dimensional beam perveance <i>K</i>.  
+     *  This value is defined to be
+     *  </p>
+     *  
+     *      <i>K</i> = (<i>I</i>/&pi;*<i>&epsilon;</i><sub>0</sub>)(1/&gamma;<sup>3</sup>&beta;<sup>3</sup><i>c</i>)(|<i>q</i>|/<i>E<sub>R</sub></i>) 
+     *  
+     *  <p>
+     *  where <i>I</i> is the current, <i>&epsilon;</i><sub>0</sub> is the permittivity
+     *  of free space, <i>&gamma;</i> is the relativistic factor, <i>&beta;</i> is 
+     *  the normalized design velocity, <i>q</i> is the individual particle charge 
+     *  and <i>E<sub>R</sub></i> is the rest energy of the beam particles.
+     *  </p>
+     *  
+     *  <h3>NOTES:</h3>
+     *  <p>
+     *  - The value (1/&pi;&epsilon;<sub>0</sub>) is equal to 40<sup>-7</sup><i>c</i><sup>2</sup>
+     *  where <i>c</i> is the speed of light.
+     *  </p> 
+     *  
+     *  @return generalized beam perveance <b>Units: radians^2/meter</b>
+     *  
+     *  @author Christopher K. Allen
+     */
+    public double beamDCPerveance() {
+    	
+        // Get some shorthand
+        double c     = LightSpeed;
+        double gamma = this.getGamma();
+        double betagamma   = Math.sqrt(gamma*gamma -1);
+
+        // Compute independent terms
+        double  dblPermT = 1.0e-7*c*c*4;
+        double  dblRelaT = this.getBeamCurrent()/(Math.pow(betagamma, 3)*c);
+        double  dblEnerT = Math.abs(super.getSpeciesCharge())/super.getSpeciesRestEnergy();
+        
+        return dblPermT*dblRelaT*dblEnerT;  
+    }
 
 //
 //    /*

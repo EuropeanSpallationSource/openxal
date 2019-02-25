@@ -953,6 +953,34 @@ public class BeamEllipsoid {
     }
 
 
+    public PhaseMatrix  computeDCScheffMatrix(double dblLen, double dblPerveance) {
+
+        // Check for pathelogical zero-space charge case
+        if (dblPerveance == 0.0) 
+            return PhaseMatrix.identity();
+
+
+        // Compute the laboratory/beam frame transform 
+        PhaseMatrix     M  = this.getBeamToEllipseTransform();
+        PhaseMatrix     Mi = M.inverse(); 
+        
+        // Get the second-order spatial moments
+        double  a = 2*Math.sqrt(arrMoments[0]);
+        double  b = 2*Math.sqrt(arrMoments[1]);
+
+        double kx = dblLen*dblPerveance*1/(a*(a+b));
+        double ky = dblLen*dblPerveance*1/(b*(a+b));
+
+        // Build the transfer matrix and transform it to laboratory frame 
+        PhaseMatrix     F0  = PhaseMatrix.identity();
+        F0.setElem(IND.Xp, IND.X, kx);
+        F0.setElem(IND.Yp, IND.Y, ky);
+
+        PhaseMatrix     F = Mi.times(F0.times(M));
+
+        return F;
+    }
+    
 
     /*
      * Internal Support
