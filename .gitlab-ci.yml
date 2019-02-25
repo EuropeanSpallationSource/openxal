@@ -26,6 +26,9 @@ build.maven:
     artifacts:
         paths:
             - .m2/repository/org/xal/
+            - "*/target/*.jar"
+            - "*/*/target/*.jar"
+            - "*/*/*/target/*.jar"
             - "*/target/classes"
             - "*/*/target/classes"
             - "*/*/*/target/classes"
