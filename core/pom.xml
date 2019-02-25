@@ -30,11 +30,13 @@
             <groupId>org.hdfgroup</groupId>
             <artifactId>hdfobject</artifactId>
             <version>1.10.3</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.hdfgroup</groupId>
             <artifactId>hdf5</artifactId>
             <version>1.10.3</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

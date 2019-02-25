@@ -33,11 +33,6 @@
         <module>../services/pvlogger/extension</module>
         <module>../services/worker/extension</module>
     </modules>
-    
-    <!-- For the local repository -->
-    <properties>
-        <main.basedir>${project.basedir}/..</main.basedir>
-    </properties>
 
     <dependencies>
         <dependency>
