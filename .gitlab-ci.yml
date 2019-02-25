@@ -94,4 +94,4 @@ pages:
         paths:
             - public
     only:
-        - site.ess.master
+        - site.ess.stable@ess-crs/openxal
