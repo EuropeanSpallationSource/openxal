@@ -13,6 +13,7 @@
     <packaging>jar</packaging>
 
     <build>
+        <finalName>third-party-libs</finalName>
         <plugins>
             <!-- This plugin will package all dependencies into one jar -->
             <plugin>

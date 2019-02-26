@@ -83,7 +83,7 @@
                             <mainClass>${mainClass}</mainClass>
                         </manifest>
                         <manifestEntries>
-                            <Class-Path>../lib/openxal.library-${project.version}.jar ../lib/openxal.third-party-libs-${project.version}.jar</Class-Path>
+                            <Class-Path>../lib/library.jar ../lib/third-party-libs.jar</Class-Path>
                         </manifestEntries>
                     </archive>
                 </configuration>

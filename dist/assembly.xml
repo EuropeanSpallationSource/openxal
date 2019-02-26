@@ -15,7 +15,7 @@
             <directory>${basedir}/../library/target</directory>
             <outputDirectory>lib</outputDirectory>
             <includes>
-                <include>openxal.library-${project.version}.jar</include>
+                <include>library.jar</include>
             </includes>
         </fileSet>
         <!-- Third party libraries jar -->
@@ -23,7 +23,7 @@
             <directory>${basedir}/../third-party-libs/target</directory>
             <outputDirectory>lib</outputDirectory>
             <includes>
-                <include>openxal.third-party-libs-${project.version}.jar</include>
+                <include>third-party-libs.jar</include>
             </includes>
         </fileSet>
         <fileSet>
