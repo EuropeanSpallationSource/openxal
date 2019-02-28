@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.xal</groupId>
         <artifactId>openxal</artifactId>
-        <version>1.2.4-SNAPSHOT</version>
+        <version>1.2.6</version>
     </parent>
 
     <artifactId>openxal.plugins</artifactId>
@@ -18,6 +18,11 @@
         <module>jca</module>
         <module>essrbac</module>
     </modules>
+    
+    <!-- For the local repository -->
+    <properties>
+        <main.basedir>${project.basedir}/..</main.basedir>
+    </properties>
 
     <dependencies>
         <dependency>

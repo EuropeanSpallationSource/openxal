@@ -6,7 +6,9 @@
 
 package xal.plugin.jca;
 
+import java.util.logging.Logger;
 import xal.ca.*;
+import xal.tools.apputils.Preferences;
 
 
 /**
@@ -24,6 +26,18 @@ public class JcaChannelFactory extends ChannelFactory {
 	
 	/** Constructor */
 	public JcaChannelFactory() {
+                  // If the property "jca.use_env" is not defined in the command line, 
+                  // it will try to get it from Open XAL preferences. By default it will be true.
+                  if (System.getProperty("jca.use_env") == null) {
+                      java.util.prefs.Preferences defaults = Preferences.nodeForPackage(JcaChannelFactory.class);
+                      Boolean jca_use_env = defaults.getBoolean("jca.use_env", true);
+                      System.setProperty("jca.use_env", jca_use_env.toString());
+                  }
+                  if (Boolean.getBoolean("jca.use_env")){
+                      Logger.getLogger(JcaChannelFactory.class.getName()).info("Using environment variables for EPICS configuration.");
+                  } else {
+                      Logger.getLogger(JcaChannelFactory.class.getName()).info("Using JCALibrary.properties for EPICS configuration.");
+                  }
 		JCA_SYSTEM = new JcaSystem();
 		NATIVE_CHANNEL_CACHE = new JcaNativeChannelCache( JCA_SYSTEM );
 	}

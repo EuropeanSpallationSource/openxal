@@ -4,7 +4,7 @@
     <parent>
     <artifactId>openxal.apps</artifactId>
     <groupId>org.xal</groupId>
-    <version>1.2.4-SNAPSHOT</version>
+    <version>1.2.6</version>
   </parent>
 
     <groupId>org.xal</groupId>
