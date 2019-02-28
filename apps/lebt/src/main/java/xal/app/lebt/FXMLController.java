@@ -1712,15 +1712,7 @@ public class FXMLController implements Initializable {
                         Complex phi = new Complex(mon.getXAvg(),mon.getYAvg());
                         //long scale2 = getScaleAxis(posPhi,posR);
                         seriesNPMposCyl[0].getData().add(new XYChart.Data(mon.getSDisplay(),phi.modulus()));
-                        if(phi.phase()!=0){
-                            if(phi.phase()>0){
-                                seriesNPMposCyl[1].getData().add(new XYChart.Data(mon.getSDisplay(),Math.PI - phi.phase()));
-                            } else {
-                                seriesNPMposCyl[1].getData().add(new XYChart.Data(mon.getSDisplay(),Math.PI + phi.phase()));                            
-                            } 
-                        } else {
-                            seriesNPMposCyl[1].getData().add(new XYChart.Data(mon.getSDisplay(),phi.phase()));                            
-                        }
+                        seriesNPMposCyl[1].getData().add(new XYChart.Data(mon.getSDisplay(),phi.phase()));                        
                     } catch (ConnectionException | GetException ex) {
                         Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                     }

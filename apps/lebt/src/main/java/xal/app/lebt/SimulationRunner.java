@@ -550,16 +550,8 @@ public class SimulationRunner {
 
             //Calculating cylindrical coordinates
             Complex phi = new Complex(covmat.getMeanX()*1.0e+3,covmat.getMeanY()*1.0e+3);
-            posR.add(phi.modulus());
-            if(phi.phase()!=0){          
-                if(phi.phase()>0){
-                    posPhi.add(Math.PI - phi.phase());
-                } else {
-                    posPhi.add(Math.PI + phi.phase());    
-                } 
-            } else {
-                posPhi.add(phi.phase());
-            }
+            posR.add(phi.modulus());           
+            posPhi.add(phi.phase());            
 
             for(int k = 0; k < sigmaOffsetX.length; k++){
                 sigmaOffsetX[k].add(sigmaX[k].get(i)+posX.get(i));
