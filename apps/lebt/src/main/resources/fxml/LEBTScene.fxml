@@ -225,7 +225,7 @@
                         <Circle fx:id="electrodeStatus" fill="GREEN" layoutX="618.0" layoutY="53.0" radius="8.0" stroke="#9e9c9c" strokeType="INSIDE" AnchorPane.leftAnchor="710.0" AnchorPane.topAnchor="45.0" />
                         <CheckBox fx:id="checkBox_electrode" contentDisplay="RIGHT" layoutX="536.0" layoutY="44.0" mnemonicParsing="false" stylesheets="@../styles/ToggleSwitch.css" text="ON" AnchorPane.leftAnchor="630.0" AnchorPane.topAnchor="44.0" />
                         <Label layoutX="634.0" layoutY="45.0" text="PS Status" AnchorPane.leftAnchor="734.0" AnchorPane.topAnchor="45.0" />
-                        <TextField fx:id="textField_sccelectrode" layoutX="533.0" layoutY="66.0" prefWidth="65.0" AnchorPane.leftAnchor="630.0" AnchorPane.topAnchor="75.0" />
+                        <TextField fx:id="textField_sccelectrode" disable="true" layoutX="533.0" layoutY="66.0" prefWidth="65.0" AnchorPane.leftAnchor="630.0" AnchorPane.topAnchor="75.0" />
                         <Label layoutX="602.0" layoutY="79.0" text="Space charge compensation" AnchorPane.leftAnchor="702.0" AnchorPane.topAnchor="79.0" />
                         <Label layoutX="533.0" layoutY="150.0" text="Chopper:" AnchorPane.leftAnchor="630.0" AnchorPane.topAnchor="145.0">
                            <font>
