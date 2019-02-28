@@ -1391,10 +1391,10 @@ public class FXMLController implements Initializable {
                 if(!newVal){
                     try {
                         comboBox_inputSimul.getSelectionModel().getSelectedItem().setX(Double.parseDouble(textField_x.getText().trim())*1e-3);
+                        textField_x.fireEvent(new RunEvent(runNow.get()));
                     } catch(NumberFormatException ex) {
                         textField_x.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getX()));
-                    }
-                    textField_x.fireEvent(new RunEvent(runNow.get()));
+                    }                    
                 }
             });
 
@@ -1402,10 +1402,10 @@ public class FXMLController implements Initializable {
                 if(!newVal){
                     try {
                         comboBox_inputSimul.getSelectionModel().getSelectedItem().setXP(Double.parseDouble(textField_xp.getText().trim())*1e-3);
+                        textField_xp.fireEvent(new RunEvent(runNow.get()));
                     } catch(NumberFormatException ex) {
                         textField_xp.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getXP()));
-                    }
-                    textField_xp.fireEvent(new RunEvent(runNow.get()));
+                    }                    
                 }
             });
 
@@ -1413,10 +1413,10 @@ public class FXMLController implements Initializable {
                 if(!newVal){
                     try {
                         comboBox_inputSimul.getSelectionModel().getSelectedItem().setY(Double.parseDouble(textField_y.getText().trim())*1e-3);
+                        textField_y.fireEvent(new RunEvent(runNow.get()));
                     } catch(NumberFormatException ex) {
                         textField_y.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getY()));
-                    }
-                    textField_y.fireEvent(new RunEvent(runNow.get()));
+                    }                    
                 }
             });
 
@@ -1424,10 +1424,10 @@ public class FXMLController implements Initializable {
                 if(!newVal){
                     try {
                         comboBox_inputSimul.getSelectionModel().getSelectedItem().setYP(Double.parseDouble(textField_yp.getText().trim())*1e-3);
+                        textField_yp.fireEvent(new RunEvent(runNow.get()));
                     } catch(NumberFormatException ex) {
                         textField_yp.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getYP()));
-                    }
-                    textField_yp.fireEvent(new RunEvent(runNow.get()));
+                    }                    
                 }
             });
 
@@ -1437,13 +1437,13 @@ public class FXMLController implements Initializable {
                         double val = Double.parseDouble(textField_betax.getText().trim());
                         if(val>=0){
                             comboBox_inputSimul.getSelectionModel().getSelectedItem().setBETAX(val);
+                            textField_betax.fireEvent(new RunEvent(runNow.get()));
                         } else {
                             textField_betax.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getBETAX()));
                         }
                     } catch(NumberFormatException ex) {
                         textField_betax.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getBETAX()));
-                    }
-                    textField_betax.fireEvent(new RunEvent(runNow.get()));
+                    }                    
                 }
             });
 
@@ -1452,10 +1452,10 @@ public class FXMLController implements Initializable {
                     try {
                         double val = Double.parseDouble(textField_alphax.getText().trim());
                         comboBox_inputSimul.getSelectionModel().getSelectedItem().setALPHAX(val);
+                        textField_alphax.fireEvent(new RunEvent(runNow.get()));
                     } catch(NumberFormatException ex) {
                         textField_alphax.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getALPHAX()));
-                    }
-                    textField_alphax.fireEvent(new RunEvent(runNow.get()));
+                    }                    
                 }
             });
 
@@ -1465,13 +1465,13 @@ public class FXMLController implements Initializable {
                         double val = Double.parseDouble(textField_emittx.getText().trim());
                         if(val>=0){
                             comboBox_inputSimul.getSelectionModel().getSelectedItem().setEMITTX(val*1e-6);
+                            textField_emittx.fireEvent(new RunEvent(runNow.get()));
                         } else {
                             textField_emittx.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getEMITTX()*1e6));
                         }
                     } catch(NumberFormatException ex) {
                         textField_emittx.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getEMITTX()*1e6));
-                    }
-                    textField_emittx.fireEvent(new RunEvent(runNow.get()));
+                    }                    
                 }
             });
 
@@ -1481,13 +1481,13 @@ public class FXMLController implements Initializable {
                         double val = Double.parseDouble(textField_betay.getText().trim());
                         if(val>=0){
                             comboBox_inputSimul.getSelectionModel().getSelectedItem().setBETAY(val);
+                            textField_betay.fireEvent(new RunEvent(runNow.get()));
                         } else {
                             textField_betay.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getBETAY()));
                         }
                     } catch(NumberFormatException ex) {
                         textField_betay.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getBETAY()));
-                    }
-                    textField_betay.fireEvent(new RunEvent(runNow.get()));
+                    }                    
                 }
             });
 
@@ -1496,10 +1496,10 @@ public class FXMLController implements Initializable {
                     try {
                         double val = Double.parseDouble(textField_alphay.getText().trim());
                         comboBox_inputSimul.getSelectionModel().getSelectedItem().setALPHAY(val);
+                        textField_alphax.fireEvent(new RunEvent(runNow.get()));
                     } catch(NumberFormatException ex) {
                         textField_alphay.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getALPHAY()));
-                    }
-                    textField_alphax.fireEvent(new RunEvent(runNow.get()));
+                    }                    
                 }
             });
 
@@ -1509,13 +1509,13 @@ public class FXMLController implements Initializable {
                         double val = Double.parseDouble(textField_emitty.getText().trim());
                         if(val>=0){
                             comboBox_inputSimul.getSelectionModel().getSelectedItem().setEMITTY(val*1e-6);
+                            textField_emitty.fireEvent(new RunEvent(runNow.get()));
                         } else {
                             textField_emitty.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getEMITTY()*1e6));
                         }
                     } catch(NumberFormatException ex) {
                         textField_emitty.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getEMITTY()*1e6));
-                    }
-                    textField_emitty.fireEvent(new RunEvent(runNow.get()));
+                    }                    
                 }
             });
 
@@ -1523,15 +1523,15 @@ public class FXMLController implements Initializable {
                 if(!newVal){
                     try {
                         double val = Double.parseDouble(textField_bc.getText().trim());
-                        if(val>=0){
+                        if(val>=0 && Math.abs(val-beamCurrent)>1.0){
                             beamCurrent=val;
+                            textField_bc.fireEvent(new RunEvent(runNow.get()));
                         } else {
                             textField_bc.setText(Double.toString(beamCurrent));
                         }
                     } catch(NumberFormatException ex) {
                         textField_bc.setText(Double.toString(beamCurrent));
-                    }
-                    textField_bc.fireEvent(new RunEvent(runNow.get()));
+                    }                    
                 }
             });
 
@@ -1541,13 +1541,13 @@ public class FXMLController implements Initializable {
                         double val = Double.parseDouble(textField_scc.getText().trim());
                         if(val>=0 && val<=1.0){
                             spaceChargeComp=Double.parseDouble(textField_scc.getText().trim());
+                            textField_scc.fireEvent(new RunEvent(runNow.get()));
                         } else {
                             textField_scc.setText(Double.toString(spaceChargeComp));
                         }
                     } catch(NumberFormatException ex) {
                         textField_scc.setText(Double.toString(spaceChargeComp));
-                    }
-                    textField_scc.fireEvent(new RunEvent(runNow.get()));
+                    }                    
                 }
             });
 
@@ -1557,13 +1557,13 @@ public class FXMLController implements Initializable {
                         double val = Double.parseDouble(textField_sccelectrode.getText().trim());
                         if(val>=0 && val<=1.0){
                             spaceChargeCompElectrode=Double.parseDouble(textField_sccelectrode.getText().trim());
+                            textField_sccelectrode.fireEvent(new RunEvent(runNow.get()));
                         } else {
                             textField_sccelectrode.setText(Double.toString(spaceChargeCompElectrode));
                         }
                     } catch(NumberFormatException ex) {
                         textField_sccelectrode.setText(Double.toString(spaceChargeCompElectrode));
-                    }
-                    textField_sccelectrode.fireEvent(new RunEvent(runNow.get()));
+                    }                    
                 }
             });
     }
