@@ -424,12 +424,12 @@ public class FXMLController implements Initializable {
         textField_CH1current.setTextFormatter(new TextFormatter<Double>(formatter4d));
         textField_CV2current.setTextFormatter(new TextFormatter<Double>(formatter4d));
         textField_CH2current.setTextFormatter(new TextFormatter<Double>(formatter4d));
-        textField_sol1field.setTextFormatter(new TextFormatter<Double>(scientific3d));
-        textField_sol2field.setTextFormatter(new TextFormatter<Double>(scientific3d));
-        textField_CV1field.setTextFormatter(new TextFormatter<Double>(scientific3d));
-        textField_CH1field.setTextFormatter(new TextFormatter<Double>(scientific3d));
-        textField_CV2field.setTextFormatter(new TextFormatter<Double>(scientific3d));
-        textField_CH2field.setTextFormatter(new TextFormatter<Double>(scientific3d));
+        textField_sol1field.setTextFormatter(new TextFormatter<Double>(formatter4d));
+        textField_sol2field.setTextFormatter(new TextFormatter<Double>(formatter4d));
+        textField_CV1field.setTextFormatter(new TextFormatter<Double>(formatter4d));
+        textField_CH1field.setTextFormatter(new TextFormatter<Double>(formatter4d));
+        textField_CV2field.setTextFormatter(new TextFormatter<Double>(formatter4d));
+        textField_CH2field.setTextFormatter(new TextFormatter<Double>(formatter4d));
         textField_irisAperture.setTextFormatter(new TextFormatter<Double>(formatter3d));
         textField_irisX.setTextFormatter(new TextFormatter<Double>(formatter3d));
         textField_irisY.setTextFormatter(new TextFormatter<Double>(formatter3d));
@@ -960,9 +960,7 @@ public class FXMLController implements Initializable {
                                 } catch (ConnectionException | PutException | GetException ex) {
                                     Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                                 }
-                            } else {
-                                textField_sol1current.fireEvent(new RunEvent(runNow.get()));
-                            }
+                            } 
                         }
                     });
                     textField_sol1field.focusedProperty().addListener((obs, oldVal, newVal) ->{
@@ -973,7 +971,9 @@ public class FXMLController implements Initializable {
                     //set the magnets Readback display as change listener for changes -> run Model
                     label_sol1fieldRB.textProperty().addListener((obs, oldVal, newVal) ->{
                         if(!newVal.equals(oldVal)){
-                            label_sol1fieldRB.fireEvent(new RunEvent(runNow.get()));
+                            if(MainFunctions.mainDocument.getModel().get().matches("LIVE")){
+                                label_sol1fieldRB.fireEvent(new RunEvent(runNow.get()));
+                            }
                         }
                     });
                 } else {                
@@ -1002,8 +1002,6 @@ public class FXMLController implements Initializable {
                                 } catch (ConnectionException | PutException | GetException ex) {
                                     Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                                 }
-                            } else {
-                                textField_sol2field.fireEvent(new RunEvent(runNow.get()));
                             }
                         }
                     });
@@ -1014,7 +1012,9 @@ public class FXMLController implements Initializable {
                     });
                     label_sol2fieldRB.textProperty().addListener((obs, oldVal, newVal) ->{
                         if(!newVal.equals(oldVal)){
-                            label_sol2fieldRB.fireEvent(new RunEvent(runNow.get()));
+                            if(MainFunctions.mainDocument.getModel().get().matches("LIVE")){
+                                label_sol2fieldRB.fireEvent(new RunEvent(runNow.get()));
+                            }
                         }
                     });
                 } else {                                    
@@ -1046,19 +1046,19 @@ public class FXMLController implements Initializable {
                                 } catch (ConnectionException | GetException | PutException ex) {
                                     Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                                 }
-                            } else {
-                                textField_CV1current.fireEvent(new RunEvent(runNow.get()));
                             }
                         }
                     });
                     textField_CV1field.focusedProperty().addListener((obs, oldVal, newVal) ->{
-                        if(!newVal){
+                        if(!newVal.equals(oldVal)){
                             textField_CV1field.fireEvent(new RunEvent(runNow.get()));
                         }
                     });
                     label_CV1fieldRB.textProperty().addListener((obs, oldVal, newVal) ->{
                         if(!newVal.equals(oldVal)){
-                            label_CV1fieldRB.fireEvent(new RunEvent(runNow.get()));
+                            if(MainFunctions.mainDocument.getModel().get().matches("LIVE")){
+                                label_CV1fieldRB.fireEvent(new RunEvent(runNow.get()));
+                            }
                         }
                     });
                 } else {                
@@ -1087,19 +1087,19 @@ public class FXMLController implements Initializable {
                                 } catch (ConnectionException | GetException | PutException ex) {
                                     Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                                 }
-                            } else {
-                                textField_CV2current.fireEvent(new RunEvent(runNow.get()));
                             }
                         }
                     });
                     textField_CV2field.focusedProperty().addListener((obs, oldVal, newVal) ->{
-                        if(!newVal){
+                        if(!newVal.equals(oldVal)){
                             textField_CV2field.fireEvent(new RunEvent(runNow.get()));
                         }
                     });
                     label_CV2fieldRB.textProperty().addListener((obs, oldVal, newVal) ->{
                         if(!newVal.equals(oldVal)){
-                            label_CV2fieldRB.fireEvent(new RunEvent(runNow.get()));
+                            if(MainFunctions.mainDocument.getModel().get().matches("LIVE")){
+                                label_CV2fieldRB.fireEvent(new RunEvent(runNow.get()));
+                            }
                         }
                     });
                 } else {                                    
@@ -1131,19 +1131,19 @@ public class FXMLController implements Initializable {
                                 } catch (ConnectionException | GetException | PutException ex) {
                                     Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                                 }
-                            } else {
-                                textField_CH1current.fireEvent(new RunEvent(runNow.get()));
                             }
                         }
                     });
                     textField_CH1field.focusedProperty().addListener((obs, oldVal, newVal) ->{
-                        if(!newVal){
+                        if(!newVal.equals(oldVal)){
                             textField_CH1field.fireEvent(new RunEvent(runNow.get()));
                         }
                     });
                     label_CH1fieldRB.textProperty().addListener((obs, oldVal, newVal) ->{
                         if(!newVal.equals(oldVal)){
-                            label_CH1fieldRB.fireEvent(new RunEvent(runNow.get()));
+                            if(MainFunctions.mainDocument.getModel().get().matches("LIVE")){
+                                label_CH1fieldRB.fireEvent(new RunEvent(runNow.get()));
+                            }
                         }
                     });
                 } else {                
@@ -1172,19 +1172,19 @@ public class FXMLController implements Initializable {
                                 } catch (ConnectionException | GetException | PutException ex) {
                                     Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                                 }
-                            } else {
-                                textField_CH2current.fireEvent(new RunEvent(runNow.get()));
                             }
                         }
                     });
                     textField_CH2field.focusedProperty().addListener((obs, oldVal, newVal) ->{
-                        if(!newVal){
+                        if(!newVal.equals(oldVal)){
                             textField_CH2field.fireEvent(new RunEvent(runNow.get()));
                         }
                     });
                     label_CH2fieldRB.textProperty().addListener((obs, oldVal, newVal) ->{
                         if(!newVal.equals(oldVal)){
-                            label_CH2fieldRB.fireEvent(new RunEvent(runNow.get()));
+                            if(MainFunctions.mainDocument.getModel().get().matches("LIVE")){
+                                label_CH2fieldRB.fireEvent(new RunEvent(runNow.get()));
+                            }
                         }
                     });
                 } else {                                    
@@ -1391,10 +1391,10 @@ public class FXMLController implements Initializable {
                 if(!newVal){
                     try {
                         comboBox_inputSimul.getSelectionModel().getSelectedItem().setX(Double.parseDouble(textField_x.getText().trim())*1e-3);
+                        textField_x.fireEvent(new RunEvent(runNow.get()));
                     } catch(NumberFormatException ex) {
                         textField_x.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getX()));
-                    }
-                    textField_x.fireEvent(new RunEvent(runNow.get()));
+                    }                    
                 }
             });
 
@@ -1402,10 +1402,10 @@ public class FXMLController implements Initializable {
                 if(!newVal){
                     try {
                         comboBox_inputSimul.getSelectionModel().getSelectedItem().setXP(Double.parseDouble(textField_xp.getText().trim())*1e-3);
+                        textField_xp.fireEvent(new RunEvent(runNow.get()));
                     } catch(NumberFormatException ex) {
                         textField_xp.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getXP()));
-                    }
-                    textField_xp.fireEvent(new RunEvent(runNow.get()));
+                    }                    
                 }
             });
 
@@ -1413,10 +1413,10 @@ public class FXMLController implements Initializable {
                 if(!newVal){
                     try {
                         comboBox_inputSimul.getSelectionModel().getSelectedItem().setY(Double.parseDouble(textField_y.getText().trim())*1e-3);
+                        textField_y.fireEvent(new RunEvent(runNow.get()));
                     } catch(NumberFormatException ex) {
                         textField_y.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getY()));
-                    }
-                    textField_y.fireEvent(new RunEvent(runNow.get()));
+                    }                    
                 }
             });
 
@@ -1424,10 +1424,10 @@ public class FXMLController implements Initializable {
                 if(!newVal){
                     try {
                         comboBox_inputSimul.getSelectionModel().getSelectedItem().setYP(Double.parseDouble(textField_yp.getText().trim())*1e-3);
+                        textField_yp.fireEvent(new RunEvent(runNow.get()));
                     } catch(NumberFormatException ex) {
                         textField_yp.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getYP()));
-                    }
-                    textField_yp.fireEvent(new RunEvent(runNow.get()));
+                    }                    
                 }
             });
 
@@ -1437,13 +1437,13 @@ public class FXMLController implements Initializable {
                         double val = Double.parseDouble(textField_betax.getText().trim());
                         if(val>=0){
                             comboBox_inputSimul.getSelectionModel().getSelectedItem().setBETAX(val);
+                            textField_betax.fireEvent(new RunEvent(runNow.get()));
                         } else {
                             textField_betax.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getBETAX()));
                         }
                     } catch(NumberFormatException ex) {
                         textField_betax.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getBETAX()));
-                    }
-                    textField_betax.fireEvent(new RunEvent(runNow.get()));
+                    }                    
                 }
             });
 
@@ -1452,10 +1452,10 @@ public class FXMLController implements Initializable {
                     try {
                         double val = Double.parseDouble(textField_alphax.getText().trim());
                         comboBox_inputSimul.getSelectionModel().getSelectedItem().setALPHAX(val);
+                        textField_alphax.fireEvent(new RunEvent(runNow.get()));
                     } catch(NumberFormatException ex) {
                         textField_alphax.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getALPHAX()));
-                    }
-                    textField_alphax.fireEvent(new RunEvent(runNow.get()));
+                    }                    
                 }
             });
 
@@ -1465,13 +1465,13 @@ public class FXMLController implements Initializable {
                         double val = Double.parseDouble(textField_emittx.getText().trim());
                         if(val>=0){
                             comboBox_inputSimul.getSelectionModel().getSelectedItem().setEMITTX(val*1e-6);
+                            textField_emittx.fireEvent(new RunEvent(runNow.get()));
                         } else {
                             textField_emittx.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getEMITTX()*1e6));
                         }
                     } catch(NumberFormatException ex) {
                         textField_emittx.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getEMITTX()*1e6));
-                    }
-                    textField_emittx.fireEvent(new RunEvent(runNow.get()));
+                    }                    
                 }
             });
 
@@ -1481,13 +1481,13 @@ public class FXMLController implements Initializable {
                         double val = Double.parseDouble(textField_betay.getText().trim());
                         if(val>=0){
                             comboBox_inputSimul.getSelectionModel().getSelectedItem().setBETAY(val);
+                            textField_betay.fireEvent(new RunEvent(runNow.get()));
                         } else {
                             textField_betay.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getBETAY()));
                         }
                     } catch(NumberFormatException ex) {
                         textField_betay.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getBETAY()));
-                    }
-                    textField_betay.fireEvent(new RunEvent(runNow.get()));
+                    }                    
                 }
             });
 
@@ -1496,10 +1496,10 @@ public class FXMLController implements Initializable {
                     try {
                         double val = Double.parseDouble(textField_alphay.getText().trim());
                         comboBox_inputSimul.getSelectionModel().getSelectedItem().setALPHAY(val);
+                        textField_alphax.fireEvent(new RunEvent(runNow.get()));
                     } catch(NumberFormatException ex) {
                         textField_alphay.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getALPHAY()));
-                    }
-                    textField_alphax.fireEvent(new RunEvent(runNow.get()));
+                    }                    
                 }
             });
 
@@ -1509,13 +1509,13 @@ public class FXMLController implements Initializable {
                         double val = Double.parseDouble(textField_emitty.getText().trim());
                         if(val>=0){
                             comboBox_inputSimul.getSelectionModel().getSelectedItem().setEMITTY(val*1e-6);
+                            textField_emitty.fireEvent(new RunEvent(runNow.get()));
                         } else {
                             textField_emitty.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getEMITTY()*1e6));
                         }
                     } catch(NumberFormatException ex) {
                         textField_emitty.setText(Double.toString(comboBox_inputSimul.getSelectionModel().getSelectedItem().getEMITTY()*1e6));
-                    }
-                    textField_emitty.fireEvent(new RunEvent(runNow.get()));
+                    }                    
                 }
             });
 
@@ -1523,15 +1523,15 @@ public class FXMLController implements Initializable {
                 if(!newVal){
                     try {
                         double val = Double.parseDouble(textField_bc.getText().trim());
-                        if(val>=0){
+                        if(val>=0 && Math.abs(val-beamCurrent)>1.0){
                             beamCurrent=val;
+                            textField_bc.fireEvent(new RunEvent(runNow.get()));
                         } else {
                             textField_bc.setText(Double.toString(beamCurrent));
                         }
                     } catch(NumberFormatException ex) {
                         textField_bc.setText(Double.toString(beamCurrent));
-                    }
-                    textField_bc.fireEvent(new RunEvent(runNow.get()));
+                    }                    
                 }
             });
 
@@ -1541,13 +1541,13 @@ public class FXMLController implements Initializable {
                         double val = Double.parseDouble(textField_scc.getText().trim());
                         if(val>=0 && val<=1.0){
                             spaceChargeComp=Double.parseDouble(textField_scc.getText().trim());
+                            textField_scc.fireEvent(new RunEvent(runNow.get()));
                         } else {
                             textField_scc.setText(Double.toString(spaceChargeComp));
                         }
                     } catch(NumberFormatException ex) {
                         textField_scc.setText(Double.toString(spaceChargeComp));
-                    }
-                    textField_scc.fireEvent(new RunEvent(runNow.get()));
+                    }                    
                 }
             });
 
@@ -1557,13 +1557,13 @@ public class FXMLController implements Initializable {
                         double val = Double.parseDouble(textField_sccelectrode.getText().trim());
                         if(val>=0 && val<=1.0){
                             spaceChargeCompElectrode=Double.parseDouble(textField_sccelectrode.getText().trim());
+                            textField_sccelectrode.fireEvent(new RunEvent(runNow.get()));
                         } else {
                             textField_sccelectrode.setText(Double.toString(spaceChargeCompElectrode));
                         }
                     } catch(NumberFormatException ex) {
                         textField_sccelectrode.setText(Double.toString(spaceChargeCompElectrode));
-                    }
-                    textField_sccelectrode.fireEvent(new RunEvent(runNow.get()));
+                    }                    
                 }
             });
     }
@@ -1710,9 +1710,9 @@ public class FXMLController implements Initializable {
                         seriesNPMpos[0].getData().add(new XYChart.Data(mon.getSDisplay(),mon.getXAvg()));
                         seriesNPMpos[1].getData().add(new XYChart.Data(mon.getSDisplay(),mon.getYAvg()));
                         Complex phi = new Complex(mon.getXAvg(),mon.getYAvg());
-                        long scale2 = getScaleAxis(posPhi,posR);
+                        //long scale2 = getScaleAxis(posPhi,posR);
                         seriesNPMposCyl[0].getData().add(new XYChart.Data(mon.getSDisplay(),phi.modulus()));
-                        seriesNPMposCyl[1].getData().add(new XYChart.Data(mon.getSDisplay(),scale2*phi.phase()/Math.PI));
+                        seriesNPMposCyl[1].getData().add(new XYChart.Data(mon.getSDisplay(),phi.phase()));                        
                     } catch (ConnectionException | GetException ex) {
                         Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -1725,12 +1725,12 @@ public class FXMLController implements Initializable {
                 npms.forEach((NPM mon) -> {
                     if(mon.getChannel(NPM.SIGMA_X_AVG_HANDLE).isConnected() && mon.getChannel(NPM.SIGMA_Y_AVG_HANDLE).isConnected()){
                         try {
-                            seriesNPMsigma[0].getData().add(new XYChart.Data(mon.getSDisplay(),scale*mon.getXSigmaAvg()*1.0e+3));
-                            seriesNPMsigma[0].getData().add(new XYChart.Data(mon.getSDisplay(),scale*mon.getXSigmaAvg()*-1.0e+3));
-                            seriesNPMsigma[1].getData().add(new XYChart.Data(mon.getSDisplay(),scale*mon.getYSigmaAvg()*1.0e+3));
-                            seriesNPMsigma[1].getData().add(new XYChart.Data(mon.getSDisplay(),scale*mon.getYSigmaAvg()*-1.0e+3));
-                            seriesNPMsigmaCyl.getData().add(new XYChart.Data(mon.getSDisplay(),scale*Math.max(mon.getXSigmaAvg(), mon.getYSigmaAvg())*1.0e+3));
-                            seriesNPMsigmaCyl.getData().add(new XYChart.Data(mon.getSDisplay(),scale*Math.min(mon.getXSigmaAvg(), mon.getYSigmaAvg())*-1.0e+3));
+                            seriesNPMsigma[0].getData().add(new XYChart.Data(mon.getSDisplay(),scale*mon.getXSigmaAvg()));
+                            seriesNPMsigma[0].getData().add(new XYChart.Data(mon.getSDisplay(),scale*mon.getXSigmaAvg()*-1.0));
+                            seriesNPMsigma[1].getData().add(new XYChart.Data(mon.getSDisplay(),scale*mon.getYSigmaAvg()));
+                            seriesNPMsigma[1].getData().add(new XYChart.Data(mon.getSDisplay(),scale*mon.getYSigmaAvg()*-1.0));
+                            seriesNPMsigmaCyl.getData().add(new XYChart.Data(mon.getSDisplay(),scale*Math.max(mon.getXSigmaAvg(), mon.getYSigmaAvg())));
+                            seriesNPMsigmaCyl.getData().add(new XYChart.Data(mon.getSDisplay(),scale*Math.min(mon.getXSigmaAvg(), mon.getYSigmaAvg())*-1.0));
                         } catch (ConnectionException | GetException ex) {
                             Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                         }
@@ -1741,13 +1741,13 @@ public class FXMLController implements Initializable {
                 npms.forEach((NPM mon) -> {
                     if (mon.getChannel(NPM.SIGMA_X_AVG_HANDLE).isConnected() && mon.getChannel(NPM.SIGMA_Y_AVG_HANDLE).isConnected()) {
                         try {
-                            seriesNPMsigma[0].getData().add(new XYChart.Data(mon.getSDisplay(),scale*mon.getXSigmaAvg()*1.0e+3+mon.getXAvg()));
-                            seriesNPMsigma[0].getData().add(new XYChart.Data(mon.getSDisplay(),scale*mon.getXSigmaAvg()*-1.0e+3+mon.getXAvg()));
-                            seriesNPMsigma[1].getData().add(new XYChart.Data(mon.getSDisplay(),scale*mon.getYSigmaAvg()*1.0e+3+mon.getYAvg()));
-                            seriesNPMsigma[1].getData().add(new XYChart.Data(mon.getSDisplay(),scale*mon.getYSigmaAvg()*-1.0e+3+mon.getYAvg()));
+                            seriesNPMsigma[0].getData().add(new XYChart.Data(mon.getSDisplay(),scale*mon.getXSigmaAvg()+mon.getXAvg()));
+                            seriesNPMsigma[0].getData().add(new XYChart.Data(mon.getSDisplay(),scale*mon.getXSigmaAvg()*-1.0+mon.getXAvg()));
+                            seriesNPMsigma[1].getData().add(new XYChart.Data(mon.getSDisplay(),scale*mon.getYSigmaAvg()+mon.getYAvg()));
+                            seriesNPMsigma[1].getData().add(new XYChart.Data(mon.getSDisplay(),scale*mon.getYSigmaAvg()*-1.0+mon.getYAvg()));
                             double posR1 = new Complex(mon.getXAvg(),mon.getYAvg()).modulus();
-                            seriesNPMsigmaCyl.getData().add(new XYChart.Data(mon.getSDisplay(), scale*Math.max(mon.getXSigmaAvg(), mon.getYSigmaAvg())*1.0e+3 + posR1));
-                            seriesNPMsigmaCyl.getData().add(new XYChart.Data(mon.getSDisplay(), scale*Math.max(mon.getXSigmaAvg(), mon.getYSigmaAvg())*-1.0e+3 + posR1));
+                            seriesNPMsigmaCyl.getData().add(new XYChart.Data(mon.getSDisplay(), scale*Math.max(mon.getXSigmaAvg(), mon.getYSigmaAvg()) + posR1));
+                            seriesNPMsigmaCyl.getData().add(new XYChart.Data(mon.getSDisplay(), scale*Math.max(mon.getXSigmaAvg(), mon.getYSigmaAvg())*-1.0 + posR1));
                         }catch (ConnectionException | GetException ex) {
                             Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                         }
@@ -2226,20 +2226,24 @@ public class FXMLController implements Initializable {
 
         clearTrajectorySeries();
 
-        long scale2 = getScaleAxis(posPhi,posR);
+        //long scale2 = getScaleAxis(posPhi,posR);
 
-        for (int i = 0; i < posX.size() ; i++) {
+        for (int i = 0; i < posR.size() ; i++) {
             seriesR.getData().add(new XYChart.Data(positions.get(i), posR.get(i)));
-            seriesPhi.getData().add(new XYChart.Data(positions.get(i), new Double(posPhi.get(i).toString())*scale2));
+            seriesPhi.getData().add(new XYChart.Data(positions.get(i), posPhi.get(i)));//*scale2));
         }
+        
+         yAxis.setLabel("Offset (mm) \nAngle (rad)");
 
-        if (scale2 != 1){
-            yAxis.setLabel("Offset (mm) \nAngle (" + Double.toString((double) 1/scale2) + " * π rad)");
+       /** if (scale2 != 1){
+            //yAxis.setLabel("Offset (mm) \nAngle (" + Double.toString((double) 1/scale2) + " * π rad)");
+            yAxis.setLabel("Offset (mm) \nAngle (rad)");
             //System.out.print(scale2);
         }
         else{
-            yAxis.setLabel("Offset (mm) \nAngle (π rad)");
-        }
+            //yAxis.setLabel("Offset (mm) \nAngle (π rad)");
+            yAxis.setLabel("Offset (mm) \nAngle (rad)");
+        }*/
 
     }
 
@@ -2350,11 +2354,12 @@ public class FXMLController implements Initializable {
             yAxis.setLabel("Offset (mm)");
         }
         else if (radioButtonCyl.isSelected()){
-            yAxis.setLabel("Offset (mm) \n Angle (π rad)");
+            //yAxis.setLabel("Offset (mm) \n Angle (π rad)");
+            yAxis.setLabel("Offset (mm) \nAngle (rad)");
         }
     }
 
-    private long getScaleAxis(ArrayList<Double> posphi, ArrayList<Double> posr){
+    /**private long getScaleAxis(ArrayList<Double> posphi, ArrayList<Double> posr){
 
         int i = 1;
 
@@ -2371,7 +2376,7 @@ public class FXMLController implements Initializable {
             return Math.round(scalephi/scaler)==0 ? 1 : Math.round(scalephi/scaler);
         }
 
-    }
+    }*/
 
     private double scaleAndOffset(ArrayList<Double> sigma, ArrayList<Double> pos, double scale, int i){
         return ((double) sigma.get(i)*scale+(double) pos.get(i));
