@@ -39,6 +39,7 @@ public class ThinMagFieldMap extends ThinElectromagnet {
     private double position;
     private double startPosition;
     private double sliceLength;
+    private double centerPosition;
 
     public ThinMagFieldMap() {
         this(null);
@@ -58,6 +59,7 @@ public class ThinMagFieldMap extends ThinElectromagnet {
         magFieldmap = fieldmap.getFieldMap();
         sliceLength = fieldmap.getSliceLength();
         startPosition = fieldmap.getPosition() - fieldmap.getLength() / 2.0;
+        centerPosition = fieldmap.getPosition();
     }
 
     /**
@@ -76,6 +78,10 @@ public class ThinMagFieldMap extends ThinElectromagnet {
         fieldMapPoint.setAmplitudeFactorB(getMagField());
 
         PhaseMatrix transferMatrix = FieldMapIntegrator.transferMap(probe, sliceLength, fieldMapPoint);
+        
+        // Jan 2019 - Natalia Milas
+        // apply alignment and rotation errors   
+        transferMatrix = applyErrors(transferMatrix, position - centerPosition);
 
         return new PhaseMap(transferMatrix);
     }
