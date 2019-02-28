@@ -35,9 +35,7 @@ import xal.smf.AcceleratorSeqCombo;
 import xal.smf.impl.HDipoleCorr;
 import xal.smf.impl.Solenoid;
 import xal.smf.impl.VDipoleCorr;
-import xal.tools.data.DataAdaptor;
 import xal.tools.math.Complex;
-import xal.tools.xml.XmlDataAdaptor;
 
 /**
  * The class handling running the simulation.
@@ -447,15 +445,9 @@ public class SimulationRunner {
             ((Solenoid)solenoid2).setDfltField(solenoidFields[0]);
         }
         
-        for(int i=0; i<CV.size(); i++){
-            if(i<3){
-                CV.get(i).setDfltField(correctorVFields[0]);
-                CH.get(i).setDfltField(correctorHFields[0]);
-            } else {
-                CV.get(i).setDfltField(correctorVFields[1]);
-                CH.get(i).setDfltField(correctorHFields[1]);
-            }
-            
+        for(int i=0; i<2; i++){
+            CV.get(i).setDfltField(correctorVFields[i]);
+            CH.get(i).setDfltField(correctorHFields[i]);                        
         }        
     }
     
@@ -485,16 +477,10 @@ public class SimulationRunner {
             ((Solenoid)solenoid2).setDfltField(solenoidFields[1]);
         }
         
-        for(int i=0; i<CV.size(); i++){
-            if(i<3){
-                CV.get(i).setDfltField(correctorVFields[0]*CV.get(i).getPolarity());
-                CH.get(i).setDfltField(correctorHFields[0]*CH.get(i).getPolarity());
-            } else {
-                CV.get(i).setDfltField(correctorVFields[1]*CV.get(i).getPolarity());
-                CH.get(i).setDfltField(correctorHFields[1]*CH.get(i).getPolarity());
-            }
-            
-        }        
+        for(int i=0; i<2; i++){
+            CV.get(i).setDfltField(correctorVFields[i]);
+            CH.get(i).setDfltField(correctorHFields[i]);                        
+        }           
         
     }
 
@@ -565,7 +551,15 @@ public class SimulationRunner {
             //Calculating cylindrical coordinates
             Complex phi = new Complex(covmat.getMeanX()*1.0e+3,covmat.getMeanY()*1.0e+3);
             posR.add(phi.modulus());
-            posPhi.add(phi.phase());
+            if(phi.phase()!=0){          
+                if(phi.phase()>0){
+                    posPhi.add(Math.PI - phi.phase());
+                } else {
+                    posPhi.add(Math.PI + phi.phase());    
+                } 
+            } else {
+                posPhi.add(phi.phase());
+            }
 
             for(int k = 0; k < sigmaOffsetX.length; k++){
                 sigmaOffsetX[k].add(sigmaX[k].get(i)+posX.get(i));
