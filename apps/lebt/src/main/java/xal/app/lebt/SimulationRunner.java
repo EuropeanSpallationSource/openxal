@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 import xal.extension.jels.smf.impl.ESSMagFieldMap3D;
 import xal.extension.jels.smf.impl.ESSSolFieldMap;
 import xal.model.ModelException;
-import xal.model.alg.EnvTrackerAdapt;
+import xal.model.alg.EnvelopeTracker;
 import xal.model.probe.EnvelopeProbe;
 import xal.model.probe.traj.EnvelopeProbeState;
 import xal.sim.scenario.AlgorithmFactory;
@@ -70,7 +70,7 @@ public class SimulationRunner {
     private ArrayList<Double> positions;
 
     private Object sequence;
-    private EnvTrackerAdapt envelopeTracker;
+    private EnvelopeTracker envelopeTracker;
     private EnvelopeProbe probe;
     private PhaseVector initial_pos;
     private Scenario model;
@@ -108,7 +108,7 @@ public class SimulationRunner {
 
         try {
             //get inital parameters from file
-            envelopeTracker = AlgorithmFactory.createEnvTrackerAdapt((AcceleratorSeq) sequence);
+            envelopeTracker = AlgorithmFactory.createEnvelopeTracker((AcceleratorSeq) sequence);
             probe = ProbeFactory.getEnvelopeProbe((AcceleratorSeq) sequence, envelopeTracker);
             probe.setCurrentElement(((AcceleratorSeq) sequence).getNodeAt(0).toString());
         } catch (InstantiationException ex) {
@@ -335,11 +335,11 @@ public class SimulationRunner {
      */
     private void setTrackerParameters(AcceleratorSeq sequence) throws InstantiationException{
 
-        envelopeTracker = AlgorithmFactory.createEnvTrackerAdapt(sequence);
+        envelopeTracker = AlgorithmFactory.createEnvelopeTracker(sequence);
 
         envelopeTracker.setUseSpacecharge(true);
 
-        envelopeTracker.setMaxIterations(2000);
+        envelopeTracker.setStepSize(0.001);
 
     }
 
@@ -348,11 +348,11 @@ public class SimulationRunner {
      */
     private void setTrackerParameters(AcceleratorSeqCombo sequence) throws InstantiationException{
 
-        envelopeTracker = AlgorithmFactory.createEnvTrackerAdapt(sequence);
+        envelopeTracker = AlgorithmFactory.createEnvelopeTracker(sequence);
 
         envelopeTracker.setUseSpacecharge(true);
 
-        envelopeTracker.setMaxIterations(2000);
+        envelopeTracker.setStepSize(0.001);
 
     }
 
@@ -565,7 +565,7 @@ public class SimulationRunner {
             //Calculating cylindrical coordinates
             Complex phi = new Complex(covmat.getMeanX()*1.0e+3,covmat.getMeanY()*1.0e+3);
             posR.add(phi.modulus());
-            posPhi.add(phi.phase()/Math.PI);
+            posPhi.add(phi.phase());
 
             for(int k = 0; k < sigmaOffsetX.length; k++){
                 sigmaOffsetX[k].add(sigmaX[k].get(i)+posX.get(i));

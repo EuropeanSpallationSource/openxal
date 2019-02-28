@@ -424,12 +424,12 @@ public class FXMLController implements Initializable {
         textField_CH1current.setTextFormatter(new TextFormatter<Double>(formatter4d));
         textField_CV2current.setTextFormatter(new TextFormatter<Double>(formatter4d));
         textField_CH2current.setTextFormatter(new TextFormatter<Double>(formatter4d));
-        textField_sol1field.setTextFormatter(new TextFormatter<Double>(scientific3d));
-        textField_sol2field.setTextFormatter(new TextFormatter<Double>(scientific3d));
-        textField_CV1field.setTextFormatter(new TextFormatter<Double>(scientific3d));
-        textField_CH1field.setTextFormatter(new TextFormatter<Double>(scientific3d));
-        textField_CV2field.setTextFormatter(new TextFormatter<Double>(scientific3d));
-        textField_CH2field.setTextFormatter(new TextFormatter<Double>(scientific3d));
+        textField_sol1field.setTextFormatter(new TextFormatter<Double>(formatter4d));
+        textField_sol2field.setTextFormatter(new TextFormatter<Double>(formatter4d));
+        textField_CV1field.setTextFormatter(new TextFormatter<Double>(formatter4d));
+        textField_CH1field.setTextFormatter(new TextFormatter<Double>(formatter4d));
+        textField_CV2field.setTextFormatter(new TextFormatter<Double>(formatter4d));
+        textField_CH2field.setTextFormatter(new TextFormatter<Double>(formatter4d));
         textField_irisAperture.setTextFormatter(new TextFormatter<Double>(formatter3d));
         textField_irisX.setTextFormatter(new TextFormatter<Double>(formatter3d));
         textField_irisY.setTextFormatter(new TextFormatter<Double>(formatter3d));
@@ -960,19 +960,17 @@ public class FXMLController implements Initializable {
                                 } catch (ConnectionException | PutException | GetException ex) {
                                     Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                                 }
-                            } else {
-                                textField_sol1current.fireEvent(new RunEvent(runNow.get()));
-                            }
+                            } 
                         }
                     });
                     textField_sol1field.focusedProperty().addListener((obs, oldVal, newVal) ->{
-                        if(!newVal){
+                        if(!newVal.equals(oldVal)){
                             textField_sol1field.fireEvent(new RunEvent(runNow.get()));
                         }
                     });
                     //set the magnets Readback display as change listener for changes -> run Model
                     label_sol1fieldRB.textProperty().addListener((obs, oldVal, newVal) ->{
-                        if(!newVal.equals(oldVal)){
+                        if(!newVal.equals(oldVal) && MainFunctions.mainDocument.getModel().get().matches("LIVE")){
                             label_sol1fieldRB.fireEvent(new RunEvent(runNow.get()));
                         }
                     });
@@ -1002,18 +1000,16 @@ public class FXMLController implements Initializable {
                                 } catch (ConnectionException | PutException | GetException ex) {
                                     Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                                 }
-                            } else {
-                                textField_sol2field.fireEvent(new RunEvent(runNow.get()));
                             }
                         }
                     });
                     textField_sol2field.focusedProperty().addListener((obs, oldVal, newVal) ->{
-                        if(!newVal){
+                        if(!newVal.equals(oldVal)){
                             textField_sol2field.fireEvent(new RunEvent(runNow.get()));
                         }
                     });
                     label_sol2fieldRB.textProperty().addListener((obs, oldVal, newVal) ->{
-                        if(!newVal.equals(oldVal)){
+                        if(!newVal.equals(oldVal) && MainFunctions.mainDocument.getModel().get().matches("LIVE")){
                             label_sol2fieldRB.fireEvent(new RunEvent(runNow.get()));
                         }
                     });
@@ -1046,18 +1042,16 @@ public class FXMLController implements Initializable {
                                 } catch (ConnectionException | GetException | PutException ex) {
                                     Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                                 }
-                            } else {
-                                textField_CV1current.fireEvent(new RunEvent(runNow.get()));
                             }
                         }
                     });
                     textField_CV1field.focusedProperty().addListener((obs, oldVal, newVal) ->{
-                        if(!newVal){
+                        if(!newVal.equals(oldVal)){
                             textField_CV1field.fireEvent(new RunEvent(runNow.get()));
                         }
                     });
                     label_CV1fieldRB.textProperty().addListener((obs, oldVal, newVal) ->{
-                        if(!newVal.equals(oldVal)){
+                        if(!newVal.equals(oldVal) && MainFunctions.mainDocument.getModel().get().matches("LIVE")){
                             label_CV1fieldRB.fireEvent(new RunEvent(runNow.get()));
                         }
                     });
@@ -1087,18 +1081,16 @@ public class FXMLController implements Initializable {
                                 } catch (ConnectionException | GetException | PutException ex) {
                                     Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                                 }
-                            } else {
-                                textField_CV2current.fireEvent(new RunEvent(runNow.get()));
                             }
                         }
                     });
                     textField_CV2field.focusedProperty().addListener((obs, oldVal, newVal) ->{
-                        if(!newVal){
+                        if(!newVal.equals(oldVal)){
                             textField_CV2field.fireEvent(new RunEvent(runNow.get()));
                         }
                     });
                     label_CV2fieldRB.textProperty().addListener((obs, oldVal, newVal) ->{
-                        if(!newVal.equals(oldVal)){
+                        if(!newVal.equals(oldVal) && MainFunctions.mainDocument.getModel().get().matches("LIVE")){
                             label_CV2fieldRB.fireEvent(new RunEvent(runNow.get()));
                         }
                     });
@@ -1131,18 +1123,16 @@ public class FXMLController implements Initializable {
                                 } catch (ConnectionException | GetException | PutException ex) {
                                     Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                                 }
-                            } else {
-                                textField_CH1current.fireEvent(new RunEvent(runNow.get()));
                             }
                         }
                     });
                     textField_CH1field.focusedProperty().addListener((obs, oldVal, newVal) ->{
-                        if(!newVal){
+                        if(!newVal.equals(oldVal)){
                             textField_CH1field.fireEvent(new RunEvent(runNow.get()));
                         }
                     });
                     label_CH1fieldRB.textProperty().addListener((obs, oldVal, newVal) ->{
-                        if(!newVal.equals(oldVal)){
+                        if(!newVal.equals(oldVal) && MainFunctions.mainDocument.getModel().get().matches("LIVE")){
                             label_CH1fieldRB.fireEvent(new RunEvent(runNow.get()));
                         }
                     });
@@ -1172,18 +1162,16 @@ public class FXMLController implements Initializable {
                                 } catch (ConnectionException | GetException | PutException ex) {
                                     Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                                 }
-                            } else {
-                                textField_CH2current.fireEvent(new RunEvent(runNow.get()));
                             }
                         }
                     });
                     textField_CH2field.focusedProperty().addListener((obs, oldVal, newVal) ->{
-                        if(!newVal){
+                        if(!newVal.equals(oldVal)){
                             textField_CH2field.fireEvent(new RunEvent(runNow.get()));
                         }
                     });
                     label_CH2fieldRB.textProperty().addListener((obs, oldVal, newVal) ->{
-                        if(!newVal.equals(oldVal)){
+                        if(!newVal.equals(oldVal) && MainFunctions.mainDocument.getModel().get().matches("LIVE")){
                             label_CH2fieldRB.fireEvent(new RunEvent(runNow.get()));
                         }
                     });
@@ -1712,7 +1700,7 @@ public class FXMLController implements Initializable {
                         Complex phi = new Complex(mon.getXAvg(),mon.getYAvg());
                         long scale2 = getScaleAxis(posPhi,posR);
                         seriesNPMposCyl[0].getData().add(new XYChart.Data(mon.getSDisplay(),phi.modulus()));
-                        seriesNPMposCyl[1].getData().add(new XYChart.Data(mon.getSDisplay(),scale2*phi.phase()/Math.PI));
+                        seriesNPMposCyl[1].getData().add(new XYChart.Data(mon.getSDisplay(),phi.phase()));
                     } catch (ConnectionException | GetException ex) {
                         Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -1725,12 +1713,12 @@ public class FXMLController implements Initializable {
                 npms.forEach((NPM mon) -> {
                     if(mon.getChannel(NPM.SIGMA_X_AVG_HANDLE).isConnected() && mon.getChannel(NPM.SIGMA_Y_AVG_HANDLE).isConnected()){
                         try {
-                            seriesNPMsigma[0].getData().add(new XYChart.Data(mon.getSDisplay(),scale*mon.getXSigmaAvg()*1.0e+3));
-                            seriesNPMsigma[0].getData().add(new XYChart.Data(mon.getSDisplay(),scale*mon.getXSigmaAvg()*-1.0e+3));
-                            seriesNPMsigma[1].getData().add(new XYChart.Data(mon.getSDisplay(),scale*mon.getYSigmaAvg()*1.0e+3));
-                            seriesNPMsigma[1].getData().add(new XYChart.Data(mon.getSDisplay(),scale*mon.getYSigmaAvg()*-1.0e+3));
-                            seriesNPMsigmaCyl.getData().add(new XYChart.Data(mon.getSDisplay(),scale*Math.max(mon.getXSigmaAvg(), mon.getYSigmaAvg())*1.0e+3));
-                            seriesNPMsigmaCyl.getData().add(new XYChart.Data(mon.getSDisplay(),scale*Math.min(mon.getXSigmaAvg(), mon.getYSigmaAvg())*-1.0e+3));
+                            seriesNPMsigma[0].getData().add(new XYChart.Data(mon.getSDisplay(),scale*mon.getXSigmaAvg()));
+                            seriesNPMsigma[0].getData().add(new XYChart.Data(mon.getSDisplay(),scale*mon.getXSigmaAvg()*-1.0));
+                            seriesNPMsigma[1].getData().add(new XYChart.Data(mon.getSDisplay(),scale*mon.getYSigmaAvg()));
+                            seriesNPMsigma[1].getData().add(new XYChart.Data(mon.getSDisplay(),scale*mon.getYSigmaAvg()*-1.0));
+                            seriesNPMsigmaCyl.getData().add(new XYChart.Data(mon.getSDisplay(),scale*Math.max(mon.getXSigmaAvg(), mon.getYSigmaAvg())));
+                            seriesNPMsigmaCyl.getData().add(new XYChart.Data(mon.getSDisplay(),scale*Math.min(mon.getXSigmaAvg(), mon.getYSigmaAvg())*-1.0));
                         } catch (ConnectionException | GetException ex) {
                             Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                         }
@@ -1741,13 +1729,13 @@ public class FXMLController implements Initializable {
                 npms.forEach((NPM mon) -> {
                     if (mon.getChannel(NPM.SIGMA_X_AVG_HANDLE).isConnected() && mon.getChannel(NPM.SIGMA_Y_AVG_HANDLE).isConnected()) {
                         try {
-                            seriesNPMsigma[0].getData().add(new XYChart.Data(mon.getSDisplay(),scale*mon.getXSigmaAvg()*1.0e+3+mon.getXAvg()));
-                            seriesNPMsigma[0].getData().add(new XYChart.Data(mon.getSDisplay(),scale*mon.getXSigmaAvg()*-1.0e+3+mon.getXAvg()));
-                            seriesNPMsigma[1].getData().add(new XYChart.Data(mon.getSDisplay(),scale*mon.getYSigmaAvg()*1.0e+3+mon.getYAvg()));
-                            seriesNPMsigma[1].getData().add(new XYChart.Data(mon.getSDisplay(),scale*mon.getYSigmaAvg()*-1.0e+3+mon.getYAvg()));
+                            seriesNPMsigma[0].getData().add(new XYChart.Data(mon.getSDisplay(),scale*mon.getXSigmaAvg()+mon.getXAvg()));
+                            seriesNPMsigma[0].getData().add(new XYChart.Data(mon.getSDisplay(),scale*mon.getXSigmaAvg()*-1.0+mon.getXAvg()));
+                            seriesNPMsigma[1].getData().add(new XYChart.Data(mon.getSDisplay(),scale*mon.getYSigmaAvg()+mon.getYAvg()));
+                            seriesNPMsigma[1].getData().add(new XYChart.Data(mon.getSDisplay(),scale*mon.getYSigmaAvg()*-1.0+mon.getYAvg()));
                             double posR1 = new Complex(mon.getXAvg(),mon.getYAvg()).modulus();
-                            seriesNPMsigmaCyl.getData().add(new XYChart.Data(mon.getSDisplay(), scale*Math.max(mon.getXSigmaAvg(), mon.getYSigmaAvg())*1.0e+3 + posR1));
-                            seriesNPMsigmaCyl.getData().add(new XYChart.Data(mon.getSDisplay(), scale*Math.max(mon.getXSigmaAvg(), mon.getYSigmaAvg())*-1.0e+3 + posR1));
+                            seriesNPMsigmaCyl.getData().add(new XYChart.Data(mon.getSDisplay(), scale*Math.max(mon.getXSigmaAvg(), mon.getYSigmaAvg()) + posR1));
+                            seriesNPMsigmaCyl.getData().add(new XYChart.Data(mon.getSDisplay(), scale*Math.max(mon.getXSigmaAvg(), mon.getYSigmaAvg())*-1.0 + posR1));
                         }catch (ConnectionException | GetException ex) {
                             Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
                         }
@@ -2230,15 +2218,17 @@ public class FXMLController implements Initializable {
 
         for (int i = 0; i < posX.size() ; i++) {
             seriesR.getData().add(new XYChart.Data(positions.get(i), posR.get(i)));
-            seriesPhi.getData().add(new XYChart.Data(positions.get(i), new Double(posPhi.get(i).toString())*scale2));
+            seriesPhi.getData().add(new XYChart.Data(positions.get(i), new Double(posPhi.get(i).toString())));//*scale2));
         }
 
         if (scale2 != 1){
-            yAxis.setLabel("Offset (mm) \nAngle (" + Double.toString((double) 1/scale2) + " * π rad)");
+            //yAxis.setLabel("Offset (mm) \nAngle (" + Double.toString((double) 1/scale2) + " * π rad)");
+            yAxis.setLabel("Offset (mm) \nAngle (rad)");
             //System.out.print(scale2);
         }
         else{
-            yAxis.setLabel("Offset (mm) \nAngle (π rad)");
+            //yAxis.setLabel("Offset (mm) \nAngle (π rad)");
+            yAxis.setLabel("Offset (mm) \nAngle (rad)");
         }
 
     }
@@ -2350,7 +2340,8 @@ public class FXMLController implements Initializable {
             yAxis.setLabel("Offset (mm)");
         }
         else if (radioButtonCyl.isSelected()){
-            yAxis.setLabel("Offset (mm) \n Angle (π rad)");
+            //yAxis.setLabel("Offset (mm) \n Angle (π rad)");
+            yAxis.setLabel("Offset (mm) \nAngle (rad)");
         }
     }
 
