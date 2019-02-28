@@ -336,8 +336,8 @@ public class SimulationRunner {
         envelopeTracker = AlgorithmFactory.createEnvelopeTracker(sequence);
 
         envelopeTracker.setUseSpacecharge(true);
-
-        envelopeTracker.setStepSize(0.001);
+        
+        envelopeTracker.setStepSize(0.02);
 
     }
 
@@ -349,8 +349,8 @@ public class SimulationRunner {
         envelopeTracker = AlgorithmFactory.createEnvelopeTracker(sequence);
 
         envelopeTracker.setUseSpacecharge(true);
-
-        envelopeTracker.setStepSize(0.001);
+        
+        envelopeTracker.setStepSize(0.02);
 
     }
 

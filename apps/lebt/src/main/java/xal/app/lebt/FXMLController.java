@@ -964,14 +964,16 @@ public class FXMLController implements Initializable {
                         }
                     });
                     textField_sol1field.focusedProperty().addListener((obs, oldVal, newVal) ->{
-                        if(!newVal.equals(oldVal)){
+                        if(!newVal){
                             textField_sol1field.fireEvent(new RunEvent(runNow.get()));
                         }
                     });
                     //set the magnets Readback display as change listener for changes -> run Model
                     label_sol1fieldRB.textProperty().addListener((obs, oldVal, newVal) ->{
-                        if(!newVal.equals(oldVal) && MainFunctions.mainDocument.getModel().get().matches("LIVE")){
-                            label_sol1fieldRB.fireEvent(new RunEvent(runNow.get()));
+                        if(!newVal.equals(oldVal)){
+                            if(MainFunctions.mainDocument.getModel().get().matches("LIVE")){
+                                label_sol1fieldRB.fireEvent(new RunEvent(runNow.get()));
+                            }
                         }
                     });
                 } else {                
@@ -1004,13 +1006,15 @@ public class FXMLController implements Initializable {
                         }
                     });
                     textField_sol2field.focusedProperty().addListener((obs, oldVal, newVal) ->{
-                        if(!newVal.equals(oldVal)){
+                        if(!newVal){
                             textField_sol2field.fireEvent(new RunEvent(runNow.get()));
                         }
                     });
                     label_sol2fieldRB.textProperty().addListener((obs, oldVal, newVal) ->{
-                        if(!newVal.equals(oldVal) && MainFunctions.mainDocument.getModel().get().matches("LIVE")){
-                            label_sol2fieldRB.fireEvent(new RunEvent(runNow.get()));
+                        if(!newVal.equals(oldVal)){
+                            if(MainFunctions.mainDocument.getModel().get().matches("LIVE")){
+                                label_sol2fieldRB.fireEvent(new RunEvent(runNow.get()));
+                            }
                         }
                     });
                 } else {                                    
@@ -1051,8 +1055,10 @@ public class FXMLController implements Initializable {
                         }
                     });
                     label_CV1fieldRB.textProperty().addListener((obs, oldVal, newVal) ->{
-                        if(!newVal.equals(oldVal) && MainFunctions.mainDocument.getModel().get().matches("LIVE")){
-                            label_CV1fieldRB.fireEvent(new RunEvent(runNow.get()));
+                        if(!newVal.equals(oldVal)){
+                            if(MainFunctions.mainDocument.getModel().get().matches("LIVE")){
+                                label_CV1fieldRB.fireEvent(new RunEvent(runNow.get()));
+                            }
                         }
                     });
                 } else {                
@@ -1090,8 +1096,10 @@ public class FXMLController implements Initializable {
                         }
                     });
                     label_CV2fieldRB.textProperty().addListener((obs, oldVal, newVal) ->{
-                        if(!newVal.equals(oldVal) && MainFunctions.mainDocument.getModel().get().matches("LIVE")){
-                            label_CV2fieldRB.fireEvent(new RunEvent(runNow.get()));
+                        if(!newVal.equals(oldVal)){
+                            if(MainFunctions.mainDocument.getModel().get().matches("LIVE")){
+                                label_CV2fieldRB.fireEvent(new RunEvent(runNow.get()));
+                            }
                         }
                     });
                 } else {                                    
@@ -1132,8 +1140,10 @@ public class FXMLController implements Initializable {
                         }
                     });
                     label_CH1fieldRB.textProperty().addListener((obs, oldVal, newVal) ->{
-                        if(!newVal.equals(oldVal) && MainFunctions.mainDocument.getModel().get().matches("LIVE")){
-                            label_CH1fieldRB.fireEvent(new RunEvent(runNow.get()));
+                        if(!newVal.equals(oldVal)){
+                            if(MainFunctions.mainDocument.getModel().get().matches("LIVE")){
+                                label_CH1fieldRB.fireEvent(new RunEvent(runNow.get()));
+                            }
                         }
                     });
                 } else {                
@@ -1171,8 +1181,10 @@ public class FXMLController implements Initializable {
                         }
                     });
                     label_CH2fieldRB.textProperty().addListener((obs, oldVal, newVal) ->{
-                        if(!newVal.equals(oldVal) && MainFunctions.mainDocument.getModel().get().matches("LIVE")){
-                            label_CH2fieldRB.fireEvent(new RunEvent(runNow.get()));
+                        if(!newVal.equals(oldVal)){
+                            if(MainFunctions.mainDocument.getModel().get().matches("LIVE")){
+                                label_CH2fieldRB.fireEvent(new RunEvent(runNow.get()));
+                            }
                         }
                     });
                 } else {                                    
