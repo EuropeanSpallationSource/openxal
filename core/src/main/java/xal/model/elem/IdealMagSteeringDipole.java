@@ -266,7 +266,7 @@ public class IdealMagSteeringDipole extends ThinElectromagnet {
             break;
             
         case ORIENT_VER:
-        	  matPhi.setElem(3,6, -dp); //this polarity with dp was wrong with orbitcorrect application. -dp is correct
+        	  matPhi.setElem(3,6, dp);
             break;
                 
             default:
