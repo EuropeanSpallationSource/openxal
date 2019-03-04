@@ -555,7 +555,11 @@ public class FXMLController implements Initializable {
         });
         
         MainFunctions.mainDocument.getAcceleratorProperty().addChangeListener((obs, oldVal, newVal) ->{
-                
+            
+            //stop simulation and disables inputs until sequence is chosen
+            mainTabPane.setDisable(true);
+            runNow.set(false);
+            
             //Check if the accelerator file contains the LEBT and Ion Source sequences
             if(MainFunctions.mainDocument.getAccelerator().findSequence("LEBT")==null || MainFunctions.mainDocument.getAccelerator().findSequence("ISRC")==null){
                  Alert alert = new Alert(AlertType.ERROR);
@@ -564,38 +568,35 @@ public class FXMLController implements Initializable {
                 alert.setContentText("Check inputs and try again");
                 alert.showAndWait();
                 Logger.getLogger(FXMLController.class.getName()).log(Level.FINER, "Accelerator file has no LEBT and/or Ion Source sequence.");
-                System.exit(0);
-            }
-            //Define Channel signals attached to textFields and displayFields
-            setupChannelSignals();
-            setupInitialConditions();
-            
-            //stop simulation and disables inputs until sequence is chosen
-            mainTabPane.setDisable(true);
-            runNow.set(false);
-            
-            //clear plots
-            for(int i = 0; i<seriesSurroundings.length;i++){
-                seriesSigmaX[i].getData().clear();
-                seriesSigmaY[i].getData().clear();
-                seriesSigmaR[i].getData().clear();
-                seriesSigmaOffsetX[i].getData().clear();
-                seriesSigmaOffsetY[i].getData().clear();
-                seriesSigmaOffsetR[i].getData().clear();
-                seriesSurroundings[i].getData().clear();
-                seriesNPMpos[i].getData().clear();
-                seriesNPMsigma[i].getData().clear();
-                seriesNPMposCyl[i].getData().clear();
-            }
-            comboBox_posNPM.setSelected(false);
-            comboBox_sigmaNPM.setSelected(false);
-            comboBox_currentFC.setSelected(false);
-            
-            //Initializes TextField 
-            setConnectAndMonitor();
-            initBIElements();   
-            initDisplayFields();                
+                //System.exit(0);
+            } else {
+                //Define Channel signals attached to textFields and displayFields
+                setupChannelSignals();
+                setupInitialConditions();                        
 
+                //clear plots
+                for(int i = 0; i<seriesSurroundings.length;i++){
+                    seriesSigmaX[i].getData().clear();
+                    seriesSigmaY[i].getData().clear();
+                    seriesSigmaR[i].getData().clear();
+                    seriesSigmaOffsetX[i].getData().clear();
+                    seriesSigmaOffsetY[i].getData().clear();
+                    seriesSigmaOffsetR[i].getData().clear();
+                    seriesSurroundings[i].getData().clear();
+                    seriesNPMpos[i].getData().clear();
+                    seriesNPMsigma[i].getData().clear();
+                    seriesNPMposCyl[i].getData().clear();
+                }
+                comboBox_posNPM.setSelected(false);
+                comboBox_sigmaNPM.setSelected(false);
+                comboBox_currentFC.setSelected(false);
+
+                //Initializes TextField 
+                setConnectAndMonitor();
+                initBIElements();   
+                initDisplayFields();                
+            }
+            
         });
         
         //Set input parameter for Simulation
