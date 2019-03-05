@@ -44,9 +44,6 @@ build.maven:
         - 'mvn $MAVEN_CLI_OPTS verify -Dmaven.javadoc.skip=true -fn | tee std.out'
         - '! grep "Build failures were ignored" std.out'
     artifacts:
-        paths:
-            - "$SUBDIR/target/surefire-reports/TEST-*.xml"
-            - "$SUBDIR/*/target/surefire-reports/TEST-*.xml"
         reports:
             junit:
                 - "$SUBDIR/target/surefire-reports/TEST-*.xml"
