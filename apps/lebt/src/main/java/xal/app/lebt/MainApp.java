@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 import static javafx.application.Application.launch;
 import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Menu;
 import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.ToggleGroup;
@@ -73,7 +74,13 @@ class ModelMenu implements EventHandler {
     @Override
     public void handle(Event t) {
         RadioMenuItem menu = (RadioMenuItem) modelGroup.getSelectedToggle();
+        if(document.getSequence() == null){                    
+            Alert alert = new Alert(Alert.AlertType.WARNING);            
+            alert.setHeaderText("Missing Sequence");
+            alert.setContentText("Please select a sequence.");
+            alert.showAndWait();            
+        } 
         document.setModel(menu.getText());
-        Logger.getLogger(LEBTDocument.class.getName()).log(Level.FINER, "Selected Model {0}",document.getModel().toString());
+        Logger.getLogger(LEBTDocument.class.getName()).log(Level.FINER, "Selected Model {0}",document.getModel().toString());                
     }
 }
