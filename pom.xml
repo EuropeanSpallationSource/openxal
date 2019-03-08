@@ -32,7 +32,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.10.4</version>
+                <version>3.0.1</version>
                 <configuration>
                     <isOffline>true</isOffline>
                     <additionalparam>-Xdoclint:none</additionalparam>
@@ -49,17 +49,21 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.2</version>
-                <executions>
+                <version>0.8.3</version>
+                    <configuration>
+                        <!-- Sets the VM argument line used when unit tests are run. -->
+                        <propertyName>surefireArgLine</propertyName>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>prepare-agent</goal>
+                            </goals>
+                        </execution>
+                        <!-- attached to Maven test phase -->
                     <execution>
-                        <id>jacoco-initialize</id>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>jacoco-site</id>
-                        <phase>package</phase>
+                        <id>report</id>
+                        <phase>test</phase>
                         <goals>
                             <goal>report</goal>
                         </goals>
@@ -71,11 +75,10 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.1</version>
                 <configuration>
-                    <!--<argLine>${argLine} -Dxal.tests.root=${project.build.directory}/test-classes -Duser.language=en -Duser.region=US</argLine>-->
-                    <argLine>-Dxal.tests.root=${project.build.directory}/test-classes -Duser.language=en -Duser.region=US</argLine>
+                    <argLine>${surefireArgLine} -Dxal.tests.root=${project.build.directory}/test-classes -Duser.language=en -Duser.region=US</argLine>
                     <systemPropertyVariables>
-                            <propertyName>build.tests.root</propertyName>
-                            <buildDirectory>${project.build.directory}/test-classes</buildDirectory>
+                        <propertyName>build.tests.root</propertyName>
+                        <buildDirectory>${project.build.directory}/test-classes</buildDirectory>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
@@ -86,7 +89,7 @@
     <properties>
         <main.basedir>${project.basedir}</main.basedir>
     </properties>
-    
+
     <repositories>
         <repository>
             <id>project</id>
