@@ -254,8 +254,8 @@ public class SimulationRunner {
                 end_simul =  seq.getNodeWithId(final_pos_simul);
             }
             AcceleratorNode electrode_node = null;
-            if (seq.getAllNodes().toString().contains("LEBT-010:BMD-Rep-01")){
-                electrode_node = seq.getNodeWithId("LEBT-010:BMD-Rep-01");
+            if (seq.getAllNodes().toString().contains("START-COMISS-TANK")){
+                electrode_node = seq.getNodeWithId("START-COMISS-TANK");
                 if (electrode_node.getSDisplay()<start_simul.getSDisplay()){
                     electrode = false;
                 }
@@ -294,8 +294,8 @@ public class SimulationRunner {
                 end_simul =  seq.getNodeWithId(final_pos_simul);
             }
             AcceleratorNode electrode_node = null;
-            if (seq.getAllNodes().toString().contains("LEBT-010:BMD-Rep-01")){
-                electrode_node = seq.getNodeWithId("LEBT-010:BMD-Rep-01");
+            if (seq.getAllNodes().toString().contains("START-COMISS-TANK")){
+                electrode_node = seq.getNodeWithId("START-COMISS-TANK");
                 if (electrode_node.getSDisplay()<start_simul.getSDisplay()){
                     electrode = false;
                 }
@@ -337,7 +337,7 @@ public class SimulationRunner {
 
         envelopeTracker.setUseSpacecharge(true);
         
-        envelopeTracker.setStepSize(0.02);
+        envelopeTracker.setStepSize(0.05);
 
     }
 
@@ -350,7 +350,7 @@ public class SimulationRunner {
 
         envelopeTracker.setUseSpacecharge(true);
         
-        envelopeTracker.setStepSize(0.02);
+        envelopeTracker.setStepSize(0.05);
 
     }
 
@@ -412,7 +412,7 @@ public class SimulationRunner {
 
         ArrayList<EnvelopeProbeState> stateElement = (ArrayList<EnvelopeProbeState>) trajectory.getStatesViaIndexer();
         CovarianceMatrix covmat;
-        int[] index = trajectory.indicesForElement("LEBT-010:BMD-Rep-01");
+        int[] index = trajectory.indicesForElement("START-COMISS-TANK");
 
         covmat = stateElement.get(index[0]).getCovarianceMatrix();
 
@@ -560,12 +560,31 @@ public class SimulationRunner {
             }
                       
             aperture = getAperture(stateElement.get(i).getPosition());
-            if(Double.isFinite(aperture)){
-                double x0 = (aperture-covmat.getMeanX())/(Math.sqrt(2.0)*covmat.getSigmaX());
-                double x1 = (-aperture-covmat.getMeanX())/(Math.sqrt(2.0)*covmat.getSigmaX());
-                double y0 = (aperture-covmat.getMeanY())/(Math.sqrt(2.0)*covmat.getSigmaY());
-                double y1 = (-aperture-covmat.getMeanY())/(Math.sqrt(2.0)*covmat.getSigmaY());                   
-                transmission_offset = Math.min(transmission_offset,(0.25*Math.abs(erf(x0)-erf(x1))*Math.abs(erf(y0)-erf(y1))));
+            if((Double.isFinite(aperture)) && stateElement.get(i).getPosition()< 2.509){
+                double xc = Math.abs(covmat.getMeanX());
+                double yc = Math.abs(covmat.getMeanY());
+                double x0=0.0, x1=0.0 , y0=0.0, y1=0.0;
+                double transOffx = 0.0;
+                double transOffy = 0.0;
+                if(xc<aperture){
+                    x0 = (aperture-xc)/(Math.sqrt(2.0)*covmat.getSigmaX());
+                    x1 = (aperture+xc)/(Math.sqrt(2.0)*covmat.getSigmaX()); 
+                    transOffx = 0.5*Math.abs(erf(x0)+erf(x1));
+                } else {
+                    x0 = (xc+aperture)/(Math.sqrt(2.0)*covmat.getSigmaX());
+                    x1 = (xc-aperture)/(Math.sqrt(2.0)*covmat.getSigmaX());
+                    transOffx = 0.5*Math.abs(erf(x0)-erf(x1));
+                }
+                if (yc < aperture){
+                    y0 = (aperture-yc)/(Math.sqrt(2.0)*covmat.getSigmaY());
+                    y1 = (aperture+yc)/(Math.sqrt(2.0)*covmat.getSigmaY());  
+                    transOffy = Math.abs(erf(x0)+erf(x1));
+                } else {
+                    y0 = (yc+aperture)/(Math.sqrt(2.0)*covmat.getSigmaY());
+                    y1 = (yc-aperture)/(Math.sqrt(2.0)*covmat.getSigmaY());
+                    transOffy = Math.abs(erf(x0)-erf(x1));
+                }
+                transmission_offset = Math.min(transmission_offset,transOffx*transOffy);
 
                 x0 = aperture/(Math.sqrt(2.0)*covmat.getSigmaX());
                 y0 = aperture/(Math.sqrt(2.0)*covmat.getSigmaY());

@@ -9,6 +9,7 @@ package xal.extension.fxapplication;
 import java.util.HashSet;
 import java.util.Set;
 import javafx.beans.value.ChangeListener;
+import javafx.event.Event;
 import xal.smf.Accelerator;
 
 /**
@@ -28,8 +29,7 @@ public class AcceleratorProperty {
           this.accelerator = accelerator;
           listeners.forEach(listener -> listener.changed(null, old_accelerator, this.accelerator));
         }
-
-    }
+    }    
 
     public Accelerator getAccelerator() {
         synchronized( listeners ){

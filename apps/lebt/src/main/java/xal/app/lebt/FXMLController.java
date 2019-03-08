@@ -498,9 +498,9 @@ public class FXMLController implements Initializable {
             sigmaOffsetY[i] = new ArrayList<Double>();
         }
                 
-        MainFunctions.mainDocument.getSequenceProperty().addListener((obs, oldVal, newVal) ->{
+        MainFunctions.mainDocument.getSequenceProperty().addListener((ObservableValue<? extends String> obs, String oldVal, String newVal) ->{
 
-            if(newVal != null && !newVal.matches("ISRC")){
+            if(newVal != null){
                 //get Sequence
                 String sequenceName = MainFunctions.mainDocument.getSequence();
                 String Sequence = MainFunctions.mainDocument.getAccelerator().getSequences().toString();
@@ -538,13 +538,36 @@ public class FXMLController implements Initializable {
                 });   
                 
                 mainTabPane.setDisable(false);
-                textField_sol1field.setVisible(false);
-                textField_sol2field.setVisible(false);
-                textField_CV1field.setVisible(false);
-                textField_CV2field.setVisible(false);
-                textField_CH1field.setVisible(false);
-                textField_CH2field.setVisible(false);
-                label_Field.setVisible(false);
+                
+                if(MainFunctions.mainDocument.getModel().getValue().equals("LIVE")){
+                    setValues.forEach((channel,textField)->{
+                        textField.setDisable(false);
+                    });
+                    textField_sol1field.setVisible(false);
+                    textField_sol2field.setVisible(false);
+                    textField_CV1field.setVisible(false);
+                    textField_CV2field.setVisible(false);
+                    textField_CH1field.setVisible(false);
+                    textField_CH2field.setVisible(false);
+                    label_Field.setVisible(false);
+                } else if(MainFunctions.mainDocument.getModel().getValue().equals("DESIGN")) {                    
+                    setValues.forEach((channel,textField)->{
+                        textField.setDisable(true);
+                    });
+                    textField_sol1field.setVisible(true);
+                    textField_sol2field.setVisible(true);
+                    textField_CV1field.setVisible(true);
+                    textField_CV2field.setVisible(true);
+                    textField_CH1field.setVisible(true);
+                    textField_CH2field.setVisible(true);
+                    label_Field.setVisible(true);
+                    textField_sol1field.setText(label_sol1fieldRB.getText());
+                    textField_sol2field.setText(label_sol2fieldRB.getText());
+                    textField_CV1field.setText(label_CV1fieldRB.getText());
+                    textField_CV2field.setText(label_CV2fieldRB.getText());
+                    textField_CH1field.setText(label_CH1fieldRB.getText());
+                    textField_CH2field.setText(label_CH2fieldRB.getText());
+                }                                
                 
                 //assigning initial parameters and run the fisrt simulation
                 getParameters();
@@ -555,7 +578,11 @@ public class FXMLController implements Initializable {
         });
         
         MainFunctions.mainDocument.getAcceleratorProperty().addChangeListener((obs, oldVal, newVal) ->{
-                
+            
+            //stop simulation and disables inputs until sequence is chosen
+            mainTabPane.setDisable(true);
+            runNow.set(false);
+            
             //Check if the accelerator file contains the LEBT and Ion Source sequences
             if(MainFunctions.mainDocument.getAccelerator().findSequence("LEBT")==null || MainFunctions.mainDocument.getAccelerator().findSequence("ISRC")==null){
                  Alert alert = new Alert(AlertType.ERROR);
@@ -564,38 +591,35 @@ public class FXMLController implements Initializable {
                 alert.setContentText("Check inputs and try again");
                 alert.showAndWait();
                 Logger.getLogger(FXMLController.class.getName()).log(Level.FINER, "Accelerator file has no LEBT and/or Ion Source sequence.");
-                System.exit(0);
-            }
-            //Define Channel signals attached to textFields and displayFields
-            setupChannelSignals();
-            setupInitialConditions();
-            
-            //stop simulation and disables inputs until sequence is chosen
-            mainTabPane.setDisable(true);
-            runNow.set(false);
-            
-            //clear plots
-            for(int i = 0; i<seriesSurroundings.length;i++){
-                seriesSigmaX[i].getData().clear();
-                seriesSigmaY[i].getData().clear();
-                seriesSigmaR[i].getData().clear();
-                seriesSigmaOffsetX[i].getData().clear();
-                seriesSigmaOffsetY[i].getData().clear();
-                seriesSigmaOffsetR[i].getData().clear();
-                seriesSurroundings[i].getData().clear();
-                seriesNPMpos[i].getData().clear();
-                seriesNPMsigma[i].getData().clear();
-                seriesNPMposCyl[i].getData().clear();
-            }
-            comboBox_posNPM.setSelected(false);
-            comboBox_sigmaNPM.setSelected(false);
-            comboBox_currentFC.setSelected(false);
-            
-            //Initializes TextField 
-            setConnectAndMonitor();
-            initBIElements();   
-            initDisplayFields();                
+                //System.exit(0);
+            } else {
+                //Define Channel signals attached to textFields and displayFields
+                setupChannelSignals();
+                setupInitialConditions();                        
 
+                //clear plots
+                for(int i = 0; i<seriesSurroundings.length;i++){
+                    seriesSigmaX[i].getData().clear();
+                    seriesSigmaY[i].getData().clear();
+                    seriesSigmaR[i].getData().clear();
+                    seriesSigmaOffsetX[i].getData().clear();
+                    seriesSigmaOffsetY[i].getData().clear();
+                    seriesSigmaOffsetR[i].getData().clear();
+                    seriesSurroundings[i].getData().clear();
+                    seriesNPMpos[i].getData().clear();
+                    seriesNPMsigma[i].getData().clear();
+                    seriesNPMposCyl[i].getData().clear();
+                }
+                comboBox_posNPM.setSelected(false);
+                comboBox_sigmaNPM.setSelected(false);
+                comboBox_currentFC.setSelected(false);
+
+                //Initializes TextField 
+                setConnectAndMonitor();
+                initBIElements();   
+                initDisplayFields();                
+            }
+            
         });
         
         //Set input parameter for Simulation
@@ -643,7 +667,6 @@ public class FXMLController implements Initializable {
 
         //Disable text field in case Model type chages to Design
         MainFunctions.mainDocument.getModel().addListener((ObservableValue<? extends String> obs, String oldVal, String newVal) ->{
-
             if(newVal.matches("DESIGN")){
                 setValues.forEach((channel,textField)->{
                     textField.setDisable(true);
@@ -661,7 +684,7 @@ public class FXMLController implements Initializable {
                 textField_CV2field.setText(label_CV2fieldRB.getText());
                 textField_CH1field.setText(label_CH1fieldRB.getText());
                 textField_CH2field.setText(label_CH2fieldRB.getText());
-                
+
             } else if (newVal.matches("LIVE")){
                 //set the magnets values as the readbacks from the channels
                 Button applyButton = new Button("Apply Selection");
@@ -679,7 +702,7 @@ public class FXMLController implements Initializable {
                 TableColumn<Magnet,String> oldFieldColumn = new TableColumn<Magnet, String>("Old Field");
 
                 ObservableList<Magnet> inputMagnets = FXCollections.observableArrayList();
-                
+
                 if(!label_sol1fieldRB.isDisable()){
                     inputMagnets.add(new Magnet("LEBT-010:BMD-Sol-01",textField_sol1field.getText(),label_sol1fieldRB.getText(),false));
                 }
@@ -737,13 +760,13 @@ public class FXMLController implements Initializable {
                 cancelButton.setOnMouseClicked((MouseEvent event) -> {                                        
                     newWindow.close();
                 });
-                
+
                 newWindow.show();
-                
+
                 setValues.forEach((channel,textField)->{
                     textField.setDisable(false);
                 });
-                
+
                 textField_sol1field.setVisible(false);
                 textField_sol2field.setVisible(false);
                 textField_CV1field.setVisible(false);
@@ -751,9 +774,9 @@ public class FXMLController implements Initializable {
                 textField_CH1field.setVisible(false);
                 textField_CH2field.setVisible(false);
                 label_Field.setVisible(false);
-                                                
+
                 mainTabPane.fireEvent(new RunEvent(runNow.get())); 
-            }
+            }            
 
         });      
 
@@ -1806,7 +1829,7 @@ public class FXMLController implements Initializable {
         if (newRun.hasRun()){
             addEnvelopeSeriesToPlot();
             npmSigHandler(new ActionEvent());
-            label_transmission.setText(String.format("%.3f",newRun.getTransmission(radioButtonOffsetOn.isSelected())*100));
+            label_transmission.setText(String.format("%.2f",newRun.getTransmission(radioButtonOffsetOn.isSelected())*100));
         } else {
             setLabels();
             setBounds();
@@ -2137,7 +2160,7 @@ public class FXMLController implements Initializable {
             positions.set(i, (Double) positions.get(i) + pos_ini);
         }
         
-        label_transmission.setText(String.format("%.3f",newRun.getTransmission(radioButtonOffsetOn.isSelected())*100));
+        label_transmission.setText(String.format("%.2f",newRun.getTransmission(radioButtonOffsetOn.isSelected())*100));
         
     }        
 
