@@ -4,8 +4,8 @@
   
     <parent>
         <artifactId>openxal.apps</artifactId>
-        <groupId>org.xal</groupId>
-        <version>1.2.9</version>
+        <groupId>org.xal</groupId>        
+        <version>1.2.10</version>
     </parent>
 
     <artifactId>openxal.apps.lebt</artifactId>

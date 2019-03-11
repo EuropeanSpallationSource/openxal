@@ -710,16 +710,16 @@ public class FXMLController implements Initializable {
                     inputMagnets.add(new Magnet("LEBT-010:BMD-Sol-02",textField_sol2field.getText(),label_sol2fieldRB.getText(),false));
                 }
                 if(!label_CV1fieldRB.isDisable()){
-                    inputMagnets.add(new Magnet("LEBT-010:BMD-CV-01:1",textField_CV1field.getText(),label_CV1fieldRB.getText(),false));
+                    inputMagnets.add(new Magnet("LEBT-010:BMD-CV-01",textField_CV1field.getText(),label_CV1fieldRB.getText(),false));
                 }
                 if(!label_CH1fieldRB.isDisable()){
-                    inputMagnets.add(new Magnet("LEBT-010:BMD-CH-01:1",textField_CH1field.getText(),label_CH1fieldRB.getText(),false));
+                    inputMagnets.add(new Magnet("LEBT-010:BMD-CH-01",textField_CH1field.getText(),label_CH1fieldRB.getText(),false));
                 }
                 if(!label_CV2fieldRB.isDisable()){
-                    inputMagnets.add(new Magnet("LEBT-010:BMD-CV-02:1",textField_CV2field.getText(),label_CV2fieldRB.getText(),false));
+                    inputMagnets.add(new Magnet("LEBT-010:BMD-CV-02",textField_CV2field.getText(),label_CV2fieldRB.getText(),false));
                 }
                 if(!label_CH2fieldRB.isDisable()){
-                    inputMagnets.add(new Magnet("LEBT-010:BMD-CH-02:1",textField_CH2field.getText(),label_CH2fieldRB.getText(),false));
+                    inputMagnets.add(new Magnet("LEBT-010:BMD-CH-02",textField_CH2field.getText(),label_CH2fieldRB.getText(),false));
                 }
 
                 elementColumn.setCellValueFactory(new PropertyValueFactory<>("magnetName"));
