@@ -85,7 +85,7 @@ publish.maven:
     script:
         - 'mvn $MAVEN_CLI_OPTS deploy -pl dist -Dartifactory.username={{ARTIFACTORY_USERNAME}} -Dartifactory.password={{ARTIFACTORY_PASSWORD}}'
     only:
-        - site.ess.stable@ess-crs/openxal
+        - tags
         - site.ess.master@ess-crs/openxal
 
 pages:
