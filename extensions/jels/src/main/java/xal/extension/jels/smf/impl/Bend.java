@@ -17,8 +17,10 @@
  */
 package xal.extension.jels.smf.impl;
 
+import java.util.Arrays;
 import xal.extension.jels.smf.attr.MagnetBucket;
 import xal.ca.ChannelFactory;
+import xal.smf.impl.Magnet;
 import xal.smf.impl.qualify.ElementTypeManager;
 
 /**
@@ -33,6 +35,8 @@ public class Bend extends xal.smf.impl.Bend {
      * device type
      */
     public static final String s_strType = "D";
+    public static final String[] s_strType_DH = {"dh", "horzbend", "hbend"};
+    public static final String[] s_strType_DV = {"dv", "vertbend", "vbend"};
 
     static {
         registerType();
@@ -205,7 +209,11 @@ public class Bend extends xal.smf.impl.Bend {
      * @return true if the node is a match and false otherwise.
      */
     @Override
-    public boolean isKindOf(final String type) {
-        return type.equalsIgnoreCase(s_strType) || super.isKindOf(type);
+    public boolean isKindOf(String type) {
+        if (getOrientation() == Magnet.HORIZONTAL) {
+            return type.equalsIgnoreCase(s_strType) || Arrays.asList(s_strType_DH).contains(type.toLowerCase()) || super.isKindOf(type);
+        } else {
+            return type.equalsIgnoreCase(s_strType) || Arrays.asList(s_strType_DV).contains(type.toLowerCase()) || super.isKindOf(type);
+        }
     }
 }
