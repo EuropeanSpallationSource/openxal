@@ -578,11 +578,11 @@ public class SimulationRunner {
                 if (yc < aperture){
                     y0 = (aperture-yc)/(Math.sqrt(2.0)*covmat.getSigmaY());
                     y1 = (aperture+yc)/(Math.sqrt(2.0)*covmat.getSigmaY());  
-                    transOffy = Math.abs(erf(x0)+erf(x1));
+                    transOffy = 0.5*Math.abs(erf(x0)+erf(x1));
                 } else {
                     y0 = (yc+aperture)/(Math.sqrt(2.0)*covmat.getSigmaY());
                     y1 = (yc-aperture)/(Math.sqrt(2.0)*covmat.getSigmaY());
-                    transOffy = Math.abs(erf(x0)-erf(x1));
+                    transOffy = 0.5*Math.abs(erf(x0)-erf(x1));
                 }
                 transmission_offset = Math.min(transmission_offset,transOffx*transOffy);
 
