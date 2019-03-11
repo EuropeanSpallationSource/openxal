@@ -102,12 +102,12 @@ public class SteererTest extends TestCommon {
         sequence.addNode(quad);
 
         DipoleCorr vcorr = ElementFactory.createCorrector("VC", MagnetType.VERTICAL, L * 1e-3, new ApertureBucket(), null, L / 2. * 1e-3);
-        // FIXME Bx is not in create corrector!
-        vcorr.setDfltField(-Bx);
+
+        vcorr.setDfltField(Bx);
         sequence.addNode(vcorr);
 
         DipoleCorr hcorr = ElementFactory.createCorrector("HC", MagnetType.HORIZONTAL, L * 1e-3, new ApertureBucket(), null, L / 2. * 1e-3);
-        // FIXME Bx is not in create corrector!
+
         hcorr.setDfltField(By);
         sequence.addNode(hcorr);
 
