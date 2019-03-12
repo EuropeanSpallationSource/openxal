@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.xal</groupId>
         <artifactId>openxal</artifactId>
-        <version>1.2.6-SNAPSHOT</version>
+        <version>1.2.9-SNAPSHOT</version>
     </parent>
 
     <artifactId>openxal.apps</artifactId>
@@ -63,6 +63,11 @@
         <module>wirescan</module>
         <module>xyzcorrelator</module>-->
   </modules>
+  
+    <!-- For the local repository -->
+    <properties>
+        <main.basedir>${project.basedir}/..</main.basedir>
+    </properties>
     
     <!-- Build executable jar for all applications and copy the jar to the target/dist folder -->
     <!-- The property mainClass should be defined in the application's pom.xml -->

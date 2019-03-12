@@ -1,14 +1,16 @@
 package xal.extension.jels.smf.impl;
 
+import java.util.Arrays;
 import xal.ca.ChannelFactory;
 import xal.extension.jels.smf.attr.MagnetBucket;
+import xal.smf.impl.Magnet;
 import xal.smf.impl.qualify.ElementTypeManager;
 import xal.smf.impl.qualify.MagnetType;
 
 /**
- * Base class for dipole correctors.
+ * Class for horizontal and vertical correctors.
  *
- * @author Blaz Kranjc
+ * @author Juan F. Esteban Müller <JuanF.EstebanMuller@esss.se>
  */
 public class DipoleCorr extends xal.smf.impl.DipoleCorr {
 
@@ -39,6 +41,8 @@ public class DipoleCorr extends xal.smf.impl.DipoleCorr {
      * standard type for nodes of this class
      */
     public static final String s_strType = "DC";
+    public static final String[] s_strType_DCH = {"dch", "horzcorr", "hcorr"};
+    public static final String[] s_strType_DCV = {"dcv", "vertcorr", "vcorr"};
 
     // static initializer
     static {
@@ -78,5 +82,14 @@ public class DipoleCorr extends xal.smf.impl.DipoleCorr {
     @Override
     public int getOrientation() {
         return m_bucESSMagnet.getOrientation();
+    }
+
+    @Override
+    public boolean isKindOf(String type) {
+        if (getOrientation() == Magnet.HORIZONTAL) {
+            return type.equalsIgnoreCase(s_strType) || Arrays.asList(s_strType_DCH).contains(type.toLowerCase()) || super.isKindOf(type);
+        } else {
+            return type.equalsIgnoreCase(s_strType) || Arrays.asList(s_strType_DCV).contains(type.toLowerCase()) || super.isKindOf(type);
+        }
     }
 }

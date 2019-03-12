@@ -1,5 +1,8 @@
 variables:
     GIT_SSL_NO_VERIFY: "true"
+    MAVEN_CLI_OPTS: "--batch-mode"
+    MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
+
 test:
     script:
         - yum install ant junit ant-junit maven -y
@@ -12,24 +15,45 @@ test:
     image: europeanspallationsource/oracle-jdk-maven-jenkins:8
     only:
         - /^site.ess.*$/
+    tags:
+        - docker
+
 build.maven:
     <<: *maven
     stage: build
     script:
-        - 'mvn -DskipTests -Dmaven.javadoc.skip=true install -B'
+        - 'mvn $MAVEN_CLI_OPTS -DskipTests -Dmaven.javadoc.skip=true install'
+    artifacts:
+        paths:
+            - .m2/repository/org/xal/
+            - "apps/target/dist/*.jar"
+            - "library/target/*.jar"
+            - "third-party-libs/target/*.jar"
+            - "*/target/classes"
+            - "*/*/target/classes"
+            - "*/*/*/target/classes"
+            - "*/target/test-classes"
+            - "*/*/target/test-classes"
+            - "*/*/*/target/test-classes"
+
 .maventest: &maventest
     <<: *maven
     stage: test
     script:
-        - 'mvn -DskipTests -Dmaven.javadoc.skip=true install -B'
         - 'cd $SUBDIR'
-        - 'mvn verify -Dmaven.javadoc.skip=true -fn -B | tee std.out'
+        - 'mvn $MAVEN_CLI_OPTS verify -Dmaven.javadoc.skip=true -fn | tee std.out'
         - '! grep "Build failures were ignored" std.out'
     artifacts:
+        paths:
+            - "$SUBDIR/target/surefire-reports/TEST-*.xml"
+            - "$SUBDIR/*/target/surefire-reports/TEST-*.xml"
+            - "$SUBDIR/target/jacoco.exec"
+            - "$SUBDIR/*/target/jacoco.exec"
         reports:
             junit:
                 - "$SUBDIR/target/surefire-reports/TEST-*.xml"
                 - "$SUBDIR/*/target/surefire-reports/TEST-*.xml"
+
 test.maven.apps:
     <<: *maventest
     variables:
@@ -46,31 +70,33 @@ test.maven.plugins:
     <<: *maventest
     variables:
         SUBDIR: 'plugins'
+
 sonarqube.maven:
     <<: *maven
     stage: deploy
     script:
-        - 'mvn -Dsonar.login={{SONAR_TOKEN}} sonar:sonar'
+        - 'mvn $MAVEN_CLI_OPTS -Dsonar.login=$SONARQUBE_TOKEN -Dsonar.branch=$CI_COMMIT_REF_SLUG -Dsonar.junit.reportPaths=target/surefire-reports -Dsonar.jacoco.reportPaths="target/jacoco.exec, ../test/target/jacoco.exec" sonar:sonar'
     only:
-        - /^site.ess.never*$/
+        - /^site.ess.*$/
+
 publish.maven:
     <<: *maven
     stage: deploy
     script:
-        - 'mvn deploy -pl dist -Dartifactory.username={{ARTIFACTORY_USERNAME}} -Dartifactory.password={{ARTIFACTORY_PASSWORD}}'
+        - 'mvn $MAVEN_CLI_OPTS deploy -pl dist -Dartifactory.username={{ARTIFACTORY_USERNAME}} -Dartifactory.password={{ARTIFACTORY_PASSWORD}}'
     only:
-        - site.ess.master.never@ess-crs/openxal
+        - tags
+        - site.ess.master@ess-crs/openxal
+
 pages:
     <<: *maven
     script:
-        - 'mvn -Dmaven.javadoc.skip=true install -B'
-        - 'mvn javadoc:aggregate -B'
-        - 'mvn jacoco:report-aggregate -B'
+        - 'mvn $MAVEN_CLI_OPTS javadoc:aggregate'
+        - 'mvn $MAVEN_CLI_OPTS jacoco:report-aggregate'
         - 'mv report/target/site/jacoco-aggregate target/site/apidocs/coverage'
         - 'mv target/site/apidocs public'
     artifacts:
         paths:
             - public
     only:
-        - site.ess.master
-
+        - site.ess.stable

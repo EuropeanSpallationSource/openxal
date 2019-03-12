@@ -101,7 +101,7 @@ public class SteererTest extends TestCommon {
 
         DipoleCorr vcorr = ESSElementFactory.createESSCorrector("VC", MagnetType.VERTICAL, L * 1e-3, new ApertureBucket(), null, L / 2. * 1e-3);
         // Setting the field
-        vcorr.setDfltField(-Bx);
+        vcorr.setDfltField(Bx);
         sequence.addNode(vcorr);
 
         DipoleCorr hcorr = ESSElementFactory.createESSCorrector("HC", MagnetType.HORIZONTAL, L * 1e-3, new ApertureBucket(), null, L / 2. * 1e-3);

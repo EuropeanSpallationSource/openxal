@@ -64,6 +64,9 @@ public class MainFunctions {
     public static SimpleBooleanProperty pauseTask;
     public static SimpleBooleanProperty stopTask;
 
+    // extra options
+    public static SimpleBooleanProperty returnHome;
+
     private static InvalidationListener changeListener;
 
     public static void initialize(ScannerDocument scannerDocument) {
@@ -74,6 +77,8 @@ public class MainFunctions {
         runProgress = new SimpleDoubleProperty(-1.0);
         pauseTask = new SimpleBooleanProperty(false);
         stopTask = new SimpleBooleanProperty(false);
+        returnHome = new SimpleBooleanProperty(true);
+
         changeListener = observable -> {
             Logger.getLogger(MainFunctions.class.getName()).log(Level.FINEST, "ChangeListener triggered, combos must be recalculated");
             isCombosUpdated.set(false);
@@ -100,6 +105,8 @@ public class MainFunctions {
             cWrapper.npointsProperty().addListener(changeListener);
             cWrapper.minProperty().addListener(changeListener);
             cWrapper.maxProperty().addListener(changeListener);
+            // Need to make sure the initial PV reading is done again.
+            mainDocument.initialCombo = null;
             mainDocument.setHasChanges(true);
             return true;
         }
@@ -125,6 +132,8 @@ public class MainFunctions {
             cWrapper.npointsProperty().removeListener(changeListener);
             cWrapper.minProperty().removeListener(changeListener);
             cWrapper.maxProperty().removeListener(changeListener);
+            // Need to make sure the initial PV reading is done again.
+            mainDocument.initialCombo = null;
         }
     }
 
@@ -269,8 +278,13 @@ public class MainFunctions {
                         break;
                 }
 
-                // Make sure we are back to initial settings!
-                setCombo(mainDocument.combos.get(0));
+                if (returnHome.get()) {
+                    Logger.getLogger(MainFunctions.class.getName()).log(Level.FINER, "Returning to initial settings");
+                    // Make sure we are back to initial settings!
+                    setCombo(mainDocument.initialCombo);
+                } else {
+                    Logger.getLogger(MainFunctions.class.getName()).log(Level.INFO, "User has selected not to return to initial settings");
+                }
 
                 // If we finished the measurement, store the new data.
                 if (mainDocument.nCombosDone == mainDocument.combos.size()) {
@@ -300,16 +314,16 @@ public class MainFunctions {
     static public void triggerPause() {
         // flip the pause state true/false
         if (pauseTask.get()) {
-            Logger.getLogger(FXMLController.class.getName()).log(Level.INFO, "Continue triggered");
+            Logger.getLogger(MainFunctions.class.getName()).log(Level.INFO, "Continue triggered");
             pauseTask.set(false);
         } else {
-            Logger.getLogger(FXMLController.class.getName()).log(Level.INFO, "Pause triggered");
+            Logger.getLogger(MainFunctions.class.getName()).log(Level.INFO, "Pause triggered");
             pauseTask.set(true);
         }
     }
 
     static public void triggerStop() {
-        Logger.getLogger(FXMLController.class.getName()).log(Level.INFO, "Stop triggered");
+        Logger.getLogger(MainFunctions.class.getName()).log(Level.INFO, "Stop triggered");
         stopTask.set(true);
     }
 
