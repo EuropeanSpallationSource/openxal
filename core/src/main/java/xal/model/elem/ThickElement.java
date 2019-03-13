@@ -19,7 +19,6 @@ import xal.tools.math.r3.R3;
 import xal.tools.math.r3.R3x3;
 
 
-
 /**
  * <p>
  *  Base class for all modeling elements having a finite length.  As such, space charge
@@ -310,7 +309,7 @@ public abstract class ThickElement extends Element {
                 if(probe.getPosition() >= m_dblNodePos){
                     pos = pos + m_dblNodeLen/2.0;
                 }
-            }        
+            }                           
             
             if(length != 0.0){
                 

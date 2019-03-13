@@ -81,7 +81,8 @@ public class ThinMagFieldMap extends ThinElectromagnet {
         
         // Jan 2019 - Natalia Milas
         // apply alignment and rotation errors   
-        transferMatrix = applyErrors(transferMatrix, 2*(centerPosition-position));
+        double slicepos = 2*(centerPosition-position);
+        transferMatrix = applyErrors(transferMatrix, slicepos);
 
         return new PhaseMap(transferMatrix);
     }
