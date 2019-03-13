@@ -122,7 +122,7 @@ public class ThickMagFieldMap extends ThickElectromagnet {
 
         // Jan 2019 - Natalia Milas
         // apply alignment and rotation errors        
-        transferMatrix = applySliceErrors(transferMatrix, probe, dblLen);
+        transferMatrix = applySliceErrors(transferMatrix, probe, sliceLength);
         
         return new PhaseMap(transferMatrix);
     }
