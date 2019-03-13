@@ -91,10 +91,10 @@ public class FieldMapIntegrator {
 
         // Dipole strengths
         double dph = k * (fieldMapPoint.getEx() - beta * LightSpeed * fieldMapPoint.getBy());
-        transferMatrix.setElem(1, 6, -dph);
+        transferMatrix.setElem(1, 6, dph);
 
         double dpv = k * (fieldMapPoint.getEy() + beta * LightSpeed * fieldMapPoint.getBx());
-        transferMatrix.setElem(3, 6, -dpv);
+        transferMatrix.setElem(3, 6, dpv);
 
         return transferMatrix;
     }
