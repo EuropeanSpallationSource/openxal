@@ -484,7 +484,11 @@ public class ScannerDocument extends XalFxDocument {
      * @param  url  The path to the XML file
      */
     public void loadDocument(URL url) {
-        DataAdaptor readAdp = XmlDataAdaptor.adaptorForUrl( url, false );
+        DataAdaptor readAdp;
+        if (USE_HDF5)
+            readAdp = Hdf5DataAdaptor.adaptorForUrl( url );
+        else
+            readAdp = XmlDataAdaptor.adaptorForUrl( url, false );
         DataAdaptor scannerAdaptor =  readAdp.childAdaptor(SCANNER_SR);
 
         Accelerator acc = Model.getInstance().getAccelerator();
