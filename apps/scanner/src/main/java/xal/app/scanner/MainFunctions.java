@@ -174,12 +174,26 @@ public class MainFunctions {
         }
     }
 
-    private static ArrayList<ChannelTimeRecord> makeReading() {
-        ArrayList<ChannelTimeRecord> readings = new ArrayList((int) mainDocument.getActivePVreadables().count());
-        for (int i=0;i<(int) mainDocument.getActivePVreadables().count();i++) {
+    private static ArrayList<ChannelTimeRecord> makeReadingOfScalars() {
+        ArrayList<ChannelTimeRecord> readings = new ArrayList((int) mainDocument.getActivePVreadableScalars().count());
+        for (int i=0;i<(int) mainDocument.getActivePVreadableScalars().count();i++) {
             try {
-                // Here you insert an actual reading of the PV value..
-                readings.add(mainDocument.getActivePVreadable(i).getChannel().getTimeRecord());
+                // Here we do the actual reading of the PV..
+                readings.add(mainDocument.getActivePVreadableScalar(i).getChannel().getTimeRecord());
+            } catch (ConnectionException | GetException ex) {
+                Logger.getLogger(MainFunctions.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return readings;
+    }
+
+    private static ArrayList<ChannelTimeRecord> makeReadingOfArrays() {
+        ArrayList<ChannelTimeRecord> readings = new ArrayList((int) mainDocument.getActivePVreadableArrays().count());
+        for (int i=0;i<(int) mainDocument.getActivePVreadableArrays().count();i++) {
+            try {
+                // Here we do the actual reading of the PV..
+                Logger.getLogger(MainFunctions.class.getName()).log(Level.INFO, "Reading array from {0}", mainDocument.getActivePVreadableArray(i).getChannel().channelName());
+                readings.add(mainDocument.getActivePVreadableArray(i).getChannel().getTimeRecord());
             } catch (ConnectionException | GetException ex) {
                 Logger.getLogger(MainFunctions.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -204,8 +218,8 @@ public class MainFunctions {
         if (!isCombosUpdated.get()) calculateCombos();
 
         if (mainDocument.nCombosDone == 0) {
-            mainDocument.currentMeasurement = new double[2+(mainDocument.combos.size()-2)*mainDocument.numberMeasurementsPerCombo.get()][((int) mainDocument.getActivePVwritebacks().count())+((int) mainDocument.getActivePVreadables().count())];
-            mainDocument.currentTimestamps = new Timestamp[2+(mainDocument.combos.size()-2)*mainDocument.numberMeasurementsPerCombo.get()][(int) mainDocument.getActivePVreadables().count()];
+            mainDocument.currentMeasurement = new double[2+(mainDocument.combos.size()-2)*mainDocument.numberMeasurementsPerCombo.get()][((int) mainDocument.getActivePVwritebacks().count())+((int) mainDocument.getActivePVreadableScalars().count())];
+            mainDocument.currentTimestamps = new Timestamp[2+(mainDocument.combos.size()-2)*mainDocument.numberMeasurementsPerCombo.get()][(int) mainDocument.getActivePVreadableScalars().count()];
         }
 
         // Warning, this only saves if document is defined (user has saved before)
@@ -220,7 +234,9 @@ public class MainFunctions {
             @Override
             public void run() {
 
-                Logger.getLogger(MainFunctions.class.getName()).log(Level.INFO, "Starting a new scan {0}",mainDocument.nCombosDone);
+                Logger.getLogger(MainFunctions.class.getName()).log(Level.INFO, "Starting a new scan {0}", mainDocument.nCombosDone);
+                Logger.getLogger(MainFunctions.class.getName()).log(Level.INFO, "Number of scalars to read: {0}, arrays to read: {1}",
+                        new Object[]{mainDocument.getActivePVreadableScalars().count(), mainDocument.getActivePVreadableArrays().count()});
 
                 int nMeasThisCombo=1;
                 int nMeasDone=0;
@@ -252,22 +268,31 @@ public class MainFunctions {
                         nMeasThisCombo=1;
                     Logger.getLogger(MainFunctions.class.getName()).log(Level.FINEST, "Number of measurements with this combo {0}", nMeasThisCombo);
                     for (int j=0;j<nMeasThisCombo;j++) {
-                        ArrayList<ChannelTimeRecord> readings = makeReading();
+                        // First we read all PV's into TimeRecord objects:
+                        ArrayList<ChannelTimeRecord> scalarReadings = makeReadingOfScalars();
+                        ArrayList<ChannelTimeRecord> arrayReadings = makeReadingOfArrays();
+
+                        // Now we copy first the set values for the channels that we write (we do not read these from EPICS)
                         System.arraycopy(mainDocument.combos.get(mainDocument.nCombosDone),
                                 0,
                                 mainDocument.currentMeasurement[nMeasDone],
                                 0,
                                 (int) mainDocument.getActivePVwritebacks().count());
-                        System.arraycopy(readings.stream().mapToDouble(m -> m.doubleValue()).toArray(),
+                        // Now we copy the read values for scalars into the same array (these are kept in memory and displayed in graphs)
+                        System.arraycopy(scalarReadings.stream().mapToDouble(m -> m.doubleValue()).toArray(),
                                 0,
                                 mainDocument.currentMeasurement[nMeasDone],
                                 (int) mainDocument.getActivePVwritebacks().count(),
-                                (int) mainDocument.getActivePVreadables().count());
-                        System.arraycopy(readings.stream().map(m -> m.getTimestamp()).toArray(),
+                                (int) mainDocument.getActivePVreadableScalars().count());
+                        // Now we copy the timestamps for each scalar reading
+                        System.arraycopy(scalarReadings.stream().map(m -> m.getTimestamp()).toArray(),
                                 0,
                                 mainDocument.currentTimestamps[nMeasDone],
                                 0,
-                                (int) mainDocument.getActivePVreadables().count());
+                                (int) mainDocument.getActivePVreadableScalars().count());
+                        // Now we write the array data straight to file
+                        mainDocument.writeCurrentArrayData(arrayReadings);
+
                         updateProgress(mainDocument.nCombosDone+1, mainDocument.combos.size());
                         mainDocument.saveCurrentMeas(nMeasDone);
                         nMeasDone++;

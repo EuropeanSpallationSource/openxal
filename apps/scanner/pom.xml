@@ -20,6 +20,14 @@
     </properties>
 
     <organization>
-        <name>European Spallation Source ERIC</name>        
+        <name>European Spallation Source ERIC</name>
     </organization>
+    <dependencies>
+        <dependency>
+            <groupId>org.xal</groupId>
+            <artifactId>openxal.third-party-libs</artifactId>
+            <version>1.2.10</version>
+            <type>jar</type>
+        </dependency>
+    </dependencies>
 </project>
