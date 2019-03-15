@@ -436,7 +436,6 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
             default:
                 throw new ModelException("IdealMagSectorDipole#transferMap() - bad magnet orientation.");
         }
-        //matPhi = applyAlignError(matPhi);
          
 	return new PhaseMap(matPhi);
     }

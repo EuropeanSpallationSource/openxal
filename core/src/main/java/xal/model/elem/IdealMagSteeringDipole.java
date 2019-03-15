@@ -260,13 +260,13 @@ public class IdealMagSteeringDipole extends ThinElectromagnet {
         	  matPhi.setElem(3,6, dp);
             break;
                 
-            default:
-                throw new PropagationException("IdealMagSteeringDipole::tranferMatrix() - unknown magnet orientation");
+        default:
+            throw new PropagationException("IdealMagSteeringDipole::tranferMatrix() - unknown magnet orientation");
         }
         
         // Jan 2019 - Natalia Milas
         // apply alignment and rotation errors for ThinElement
-        matPhi = applyErrors(matPhi,m_dblLenEff);
+        matPhi = applyErrors(matPhi,0.0);
         
         return new PhaseMap(matPhi);
     }

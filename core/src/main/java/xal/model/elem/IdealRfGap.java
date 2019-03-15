@@ -543,7 +543,7 @@ public class IdealRfGap extends ThinElement implements IRfGap {
                 
                 // Jan 2019 - Natalia Milas
                 // apply alignment and rotation errors
-                matPhi = applyErrors(matPhi,0.0);//getCellLength());    
+                matPhi = applyErrors(matPhi,0.0);
 
 		return new PhaseMap(matPhi);
 	}

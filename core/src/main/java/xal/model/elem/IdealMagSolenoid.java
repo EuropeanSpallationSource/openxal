@@ -160,28 +160,9 @@ public class IdealMagSolenoid  extends ThickElectromagnet {
         
         // Build the tranfer matrix from its component blocks
         PhaseMatrix matPhi = new PhaseMatrix();
-
-        /*matPhi.setElem(0, 0, r11);
-        matPhi.setElem(1, 1, r11);
-        matPhi.setElem(2, 2, r11);
-        matPhi.setElem(3, 3, r11);
-        matPhi.setElem(0, 1, r12);
-        matPhi.setElem(2, 3, r12);
-        matPhi.setElem(0, 2, r13);
-        matPhi.setElem(1, 3, r13);
-        matPhi.setElem(2, 0, -1.*r13);
-        matPhi.setElem(3, 1, -1.*r13);
-        matPhi.setElem(0, 3, r14);
-        matPhi.setElem(2, 1, -1.*r14);
-        matPhi.setElem(1, 0, r21);
-        matPhi.setElem(3, 2, r21);
-        matPhi.setElem(3, 0, r41);
-        matPhi.setElem(1, 2, -1.*r41);*/
                 
         if (isFirstSubslice(probe.getPosition())) {
-            matPhi = Mbody.times(Mentrance);            
-        //} else if (isLastSubslice(probe.getPosition() + length)) {
-        //    matPhi = Mexit.times(Mbody);
+            matPhi = Mbody.times(Mentrance);                  
         } else {
             matPhi = Mbody;
         }      

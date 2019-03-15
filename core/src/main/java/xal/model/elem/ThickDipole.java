@@ -471,11 +471,7 @@ public class ThickDipole extends ThickElectromagnet {
         // Multiply the 3 matrices together, starting at entrance side
         PhaseMatrix matProd1 = matBody.times(matEntrance);
         PhaseMatrix matProd2 = matExit.times(matProd1);
-        //System.out.println(getId() + "  len = " + new Double(dL) + "  k = " + new Double(k) + "  field = " + new Double(getMagField()) );
-
-        // Jan 2019 - Natalia Milas
-        // apply alignment and rotation errors
-        matProd2 = applySliceErrors(matProd2, probe, dL);
+        //System.out.println(getId() + "  len = " + new Double(dL) + "  k = " + new Double(k) + "  field = " + new Double(getMagField()) );        
 
         return new PhaseMap(matProd2);
         //return new PhaseMap(matBody);

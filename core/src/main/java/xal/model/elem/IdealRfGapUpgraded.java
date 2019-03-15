@@ -1092,7 +1092,7 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
 
         // Jan 2019 - Natalia Milas
         // apply alignment and rotation errors
-        matPhi = applyErrors(matPhi,getGapLength());
+        matPhi = applyErrors(matPhi,0.0);
         
         return new PhaseMap(matPhi);
     }

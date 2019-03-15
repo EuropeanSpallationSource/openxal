@@ -252,7 +252,7 @@ public abstract class ThinElement extends Element {
      * numerical error.
      *
      * @param   matPhi      transfer matrix <b>&Phi;</b> to be processed
-     * @param   length      element length
+     * @param   length      element length (used only for FM composed of many thing elements stacked)
      * @return  transfer matrix <b>&Phi;</b> after applying displacement
      * 
      * @author  Natalia Milas
@@ -281,39 +281,7 @@ public abstract class ThinElement extends Element {
             dx = dx + Dx + ((ElementSeq)this.getParent()).getAlignX();
             dy = dy + Dy + ((ElementSeq)this.getParent()).getAlignY() ;
             dz = dz + ((ElementSeq)this.getParent()).getAlignZ() ;            
-        }
-        
-        /**
-        if (px != 0. || py != 0.|| dx !=0 || dy != 0) {
-            PhaseMatrix T = PhaseMatrix.translation(new PhaseVector(py*length/2-dx, -py, px*length/2-dy, -px, 0., 0.));		    	
-            matPhi = matPhi.times(T);
-        }
-
-        if (pz != 0.) {		   
-            PhaseMatrix R = PhaseMatrix.rotationProduct(R3x3.newRotationZ(-pz));		    
-            matPhi = matPhi.times(R);
-        }	
-        if ((dz != 0)) {
-            PhaseMatrix T = PhaseMatrix.spatialTranslation(new R3(0.0, 0.0, -dz));
-            matPhi = matPhi.times(T);
-        }
-
-
-        if (px != 0. || py != 0. || dx !=0 || dy != 0) {
-            PhaseMatrix T = PhaseMatrix.translation(new PhaseVector(-py*length/2+dx, py, -px*length/2+dy, px, 0., 0.)); 		    
-            matPhi = T.times(matPhi);
-        }
-
-        if (pz != 0.) {		   
-            PhaseMatrix R = PhaseMatrix.rotationProduct(R3x3.newRotationZ(pz));
-            matPhi = R.times(matPhi);	    		    
-        }
-
-        if ((dz != 0)) {
-            PhaseMatrix T = PhaseMatrix.spatialTranslation(new R3(0.0,0.0,dz));
-             matPhi = T.times(matPhi);
-        } 
-        */
+        }                        
         
         if (pz != 0.) {		   
             PhaseMatrix R = PhaseMatrix.rotationProduct(R3x3.newRotationZ(-pz));		    
@@ -321,12 +289,12 @@ public abstract class ThinElement extends Element {
         }
 
         if (px != 0. || py != 0. || dz != 0. || dx != 0. || dy != 0.) {
-            PhaseMatrix T = PhaseMatrix.translation(new PhaseVector(py*length/2.0-dx, -py, px*length/2.0-dy, -px, -dz, 0.));		    	
+            PhaseMatrix T = PhaseMatrix.translation(new PhaseVector(py*length-dx, -py, px*length-dy, -px, -dz, 0.));		    	
             matPhi = matPhi.times(T);
         }
 
         if (px != 0. || py != 0. || dz != 0.|| dx != 0. || dy != 0.) {
-            PhaseMatrix T = PhaseMatrix.translation(new PhaseVector(-py*length/2.0+dx, py, -px*length/2.0+dy, px, dz, 0.)); 		    
+            PhaseMatrix T = PhaseMatrix.translation(new PhaseVector(-py*length+dx, py, -px*length+dy, px, dz, 0.)); 		    
             matPhi = T.times(matPhi);
         }      
         

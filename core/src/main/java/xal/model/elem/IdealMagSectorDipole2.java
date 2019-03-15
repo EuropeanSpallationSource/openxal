@@ -764,14 +764,7 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
             matBody.setElem(4, 6, M46);
    
             break;
-        }
-        
-        //4 Feb 08, sako try to apply align error be careful.
-        //PhaseMatrix Phidx = applyAlignError(matBody);	
-        
-        //Jan 2019 Appliy the slice error form the Thick element
-        PhaseMatrix Phidx = applySliceErrors(matBody,probe,dblLen);	
-	matBody = Phidx;
+        }                
 
        return new PhaseMap( matBody );     
        

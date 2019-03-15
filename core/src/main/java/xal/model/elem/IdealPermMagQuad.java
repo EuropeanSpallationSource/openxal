@@ -292,8 +292,6 @@ in imparted to a particular probe.  For an ideal quadrupole
             System.exit(-1);
         }
 
-       //matPhi = applyAlignErrorStatic(matPhi,alignx,aligny,alignz);
-
         // Jan 2019 - Natalia Milas
         // apply alignment and rotation errors
         matPhi = applySliceErrors(matPhi, probe, dL);

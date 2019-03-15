@@ -12,6 +12,7 @@ import xal.model.IProbe;
 import xal.model.ModelException;
 import xal.model.elem.sync.IRfCavity;
 import xal.sim.scenario.LatticeElement;
+import xal.smf.impl.Magnet;
 import xal.tools.beam.PhaseMap;
 import xal.tools.beam.PhaseMatrix;
 import xal.tools.beam.PhaseVector;
@@ -45,10 +46,10 @@ public abstract class ThickElement extends Element {
     private double      m_dblLen = 0.0;
     
     /** total length of the node before it was sliced by scenario generator */
-    private double		m_dblNodeLen = 0.0;
+    private double	m_dblNodeLen = 0.0;
     
      /** position of the node before it was sliced by scenario generator */
-    private double		m_dblNodePos = 0.0;
+    private double	m_dblNodePos = 0.0;
    
     
     /** position of the element slice within the node */
@@ -286,7 +287,8 @@ public abstract class ThickElement extends Element {
             double dx = getAlignX();
             double dy = getAlignY();
             double dz = getAlignZ();
-            double pos = compProbeLocation(probe);
+            //Distance form the begining of the element
+            double pos = probe.getPosition() - (m_dblNodePos - m_dblNodeLen/2.0);
             
             //check if the element is contained in a sequence which has its own misalignements
             if(this.getParent() instanceof ElementSeq){
@@ -300,16 +302,7 @@ public abstract class ThickElement extends Element {
                 dx = dx + Dx + ((ElementSeq)this.getParent()).getAlignX();
                 dy = dy + Dy + ((ElementSeq)this.getParent()).getAlignY();
                 dz = dz + ((ElementSeq)this.getParent()).getAlignZ() ;            
-            }
-            
-            // The Hard-edge quadrupole is divided in two when the lattice is parsed.
-            // This is to take into account that the vairable compProbeLocation(probe) is 
-            // reset half way throught the magnet.
-            if(this instanceof IdealMagQuad){
-                if(probe.getPosition() >= m_dblNodePos){
-                    pos = pos + m_dblNodeLen/2.0;
-                }
-            }                           
+            }                                            
             
             if(length != 0.0){
                 
