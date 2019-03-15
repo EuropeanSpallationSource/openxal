@@ -13,6 +13,7 @@ import xal.tools.math.r3.R3;
 import xal.tools.math.r3.R3x3;
 import xal.model.IProbe;
 import xal.model.ModelException;
+import xal.sim.scenario.LatticeElement;
 
 
 /**
@@ -26,10 +27,20 @@ import xal.model.ModelException;
  */
 public abstract class ThinElement extends Element {
     
+    /** position of the node before it was sliced by scenario generator */
+    private double	m_dblNodePos = 0.0;
 
     /*
      *  Initialization
+     *
+     * @param latticeElement the SMF node to convert
      */
+    @Override
+	public void initializeFrom(LatticeElement latticeElement) {
+    	super.initializeFrom(latticeElement);
+		m_dblNodePos = latticeElement.getHardwareNode().getPosition();
+		
+	}
     
  
     /** 
@@ -120,6 +131,14 @@ public abstract class ThinElement extends Element {
     @Override
     public double getLength() { return 0.0; };
 
+   
+    /**
+     * Returns the position of the node, before the element was sliced by scenario generator
+     * @return original node length
+     */
+	public double getNodePos() {
+		return m_dblNodePos;
+	}    
     
     /*
      *  IElement Interface
@@ -271,8 +290,8 @@ public abstract class ThinElement extends Element {
         
         //check if the element is contained in a sequence which has its own misalignements
         if(this.getParent() instanceof ElementSeq){
-            double Dx = (getPosition()-this.getParent().getLength()/2)*((ElementSeq)this.getParent()).getPhiY();
-            double Dy = (getPosition()-this.getParent().getLength()/2)*((ElementSeq)this.getParent()).getPhiX();
+            double Dx = (m_dblNodePos - this.getParent().getLength()/2)*((ElementSeq)this.getParent()).getPhiY();
+            double Dy = (m_dblNodePos - this.getParent().getLength()/2)*((ElementSeq)this.getParent()).getPhiX();
             
             px = px + ((ElementSeq)this.getParent()).getPhiX();
             py = py + ((ElementSeq)this.getParent()).getPhiY();
