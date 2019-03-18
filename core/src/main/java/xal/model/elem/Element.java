@@ -24,9 +24,7 @@ import xal.tools.beam.IConstants;
 import xal.tools.beam.PhaseMap;
 import xal.tools.beam.PhaseMatrix;
 import xal.tools.beam.PhaseVector;
-import xal.tools.beam.PhaseMatrix.IND;
 import xal.tools.math.r3.R3;
-import xal.tools.math.r3.R3x3;
 
 
 
@@ -81,6 +79,11 @@ public abstract class Element implements IElement {
     //position in s (m)
     /** This is the center position of the element with the lattice - CKA */
     private double      dblPos;
+    
+    /** total length of the node before it was sliced by scenario generator */
+    protected double m_dblNodeLen = 0.0;
+    /** position of the node before it was sliced by scenario generator */
+    protected double m_dblNodePos = 0.0;
     
     
     //sako closeElements (for fringe field calculations)
@@ -497,6 +500,9 @@ public abstract class Element implements IElement {
         setPhiX(alignmentBucket.getPitch());
         setPhiY(alignmentBucket.getYaw());
         setPhiZ(alignmentBucket.getRoll());
+
+        m_dblNodeLen = latticeElement.getHardwareNode().getLength();
+        m_dblNodePos = latticeElement.getHardwareNode().getPosition();
         
 //        // CKA: Added to include hardware ID attribute for the new element.
 //        //   This is bound to ScenarioGenerator#collectElements(). 
@@ -524,6 +530,23 @@ public abstract class Element implements IElement {
     @Override
     public double getPosition() {
         return dblPos;
+    }
+    
+
+    /**
+     * Returns the total length of the node, before the element was sliced by scenario generator
+     * @return original node length
+     */
+    public double getNodeLen() {
+        return m_dblNodeLen;
+    }
+
+    /**
+     * Returns the position of the node, before the element was sliced by scenario generator
+     * @return original node length
+     */
+    public double getNodePos() {
+        return m_dblNodePos;
     }
     
     /**
@@ -822,6 +845,5 @@ public abstract class Element implements IElement {
 //        os.println("  element length     : " + this.getLength() );
         os.println(this.toString());
     };
-
 };
 

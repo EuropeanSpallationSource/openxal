@@ -12,11 +12,9 @@ import xal.model.IProbe;
 import xal.model.ModelException;
 import xal.model.elem.sync.IRfCavity;
 import xal.sim.scenario.LatticeElement;
-import xal.smf.impl.Magnet;
 import xal.tools.beam.PhaseMap;
 import xal.tools.beam.PhaseMatrix;
 import xal.tools.beam.PhaseVector;
-import xal.tools.math.r3.R3;
 import xal.tools.math.r3.R3x3;
 
 
@@ -45,17 +43,9 @@ public abstract class ThickElement extends Element {
     /** total length of the element */
     private double      m_dblLen = 0.0;
     
-    /** total length of the node before it was sliced by scenario generator */
-    private double	m_dblNodeLen = 0.0;
-    
-     /** position of the node before it was sliced by scenario generator */
-    private double	m_dblNodePos = 0.0;
-   
-    
     /** position of the element slice within the node */
     private boolean firstSlice = true, lastSlice = true;
     
- 
 
     /*
      *  Initialization
@@ -104,8 +94,6 @@ public abstract class ThickElement extends Element {
 	public void initializeFrom(LatticeElement latticeElement) {
     	super.initializeFrom(latticeElement);
 		setLength(latticeElement.getLength());		
-		m_dblNodeLen = latticeElement.getHardwareNode().getLength();
-                m_dblNodePos = latticeElement.getHardwareNode().getPosition();
 		firstSlice = latticeElement.isFirstSlice();
 		lastSlice = latticeElement.isLastSlice();
 	}
@@ -154,22 +142,6 @@ public abstract class ThickElement extends Element {
      */
     @Override
     public abstract PhaseMap transferMap(IProbe probe, double dblLen) throws ModelException;
-
-    /**
-     * Returns the total length of the node, before the element was sliced by scenario generator
-     * @return original node length
-     */
-	public double getNodeLen() {
-		return m_dblNodeLen;
-	}
-        
-    /**
-     * Returns the position of the node, before the element was sliced by scenario generator
-     * @return original node length
-     */
-	public double getNodePos() {
-		return m_dblNodePos;
-	}    
 	
 	/**
 	 * Checks if this is the first subslice transfer matrix is requested for
@@ -190,79 +162,6 @@ public abstract class ThickElement extends Element {
     	return lastSlice && Math.abs(position - (getLatticePosition() + getLength()/2.)) < 1e-6;
     }
  
-    /**
-     * <h2>Add Rotation and Displacement Error to Transfer Matrix</h2>
-     * <p>
-     * Method to add the effects of a spatial rotation and displacement to the
-     * beamline element represented by the given transfer matrix.
-     * 
-     * Method is optimized to add transformation only to the first and last sub-slice of
-     * the element. Besides reducing number of matrix multiplications, there is also less
-     * numerical error.
-     *
-     * @param   matPhi      transfer matrix <b>&Phi;</b> to be processed
-     * @param   probe       instance of the probe
-     * @param   length      element length
-     * @return  transfer matrix <b>&Phi;</b> after applying displacement
-     * 
-     * @author  Ivo List
-     * 
-     * @see PhaseMatrix
-     * @see PhaseMatrix#translation(PhaseVector)
-     
-    protected PhaseMatrix applyErrors(PhaseMatrix matPhi, IProbe probe, double length)
-    {
-		if (isFirstSubslice(probe.getPosition())) {
-                    double px = getPhiX();
-		    double py = getPhiY();
-		    double pz = getPhiZ();
-                    double dx = getAlignX();
-                    double dy = getAlignY();
-                    double dz = getAlignZ();
-	        
-		    if (px != 0. || py != 0.) {
-		    	PhaseMatrix T = PhaseMatrix.translation(new PhaseVector(py*m_dblNodeLen/2., -py, px*m_dblNodeLen/2., -px, 0., 0.));		    	
-		    	matPhi = matPhi.times(T);
-		    }
-		    
-		    if (pz != 0.) {		   
-		    	PhaseMatrix R = PhaseMatrix.rotationProduct(R3x3.newRotationZ(-pz));		    
-		    	matPhi = matPhi.times(R);
-		    }		   
-
-                    if ((dx != 0)||(dy != 0)||(dz !=0)) {
-                        PhaseMatrix T = PhaseMatrix.spatialTranslation(new R3(-dx, -dy, -dz));
-                            matPhi = matPhi.times(T);
-                    }
-		}
-		
-		if (isLastSubslice(probe.getPosition() + length)) {
-                    double px = getPhiX();
-		    double py = getPhiY();
-		    double pz = getPhiZ();
-                    double dx = getAlignX();
-                    double dy = getAlignY();
-                    double dz = getAlignZ();
-	        
-		    if (px != 0. || py != 0.) {
-		    	PhaseMatrix T = PhaseMatrix.translation(new PhaseVector(py*m_dblNodeLen/2., py, px*m_dblNodeLen/2., px, 0., 0.)); 		    
-		    	matPhi = T.times(matPhi);
-		    }
-		    
-		    if (pz != 0.) {		   
-		    	PhaseMatrix R = PhaseMatrix.rotationProduct(R3x3.newRotationZ(pz));
-		    	matPhi = R.times(matPhi);	    		    
-		    }
-
-                    if ((dx != 0)||(dy != 0)||(dz !=0)) {
-                             PhaseMatrix T = PhaseMatrix.spatialTranslation(new R3(dx,dy,dz));
-                         matPhi = T.times(matPhi);
-                    } 
-		}
-		   		   
-		return matPhi;
-    }   
-    */
 
     /**
      * <h2>Add Rotation and Displacement Error to Transfer Matrix</h2>
@@ -279,70 +178,66 @@ public abstract class ThickElement extends Element {
      * 
      * @see PhaseMatrix
      */
-    protected PhaseMatrix applySliceErrors(PhaseMatrix matPhi, IProbe probe, double length)
-    {
-            double px = getPhiX();
-            double py = getPhiY();
-            double pz = getPhiZ();
-            double dx = getAlignX();
-            double dy = getAlignY();
-            double dz = getAlignZ();
-            //Distance form the begining of the element
-            double pos = probe.getPosition() - (m_dblNodePos - m_dblNodeLen/2.0);
-            
-            //check if the element is contained in a sequence which has its own misalignements
-            if(this.getParent() instanceof ElementSeq){
-                double Dx = (getPosition()-this.getParent().getLength()/2.0)*((ElementSeq)this.getParent()).getPhiY();
-                double Dy = (getPosition()-this.getParent().getLength()/2.0)*((ElementSeq)this.getParent()).getPhiX();
+    protected PhaseMatrix applySliceErrors(PhaseMatrix matPhi, IProbe probe, double length) {
+        double px = getPhiX();
+        double py = getPhiY();
+        double pz = getPhiZ();
+        double dx = getAlignX();
+        double dy = getAlignY();
+        double dz = getAlignZ();
+        //Distance form the begining of the element
+        double pos = probe.getPosition() - (getNodePos() - getNodeLen()/2.0);
 
-                px = px + ((ElementSeq)this.getParent()).getPhiX();
-                py = py + ((ElementSeq)this.getParent()).getPhiY();
-                pz = pz + ((ElementSeq)this.getParent()).getPhiZ();
+        //check if the element is contained in a sequence which has its own misalignements
+        if (this.getParent() instanceof ElementSeq) {
+            double Dx = (getNodePos() - this.getParent().getLength() / 2.0) * ((ElementSeq) this.getParent()).getPhiY();
+            double Dy = (getNodePos() - this.getParent().getLength() / 2.0) * ((ElementSeq) this.getParent()).getPhiX();
 
-                dx = dx + Dx + ((ElementSeq)this.getParent()).getAlignX();
-                dy = dy + Dy + ((ElementSeq)this.getParent()).getAlignY();
-                dz = dz + ((ElementSeq)this.getParent()).getAlignZ() ;            
-            }                                            
-            
-            if(length != 0.0){
-                
-                if (pz != 0.) {		   
-                    PhaseMatrix R = PhaseMatrix.rotationProduct(R3x3.newRotationZ(-pz));		    
-                    matPhi = R.transpose().times(matPhi.times(R));
-                }
-                
-                if (px != 0. || py != 0. || dz != 0. || dx != 0. || dy != 0.) {
-                    PhaseMatrix T = PhaseMatrix.translation(new PhaseVector(py*(m_dblNodeLen/2.0-pos)-dx, -py, px*(m_dblNodeLen/2.0-pos)-dy, -px, -dz, 0.));		    	
-                    matPhi = matPhi.times(T);
-                }
-                
-                if (px != 0. || py != 0. || dz != 0.|| dx != 0. || dy != 0.) {
-                    PhaseMatrix T = PhaseMatrix.translation(new PhaseVector(-py*(m_dblNodeLen/2.0-(pos+length))+dx, py, -px*(m_dblNodeLen/2.0-(pos+length))+dy, px, dz, 0.)); 		    
-                    matPhi = T.times(matPhi);
-                }                                
+            px = px + ((ElementSeq) this.getParent()).getPhiX();
+            py = py + ((ElementSeq) this.getParent()).getPhiY();
+            pz = pz + ((ElementSeq) this.getParent()).getPhiZ();
 
-                
-            } else if(this instanceof IdealMagSolenoid) { // this is to account for the focusing slice at the end of the Hard edge solenoid model
-                pos = m_dblNodeLen;
-                
-                if (pz != 0.) {		   
-                    PhaseMatrix R = PhaseMatrix.rotationProduct(R3x3.newRotationZ(-pz));		    
-                    matPhi = R.transpose().times(matPhi.times(R));
-                }
-                if (px != 0. || py != 0. || dz != 0. || dx != 0. || dy != 0.) {
-                    PhaseMatrix T = PhaseMatrix.translation(new PhaseVector(py*(m_dblNodeLen/2.0-pos)-dx, -py, px*(m_dblNodeLen/2.0-pos)-dy, -px, -dz, 0.));		    	
-                    matPhi = matPhi.times(T);
-                }                	
+            dx = dx + Dx + ((ElementSeq) this.getParent()).getAlignX();
+            dy = dy + Dy + ((ElementSeq) this.getParent()).getAlignY();
+            dz = dz + ((ElementSeq) this.getParent()).getAlignZ();
+        }
 
-                if (px != 0. || py != 0. || dz != 0. || dx != 0. || dy != 0.) {
-                    PhaseMatrix T = PhaseMatrix.translation(new PhaseVector(-py*(m_dblNodeLen/2.0-pos)+dx, py, -px*(m_dblNodeLen/2.0-pos)+dy, px, dz, 0.)); 		    
-                    matPhi = T.times(matPhi);
-                }
-             
+        if (length != 0.0) {
+
+            if (pz != 0.) {
+                PhaseMatrix R = PhaseMatrix.rotationProduct(R3x3.newRotationZ(-pz));
+                matPhi = R.transpose().times(matPhi.times(R));
             }
-            
-            return matPhi;
-    }   
+
+            if (px != 0. || py != 0. || dz != 0. || dx != 0. || dy != 0.) {
+                PhaseMatrix T = PhaseMatrix.translation(new PhaseVector(py * (getNodeLen() / 2.0 - pos) - dx, -py, px * (getNodeLen() / 2.0 - pos) - dy, -px, -dz, 0.));
+                matPhi = matPhi.times(T);
+            }
+
+            if (px != 0. || py != 0. || dz != 0. || dx != 0. || dy != 0.) {
+                PhaseMatrix T = PhaseMatrix.translation(new PhaseVector(-py * (getNodeLen() / 2.0 - (pos + length)) + dx, py, -px * (getNodeLen() / 2.0 - (pos + length)) + dy, px, dz, 0.));
+                matPhi = T.times(matPhi);
+            }
+
+        } else if (this instanceof IdealMagSolenoid) { // this is to account for the focusing slice at the end of the Hard edge solenoid model
+            if (pz != 0.) {
+                PhaseMatrix R = PhaseMatrix.rotationProduct(R3x3.newRotationZ(-pz));
+                matPhi = R.transpose().times(matPhi.times(R));
+            }
+            if (px != 0. || py != 0. || dz != 0. || dx != 0. || dy != 0.) {
+                PhaseMatrix T = PhaseMatrix.translation(new PhaseVector(-py * getNodeLen() / 2.0 - dx, -py, -px * getNodeLen() / 2.0 - dy, -px, -dz, 0.));
+                matPhi = matPhi.times(T);
+            }
+
+            if (px != 0. || py != 0. || dz != 0. || dx != 0. || dy != 0.) {
+                PhaseMatrix T = PhaseMatrix.translation(new PhaseVector(py * getNodeLen() / 2.0 + dx, py, px * getNodeLen() / 2.0 + dy, px, dz, 0.));
+                matPhi = T.times(matPhi);
+            }
+
+        }
+
+        return matPhi;
+    }
     
     public abstract double elapsedTime(IProbe probe, double dblLen);
 
