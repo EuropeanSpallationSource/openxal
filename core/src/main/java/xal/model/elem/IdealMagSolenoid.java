@@ -172,10 +172,10 @@ public class IdealMagSolenoid  extends ThickElectromagnet {
         
         // apply alignment and rotation errors taking care of the thin matrix entrance and exit slices
         // 2018-07-02 Natalia Milas
-	matPhi = applySliceErrors(matPhi, probe, length);	
+	matPhi = applyErrors(matPhi, probe, length);	
       
         if (isLastSubslice(probe.getPosition() + length)) {
-            Mexit = applySliceErrors(Mexit, probe, 0);
+            Mexit = applyErrors(Mexit, probe, 0);
             matPhi = Mexit.times(matPhi);
         }
         

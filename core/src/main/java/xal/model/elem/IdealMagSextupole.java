@@ -79,7 +79,7 @@ public class IdealMagSextupole extends ThickElement {
 	
         // Jan 2019 - Natalia Milas
         // apply alignment and rotation errors
-        matPhi = applySliceErrors(matPhi, probe, length);
+        matPhi = applyErrors(matPhi, probe, length);
         
         return new PhaseMap( matPhi );
 	}

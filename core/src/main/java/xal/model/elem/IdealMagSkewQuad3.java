@@ -394,7 +394,7 @@ public class IdealMagSkewQuad3 extends ThickElectromagnet {
         
         // Jan 2019 - Natalia Milas
         // apply alignment and rotation errors
-        matBeam = applySliceErrors(matBeam, probe, length);
+        matBeam = applyErrors(matBeam, probe, length);
         
         return new PhaseMap( matBeam );
     }

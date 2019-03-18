@@ -178,7 +178,7 @@ public abstract class ThickElement extends Element {
      * 
      * @see PhaseMatrix
      */
-    protected PhaseMatrix applySliceErrors(PhaseMatrix matPhi, IProbe probe, double length) {
+    protected PhaseMatrix applyErrors(PhaseMatrix matPhi, IProbe probe, double length) {
         double px = getPhiX();
         double py = getPhiY();
         double pz = getPhiZ();

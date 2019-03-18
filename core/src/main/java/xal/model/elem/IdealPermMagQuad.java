@@ -294,7 +294,7 @@ in imparted to a particular probe.  For an ideal quadrupole
 
         // Jan 2019 - Natalia Milas
         // apply alignment and rotation errors
-        matPhi = applySliceErrors(matPhi, probe, dL);
+        matPhi = applyErrors(matPhi, probe, dL);
    
 
         return new PhaseMap(matPhi);
@@ -672,7 +672,7 @@ public double calcK(IProbe probe, double dblLen) {
 
         // Jan 2019 - Natalia Milas
         // apply alignment and rotation errors
-        matPhi = applySliceErrors(matPhi, probe, dblLen);
+        matPhi = applyErrors(matPhi, probe, dblLen);
 
         return new PhaseMap(matPhi);
     }

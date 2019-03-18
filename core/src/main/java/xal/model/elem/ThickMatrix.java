@@ -245,7 +245,7 @@ public class ThickMatrix extends ThickElement {
         
         // Jan 2019 - Natalia Milas
         // apply alignment and rotation errors
-        M = applySliceErrors(M, probe, dblLen);
+        M = applyErrors(M, probe, dblLen);
         
         return new PhaseMap( M );
     }
