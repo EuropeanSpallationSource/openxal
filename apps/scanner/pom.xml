@@ -4,7 +4,7 @@
     <parent>
     <artifactId>openxal.apps</artifactId>
     <groupId>org.xal</groupId>
-    <version>1.2.11</version>
+    <version>1.2.12-SNAPSHOT</version>
   </parent>
 
     <groupId>org.xal</groupId>
@@ -26,7 +26,7 @@
         <dependency>
             <groupId>org.xal</groupId>
             <artifactId>openxal.third-party-libs</artifactId>
-            <version>1.2.11</version>
+            <version>1.2.12-SNAPSHOT</version>
             <type>jar</type>
         </dependency>
     </dependencies>
