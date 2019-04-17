@@ -415,9 +415,11 @@ public class ScannerDocument extends XalFxDocument {
 
     private void setFileNameExtension() {
         if (USE_HDF5) {
-            DEFAULT_FILENAME="Data.scan.h5";
+            FILETYPE_DESCRIPTION = "HDF5 scan file";
+            DEFAULT_FILENAME = "Data.scan.h5";
             WILDCARD_FILE_EXTENSION = "*.scan.h5";
         } else {
+            FILETYPE_DESCRIPTION = "XML scan file";
             DEFAULT_FILENAME="Data.scan.xml";
             WILDCARD_FILE_EXTENSION = "*.scan.xml";
         }
