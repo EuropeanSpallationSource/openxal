@@ -349,6 +349,8 @@ public class ScannerDocument extends XalFxDocument {
                     channelAdaptor.setValue("type", "r");
                 }
                 double[] data = new double[measurement.getValue().length];
+                // DataAdaptor is not supporting BigDecimals, so for now we convert to doubles
+                double[] tstampArray = new double[measurement.getValue().length];
                 String tstamps_str = "";
                 for (int j = 0;j<measurement.getValue().length;j++) {
                     data[j]=measurement.getValue()[j][i];
@@ -356,12 +358,13 @@ public class ScannerDocument extends XalFxDocument {
                         if (j!=0)
                             tstamps_str=tstamps_str.concat(", ");
                         tstamps_str=tstamps_str.concat(tstamps[j][i-pvW.size()].getFullSeconds().toString());
+                        tstampArray[j] = tstamps[j][i-pvW.size()].getFullSeconds().doubleValue();
                     }
                     channelAdaptor.setValue("data", data);
                 }
                 channelAdaptor.setValue("data", data);
                 if (i>=pvW.size())
-                    channelAdaptor.setValue(TIMESTAMPS_SR, tstamps_str);
+                    channelAdaptor.setValue(TIMESTAMPS_SR, tstampArray);
             }
         });
         // Store information about current measurement setup..
