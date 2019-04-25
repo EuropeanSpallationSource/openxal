@@ -48,6 +48,7 @@ import java.util.stream.Stream;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleLongProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.stage.Stage;
@@ -129,6 +130,23 @@ public class ScannerDocument extends XalFxDocument {
      */
     public static SimpleBooleanProperty includeInitialSettings;
 
+    /**
+     * A command that is executed between each scan step
+     *
+     * If the return value is 0, then scan continues
+     *
+     * If the return value is 42, scan pauses
+     *
+     * For any other non-zero return value, scan stops.
+     * All settings return to initial if scan is configured that way.
+     */
+    public SimpleStringProperty commandToExecute;
+
+    /**
+     * If true, commandToExecute will be executed between each step
+     */
+    public SimpleBooleanProperty isCommandActive;
+
     // The channels that may be scanned or only read
     public ObservableList<ChannelWrapper> pvChannels;
     // The combination of scan points (each double[] is equal to number of writeables)
@@ -199,6 +217,9 @@ public class ScannerDocument extends XalFxDocument {
         currentMeasurementWasLoaded = new SimpleBooleanProperty(false);
 
         includeInitialSettings = new SimpleBooleanProperty(true);
+
+        commandToExecute = new SimpleStringProperty("");
+        isCommandActive = new SimpleBooleanProperty(false);
 
         setFileNameExtension();
         HELP_PAGEID="227688413";

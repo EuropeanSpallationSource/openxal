@@ -32,9 +32,13 @@
 
 package xal.app.scanner;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -230,6 +234,8 @@ public class MainFunctions {
 
         Task runTask = new Task<Void>() {
 
+            private Process commandProcess;
+            private String commandLine;
 
             @Override
             public void run() {
@@ -240,12 +246,15 @@ public class MainFunctions {
 
                 int nMeasThisCombo=1;
                 int nMeasDone=0;
+
+
                 if (mainDocument.nCombosDone>0) {
                     Logger.getLogger(MainFunctions.class.getName()).log(Level.FINER, "Continuing old measurement, {0} combos already done", mainDocument.nCombosDone);
                     nMeasDone=1+(mainDocument.nCombosDone-1)*mainDocument.numberMeasurementsPerCombo.get();
                 }
 
                 while (mainDocument.nCombosDone<mainDocument.combos.size()) {
+                    updateProgress(mainDocument.nCombosDone, mainDocument.combos.size());
                     while (pauseTask.get()) {
                         try {
                             Thread.sleep(mainDocument.delayBetweenMeasurements.get());
@@ -255,6 +264,48 @@ public class MainFunctions {
                     }
 
                     setCombo(mainDocument.combos.get(mainDocument.nCombosDone));
+
+                    // If we have a command to execute, do now:
+                    if (mainDocument.isCommandActive.get()) {
+                        try {
+                            commandProcess = Runtime.getRuntime().exec(mainDocument.commandToExecute.get());
+                            BufferedReader in = new BufferedReader(
+                                new InputStreamReader(commandProcess.getInputStream()));
+                            while ((commandLine = in.readLine()) != null) {
+                              System.out.println(commandLine);
+                            }
+                            in.close();
+                            int exitValue = commandProcess.waitFor();
+                            switch (exitValue) {
+                                case 0:
+                                    Logger.getLogger(MainFunctions.class.getName()).log(Level.FINER, "Command finished, continuing simulation");
+                                    break;
+                                case 42:
+                                    Logger.getLogger(MainFunctions.class.getName()).log(Level.WARNING, "Command exited with status value {0}, pausing simulation", exitValue);
+                                    // Using runLater is hideous, but works so yay
+                                    Platform.runLater(new Runnable() {
+                                        @Override public void run() {
+                                            triggerPause();
+                                        }
+                                    });
+                                    break;
+                                default:
+                                    Logger.getLogger(MainFunctions.class.getName()).log(Level.WARNING, "Command exited with status value {0}, stopping simulation", exitValue);
+                                    // Using runLater is hideous, but works so yay
+                                    Platform.runLater(new Runnable() {
+                                        @Override public void run() {
+                                            triggerStop();
+                                        }
+                                    });
+                                    break;
+                            }
+                        } catch (IOException ex) {
+                            Logger.getLogger(MainFunctions.class.getName()).log(Level.SEVERE, null, ex);
+                        } catch (InterruptedException ex) {
+                            Logger.getLogger(MainFunctions.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+
                     try {
                         Thread.sleep(mainDocument.delayBetweenMeasurements.get());
                     } catch (InterruptedException ex) {

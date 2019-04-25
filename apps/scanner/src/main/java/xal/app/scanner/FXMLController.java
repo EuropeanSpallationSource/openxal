@@ -32,8 +32,10 @@
 
 package xal.app.scanner;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.ResourceBundle;
 import java.util.function.UnaryOperator;
 import java.util.logging.Level;
@@ -51,6 +53,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.SelectionMode;
@@ -103,6 +106,12 @@ public class FXMLController implements Initializable {
 
     @FXML // fx:id="nMeasPerSettingSetButton"
     private Button nMeasPerSettingSetButton; // Value injected by FXMLLoader
+
+    @FXML
+    private TextField commandToExecute;
+
+    @FXML
+    private CheckBox commandActivated;
 
     @FXML
     private TableView<ChannelWrapper> listOfWriteables;
@@ -271,6 +280,41 @@ public class FXMLController implements Initializable {
         restartButton.setVisible(MainFunctions.mainDocument.nCombosDone != 0);
     }
 
+    @FXML
+    private void handleInspectCommand(ActionEvent event) {
+        // Check that the command written down is valid,
+        // and if it is, allow to activate it
+        String command = commandToExecute.getText().split("\\s+")[0];
+        File filepath = new File(command);
+        if (filepath.canExecute()) {
+            commandActivated.setDisable(false);
+            MainFunctions.mainDocument.commandToExecute.set(commandToExecute.getText());
+        } else {
+            commandActivated.setDisable(true);
+            MainFunctions.mainDocument.commandToExecute.set("");
+            String[] paths = System.getenv("PATH").split(":");
+            for (String path: paths) {
+                filepath = new File(path + "/" + command);
+                if (filepath.canExecute()) {
+                    commandActivated.setDisable(false);
+                    break;
+                }
+            }
+
+        }
+        if (commandActivated.isDisabled())
+            commandActivated.setSelected(false);
+
+    }
+
+    @FXML
+    private void handleActivateCommand(ActionEvent event) {
+        if (commandActivated.isSelected())
+            MainFunctions.mainDocument.isCommandActive.set(true);
+        else
+            MainFunctions.mainDocument.isCommandActive.set(false);
+    }
+
     private void dummyBugFunction() {
         // Needed due to problem with getSelectedItems()
     }
@@ -344,6 +388,8 @@ public class FXMLController implements Initializable {
         assertObject(measPerPoint, "measPerPoint");
         assertObject(measDelaySetButton, "measDelaySetButton");
         assertObject(nMeasPerSettingSetButton, "nMeasPerSettingSetButton");
+        assertObject(commandToExecute, "commandToExecute");
+        assertObject(commandActivated, "commandActivated");
         assertObject(listOfWriteables, "listOfWriteables");
         assertObject(listOfWriteablesShortVar, "listOfWriteablesShortVar");
         assertObject(listOfWriteablesPV, "listOfWriteablesPV");
@@ -417,12 +463,26 @@ public class FXMLController implements Initializable {
         MainFunctions.pauseTask.addListener(new ChangeListener() {
             @Override
             public void changed(ObservableValue o, Object oldVal, Object newVal) {
-                if (MainFunctions.pauseTask.get())
+                if ((Boolean) newVal) {
                     pauseButton.setText("Continue");
-                else
+                    restartButton.setVisible(false);
+                } else {
                     pauseButton.setText("Pause");
+                }
             }
           });
+
+        MainFunctions.stopTask.addListener(new ChangeListener() {
+            @Override
+            public void changed(ObservableValue o, Object oldVal, Object newVal) {
+                if ((Boolean) newVal) {
+                    restartButton.setVisible(true);
+                } else {
+                    restartButton.setVisible(false);
+
+                }
+            }
+        });
 
         // Deal with the progress of the run, activate to pause/stop buttons, plot last measurement etc..
         MainFunctions.runProgress.addListener(new ChangeListener() {
