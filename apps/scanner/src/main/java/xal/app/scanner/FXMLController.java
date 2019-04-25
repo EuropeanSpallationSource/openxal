@@ -243,6 +243,8 @@ public class FXMLController implements Initializable {
         }
         if (!MainFunctions.mainDocument.sourceSetAndValid())
             textFieldWarnSave.setText("Remember to save document first!");
+        else
+            textFieldWarnSave.setText("");
     }
 
     @FXML
