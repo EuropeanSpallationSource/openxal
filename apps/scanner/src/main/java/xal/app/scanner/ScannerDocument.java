@@ -48,6 +48,7 @@ import java.util.stream.Stream;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleLongProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.stage.Stage;
@@ -129,6 +130,23 @@ public class ScannerDocument extends XalFxDocument {
      */
     public static SimpleBooleanProperty includeInitialSettings;
 
+    /**
+     * A command that is executed between each scan step
+     *
+     * If the return value is 0, then scan continues
+     *
+     * If the return value is 42, scan pauses
+     *
+     * For any other non-zero return value, scan stops.
+     * All settings return to initial if scan is configured that way.
+     */
+    public SimpleStringProperty commandToExecute;
+
+    /**
+     * If true, commandToExecute will be executed between each step
+     */
+    public SimpleBooleanProperty isCommandActive;
+
     // The channels that may be scanned or only read
     public ObservableList<ChannelWrapper> pvChannels;
     // The combination of scan points (each double[] is equal to number of writeables)
@@ -199,6 +217,9 @@ public class ScannerDocument extends XalFxDocument {
         currentMeasurementWasLoaded = new SimpleBooleanProperty(false);
 
         includeInitialSettings = new SimpleBooleanProperty(true);
+
+        commandToExecute = new SimpleStringProperty("");
+        isCommandActive = new SimpleBooleanProperty(false);
 
         setFileNameExtension();
         HELP_PAGEID="227688413";
@@ -349,6 +370,8 @@ public class ScannerDocument extends XalFxDocument {
                     channelAdaptor.setValue("type", "r");
                 }
                 double[] data = new double[measurement.getValue().length];
+                // DataAdaptor is not supporting BigDecimals, so for now we convert to doubles
+                double[] tstampArray = new double[measurement.getValue().length];
                 String tstamps_str = "";
                 for (int j = 0;j<measurement.getValue().length;j++) {
                     data[j]=measurement.getValue()[j][i];
@@ -356,12 +379,13 @@ public class ScannerDocument extends XalFxDocument {
                         if (j!=0)
                             tstamps_str=tstamps_str.concat(", ");
                         tstamps_str=tstamps_str.concat(tstamps[j][i-pvW.size()].getFullSeconds().toString());
+                        tstampArray[j] = tstamps[j][i-pvW.size()].getFullSeconds().doubleValue();
                     }
                     channelAdaptor.setValue("data", data);
                 }
                 channelAdaptor.setValue("data", data);
                 if (i>=pvW.size())
-                    channelAdaptor.setValue(TIMESTAMPS_SR, tstamps_str);
+                    channelAdaptor.setValue(TIMESTAMPS_SR, tstampArray);
             }
         });
         // Store information about current measurement setup..
@@ -412,9 +436,11 @@ public class ScannerDocument extends XalFxDocument {
 
     private void setFileNameExtension() {
         if (USE_HDF5) {
-            DEFAULT_FILENAME="Data.scan.h5";
+            FILETYPE_DESCRIPTION = "HDF5 scan file";
+            DEFAULT_FILENAME = "Data.scan.h5";
             WILDCARD_FILE_EXTENSION = "*.scan.h5";
         } else {
+            FILETYPE_DESCRIPTION = "XML scan file";
             DEFAULT_FILENAME="Data.scan.xml";
             WILDCARD_FILE_EXTENSION = "*.scan.xml";
         }

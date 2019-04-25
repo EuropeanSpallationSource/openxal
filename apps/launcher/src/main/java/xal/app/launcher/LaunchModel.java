@@ -184,8 +184,9 @@ public class LaunchModel implements DataListener {
 
     /** preconfigure the model when initializing without a document file */
     public void preConfigure() {
+        String openxal_home = System.getenv("OPENXAL_HOME");
         RULES.clear();
-        RULES.add( new Rule( "openxal.apps.*.jar", "Application", "java", "-DuseDefaultAccelerator=true", "-jar", "%f" ) );
+        RULES.add( new Rule( "openxal.apps.*.jar", "Application", "java", "-DuseDefaultAccelerator=true", "-Djava.library.path=" + openxal_home + "/lib/", "-jar", "%f" ) );
         RULES.add( new Rule( "*.rb", "JRuby", "jruby", "%f" ) );
         RULES.add( new Rule( "*.py", "Jython", "jython", "%f" ) );
 
