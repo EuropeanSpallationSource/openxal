@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 European Spallation Source ERIC.
+ * Copyright (C) 2019 European Spallation Source ERIC.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -77,12 +77,18 @@ public class ThinMagFieldMap extends ThinElectromagnet {
 
         fieldMapPoint.setAmplitudeFactorB(getMagField());
 
-        PhaseMatrix transferMatrix = FieldMapIntegrator.transferMap(probe, sliceLength, fieldMapPoint);
-        
+        double dz = sliceLength;
+        // First and last slices of the element get half a kick
+        if ((Math.abs(position - startPosition) < 1e-6) || (Math.abs(position - startPosition - magFieldmap.getLength()) < 1e-6)) {
+            dz /= 2.;
+        }
+
+        PhaseMatrix transferMatrix = FieldMapIntegrator.transferMap(probe, dz, fieldMapPoint);
+
         // Jan 2019 - Natalia Milas
-        // apply alignment and rotation errors   
-        double slicepos = centerPosition-position; // distance from the probe position and element center
-        transferMatrix = applyErrors(transferMatrix, slicepos);        
+        // apply alignment and rotation errors
+        double slicepos = centerPosition - position; // distance from the probe position and element center
+        transferMatrix = applyErrors(transferMatrix, slicepos);
 
         return new PhaseMap(transferMatrix);
     }

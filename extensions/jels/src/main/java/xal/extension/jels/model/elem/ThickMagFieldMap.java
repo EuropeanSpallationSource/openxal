@@ -107,8 +107,15 @@ public class ThickMagFieldMap extends ThickElectromagnet {
 
             fieldMapPoint.setAmplitudeFactorB(getMagField());
 
+            // First and last slices of the element get half a kick
+            if ((Math.abs(fieldMapPointPositions.get(i) - startPosition) < 1e-6) || (Math.abs(fieldMapPointPositions.get(i) - startPosition - magFieldmap.getLength()) < 1e-6)) {
+                dz /= 2.;
+            }
+
             // Kick
-            transferMatrix = FieldMapIntegrator.transferMap(probe, sliceLength, fieldMapPoint).times(transferMatrix);
+            transferMatrix = FieldMapIntegrator.transferMap(probe, dz, fieldMapPoint).times(transferMatrix);
+            // Set the length of the following drift spaces.
+            dz = sliceLength;
         }
 
         // Last drift space (if any).
@@ -121,9 +128,9 @@ public class ThickMagFieldMap extends ThickElectromagnet {
         transferMatrix = driftMatrix.times(transferMatrix);
 
         // Jan 2019 - Natalia Milas
-        // apply alignment and rotation errors        
+        // apply alignment and rotation errors
         transferMatrix = applyErrors(transferMatrix, probe, dblLen);
-        
+
         return new PhaseMap(transferMatrix);
     }
 

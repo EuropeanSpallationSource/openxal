@@ -148,7 +148,7 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
 
             a_deltaPhi[i + 1] = a_deltaPhi[i] + 2 * Math.PI * getFrequency() * dz / (beta * LightSpeed);
 
-            // Set the length of the following drift spaces.
+            // Set the length of the following kick.
             dz = getCellLength();
 
             FieldMapPoint fieldMapPoint = rfFieldmap.getFieldAt(fieldMapPointPositions.get(i));
@@ -158,7 +158,16 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
                 a_deltaPhi[i + 1] = a_deltaPhi[i] + 0;
                 continue;
             }
+            
+            // First and last slices of the element get half a kick
+            if ((Math.abs(fieldMapPointPositions.get(i) - startPosition) < 1e-6) || (Math.abs(fieldMapPointPositions.get(i) - startPosition - rfFieldmap.getLength()) < 1e-6)) {
+                dz /= 2.;
+            }
+            
             a_energyGain[i + 1] = a_energyGain[i] + fieldMapPoint.getEz() * dz * getE0() * Math.cos(phiS + a_deltaPhi[i + 1]);
+            
+            // Set the length of the following drift spaces.
+            dz = getCellLength();
         }
 
         dz = (numberOfPoints > 0 ? probe.getPosition() - startPosition + dblLen - fieldMapPointPositions.get(numberOfPoints - 1) : dblLen);
@@ -210,8 +219,13 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
 
             transferMatrix = driftMatrix.times(transferMatrix);
 
-            // Set the length of the following drift spaces.
+            // Set the length of the following kick.
             dz = getCellLength();
+            
+            // First and last slices of the element get half a kick
+            if ((Math.abs(fieldMapPointPositions.get(i) - startPosition) < 1e-6) || (Math.abs(fieldMapPointPositions.get(i) - startPosition - rfFieldmap.getLength()) < 1e-6)) {
+                dz /= 2.;
+            }
 
             FieldMapPoint fieldMapPoint = rfFieldmap.getFieldAt(fieldMapPointPositions.get(i));
 
@@ -220,6 +234,9 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
 
             // Kick
             transferMatrix = FieldMapIntegrator.transferMap(probe, dz, fieldMapPoint, a_energyGain[i]).times(transferMatrix);
+            
+            // Set the length of the following drift spaces.
+            dz = getCellLength();
         }
 
         // Last drift space (if any).
