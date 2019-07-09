@@ -141,6 +141,11 @@ public class ThinRfFieldMap extends ThinElement implements IRfGap, IRfCavityCell
         fieldMapPoint.setAmplitudeFactorE(getE0() * Math.cos(phiS));
         fieldMapPoint.setAmplitudeFactorB(2.0 * Math.PI * getFrequency() / (LightSpeed * LightSpeed) * getE0() * Math.sin(phiS));
 
+        // First and last slices of the element get half a kick
+        if ((Math.abs(position - startPosition) < 1e-6) || (Math.abs(position - startPosition - rfFieldmap.getLength()) < 1e-6)) {
+            dz /= 2.;
+        }
+        
         // Set energy gain and phase
         energyGain = fieldMapPoint.getEz() * dz;
         deltaPhi = 0;
