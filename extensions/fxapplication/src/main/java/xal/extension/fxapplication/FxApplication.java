@@ -160,6 +160,7 @@ abstract public class FxApplication extends Application {
 
         final Menu editMenu = new Menu("Edit");
 
+        final ToggleGroup groupSequence = new ToggleGroup();
         final Menu acceleratorMenu = new Menu("Accelerator");
         final MenuItem loadDefaultAcceleratorMenu = new MenuItem("Load Default Accelerator");
         loadDefaultAcceleratorMenu.setOnAction(new LoadDefaultAcceleratorMenu(DOCUMENT));
@@ -167,8 +168,7 @@ abstract public class FxApplication extends Application {
         loadAcceleratorMenu.setOnAction(new LoadAcceleratorMenu(DOCUMENT));
         acceleratorMenu.getItems().addAll(loadDefaultAcceleratorMenu, loadAcceleratorMenu);
         final Menu sequenceMenu = new Menu("Sequence");
-        final ToggleGroup groupSequence = new ToggleGroup();
-
+        
         if (HAS_SEQUENCE && DOCUMENT.accelerator.getAccelerator() != null) {
             buildSequenceMenu(DOCUMENT.accelerator.getAccelerator(), sequenceMenu, groupSequence);
             acceleratorMenu.getItems().addAll(new SeparatorMenuItem(), sequenceMenu);
@@ -199,13 +199,14 @@ abstract public class FxApplication extends Application {
 
         DOCUMENT.accelerator.addChangeListener((ChangeListener) (ObservableValue o, Object oldVal, Object newVal) -> {
             if (HAS_SEQUENCE && DOCUMENT.accelerator.getAccelerator() != null) {
+                DOCUMENT.sequence.set(null);
+                groupSequence.getSelectedToggle().setSelected(false);
                 int menu_num = sequenceMenu.getItems().size() - 1;
                 sequenceMenu.getItems().remove(0, menu_num);
                 groupSequence.getToggles().clear();
-                buildSequenceMenu(DOCUMENT.accelerator.getAccelerator(), sequenceMenu, groupSequence);
-                DOCUMENT.sequence.set(null);
-                Logger.getLogger(FxApplication.class.getName()).log(Level.INFO, "Rebuilding Sequence Menu.");
-            }
+                buildSequenceMenu(DOCUMENT.accelerator.getAccelerator(), sequenceMenu, groupSequence);                
+                Logger.getLogger(FxApplication.class.getName()).log(Level.INFO, "Rebuilding Sequence Menu.");                
+            }            
         });
 
         registerApplicationStatusService();

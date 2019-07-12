@@ -59,6 +59,7 @@ public class ChannelWrapper {
     private final SimpleBooleanProperty isScanned;
     private final SimpleBooleanProperty isRead;
     private final SimpleStringProperty instance;
+    private int numberOfElements;
     private double[] scanPoints;
     // This is probably not the best way to do this.
     private static int instanceCount = 0;
@@ -94,7 +95,11 @@ public class ChannelWrapper {
 
        try {
             m_unit.set(c.getUnits());
-        } catch (ConnectionException | GetException ex) { }
+            numberOfElements = c.elementCount();
+
+        } catch (ConnectionException | GetException ex) {
+            numberOfElements = 1;
+        }
     }
 
     private void setType() {
@@ -155,6 +160,14 @@ public class ChannelWrapper {
     }
     public boolean getIsRead() {
         return isRead.get();
+    }
+    /**
+     * If the channel only has one element, it is considered
+     * a scalar
+     * @return true if the channel is scalar
+     */
+    public boolean getIsScalar() {
+        return numberOfElements == 1;
     }
     public int getNpoints() {
         return npoints.get();

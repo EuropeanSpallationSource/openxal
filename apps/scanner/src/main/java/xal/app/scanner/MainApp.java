@@ -35,11 +35,17 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static javafx.application.Application.launch;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.scene.control.CheckMenuItem;
+import javafx.scene.control.Menu;
+import javafx.scene.control.SeparatorMenuItem;
 import javafx.stage.Stage;
 
 import xal.extension.fxapplication.FxApplication;
 
 public class MainApp extends FxApplication {
+
+    private SimpleBooleanProperty HDF5_ENABLED;
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -50,11 +56,22 @@ public class MainApp extends FxApplication {
         DOCUMENT = new ScannerDocument(stage);
         // Initialize some static functions (this is probably bad design..)
         MainFunctions.initialize((ScannerDocument) DOCUMENT);
-
-
         HAS_SEQUENCE = false;
 
         super.initialize();
+
+        // Add specific menu items..
+        HDF5_ENABLED = new SimpleBooleanProperty(false);
+        HDF5_ENABLED.addListener((observable, oldValue, newValue) -> ((ScannerDocument)DOCUMENT).setUseHDF5(newValue));
+        SeparatorMenuItem separator = new SeparatorMenuItem();
+        CheckMenuItem useHDF5 = new CheckMenuItem("Use HDF5");
+        HDF5_ENABLED.bind(useHDF5.selectedProperty());
+
+        Menu fileMenu = MENU_BAR.getMenus().get(0);
+        fileMenu.getItems().add(separator);
+        fileMenu.getItems().add(useHDF5);
+        MENU_BAR.getMenus().set(0, fileMenu);
+
         super.start(stage);
     }
 

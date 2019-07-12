@@ -16,7 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import xal.extension.jels.smf.impl.MagFieldMap;
 import xal.model.ModelException;
-import xal.model.alg.EnvTrackerAdapt;
+import xal.model.alg.EnvelopeTracker;
 import xal.model.probe.EnvelopeProbe;
 import xal.model.probe.traj.EnvelopeProbeState;
 import xal.sim.scenario.AlgorithmFactory;
@@ -66,7 +66,7 @@ public class SimulationRunner {
     private ArrayList<Double> positions;
 
     private Object sequence;
-    private EnvTrackerAdapt envelopeTracker;
+    private EnvelopeTracker envelopeTracker;
     private EnvelopeProbe probe;
     private PhaseVector initial_pos;
     private Scenario model;
@@ -104,7 +104,7 @@ public class SimulationRunner {
 
         try {
             //get inital parameters from file
-            envelopeTracker = AlgorithmFactory.createEnvTrackerAdapt((AcceleratorSeq) sequence);
+            envelopeTracker = AlgorithmFactory.createEnvelopeTracker((AcceleratorSeq) sequence);
             probe = ProbeFactory.getEnvelopeProbe((AcceleratorSeq) sequence, envelopeTracker);
             probe.setCurrentElement(((AcceleratorSeq) sequence).getNodeAt(0).toString());
         } catch (InstantiationException ex) {
@@ -252,8 +252,8 @@ public class SimulationRunner {
                 end_simul =  seq.getNodeWithId(final_pos_simul);
             }
             AcceleratorNode electrode_node = null;
-            if (seq.getAllNodes().toString().contains("LEBT-010:BMD-Rep-01")){
-                electrode_node = seq.getNodeWithId("LEBT-010:BMD-Rep-01");
+            if (seq.getAllNodes().toString().contains("START-COMISS-TANK")){
+                electrode_node = seq.getNodeWithId("START-COMISS-TANK");
                 if (electrode_node.getSDisplay()<start_simul.getSDisplay()){
                     electrode = false;
                 }
@@ -292,8 +292,8 @@ public class SimulationRunner {
                 end_simul =  seq.getNodeWithId(final_pos_simul);
             }
             AcceleratorNode electrode_node = null;
-            if (seq.getAllNodes().toString().contains("LEBT-010:BMD-Rep-01")){
-                electrode_node = seq.getNodeWithId("LEBT-010:BMD-Rep-01");
+            if (seq.getAllNodes().toString().contains("START-COMISS-TANK")){
+                electrode_node = seq.getNodeWithId("START-COMISS-TANK");
                 if (electrode_node.getSDisplay()<start_simul.getSDisplay()){
                     electrode = false;
                 }
@@ -331,11 +331,11 @@ public class SimulationRunner {
      */
     private void setTrackerParameters(AcceleratorSeq sequence) throws InstantiationException{
 
-        envelopeTracker = AlgorithmFactory.createEnvTrackerAdapt(sequence);
+        envelopeTracker = AlgorithmFactory.createEnvelopeTracker(sequence);
 
         envelopeTracker.setUseSpacecharge(true);
-
-        envelopeTracker.setMaxIterations(2000);
+        
+        envelopeTracker.setStepSize(0.05);
 
     }
 
@@ -344,11 +344,11 @@ public class SimulationRunner {
      */
     private void setTrackerParameters(AcceleratorSeqCombo sequence) throws InstantiationException{
 
-        envelopeTracker = AlgorithmFactory.createEnvTrackerAdapt(sequence);
+        envelopeTracker = AlgorithmFactory.createEnvelopeTracker(sequence);
 
         envelopeTracker.setUseSpacecharge(true);
-
-        envelopeTracker.setMaxIterations(2000);
+        
+        envelopeTracker.setStepSize(0.05);
 
     }
 
@@ -410,7 +410,7 @@ public class SimulationRunner {
 
         ArrayList<EnvelopeProbeState> stateElement = (ArrayList<EnvelopeProbeState>) trajectory.getStatesViaIndexer();
         CovarianceMatrix covmat;
-        int[] index = trajectory.indicesForElement("LEBT-010:BMD-Rep-01");
+        int[] index = trajectory.indicesForElement("START-COMISS-TANK");
 
         covmat = stateElement.get(index[0]).getCovarianceMatrix();
 
@@ -439,15 +439,9 @@ public class SimulationRunner {
             ((Solenoid)solenoid2).setDfltField(solenoidFields[0]);
         }
         
-        for(int i=0; i<CV.size(); i++){
-            if(i<3){
-                CV.get(i).setDfltField(correctorVFields[0]);
-                CH.get(i).setDfltField(correctorHFields[0]);
-            } else {
-                CV.get(i).setDfltField(correctorVFields[1]);
-                CH.get(i).setDfltField(correctorHFields[1]);
-            }
-            
+        for(int i=0; i<2; i++){
+            CV.get(i).setDfltField(correctorVFields[i]);
+            CH.get(i).setDfltField(correctorHFields[i]);                        
         }        
     }
     
@@ -473,16 +467,10 @@ public class SimulationRunner {
             ((Solenoid)solenoid2).setDfltField(solenoidFields[1]);
         }
         
-        for(int i=0; i<CV.size(); i++){
-            if(i<3){
-                CV.get(i).setDfltField(correctorVFields[0]*CV.get(i).getPolarity());
-                CH.get(i).setDfltField(correctorHFields[0]*CH.get(i).getPolarity());
-            } else {
-                CV.get(i).setDfltField(correctorVFields[1]*CV.get(i).getPolarity());
-                CH.get(i).setDfltField(correctorHFields[1]*CH.get(i).getPolarity());
-            }
-            
-        }        
+        for(int i=0; i<2; i++){
+            CV.get(i).setDfltField(correctorVFields[i]);
+            CH.get(i).setDfltField(correctorHFields[i]);                        
+        }           
         
     }
 
@@ -552,8 +540,8 @@ public class SimulationRunner {
 
             //Calculating cylindrical coordinates
             Complex phi = new Complex(covmat.getMeanX()*1.0e+3,covmat.getMeanY()*1.0e+3);
-            posR.add(phi.modulus());
-            posPhi.add(phi.phase()/Math.PI);
+            posR.add(phi.modulus());           
+            posPhi.add(phi.phase());            
 
             for(int k = 0; k < sigmaOffsetX.length; k++){
                 sigmaOffsetX[k].add(sigmaX[k].get(i)+posX.get(i));
@@ -562,12 +550,31 @@ public class SimulationRunner {
             }
                       
             aperture = getAperture(stateElement.get(i).getPosition());
-            if(Double.isFinite(aperture)){
-                double x0 = (aperture-covmat.getMeanX())/(Math.sqrt(2.0)*covmat.getSigmaX());
-                double x1 = (-aperture-covmat.getMeanX())/(Math.sqrt(2.0)*covmat.getSigmaX());
-                double y0 = (aperture-covmat.getMeanY())/(Math.sqrt(2.0)*covmat.getSigmaY());
-                double y1 = (-aperture-covmat.getMeanY())/(Math.sqrt(2.0)*covmat.getSigmaY());                   
-                transmission_offset = Math.min(transmission_offset,(0.25*Math.abs(erf(x0)-erf(x1))*Math.abs(erf(y0)-erf(y1))));
+            if((Double.isFinite(aperture)) && stateElement.get(i).getPosition()< 2.509){
+                double xc = Math.abs(covmat.getMeanX());
+                double yc = Math.abs(covmat.getMeanY());
+                double x0=0.0, x1=0.0 , y0=0.0, y1=0.0;
+                double transOffx = 0.0;
+                double transOffy = 0.0;
+                if(xc<aperture){
+                    x0 = (aperture-xc)/(Math.sqrt(2.0)*covmat.getSigmaX());
+                    x1 = (aperture+xc)/(Math.sqrt(2.0)*covmat.getSigmaX()); 
+                    transOffx = 0.5*Math.abs(erf(x0)+erf(x1));
+                } else {
+                    x0 = (xc+aperture)/(Math.sqrt(2.0)*covmat.getSigmaX());
+                    x1 = (xc-aperture)/(Math.sqrt(2.0)*covmat.getSigmaX());
+                    transOffx = 0.5*Math.abs(erf(x0)-erf(x1));
+                }
+                if (yc < aperture){
+                    y0 = (aperture-yc)/(Math.sqrt(2.0)*covmat.getSigmaY());
+                    y1 = (aperture+yc)/(Math.sqrt(2.0)*covmat.getSigmaY());  
+                    transOffy = 0.5*Math.abs(erf(x0)+erf(x1));
+                } else {
+                    y0 = (yc+aperture)/(Math.sqrt(2.0)*covmat.getSigmaY());
+                    y1 = (yc-aperture)/(Math.sqrt(2.0)*covmat.getSigmaY());
+                    transOffy = 0.5*Math.abs(erf(x0)-erf(x1));
+                }
+                transmission_offset = Math.min(transmission_offset,transOffx*transOffy);
 
                 x0 = aperture/(Math.sqrt(2.0)*covmat.getSigmaX());
                 y0 = aperture/(Math.sqrt(2.0)*covmat.getSigmaY());

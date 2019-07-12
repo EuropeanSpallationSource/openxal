@@ -28,7 +28,7 @@ public class SteererTest extends TestCommon {
     public void doQuadTest() throws InstantiationException, ModelException {
         probe.reset();
         System.out.println("QUAD 70 -16 15 0 0 0 0 0");
-        //QUAD 70 -16 15 0 0 0 0 0		
+        //QUAD 70 -16 15 0 0 0 0 0
         AcceleratorSeq sequence = quad_steerer(70., -16., 15., 10, -20);
 
         run(sequence);
