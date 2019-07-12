@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.xal</groupId>
         <artifactId>openxal</artifactId>
-        <version>1.2.12</version>
+        <version>1.2.13-SNAPSHOT</version>
     </parent>
 
     <artifactId>openxal.third-party-libs</artifactId>
@@ -85,6 +85,16 @@
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>2.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hdfgroup</groupId>
+            <artifactId>hdfobject</artifactId>
+            <version>1.10.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hdfgroup</groupId>
+            <artifactId>hdf5</artifactId>
+            <version>1.10.3</version>
         </dependency>
     </dependencies>
 </project>

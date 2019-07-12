@@ -54,8 +54,12 @@ public class ScenarioGeneratorTest {
 
 	private static Accelerator loadAccelerator() {
 		/* Loading SMF model */		
-		Accelerator accelerator = XMLDataManager.acceleratorWithUrlSpec(JElsDemo.class.getResource("main.xal").toString());
-		
+                Accelerator accelerator = null;
+                try{
+                    accelerator = XMLDataManager.acceleratorWithUrlSpec(JElsDemo.class.getResource("main.xal").toString());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 		if (accelerator == null)
 		{			
 			throw new Error("Accelerator is empty. Could not load the default accelerator.");

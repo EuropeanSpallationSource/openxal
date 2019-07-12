@@ -203,6 +203,10 @@ public class ThinLens extends ThinElement {
         if (m_dblFocZ != 0.0)
             matPhi.setElem(5,4, -1.0/m_dblFocZ);
         
+        // Jan 2019 - Natalia Milas
+        // apply alignment and rotation errors
+        matPhi = applyErrors(matPhi,0.0);
+        
         return new PhaseMap( matPhi );
     };
 

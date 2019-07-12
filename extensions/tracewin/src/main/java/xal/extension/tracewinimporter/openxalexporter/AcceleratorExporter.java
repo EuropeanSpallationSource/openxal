@@ -21,7 +21,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
@@ -34,8 +33,9 @@ import org.w3c.dom.Element;
 
 import xal.extension.jels.ImporterHelpers;
 import xal.extension.jels.smf.ESSAccelerator;
-import xal.extension.jels.smf.impl.ESSFieldMap;
-import xal.extension.jels.smf.impl.ESSSolFieldMap;
+import xal.extension.jels.smf.impl.FieldMap;
+import xal.extension.jels.smf.impl.MagFieldMap;
+import xal.extension.jels.smf.impl.RfFieldMap;
 import xal.smf.AcceleratorNode;
 import xal.smf.AcceleratorSeq;
 import xal.tools.data.DataAdaptor;
@@ -149,21 +149,27 @@ public class AcceleratorExporter {
 
         da.writeTo(opticsFile);
 
-        // Field Maps
-        List<AcceleratorNode> fieldMapNodes = acc.getAllNodesOfType("FM");
+        // Field Maps - get a list of unique field maps.
+        List<AcceleratorNode> fieldMapNodes = acc.getAllNodesOfType("RFM");
+        Map<String,FieldMap> fieldMaps = new HashMap<>();
         for (AcceleratorNode fieldMapNode : fieldMapNodes) {
-            ESSFieldMap fieldMap = (ESSFieldMap) fieldMapNode;
-            String destinationFile = new URL(dir.toURI().toURL(), fieldMap.getFieldMapFile() + ".edz").toString();
-            fieldMap.getFieldProfile().saveFile(destinationFile);
+            RfFieldMap fieldMap = (RfFieldMap) fieldMapNode;
+            if(!fieldMaps.containsValue(fieldMap.getFieldMap())){
+                fieldMaps.put(fieldMap.getFieldMapFile(),fieldMap.getFieldMap());
+            }
         }
         // Solenoid Field Maps
-        fieldMapNodes = acc.getAllNodesOfType("SFM");
+        fieldMapNodes = acc.getAllNodesOfType("MFM");
         for (AcceleratorNode fieldMapNode : fieldMapNodes) {
-            ESSSolFieldMap fieldMap = (ESSSolFieldMap) fieldMapNode;
-            String destinationFile = new URL(dir.toURI().toURL(), fieldMap.getFieldMapFile() + ".bsz").toString();
-            fieldMap.getFieldProfileZ().saveFile(destinationFile);
-            destinationFile = new URL(dir.toURI().toURL(), fieldMap.getFieldMapFile() + ".bsr").toString();
-            fieldMap.getFieldProfileR().saveFile(destinationFile);
+            MagFieldMap fieldMap = (MagFieldMap) fieldMapNode;
+            if(!fieldMaps.containsValue(fieldMap.getFieldMap())){
+                fieldMaps.put(fieldMap.getFieldMapFile(),fieldMap.getFieldMap());
+            }
+        }
+        
+        // Export each field map only once.
+        for (String fieldMapFile: fieldMaps.keySet()){
+            fieldMaps.get(fieldMapFile).saveFieldMap(dir.toURI().toURL().toString(), fieldMapFile);
         }
     }
 

@@ -392,6 +392,10 @@ public class IdealMagSkewQuad3 extends ThickElectromagnet {
         
         PhaseMatrix matBeam = IdealMagSkewQuad3.toBeamFrame(matQuad);
         
+        // Jan 2019 - Natalia Milas
+        // apply alignment and rotation errors
+        matBeam = applyErrors(matBeam, probe, length);
+        
         return new PhaseMap( matBeam );
     }
 

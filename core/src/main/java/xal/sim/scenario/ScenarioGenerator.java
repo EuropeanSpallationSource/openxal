@@ -9,7 +9,6 @@ package xal.sim.scenario;
 import xal.model.Lattice;
 import xal.model.ModelException;
 import xal.model.Sector;
-import xal.model.elem.SectionEndpoint;
 import xal.model.xml.LatticeXmlParser;
 import xal.sim.sync.SynchronizationManager;
 import xal.smf.AcceleratorSeq;

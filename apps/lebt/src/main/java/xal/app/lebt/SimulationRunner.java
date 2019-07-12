@@ -5,8 +5,7 @@
  */
 package xal.app.lebt;
 
-import java.io.FileNotFoundException;
-import java.net.URL;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -15,8 +14,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import xal.extension.jels.smf.impl.ESSMagFieldMap3D;
-import xal.extension.jels.smf.impl.ESSSolFieldMap;
+import xal.extension.jels.smf.impl.MagFieldMap;
 import xal.model.ModelException;
 import xal.model.alg.EnvelopeTracker;
 import xal.model.probe.EnvelopeProbe;
@@ -429,18 +427,14 @@ public class SimulationRunner {
         List<VDipoleCorr> CV = sequence.getNodesOfType("DCV");
         List<HDipoleCorr> CH = sequence.getNodesOfType("DCH");
         
-        if(solenoid1 instanceof ESSSolFieldMap){
-            ((ESSSolFieldMap)solenoid1).setDfltField(solenoidFields[0]);
-        } else if (solenoid1 instanceof ESSMagFieldMap3D){
-            ((ESSMagFieldMap3D)solenoid1).setDfltField(solenoidFields[0]);
+        if(solenoid1 instanceof MagFieldMap){
+            ((MagFieldMap)solenoid1).setDfltField(solenoidFields[0]);
         } else if (solenoid1 instanceof Solenoid){
             ((Solenoid)solenoid1).setDfltField(solenoidFields[0]);
         }
         
-        if(solenoid2 instanceof ESSSolFieldMap){
-            ((ESSSolFieldMap)solenoid2).setDfltField(solenoidFields[0]);
-        } else if (solenoid2 instanceof ESSMagFieldMap3D){
-            ((ESSMagFieldMap3D)solenoid2).setDfltField(solenoidFields[0]);
+        if(solenoid2 instanceof MagFieldMap){
+            ((MagFieldMap)solenoid2).setDfltField(solenoidFields[0]);
         } else if (solenoid2 instanceof Solenoid){
             ((Solenoid)solenoid2).setDfltField(solenoidFields[0]);
         }
@@ -461,18 +455,14 @@ public class SimulationRunner {
         List<VDipoleCorr> CV = sequence.getNodesOfType("DCV");
         List<HDipoleCorr> CH = sequence.getNodesOfType("DCH");
         
-        if(solenoid1 instanceof ESSSolFieldMap){
-            ((ESSSolFieldMap)solenoid1).setDfltField(solenoidFields[0]);
-        } else if (solenoid1 instanceof ESSMagFieldMap3D){
-            ((ESSMagFieldMap3D)solenoid1).setDfltField(solenoidFields[0]);
+        if(solenoid1 instanceof MagFieldMap){
+            ((MagFieldMap)solenoid1).setDfltField(solenoidFields[0]);
         } else if (solenoid1 instanceof Solenoid){
             ((Solenoid)solenoid1).setDfltField(solenoidFields[0]);
         }
         
-        if(solenoid2 instanceof ESSSolFieldMap){
-            ((ESSSolFieldMap)solenoid2).setDfltField(solenoidFields[1]);
-        } else if (solenoid2 instanceof ESSMagFieldMap3D){
-            ((ESSMagFieldMap3D)solenoid2).setDfltField(solenoidFields[1]);
+        if(solenoid2 instanceof MagFieldMap){
+            ((MagFieldMap)solenoid2).setDfltField(solenoidFields[1]);
         } else if (solenoid2 instanceof Solenoid){
             ((Solenoid)solenoid2).setDfltField(solenoidFields[1]);
         }

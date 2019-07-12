@@ -5,21 +5,11 @@
     <parent>
         <groupId>org.xal</groupId>
         <artifactId>openxal.extensions</artifactId>
-        <version>1.2.12</version>
+        <version>1.2.13-SNAPSHOT</version>
     </parent>
 
     <artifactId>openxal.extensions.fxapplication</artifactId>
 
-    <build>
-        <sourceDirectory>src</sourceDirectory>
-        <resources>
-            <resource>
-                <directory>resources</directory>
-                <targetPath>xal/extension/fxapplication/resources</targetPath>
-            </resource>
-        </resources>
-    </build>
-    
     <dependencies>
         <dependency>
             <groupId>org.xal</groupId>

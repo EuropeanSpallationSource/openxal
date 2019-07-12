@@ -243,6 +243,10 @@ public class ThickMatrix extends ThickElement {
         M.plusEquals( A.times(s) );
         M.plusEquals( A.times(A.times(0.5*s*s)) ); 
         
+        // Jan 2019 - Natalia Milas
+        // apply alignment and rotation errors
+        M = applyErrors(M, probe, dblLen);
+        
         return new PhaseMap( M );
     }
 

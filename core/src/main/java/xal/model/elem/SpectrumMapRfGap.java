@@ -1028,6 +1028,10 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
         //        PrintWriter os = new PrintWriter(System.out);
         //        matPhi.print(os);
         //        os.close();
+        
+        // Jan 2019 - Natalia Milas
+        // apply alignment and rotation errors
+        matPhi = applyErrors(matPhi,getGapLength());    
 
         return new PhaseMap(matPhi);
     }

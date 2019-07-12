@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Formatter;
 import java.util.Iterator;
@@ -50,17 +49,17 @@ public class GeneralTest {
      */
     static enum Column {
         POSITION(0, 1, 0.),
-        GAMA_1(1, 2, 1e-2),
-        RMSX(2, 9, 2e-1),
-        RMSY(3, 10, 2e-1),
-        RMSZ(4, 11, 2e-1),
-        CENTX(5, 3, 1e-1),
+        GAMA_1(1, 2, 1e-3),
+        RMSX(2, 9, 1e-1),
+        RMSY(3, 10, 1e-1),
+        RMSZ(4, 11, 1e-1),
+        CENTX(5, 3, 5e-2),
         CENTXp(6, 6, 2.5e-1),
         CENTY(7, 4, 1e-1),
         CENTYp(8, 7, 2.5e-1),
-        CENTZ(9, 5, 1.),
-        CENTdpp(10, 8, 1.);
-        
+        CENTZ(9, 5, 1e-1),
+        CENTdpp(10, 8, 1e-1);
+
         int openxal;
         int tracewin;
         double allowedError;
@@ -118,12 +117,12 @@ public class GeneralTest {
         boolean ok = true;
         for (int j = 1; j < allCols.length; j++) {
             double e = compare(dataOX[0], dataTW[1], dataOX[allCols[j].openxal], dataTW[allCols[j].tracewin]);
-//            System.out.printf("%s: %E %c %E\n", allCols[j].name(), e, e < allCols[j].allowedError ? '<' : '>', allCols[j].allowedError);
-//            System.out.printf("%s: %E %E\n", allCols[j].name(), dataOX[allCols[j].openxal][dataOX[allCols[j].openxal].length - 1], dataTW[allCols[j].tracewin][dataTW[allCols[j].tracewin].length - 1]);
-//            System.out.printf("%E\t", e);
             if (e >= allCols[j].allowedError) {
                 message.append(allCols[j].name()).append(" ");
                 ok = false;
+                System.out.printf("%s: %E %c %E\n", allCols[j].name(), e, e < allCols[j].allowedError ? '<' : '>', allCols[j].allowedError);
+                System.out.printf("%s: %E %E\n", allCols[j].name(), dataOX[allCols[j].openxal][dataOX[allCols[j].openxal].length - 1], dataTW[allCols[j].tracewin][dataTW[allCols[j].tracewin].length - 1]);
+                System.out.printf("%E\t", e);
             }
             //System.out.printf("%E %E\n",dataOX[allCols[j].openxal][0], dataTW[allCols[j].tracewin][0]);
         }
@@ -214,7 +213,7 @@ public class GeneralTest {
         }
 
         AcceleratorSeq acceleratorSeq = accelerator.getComboSequence("MEBT-A2T");
-        
+
         return acceleratorSeq;
     }
 
@@ -267,7 +266,7 @@ public class GeneralTest {
             dataOX[Column.CENTXp.openxal][i] = mean.getxp() * 1e3;
             dataOX[Column.CENTY.openxal][i] = mean.gety() * 1e3;
             dataOX[Column.CENTYp.openxal][i] = mean.getyp() * 1e3;
-            dataOX[Column.CENTZ.openxal][i] = - mean.getz() * 360 * ps.getBunchFrequency() / (beta * IElement.LightSpeed) * Math.sqrt(1 + Math.pow(mean.getx(), 2) / 4 + Math.pow(mean.gety(), 2) / 4);
+            dataOX[Column.CENTZ.openxal][i] = -mean.getz() * 360 * ps.getBunchFrequency() / (beta * IElement.LightSpeed) * Math.sqrt(1 + Math.pow(mean.getx(), 2) / 4 + Math.pow(mean.gety(), 2) / 4);
             dataOX[Column.CENTdpp.openxal][i] = mean.getzp() * gamma * gamma * gamma * beta * beta * ps.getSpeciesRestEnergy() * 1e-6;
 
             i = i + 1;

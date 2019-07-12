@@ -1,22 +1,21 @@
 package xal.extension.jels.smf;
 
-import xal.extension.jels.smf.impl.ESSBend;
+import xal.extension.jels.smf.impl.Bend;
+import xal.extension.jels.smf.impl.DipoleCorr;
 import xal.extension.jels.smf.impl.ESSDTLTank;
-import xal.extension.jels.smf.impl.ESSFieldMap;
-import xal.extension.jels.smf.impl.ESSMagFieldMap3D;
+import xal.extension.jels.smf.impl.RfFieldMap;
 import xal.extension.jels.smf.impl.ESSRfCavity;
 import xal.extension.jels.smf.impl.ESSRfGap;
-import xal.extension.jels.smf.impl.ESSSolFieldMap;
-import xal.extension.jels.smf.impl.FieldProfile;
-import xal.extension.jels.smf.impl.FieldProfile2D;
-import xal.extension.jels.smf.impl.MagFieldProfile3D;
+import xal.extension.jels.smf.impl.FieldMap;
+import xal.extension.jels.smf.impl.FieldMapFactory;
+import xal.extension.jels.smf.impl.MagFieldMap;
+import xal.extension.jels.smf.impl.RfFieldMap1D;
 import xal.smf.AcceleratorNode;
 import xal.smf.ChannelSuite;
 import xal.smf.attr.ApertureBucket;
 import xal.smf.impl.Electromagnet;
 import xal.smf.impl.MagnetMainSupply;
 import xal.smf.impl.RfCavity;
-import xal.smf.impl.qualify.MagnetType;
 
 /**
  * Factory class for creation of ESS specific AcceleratorNode elements,
@@ -72,7 +71,7 @@ public final class ESSElementFactory {
      * @param position Position of the magnet in the accelerator.
      * @return Bend object.
      */
-    public static ESSBend createESSBend(String name, double alpha, double k, double rho, double entryAngle,
+    public static Bend createESSBend(String name, double alpha, double k, double rho, double entryAngle,
             double exitAngle, double quadComp, ApertureBucket aper, MagnetMainSupply ps, int orientation, double gap, double position) {
 
         return createESSBend(name, alpha, k, rho, entryAngle, exitAngle, 0.45, 2.8, 0.45, 2.8, quadComp, aper, ps, orientation,
@@ -98,16 +97,16 @@ public final class ESSElementFactory {
      * @param position Position of the magnet in the accelerator.
      * @return Bend object.
      */
-    public static ESSBend createESSBend(String name, double alpha, double k, double rho, double entryAngle,
+    public static Bend createESSBend(String name, double alpha, double k, double rho, double entryAngle,
             double exitAngle, double enterK1, double enterK2, double exitK1, double exitK2, double quadComp,
             ApertureBucket aper, MagnetMainSupply ps, int orientation, double gap, double position) {
 
         // calculations
         double len = Math.abs(rho * alpha * Math.PI / 180.0);
 
-        double B0 = k / rho * Math.signum(alpha);
-
-        ESSBend bend = new ESSBend(name, (orientation == MagnetType.HORIZONTAL) ? MagnetType.HORIZONTAL : MagnetType.VERTICAL);
+//        Field not used in computations.
+//        double B0 = k / rho * Math.signum(alpha);
+        Bend bend = new Bend(name, orientation);
         if (ps != null) {
             bend.setMainSupplyId(ps.getId());
         }
@@ -119,7 +118,7 @@ public final class ESSElementFactory {
         bend.getMagBucket().setDipoleEntrRotAngle(-entryAngle);
         bend.getMagBucket().setBendAngle(alpha);
         bend.getMagBucket().setDipoleExitRotAngle(-exitAngle);
-        bend.setDfltField(B0);
+//        bend.setDfltField(B0);
         bend.getMagBucket().setDipoleQuadComponent(quadComp);
 
         bend.setGap(gap);
@@ -131,6 +130,32 @@ public final class ESSElementFactory {
         bend.setAper(aper);
 
         return bend;
+    }
+
+    /**
+     * Creates the DipoleCorrector node with specified properties.
+     *
+     * @param name Name of the corrector.
+     * @param orientation Orientation of the corrector.
+     * @param length Length of the corrector in meters.
+     * @param aper Aperture details.
+     * @param ps Power supply for the magnet. Can be null.
+     * @param position Position of the corrector in the accelerator.
+     * @return Dipole correctors.
+     */
+    public static DipoleCorr createESSCorrector(String name, int orientation, double length,
+            ApertureBucket aper, MagnetMainSupply ps, double position) {
+        DipoleCorr corr = new DipoleCorr(name, orientation);
+        if (ps != null) {
+            corr.setMainSupplyId(ps.getId());
+        }
+        addElectromagnetChannels(name, "B", corr.channelSuite());
+        corr.setPosition(position);
+        corr.setLength(length);
+        double effLength = length == 0 ? 1 : length;
+        corr.getMagBucket().setEffLength(effLength);
+        corr.setAper(aper);
+        return corr;
     }
 
     /**
@@ -164,29 +189,32 @@ public final class ESSElementFactory {
      * @param name Name of the field map.
      * @param length Length of the fieldmap.
      * @param frequency Frequency at the start of the element.
-     * @param xelmax Electric field intensity factor.
+     * @param amplitude
      * @param rfphase RF phase.
      * @param fieldFile File containing the filed profile.
-     * @param fieldProfile Field profile.
+     * @param fieldMapPath
      * @param aper Aperture details.
      * @param position Position of the field map.
-     * @return ESSFieldMap object.
+     * @param numberOfPoints
+     * @return RfFieldMap object.
      */
-    public static ESSRfCavity createESSFieldMap(String name, double length, double frequency, double xelmax,
-            double rfphase, String fieldFile, FieldProfile fieldProfile, ApertureBucket aper, double position) {
-        ESSFieldMap fm = new ESSFieldMap(name + ":FM");
+    public static ESSRfCavity createRfFieldMap(String name, double length, double frequency,
+            double amplitude, double rfphase, String fieldFile, String fieldMapPath,
+            ApertureBucket aper, double position, int numberOfPoints) {
+        RfFieldMap fm = new RfFieldMap(name + ":RFM");
         fm.setLength(length);
         fm.setPosition(length / 2);
         fm.setFieldMapFile(fieldFile);
-        fm.setFieldProfile(fieldProfile);
-        fm.setXelmax(xelmax);
         fm.setAper(aper);
-        fm.setFrequency(frequency);
-        fm.setPhase(rfphase);
+        fm.setDimensions(1);
+        fm.setDynamic(true);
+        fm.getFieldMapBucket().setFieldType(FieldMapFactory.FieldType.ELECTRIC);
 
-        double amplitude = (fieldProfile.getE0L(frequency) / fieldProfile.getLength()) * 1e-6;
+        FieldMap fieldMap = FieldMapFactory.getInstance(fieldMapPath,
+                fieldFile, true, FieldMapFactory.FieldType.ELECTRIC, 1, numberOfPoints);
+        fm.setFieldMap(fieldMap);
 
-        ESSRfCavity cavity = createESSRfCavity(name, length, new AcceleratorNode[]{fm}, rfphase, amplitude, frequency, position);
+        ESSRfCavity cavity = createESSRfCavity(name, length, new AcceleratorNode[]{fm}, rfphase, amplitude * ((RfFieldMap1D) fieldMap).getFieldIntegral(), frequency, position);
         return cavity;
     }
 
@@ -197,7 +225,7 @@ public final class ESSElementFactory {
      * @param name Name of the RF cavity.
      * @param length Length of the cavity in meters.
      * @param node Node to include in the cavity.
-     * @param Phis Phase.
+     * @param phiS Phase.
      * @param amplitude Amplitude.
      * @param frequency Frequency at the start of the element.
      * @param position Position of the cavity.
@@ -215,7 +243,7 @@ public final class ESSElementFactory {
      * @param name Name of the RF cavity.
      * @param length Length of the cavity in meters.
      * @param nodes Nodes to include in the cavity.
-     * @param Phis Phase.
+     * @param phiS Phase.
      * @param amplitude Amplitude.
      * @param frequency Frequency at the start of the element.
      * @param position Position of the cavity.
@@ -230,9 +258,9 @@ public final class ESSElementFactory {
             cavity.addNode(gap);
         }
 
-        cavity.getRfField().setPhase(phiS);
-        cavity.getRfField().setAmplitude(amplitude);
         cavity.getRfField().setFrequency(frequency);
+        cavity.setDfltCavAmp(amplitude);
+        cavity.setDfltCavPhase(phiS);
         cavity.setPosition(position);
         cavity.setLength(length);
 
@@ -246,7 +274,7 @@ public final class ESSElementFactory {
      * @param name Name of the RF cavity.
      * @param length Length of the cavity in meters.
      * @param nodes Nodes to include in the cavity.
-     * @param Phis Phase.
+     * @param phiS Phase.
      * @param amplitude Amplitude.
      * @param frequency Frequency at the start of the element.
      * @param position Position of the cavity.
@@ -275,73 +303,42 @@ public final class ESSElementFactory {
      *
      * @param name Name of the field map.
      * @param length Length of the fieldmap.
-     * @param xmagmax Electric field intensity factor.
+     * @param amplitude Magnetic field amplitude.
      * @param fieldPath Path of the file containing the field profile.
      * @param fieldFile File containing the field profile.
      * @param aper Aperture details.
      * @param ps
      * @param position Position of the field map.
-     * @return ESSFieldMap object.
+     * @param dimensions
+     * @param numberOfPoints
+     * @return RfFieldMap object.
      */
-    public static ESSSolFieldMap createESSSolFieldMap(String name, double length,
-            double xmagmax, String fieldPath, String fieldFile, ApertureBucket aper,
-            MagnetMainSupply ps, double position) {
-        ESSSolFieldMap solenoid = new ESSSolFieldMap(name + ":SFM");
+    public static MagFieldMap createMagFieldMap(String name, double length,
+            double amplitude, String fieldPath, String fieldFile, ApertureBucket aper,
+            MagnetMainSupply ps, double position, int dimensions, int numberOfPoints) {
+        MagFieldMap magFieldMap = new MagFieldMap(name + ":MFM");
 
-        addElectromagnetChannels(name, "B", solenoid.channelSuite());
+        addElectromagnetChannels(name, "B", magFieldMap.channelSuite());
         if (ps != null) {
-            solenoid.setMainSupplyId(ps.getId());
+            magFieldMap.setMainSupplyId(ps.getId());
         }
 
-        solenoid.setLength(length);
-        solenoid.setPosition(position + length / 2.);
-        solenoid.setFieldMapFile(fieldFile);
+        magFieldMap.setLength(length);
+        magFieldMap.getMagBucket().setEffLength(length);
+        magFieldMap.setPosition(position + length / 2.);
+        magFieldMap.setFieldMapFile(fieldFile);
+        magFieldMap.setDimensions(dimensions);
+        magFieldMap.setDynamic(false);
+        magFieldMap.getFieldMapBucket().setFieldType(FieldMapFactory.FieldType.MAGNETIC);
 
-        solenoid.setFieldProfileR(FieldProfile2D.getInstance(fieldPath + "/" + fieldFile + ".bsr"));
-        solenoid.setFieldProfileZ(FieldProfile2D.getInstance(fieldPath + "/" + fieldFile + ".bsz"));
+        FieldMap fieldMap = FieldMapFactory.getInstance(fieldPath, fieldFile, false,
+                FieldMapFactory.FieldType.MAGNETIC, dimensions, numberOfPoints);
+        magFieldMap.setFieldMap(fieldMap);
 
-        solenoid.setDesignField(xmagmax);
+        magFieldMap.setDfltField(amplitude);
 
-        solenoid.setAper(aper);
+        magFieldMap.setAper(aper);
 
-        return solenoid;
-    }
-
-    /**
-     * Creates the field map node with specified properties.
-     *
-     * @param name Name of the field map.
-     * @param length Length of the fieldmap.
-     * @param xmagmax Electric field intensity factor.
-     * @param fieldPath Path of the file containing the field profile.
-     * @param fieldFile File containing the field profile.
-     * @param aper Aperture details.
-     * @param ps
-     * @param position Position of the field map.
-     * @return ESSFieldMap object.
-     */
-    public static ESSMagFieldMap3D createESSMagFieldMap3D(String name, double length,
-            double xmagmax, String fieldPath, String fieldFile, ApertureBucket aper,
-            MagnetMainSupply ps, double position) {
-        ESSMagFieldMap3D magneticFieldmap = new ESSMagFieldMap3D(name + ":MFM");
-
-        addElectromagnetChannels(name, "B", magneticFieldmap.channelSuite());
-        if (ps != null) {
-            magneticFieldmap.setMainSupplyId(ps.getId());
-        }
-
-        magneticFieldmap.setLength(length);
-        magneticFieldmap.setPosition(position + length / 2.);
-        magneticFieldmap.setFieldMapFile(fieldFile);
-
-        magneticFieldmap.setMagFieldProfileX(MagFieldProfile3D.getInstance(fieldPath + "/" + fieldFile + ".bsx"));
-        magneticFieldmap.setMagFieldProfileY(MagFieldProfile3D.getInstance(fieldPath + "/" + fieldFile + ".bsy"));
-        magneticFieldmap.setMagFieldProfileZ(MagFieldProfile3D.getInstance(fieldPath + "/" + fieldFile + ".bsz"));
-
-        magneticFieldmap.setDesignField(xmagmax);
-
-        magneticFieldmap.setAper(aper);
-
-        return magneticFieldmap;
+        return magFieldMap;
     }
 }

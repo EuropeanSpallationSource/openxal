@@ -44,6 +44,11 @@ build.maven:
         - 'mvn $MAVEN_CLI_OPTS verify -Dmaven.javadoc.skip=true -fn | tee std.out'
         - '! grep "Build failures were ignored" std.out'
     artifacts:
+        paths:
+            - "$SUBDIR/target/surefire-reports/TEST-*.xml"
+            - "$SUBDIR/*/target/surefire-reports/TEST-*.xml"
+            - "$SUBDIR/target/jacoco.exec"
+            - "$SUBDIR/*/target/jacoco.exec"
         reports:
             junit:
                 - "$SUBDIR/target/surefire-reports/TEST-*.xml"
@@ -70,7 +75,7 @@ sonarqube.maven:
     <<: *maven
     stage: deploy
     script:
-        - 'mvn $MAVEN_CLI_OPTS -Dsonar.login=$SONARQUBE_TOKEN -Dsonar.branch=$CI_COMMIT_REF_SLUG sonar:sonar'
+        - 'mvn $MAVEN_CLI_OPTS -Dsonar.login=$SONARQUBE_TOKEN -Dsonar.branch=$CI_COMMIT_REF_SLUG -Dsonar.junit.reportPaths=target/surefire-reports -Dsonar.jacoco.reportPaths="target/jacoco.exec, ../test/target/jacoco.exec" sonar:sonar'
     only:
         - /^site.ess.*$/
 
@@ -94,4 +99,4 @@ pages:
         paths:
             - public
     only:
-        - site.ess.master
+        - site.ess.stable

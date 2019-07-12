@@ -9,7 +9,6 @@ package xal.model.elem;
 import xal.tools.beam.PhaseMap;
 import xal.tools.beam.PhaseMatrix;
 import xal.tools.beam.PhaseVector;
-import xal.tools.math.r3.R3;
 import xal.tools.math.r3.R3x3;
 import xal.model.IProbe;
 import xal.model.ModelException;
@@ -25,11 +24,6 @@ import xal.model.ModelException;
  * @author  Christopher Allen
  */
 public abstract class ThinElement extends Element {
-    
-
-    /*
-     *  Initialization
-     */
     
  
     /** 
@@ -119,7 +113,6 @@ public abstract class ThinElement extends Element {
      */
     @Override
     public double getLength() { return 0.0; };
-
     
     /*
      *  IElement Interface
@@ -191,54 +184,64 @@ public abstract class ThinElement extends Element {
     	return transferMap(probe);
     }
 
-    /**
+     /**
      * <h2>Add Rotation and Displacement Error to Transfer Matrix</h2>
      * <p>
      * Method to add the effects of a spatial rotation and displacement to the
      * beamline element represented by the given transfer matrix.
-     * </p>
-     * <p>
-     * The returned matrix is the original transfer matrix conjugated by the 
-     * rotation and displacement matrix.
-     * </p>
      *
-     * @param   matPhi      transfer matrix <b>&Phi;</b> to be processed
-     * @return  transfer matrix <b>&Phi;</b> after applying displacement
-     * 
-     * @author  Hiroyuki Sako
-     * @author  Christopher K. Allen
-     * @author  Ivo List
-     * 
+     * Method is optimized to add transformation only to the first and last
+     * sub-slice of the element. Besides reducing number of matrix
+     * multiplications, there is also less numerical error.
+     *
+     * @param matPhi transfer matrix <b>&Phi;</b> to be processed
+     * @param length element length (used only for FM composed of many thing
+     * elements stacked)
+     * @return transfer matrix <b>&Phi;</b> after applying displacement
+     *
+     * @author Natalia Milas
+     *
      * @see PhaseMatrix
      * @see PhaseMatrix#translation(PhaseVector)
      */
-    protected PhaseMatrix applyErrors(PhaseMatrix matPhi)
-    {		
-			double px = getPhiX();
-		    double py = getPhiY();
-		    double pz = getPhiZ();
-	    	double dx = getAlignX();
-	        double dy = getAlignY();
-	        double dz = getAlignZ();
-	        
-		    if (px != 0. || py != 0.) {
-		    	PhaseMatrix T = PhaseMatrix.translation(new PhaseVector(0., -px, 0., -py, 0., 0.));
-		    	PhaseMatrix Ti = PhaseMatrix.translation(new PhaseVector(0., px, 0., py, 0., 0.));
-		    	matPhi = Ti.times(matPhi).times(T);
-		    }
-		    
-		    if (pz != 0.) {		   
-		    	PhaseMatrix R = PhaseMatrix.rotationProduct(R3x3.newRotationZ(pz));		
-		    	matPhi = matPhi.conjugateTrans(R);		    			    	
-		    }		   
+    protected PhaseMatrix applyErrors(PhaseMatrix matPhi, double length) {
+        double px = getPhiX();
+        double py = getPhiY();
+        double pz = getPhiZ();
+        double dx = getAlignX();
+        double dy = getAlignY();
+        double dz = getAlignZ();
 
-	        if ((dx != 0)||(dy != 0)||(dz !=0)) {
-	            PhaseMatrix T = PhaseMatrix.spatialTranslation(new R3(-dx, -dy, -dz));
-	            PhaseMatrix Ti = PhaseMatrix.spatialTranslation(new R3(dx, dy, dz));
-	        	matPhi = Ti.times(matPhi).times(T);
-	        }
-		  		   
-	        return matPhi;
+        //check if the element is contained in a sequence which has its own misalignements
+        if (this.getParent() instanceof ElementSeq) {
+            double Dx = (getNodePos() - this.getParent().getLength() / 2) * ((ElementSeq) this.getParent()).getPhiY();
+            double Dy = (getNodePos() - this.getParent().getLength() / 2) * ((ElementSeq) this.getParent()).getPhiX();
+
+            px = px + ((ElementSeq) this.getParent()).getPhiX();
+            py = py + ((ElementSeq) this.getParent()).getPhiY();
+            pz = pz + ((ElementSeq) this.getParent()).getPhiZ();
+
+            dx = dx + Dx + ((ElementSeq) this.getParent()).getAlignX();
+            dy = dy + Dy + ((ElementSeq) this.getParent()).getAlignY();
+            dz = dz + ((ElementSeq) this.getParent()).getAlignZ();
+        }
+
+        if (pz != 0.) {
+            PhaseMatrix R = PhaseMatrix.rotationProduct(R3x3.newRotationZ(-pz));
+            matPhi = R.transpose().times(matPhi.times(R));
+        }
+
+        if (px != 0. || py != 0. || dz != 0. || dx != 0. || dy != 0.) {
+            PhaseMatrix T = PhaseMatrix.translation(new PhaseVector(py * length - dx, -py, px * length - dy, -px, -dz, 0.));
+            matPhi = matPhi.times(T);
+        }
+
+        if (px != 0. || py != 0. || dz != 0. || dx != 0. || dy != 0.) {
+            PhaseMatrix T = PhaseMatrix.translation(new PhaseVector(-py * length + dx, py, -px * length + dy, px, dz, 0.));
+            matPhi = T.times(matPhi);
+        }
+
+        return matPhi;
     }
-    
+
 };

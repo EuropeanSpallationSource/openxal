@@ -19,6 +19,7 @@ package xal.app.configurator;
 
 import com.cosylab.epics.caj.CAJContext;
 import gov.aps.jca.JCALibrary;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -321,9 +322,15 @@ public class FXMLController implements Initializable {
                     userPropertiesPath = System.getProperty("user.home") + fileSep + ".JCALibrary" + fileSep
                             + "JCALibrary.properties";
                 }
-                // Load properties
+                // New properties
                 Properties properties = new Properties();
-                properties.load(new FileInputStream(userPropertiesPath));
+                // Try to load the current property file if exists, otherwise create a new one.
+                File file = new File(userPropertiesPath);
+                if (!file.exists()) {
+                    file.getParentFile().mkdirs();
+                } else {
+                    properties.load(new FileInputStream(userPropertiesPath));
+                }
                 //Save new properties
                 FileOutputStream out = new FileOutputStream(userPropertiesPath);
                 properties.setProperty(CAJContext.class.getName() + ".addr_list", AddrListTextField.getText());

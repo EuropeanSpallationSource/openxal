@@ -6,9 +6,8 @@
 
 package xal.sim.scenario;
 
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import xal.model.IComponent;
@@ -32,10 +31,8 @@ public abstract class ElementMapping {
      * Local Attributes
      */
     
-    // CKA: Why we are not using a Map container directly?
-    //  We could an equivalence class defined by AcceleratorNode#isKindOf()  (Comparable interface)
-    /** The list of hardware type identifier string to modeling element class types. */
-	protected List<Entry<String, Class<? extends IComponent>>> elementMapping = new ArrayList<>();
+    /** The map of hardware type identifier string to modeling element class types. */
+	protected Map<String, Class<? extends IComponent>> elementMapping = new HashMap<>();
 	
 	/** indicates whether or not subsection axis coordinate have origin at sequence center */
 	protected boolean bolSubsectionCtrOrigin = true;  // default set for SNS
@@ -139,9 +136,9 @@ public abstract class ElementMapping {
 	 * @throws InstantiationException 
 	 */
 	public Class<? extends IComponent> getModelElementType(AcceleratorNode node) {
-		for (Entry<String, Class<? extends IComponent>> tc : elementMapping) {
-			if (node.isKindOf(tc.getKey()))
-				return tc.getValue();
+		for (Entry<String, Class<? extends IComponent>> tc : elementMapping.entrySet()) {
+                    if (node.getType().equalsIgnoreCase(tc.getKey()))
+                        return tc.getValue();
 		}
 		
 		if (node instanceof AcceleratorSeq)
@@ -186,9 +183,25 @@ public abstract class ElementMapping {
 	 * @param key node type
 	 * @param value the converter
 	 */
-	protected void putMap(String key, Class<? extends IComponent> value) {
-		elementMapping.add(new AbstractMap.SimpleImmutableEntry<String, Class<? extends IComponent>>(key, value));
-	}
+        protected void putMap(String key, Class<? extends IComponent> value) {
+            if (elementMapping.containsKey(key)) {
+                throw new RuntimeException("The key \"" + key + "\" is already in defined in the current ElementMapping. Please use another key or remove the other element.");
+            } else {
+                elementMapping.put(key, value);
+            }
+        }
+        
+        /**
+         * Removes a converter from the list. This method is useful if one wants to modify a given Mapping.
+         * @param key 
+         */
+        protected void removeMap(String key) {
+            if (!elementMapping.containsKey(key)) {
+                throw new RuntimeException("The key \"" + key + "\" is not defined in the current ElementMapping.");
+            } else {
+                elementMapping.remove(key);
+            }
+        }
 	
 	
     /**
