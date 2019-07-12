@@ -247,7 +247,17 @@ in imparted to a particular probe.  For an ideal quadrupole
     };
 
 
-    static public PhaseMap transferMap(IProbe probe, double dL, double k, int orientation, double alignx, double aligny, double alignz) {
+    /**
+     *  Compute the partial transfer map of an ideal permanent quadrupole for the particular probe.
+     *  Computes transfer map for a section of quadrupole <code>dblLen</code> meters in length.
+     *  @param  probe   supplies the charge, rest and kinetic energy parameters
+     *  @param  dL      compute transfer matrix for section of this length
+     *  @param  k       focal strength
+     *  @param  orientation 
+     *  @return         transfer map of ideal quadrupole for particular probe
+     */
+    //static public PhaseMap transferMap(IProbe probe, double dL, double k, int orientation, double alignx, double aligny, double alignz) {
+    public PhaseMap transferMap(IProbe probe, double dL, double k, int orientation) {    
         // Compute the transfer matrix components
         double[][] arrF = QuadrupoleLens.transferFocPlane(k, dL);
 
@@ -255,38 +265,40 @@ in imparted to a particular probe.  For an ideal quadrupole
 
         double[][] arr0 = DriftSpace.transferDriftPlane(dL);
 
-    // Build the tranfer matrix from its component blocks
-    PhaseMatrix matPhi = new PhaseMatrix();
+        // Build the tranfer matrix from its component blocks
+        PhaseMatrix matPhi = new PhaseMatrix();
 
-    matPhi.setSubMatrix(4, 5, 4, 5, arr0); // a drift space longitudinally
-    matPhi.setElem(6, 6, 1.0); // homogeneous coordinates
+        matPhi.setSubMatrix(4, 5, 4, 5, arr0); // a drift space longitudinally
+        matPhi.setElem(6, 6, 1.0); // homogeneous coordinates
 
-    try {
-    switch (orientation) {
+        try {
+        switch (orientation) {
 
-        case ORIENT_HOR : // focusing in x, defocusing in y
-            matPhi.setSubMatrix(0, 1, 0, 1, arrF);
-            matPhi.setSubMatrix(2, 3, 2, 3, arrD);
-            break;
+            case ORIENT_HOR : // focusing in x, defocusing in y
+                matPhi.setSubMatrix(0, 1, 0, 1, arrF);
+                matPhi.setSubMatrix(2, 3, 2, 3, arrD);
+                break;
 
-        case ORIENT_VER : // defocusing in x, focusing in y
-            matPhi.setSubMatrix(0, 1, 0, 1, arrD);
-            matPhi.setSubMatrix(2, 3, 2, 3, arrF);
-            break;
+            case ORIENT_VER : // defocusing in x, focusing in y
+                matPhi.setSubMatrix(0, 1, 0, 1, arrD);
+                matPhi.setSubMatrix(2, 3, 2, 3, arrF);
+                break;
 
-        default :
-            throw new ModelException("IdealMagQuad::computeTransferMatrix() - Bad magnet orientation.");
-    }
-    } catch(Exception e) {
-        e.printStackTrace();
-        System.exit(-1);
-    }
+            default :
+                throw new ModelException("IdealMagQuad::computeTransferMatrix() - Bad magnet orientation.");
+        }
+        } catch(Exception e) {
+            e.printStackTrace();
+            System.exit(-1);
+        }
 
-   matPhi = applyAlignErrorStatic(matPhi,alignx,aligny,alignz);
+        // Jan 2019 - Natalia Milas
+        // apply alignment and rotation errors
+        matPhi = applyErrors(matPhi, probe, dL);
+   
 
-
-    return new PhaseMap(matPhi);
-};
+        return new PhaseMap(matPhi);
+    };
 
 
 
@@ -361,7 +373,7 @@ in imparted to a particular probe.  For an ideal quadrupole
     return KSum;
     }
 
-
+/** Removed - Jan 2019 Natalia Milas
 static private PhaseMatrix applyAlignErrorStatic(PhaseMatrix matPhi, double delx, double dely, double delz) {
 
     if ((delx==0)&&(dely==0)&&(delz==0)) {
@@ -404,7 +416,7 @@ static private PhaseMatrix applyAlignErrorStatic(PhaseMatrix matPhi, double delx
 
     return Phidx;
 }
-
+*/
 
 
 public double calcK(IProbe probe, double dblLen) {
@@ -658,6 +670,8 @@ public double calcK(IProbe probe, double dblLen) {
                 matPhi.setSubMatrix(2, 3, 2, 3, arrF);
          }
 
+        // Jan 2019 - Natalia Milas
+        // apply alignment and rotation errors
         matPhi = applyErrors(matPhi, probe, dblLen);
 
         return new PhaseMap(matPhi);

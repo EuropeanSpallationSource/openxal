@@ -160,28 +160,9 @@ public class IdealMagSolenoid  extends ThickElectromagnet {
         
         // Build the tranfer matrix from its component blocks
         PhaseMatrix matPhi = new PhaseMatrix();
-
-        /*matPhi.setElem(0, 0, r11);
-        matPhi.setElem(1, 1, r11);
-        matPhi.setElem(2, 2, r11);
-        matPhi.setElem(3, 3, r11);
-        matPhi.setElem(0, 1, r12);
-        matPhi.setElem(2, 3, r12);
-        matPhi.setElem(0, 2, r13);
-        matPhi.setElem(1, 3, r13);
-        matPhi.setElem(2, 0, -1.*r13);
-        matPhi.setElem(3, 1, -1.*r13);
-        matPhi.setElem(0, 3, r14);
-        matPhi.setElem(2, 1, -1.*r14);
-        matPhi.setElem(1, 0, r21);
-        matPhi.setElem(3, 2, r21);
-        matPhi.setElem(3, 0, r41);
-        matPhi.setElem(1, 2, -1.*r41);*/
                 
         if (isFirstSubslice(probe.getPosition())) {
-            matPhi = Mbody.times(Mentrance);            
-        //} else if (isLastSubslice(probe.getPosition() + length)) {
-        //    matPhi = Mexit.times(Mbody);
+            matPhi = Mbody.times(Mentrance);                  
         } else {
             matPhi = Mbody;
         }      
@@ -189,13 +170,12 @@ public class IdealMagSolenoid  extends ThickElectromagnet {
         matPhi.setSubMatrix( 4, 5, 4, 5, arr0 ); // a drift space longitudinally       
         matPhi.setElem( 6, 6, 1.0 ); // homogeneous coordinates      
         
-        // apply alignment and rotation errors
+        // apply alignment and rotation errors taking care of the thin matrix entrance and exit slices
         // 2018-07-02 Natalia Milas
-	matPhi = applySolenoidErrors(matPhi, probe, length);	
-        //matPhi = applyErrors2(matPhi, probe, length);	
-        //matPhi = applyErrors(matPhi, probe, length);	
+	matPhi = applyErrors(matPhi, probe, length);	
+      
         if (isLastSubslice(probe.getPosition() + length)) {
-            Mexit = applySolenoidErrors(Mexit, probe, 0);
+            Mexit = applyErrors(Mexit, probe, 0);
             matPhi = Mexit.times(matPhi);
         }
         

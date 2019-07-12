@@ -50,17 +50,17 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.3</version>
-                    <configuration>
-                        <!-- Sets the VM argument line used when unit tests are run. -->
-                        <propertyName>surefireArgLine</propertyName>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>prepare-agent</goal>
-                            </goals>
-                        </execution>
-                        <!-- attached to Maven test phase -->
+                <configuration>
+                    <!-- Sets the VM argument line used when unit tests are run. -->
+                    <propertyName>surefireArgLine</propertyName>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <!-- attached to Maven test phase -->
                     <execution>
                         <id>report</id>
                         <phase>test</phase>
@@ -88,6 +88,7 @@
     <!-- For the local repository -->
     <properties>
         <main.basedir>${project.basedir}</main.basedir>
+        <surefireArgLine></surefireArgLine> <!-- To be able to run tests on Netbeans -->
     </properties>
 
     <repositories>

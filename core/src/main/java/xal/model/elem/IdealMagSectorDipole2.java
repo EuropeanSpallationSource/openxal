@@ -721,7 +721,7 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
         
         /**
          *
-         * Build the dipole body tranfer matrix.
+         * Build the dipole body transfer matrix.
          *
          */
         
@@ -764,12 +764,7 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
             matBody.setElem(4, 6, M46);
    
             break;
-        }
-        
-        //4 Feb 08, sako try to apply align error be careful.
-       
-  	   PhaseMatrix Phidx = applyAlignError(matBody);	
-	   matBody = Phidx;
+        }                
 
        return new PhaseMap( matBody );     
        

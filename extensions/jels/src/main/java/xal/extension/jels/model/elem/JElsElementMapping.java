@@ -73,7 +73,7 @@ public class JElsElementMapping extends ElementMapping {
 
     protected void initialize() {
         putMap("rfm", ThickRfFieldMap.class);
-        putMap("mfm", ThinMagFieldMap.class);
+        putMap("mfm", ThickMagFieldMap.class);
         putMap("d", IdealMagWedgeDipole.class);
         putMap("q", IdealMagQuad.class);
         putMap("qt", IdealMagQuad.class);

@@ -198,24 +198,24 @@ public class IdealMagQuad extends ThickElectromagnet {
      */
     @Override
     public PhaseMap transferMap( final IProbe probe, final double length ) {
-		double charge = probe.getSpeciesCharge();
+        double charge = probe.getSpeciesCharge();
         double Er = probe.getSpeciesRestEnergy();
 //        double beta = probe.getBeta();
- //       double gamma = probe.getGamma();
+//        double gamma = probe.getGamma();
         double w = probe.getKineticEnergy();
         double p = Math.sqrt(w*(w+2*Er));
         
         double bPathFlag = getFieldPathFlag();
         if (bPathFlag == 1) {//if bpathflag =1, then use nominal k0 from nominal kine energy
-        	double w0 = getNominalKineEnergy();
-        	if (w0==0.) {
-        		w0 = probe.getKineticEnergy();
-        		setNominalKineEnergy(w0);
-        	}
-        	double p0 = Math.sqrt(w0*(w0+2*Er));
-		
-			setBRhoScaling(p/p0);//save brho scaling. when nominalKineEnergy = 0, set 1.
-		}
+            double w0 = getNominalKineEnergy();
+            if (w0==0.) {
+                    w0 = probe.getKineticEnergy();
+                    setNominalKineEnergy(w0);
+            }
+            double p0 = Math.sqrt(w0*(w0+2*Er));
+
+            setBRhoScaling(p/p0);//save brho scaling. when nominalKineEnergy = 0, set 1.
+        }
 	    
         
         // focusing constant (radians/meter)
@@ -236,7 +236,7 @@ public class IdealMagQuad extends ThickElectromagnet {
     	   k = K1;
        }
        */
-		double kSqrt = Math.sqrt( Math.abs( k ) );
+        double kSqrt = Math.sqrt( Math.abs( k ) );
 
         // Compute the transfer matrix components		
         final double[][] arrF = QuadrupoleLens.transferFocPlane( kSqrt, length );
@@ -250,19 +250,20 @@ public class IdealMagQuad extends ThickElectromagnet {
         matPhi.setSubMatrix( 4, 5, 4, 5, arr0 ); // a drift space longitudinally
         matPhi.setElem( 6, 6, 1.0 ); // homogeneous coordinates
 		
-		if ( k >= 0.0 ) {
-			matPhi.setSubMatrix( 0, 1, 0, 1, arrF );
-			matPhi.setSubMatrix( 2, 3, 2, 3, arrD );			
-		}
-		else if ( k < 0.0 ) {
-			matPhi.setSubMatrix( 0, 1, 0, 1, arrD );
-			matPhi.setSubMatrix( 2, 3, 2, 3, arrF );			
-		}
-				
-		// apply alignment and rotation errors
-		matPhi = applyErrors(matPhi, probe, length);			
+        if ( k >= 0.0 ) {
+                matPhi.setSubMatrix( 0, 1, 0, 1, arrF );
+                matPhi.setSubMatrix( 2, 3, 2, 3, arrD );			
+        }
+        else if ( k < 0.0 ) {
+                matPhi.setSubMatrix( 0, 1, 0, 1, arrD );
+                matPhi.setSubMatrix( 2, 3, 2, 3, arrF );			
+        }
+
+        // Jan 2019 - Natalia Milas
+        // apply alignment and rotation errors        
+        matPhi = applyErrors(matPhi, probe, length);			        
 		
-	    return new PhaseMap( matPhi );
+        return new PhaseMap( matPhi );
    }
     
     /*

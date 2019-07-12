@@ -112,38 +112,40 @@ public class MagFieldMap3D extends FieldMap {
             positionIndex = numberOfPointsZ - 2;
         }
 
+        double interpolation_factor = position / spacingZ - positionIndex;
+
         // To get the (0,0) point in the XY plane.
-        int midPointX = (int) (numberOfPointsX * minX / (minX - maxX));
-        int midPointY = (int) (numberOfPointsY * minY / (minY - maxY));
+        int midPointX = (int) (-minX / spacingX);
+        int midPointY = (int) (-minY / spacingY);
 
-        double Bx0 = fieldX[positionIndex][midPointY][midPointX] + (position - positionIndex * spacingZ)
-                * (fieldX[positionIndex + 1][midPointY][midPointX] - fieldX[positionIndex][midPointY][midPointX]) / spacingZ;
-        double By0 = fieldY[positionIndex][midPointY][midPointX] + (position - positionIndex * spacingZ)
-                * (fieldY[positionIndex + 1][midPointY][midPointX] - fieldY[positionIndex][midPointY][midPointX]) / spacingZ;
-        double Bz0 = fieldZ[positionIndex][midPointY][midPointX] + (position - positionIndex * spacingZ)
-                * (fieldZ[positionIndex + 1][midPointY][midPointX] - fieldZ[positionIndex][midPointY][midPointX]) / spacingZ;
+        double Bx0 = fieldX[positionIndex][midPointY][midPointX] + interpolation_factor
+                * (fieldX[positionIndex + 1][midPointY][midPointX] - fieldX[positionIndex][midPointY][midPointX]);
+        double By0 = fieldY[positionIndex][midPointY][midPointX] + interpolation_factor
+                * (fieldY[positionIndex + 1][midPointY][midPointX] - fieldY[positionIndex][midPointY][midPointX]);
+        double Bz0 = fieldZ[positionIndex][midPointY][midPointX] + interpolation_factor
+                * (fieldZ[positionIndex + 1][midPointY][midPointX] - fieldZ[positionIndex][midPointY][midPointX]);
 
-        double dBxdx = (fieldX[positionIndex][midPointY][midPointX + 1] - fieldX[positionIndex][midPointY][midPointX]) + (position - positionIndex * spacingZ)
-                * (fieldX[positionIndex + 1][midPointY][midPointX + 1] - fieldX[positionIndex + 1][midPointY][midPointX] - (fieldX[positionIndex][midPointY][midPointX + 1] - fieldX[positionIndex][midPointY][midPointX])) / spacingZ;
-        double dBxdy = (fieldX[positionIndex][midPointY + 1][midPointX] - fieldX[positionIndex][midPointY][midPointX]) + (position - positionIndex * spacingZ)
-                * (fieldX[positionIndex + 1][midPointY + 1][midPointX] - fieldX[positionIndex + 1][midPointY][midPointX] - (fieldX[positionIndex][midPointY + 1][midPointX] - fieldX[positionIndex][midPointY][midPointX])) / spacingZ;
-        double dBydx = (fieldY[positionIndex][midPointY][midPointX + 1] - fieldY[positionIndex][midPointY][midPointX]) + (position - positionIndex * spacingZ)
-                * (fieldY[positionIndex + 1][midPointY][midPointX + 1] - fieldY[positionIndex + 1][midPointY][midPointX] - (fieldY[positionIndex][midPointY][midPointX + 1] - fieldY[positionIndex][midPointY][midPointX])) / spacingZ;
-        double dBydy = (fieldY[positionIndex][midPointY + 1][midPointX] - fieldY[positionIndex][midPointY][midPointX]) + (position - positionIndex * spacingZ)
-                * (fieldY[positionIndex + 1][midPointY + 1][midPointX] - fieldY[positionIndex + 1][midPointY][midPointX] - (fieldY[positionIndex][midPointY + 1][midPointX] - fieldY[positionIndex][midPointY][midPointX])) / spacingZ;
+        double dBxdx = (fieldX[positionIndex][midPointY][midPointX + 1] - fieldX[positionIndex][midPointY][midPointX]) + interpolation_factor
+                * (fieldX[positionIndex + 1][midPointY][midPointX + 1] - fieldX[positionIndex + 1][midPointY][midPointX] - (fieldX[positionIndex][midPointY][midPointX + 1] - fieldX[positionIndex][midPointY][midPointX]));
+        double dBxdy = (fieldX[positionIndex][midPointY + 1][midPointX] - fieldX[positionIndex][midPointY][midPointX]) + interpolation_factor
+                * (fieldX[positionIndex + 1][midPointY + 1][midPointX] - fieldX[positionIndex + 1][midPointY][midPointX] - (fieldX[positionIndex][midPointY + 1][midPointX] - fieldX[positionIndex][midPointY][midPointX]));
+        double dBydx = (fieldY[positionIndex][midPointY][midPointX + 1] - fieldY[positionIndex][midPointY][midPointX]) + interpolation_factor
+                * (fieldY[positionIndex + 1][midPointY][midPointX + 1] - fieldY[positionIndex + 1][midPointY][midPointX] - (fieldY[positionIndex][midPointY][midPointX + 1] - fieldY[positionIndex][midPointY][midPointX]));
+        double dBydy = (fieldY[positionIndex][midPointY + 1][midPointX] - fieldY[positionIndex][midPointY][midPointX]) + interpolation_factor
+                * (fieldY[positionIndex + 1][midPointY + 1][midPointX] - fieldY[positionIndex + 1][midPointY][midPointX] - (fieldY[positionIndex][midPointY + 1][midPointX] - fieldY[positionIndex][midPointY][midPointX]));
 
         double dBxdz;
         double dBydz;
-        positionIndex = (int) Math.round(position / spacingZ);
+
         if (positionIndex == 0) {
-            dBxdz = (fieldX[positionIndex + 1][midPointY][midPointX] - fieldX[positionIndex][midPointY][midPointX]) / spacingZ;
-            dBydz = (fieldY[positionIndex + 1][midPointY][midPointX] - fieldY[positionIndex][midPointY][midPointX]) / spacingZ;
+            dBxdz = (fieldX[positionIndex + 1][midPointY][midPointX] - fieldX[positionIndex][midPointY][midPointX]);
+            dBydz = (fieldY[positionIndex + 1][midPointY][midPointX] - fieldY[positionIndex][midPointY][midPointX]);
         } else if (positionIndex == fieldZ.length - 1) {
-            dBxdz = (fieldX[positionIndex][midPointY][midPointX] - fieldX[positionIndex - 1][midPointY][midPointX]) / spacingZ;
-            dBydz = (fieldY[positionIndex][midPointY][midPointX] - fieldY[positionIndex - 1][midPointY][midPointX]) / spacingZ;
+            dBxdz = (fieldX[positionIndex][midPointY][midPointX] - fieldX[positionIndex - 1][midPointY][midPointX]);
+            dBydz = (fieldY[positionIndex][midPointY][midPointX] - fieldY[positionIndex - 1][midPointY][midPointX]);
         } else {
-            dBxdz = (fieldX[positionIndex + 1][midPointY][midPointX] - fieldX[positionIndex - 1][midPointY][midPointX]) / (2 * spacingZ);
-            dBydz = (fieldY[positionIndex + 1][midPointY][midPointX] - fieldY[positionIndex - 1][midPointY][midPointX]) / (2 * spacingZ);
+            dBxdz = (fieldX[positionIndex + 1][midPointY][midPointX] - fieldX[positionIndex][midPointY][midPointX]);
+            dBydz = (fieldY[positionIndex + 1][midPointY][midPointX] - fieldY[positionIndex][midPointY][midPointX]);
         }
 
         // Denormalising

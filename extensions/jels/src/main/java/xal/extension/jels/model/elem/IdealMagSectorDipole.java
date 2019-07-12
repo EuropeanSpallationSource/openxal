@@ -472,8 +472,10 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
 
             matPhi.setElem(2, 5, Math.pow(gamma, 2) * h * (1 - Math.cos(kx * Deltas)) / Math.pow(kx, 2));
             matPhi.setElem(3, 5, Math.pow(gamma, 2) * h * Math.sin(kx * Deltas) / kx);
-        }
-
+        }      
+        
+        matPhi.setElem(6, 6, 1);
+        
         return new PhaseMap(matPhi);
     }
 

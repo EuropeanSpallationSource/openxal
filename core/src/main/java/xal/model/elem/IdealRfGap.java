@@ -540,6 +540,10 @@ public class IdealRfGap extends ThinElement implements IRfGap {
 //        PrintWriter os = new PrintWriter(System.out);
 //        matPhi.print(os);
 //        os.close();
+                
+                // Jan 2019 - Natalia Milas
+                // apply alignment and rotation errors
+                matPhi = applyErrors(matPhi,0.0);
 
 		return new PhaseMap(matPhi);
 	}

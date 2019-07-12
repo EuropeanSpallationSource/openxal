@@ -737,8 +737,8 @@ public class IdealEDipole extends ThickElectrostatic
       matProd2 = matProd2.times(rotMatTrans);
       matProd2 = rotMat.times(matProd2);
 
-    }
-
+    }        
+    
     return new PhaseMap( matProd2 );
   }
 

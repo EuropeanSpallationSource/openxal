@@ -24,9 +24,7 @@ import xal.tools.beam.IConstants;
 import xal.tools.beam.PhaseMap;
 import xal.tools.beam.PhaseMatrix;
 import xal.tools.beam.PhaseVector;
-import xal.tools.beam.PhaseMatrix.IND;
 import xal.tools.math.r3.R3;
-import xal.tools.math.r3.R3x3;
 
 
 
@@ -77,10 +75,15 @@ public abstract class Element implements IElement {
     /** the parent composite structure that owns this element */
     private IComposite  cpsParent;
     
-//  sako
+    //  sako
     //position in s (m)
     /** This is the center position of the element with the lattice - CKA */
     private double      dblPos;
+    
+    /** total length of the node before it was sliced by scenario generator */
+    protected double m_dblNodeLen = 0.0;
+    /** position of the node before it was sliced by scenario generator */
+    protected double m_dblNodePos = 0.0;
     
     
     //sako closeElements (for fringe field calculations)
@@ -267,29 +270,29 @@ public abstract class Element implements IElement {
         return alignz;
     }
         
-	public double getPhiX() {
-		return phix;
-	}
+    public double getPhiX() {
+        return phix;
+    }
 
-	public double getPhiY() {
-		return phiy;
-	}
+    public double getPhiY() {
+        return phiy;
+    }
 
-	public double getPhiZ() {
-		return phiz;
-	}
+    public double getPhiZ() {
+        return phiz;
+    }
 
-	public void setPhiX(double phix) {
-		this.phix = phix;
-	}
+    public void setPhiX(double phix) {
+        this.phix = phix;
+    }
 
-	public void setPhiY(double phiy) {
-		this.phiy = phiy;
-	}
+    public void setPhiY(double phiy) {
+        this.phiy = phiy;
+    }
 
-	public void setPhiZ(double phiz) {
-		this.phiz = phiz;
-	};
+    public void setPhiZ(double phiz) {
+        this.phiz = phiz;
+    };
 
     
     
@@ -311,6 +314,9 @@ public abstract class Element implements IElement {
     }
     
     /**
+     * 
+     * Removed in Jan 2019 - Natalia Milas
+     * 
      * <h2>Add Displacement Error to Transfer Matrix</h2>
      * <p>
      * Method to add the effects of a spatially displaced to the
@@ -341,7 +347,7 @@ public abstract class Element implements IElement {
      * 
      * @since Feb 20, 2009, version 2
      */
-    protected PhaseMatrix applyAlignError(PhaseMatrix matPhi) {
+    /*protected PhaseMatrix applyAlignError(PhaseMatrix matPhi) {
     	double dx = getAlignX();
         double dy = getAlignY();
         double dz = getAlignZ();
@@ -366,7 +372,7 @@ public abstract class Element implements IElement {
 
         return matPhi;
 	}
-
+    /*
      
     /**
      * <p>This method is intended to return the location of the probe within
@@ -494,6 +500,9 @@ public abstract class Element implements IElement {
         setPhiX(alignmentBucket.getPitch());
         setPhiY(alignmentBucket.getYaw());
         setPhiZ(alignmentBucket.getRoll());
+
+        m_dblNodeLen = latticeElement.getHardwareNode().getLength();
+        m_dblNodePos = latticeElement.getHardwareNode().getPosition();
         
 //        // CKA: Added to include hardware ID attribute for the new element.
 //        //   This is bound to ScenarioGenerator#collectElements(). 
@@ -521,6 +530,23 @@ public abstract class Element implements IElement {
     @Override
     public double getPosition() {
         return dblPos;
+    }
+    
+
+    /**
+     * Returns the total length of the node, before the element was sliced by scenario generator
+     * @return original node length
+     */
+    public double getNodeLen() {
+        return m_dblNodeLen;
+    }
+
+    /**
+     * Returns the position of the node, before the element was sliced by scenario generator
+     * @return original node length
+     */
+    public double getNodePos() {
+        return m_dblNodePos;
     }
     
     /**
@@ -819,6 +845,5 @@ public abstract class Element implements IElement {
 //        os.println("  element length     : " + this.getLength() );
         os.println(this.toString());
     };
-
 };
 

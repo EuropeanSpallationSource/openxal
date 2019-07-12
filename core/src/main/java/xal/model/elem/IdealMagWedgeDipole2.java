@@ -110,6 +110,11 @@ public class IdealMagWedgeDipole2 extends ElectromagnetSeq {
         this.getFaceExit().setHardwareNodeId(strSmfId);
     }
 
+    
+    /**
+     * Added Alignment routines to ElementSeq that doesn't need to be replicated here
+     * Jan 2019 - Natalia Milas
+     */
     /**
      * Set the alignment parameters for the magnet.
      * 
@@ -117,31 +122,33 @@ public class IdealMagWedgeDipole2 extends ElectromagnetSeq {
      * 
      * @param   vecAlign    (dx,dy,dz)
      */
-    public void setAlignment(R3 vecAlign)   {
+    /**public void setAlignment(R3 vecAlign)   {
         this.getMagBody().setAlign(vecAlign);
         this.getFaceEntr().setAlign(vecAlign);
         this.getFaceExit().setAlign(vecAlign);
     }
-    
+    */
     /**
      * set align x
      * @param dx
      */
-    public void setAlignX(double dx) {
+    /** public void setAlignX(double dx) {
     	this.getFaceEntr().setAlignX(dx);
     	this.getMagBody().setAlignX(dx);
     	this.getFaceExit().setAlignX(dx);
     }
-    
+    */
     /**
      * set align y
      * @param dy
      */
-    public void setAlignY(double dy) {
+    /**public void setAlignY(double dy) {
     	this.getFaceEntr().setAlignY(dy);
     	this.getMagBody().setAlignY(dy);
     	this.getFaceExit().setAlignY(dy);
     }
+    */ 
+    
     /**
      * set align z
      * @param dz
