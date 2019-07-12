@@ -640,7 +640,7 @@ public class RfFieldMapTest extends SingleElementTest {
                     {-1.394553e-10, -1.134176e-09, -1.394553e-10, -1.134176e-09, +2.943425e-07, +1.310075e-07,},
                     {-2.043654e-10, -5.202442e-10, -2.043654e-10, -5.202442e-10, +1.310075e-07, +2.207463e-07,},};
 
-                TWMean = new double[]{0.232924, 0.360136, 0.232924, 0.360136, -0.281995*0, 0.0267418*0, 1.0};
+                TWMean = new double[]{0.232924, 0.360136, 0.232924, 0.360136, -0.281995 * 0, 0.0267418 * 0, 1.0};
                 CMerrTolerance = 3e-3;
             }
         }});
@@ -677,7 +677,7 @@ public class RfFieldMapTest extends SingleElementTest {
                     {-1.394553e-10, -1.134176e-09, -1.394553e-10, -1.134176e-09, +2.943425e-07, +1.310075e-07,},
                     {-2.043654e-10, -5.202442e-10, -2.043654e-10, -5.202442e-10, +1.310075e-07, +2.207463e-07,},};
 
-                TWMean = new double[]{0.232924, 0.360136, 0.232924, 0.360136, -0.281995*0, 0.0267418*0, 1.0};
+                TWMean = new double[]{0.232924, 0.360136, 0.232924, 0.360136, -0.281995 * 0, 0.0267418 * 0, 1.0};
                 CMerrTolerance = 3e-3;
             }
         }});
@@ -694,7 +694,7 @@ public class RfFieldMapTest extends SingleElementTest {
     }
 
     public static AcceleratorSeq spokeFieldMap(double length, double frequency, double cavAmp, double cavPh, double dx, double dy, double pitch, double yaw, double roll) {
-        AcceleratorSeq sequence = new AcceleratorSeq("ThinRfFieldMapTest");
+        AcceleratorSeq sequence = new AcceleratorSeq("RfFieldMapTest");
 
         String fieldFile = "Field_Maps/1D/Spoke_W_coupler.edz";
         String fieldMapPath = JElsDemo.class.getResource(fieldFile).toString();
@@ -703,7 +703,6 @@ public class RfFieldMapTest extends SingleElementTest {
 
         RfCavity rfCavity = ESSElementFactory.createRfFieldMap("TestFM", length, frequency, cavAmp,
                 cavPh, fieldFile, fieldMapPath, new ApertureBucket(), 0, 0);
-
 
         rfCavity.setXOffset(dx);
         rfCavity.setYOffset(dy);
@@ -728,7 +727,7 @@ public class RfFieldMapTest extends SingleElementTest {
      * @return sequence with fieldmap
      */
     public static AcceleratorSeq hbFieldMap(double length, double frequency, double cavAmp, double cavPh) {
-        AcceleratorSeq sequence = new AcceleratorSeq("ThinRfFieldMapTest");
+        AcceleratorSeq sequence = new AcceleratorSeq("RfFieldMapTest");
 
         String fieldFile = "Field_Maps/1D/HB_W_coupler.edz";
         String fieldMapPath = JElsDemo.class.getResource(fieldFile).toString();

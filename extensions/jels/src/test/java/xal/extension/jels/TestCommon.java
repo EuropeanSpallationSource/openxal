@@ -282,8 +282,9 @@ public abstract class TestCommon {
         pw.flush();
         double n = centCovOx.minus(centCovTw).norm2() / centCovTw.norm2();
         double n2 = meanOx.minus(meanTw).norm2();
-        if (meanTw.norm2() > 0.) {
-            n2 /= meanTw.norm2();
+        // Dividing by the Open XAL value because the TW value is set to zero by default.
+        if (meanOx.norm2() > 0.) {
+            n2 /= meanOx.norm2();
         }
         double aux;
         if (n >= errTolerance) {
