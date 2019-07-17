@@ -22,8 +22,7 @@
         <module>services</module>
         <module>library</module>
         <module>third-party-libs</module>
-        <module>apps</module>
-        <module>dist</module>
+        <module>app</module>
         <module>report</module>
     </modules>
 
@@ -83,13 +82,43 @@
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.jfrog.buildinfo</groupId>
+                <artifactId>artifactory-maven-plugin</artifactId>
+                <version>2.7.0</version>
+                <inherited>false</inherited>
+                <executions>
+                    <execution>
+                        <id>build-info</id>
+                        <goals>
+                            <goal>publish</goal>
+                        </goals>
+                        <configuration>
+                            <publisher>
+                                <contextUrl>${artifactory.url}</contextUrl>
+                                <username>${artifactory.username}</username>
+                                <password>${artifactory.password}</password>
+                                <repoKey>OpenXAL</repoKey>
+                                <snapshotRepoKey>OpenXAL</snapshotRepoKey>
+                                <includePatterns>**app**,**library,**third-party-libs</includePatterns>
+                            </publisher>
+                            <buildInfo>
+                                <agentName>{{JENKINS_URL}}</agentName>
+                                <agentVersion>{{JENKINS_VERSION}}</agentVersion>
+                                <buildNumber>{{BUILD_NUMBER}}</buildNumber>
+                                <buildUrl>{{BUILD_URL}}</buildUrl>
+                            </buildInfo>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
-    <!-- For the local repository -->
+
     <properties>
-        <main.basedir>${project.basedir}</main.basedir>
-        <surefireArgLine></surefireArgLine> <!-- To be able to run tests on Netbeans -->
+        <main.basedir>${project.basedir}</main.basedir>     <!-- For the local repository -->
+        <surefireArgLine></surefireArgLine>                 <!-- To be able to run tests on Netbeans -->
     </properties>
 
     <repositories>
@@ -98,7 +127,14 @@
             <url>file://${main.basedir}/third-party-libs/lib</url>
         </repository>
     </repositories>
-
+    
+    <pluginRepositories>
+        <pluginRepository>
+            <id>jcenter</id>
+            <url>https://jcenter.bintray.com</url>
+        </pluginRepository>
+    </pluginRepositories>
+    
     <dependencyManagement>
         <dependencies>
             <dependency>
