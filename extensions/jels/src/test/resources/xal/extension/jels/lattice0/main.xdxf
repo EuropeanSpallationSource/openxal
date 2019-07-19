@@ -12,7 +12,7 @@
     <sequence id="LEBT" len="2.505899999999999" pos="0.0">
         <node id="MFM1:MFM" len="0.5454" pos="0.6081000000000001" type="MFM">
             <attributes>
-                <fieldmap dimensions="2" dynamic="false" fieldMapFile="Field_Maps/1D/sef2_545_4mm" fieldType="magnetic" numberOfPoints="2000"/>
+                <fieldmap dimensions="2" dynamic="false" fieldMapFile="Field_Maps/1D/sef2_545_4mm" fieldType="magnetic" numberOfPoints="1000"/>
                 <magnet dfltMagFld="0.235"/>
                 <aperture shape="1" x="0.075" y="0.075"/>
             </attributes>
@@ -41,7 +41,7 @@
         </node>
         <node id="MFM2:MFM" len="0.5454" pos="2.1069" type="MFM">
             <attributes>
-                <fieldmap dimensions="2" dynamic="false" fieldMapFile="Field_Maps/1D/sef2_545_4mm" fieldType="magnetic" numberOfPoints="2000"/>
+                <fieldmap dimensions="2" dynamic="false" fieldMapFile="Field_Maps/1D/sef2_545_4mm" fieldType="magnetic" numberOfPoints="1000"/>
                 <magnet dfltMagFld="0.22"/>
                 <aperture shape="1" x="0.05" y="0.05"/>
             </attributes>
