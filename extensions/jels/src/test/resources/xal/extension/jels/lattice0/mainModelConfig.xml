@@ -12,7 +12,7 @@
     
     <associations>
         <map smf="rfm" model="xal.extension.jels.model.elem.ThickRfFieldMap"/>
-        <map smf="mfm" model="xal.extension.jels.model.elem.ThinMagFieldMap"/>
+        <map smf="mfm" model="xal.extension.jels.model.elem.ThickMagFieldMap"/>
         <map smf="d" model="xal.extension.jels.model.elem.IdealMagWedgeDipole"/>
         <map smf="q" model="xal.model.elem.IdealMagQuad"/>
         <map smf="pq" model="xal.model.elem.IdealMagQuad"/>
