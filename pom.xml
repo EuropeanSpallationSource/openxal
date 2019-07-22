@@ -106,7 +106,7 @@
                                 <password>${artifactory.password}</password>
                                 <repoKey>OpenXAL/release</repoKey>
                                 <snapshotRepoKey>OpenXAL/snapshot</snapshotRepoKey>
-                                <includePatterns>**openxal-${project.version}.pom,**app/**,**library**,**third-party-libs**,**dist**</includePatterns>
+                                <includePatterns>**openxal-${project.version}.pom,**app/**,**app.**,**library**,**third-party-libs**,**dist**</includePatterns>
                                 <excludePatterns>**-tests.jar</excludePatterns>
                             </publisher>
                         </configuration>
