@@ -9,44 +9,26 @@
     <includeBaseDirectory/>
     
     <!-- Files to include -->
-    <fileSets>
+    <files>
         <!-- Open XAL library jar -->
-        <fileSet>
-            <directory>${basedir}/../library/target</directory>
+        <file>
+            <source>${basedir}/../library/target/openxal.library-${project.version}.jar</source>
             <outputDirectory>lib</outputDirectory>
-            <includes>
-                <include>openxal.library-${project.version}.jar</include>
-            </includes>
-        </fileSet>
+            <destName>library.jar</destName>
+        </file>
         <!-- Third party libraries jar -->
-        <fileSet>
-            <directory>${basedir}/../third-party-libs/target</directory>
+        <file>
+            <source>${basedir}/../third-party-libs/target/openxal.third-party-libs-${project.version}.jar</source>
             <outputDirectory>lib</outputDirectory>
-            <includes>
-                <include>openxal.third-party-libs-${project.version}.jar</include>
-            </includes>
-        </fileSet>
+            <destName>third-party-libs.jar</destName>
+        </file>
+    </files>
+    <fileSets>
         <fileSet>
             <directory>${basedir}/../third-party-libs/lib</directory>
             <outputDirectory>lib</outputDirectory>
             <includes>
                 <include>*hdf5_java*</include>
-            </includes>
-        </fileSet>
-        <!-- Open XAL optics files -->
-        <fileSet>
-            <directory>../site/optics</directory>
-            <outputDirectory>optics</outputDirectory>
-            <includes>
-                <include>**</include>
-            </includes>
-        </fileSet>
-        <!-- Open XAL applications -->
-        <fileSet>
-            <directory>${basedir}/../apps/target/dist/</directory>
-            <outputDirectory>apps</outputDirectory>
-            <includes>
-                <include>*.jar</include>
             </includes>
         </fileSet>
     </fileSets>
