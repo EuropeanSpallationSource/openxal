@@ -5,11 +5,11 @@
     <parent>
         <groupId>org.xal</groupId>
         <artifactId>openxal</artifactId>
-        <version>2.1-SNAPSHOT</version>
+        <version>${revision}</version>
     </parent>
 
     <artifactId>openxal.app</artifactId>
-
+    
     <packaging>pom</packaging>
     
     <!-- Build executable jar for all applications and copy the jar to the target/dist folder -->
