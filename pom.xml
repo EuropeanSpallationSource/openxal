@@ -7,7 +7,7 @@
     <version>${revision}</version>
 
     <properties>
-        <revision>2.1-SNAPSHOT</revision>
+        <revision>2.1</revision>
         <main.basedir>${project.basedir}</main.basedir>     <!-- For the local repository -->
         <surefireArgLine></surefireArgLine>                 <!-- To be able to run tests on Netbeans -->
     </properties>
