@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.xal</groupId>
         <artifactId>openxal</artifactId>
-        <version>${revision}</version>
+        <version>2.2-SNAPSHOT</version>
     </parent>
 
     <artifactId>openxal.library</artifactId>
@@ -26,10 +26,7 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <artifactSet>
-                            </artifactSet>
                             <createSourcesJar>true</createSourcesJar>
-                            <createDependencyReducedPom>false</createDependencyReducedPom>
                         </configuration>
                     </execution>
                 </executions>
@@ -40,93 +37,93 @@
     <dependencies>
         <dependency>
             <groupId>org.xal</groupId>
-            <artifactId>openxal.extensions.widgets</artifactId>
+            <artifactId>openxal.extensions.widgets</artifactId>     
         </dependency>
         <dependency>
             <groupId>org.xal</groupId>
-            <artifactId>openxal.extensions.bricks</artifactId>
+            <artifactId>openxal.extensions.bricks</artifactId>    
         </dependency>
         <dependency>
             <groupId>org.xal</groupId>
-            <artifactId>openxal.extensions.service</artifactId>
+            <artifactId>openxal.extensions.service</artifactId>   
         </dependency>
         <dependency>
             <groupId>org.xal</groupId>
-            <artifactId>openxal.extensions.application</artifactId>
+            <artifactId>openxal.extensions.application</artifactId> 
         </dependency>
         <dependency>
             <groupId>org.xal</groupId>
-            <artifactId>openxal.extensions.fxapplication</artifactId>
+            <artifactId>openxal.extensions.fxapplication</artifactId>        
         </dependency>
         <dependency>
             <groupId>org.xal</groupId>
-            <artifactId>openxal.extensions.pvlogger</artifactId>
+            <artifactId>openxal.extensions.pvlogger</artifactId>        
         </dependency>
         <dependency>
             <groupId>org.xal</groupId>
-            <artifactId>openxal.extensions.extlatgen</artifactId>
+            <artifactId>openxal.extensions.extlatgen</artifactId>        
         </dependency>
         <dependency>
             <groupId>org.xal</groupId>
-            <artifactId>openxal.extensions.solver</artifactId>
+            <artifactId>openxal.extensions.solver</artifactId>        
         </dependency>
         <dependency>
             <groupId>org.xal</groupId>
-            <artifactId>openxal.extensions.fit</artifactId>
+            <artifactId>openxal.extensions.fit</artifactId>        
         </dependency>
         <dependency>
             <groupId>org.xal</groupId>
-            <artifactId>openxal.extensions.logbook</artifactId>
+            <artifactId>openxal.extensions.logbook</artifactId>        
         </dependency>
         <dependency>
             <groupId>org.xal</groupId>
-            <artifactId>openxal.extensions.orbit</artifactId>
+            <artifactId>openxal.extensions.orbit</artifactId>        
         </dependency>
         <dependency>
             <groupId>org.xal</groupId>
-            <artifactId>openxal.extensions.recordselector</artifactId>
+            <artifactId>openxal.extensions.recordselector</artifactId>        
         </dependency>
         <dependency>
             <groupId>org.xal</groupId>
-            <artifactId>openxal.extensions.scan</artifactId>
+            <artifactId>openxal.extensions.scan</artifactId>        
         </dependency>
         <dependency>
             <groupId>org.xal</groupId>
-            <artifactId>openxal.extensions.twissobserver</artifactId>
+            <artifactId>openxal.extensions.twissobserver</artifactId>        
         </dependency>
         <dependency>
             <groupId>org.xal</groupId>
-            <artifactId>openxal.extensions.wirescan</artifactId>
+            <artifactId>openxal.extensions.wirescan</artifactId>        
         </dependency>
         <dependency>
             <groupId>org.xal</groupId>
-            <artifactId>openxal.extensions.worker</artifactId>
+            <artifactId>openxal.extensions.worker</artifactId>        
         </dependency>
         <dependency>
             <groupId>org.xal</groupId>
             <!-- Only one of these two plugins can be included. If both are added, only the one which appears first here will be used -->
             <artifactId>openxal.plugins.jca</artifactId> <!-- This plugin enables EPICS 3 only -->
-            <!--<artifactId>openxal.plugins.pvaccess</artifactId>  This plugin enables EPICS 4 and 3 -->
+            <!--<artifactId>openxal.plugins.pvaccess</artifactId>  This plugin enables EPICS 4 and 3 -->        
         </dependency>
         <dependency>
             <groupId>org.xal</groupId>
-            <artifactId>openxal.plugins.essrbac</artifactId>
+            <artifactId>openxal.plugins.essrbac</artifactId>        
         </dependency>
         <dependency>
             <groupId>org.xal</groupId>
-            <artifactId>openxal.plugins.postgres</artifactId>
+            <artifactId>openxal.plugins.postgres</artifactId>        
         </dependency>
         <dependency>
             <groupId>org.xal</groupId>
-            <artifactId>openxal.extensions.jels</artifactId>
+            <artifactId>openxal.extensions.jels</artifactId>        
         </dependency>
         <dependency>
             <groupId>org.xal</groupId>
-            <artifactId>openxal.extensions.jelog</artifactId>
+            <artifactId>openxal.extensions.jelog</artifactId>        
         </dependency>
         <dependency>
             <groupId>org.xal</groupId>
-            <artifactId>openxal.extensions.tracewin</artifactId>
+            <artifactId>openxal.extensions.tracewin</artifactId>        
         </dependency>
     </dependencies>
 </project>
