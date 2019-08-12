@@ -63,9 +63,9 @@ sonarqube.maven:
     <<: *maven
     stage: deploy
     script:
-        - 'mvn $MAVEN_CLI_OPTS -Dsonar.login=$SONARQUBE_TOKEN -Dsonar.branch=$CI_COMMIT_REF_SLUG -Dsonar.junit.reportPaths=target/surefire-reports -Dsonar.jacoco.reportPaths="target/jacoco.exec, ../test/target/jacoco.exec" sonar:sonar'
+        - 'mvn $MAVEN_CLI_OPTS -Dsonar.login=$SONARQUBE_TOKEN -Dsonar.junit.reportPaths=target/surefire-reports -Dsonar.jacoco.reportPaths="target/jacoco.exec, ../test/target/jacoco.exec" sonar:sonar'
     only:
-        - /^site.ess.*$/
+        - site.ess.master@ess-crs/openxal
 
 publish.maven:
     <<: *maven
