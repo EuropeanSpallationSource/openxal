@@ -62,7 +62,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.4</version>
+                <version>0.8.5</version>
                 <configuration>
                     <!-- Sets the VM argument line used when unit tests are run. -->
                     <propertyName>surefireArgLine</propertyName>
@@ -122,7 +122,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>3.1.0</version>
+                <version>3.2.0</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -313,12 +313,12 @@
             <dependency>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-controls</artifactId>
-                <version>11.0.1-ea+1</version>
+                <version>13.0.1</version>
             </dependency>
             <dependency>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-fxml</artifactId>
-                <version>11.0.1-ea+1</version>
+                <version>13.0.1</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
