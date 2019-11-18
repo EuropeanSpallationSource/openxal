@@ -7,7 +7,7 @@
     <version>${revision}</version>
 
     <properties>
-        <revision>3.1-SNAPSHOT</revision>
+        <revision>3.0</revision>
         <main.basedir>${project.basedir}</main.basedir>     <!-- For the local repository -->
         <surefireArgLine></surefireArgLine>                 <!-- To be able to run tests on Netbeans -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
