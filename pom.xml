@@ -7,7 +7,7 @@
     <version>3.0</version>
 
     <properties>
-        <revision>2.3-SNAPSHOT</revision>
+<!--        <revision>2.3-SNAPSHOT</revision>-->
         <main.basedir>${project.basedir}</main.basedir>     <!-- For the local repository -->
         <surefireArgLine></surefireArgLine>                 <!-- To be able to run tests on Netbeans -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -112,7 +112,7 @@
                                 <password>${artifactory.password}</password>
                                 <repoKey>OpenXAL/release</repoKey>
                                 <snapshotRepoKey>OpenXAL/snapshot</snapshotRepoKey>
-                                <includePatterns>**openxal-${revision}.pom,**app/**,**app.**,**library**,**third-party-libs**,**dist**</includePatterns>
+                                <includePatterns>**openxal-${project.version}.pom,**app/**,**app.**,**library**,**third-party-libs**,**dist**</includePatterns>
                                 <excludePatterns>**-tests.jar</excludePatterns>
                             </publisher>
                         </configuration>
@@ -188,127 +188,127 @@
             <dependency>
                 <groupId>org.xal</groupId>
                 <artifactId>openxal.core</artifactId>
-                <version>${revision}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.xal</groupId>
                 <artifactId>openxal.library</artifactId>
-                <version>${revision}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.xal</groupId>
                 <artifactId>openxal.third-party-libs</artifactId>
-                <version>${revision}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.xal</groupId>
                 <artifactId>openxal.extensions.widgets</artifactId>
-                <version>${revision}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.xal</groupId>
                 <artifactId>openxal.extensions.bricks</artifactId>
-                <version>${revision}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.xal</groupId>
                 <artifactId>openxal.extensions.service</artifactId>
-                <version>${revision}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.xal</groupId>
                 <artifactId>openxal.extensions.application</artifactId>
-                <version>${revision}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.xal</groupId>
                 <artifactId>openxal.extensions.pvlogger</artifactId>
-                <version>${revision}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.xal</groupId>
                 <artifactId>openxal.extensions.extlatgen</artifactId>
-                <version>${revision}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.xal</groupId>
                 <artifactId>openxal.extensions.fxapplication</artifactId>
-                <version>${revision}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.xal</groupId>
                 <artifactId>openxal.extensions.solver</artifactId>
-                <version>${revision}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.xal</groupId>
                 <artifactId>openxal.extensions.fit</artifactId>
-                <version>${revision}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.xal</groupId>
                 <artifactId>openxal.extensions.logbook</artifactId>
-                <version>${revision}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.xal</groupId>
                 <artifactId>openxal.extensions.orbit</artifactId>
-                <version>${revision}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.xal</groupId>
                 <artifactId>openxal.extensions.recordselector</artifactId>
-                <version>${revision}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.xal</groupId>
                 <artifactId>openxal.extensions.scan</artifactId>
-                <version>${revision}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.xal</groupId>
                 <artifactId>openxal.extensions.twissobserver</artifactId>
-                <version>${revision}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.xal</groupId>
                 <artifactId>openxal.extensions.wirescan</artifactId>
-                <version>${revision}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.xal</groupId>
                 <artifactId>openxal.extensions.worker</artifactId>
-                <version>${revision}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.xal</groupId>
                 <artifactId>openxal.plugins.jca</artifactId>
-                <version>${revision}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.xal</groupId>
                 <artifactId>openxal.plugins.essrbac</artifactId>
-                <version>${revision}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.xal</groupId>
                 <artifactId>openxal.plugins.postgres</artifactId>
-                <version>${revision}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.xal</groupId>
                 <artifactId>openxal.extensions.jels</artifactId>
-                <version>${revision}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.xal</groupId>
                 <artifactId>openxal.extensions.jelog</artifactId>
-                <version>${revision}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.xal</groupId>
                 <artifactId>openxal.extensions.tracewin</artifactId>
-                <version>${revision}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.openjfx</groupId>
