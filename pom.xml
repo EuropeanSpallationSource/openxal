@@ -4,7 +4,7 @@
     
     <groupId>org.xal</groupId>
     <artifactId>openxal</artifactId>
-    <version>3.0</version>
+    <version>3.1-SNAPSHOT</version>
 
     <properties>
         <revision>2.3-SNAPSHOT</revision>
