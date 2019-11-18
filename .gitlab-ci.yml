@@ -4,7 +4,7 @@ variables:
     MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
 
 .maven: &maven
-    image: europeanspallationsource/oracle-jdk-maven-jenkins:8
+    image: registry.esss.lu.se/ics-docker/maven:openjdk-11
     only:
         - /^site.ess.*$/
     tags:
@@ -88,3 +88,4 @@ pages:
             - public
     only:
         - site.ess.stable
+        - site.ess.master

@@ -2,8 +2,6 @@ package xal.tools.apputils.pvselection;
 
 import javax.swing.tree.*;
 import java.awt.event.*;
-import javax.swing.event.*;
-import javax.swing.*;
 import java.awt.*;
 import java.util.Enumeration;
 
@@ -64,9 +62,8 @@ public class PVTreeNode extends DefaultMutableTreeNode {
     
     
     /** Get the child PVTreeNode enumeration overriding the inherited untyped Enumeration */
-    @SuppressWarnings( "unchecked" )    // cast from inherited untyped Enumeration
-    public Enumeration<PVTreeNode> children() {
-        return (Enumeration<PVTreeNode>)super.children();
+    public Enumeration<TreeNode> children() {
+        return (Enumeration<TreeNode>)super.children();
     }
     
     
@@ -212,7 +209,7 @@ public class PVTreeNode extends DefaultMutableTreeNode {
                 next = (PVTreeNode) next.getNextNode();
             }
             if(getNumberOfSelectedNodes(root) == 1){
-                index = Integer.valueOf(indSelected);
+                index = indSelected;
             }
         }
         return index;
