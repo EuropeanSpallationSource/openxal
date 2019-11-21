@@ -4,10 +4,10 @@
     
     <groupId>org.xal</groupId>
     <artifactId>openxal</artifactId>
-    <version>3.1-SNAPSHOT</version>
+    <version>3.1</version>
 
     <properties>
-        <revision>3.1-SNAPSHOT</revision>
+        <revision>3.1</revision>
         <main.basedir>${project.basedir}</main.basedir>     <!-- For the local repository -->
         <surefireArgLine></surefireArgLine>                 <!-- To be able to run tests on Netbeans -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -156,6 +156,18 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+                <version>2.7</version>
+                <configuration>
+                    <properties>
+                        <property>
+                            <name>revision</name>
+                        </property>
+                    </properties>
+                </configuration>
             </plugin>
         </plugins>
     </build>
