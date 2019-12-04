@@ -33,8 +33,6 @@ public class FieldMapIntegrator {
     private static PhaseMatrix identity = PhaseMatrix.identity();
     private static PhaseMatrix transferMatrix = PhaseMatrix.identity();
     private static PhaseMatrix infTransferMatrix = PhaseMatrix.zero();
-    private static PhaseMatrix energyKickMatrixLeft = PhaseMatrix.identity();
-    private static PhaseMatrix energyKickMatrixRight = PhaseMatrix.identity();
 
     private FieldMapIntegrator() {
     }
@@ -86,9 +84,10 @@ public class FieldMapIntegrator {
         transferMatrix = FieldMapIntegrator.RK4Integrator(infTransferMatrix, length);
 
         // Renormalizing coordinates to final energy.
-        energyKickMatrixLeft.setElem(5, 5, 1. / (gammaEnd * gammaEnd));
-        energyKickMatrixRight.setElem(5, 5, gammaStart * gammaStart);
-        transferMatrix = energyKickMatrixLeft.times(transferMatrix).times(energyKickMatrixRight);
+          for (int i = 0; i < 6; i++) {
+            transferMatrix.setElem(i, 5, transferMatrix.getElem(i, 5) * gammaStart * gammaStart);
+            transferMatrix.setElem(5, i, transferMatrix.getElem(5, i) / gammaEnd / gammaEnd);
+        }
 
         // Dipole strengths
         double dph = length * k * (fieldMapPoint.getEx() - beta * LightSpeed * fieldMapPoint.getBy());
