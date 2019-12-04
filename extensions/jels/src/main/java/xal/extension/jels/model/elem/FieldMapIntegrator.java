@@ -116,12 +116,25 @@ public class FieldMapIntegrator {
      * @return
      */
     private static PhaseMatrix RK4Integrator(PhaseMatrix infTransferMatrix, double length) {
-        PhaseMatrix k1 = infTransferMatrix.times(length);
-        PhaseMatrix k2 = k1.times(identity.plus(k1.times(0.5)));
-        PhaseMatrix k3 = k1.times(identity.plus(k2.times(0.5)));
-        PhaseMatrix k4 = k1.times(identity.plus(k3));
+        PhaseMatrix k1 = infTransferMatrix.times(length);        
+        PhaseMatrix k2 = k1.times(0.5);
+        k2.plusEquals(identity);
+        k2 = k2.times(k1);
+        PhaseMatrix k3 = k2.times(0.5);
+        k3.plusEquals(identity);
+        k3 = k3.times(k1);
+        PhaseMatrix k4 = k3.plus(identity);
+        k4 = k4.times(k1);
 
-        transferMatrix = identity.plus(k1.times(1 / 6.)).plus(k2.times(1 / 3.)).plus(k3.times(1 / 3.)).plus(k4.times(1 / 6.));
+        k1.timesEquals(1/6.);
+        k2.timesEquals(1/3.);
+        k3.timesEquals(1/3.);
+        k4.timesEquals(1/6.);
+
+        transferMatrix = identity.plus(k1);
+        transferMatrix.plusEquals(k2);
+        transferMatrix.plusEquals(k3);
+        transferMatrix.plusEquals(k4);
 
         return transferMatrix;
     }
