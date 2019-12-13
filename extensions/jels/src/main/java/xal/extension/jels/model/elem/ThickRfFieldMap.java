@@ -158,14 +158,14 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
                 a_deltaPhi[i + 1] = a_deltaPhi[i] + 0;
                 continue;
             }
-            
+
             // First and last slices of the element get half a kick
             if ((Math.abs(fieldMapPointPositions.get(i) - startPosition) < 1e-6) || (Math.abs(fieldMapPointPositions.get(i) - startPosition - rfFieldmap.getLength()) < 1e-6)) {
                 dz /= 2.;
             }
-            
+
             a_energyGain[i + 1] = a_energyGain[i] + fieldMapPoint.getEz() * dz * getE0() * Math.cos(phiS + a_deltaPhi[i + 1]);
-            
+
             // Set the length of the following drift spaces.
             dz = getCellLength();
         }
@@ -189,7 +189,6 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
     @Override
     public PhaseMap transferMap(IProbe probe, double dblLen)
             throws ModelException {
-
         computePhaseDriftAndEnergyGain(probe, dblLen);
 
         double phiS;
@@ -203,8 +202,8 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
         List<Double> fieldMapPointPositions = rfFieldmap.getFieldMapPointPositions(probe.getPosition() - startPosition, dblLen);
 
         int numberOfPoints = fieldMapPointPositions.size();
-        PhaseMatrix driftMatrix = PhaseMatrix.identity();
-        PhaseMatrix transferMatrix = PhaseMatrix.identity();
+        FieldMapIntegrator integrator = FieldMapIntegrator.identity();
+        integrator.setCoupled(rfFieldmap.isCoupled());
 
         // Calculating the length of the first drift from the slice start to the
         // first point of the field map. It could be the end point and only a 
@@ -213,15 +212,11 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
 
         // Add kicks and drifts for each intermediate point (could be none).
         for (int i = 0; i < numberOfPoints; i++) {
-            driftMatrix.setElem(0, 1, dz);
-            driftMatrix.setElem(2, 3, dz);
-            driftMatrix.setElem(4, 5, dz);
-
-            transferMatrix = driftMatrix.times(transferMatrix);
+            integrator.timesDriftLeft(dz);
 
             // Set the length of the following kick.
             dz = getCellLength();
-            
+
             // First and last slices of the element get half a kick
             if ((Math.abs(fieldMapPointPositions.get(i) - startPosition) < 1e-6) || (Math.abs(fieldMapPointPositions.get(i) - startPosition - rfFieldmap.getLength()) < 1e-6)) {
                 dz /= 2.;
@@ -233,24 +228,20 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
             fieldMapPoint.setAmplitudeFactorB(2.0 * Math.PI * getFrequency() / (LightSpeed * LightSpeed) * getE0() * Math.sin(phiS + a_deltaPhi[i + 1]));
 
             // Kick
-            transferMatrix = FieldMapIntegrator.transferMap(probe, dz, fieldMapPoint, a_energyGain[i]).times(transferMatrix);
-            
+            integrator.timesKick(probe, dz, fieldMapPoint, a_energyGain[i]);
+
             // Set the length of the following drift spaces.
             dz = getCellLength();
         }
 
         // Last drift space (if any).
         dz = (numberOfPoints > 0 ? probe.getPosition() - startPosition + dblLen - fieldMapPointPositions.get(numberOfPoints - 1) : dblLen);
-        driftMatrix.setElem(0, 1, dz);
-        driftMatrix.setElem(2, 3, dz);
-        driftMatrix.setElem(4, 5, dz);
 
-        transferMatrix = driftMatrix.times(transferMatrix);
-        
+        integrator.timesDriftLeft(dz);
+
         // Jan 2019 - Natalia Milas
         // apply alignment and rotation errors   
-        transferMatrix = applyErrors(transferMatrix, probe, dblLen);
-
+        PhaseMatrix transferMatrix = applyErrors((PhaseMatrix) integrator, probe, dblLen);
 
         return new PhaseMap(transferMatrix);
     }

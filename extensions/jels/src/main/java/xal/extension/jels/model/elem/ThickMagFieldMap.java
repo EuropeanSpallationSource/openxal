@@ -84,8 +84,7 @@ public class ThickMagFieldMap extends ThickElectromagnet {
 
         int numberOfPoints = fieldMapPointPositions.size();
 
-        PhaseMatrix driftMatrix = PhaseMatrix.identity();
-        PhaseMatrix transferMatrix = PhaseMatrix.identity();
+        FieldMapIntegrator integrator = FieldMapIntegrator.identity();
 
         // Calculating the length of the first drift from the slice start to the
         // first point of the field map. It could be the end point and only a 
@@ -94,11 +93,7 @@ public class ThickMagFieldMap extends ThickElectromagnet {
 
         // Add kicks and drifts for each intermediate point (could be none).
         for (int i = 0; i < numberOfPoints; i++) {
-            driftMatrix.setElem(0, 1, dz);
-            driftMatrix.setElem(2, 3, dz);
-            driftMatrix.setElem(4, 5, dz);
-
-            transferMatrix = driftMatrix.times(transferMatrix);
+            integrator.timesDriftLeft(dz);
 
             // Set the length of the following drift spaces.
             dz = sliceLength;
@@ -113,7 +108,7 @@ public class ThickMagFieldMap extends ThickElectromagnet {
             }
 
             // Kick
-            transferMatrix = FieldMapIntegrator.transferMap(probe, dz, fieldMapPoint).times(transferMatrix);
+            integrator.timesKick(probe, dz, fieldMapPoint);
             // Set the length of the following drift spaces.
             dz = sliceLength;
         }
@@ -121,15 +116,11 @@ public class ThickMagFieldMap extends ThickElectromagnet {
         // Last drift space (if any).
         dz = (numberOfPoints > 0 ? probe.getPosition() - startPosition + dblLen - fieldMapPointPositions.get(numberOfPoints - 1) : dblLen);
 
-        driftMatrix.setElem(0, 1, dz);
-        driftMatrix.setElem(2, 3, dz);
-        driftMatrix.setElem(4, 5, dz);
-
-        transferMatrix = driftMatrix.times(transferMatrix);
+        integrator.timesDriftLeft(dz);
 
         // Jan 2019 - Natalia Milas
         // apply alignment and rotation errors
-        transferMatrix = applyErrors(transferMatrix, probe, dblLen);
+        PhaseMatrix transferMatrix = applyErrors((PhaseMatrix) integrator, probe, dblLen);
 
         return new PhaseMap(transferMatrix);
     }

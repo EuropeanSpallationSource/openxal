@@ -83,12 +83,13 @@ public class ThinMagFieldMap extends ThinElectromagnet {
             dz /= 2.;
         }
 
-        PhaseMatrix transferMatrix = FieldMapIntegrator.transferMap(probe, dz, fieldMapPoint);
+        FieldMapIntegrator integrator = FieldMapIntegrator.identity();
+        integrator.timesKick(probe, dz, fieldMapPoint);
 
         // Jan 2019 - Natalia Milas
         // apply alignment and rotation errors
         double slicepos = centerPosition - position; // distance from the probe position and element center
-        transferMatrix = applyErrors(transferMatrix, slicepos);
+        PhaseMatrix transferMatrix = applyErrors((PhaseMatrix) integrator, slicepos);
 
         return new PhaseMap(transferMatrix);
     }

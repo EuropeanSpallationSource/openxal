@@ -145,18 +145,20 @@ public class ThinRfFieldMap extends ThinElement implements IRfGap, IRfCavityCell
         if ((Math.abs(position - startPosition) < 1e-6) || (Math.abs(position - startPosition - rfFieldmap.getLength()) < 1e-6)) {
             dz /= 2.;
         }
-        
+
         // Set energy gain and phase
         energyGain = fieldMapPoint.getEz() * dz;
         deltaPhi = 0;
 
-        PhaseMatrix transferMatrix = FieldMapIntegrator.transferMap(probe, dz, fieldMapPoint, energyGain);
+        FieldMapIntegrator integrator = FieldMapIntegrator.identity();
+        integrator.setCoupled(rfFieldmap.isCoupled());
+        integrator.timesKick(probe, dz, fieldMapPoint, energyGain);
 
         // Jan 2019 - Natalia Milas
         // apply alignment and rotation errors   
-        double slicepos = centerPosition-position; // distance from the probe position and element center
-        transferMatrix = applyErrors(transferMatrix, slicepos);
-        
+        double slicepos = centerPosition - position; // distance from the probe position and element center
+        PhaseMatrix transferMatrix = applyErrors((PhaseMatrix) integrator, slicepos);
+
         return new PhaseMap(transferMatrix);
     }
 

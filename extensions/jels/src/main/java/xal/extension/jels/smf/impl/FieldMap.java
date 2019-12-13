@@ -56,6 +56,17 @@ public abstract class FieldMap {
     protected double sliceLength;
     protected double[] longitudinalPositions;
 
+    // If the field couples different planes (e.g., solenoid).
+    private boolean coupled = true;
+
+    public boolean isCoupled() {
+        return coupled;
+    }
+
+    protected void setCoupled(boolean coupled) {
+        this.coupled = coupled;
+    }
+
     /**
      * This method should use the fieldComponents HashMap to calculate the field
      * components at a given position.
