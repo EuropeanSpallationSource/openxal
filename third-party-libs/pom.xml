@@ -188,7 +188,7 @@
             <classifier>mac</classifier>
         </dependency>  
         <dependency>
-            <groupId>se.europeanspallationsource</groupId>
+            <groupId>eu.ess</groupId>
             <artifactId>xaos.ui.plot</artifactId>
         </dependency>
     </dependencies>
