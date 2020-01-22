@@ -39,7 +39,7 @@ public class RBACPlugin {
      */
     public static boolean useRBACLogin() {
         java.util.prefs.Preferences defaults = getDefaults();
-        return defaults.getBoolean(USE_RBAC_KEY, true);
+        return defaults.getBoolean(USE_RBAC_KEY, false);
     }
     
     
