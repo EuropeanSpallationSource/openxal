@@ -16,9 +16,8 @@ Open XAL is designed to be a flexible application framework for developing accel
 
 ## Requirements (ESS/Maven branch)
 
-- Java version 1.8
+- Java version 11
 - Maven at least version 3.5
-- The [ess-java-config](https://bitbucket.org/europeanspallationsource/ess-java-config) repository installed
 
 ## Build Results
 
