@@ -1,6 +1,6 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
 <tablegroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	xsi:noNamespaceSchemaLocation="http://sourceforge.net/p/xaldev/openxal/ci/master/tree/core/resources/xal/schemas/tablegroup.xsd?format=raw">
+            xsi:noNamespaceSchemaLocation="http://sourceforge.net/p/xaldev/openxal/ci/master/tree/core/resources/xal/schemas/tablegroup.xsd?format=raw">
     <table name="species">
         <schema>
             <attribute isPrimaryKey="true" name="name" type="java.lang.String" />
@@ -12,29 +12,29 @@
     </table>
 	
     
-	<table name="beam">
-		<schema>
-			<attribute isPrimaryKey="true" name="name" type="java.lang.String" />
+    <table name="beam">
+        <schema>
+            <attribute isPrimaryKey="true" name="name" type="java.lang.String" />
             <attribute isPrimaryKey="false" name="current" type="java.lang.Double" />
             <attribute isPrimaryKey="false" name="bunchFreq" type="java.lang.Double" />
             <attribute isPrimaryKey="false" name="phase" type="java.lang.String" />
             <attribute isPrimaryKey="false" name="charge" type="java.lang.Double" />
-		</schema>
-		<record name="default" current="0.038" bunchFreq="402.5e6" phase="(0,0,0)" charge="4.96894E-11" />
-		<record name="IDmp+" current="0.0" bunchFreq="1.0" phase="(0,0,0)" charge="4.96894E-11" />
-	</table>
+        </schema>
+        <record name="default" current="0.038" bunchFreq="402.5e6" phase="(0,0,0)" charge="4.96894E-11" />
+        <record name="IDmp+" current="0.0" bunchFreq="1.0" phase="(0,0,0)" charge="4.96894E-11" />
+    </table>
     
     
     <table name="Algorithm">
         <!-- This table's function has been updated.  We should not support a "default algorithm" for every probe -->
-	    <schema>
-			<attribute isPrimaryKey="true"  name="name"           type="java.lang.String"/>
-			<!-- attribute isPrimaryKey="false" name="type"           type="java.lang.String" defaultValue="xal.model.alg.EnvTrackerAdapt" -->
-			<attribute isPrimaryKey="false" name="update" 		  type="java.lang.Integer" defaultValue="2" />
-			<attribute isPrimaryKey="false" name="debug"          type="java.lang.Boolean" defaultValue="false" />
-			<attribute isPrimaryKey="true" name="calcRfGapPhase" type="java.lang.Boolean" defaultValue="true" />
-		</schema>
-		<record name="default" />
+        <schema>
+            <attribute isPrimaryKey="true"  name="name"           type="java.lang.String"/>
+            <!-- attribute isPrimaryKey="false" name="type"           type="java.lang.String" defaultValue="xal.model.alg.EnvTrackerAdapt" -->
+            <attribute isPrimaryKey="false" name="update" 		  type="java.lang.Integer" defaultValue="2" />
+            <attribute isPrimaryKey="false" name="debug"          type="java.lang.Boolean" defaultValue="false" />
+            <attribute isPrimaryKey="true" name="calcRfGapPhase" type="java.lang.Boolean" defaultValue="true" />
+        </schema>
+        <record name="default" />
     </table>
     
     <table name="SynchronousTracker">
@@ -77,18 +77,19 @@
     </table>
     
     <table name="EnvelopeBaseTracker">
-	    <schema>
-			<attribute isPrimaryKey="true"  name="name"         type="java.lang.String" />
-			<attribute isPrimaryKey="false" name="emitgrowth"   type="java.lang.Boolean" defaultValue="false" />
-			<attribute isPrimaryKey="false" name="scheff"       type="java.lang.Boolean" defaultValue="true" />
-			<attribute isPrimaryKey="false" name="stepsize"     type="java.lang.Double" defaultValue="0.004" />
-		</schema>
-		<record name="default" />
+        <schema>
+            <attribute isPrimaryKey="true"  name="name"         type="java.lang.String" />
+            <attribute isPrimaryKey="false" name="emitgrowth"   type="java.lang.Boolean" defaultValue="false" />
+            <attribute isPrimaryKey="false" name="scheff"       type="java.lang.Boolean" defaultValue="true" />
+            <attribute isPrimaryKey="false" name="stepsize"     type="java.lang.Double" defaultValue="0.004" />
+            <attribute isPrimaryKey="false" name="useDCBeam"    type="java.lang.Boolean" defaultValue="false" />
+        </schema>
+        <record name="default" />
     </table>
     
-	<table name="EnvTrackerAdapt">
-		<schema>
-			<attribute isPrimaryKey="true" name="name" type="java.lang.String" />
+    <table name="EnvTrackerAdapt">
+        <schema>
+            <attribute isPrimaryKey="true" name="name" type="java.lang.String" />
             <attribute isPrimaryKey="false" name="errortol" type="java.lang.Double" defaultValue="1.0E-5" />
             <attribute isPrimaryKey="false" name="initstep" type="java.lang.Double" defaultValue="0.01" />
             <attribute isPrimaryKey="false" name="maxstep" type="java.lang.Double" defaultValue="0.0" />
@@ -97,13 +98,13 @@
             <attribute isPrimaryKey="false" name="slack" type="java.lang.Double" defaultValue="0.05" />
             <attribute isPrimaryKey="false" name="maxiter" type="java.lang.Integer" defaultValue="50" />
             <attribute isPrimaryKey="false" name="maxstepdriftpmq" type="java.lang.Double" defaultValue="0.0" />
-		</schema>
-		<record name="default" />
-		<record name="HEBT1" errortol="1.0e-8" initstep="0.1" maxiter="1000" />
-		<record name="HEBT2" errortol="1.0e-6" initstep="0.1" maxiter="1000" />
-		<record name="RTBT1" errortol="1.0e-8" initstep="0.1" maxiter="1000" />
-		<record name="RTBT2" errortol="1.0e-8" initstep="0.1" maxiter="1000" />
-	</table>
+        </schema>
+        <record name="default" />
+        <record name="HEBT1" errortol="1.0e-8" initstep="0.1" maxiter="1000" />
+        <record name="HEBT2" errortol="1.0e-6" initstep="0.1" maxiter="1000" />
+        <record name="RTBT1" errortol="1.0e-8" initstep="0.1" maxiter="1000" />
+        <record name="RTBT2" errortol="1.0e-8" initstep="0.1" maxiter="1000" />
+    </table>
     
     <table name="PhaseCoordinates">
         <schema>
@@ -123,77 +124,77 @@
         <record name="HEBT2" classification="centroid" coordinates="(0.01, 0, 0, 0, 0, 0)" />
     </table>
     
-	<table name="twiss">
-		<schema>
-			<attribute isPrimaryKey="true" name="name" type="java.lang.String" />
-		    <attribute isPrimaryKey="true" name="coordinate" type="java.lang.String" />
-			<attribute isPrimaryKey="false" name="alpha" type="java.lang.Double" />
-			<attribute isPrimaryKey="false" name="beta" type="java.lang.Double" />
-			<attribute isPrimaryKey="false" name="emittance" type="java.lang.Double" />
-		</schema>
-		<record name="MEBT" coordinate="x" alpha="-1.620000" beta=" 0.155000" emittance="+3.02000e-006"/>
-		<record name="MEBT" coordinate="y" alpha=" 3.230000" beta=" 0.381000" emittance="+3.46000e-006"/>
-		<record name="MEBT" coordinate="z" alpha=" 0.019600" beta=" 0.584400" emittance="+3.86380e-006"/>
-		<record name="DTL1" coordinate="x" alpha="-0.374691" beta=" 0.586174" emittance="+3.01915e-006"/>
-		<record name="DTL1" coordinate="y" alpha="-0.231111" beta=" 0.137198" emittance="+3.45946e-006"/>
-		<record name="DTL1" coordinate="z" alpha=" 0.299183" beta=" 0.471763" emittance="+3.86355e-006"/>
-		<record name="DTL2" coordinate="x" alpha=" 2.701320" beta=" 0.700338" emittance="+1.73777e-006"/>
-		<record name="DTL2" coordinate="y" alpha="-2.603076" beta=" 0.794770" emittance="+1.99123e-006"/>
-		<record name="DTL2" coordinate="z" alpha="-0.397774" beta=" 0.403277" emittance="+2.20041e-006"/>
-		<record name="DTL3" coordinate="x" alpha=" 1.297644" beta=" 0.549192" emittance="+9.92285e-007"/>
-		<record name="DTL3" coordinate="y" alpha="-3.214553" beta=" 1.824498" emittance="+1.13702e-006"/>
-		<record name="DTL3" coordinate="z" alpha=" 0.196423" beta=" 1.817600" emittance="+1.21681e-006"/>
-		<record name="DTL4" coordinate="x" alpha=" 2.014815" beta=" 1.248958" emittance="+7.49028e-007"/>
-		<record name="DTL4" coordinate="y" alpha="-2.002180" beta=" 1.295824" emittance="+8.58283e-007"/>
-		<record name="DTL4" coordinate="z" alpha="-0.383242" beta=" 1.495460" emittance="+8.87229e-007"/>
-		<record name="DTL5" coordinate="x" alpha="-0.080589" beta=" 2.648011" emittance="+6.25412e-007"/>
-		<record name="DTL5" coordinate="y" alpha="-0.165355" beta=" 0.735660" emittance="+7.16623e-007"/>
-		<record name="DTL5" coordinate="z" alpha="-0.565187" beta=" 2.410661" emittance="+7.16145e-007"/>
-		<record name="DTL6" coordinate="x" alpha=" 2.126661" beta=" 1.792066" emittance="+5.49904e-007"/>
-		<record name="DTL6" coordinate="y" alpha="-1.977689" beta=" 1.719692" emittance="+6.30142e-007"/>
-		<record name="DTL6" coordinate="z" alpha="-0.068538" beta=" 2.218784" emittance="+6.10027e-007"/>
-		<record name="CCL1" coordinate="x" alpha="-3.279096" beta=" 3.879661" emittance="+5.00893e-007"/>
-		<record name="CCL1" coordinate="y" alpha=" 0.810056" beta=" 0.766892" emittance="+5.73962e-007"/>
-		<record name="CCL1" coordinate="z" alpha=" 0.653812" beta=" 3.145347" emittance="+5.40359e-007"/>
-		<record name="CCL2" coordinate="x" alpha=" 2.473646" beta=" 3.594577" emittance="+4.48495e-007"/>
-		<record name="CCL2" coordinate="y" alpha="-0.946671" beta=" 1.394213" emittance="+5.13934e-007"/>
-		<record name="CCL2" coordinate="z" alpha="-0.773927" beta=" 4.520875" emittance="+4.65244e-007"/>
-		<record name="CCL3" coordinate="x" alpha=" 2.283667" beta=" 4.582043" emittance="+4.02964e-007"/>
-		<record name="CCL3" coordinate="y" alpha="-1.293711" beta=" 2.236370" emittance="+4.61762e-007"/>
-		<record name="CCL3" coordinate="z" alpha=" 0.538514" beta=" 3.153244" emittance="+3.99505e-007"/>
-		<record name="CCL4" coordinate="x" alpha=" 2.787507" beta=" 7.072388" emittance="+3.65633e-007"/>
-		<record name="CCL4" coordinate="y" alpha="-1.313166" beta=" 3.617282" emittance="+4.18994e-007"/>
-		<record name="CCL4" coordinate="z" alpha="-0.634955" beta=" 4.202553" emittance="+3.45471e-007"/>
-		<record name="SCLMed" coordinate="x" alpha="-1.573126" beta=" 8.131378" emittance="+3.34159e-007"/>
-		<record name="SCLMed" coordinate="y" alpha=" 0.684698" beta=" 8.634511" emittance="+3.82927e-007"/>
-		<record name="SCLMed" coordinate="z" alpha=" 0.213766" beta=" 6.071008" emittance="+2.99985e-007"/>
-		<record name="SCLHigh" coordinate="x" alpha=" 0.379621" beta=" 4.666692" emittance="+2.19297e-007"/>
-		<record name="SCLHigh" coordinate="y" alpha=" 2.364523" beta="13.876136" emittance="+2.51303e-007"/>
-		<record name="SCLHigh" coordinate="z" alpha="-1.622597" beta=" 9.553335" emittance="+1.40606e-007"/>
-		<record name="HEBT1" coordinate="x" alpha=" 0.9686" beta=" 3.6736" emittance="+1.21644e-007"/>
-		<record name="HEBT1" coordinate="y" alpha="-1.9501" beta=" 9.3842" emittance="+1.39475e-007"/>
-		<record name="HEBT1" coordinate="z" alpha="-103.218446" beta="7096.290320" emittance="+3.67111e-008"/>
-		<record name="HEBT2" coordinate="x" alpha="-0.641247" beta=" 4.717389" emittance="+1.21644e-007"/>
-		<record name="HEBT2" coordinate="y" alpha=" 1.777757" beta="19.469339" emittance="+1.39475e-007"/>
-		<record name="HEBT2" coordinate="z" alpha="-170.8246" beta="18586.384" emittance="+3.67111e-008"/>
-		<record name="MDmp" coordinate="x" alpha="4.8496" beta=" 48.5737" emittance="+1.21644e-007"/>
-		<record name="MDmp" coordinate="y" alpha="-1.4334" beta="10.8977" emittance="+1.39475e-007"/>
-		<record name="MDmp" coordinate="z" alpha="49.9465" beta="0.5486" emittance="+3.67111e-008"/>
-		<record name="IDmp-" coordinate="x" alpha=" 0.073049" beta="12.568964" emittance="+1.21644e-007"/>
-		<record name="IDmp-" coordinate="y" alpha="-0.271860" beta="11.454688" emittance="+1.39475e-007"/>
-		<record name="IDmp-" coordinate="z" alpha="-314.2278" beta="58746.924" emittance="+3.67111e-008"/>
-		<record name="IDmp+" coordinate="x" alpha="-0.057543" beta="12.588942" emittance="+1.21644e-007"/>
-		<record name="IDmp+" coordinate="y" alpha="-0.560435" beta="13.467029" emittance="+1.39475e-007"/>
-		<record name="IDmp+" coordinate="z" alpha="-316.8352" beta="59691.567" emittance="+3.67111e-008"/>
-		<record name="RTBT1" coordinate="x" alpha="-1.3168" beta="5.8471" emittance="1.60e-4"/>
-		<record name="RTBT1" coordinate="y" alpha=" 0.6831" beta="9.2607" emittance="1.60e-4"/>
-		<record name="RTBT1" coordinate="z" alpha="-0.0036" beta="9589.2334" emittance="11.4e-3"/>
-		<record name="RTBT2" coordinate="x" alpha="-1.6" beta="7.6" emittance="1.60e-4"/>
-		<record name="RTBT2" coordinate="y" alpha=" 2.2" beta="20.5" emittance="1.60e-4"/>
-		<record name="RTBT2" coordinate="z" alpha="-0.01" beta="9589." emittance="11.4e-3"/>
-		<record name="EDmp" coordinate="x" alpha="-1.6" beta="7.6" emittance="1.60e-4"/>
-		<record name="EDmp" coordinate="y" alpha=" 2.2" beta="20.5" emittance="1.60e-4"/>
-		<record name="EDmp" coordinate="z" alpha="-0.01" beta="9589" emittance="11.4e-3"/>
+    <table name="twiss">
+        <schema>
+            <attribute isPrimaryKey="true" name="name" type="java.lang.String" />
+            <attribute isPrimaryKey="true" name="coordinate" type="java.lang.String" />
+            <attribute isPrimaryKey="false" name="alpha" type="java.lang.Double" />
+            <attribute isPrimaryKey="false" name="beta" type="java.lang.Double" />
+            <attribute isPrimaryKey="false" name="emittance" type="java.lang.Double" />
+        </schema>
+        <record name="MEBT" coordinate="x" alpha="-1.620000" beta=" 0.155000" emittance="+3.02000e-006"/>
+        <record name="MEBT" coordinate="y" alpha=" 3.230000" beta=" 0.381000" emittance="+3.46000e-006"/>
+        <record name="MEBT" coordinate="z" alpha=" 0.019600" beta=" 0.584400" emittance="+3.86380e-006"/>
+        <record name="DTL1" coordinate="x" alpha="-0.374691" beta=" 0.586174" emittance="+3.01915e-006"/>
+        <record name="DTL1" coordinate="y" alpha="-0.231111" beta=" 0.137198" emittance="+3.45946e-006"/>
+        <record name="DTL1" coordinate="z" alpha=" 0.299183" beta=" 0.471763" emittance="+3.86355e-006"/>
+        <record name="DTL2" coordinate="x" alpha=" 2.701320" beta=" 0.700338" emittance="+1.73777e-006"/>
+        <record name="DTL2" coordinate="y" alpha="-2.603076" beta=" 0.794770" emittance="+1.99123e-006"/>
+        <record name="DTL2" coordinate="z" alpha="-0.397774" beta=" 0.403277" emittance="+2.20041e-006"/>
+        <record name="DTL3" coordinate="x" alpha=" 1.297644" beta=" 0.549192" emittance="+9.92285e-007"/>
+        <record name="DTL3" coordinate="y" alpha="-3.214553" beta=" 1.824498" emittance="+1.13702e-006"/>
+        <record name="DTL3" coordinate="z" alpha=" 0.196423" beta=" 1.817600" emittance="+1.21681e-006"/>
+        <record name="DTL4" coordinate="x" alpha=" 2.014815" beta=" 1.248958" emittance="+7.49028e-007"/>
+        <record name="DTL4" coordinate="y" alpha="-2.002180" beta=" 1.295824" emittance="+8.58283e-007"/>
+        <record name="DTL4" coordinate="z" alpha="-0.383242" beta=" 1.495460" emittance="+8.87229e-007"/>
+        <record name="DTL5" coordinate="x" alpha="-0.080589" beta=" 2.648011" emittance="+6.25412e-007"/>
+        <record name="DTL5" coordinate="y" alpha="-0.165355" beta=" 0.735660" emittance="+7.16623e-007"/>
+        <record name="DTL5" coordinate="z" alpha="-0.565187" beta=" 2.410661" emittance="+7.16145e-007"/>
+        <record name="DTL6" coordinate="x" alpha=" 2.126661" beta=" 1.792066" emittance="+5.49904e-007"/>
+        <record name="DTL6" coordinate="y" alpha="-1.977689" beta=" 1.719692" emittance="+6.30142e-007"/>
+        <record name="DTL6" coordinate="z" alpha="-0.068538" beta=" 2.218784" emittance="+6.10027e-007"/>
+        <record name="CCL1" coordinate="x" alpha="-3.279096" beta=" 3.879661" emittance="+5.00893e-007"/>
+        <record name="CCL1" coordinate="y" alpha=" 0.810056" beta=" 0.766892" emittance="+5.73962e-007"/>
+        <record name="CCL1" coordinate="z" alpha=" 0.653812" beta=" 3.145347" emittance="+5.40359e-007"/>
+        <record name="CCL2" coordinate="x" alpha=" 2.473646" beta=" 3.594577" emittance="+4.48495e-007"/>
+        <record name="CCL2" coordinate="y" alpha="-0.946671" beta=" 1.394213" emittance="+5.13934e-007"/>
+        <record name="CCL2" coordinate="z" alpha="-0.773927" beta=" 4.520875" emittance="+4.65244e-007"/>
+        <record name="CCL3" coordinate="x" alpha=" 2.283667" beta=" 4.582043" emittance="+4.02964e-007"/>
+        <record name="CCL3" coordinate="y" alpha="-1.293711" beta=" 2.236370" emittance="+4.61762e-007"/>
+        <record name="CCL3" coordinate="z" alpha=" 0.538514" beta=" 3.153244" emittance="+3.99505e-007"/>
+        <record name="CCL4" coordinate="x" alpha=" 2.787507" beta=" 7.072388" emittance="+3.65633e-007"/>
+        <record name="CCL4" coordinate="y" alpha="-1.313166" beta=" 3.617282" emittance="+4.18994e-007"/>
+        <record name="CCL4" coordinate="z" alpha="-0.634955" beta=" 4.202553" emittance="+3.45471e-007"/>
+        <record name="SCLMed" coordinate="x" alpha="-1.573126" beta=" 8.131378" emittance="+3.34159e-007"/>
+        <record name="SCLMed" coordinate="y" alpha=" 0.684698" beta=" 8.634511" emittance="+3.82927e-007"/>
+        <record name="SCLMed" coordinate="z" alpha=" 0.213766" beta=" 6.071008" emittance="+2.99985e-007"/>
+        <record name="SCLHigh" coordinate="x" alpha=" 0.379621" beta=" 4.666692" emittance="+2.19297e-007"/>
+        <record name="SCLHigh" coordinate="y" alpha=" 2.364523" beta="13.876136" emittance="+2.51303e-007"/>
+        <record name="SCLHigh" coordinate="z" alpha="-1.622597" beta=" 9.553335" emittance="+1.40606e-007"/>
+        <record name="HEBT1" coordinate="x" alpha=" 0.9686" beta=" 3.6736" emittance="+1.21644e-007"/>
+        <record name="HEBT1" coordinate="y" alpha="-1.9501" beta=" 9.3842" emittance="+1.39475e-007"/>
+        <record name="HEBT1" coordinate="z" alpha="-103.218446" beta="7096.290320" emittance="+3.67111e-008"/>
+        <record name="HEBT2" coordinate="x" alpha="-0.641247" beta=" 4.717389" emittance="+1.21644e-007"/>
+        <record name="HEBT2" coordinate="y" alpha=" 1.777757" beta="19.469339" emittance="+1.39475e-007"/>
+        <record name="HEBT2" coordinate="z" alpha="-170.8246" beta="18586.384" emittance="+3.67111e-008"/>
+        <record name="MDmp" coordinate="x" alpha="4.8496" beta=" 48.5737" emittance="+1.21644e-007"/>
+        <record name="MDmp" coordinate="y" alpha="-1.4334" beta="10.8977" emittance="+1.39475e-007"/>
+        <record name="MDmp" coordinate="z" alpha="49.9465" beta="0.5486" emittance="+3.67111e-008"/>
+        <record name="IDmp-" coordinate="x" alpha=" 0.073049" beta="12.568964" emittance="+1.21644e-007"/>
+        <record name="IDmp-" coordinate="y" alpha="-0.271860" beta="11.454688" emittance="+1.39475e-007"/>
+        <record name="IDmp-" coordinate="z" alpha="-314.2278" beta="58746.924" emittance="+3.67111e-008"/>
+        <record name="IDmp+" coordinate="x" alpha="-0.057543" beta="12.588942" emittance="+1.21644e-007"/>
+        <record name="IDmp+" coordinate="y" alpha="-0.560435" beta="13.467029" emittance="+1.39475e-007"/>
+        <record name="IDmp+" coordinate="z" alpha="-316.8352" beta="59691.567" emittance="+3.67111e-008"/>
+        <record name="RTBT1" coordinate="x" alpha="-1.3168" beta="5.8471" emittance="1.60e-4"/>
+        <record name="RTBT1" coordinate="y" alpha=" 0.6831" beta="9.2607" emittance="1.60e-4"/>
+        <record name="RTBT1" coordinate="z" alpha="-0.0036" beta="9589.2334" emittance="11.4e-3"/>
+        <record name="RTBT2" coordinate="x" alpha="-1.6" beta="7.6" emittance="1.60e-4"/>
+        <record name="RTBT2" coordinate="y" alpha=" 2.2" beta="20.5" emittance="1.60e-4"/>
+        <record name="RTBT2" coordinate="z" alpha="-0.01" beta="9589." emittance="11.4e-3"/>
+        <record name="EDmp" coordinate="x" alpha="-1.6" beta="7.6" emittance="1.60e-4"/>
+        <record name="EDmp" coordinate="y" alpha=" 2.2" beta="20.5" emittance="1.60e-4"/>
+        <record name="EDmp" coordinate="z" alpha="-0.01" beta="9589" emittance="11.4e-3"/>
         <!-- Currently the ring emittances for the ring are taken from the RTBT -->
         <!-- It may be interesting to use those of the HEBT and assume a single bunch through the ring -->		
         <record name="Ring1" coordinate="x" alpha="0.9626321767470538"    beta="193.09331608059273" emittance="1.60e-4"/>
@@ -318,16 +319,16 @@
         <record name="SCL_RF:Cav23b" species="HMINUS" W= "6.914395714200009E8"/>
         <record name="SCL_RF:Cav23c" species="HMINUS" W= "6.914395714200009E8"/>
         <record name="SCL_RF:Cav23d" species="HMINUS" W= "6.914395714200009E8"/>
-		<record name="IDmp-" species="HMINUS" W="1001.122E6"/>
-		<record name="IDmp+" species="PROTON" W="1000.025E6"/>
-		<record name="Ring1" species="PROTON" W="1000.025E6"/>        
-		<record name="Ring2" species="PROTON" W="1000.025E6"/>        
-		<record name="Ring3" species="PROTON" W="1000.025E6"/>        
-		<record name="Ring4" species="PROTON" W="1000.025E6"/>        
-		<record name="Ring5" species="PROTON" W="1000.025E6"/>        
-		<record name="RTBT1" species="PROTON" W="1000.025E6"/>
-		<record name="RTBT2" species="PROTON" W="1000.025E6"/>
-		<record name="EDmp" species="PROTON" W="1000.025E6"/>
-	</table>
+        <record name="IDmp-" species="HMINUS" W="1001.122E6"/>
+        <record name="IDmp+" species="PROTON" W="1000.025E6"/>
+        <record name="Ring1" species="PROTON" W="1000.025E6"/>        
+        <record name="Ring2" species="PROTON" W="1000.025E6"/>        
+        <record name="Ring3" species="PROTON" W="1000.025E6"/>        
+        <record name="Ring4" species="PROTON" W="1000.025E6"/>        
+        <record name="Ring5" species="PROTON" W="1000.025E6"/>        
+        <record name="RTBT1" species="PROTON" W="1000.025E6"/>
+        <record name="RTBT2" species="PROTON" W="1000.025E6"/>
+        <record name="EDmp" species="PROTON" W="1000.025E6"/>
+    </table>
 </tablegroup>
 

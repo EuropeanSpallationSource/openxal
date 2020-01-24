@@ -16,6 +16,7 @@
             <attribute defaultValue="false" isPrimaryKey="false" name="emitgrowth" type="java.lang.Boolean"/>
             <attribute defaultValue="true" isPrimaryKey="false" name="scheff" type="java.lang.Boolean"/>
             <attribute defaultValue="0.1" isPrimaryKey="false" name="stepsize" type="java.lang.Double"/>
+            <attribute defaultValue="false" isPrimaryKey="false" name="useDCBeam" type="java.lang.Boolean"/>
         </schema>
         <record name="default"/>
     </table>
