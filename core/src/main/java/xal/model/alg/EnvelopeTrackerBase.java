@@ -186,8 +186,9 @@ public abstract class EnvelopeTrackerBase extends Tracker {
     
     /** label for maximum step size **/
     public static final String ATTR_STEPSIZE = "stepsize";
-
-
+    
+    /** label for use DC Beam **/
+    public static final String ATTR_USEDCBEAM = "useDCBeam";
     
     /*
      * LOCAL CONSTANTS
@@ -513,10 +514,12 @@ public abstract class EnvelopeTrackerBase extends Tracker {
         final boolean   bolEmitGrw  = recTracker.booleanValueForKey( ATTR_EMITGROWTH );
         final boolean   bolUseSpChg = recTracker.booleanValueForKey( ATTR_SCHEFF );
         final double    dblStepSize = recTracker.doubleValueForKey( ATTR_STEPSIZE );
+        final boolean   bolDCBeam = recTracker.booleanValueForKey( ATTR_USEDCBEAM );
     
         this.setEmittanceGrowth( bolEmitGrw );
         this.setStepSize( dblStepSize );
         this.setUseSpacecharge( bolUseSpChg );
+        this.setUseDCBeam(bolDCBeam );
     }
 
     /** 
