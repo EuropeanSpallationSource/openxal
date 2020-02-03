@@ -4,6 +4,8 @@
 package xal.smf.proxy;
 
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xal.sim.scenario.Scenario;
 import xal.sim.scenario.ModelInput;
@@ -411,12 +413,13 @@ abstract class BatchChannelPropertyAccessor extends BatchPropertyAccessor {
 
 
 	/** make the request for values for the specified nodes */
+         @Override
 	public void requestValuesForNodes( final Collection<AcceleratorNode> nodes ) {
 		// assign an empty map at the start should something go wrong later
 		_channelValues = Collections.<Channel,Double>emptyMap();
 
 		// collect all the channels from every node's properties
-		final Set<Channel> channels = new HashSet<Channel>();
+		final Set<Channel> channels = new HashSet<>();
 		for ( final AcceleratorNode node : nodes ) {
 			final PropertyAccessor accessor = getAccessorFor( node );
 			channels.addAll( getChannels( accessor, node ) );
@@ -431,25 +434,24 @@ abstract class BatchChannelPropertyAccessor extends BatchPropertyAccessor {
 			final int requestCount = channels.size();
 			final int recordCount = request.getRecordCount();
 			final int exceptionCount = request.getExceptionCount();
-			System.err.println( "Batch channel request for online model is incomplete. " + recordCount + " of " + requestCount + " channels succeeded. " + exceptionCount + " channels had exceptions." );
+			Logger.getLogger(BatchChannelPropertyAccessor.class.getName()).log(Level.WARNING, "Batch channel request for online model is incomplete. {0} of {1} channels succeeded. {2} channels had exceptions.", new Object[]{recordCount, requestCount, exceptionCount});
 		}
 
 		// gather values for the channels in a map keyed by channel
-		final Map<Channel,Double> channelValues = new HashMap<Channel,Double>();
+		final Map<Channel,Double> channelValues = new HashMap<>();
+		final List<String> unreadChannels = new ArrayList<>();
 		for ( final Channel channel : channels ) {
 			final ChannelRecord record = request.getRecord( channel );
 			if ( record != null ) {
 				channelValues.put( channel, record.doubleValue() );
 			}
 			else {
-				System.err.println( "No record for channel: " + channel.getId() );
-				
-				final Exception channelException = request.getException( channel );
-				if ( channelException != null ) {
-					System.err.println( channelException );
-				}
+                                unreadChannels.add(channel.getId());	
 			}
 		}
+                 if (!unreadChannels.isEmpty()){
+                          Logger.getLogger(BatchChannelPropertyAccessor.class.getName()).log(Level.WARNING, "No record for channels: {0}", unreadChannels);
+                 }
 
 		_channelValues = channelValues;
 	}
@@ -460,6 +462,7 @@ abstract class BatchChannelPropertyAccessor extends BatchPropertyAccessor {
 	 * @param node the AcclereatorNode whose properties to return
 	 * @return a Map of node property values
 	 */
+         @Override
 	public Map<String,Double> valueMapFor( final AcceleratorNode node ) {
 		final PropertyAccessor accessor = getAccessorFor( node );
 		return getValueMap( accessor, node );
@@ -479,12 +482,14 @@ abstract class BatchChannelPropertyAccessor extends BatchPropertyAccessor {
 /** Accessor for property values in batch */
 class LiveBatchPropertyAccessor extends BatchChannelPropertyAccessor {
 	/** get the channels for the specified node */
+        @Override
 	protected Collection<Channel> getChannels( final PropertyAccessor accessor, final AcceleratorNode node ) {
 		return accessor.getLiveChannels( node );
 	}
 
 
 	/** get the value map for the specified node */
+        @Override
 	protected Map<String,Double> getValueMap( final PropertyAccessor accessor, final AcceleratorNode node ) {
 		return accessor.getLiveValueMap( node, _channelValues );
 	}
@@ -495,12 +500,14 @@ class LiveBatchPropertyAccessor extends BatchChannelPropertyAccessor {
 /** Accessor for property values in batch */
 class LiveRFDesignBatchPropertyAccessor extends BatchChannelPropertyAccessor {
 	/** get the channels for the specified node */
+        @Override
 	protected Collection<Channel> getChannels( final PropertyAccessor accessor, final AcceleratorNode node ) {
 		return accessor.getLiveRFDesignChannels( node );
 	}
 
 
 	/** get the value map for the specified node */
+        @Override
 	protected Map<String,Double> getValueMap( final PropertyAccessor accessor, final AcceleratorNode node ) {
 		return accessor.getLiveRFDesignValueMap( node, _channelValues );
 	}
