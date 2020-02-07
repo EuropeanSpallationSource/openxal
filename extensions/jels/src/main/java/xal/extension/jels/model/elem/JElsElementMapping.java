@@ -82,6 +82,7 @@ public class JElsElementMapping extends ElementMapping {
         putMap("dc", IdealMagSteeringDipole.class);
         putMap("marker", Marker.class);
         putMap("rf", IdealRfCavity.class);
+        putMap("rfq", RfqDummyModel.class);
     }
 
     @Override
