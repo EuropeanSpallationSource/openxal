@@ -33,6 +33,10 @@ public class FieldMapFactory {
         MAGNETIC
     }
 
+    public static Map<String, FieldMap> getInstances() {
+        return instances;
+    }
+
     /**
      * Static factory method to give field profile for a specific file
      *

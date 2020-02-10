@@ -42,13 +42,7 @@ public class MagFieldMap2D extends FieldMap {
         }
         this.numberOfPoints = numberOfPoints;
 
-        sliceLength = length / (numberOfPoints - 1);
-
-        longitudinalPositions = new double[numberOfPoints];
-        for (int i = 0; i < numberOfPoints - 1; i++) {
-            longitudinalPositions[i] = i * length / (numberOfPoints - 1);
-        }
-        longitudinalPositions[numberOfPoints - 1] = length;
+        recalculateSliceLength();
     }
 
     @Override

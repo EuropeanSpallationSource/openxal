@@ -30,7 +30,7 @@ import xal.extension.jels.model.elem.FieldMapPoint;
 public class RfFieldMap1D extends FieldMap {
 
     private double fieldIntegral;
-    
+
     public RfFieldMap1D(String path, String filename, int numberOfPoints) {
         FieldComponent<double[]> fieldComponent = loadFile1D(path, filename + ".edz");
 
@@ -55,14 +55,8 @@ public class RfFieldMap1D extends FieldMap {
         }
         this.numberOfPoints = numberOfPoints;
 
-        sliceLength = length / (numberOfPoints - 1);
+        recalculateSliceLength();
 
-        longitudinalPositions = new double[numberOfPoints];
-        for (int i = 0; i < numberOfPoints - 1; i++) {
-            longitudinalPositions[i] = i * length / (numberOfPoints - 1);
-        }
-        longitudinalPositions[numberOfPoints - 1] = length;
-        
         setCoupled(false);
     }
 
@@ -119,7 +113,7 @@ public class RfFieldMap1D extends FieldMap {
         }
 
         FieldMapPoint fieldMapPoint = new FieldMapPoint();
-        
+
         fieldMapPoint.setEz(Ez0);
         fieldMapPoint.setdExdx(-0.5 * dEzds);
         fieldMapPoint.setdEydy(-0.5 * dEzds);

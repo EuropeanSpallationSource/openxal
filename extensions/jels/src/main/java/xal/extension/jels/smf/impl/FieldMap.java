@@ -59,6 +59,25 @@ public abstract class FieldMap {
     // If the field couples different planes (e.g., solenoid).
     private boolean coupled = true;
 
+    public int getNumberOfPoints() {
+        return numberOfPoints;
+    }
+
+    public void setNumberOfPoints(int numberOfPoints) {
+        this.numberOfPoints = numberOfPoints;
+        recalculateSliceLength();
+    }
+
+    protected void recalculateSliceLength() {
+        sliceLength = length / (numberOfPoints - 1);
+
+        longitudinalPositions = new double[numberOfPoints];
+        for (int i = 0; i < numberOfPoints - 1; i++) {
+            longitudinalPositions[i] = i * length / (numberOfPoints - 1);
+        }
+        longitudinalPositions[numberOfPoints - 1] = length;
+    }
+
     public boolean isCoupled() {
         return coupled;
     }
