@@ -186,13 +186,15 @@ public abstract class ThickElement extends Element {
         double dy = getAlignY();
         double dz = getAlignZ();
 
+        // Distance from the beginning of the sequence
+        double positionInSequence = getLatticePosition() - getPosition();
         //Distance form the begining of the element
-        double pos = probe.getPosition() - (getLatticePosition() - getNodeLen() / 2.0);
+        double pos = probe.getPosition() - positionInSequence - (getNodePos() - getNodeLen() / 2.0);
 
         //check if the element is contained in a sequence which has its own misalignements
         if (this.getParent() instanceof ElementSeq) {
-            double Dx = (getPosition() - this.getParent().getLength() / 2.0) * ((ElementSeq) this.getParent()).getPhiY();
-            double Dy = (getPosition() - this.getParent().getLength() / 2.0) * ((ElementSeq) this.getParent()).getPhiX();
+            double Dx = (getNodePos() - this.getParent().getLength() / 2.0) * ((ElementSeq) this.getParent()).getPhiY();
+            double Dy = (getNodePos() - this.getParent().getLength() / 2.0) * ((ElementSeq) this.getParent()).getPhiX();
 
             px = px + ((ElementSeq) this.getParent()).getPhiX();
             py = py + ((ElementSeq) this.getParent()).getPhiY();
