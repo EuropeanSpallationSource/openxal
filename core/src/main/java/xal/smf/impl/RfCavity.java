@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import xal.ca.Channel;
 import xal.ca.ChannelFactory;
@@ -130,7 +132,7 @@ public class RfCavity extends AcceleratorSeq {
      */    
     private void updateGaps() {
         final List<AcceleratorNode> nodes = getNodesOfType( RfGap.s_strType, true );
-        _gaps = new ArrayList<RfGap>( nodes.size() );
+        _gaps = new ArrayList<>( nodes.size() );
         for ( final AcceleratorNode node : nodes ) {
             _gaps.add( (RfGap)node );
         }
@@ -148,15 +150,11 @@ public class RfCavity extends AcceleratorSeq {
     private void processGaps() {
 		Iterator<RfGap> gapIter = _gaps.iterator();
 		int index = 0;
-		double position = 0.;
-		double oldPosition = 0.;
-		double oldCellLength = 0.;
-		double oldGapOffset = 0.;
 		// presently the gappOffset is commented out.
 		// to do it right we need the gapOffset of the 1st
 		// gap in a cavity to come from an external source.
 		while ( gapIter.hasNext() ) {
-            RfGap gap = gapIter.next();
+                      RfGap gap = gapIter.next();
 			
 			if( index == 0) {
 				gap.setFirstGap(true);	   
@@ -164,9 +162,6 @@ public class RfCavity extends AcceleratorSeq {
 			else{
 				gap.setFirstGap(false);	   
 			}
-			position = gap.getPosition();
-			//if(getId().startsWith("DTL")) 
-			//    gap.m_bucRfGap.setGapOffset(0.);
 			index += 1;
 		}
     }
@@ -193,6 +188,16 @@ public class RfCavity extends AcceleratorSeq {
     }
 
 
+    /**
+     * @return properties that can be accessed via EPICS.
+     */
+    @Override
+    public List<String> getAccesibleProperties() {
+        return Stream.of(Property.values())
+                .map(Property::name)
+                .collect(Collectors.toList());
+    }
+    
 	/** Get the design value for the specified property */
 	public double getDesignPropertyValue( final String propertyName ) {
 		try {
@@ -254,28 +259,24 @@ public class RfCavity extends AcceleratorSeq {
     private Channel cavPhaseSetC = null;
     private Channel cavAmpAvgC = null;
     private Channel cavPhaseAvgC = null;
-    private Channel deltaTRFStartC = null;
-    private Channel deltaTRFEndC = null;
-    private Channel tDelayC = null;
 
     
-    /** get the cavity amplitude (kV)   
+    /** get the cavity amplitude (MV)   
      * and publish this to all the gaps connected to this cavity
-     * note the cavity amp [kV]  = klystron amplitude *  ampFactor
+     * note the cavity amp [MV]  = klystron amplitude *  ampFactor
      * where ampFactor is a calibration factor determined experimentally
      */ 
     public double getCavAmpAvg() throws ConnectionException, GetException {
         cavAmpAvgC = this.lazilyGetAndConnect(CAV_AMP_AVG_HANDLE, cavAmpAvgC);
         final double amplitudeAverage = toCavAmpAvgFromCA( cavAmpAvgC.getValDbl() );
-        publishAmplitude( amplitudeAverage );
         return amplitudeAverage;
     }
 	
 	
 	/**
-	 * Convert the raw channel access value to get the cavity amplitude in kV.
+	 * Convert the raw channel access value to get the cavity amplitude in MV.
 	 * @param rawValue the raw channel value
-	 * @return the cavity amplitude in kV
+	 * @return the cavity amplitude in MV
 	 */
 	public double toCavAmpAvgFromCA( final double rawValue ) {
         return rawValue * m_bucRfCavity.getAmpFactor(); 
@@ -300,7 +301,6 @@ public class RfCavity extends AcceleratorSeq {
     public double getCavPhaseAvg() throws ConnectionException, GetException {
         cavPhaseAvgC = this.lazilyGetAndConnect(CAV_PHASE_AVG_HANDLE, cavPhaseAvgC);
         final double phaseAverage = toCavPhaseAvgFromCA( cavPhaseAvgC.getValDbl() );
-        publishPhase( phaseAverage );
         return phaseAverage;
     }
 	
@@ -326,14 +326,14 @@ public class RfCavity extends AcceleratorSeq {
 	
 
     /**
-     * @return default (design) cavity amplitude
+     * @return default (design) cavity amplitude (MV)
      */
     public double getDfltCavAmp() {
         return getRfField().getAmplitude();
     }
     
     /**
-     * @return default (design) cavity phase
+     * @return default (design) cavity phase (deg)
      */
     public double getDfltCavPhase() {
         return getRfField().getPhase();
@@ -424,8 +424,8 @@ public class RfCavity extends AcceleratorSeq {
 	}
 	
 	
-    /** Set the cavity amplitude [kV]    
-     * note the cavity amp [kV]  = klystron amp *  ampFactor
+    /** Set the cavity amplitude [MV]    
+     * note the cavity amp [MV]  = klystron amp *  ampFactor
      * where ampFactor is a calibration factor determined experimentally
      */     
     public void setCavAmp(double newAmp) throws ConnectionException, PutException {
@@ -454,30 +454,7 @@ public class RfCavity extends AcceleratorSeq {
     public double getCavPhaseSetPoint() throws ConnectionException, GetException {
 	cavPhaseSetC = this.lazilyGetAndConnect(CAV_PHASE_SET_HANDLE, cavPhaseSetC);
         return cavPhaseSetC.getValDbl();
-    }
-
-    
-    /*
-     * set the amplitude of all of the gaps
-     * @param The amplitude  of the first gap (kV/m)
-     */
-    protected void publishAmplitude(double newCavAmp) {
-		for ( final RfGap gap : _gaps ) {
-            gap.setGapAmp( newCavAmp );
-        }
-    }
-
-    
-    /*
-     * set the phases of all of the gaps
-     * @param The phase of the first gap (deg)
-     */
-    public void publishPhase(double newCavPhase) {
-		for ( final RfGap gap : _gaps ) {
-            gap.setGapPhase( newCavPhase );
-        }
-    }
-	
+    }	
 
     /**
      * Determine whether the beam is blanked
@@ -522,7 +499,7 @@ public class RfCavity extends AcceleratorSeq {
     }
     
    /** method to set the design amplitude
-    * @param amp new design amplitude (kV)
+    * @param amp new design amplitude (MV)
     */
     public void updateDesignAmp(double amp) {
 	    RfCavityBucket rfCavBuc = this.getRfField();
@@ -589,7 +566,7 @@ public class RfCavity extends AcceleratorSeq {
 	/**
 	 * Get RF cavity frequency.
 	 * 
-	 * @return RF cavity frequency
+	 * @return RF cavity frequency (MHz)
 	 */
 	public double getCavFreq() {
 		return this.getRfField().getFrequency();

@@ -49,13 +49,13 @@ public class RfCavityBucket extends AttributeBucket {
      *  Local Attributes
      */
     
-    /** Default field amplitude (in kV/m) */
+    /** Default field amplitude (in MV/m) */
     private Attribute   m_attAmp;
     
-    /** Default (design) cavity RF phase */
+    /** Default (design) cavity RF phase (deg) */
     private Attribute   m_attPhase;
     
-    /** Design cavity resonant frequency */
+    /** Design cavity resonant frequency (MHz) */
     private Attribute   m_attFreq;
     
     /** Calibration factor for klystron amplitude to cavity field value (ratio) */

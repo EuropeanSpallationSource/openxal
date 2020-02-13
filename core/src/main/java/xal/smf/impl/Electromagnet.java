@@ -13,6 +13,8 @@ import xal.ca.*;
 import xal.tools.data.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 /**
@@ -180,6 +182,16 @@ abstract public class Electromagnet extends Magnet {
     }
 
 
+    /**
+     * @return properties that can be accessed via EPICS.
+     */
+    @Override
+    public List<String> getAccesibleProperties() {
+        return Stream.of(Property.values())
+                .map(Property::name)
+                .collect(Collectors.toList());
+    }
+    
 	/** Get the design value for the specified property */
 	public double getDesignPropertyValue( final String propertyName ) {
 		try {
