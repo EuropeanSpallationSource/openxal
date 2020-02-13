@@ -30,7 +30,9 @@ public interface IRfGap /*extends gov.sns.xal.model.IElement*/ {
     public void setETL(double dblETL);
     
     /**
-     *  Set the on accelerating field
+     *  Set the on accelerating field.
+     *  This method should be called by the RF cavity containing this gap and should use
+     *  the amplitude factor.
      *  
      * @param E - the on axis field (V/m)
      */
@@ -40,6 +42,8 @@ public interface IRfGap /*extends gov.sns.xal.model.IElement*/ {
      *  Set the phase delay of the RF in gap with respect to the synchronous particle.
      *  The actual energy gain from the gap is given by qETLcos(dblPhi) where dbkPhi is 
      *  the phase delay.
+     *  This method should be called by the RF cavity containing this gap and should use
+     *  the phase factor.
      *
      *  @param  dblPhase    phase delay of the RF w.r.t. synchronous particle (in <bold>radians</bold>).
      */

@@ -50,6 +50,9 @@ public class ThinRfFieldMap extends ThinElement implements IRfGap, IRfCavityCell
     private double centerPosition = 0;
     private double position = 0;
 
+    private double m_dblAmpFactor;
+    private double m_dblPhaseFactor;
+
     /**
      * ETL product of gap
      */
@@ -112,6 +115,14 @@ public class ThinRfFieldMap extends ThinElement implements IRfGap, IRfCavityCell
         cellLength = fieldmap.getSliceLength();
         // Always 0. This is valid only if the energy gain is small enough.
         deltaPhi = 0;
+
+        m_dblETL = fieldmap.getGapDfltE0TL() * 1e6;
+        m_dblFreq = fieldmap.getGapDfltFrequency() * 1e6;
+        m_dblPhase = fieldmap.getGapDfltPhase() * Math.PI / 180.;
+        m_dblE0 = fieldmap.getGapDfltAmp() * 1e6;
+
+        m_dblAmpFactor = fieldmap.getRfGap().getAmpFactor();
+        m_dblPhaseFactor = fieldmap.getRfGap().getPhaseFactor();
     }
 
     /**
@@ -131,7 +142,6 @@ public class ThinRfFieldMap extends ThinElement implements IRfGap, IRfCavityCell
             phiS = getPhase();
         } else {
             phiS = probe.getLongitinalPhase();
-            setPhase(phiS);
         }
 
         double dz = getCellLength();
@@ -197,13 +207,13 @@ public class ThinRfFieldMap extends ThinElement implements IRfGap, IRfCavityCell
     }
 
     @Override
-    public void setE0(double E) {
-        m_dblE0 = E;
+    public void setE0(double cavAmp) {
+        m_dblE0 = cavAmp * m_dblAmpFactor;
     }
 
     @Override
-    public void setPhase(double dblPhase) {
-        m_dblPhase = dblPhase;
+    public void setPhase(double cavPhase) {
+        m_dblPhase = cavPhase + m_dblPhaseFactor;
     }
 
     @Override
