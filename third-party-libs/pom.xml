@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.xal</groupId>
         <artifactId>openxal</artifactId>
-        <version>3.3</version>
+        <version>3.4-SNAPSHOT</version>
     </parent>
 
     <artifactId>openxal.third-party-libs</artifactId>
