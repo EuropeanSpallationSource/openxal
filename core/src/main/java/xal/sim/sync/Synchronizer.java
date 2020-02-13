@@ -5,8 +5,8 @@ package xal.sim.sync;
 
 
 import java.util.Map;
+import xal.model.IComponent;
 
-import xal.model.IElement;
 
 /**
  * Specifies abstract interface for element synchronizers, used by the
@@ -17,10 +17,10 @@ import xal.model.IElement;
  */
 public interface Synchronizer {
 	
-	void resync( final IElement anElem, final Map<String,Double> valueMap )
+	void resync( final IComponent aComp, final Map<String,Double> valueMap )
 			throws SynchronizationException;
 			
-	void checkSynchronization( final IElement anElem, final Map<String,Double> valueMap )
+	void checkSynchronization( final IComponent aComp, final Map<String,Double> valueMap )
 			throws SynchronizationException;
 
 }
