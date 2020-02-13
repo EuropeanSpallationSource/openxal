@@ -210,6 +210,16 @@ public class ChannelSuite implements DataListener {
         return SIGNAL_SUITE.isSettable( handle );
     }
 
+
+    /**
+     * Set settable property for the PV associated with the handle.
+     * @param handle The handle for which to set the settable property.
+     * @param settable Set parameter.
+     */
+    public void setSettable( final String handle, final boolean settable ) {
+        SIGNAL_SUITE.setSettable( handle, settable );
+    }
+
     
     /** 
      * Get the channel corresponding to the specified handle.
@@ -461,14 +471,26 @@ class SignalSuite {
 
 
 	/**
-	 * Determine whether the handle's corresponding PV is valid.
-	 * @param handle The handle for which to get the validity.
-	 * @return validity state of the PV or false if there is no entry for the handle
+          * Determine whether the handle's corresponding PV is settable.
+          * @param handle The handle for which to get the attribute.
+          * @return set parameter of the PV or false if there is no entry for the handle
 	 */
 	public boolean isSettable( final String handle ) {
 		final SignalEntry signalEntry = getSignalEntry( handle );
 		return signalEntry != null ? signalEntry.settable() : false;
 	}
+
+	/**
+	 * Set settable property for the PV associated with the handle.
+	 * @param handle The handle for which to set the settable property.
+	 * @param settable Set parameter.
+	 */
+         public void setSettable(final String handle, final boolean settable) {
+                  final SignalEntry signalEntry = getSignalEntry(handle);
+                  if (signalEntry != null) {
+                      signalEntry.setSettable(settable);
+                  }
+         }
 
 
 	/**

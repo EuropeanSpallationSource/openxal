@@ -4,8 +4,8 @@
 package xal.sim.sync;
 
 import java.util.Map;
+import xal.model.IComponent;
 
-import xal.model.IElement;
 import xal.model.elem.IdealPermMagQuad;
 
 import xal.smf.proxy.PermanentMagnetPropertyAccessor;
@@ -19,28 +19,30 @@ import xal.smf.proxy.PermanentMagnetPropertyAccessor;
 public class PermanentMagnetSynchronizer implements Synchronizer {
 
 	/* resync the element from the value map */
-	public void resync( final IElement anElem, final Map<String,Double> valueMap ) throws SynchronizationException {
-		if ( !( anElem instanceof IdealPermMagQuad ) ) {
-			throw new IllegalArgumentException( "expected IdealPermMagQuad instance, got: " + anElem.getClass().getName() );
+         @Override
+	public void resync( final IComponent aComp, final Map<String,Double> valueMap ) throws SynchronizationException {
+		if ( !( aComp instanceof IdealPermMagQuad ) ) {
+			throw new IllegalArgumentException( "expected IdealPermMagQuad instance, got: " + aComp.getClass().getName() );
 		}
 
-		final IdealPermMagQuad mag = (IdealPermMagQuad)anElem;
+		final IdealPermMagQuad mag = (IdealPermMagQuad)aComp;
 		final Double field = valueMap.get( PermanentMagnetPropertyAccessor.PROPERTY_FIELD );
 		if ( field == null )  throw new SynchronizationException("missing value for Field property");
-		mag.setMagField( field.doubleValue() );
+		mag.setMagField(field);
 	}
 
 	
 	/* check synchronization */
-	public void checkSynchronization( final IElement anElem, final Map<String,Double> valueMap ) throws SynchronizationException {
-		if ( !(anElem instanceof IdealPermMagQuad) ) {
-			throw new IllegalArgumentException( "expected IElectromagnet instance, got: " + anElem.getClass().getName() );
+         @Override
+	public void checkSynchronization( final IComponent aComp, final Map<String,Double> valueMap ) throws SynchronizationException {
+		if ( !(aComp instanceof IdealPermMagQuad) ) {
+			throw new IllegalArgumentException( "expected IElectromagnet instance, got: " + aComp.getClass().getName() );
 		}
 
-		final IdealPermMagQuad mag = (IdealPermMagQuad)anElem;
+		final IdealPermMagQuad mag = (IdealPermMagQuad)aComp;
 		final Double field = valueMap.get( PermanentMagnetPropertyAccessor.PROPERTY_FIELD );
 		if ( field == null )  throw new SynchronizationException( "missing value for Field property: " );
-		if ( mag.getMagField() != field.doubleValue() )  throw new SynchronizationException( "synchronized value doesn't agree with node property" );
+		if ( mag.getMagField() != field )  throw new SynchronizationException( "synchronized value doesn't agree with node property" );
 	}
 	
 }

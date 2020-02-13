@@ -52,6 +52,9 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
 
     private double[] a_deltaPhi = null;
     private double[] a_energyGain = null;
+    
+    private double m_dblAmpFactor;
+    private double m_dblPhaseFactor;
 
     /**
      * ETL product of gap
@@ -103,7 +106,15 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
         }
         sliceStartPosition = element.getStartPosition() - (fieldmap.getPosition() - fieldmap.getLength() / 2.0);
         rfFieldmap = fieldmap.getFieldMap();
-        cellLength = fieldmap.getSliceLength();
+        cellLength = fieldmap.getSliceLength();        
+               
+        m_dblETL = fieldmap.getGapDfltE0TL()*1e6;
+        m_dblFreq = fieldmap.getGapDfltFrequency()*1e6;
+        m_dblPhase = fieldmap.getGapDfltPhase()*Math.PI/180.;
+        m_dblE0 = fieldmap.getGapDfltAmp()*1e6;
+                
+        m_dblAmpFactor = fieldmap.getRfGap().getAmpFactor();
+        m_dblPhaseFactor = fieldmap.getRfGap().getPhaseFactor();
     }
 
     /**
@@ -286,13 +297,13 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
     }
 
     @Override
-    public void setE0(double E) {
-        m_dblE0 = E;
+    public void setE0(double cavAmp) {
+        m_dblE0 = cavAmp * m_dblAmpFactor;
     }
 
     @Override
-    public void setPhase(double dblPhase) {
-        m_dblPhase = dblPhase;
+    public void setPhase(double cavPhase) {
+        m_dblPhase = cavPhase + m_dblPhaseFactor;
     }
 
     @Override

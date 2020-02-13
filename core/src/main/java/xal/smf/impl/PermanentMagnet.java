@@ -6,6 +6,9 @@
 
 package xal.smf.impl;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import xal.smf.*;
 import xal.smf.attr.*;
 import xal.smf.impl.qualify.*;
@@ -56,6 +59,16 @@ abstract public class PermanentMagnet extends Magnet {
         return true;
     }
 
+
+    /**
+     * @return properties that can be accessed via EPICS.
+     */
+    @Override
+    public List<String> getAccesibleProperties() {
+        return Stream.of(Property.values())
+                .map(Property::name)
+                .collect(Collectors.toList());
+    }
 
 	/** Get the design value for the specified property */
 	public double getDesignPropertyValue( final String propertyName ) {

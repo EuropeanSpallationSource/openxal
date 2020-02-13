@@ -4,7 +4,6 @@
 package xal.sim.scenario;
 
 import xal.model.IAlgorithm;
-import xal.model.IElement;
 import xal.model.Lattice;
 import xal.model.ModelException;
 import xal.model.probe.Probe;
@@ -19,6 +18,7 @@ import xal.smf.Ring;
 
 import java.util.List;
 import java.util.Map;
+import xal.model.IComponent;
 
 
 /**
@@ -133,11 +133,11 @@ public class Scenario {
     /** Current probe driving the simulation through the model lattice */
     private Probe<?>                        probe;
     
-    /** element from which to start propagation */
-    private String idElemStart = null;
+    /** component from which to start propagation */
+    private String idCompStart = null;
     
-    /** element at which to stop propagation */
-    private String idElemStop = null;
+    /** component at which to stop propagation */
+    private String idCompStop = null;
 
     
     /**
@@ -211,14 +211,14 @@ public class Scenario {
             throw new ModelException("Node not found: " + nodeId);
             
         // get first element mapped to node
-        List<IElement> mappedElems = elementsMappedTo(theNode);
-        if (mappedElems.isEmpty())
+        List<IComponent> mappedComps = componentsMappedTo(theNode);
+        if (mappedComps.isEmpty())
             throw new ModelException("No model elements mapped to: " + nodeId);
             
         // set propagation to start from that element
-        IElement elemStart = mappedElems.get(0);
-        //System.out.println("Scenario.setStartNode start at element: " + elemStart.getId());
-        setStartElement(elemStart);
+        IComponent compStart = mappedComps.get(0);
+
+        setStartComponent(compStart);
         
     }
         
@@ -239,41 +239,41 @@ public class Scenario {
         if (theNode == null)
             throw new ModelException("Node not found: " + nodeId);
             
-        // get first element mapped to node
-        List<IElement> mappedElems = elementsMappedTo(theNode);
-        if (mappedElems.isEmpty())
+        // get first component mapped to node
+        List<IComponent> mappedComps = componentsMappedTo(theNode);
+        if (mappedComps.isEmpty())
             throw new ModelException("No model elements mapped to: " + nodeId);
             
-        // set propagation to stop after that element
-        IElement elemStop = mappedElems.get(0);
-        //System.out.println("Scenario.setStopNode stop at element: " + elemStop.getId());
-        setStopElement(elemStop);
+        // set propagation to stop after that component
+        IComponent compStop = mappedComps.get(0);
+
+        setStopComponent(compStop);
         
     }
 	
 	
     /**
-     * Sets the model to start propagation from the specified IElement.  If you
-     * don't have a reference to an element but do have an AcceleratorNode, use
+     * Sets the model to start propagation from the specified IComponent.  If you
+     * don't have a reference to a component but do have an AcceleratorNode, use
      * setStartNode(String).
      * 
-     * @param start Element to start propagation from
+     * @param start Component to start propagation from
      */
-    public void setStartElement( final IElement start ) {
-        idElemStart = start.getId();
+    public void setStartComponent( final IComponent start ) {
+        idCompStart = start.getId();
     }
     
 	
     /**
-     * Sets the model to stop propagation (by default) <b>after</b> the specified IElement.  If you
-     * don't have a reference to an element but do have an AcceleratorNode, use
+     * Sets the model to stop propagation (by default) <b>after</b> the specified IComponent.  If you
+     * don't have a reference to a component but do have an AcceleratorNode, use
      * setStopNode(String). 
 		 * This "stop after" behavior can be changed in the Tracker ( see setStopNodeInclusive(boolean) method. 
      * 
-     * @param stop Element to stop propagation after
+     * @param stop Component to stop propagation after
      */
-    public void setStopElement( final IElement stop ) {
-        idElemStop = stop.getId();
+    public void setStopComponent( final IComponent stop ) {
+        idCompStop = stop.getId();
     }
 	
     /**
@@ -299,7 +299,7 @@ public class Scenario {
 	 * @return the corresponding position relative to this scenario's starting element
 	 */
 	public double getPositionRelativeToStart( final double positionInSequence ) {
-		return ( idElemStart == null ) ? positionInSequence : smfSeq.getRelativePosition( positionInSequence, idElemStart );
+		return ( idCompStart == null ) ? positionInSequence : smfSeq.getRelativePosition(positionInSequence, idCompStart );
 	}
     
 	
@@ -316,13 +316,7 @@ public class Scenario {
         if (probe == null)
             throw new IllegalStateException(
                 "must initialize probe before running model");
-        
-        // TODO - remove debugging code
-//        System.out.println("HO HO HO I am in xal.sim.Scenario#run()");
-//        System.out.println("  getStartElementId() = " + this.getStartElementId());
-//        System.out.println("  getStopElementId() = " + this.getStopElementId());
-//        System.out.println();
-        
+                
         // Set the starting and stopping elements
         IAlgorithm  alg = probe.getAlgorithm();
         
@@ -342,8 +336,6 @@ public class Scenario {
         probe.update();
         
         lattice.propagate(probe);
-
-//        probe.performPostProcessing();
     }
     
 	
@@ -392,10 +384,8 @@ public class Scenario {
             throw new IllegalStateException("model not yet run");
         
         @SuppressWarnings("unchecked")
-        Trajectory<S>   trj = (Trajectory<S>) probe.getTrajectory();
-        return trj;
-        
-//        return  probe.getTrajectory();
+        Trajectory<S>   trajectory = (Trajectory<S>) probe.getTrajectory();
+        return trajectory;
     }
         
     
@@ -429,13 +419,13 @@ public class Scenario {
     
 	
     /**
-     * Returns a List of elements mapped to the specified node.
+     * Returns a List of components mapped to the specified node.
      * 
-     * @param aNode node to get elements mapped to
-     * @return a List of Elements mapped to the specified node
+     * @param aNode node to get components mapped to
+     * @return a List of Components mapped to the specified node
      */
-    public List<IElement> elementsMappedTo( final AcceleratorNode aNode ) {
-        return mgrSync.allElementsMappedTo(aNode);
+    public List<IComponent> componentsMappedTo( final AcceleratorNode aNode ) {
+        return mgrSync.allComponentsMappedTo(aNode);
     }
     
 	
@@ -460,7 +450,7 @@ public class Scenario {
      * @return      modeling element string identifier
      */
     public String getStartElementId() {
-        return idElemStart;
+        return idCompStart;
     }
     
 	
@@ -469,7 +459,7 @@ public class Scenario {
      * @param elemId Start element Id
      */
     public void setStartElementId( final String elemId ) {
-        idElemStart = elemId;
+        idCompStart = elemId;
     }
 
 	
@@ -480,7 +470,7 @@ public class Scenario {
      * @return      modeling element string identifier
      */
     public String getStopElementId() {
-        return idElemStop;
+        return idCompStop;
     }
     
 	
@@ -489,7 +479,7 @@ public class Scenario {
      * @param elemId Stop element Id
      */
     public void setStopElementId( final String elemId ){
-        idElemStop = elemId;
+        idCompStop = elemId;
     }
     
 	
@@ -568,7 +558,7 @@ public class Scenario {
      * remove previously set Start point
      */
     public void unsetStartNode() {
-        idElemStart = null;
+        idCompStart = null;
     }
     
 	
@@ -576,7 +566,7 @@ public class Scenario {
      * remove previously set Stop point
      */
     public void unsetStopNode() {
-        idElemStop = null;
+        idCompStop = null;
     }
 
 	public AcceleratorSeq getSequence() {

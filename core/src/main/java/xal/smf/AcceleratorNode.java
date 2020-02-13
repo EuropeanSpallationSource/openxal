@@ -15,8 +15,7 @@ import java.util.logging.Logger;
  * The base class in the hierarchy of different accelerator node types.
  * @author  Nikolay Malitsky, Christopher K. Allen, Nick D. Pattengale
  */
-public abstract class AcceleratorNode implements /* IElement, */ ElementType, DataListener {
-
+public abstract class AcceleratorNode implements /* IElement, */ ElementType, DataListener {   
     /*
      *  Local Attributes
      */
@@ -288,7 +287,12 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
         return tmpChan;
     }
 
-
+    /**
+     * @return properties that can be accessed via EPICS.
+     */
+    public List<String> getAccesibleProperties() {
+        return new ArrayList<>();
+    }
 	/** Get the design value for the specified property */
 	public double getDesignPropertyValue( final String propertyName ) {
 		throw new IllegalArgumentException( "Unsupported AcceleratorNode design value property: " + propertyName );

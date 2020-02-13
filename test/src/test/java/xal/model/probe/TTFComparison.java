@@ -15,8 +15,8 @@ import xal.smf.data.XMLDataManager;
 import xal.smf.impl.RfGap;
 
 import java.util.List;
+import xal.model.IComponent;
 
-import xal.model.IElement;
 import xal.model.ModelException;
 import xal.model.probe.traj.EnvelopeProbeState;
 import xal.sim.scenario.ProbeFactory;
@@ -86,10 +86,10 @@ public class TTFComparison {
 		
 		List<RfGap> lstGaps = SEQ_TEST.getAllNodesOfType("RG");
 		for (RfGap gap : lstGaps) {
-			List<IElement> lstElems = model.elementsMappedTo(gap);
-			IElement       elemLast = lstElems.get( lstElems.size() - 1 );
+			List<IComponent> lstComps = model.componentsMappedTo(gap);
+			IComponent       compLast = lstComps.get(lstComps.size() - 1 );
 			@SuppressWarnings("unchecked")
-            List<EnvelopeProbeState> lstStates = (List<EnvelopeProbeState>) model.trajectoryStatesForElement( elemLast.getId() );
+            List<EnvelopeProbeState> lstStates = (List<EnvelopeProbeState>) model.trajectoryStatesForElement(compLast.getId() );
 			
 			//gets the last state
             EnvelopeProbeState state = lstStates.get(0);

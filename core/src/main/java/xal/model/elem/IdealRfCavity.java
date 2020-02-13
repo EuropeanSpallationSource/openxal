@@ -205,7 +205,8 @@ public class IdealRfCavity extends ElementSeq  implements IRfCavity {
     
     /**
      * Sets the amplitude of the RF signal feeding the cavity.  Specifically,
-     * the voltage of the RF at the cavity RF window.
+     * the voltage of the RF at the cavity RF window. This method updates the voltage
+     * for all gaps in the cavity.
      * 
      * @param dblAmp    high-power signal level at the cavity (in Volts)
      *
@@ -214,12 +215,22 @@ public class IdealRfCavity extends ElementSeq  implements IRfCavity {
     @Override
     public void setCavAmp(double dblAmp) {
         this.dblAmp = dblAmp;
+        
+        //  Setting RF field for all the gaps.
+        Iterator<IComponent>    iterCmps = localIterator();
+        while ( iterCmps.hasNext() ) {
+            IComponent cmp = iterCmps.next();       
+            if (cmp instanceof IRfGap) {
+                IRfGap   mdlCavCell = (IRfGap)cmp;
+                mdlCavCell.setE0(this.dblAmp);
+            }
+        }
     }
     
     /**
      * Sets the RF phase of the cavity with respect to the propagating probe.
      * Specifically, this is the RF phase seen by the probe as it first enters
-     * the cavity.
+     * the cavity. This method updates the phase for all gaps in the cavity.
      * 
      * @param dblPhase      RF phase of the cavity upon probe arrival (in radians)
      *
@@ -228,6 +239,16 @@ public class IdealRfCavity extends ElementSeq  implements IRfCavity {
     @Override
     public void setCavPhase(double dblPhase) {
         this.dblPhase = dblPhase;
+        
+        //  Setting RF phase for all the gaps.
+        Iterator<IComponent>    iterCmps = localIterator();
+        while ( iterCmps.hasNext() ) {
+            IComponent cmp = iterCmps.next();
+            if (cmp instanceof IRfGap) {
+                IRfGap   mdlCavCell = (IRfGap)cmp;
+                mdlCavCell.setPhase(this.dblPhase);           
+            }
+        }
     }
 
     
@@ -256,15 +277,10 @@ public class IdealRfCavity extends ElementSeq  implements IRfCavity {
         
         RfCavity    smfRfCav = (RfCavity)smfNode;
         
-        double  dblFreq  = 1.0e6 * smfRfCav.getCavFreq();    // convert to Hertz
-        double  dblAmp   = 1.0e3 * smfRfCav.getDfltCavAmp(); // convert to Volts
-        double  dblPhase = (Math.PI/180.0) * smfRfCav.getDfltCavPhase(); // convert to radians
-        double  dblModeConst = smfRfCav.getStructureMode();
-        
-        this.setCavFrequency( dblFreq );
-        this.setCavAmp( dblAmp );
-        this.setCavPhase( dblPhase );
-        this.setCavityModeConstant( dblModeConst );
+        dblFreq  = 1.0e6 * smfRfCav.getCavFreq();    // convert to Hertz
+        dblAmp   = 1.0e6 * smfRfCav.getDfltCavAmp(); // convert to Volts
+        dblPhase = (Math.PI/180.0) * smfRfCav.getDfltCavPhase(); // convert to radians
+        dblModeConst = smfRfCav.getStructureMode();
     }
 
     /**
@@ -287,16 +303,8 @@ public class IdealRfCavity extends ElementSeq  implements IRfCavity {
      */
     @Override
     public void propagate(IProbe probe) throws ModelException {
-        
-        // This is the non-preferred way to do things - modeling elements 
-        //  should not modify probes.  But right now I need to get my foot
-        //  into this RF cavity door.
-        //  TODO : modify this to conform to the Element/Algorithm/Probe design
-//        probe.setLongitudinalPhase( this.getPhase() );
-        
-        // This action is okay - it distributes parameters to the child
-        //  modeling ELEMENTS of this cavity.  We are not acting on the
-        //  probe component.
+        // It distributes parameters to the child modeling ELEMENTS of this cavity. 
+        // We are not acting on the probe component.
         this.distributeCavityProperties();
         this.distributeCellIndices();
         
