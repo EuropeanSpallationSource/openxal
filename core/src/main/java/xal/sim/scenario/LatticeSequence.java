@@ -121,10 +121,7 @@ public class LatticeSequence extends LatticeElement implements Iterable<LatticeE
      * </p>
      *
      * @param smfSeqRoot    top level associated hardware accelerator sequence
-     * @param mapNodeToElem the mapping of SMF hardware nodes to modeling element class types  
-//     * @param dblPos        position of the accelerator sequence within parent (if applicable)
-//     * @param clsSeq        class type of the modeling element used to represent the hardware
-//     * @param indOrgPos     index of the sequence within its parent sequence (if applicable)
+     * @param mapNodeToElem the mapping of SMF hardware nodes to modeling element class types
      *
      * @since  Dec 8, 2014  @author Christopher K. Allen
      */
@@ -415,34 +412,6 @@ public class LatticeSequence extends LatticeElement implements Iterable<LatticeE
 
         return mdlSeq;
     }
-
-//    /**
-//     *
-//     * @see xal.sim.scenario.LatticeElement#createModelingElement()
-//     *
-//     * @author Christopher K. Allen
-//     * @since  Dec 9, 2014
-//     */
-//    @Deprecated
-//    @Override
-//    public IComposite createModelingElement() throws ModelException {
-//
-//        Class<? extends IComposite> clsSeq = this.getModelingClass();
-//        try {
-//            IComposite modSeq = clsSeq.newInstance();        
-//            modSeq.initializeFrom(this);
-//
-//            return modSeq;
-//        } catch (InstantiationException | IllegalAccessException e) {
-//            String  strMsg  = "Exception while instantiating class " + 
-//                    clsSeq.getName() +
-//                    " for node " + 
-//                    this.getHardwareNode().getId();
-//
-//            throw new ModelException(strMsg, e);
-//        }
-//    }
-
     
     /*
      * Object Overrides
@@ -458,7 +427,7 @@ public class LatticeSequence extends LatticeElement implements Iterable<LatticeE
      */
     @Override
     public String toString() {
-        StringBuffer    bufOutput = new StringBuffer();
+        StringBuilder bufOutput = new StringBuilder();
 
         bufOutput.append(super.toString());
         bufOutput.append('\n');
@@ -520,24 +489,17 @@ public class LatticeSequence extends LatticeElement implements Iterable<LatticeE
         //  since users do not have access to the sub-lattice constructor
         IComposite mdlSeq = this.createModelElements(mgrSync);
         
-//        // Identify the first gaps in any RF Cavity and sub-cavities, then do any
-//        //  processing as necessary.  Right now this method does nothing since the
-//        //  only action, setting the isFirstGap flag, is accomplished via the XDXF
-//        //  configuration file.
-//        this.markFirstCavityGap(mdlSeq);
-        
         return mdlSeq;
     }
     
     /**
-     * Creates the actual model lattice object from the given element sequence.
-     * Some of the cursory fields of the lattice are populated.
-     * 
-     * @param modSeqRoot    primary modeling element sequence
-     * 
-     * @return              model lattice object containing the given root sequence
+     * Creates the actual model lattice object from the given element
+     * sequence.Some of the cursory fields of the lattice are populated.
      *
-     * @since  Jan 20, 2015   by Christopher K. Allen
+     *
+     * @return model lattice object containing the given root sequence
+     *
+     * @since Jan 20, 2015 by Christopher K. Allen
      */
     protected Lattice createParentLattice() {
         
@@ -597,17 +559,7 @@ public class LatticeSequence extends LatticeElement implements Iterable<LatticeE
         int     indSeqPosition = 0;                        // used to record original position 
         double  dblLenSeq   = smfSeqRoot.getLength(); // workaround for sequences that don't have length set
                                                         //  This is also the location of the sequence end marker
-        
-        // The returned modeling element sequence
-//        String                      strSeqId  = smfSeqParent.getId();
-//        double                      dblSeqPos = smfSeqParent.getParent().getPosition(smfSeqParent);  
-//        Class<? extends IComposite> clsSeqTyp = this.mapNodeToMdl.getModelSequenceType(smfSeqParent);
-//
-//        LatticeSequence latSeqParent = new LatticeSequence(smfSeqParent, dblSeqPos, clsSeqTyp, 0);
-        
-        
-
-        
+                                                        
         // Now we generate lattice association objects for every hardware node 
         //  (including sequences) in the accelerator sequence which is marked as 
         //  having good status.
@@ -806,7 +758,7 @@ public class LatticeSequence extends LatticeElement implements Iterable<LatticeE
      */
     private void placeOrphanedElements() {
 
-        List<LatticeElement>    lstElemsToRemove = new LinkedList<LatticeElement>();
+        List<LatticeElement>    lstElemsToRemove = new LinkedList<>();
         
         // Now check if any of my children are actually grand children
         for (LatticeSequence lsqChild : this.getSubSequences()) 
@@ -830,10 +782,6 @@ public class LatticeSequence extends LatticeElement implements Iterable<LatticeE
 
         // Remove all the lattice elements that have been moved to my child sequences
         this.removeAllLatticeElements(lstElemsToRemove);
-        
-//        // Now we recursively call this method on all my child sequences.
-//        for (LatticeSequence lsqChild : this.getSubSequences())
-//            lsqChild.placeOrphanedElements();
     }
     
     /**
@@ -1048,10 +996,8 @@ public class LatticeSequence extends LatticeElement implements Iterable<LatticeE
         //
 
         // Running position of the last processed element
-//        double dblPosLast = this.getStartPosition();
         double dblPosLast = 0.0;
 
-        //        double position = smfAccelSeq.getPosition(); // always 0.0
         // Running count of the number of drift spaces
         int cntDrifts = 1;
 
@@ -1072,22 +1018,6 @@ public class LatticeSequence extends LatticeElement implements Iterable<LatticeE
             if (dblLenDrift > EPS) { 
                 this.createAndAppendDrift(cntDrifts, dblLenDrift, mdlSeqRoot);
                 cntDrifts++;
-                
-//                // Create the drift element identifier string
-//                String       strDriftId = "DR" + (++cntDrifts);
-//
-//                // If this lattice sequence represents an RF cavity we need an RF cavity drift
-//                if (this.isRfCavity()) {
-//                    IComponent mdlDrift = this.mapNodeToMdl.createRfCavityDrift(strDriftId, dblLenDrift, this.dblCavFreq, this.dblCavMode);
-//
-//                    mdlSeqRoot.addChild(mdlDrift);
-//
-//                    // Else we use a regular drift space
-//                } else {
-//                    IComponent   modDrift   = this.mapNodeToMdl.createDefaultDrift(strDriftId, dblLenDrift);
-//
-//                    mdlSeqRoot.addChild(modDrift);
-//                }
             }
 
             // Fetch the associated hardware node of the current element for later use 
@@ -1105,14 +1035,7 @@ public class LatticeSequence extends LatticeElement implements Iterable<LatticeE
                 IComposite mdlSeqChild = latSeqCurr.createModelElements(mgrSync);
 
                 mdlSeqRoot.addChild(mdlSeqChild);
-//                mgrSync.synchronize((IComposite)mdlSeqChild, smfNodeCurr);
-
-//                if (mdlSeqChild instanceof IElement) 
-//                    syncMgr.synchronize((IElement) mdlSeqChild, smfNodeCurr);
-//                
-//                if (mdlSeqChild instanceof IComposite)
-//                    syncMgr.synchronize((IComposite)mdlSeqChild, smfNodeCurr);
-//                
+                mgrSync.synchronize(mdlSeqChild, smfNodeCurr);
 
                 // Advance the position of the last processed element
                 dblPosLast = latSeqCurr.getEndPosition();
@@ -1148,54 +1071,6 @@ public class LatticeSequence extends LatticeElement implements Iterable<LatticeE
         
         return mdlSeqRoot;
     }
-
-//    /**
-//     * <p>
-//     * Currently this method is just a skeleton, it is nothing but a placeholder for 
-//     * future modifications and upgrades.
-//     * </p>
-//     * <p>  
-//     * In many modeling applications it
-//     * is necessary to identify the first gap in an RF cavity in order to synchronize
-//     * incoming particle phases.  At the moment there is a flag in the Open XAL 
-//     * XDXF configuration file that identifies a gap as the first gap in a cavity.
-//     * This flag is not needed since it is self evident which gap is first simply by
-//     * its position within the cavity.  This method can identify first gaps and do
-//     * whatever processing is necessary.
-//     * </p>
-//     *  
-//     * @param mdlSec    model sequence object to process RF Cavity first gaps
-//     *
-//     * @since  Dec 15, 2014   @author Christopher K. Allen
-//     * @deprecated  The first gap in any cavity does not need a special flag, you can
-//     *              identify it as the first cavity in the sequence (i.e., by it's index).
-//     */
-//    @Deprecated
-//    private void markFirstCavityGap(IComposite mdlSec) {
-//
-//        // We are going to search every direct child element of this model sequence
-//        Iterator<IComponent>    iterElems = mdlSec.localIterator();
-//        while ( iterElems.hasNext() ) {
-//            IComponent mdlElem = iterElems.next();
-//            
-//            // If we find a composite element then we must check all of its elements (recursively)
-//            if ( mdlElem instanceof IComposite ) {
-//                IComposite  mdlComp = (IComposite)mdlElem;
-//                
-//                this.markFirstCavityGap( mdlComp );
-//                
-//            // We have found an RF gap, and it must be the first one because
-//            //  we have not returned yet
-//            } else if ( mdlElem instanceof IdealRfGap ) {
-//                IdealRfGap  mdlFirstRfGap = (IdealRfGap)mdlElem;
-//
-//                // TODO: Do something necessary with the first gap
-//                // mdlFirstRfGap.set
-//                return;
-//            }
-//        }
-//    }
-
 
     //
     // These methods are called by the support methods above

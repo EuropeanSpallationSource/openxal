@@ -435,7 +435,7 @@ public class ModelProxy {
 			checkLattice();
 			checkProbe();
 			AcceleratorNode node = scenario.nodeWithId(id);
-			Element elem = (Element) scenario.elementsMappedTo(node).get(0);
+			Element elem = (Element) scenario.componentsMappedTo(node).get(0);
 			String latticeElementId = elem.getId();
 			state = scenario.trajectoryStatesForElement(latticeElementId).get(0);
 		} catch (LatticeError e) {
