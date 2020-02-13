@@ -9,12 +9,10 @@ import java.util.logging.Logger;
 
 import xal.sim.scenario.Scenario;
 import xal.sim.scenario.ModelInput;
-import xal.sim.sync.SynchronizationManager;
 import xal.smf.AcceleratorNode;
 import xal.smf.impl.Electromagnet;
 import xal.smf.impl.PermanentMagnet;
 import xal.smf.impl.RfCavity;
-import xal.smf.impl.RfGap;
 import xal.ca.*;
 
 
@@ -26,7 +24,7 @@ public class PrimaryPropertyAccessor {
 	private static final boolean DEBUG = false;
 	
 	// key = accelerator node, value = list of inputs for that node
-	private Map<AcceleratorNode,Map<String,ModelInput>> nodeInputMap = new HashMap<AcceleratorNode,Map<String,ModelInput>>();
+	private Map<AcceleratorNode,Map<String,ModelInput>> nodeInputMap = new HashMap<>();
 	
 	/** cache of values (excluding model inputs) for node properties keyed by node and the subsequent map is keyed by property to get the value */
 	final private Map<AcceleratorNode, Map<String,Double>> PROPERTY_VALUE_CACHE;
@@ -37,7 +35,7 @@ public class PrimaryPropertyAccessor {
 	
 	/** Constructor */
 	public PrimaryPropertyAccessor() {
-		PROPERTY_VALUE_CACHE = new HashMap<AcceleratorNode, Map<String,Double>>();
+		PROPERTY_VALUE_CACHE = new HashMap<>();
 		_batchAccessor = BatchPropertyAccessor.getInstance( Scenario.SYNC_MODE_DESIGN );
 	}
 
@@ -51,11 +49,10 @@ public class PrimaryPropertyAccessor {
 
 	
 	/**
-	 * Returns a Map of property values for the supplied node.  The map's keys are the property names as defined by the node class' propertyNames
-	 * method, values are the Double value for that property on aNode.
+	 * Returns a Map of property values for the supplied node.The map's keys are the property names as defined by the node class' propertyNames
+ method, values are the Double value for that property on aNode.
 	 * @param objNode the AcclereatorNode whose properties to return
 	 * @return a Map of node property values
-	 * @throws ProxyException if the node's accessor encounters an error getting a property value
 	 */
 	public Map<String,Double> valueMapFor( final Object objNode ) {
 		if ( (objNode == null) ) {
@@ -150,61 +147,13 @@ public class PrimaryPropertyAccessor {
 		ModelInput existingInput = getInput( aNode, property );
 		if (existingInput != null) {
 			existingInput.setDoubleValue(val);
-			if ( aNode instanceof RfCavity )  applyModelInputToRFGaps( (RfCavity)aNode, property, val );
 			return existingInput;
 		} else {
 			ModelInput input = new ModelInput( aNode, property, val );
 			addInput(input);
-			if ( aNode instanceof RfCavity )  applyModelInputToRFGaps( (RfCavity)aNode, property, val );
 			return input;
 		}
 	}
-	
-	
-	/**
-	 * Workaround to address a bug in the way that cavities are handled.  Whenever a cavity 
-	 * input is changed its RF Gaps must be changed accordingly.
-	 * @param cavity the cavity whose inputs are being set
-	 * @param property the cavity's property being changed
-	 * @param value the new value of the cavity's property
-	 */
-	private void applyModelInputToRFGaps( final RfCavity cavity, final String property, final double value ) {
-		if ( property.equals( RfCavityPropertyAccessor.PROPERTY_PHASE ) ) {
-			applyCavityPhaseToRFGaps( cavity, value );
-		}
-		else if ( property.equals( RfCavityPropertyAccessor.PROPERTY_AMPLITUDE ) ) {
-			applyCavityAmplitudeToRFGaps( cavity, value );
-		}
-	}
-	
-	
-	/**
-	 * Workaround to address a bug in the way that cavities are handled.  Whenever a cavity's amplitude 
-	 * input is changed its RF Gaps must be changed accordingly.
-	 * @param cavity the cavity whose inputs are being set
-	 * @param cavityAmp the new value of the cavity's amplitude
-	 */
-	private void applyCavityAmplitudeToRFGaps( final RfCavity cavity, final double cavityAmp ) {
-		for ( final RfGap gap : cavity.getGaps() ) {
-			final double gapAmp = gap.toGapAmpFromCavityAmp( cavityAmp );
-			setModelInput( gap, RfGapPropertyAccessor.PROPERTY_E0, RfGapPropertyAccessor.SCALE_E0 * gapAmp );
-			setModelInput( gap, RfGapPropertyAccessor.PROPERTY_ETL, RfGapPropertyAccessor.SCALE_ETL * gap.toE0TLFromGapField( gapAmp ) );
-		}
-	}
-	
-	
-	/**
-	 * Workaround to address a bug in the way that cavities are handled.  Whenever a cavity's phase 
-	 * input is changed its RF Gaps must be changed accordingly.
-	 * @param cavity the cavity whose inputs are being set
-	 * @param cavityPhase the new value of the cavity's phase
-	 */
-	private void applyCavityPhaseToRFGaps( final RfCavity cavity, final double cavityPhase ) {
-		for ( final RfGap gap : cavity.getGaps() ) {
-			setModelInput( gap, RfGapPropertyAccessor.PROPERTY_PHASE, RfGapPropertyAccessor.SCALE_PHASE * gap.toGapPhaseFromCavityPhase( cavityPhase ) );
-		}
-	}	
-	
 	
 	/**
 	 * Returns the ModelInput for the specified node's property, or null if there
@@ -222,7 +171,7 @@ public class PrimaryPropertyAccessor {
 		final AcceleratorNode node = anInput.getAcceleratorNode();
 		Map<String,ModelInput> inputs = inputsForNode(node);
 		if (inputs == null) {
-			inputs = new HashMap<String,ModelInput>();
+			inputs = new HashMap<>();
 			nodeInputMap.put( node, inputs );
 		}
 		inputs.put( anInput.getProperty(), anInput );		
@@ -233,46 +182,7 @@ public class PrimaryPropertyAccessor {
 		final Map<String,ModelInput> inputs = inputsForNode(aNode);
 		if ( inputs != null ) {
 			inputs.remove( property );
-			if ( aNode instanceof RfCavity )  removeRFCavityGapInputs( (RfCavity)aNode, property );
 		}
-	}
-	
-	
-	/**
-	 * Workaround to remove the cavity's associated gap inputs.
-	 * @param cavity the cavity for which to remove the input
-	 * @param property the property whose input is to be removed
-	 */
-	private void removeRFCavityGapInputs( final RfCavity cavity, final String property ) {
-		if ( property.equals( RfCavityPropertyAccessor.PROPERTY_PHASE ) ) {
-			removeRFCavityGapPhaseInputs( cavity );
-		}
-		else if ( property.equals( RfCavityPropertyAccessor.PROPERTY_AMPLITUDE ) ) {
-			removeRFCavityGapAmplitudeInputs( cavity );
-		}		
-	}
-	
-	
-	/**
-	 * Workaround to remove an RF cavity's gap phase inputs.
-	 * @param cavity the cavity for which to remove the gap's inputs
-	 */
-	private void removeRFCavityGapPhaseInputs( final RfCavity cavity ) {
-		for ( final RfGap gap : cavity.getGaps() ) {
-			removeInput( gap, RfGapPropertyAccessor.PROPERTY_PHASE );
-		}		
-	}
-	
-	
-	/**
-	 * Workaround to remove an RF cavity's gap amplitude inputs.
-	 * @param cavity the cavity for which to remove the gap's inputs
-	 */
-	private void removeRFCavityGapAmplitudeInputs( final RfCavity cavity ) {
-		for ( final RfGap gap : cavity.getGaps() ) {
-			removeInput( gap, RfGapPropertyAccessor.PROPERTY_E0 );
-			removeInput( gap, RfGapPropertyAccessor.PROPERTY_ETL );
-		}		
 	}
 	
 	
@@ -307,7 +217,6 @@ abstract class BatchPropertyAccessor {
 	static {
 		// Accessor Registration
 		registerAccessorInstance( Electromagnet.class, new ElectromagnetPropertyAccessor() );
-		registerAccessorInstance( RfGap.class, new RfGapPropertyAccessor() );
 		registerAccessorInstance( RfCavity.class, new RfCavityPropertyAccessor() );
 		registerAccessorInstance( PermanentMagnet.class, new PermanentMagnetPropertyAccessor() );
 	}
@@ -390,6 +299,7 @@ abstract class BatchPropertyAccessor {
 /** Accessor for property values in batch */
 class DesignBatchPropertyAccessor extends BatchPropertyAccessor {
 	/** make the request for values for the specified nodes */
+        @Override
 	public void requestValuesForNodes( final Collection<AcceleratorNode> nodes ) {}
 
 
@@ -398,6 +308,7 @@ class DesignBatchPropertyAccessor extends BatchPropertyAccessor {
 	 * @param node the AcclereatorNode whose properties to return
 	 * @return a Map of node property values
 	 */
+        @Override
 	public Map<String,Double> valueMapFor( final AcceleratorNode node ) {
 		final PropertyAccessor accessor = getAccessorFor( node );
 		return accessor.getDesignValueMap( node );
