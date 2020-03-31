@@ -120,8 +120,9 @@
                     </execution>
                     <execution>
                         <id>Publish_targz_and_apps</id>
+                        <phase>deploy</phase>
                         <goals>
-                            <goal>publish</goal>
+                            <goal>publish2</goal>
                         </goals>
                         <configuration>
                             <publisher>
