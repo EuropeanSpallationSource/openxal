@@ -113,7 +113,8 @@
                                 <password>${artifactory.password}</password>
                                 <repoKey>libs-release-local</repoKey>
                                 <snapshotRepoKey>libs-snapshot-local</snapshotRepoKey>
-                                <!--<excludePatterns>**app/*-${revision}.jar,**dis/*-${revision}.tar.gz</excludePatterns>-->
+                                <includePatterns>**</includePatterns>
+                                <excludePatterns>**app/*-${revision}.jar,**dist/*-${revision}.tar.gz</excludePatterns>
                             </publisher>
                         </configuration>
                     </execution>
@@ -129,7 +130,8 @@
                                 <password>${artifactory.password}</password>
                                 <repoKey>OpenXAL/release</repoKey>
                                 <snapshotRepoKey>OpenXAL/snapshot</snapshotRepoKey>
-                                <includePatterns>**app/*-${revision}.jar,**dist/*-${revision}.tar.gz</includePatterns>
+                                <includePatterns>**app/*-${revision}.jar,**dist/*.tar.gz</includePatterns>
+                                <excludePatterns></excludePatterns>
                             </publisher>
                         </configuration>
                     </execution>
