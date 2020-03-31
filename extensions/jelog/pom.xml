@@ -20,9 +20,8 @@
          
     <dependencies>
         <dependency>
-            <groupId>se.esss</groupId>
+            <groupId>eu.ess</groupId>
             <artifactId>jelog</artifactId>
-            <version>1.5</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>

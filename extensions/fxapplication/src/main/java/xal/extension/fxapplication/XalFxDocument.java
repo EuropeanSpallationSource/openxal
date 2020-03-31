@@ -18,8 +18,8 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
-import se.esss.jelog.Attachment;
-import xal.extension.jelog.PostEntryDialog;
+import eu.ess.jelog.Attachment;
+import xal.extension.jelog.XALPostEntryDialog;
 import xal.smf.Accelerator;
 
 
@@ -130,10 +130,10 @@ abstract public class XalFxDocument {
             List<Attachment> attachments = new ArrayList<>();
             if (docType.equals("image")) {
                 attachments.add(new Attachment("screenshot.png", mainStage.getScene().snapshot(null)));
-                PostEntryDialog.post(attachments, "Studies");
+                XALPostEntryDialog.post(attachments, "Studies");
             } else if (docType.equals("file") && sourceSetAndValid()) {
                 attachments.add(new Attachment(new File(source.getPath())));
-                PostEntryDialog.post(attachments, "Studies");
+                XALPostEntryDialog.post(attachments, "Studies");
             } else if (docType.equals("file") && !sourceSetAndValid()) {
                 Alert alert = new Alert(AlertType.WARNING);
                 alert.setTitle("Error");

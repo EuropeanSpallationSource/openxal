@@ -18,28 +18,23 @@
 package xal.extension.jelog;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
-import se.esss.jelog.Attachment;
-import se.esss.jelog.Jelog;
+import eu.ess.jelog.Attachment;
+import eu.ess.jelog.Jelog;
 
 /**
  * Class to submit new entries without a GUI. Useful for applications that
  * require to log some data regularly in an automatic manner.
  *
- * @author Juan F. Esteban Müller <juanf.estebanmuller@esss.se>
+ * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
  */
 public class PostEntry {
 
     private static String elogServer = null;
 
     public static final Logger LOGGER = Logger.getLogger(PostEntry.class.getName());
-
-    public static String getElogServer() {
-        return elogServer;
-    }
 
     public static void setElogServer(String elogServer) {
         PostEntry.elogServer = elogServer;
@@ -50,30 +45,18 @@ public class PostEntry {
     }
 
     public static int post(HashMap<String, String> fields, String textBody, String logbook, List<Attachment> attachments) throws IOException, Exception {
-        Jelog.setTrustAllCerts();
-
         if (elogServer == null) {
             elogServer = ElogServer.getElogURL();
         }
+        
+        Jelog jelog = new Jelog(elogServer);
 
-        String[] credentials = Jelog.retrieveUsernameAndPassword(new URL(new URL(elogServer), logbook).toString());
-
-        if (credentials[0] == null) {
+        if (jelog.getUserName() == null) {
             LOGGER.severe("Not logged in. Please log in using the login() method.");
         }
 
-        String author = credentials[0];
-        String userName = credentials[1];
-        String userPasswordHash = credentials[2];
-
-        System.out.println(author);
-
-        // Creates a new field for the author or overwrite the existing one with
-        // the user's name returned from elog.
-        fields.replace("Author", author);
-
-        return Jelog.submit(fields, textBody, null, attachments,
-                logbook, elogServer, userName, userPasswordHash);
+        return jelog.submit(fields, textBody, null, attachments,
+                logbook);
     }
 
     /**
@@ -86,13 +69,8 @@ public class PostEntry {
      * @throws Exception
      */
     public static boolean login(String user, char[] password) throws IOException, Exception {
-        Jelog.setTrustAllCerts();
-
-        Jelog.login(user, password, true, elogServer);
-
-        String logbook = Jelog.getLogbooks(new URL(new URL(elogServer), Jelog.getLogbooks(elogServer).get(0)).toString()).get(0);
-        String[] credentials = Jelog.retrieveUsernameAndPassword(new URL(new URL(elogServer), logbook).toString());
-
-        return credentials[0] != null;
+        Jelog jelog = new Jelog(elogServer);
+    
+        return jelog.login(user, password, true);
     }
 }
