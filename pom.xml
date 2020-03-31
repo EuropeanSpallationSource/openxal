@@ -102,6 +102,22 @@
                 <inherited>false</inherited>
                 <executions>
                     <execution>
+                        <id>Publish_source_and_metadata</id>
+                        <goals>
+                            <goal>publish</goal>
+                        </goals>
+                        <configuration>
+                            <publisher>
+                                <contextUrl>${artifactory.url}</contextUrl>
+                                <username>${artifactory.username}</username>
+                                <password>${artifactory.password}</password>
+                                <repoKey>libs-release-local</repoKey>
+                                <snapshotRepoKey>libs-snapshot-local</snapshotRepoKey>
+                                <!--<excludePatterns>**app/*-${revision}.jar,**dis/*-${revision}.tar.gz</excludePatterns>-->
+                            </publisher>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>Publish_jars</id>
                         <goals>
                             <goal>publish</goal>
@@ -114,22 +130,6 @@
                                 <repoKey>OpenXAL/release</repoKey>
                                 <snapshotRepoKey>OpenXAL/snapshot</snapshotRepoKey>
                                 <includePatterns>**app/*-${revision}.jar,**dis/*-${revision}.tar.gz</includePatterns>
-                            </publisher>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>Publish_source_and_metadata</id>
-                        <goals>
-                            <goal>publish</goal>
-                        </goals>
-                        <configuration>
-                            <publisher>
-                                <contextUrl>${artifactory.url}</contextUrl>
-                                <username>${artifactory.username}</username>
-                                <password>${artifactory.password}</password>
-                                <repoKey>libs-release-local</repoKey>
-                                <snapshotRepoKey>libs-snapshot-local</snapshotRepoKey>
-                                <excludePatterns>**app/*-${revision}.jar,**dis/*-${revision}.tar.gz</excludePatterns>
                             </publisher>
                         </configuration>
                     </execution>
