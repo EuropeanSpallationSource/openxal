@@ -114,12 +114,12 @@
                                 <repoKey>libs-release-local</repoKey>
                                 <snapshotRepoKey>libs-snapshot-local</snapshotRepoKey>
                                 <includePatterns>**</includePatterns>
-                                <excludePatterns>**app/*-${revision}.jar,**dist/*-${revision}.tar.gz</excludePatterns>
+                                <excludePatterns>**app/*-${revision}.jar,**dist/*.tar.gz</excludePatterns>
                             </publisher>
                         </configuration>
                     </execution>
                     <execution>
-                        <id>Publish_jars</id>
+                        <id>Publish_targz_and_apps</id>
                         <goals>
                             <goal>publish</goal>
                         </goals>
@@ -131,7 +131,7 @@
                                 <repoKey>OpenXAL/release</repoKey>
                                 <snapshotRepoKey>OpenXAL/snapshot</snapshotRepoKey>
                                 <includePatterns>**app/*-${revision}.jar,**dist/*.tar.gz</includePatterns>
-                                <excludePatterns></excludePatterns>
+                                <excludePatterns>**</excludePatterns>
                             </publisher>
                         </configuration>
                     </execution>

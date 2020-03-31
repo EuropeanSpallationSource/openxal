@@ -76,16 +76,16 @@ publish.maven:
         - site.ess.stable@ess-crs/openxal
         - site.ess.master@ess-crs/openxal
 
-pages:
-    <<: *maven
-    script:
-        - 'mvn $MAVEN_CLI_OPTS javadoc:aggregate'
-        - 'mvn $MAVEN_CLI_OPTS jacoco:report-aggregate'
-        - 'mv report/target/site/jacoco-aggregate target/site/apidocs/coverage'
-        - 'mv target/site/apidocs public'
-    artifacts:
-        paths:
-            - public
-    only:
-        - site.ess.stable
-        - site.ess.master
+#pages:
+#    <<: *maven
+#    script:
+#        - 'mvn $MAVEN_CLI_OPTS javadoc:aggregate'
+#        - 'mvn $MAVEN_CLI_OPTS jacoco:report-aggregate'
+#        - 'mv report/target/site/jacoco-aggregate target/site/apidocs/coverage'
+#        - 'mv target/site/apidocs public'
+#    artifacts:
+#        paths:
+#            - public
+#    only:
+#        - site.ess.stable
+#        - site.ess.master
