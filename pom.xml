@@ -129,7 +129,7 @@
                                 <password>${artifactory.password}</password>
                                 <repoKey>OpenXAL/release</repoKey>
                                 <snapshotRepoKey>OpenXAL/snapshot</snapshotRepoKey>
-                                <includePatterns>**app/*-${revision}.jar,**dis/*-${revision}.tar.gz</includePatterns>
+                                <includePatterns>**app/*-${revision}.jar,**dist/*-${revision}.tar.gz</includePatterns>
                             </publisher>
                         </configuration>
                     </execution>
