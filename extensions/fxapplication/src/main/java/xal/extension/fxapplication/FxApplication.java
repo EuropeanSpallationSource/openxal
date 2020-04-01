@@ -168,7 +168,7 @@ abstract public class FxApplication extends Application {
         loadAcceleratorMenu.setOnAction(new LoadAcceleratorMenu(DOCUMENT));
         acceleratorMenu.getItems().addAll(loadDefaultAcceleratorMenu, loadAcceleratorMenu);
         final Menu sequenceMenu = new Menu("Sequence");
-        
+
         if (HAS_SEQUENCE && DOCUMENT.accelerator.getAccelerator() != null) {
             buildSequenceMenu(DOCUMENT.accelerator.getAccelerator(), sequenceMenu, groupSequence);
             acceleratorMenu.getItems().addAll(new SeparatorMenuItem(), sequenceMenu);
@@ -204,10 +204,16 @@ abstract public class FxApplication extends Application {
                 int menu_num = sequenceMenu.getItems().size() - 1;
                 sequenceMenu.getItems().remove(0, menu_num);
                 groupSequence.getToggles().clear();
-                buildSequenceMenu(DOCUMENT.accelerator.getAccelerator(), sequenceMenu, groupSequence);                
-                Logger.getLogger(FxApplication.class.getName()).log(Level.INFO, "Rebuilding Sequence Menu.");                
-            }            
+                buildSequenceMenu(DOCUMENT.accelerator.getAccelerator(), sequenceMenu, groupSequence);
+                Logger.getLogger(FxApplication.class.getName()).log(Level.INFO, "Rebuilding Sequence Menu.");
+            }
         });
+
+        // display the menu bar at the top of the screen consistent with the Mac look and feel
+        final String os = System.getProperty("os.name");
+        if (os != null && os.startsWith("Mac")) {
+            MENU_BAR.useSystemMenuBarProperty().set(true);
+        }
 
         registerApplicationStatusService();
 
@@ -280,15 +286,13 @@ abstract public class FxApplication extends Application {
         if (shouldRegister.booleanValue()) {
             try {
                 ServiceDirectory.defaultDirectory().registerService(ApplicationStatus.class, STAGE_TITLE, new FxApplicationStatusService(this));
-                System.out.println("Registered application services...");
-                Logger.getLogger("xal.extension.fxapplication").log(Level.INFO, "Registered application services...");
+                Logger.getLogger(FxApplication.class.getName()).log(Level.INFO, "Registered application services...");
             } catch (ServiceException exception) {
                 System.err.println("Service registration failed due to " + exception);
-                Logger.getLogger("xal.extension.fxapplication").log(Level.SEVERE, "Service registration failed...", exception);
+                Logger.getLogger(FxApplication.class.getName()).log(Level.SEVERE, "Service registration failed due to ", exception);
             }
         } else {
             Logger.getLogger("global").log(Level.CONFIG, "Application services disabled.");
-            System.out.println("Application services not registerd because of startup flag...");
         }
     }
 
@@ -427,7 +431,7 @@ class ExitMenu implements EventHandler {
     @Override
     public void handle(Event t) {
         Logger.getLogger(ExitMenu.class.getName()).log(Level.INFO, "Exit button clicked");
-        System.exit(0);
+        Platform.exit();
     }
 }
 
