@@ -102,28 +102,6 @@
                 <inherited>false</inherited>
                 <executions>
                     <execution>
-                        <id>Publish_source_and_metadata</id>
-                        <goals>
-                            <goal>publish</goal>
-                        </goals>
-                        <configuration>
-                            <publisher>
-                                <contextUrl>${artifactory.url}</contextUrl>
-                                <username>${artifactory.username}</username>
-                                <password>${artifactory.password}</password>
-                                <repoKey>libs-release-local</repoKey>
-                                <snapshotRepoKey>libs-snapshot-local</snapshotRepoKey>
-                                <includePatterns>**</includePatterns>
-                                <excludePatterns>**app/*-${revision}.jar,**dist/*.tar.gz</excludePatterns>
-                            </publisher>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>Publish_targz_and_apps</id>
-                        <phase>deploy</phase>
-                        <goals>
-                            <goal>publish2</goal>
-                        </goals>
                         <configuration>
                             <publisher>
                                 <contextUrl>${artifactory.url}</contextUrl>
@@ -131,8 +109,8 @@
                                 <password>${artifactory.password}</password>
                                 <repoKey>OpenXAL/release</repoKey>
                                 <snapshotRepoKey>OpenXAL/snapshot</snapshotRepoKey>
-                                <includePatterns>**app/*-${revision}.jar,**dist/*.tar.gz</includePatterns>
-                                <excludePatterns>**</excludePatterns>
+                                <includePatterns>**openxal-${revision}.pom,**app/**,**app.**,**library**,**third-party-libs**,**dist**</includePatterns>
+                                <excludePatterns>**-tests.jar</excludePatterns>
                             </publisher>
                         </configuration>
                     </execution>
