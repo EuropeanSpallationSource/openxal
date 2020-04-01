@@ -99,7 +99,7 @@
                 <groupId>org.jfrog.buildinfo</groupId>
                 <artifactId>artifactory-maven-plugin</artifactId>
                 <version>2.7.0</version>
-                <inherited>false</inherited>
+                <inherited>true</inherited>
                 <executions>
                     <execution>                        
                         <goals>
