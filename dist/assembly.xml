@@ -7,6 +7,7 @@
     </formats>
     
     <includeBaseDirectory/>
+    <baseDirectory>${parent.artifactId}-${parent.version}</baseDirectory>
     
     <!-- Files to include -->
     <files>
