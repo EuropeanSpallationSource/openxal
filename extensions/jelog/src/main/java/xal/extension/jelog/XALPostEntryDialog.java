@@ -26,7 +26,8 @@ import javafx.util.Pair;
 /**
  * Class to submit new entries using a JavaFX dialog. Useful for logging data
  * together with some files or images attached directly from an Open XAL
- * application.
+ * application. It is basically a wrapper around PostEntryDialog to set the
+ * default ESS elog server address and the CKEditor path.
  *
  * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
  */
@@ -52,7 +53,7 @@ public class XALPostEntryDialog {
         ckeditorPath = ckeditorPath.substring(0, ckeditorPath.lastIndexOf('/'));
         ckeditorPath += "/html/ckeditor.html";
         System.setProperty("eu.ess.jelog.ckeditor_path", ckeditorPath);
-        
+
         PostEntryDialog.setElogServer(ElogServer.getElogURL());
 
         PostEntryDialog.post(attachments, defaultLogbook, defaultAttributes);

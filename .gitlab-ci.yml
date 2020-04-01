@@ -26,6 +26,7 @@ build.maven:
             - "*/target/test-classes"
             - "*/*/target/test-classes"
             - "*/*/*/target/test-classes"
+            - "dist/target/*.tar.gz"
 
 
 # .maventest: &maventest
