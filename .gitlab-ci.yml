@@ -29,50 +29,60 @@ build.maven:
             - "dist/target/*.tar.gz"
 
 
-# .maventest: &maventest
-#     <<: *maven
-#     stage: test
-#     script:
-#         - 'cd $SUBDIR'
-#         - 'mvn $MAVEN_CLI_OPTS verify -Dmaven.javadoc.skip=true -fn | tee std.out'
-#         - '! grep "Build failures were ignored" std.out'
-#     artifacts:
-#         paths:
-#             - "$SUBDIR/target/surefire-reports/TEST-*.xml"
-#             - "$SUBDIR/*/target/surefire-reports/TEST-*.xml"
-#             - "$SUBDIR/target/jacoco.exec"
-#             - "$SUBDIR/*/target/jacoco.exec"
-#         reports:
-#             junit:
-#                 - "$SUBDIR/target/surefire-reports/TEST-*.xml"
-#                 - "$SUBDIR/*/target/surefire-reports/TEST-*.xml"
-# 
-# test.maven.core:
-#     <<: *maventest
-#     variables:
-#         SUBDIR: 'test'
-# test.maven.extensions:
-#     <<: *maventest
-#     variables:
-#         SUBDIR: 'extensions'
-# test.maven.plugins:
-#     <<: *maventest
-#     variables:
-#         SUBDIR: 'plugins'
-# 
-# sonarqube.maven:
-#     <<: *maven
-#     stage: deploy
-#     script:
-#         - 'mvn $MAVEN_CLI_OPTS -Dsonar.login=$SONARQUBE_TOKEN -Dsonar.branch.name=$CI_COMMIT_REF_NAME -Dsonar.junit.reportPaths=target/surefire-reports -Dsonar.jacoco.reportPaths="target/jacoco.exec, ../test/target/jacoco.exec" sonar:sonar'
-#     only:
-#         - branches@ess-crs/openxal
+.maventest: &maventest
+    <<: *maven
+    stage: test
+    script:
+        - 'cd $SUBDIR'
+        - 'mvn $MAVEN_CLI_OPTS verify -Dmaven.javadoc.skip=true -fn | tee std.out'
+        - '! grep "Build failures were ignored" std.out'
+    artifacts:
+        paths:
+            - "$SUBDIR/target/surefire-reports/TEST-*.xml"
+            - "$SUBDIR/*/target/surefire-reports/TEST-*.xml"
+            - "$SUBDIR/target/jacoco.exec"
+            - "$SUBDIR/*/target/jacoco.exec"
+        reports:
+            junit:
+                - "$SUBDIR/target/surefire-reports/TEST-*.xml"
+                - "$SUBDIR/*/target/surefire-reports/TEST-*.xml"
+
+test.maven.core:
+    <<: *maventest
+    variables:
+        SUBDIR: 'test'
+test.maven.extensions:
+    <<: *maventest
+    variables:
+        SUBDIR: 'extensions'
+test.maven.plugins:
+    <<: *maventest
+    variables:
+        SUBDIR: 'plugins'
+
+sonarqube.maven:
+    <<: *maven
+    stage: deploy
+    script:
+        - 'mvn $MAVEN_CLI_OPTS -Dsonar.login=$SONARQUBE_TOKEN -Dsonar.branch.name=$CI_COMMIT_REF_NAME -Dsonar.junit.reportPaths=target/surefire-reports -Dsonar.jacoco.reportPaths="target/jacoco.exec, ../test/target/jacoco.exec" sonar:sonar'
+    only:
+        - branches@ess-crs/openxal
 
 publish.maven:
     <<: *maven
     stage: deploy
     script:
-        # - 'mvn $MAVEN_CLI_OPTS deploy -DskipTests -Dmaven.javadoc.skip=true -Dartifactory.username=${ARTIFACTORY_USERNAME} -Dartifactory.password=${ARTIFACTORY_PASSWORD}'
+        - 'mvn $MAVEN_CLI_OPTS deploy -DskipTests -Dmaven.javadoc.skip=true -Dartifactory.username=${ARTIFACTORY_USERNAME} -Dartifactory.password=${ARTIFACTORY_PASSWORD}'
+        
+    only:
+        - site.ess.stable@ess-crs/openxal
+        - site.ess.master@ess-crs/openxal
+
+
+publish.artifactory:
+    <<: *maven
+    stage: deploy
+    script:
         - 'VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)'
         - 'if [[ $VERSION == *"SNAPSHOT" ]]; then REPO="snapshot"; else REPO="release"; fi'
         - 'cd dist/target'
@@ -83,16 +93,16 @@ publish.maven:
         - site.ess.stable@ess-crs/openxal
         - site.ess.master@ess-crs/openxal
 
-# pages:
-#     <<: *maven
-#     script:
-#         - 'mvn $MAVEN_CLI_OPTS javadoc:aggregate'
-#         - 'mvn $MAVEN_CLI_OPTS jacoco:report-aggregate'
-#         - 'mv report/target/site/jacoco-aggregate target/site/apidocs/coverage'
-#         - 'mv target/site/apidocs public'
-#     artifacts:
-#         paths:
-#             - public
-#     only:
-#         - site.ess.stable
-#         - site.ess.master
+pages:
+    <<: *maven
+    script:
+        - 'mvn $MAVEN_CLI_OPTS javadoc:aggregate'
+        - 'mvn $MAVEN_CLI_OPTS jacoco:report-aggregate'
+        - 'mv report/target/site/jacoco-aggregate target/site/apidocs/coverage'
+        - 'mv target/site/apidocs public'
+    artifacts:
+        paths:
+            - public
+    only:
+        - site.ess.stable
+        - site.ess.master
