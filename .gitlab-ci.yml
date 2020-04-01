@@ -71,11 +71,12 @@ publish.maven:
     <<: *maven
     stage: deploy
     script:
-        - 'mvn $MAVEN_CLI_OPTS deploy -DskipTests -Dmaven.javadoc.skip=true -Dartifactory.username=${ARTIFACTORY_USERNAME} -Dartifactory.password=${ARTIFACTORY_PASSWORD}'
+        # - 'mvn $MAVEN_CLI_OPTS deploy -DskipTests -Dmaven.javadoc.skip=true -Dartifactory.username=${ARTIFACTORY_USERNAME} -Dartifactory.password=${ARTIFACTORY_PASSWORD}'
         - 'VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)'
         - 'if [[ $VERSION == *"SNAPSHOT" ]]; then REPO="snapshot"; else REPO="release"; fi'
-        - 'jfrog rt config artifactory --url=${ARTIFACTORY_URL} --user=${ARTIFACTORY_USERNAME} --password=${ARTIFACTORY_PASSWORD}'
-        - 'jfrog rt upload "dist/target/*.tar.gz" OpenXAL/$REPO/org/xal/openxal.dist/$VERSION/'
+        - 'cd dist/target'
+        - 'TARBALL=$(find * -name "*.tar.gz")'
+        - 'curl -u ${ARTIFACTORY_USERNAME}:${ARTIFACTORY_PASSWORD} -X PUT "${ARTIFACTORY_URL}/OpenXAL/$REPO/org/xal/openxal.dist/$VERSION/$TARBALL" -T $TARBALL'
 
     only:
         - site.ess.stable@ess-crs/openxal
