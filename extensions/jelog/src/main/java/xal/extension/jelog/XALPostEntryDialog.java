@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.List;
 import eu.ess.jelog.Attachment;
 import eu.ess.jelog.PostEntryDialog;
+import javafx.stage.Stage;
 import javafx.util.Pair;
 
 /**
@@ -33,19 +34,19 @@ import javafx.util.Pair;
  */
 public class XALPostEntryDialog {
 
-    public static void post(Pair<String, String>... defaultAttributes) throws IOException, Exception {
-        post(null, null, defaultAttributes);
+    public static Stage post(Pair<String, String>... defaultAttributes) throws IOException, Exception {
+        return post(null, null, defaultAttributes);
     }
 
-    public static void post(String defaultLogbook, Pair<String, String>... defaultAttributes) throws IOException, Exception {
-        post(null, defaultLogbook, defaultAttributes);
+    public static Stage post(String defaultLogbook, Pair<String, String>... defaultAttributes) throws IOException, Exception {
+        return post(null, defaultLogbook, defaultAttributes);
     }
 
-    public static void post(List<Attachment> attachments, Pair<String, String>... defaultAttributes) throws IOException, Exception {
-        post(attachments, null, defaultAttributes);
+    public static Stage post(List<Attachment> attachments, Pair<String, String>... defaultAttributes) throws IOException, Exception {
+        return post(attachments, null, defaultAttributes);
     }
 
-    public static void post(List<Attachment> attachments, String defaultLogbook, Pair<String, String>... defaultAttributes) throws IOException, Exception {
+    public static Stage post(List<Attachment> attachments, String defaultLogbook, Pair<String, String>... defaultAttributes) throws IOException, Exception {
         // Trick to locate CKEditor files. Only works on LCR-type installations, where
         // the html folder is located next to the library.jar file.
         String ckeditorPath = PostEntryDialog.class.getResource("PostEntryDialog.class").toExternalForm();
@@ -56,6 +57,6 @@ public class XALPostEntryDialog {
 
         PostEntryDialog.setElogServer(ElogServer.getElogURL());
 
-        PostEntryDialog.post(attachments, defaultLogbook, defaultAttributes);
+        return PostEntryDialog.post(attachments, defaultLogbook, defaultAttributes);
     }
 }
