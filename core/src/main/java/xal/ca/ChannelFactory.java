@@ -8,8 +8,9 @@ package xal.ca;
 
 import xal.tools.transforms.ValueTransform;
 
-import java.util.*;
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -33,7 +34,7 @@ abstract public class ChannelFactory {
     
     /** Creates a new instance of ChannelFactory */
     protected ChannelFactory() {
-        CHANNEL_MAP = new Hashtable<String,Channel>();
+        CHANNEL_MAP = new HashMap<>();
     }
 	
 	
@@ -52,13 +53,13 @@ abstract public class ChannelFactory {
      */
     public Channel getChannel( final String signalName ) {
         Channel channel;
-        
-        if ( !CHANNEL_MAP.containsKey( signalName ) ) {
-            channel = newChannel( signalName );
-            CHANNEL_MAP.put( signalName, channel );
-        }
-        else {
-            channel = CHANNEL_MAP.get( signalName );
+        synchronized (CHANNEL_MAP) {
+            if (!CHANNEL_MAP.containsKey(signalName)) {
+                channel = newChannel(signalName);
+                CHANNEL_MAP.put(signalName, channel);
+            } else {
+                channel = CHANNEL_MAP.get(signalName);
+            }
         }
         
         return channel;
@@ -73,15 +74,16 @@ abstract public class ChannelFactory {
      * @return The channel corresponding to the signal name
      */
     public Channel getChannel( final String signalName, final ValueTransform transform ) {
-		final String channelID = Channel.generateId( signalName,  transform );
-		if ( !CHANNEL_MAP.containsKey( channelID ) ) {
-            final Channel channel = newChannel( signalName, transform );
-            CHANNEL_MAP.put( channelID, channel );
-			return channel;
-        }
-        else {
-            final Channel channel = CHANNEL_MAP.get( channelID );
-			return channel;
+        final String channelID = Channel.generateId(signalName, transform);
+        synchronized (CHANNEL_MAP) {
+            if (!CHANNEL_MAP.containsKey(channelID)) {
+                final Channel channel = newChannel(signalName, transform);
+                CHANNEL_MAP.put(channelID, channel);
+                return channel;
+            } else {
+                final Channel channel = CHANNEL_MAP.get(channelID);
+                return channel;
+            }
         }
     }
     
