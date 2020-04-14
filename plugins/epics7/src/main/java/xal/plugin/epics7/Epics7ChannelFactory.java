@@ -27,12 +27,22 @@ import xal.ca.ChannelSystem;
  */
 public class Epics7ChannelFactory extends ChannelFactory {
 
+    // EPICS7 channel system
+    private final Epics7ChannelSystem CHANNEL_SYSTEM;
+
     public Epics7ChannelFactory() {
+        CHANNEL_SYSTEM = new Epics7ChannelSystem();
     }
 
+    /**
+     * This method does not perform any action, it only returns true if the
+     * system has been initialized.
+     *
+     * @return
+     */
     @Override
     public boolean init() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return CHANNEL_SYSTEM.isInitialized();
     }
 
     @Override
@@ -49,5 +59,5 @@ public class Epics7ChannelFactory extends ChannelFactory {
     public void printInfo() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
 }

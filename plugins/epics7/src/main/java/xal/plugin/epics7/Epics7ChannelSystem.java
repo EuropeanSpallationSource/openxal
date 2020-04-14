@@ -17,6 +17,9 @@
  */
 package xal.plugin.epics7;
 
+import java.util.logging.Logger;
+import org.epics.pvaccess.client.ChannelProvider;
+import org.epics.pvaccess.client.ChannelProviderRegistryFactory;
 import xal.ca.ChannelSystem;
 
 /**
@@ -24,6 +27,28 @@ import xal.ca.ChannelSystem;
  * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
  */
 public class Epics7ChannelSystem extends ChannelSystem {
+
+    private final ChannelProvider caChannelProvider;
+    private final ChannelProvider pvaChannelProvider;
+    private volatile boolean initialized = false;
+
+    protected Epics7ChannelSystem() {
+        // Initialising channel providers for both EPICS protocols.
+        org.epics.ca.ClientFactory.start();
+        org.epics.pvaccess.ClientFactory.start();
+
+        // Try to get the channel providers.
+        caChannelProvider = ChannelProviderRegistryFactory.getChannelProviderRegistry().getProvider("ca");
+        pvaChannelProvider = ChannelProviderRegistryFactory.getChannelProviderRegistry().getProvider("pva");
+
+        if (caChannelProvider == null) {
+            Logger.getLogger(Epics7ChannelSystem.class.getName(), "Channel Access provider could not be created.");
+        } else if (pvaChannelProvider != null) {
+            Logger.getLogger(Epics7ChannelSystem.class.getName(), "PV Access provider could not be created.");
+        } else {
+            initialized = true;
+        }
+    }
 
     @Override
     public void setDebugMode(boolean debugFlag) {
@@ -49,5 +74,9 @@ public class Epics7ChannelSystem extends ChannelSystem {
     public void printInfo() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
+    protected boolean isInitialized() {
+        return initialized;
+    }
+
 }
