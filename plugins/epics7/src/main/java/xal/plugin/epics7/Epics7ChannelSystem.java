@@ -23,7 +23,6 @@ import org.epics.pvaccess.client.ChannelProviderRegistryFactory;
 import xal.ca.ChannelSystem;
 
 /**
- *
  * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
  */
 public class Epics7ChannelSystem extends ChannelSystem {
@@ -31,6 +30,14 @@ public class Epics7ChannelSystem extends ChannelSystem {
     private final ChannelProvider caChannelProvider;
     private final ChannelProvider pvaChannelProvider;
     private volatile boolean initialized = false;
+
+    protected ChannelProvider getCaChannelProvider() {
+        return caChannelProvider;
+    }
+
+    protected ChannelProvider getPvaChannelProvider() {
+        return pvaChannelProvider;
+    }
 
     protected Epics7ChannelSystem() {
         // Initialising channel providers for both EPICS protocols.
@@ -43,7 +50,7 @@ public class Epics7ChannelSystem extends ChannelSystem {
 
         if (caChannelProvider == null) {
             Logger.getLogger(Epics7ChannelSystem.class.getName(), "Channel Access provider could not be created.");
-        } else if (pvaChannelProvider != null) {
+        } else if (pvaChannelProvider == null) {
             Logger.getLogger(Epics7ChannelSystem.class.getName(), "PV Access provider could not be created.");
         } else {
             initialized = true;
@@ -79,4 +86,8 @@ public class Epics7ChannelSystem extends ChannelSystem {
         return initialized;
     }
 
+    public void dispose() {
+        org.epics.ca.ClientFactory.stop();
+        org.epics.pvaccess.ClientFactory.stop();
+    }
 }

@@ -22,6 +22,10 @@ import xal.ca.ChannelFactory;
 import xal.ca.ChannelSystem;
 
 /**
+ * NOTE: previous implementations kept a cache of native channels, but that is
+ * not required since ChannelFactory keeps a list of Open XAL Channels, which
+ * can create only 1 native channel each. TODO: test if it works when connecting
+ * to 2 different fields of the same PV.
  *
  * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
  */
@@ -45,19 +49,27 @@ public class Epics7ChannelFactory extends ChannelFactory {
         return CHANNEL_SYSTEM.isInitialized();
     }
 
-    @Override
-    protected Channel newChannel(String signalName) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void dispose() {
+        CHANNEL_SYSTEM.dispose();
     }
 
     @Override
+    protected Channel newChannel(String signalName) {
+        return new Epics7Channel(signalName, CHANNEL_SYSTEM);
+    }
+
+    /**
+     * This implementation does not use a ChannelSystem.
+     *
+     * @return
+     */
+    @Override
     protected ChannelSystem channelSystem() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return null;
     }
 
     @Override
     public void printInfo() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        System.out.println("Using EPICS7 Open XAL plugin.");
     }
-
 }

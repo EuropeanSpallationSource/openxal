@@ -17,7 +17,15 @@
  */
 package xal.plugin.epics7;
 
-import xal.ca.Channel;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.epics.pvaccess.client.Channel;
+import org.epics.pvaccess.client.ChannelProvider;
+import org.epics.pvaccess.client.ChannelRequester;
+import org.epics.pvdata.pv.MessageType;
+import org.epics.pvdata.pv.Status;
 import xal.ca.ChannelRecord;
 import xal.ca.ChannelStatusRecord;
 import xal.ca.ChannelTimeRecord;
@@ -32,25 +40,151 @@ import xal.ca.PutException;
 import xal.ca.PutListener;
 
 /**
+ * This {@link xal.ca.Channel} implementation can connect to ChannelAccess or PV Access. If the
+ * PV signal starts with 'ca://', it will only connect to CA; if it starts with
+ * 'pva://', it will only connect to PVA; otherwise it tries to connect to both
+ * and uses the protocol that replies first.
  *
  * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
  */
-public class Epics7Channel extends Channel {
+public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
+
+    private final Epics7ChannelSystem CHANNEL_SYSTEM;
+
+    private volatile Channel caChannel;
+    private volatile Channel pvaChannel;
+    private volatile Channel nativeChannel;
+
+    private final Object connectionLock = new Object();
+
+    private CountDownLatch connectionLatch;
+
+    private static final String CA_PREFIX = "ca://";
+    private static final String PVA_PREFIX = "pva://";
+
+    Epics7Channel(String signalName, Epics7ChannelSystem CHANNEL_SYSTEM) {
+        super(signalName);
+
+        this.CHANNEL_SYSTEM = CHANNEL_SYSTEM;
+    }
 
     @Override
     public boolean connectAndWait(double timeout) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (connectionLatch == null || connectionLatch.getCount() == 0) {
+            requestConnection();
+
+            try {
+                connectionLatch.await((long) timeout, TimeUnit.SECONDS);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Epics7Channel.class
+                        .getName()).log(Level.INFO, null, ex);
+            }
+
+        }
+        return isConnected();
     }
 
     @Override
     public void requestConnection() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        connectionLatch = new CountDownLatch(1);
+
+        if (!m_strId.startsWith(CA_PREFIX)) {
+            synchronized (connectionLock) {
+                pvaChannel = CHANNEL_SYSTEM.getPvaChannelProvider().createChannel(
+                        m_strId.startsWith(PVA_PREFIX) ? m_strId.substring(PVA_PREFIX.length()) : m_strId, this, ChannelProvider.PRIORITY_DEFAULT);
+            }
+        }
+        if (!m_strId.startsWith(PVA_PREFIX)) {
+            synchronized (connectionLock) {
+                caChannel = CHANNEL_SYSTEM.getCaChannelProvider().createChannel(
+                        m_strId.startsWith(CA_PREFIX) ? m_strId.substring(CA_PREFIX.length()) : m_strId, this, ChannelProvider.PRIORITY_DEFAULT);
+            }
+        }
+
     }
 
     @Override
     public void disconnect() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (caChannel != null) {
+            synchronized (connectionLock) {
+                caChannel.destroy();
+            }
+        }
+        if (pvaChannel != null) {
+            synchronized (connectionLock) {
+                pvaChannel.destroy();
+            }
+        }
+        nativeChannel = null;
+        connectionFlag = false;
     }
+
+    //--------------- Implementing Channel Requester abstract methods ------------------
+    @Override
+    public void channelStateChange(Channel chnl, Channel.ConnectionState cs) {
+        if (cs == Channel.ConnectionState.CONNECTED) {
+            // If the other channel is connected, destroy the channel that invoked this method.
+            // Otherwise, use use it.
+            synchronized (connectionLock) {
+                if (chnl == caChannel) {
+                    if (connectionFlag) {
+                        if (caChannel != null) {
+                            caChannel.destroy();
+                        }
+                        return;
+                    } else {
+                        nativeChannel = caChannel;
+                    }
+                } else if (chnl == pvaChannel) {
+                    if (connectionFlag) {
+                        if (pvaChannel != null) {
+                            pvaChannel.destroy();
+                        }
+                        return;
+                    } else {
+                        nativeChannel = pvaChannel;
+                    }
+                } else {
+                    throw new RuntimeException();
+                }
+            }
+            // Notify listeners.
+            if (connectionProxy != null) {
+                connectionProxy.connectionMade(this);
+            }
+
+            connectionFlag = true;
+
+            // Releasing the connection latch.
+            connectionLatch.countDown();
+        } else if (cs == Channel.ConnectionState.DISCONNECTED && chnl == nativeChannel) {
+            // Notify listeners if the channel that is in used is disconnected.
+            if (connectionProxy != null) {
+                connectionProxy.connectionDropped(this);
+            }
+            connectionFlag = false;
+        }
+    }
+
+    @Override
+    public String getRequesterName() {
+        if (nativeChannel != null) {
+            return nativeChannel.getRequesterName();
+        }
+        return null;
+    }
+
+    @Override
+    public void channelCreated(Status status, Channel chnl) {
+        Logger.getLogger(Epics7Channel.class.getName()).log(Level.INFO, "{0} provider created a channel: {1}", new Object[]{chnl.getProvider().getProviderName(), chnl.getChannelName()});
+    }
+
+    @Override
+    public void message(String message, MessageType mt) {
+        Logger.getLogger(Epics7Channel.class.getName()).log(Level.INFO, message);
+//        Logger.getLogger(Epics7Channel.class.getName()).log(Level.INFO, "Channel {0} received the following message:\n{1}", new Object[]{nativeChannel.getChannelName(), message});
+    }
+    //---------------------------------------------------------------------------------
 
     @Override
     public Class<?> elementType() throws ConnectionException {
@@ -251,5 +385,4 @@ public class Epics7Channel extends Channel {
     public void putRawValCallback(double[] newVal, PutListener listener) throws ConnectionException, PutException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
 }
