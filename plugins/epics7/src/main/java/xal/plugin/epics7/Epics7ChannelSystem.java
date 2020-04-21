@@ -44,6 +44,18 @@ public class Epics7ChannelSystem extends ChannelSystem {
         org.epics.ca.ClientFactory.start();
         org.epics.pvaccess.ClientFactory.start();
 
+        // Create shutdown hook to close the resource when calling System.exit() or 
+        // if the process is terminated.
+        // TODO: check whether this is needed, e.g., monitors are stopped without this?
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                dispose();
+            }
+        });
+        t.setDaemon(false);
+        Runtime.getRuntime().addShutdownHook(t);
+
         // Try to get the channel providers.
         caChannelProvider = ChannelProviderRegistryFactory.getChannelProviderRegistry().getProvider("ca");
         pvaChannelProvider = ChannelProviderRegistryFactory.getChannelProviderRegistry().getProvider("pva");
@@ -79,7 +91,7 @@ public class Epics7ChannelSystem extends ChannelSystem {
 
     @Override
     public void printInfo() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        System.out.println("Epics7ChannelSystem: using EPICS7 Open XAL plugin.");
     }
 
     protected boolean isInitialized() {

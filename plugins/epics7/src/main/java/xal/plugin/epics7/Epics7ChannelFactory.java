@@ -65,19 +65,14 @@ public class Epics7ChannelFactory extends ChannelFactory {
         return new Epics7Channel(signalName, CHANNEL_SYSTEM);
     }
 
-    /**
-     * This implementation does not use a ChannelSystem.
-     *
-     * @return
-     */
     @Override
     protected ChannelSystem channelSystem() {
-        return null;
+        return CHANNEL_SYSTEM;
     }
 
     @Override
     public void printInfo() {
-        System.out.println("Using EPICS7 Open XAL plugin.");
+        System.out.println("Epics7ChannelFactory: using EPICS7 Open XAL plugin.");
     }
 
     /**
