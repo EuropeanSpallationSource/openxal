@@ -22,10 +22,16 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.epics.pvaccess.client.Channel;
+import org.epics.pvaccess.client.ChannelGet;
+import org.epics.pvaccess.client.ChannelGetRequester;
 import org.epics.pvaccess.client.ChannelProvider;
 import org.epics.pvaccess.client.ChannelRequester;
+import org.epics.pvdata.copy.CreateRequest;
+import org.epics.pvdata.misc.BitSet;
 import org.epics.pvdata.pv.MessageType;
+import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.Status;
+import org.epics.pvdata.pv.Structure;
 import xal.ca.ChannelRecord;
 import xal.ca.ChannelStatusRecord;
 import xal.ca.ChannelTimeRecord;
@@ -38,18 +44,30 @@ import xal.ca.Monitor;
 import xal.ca.MonitorException;
 import xal.ca.PutException;
 import xal.ca.PutListener;
+import xal.tools.apputils.Preferences;
 
 /**
- * This {@link xal.ca.Channel} implementation can connect to ChannelAccess or PV Access. If the
- * PV signal starts with 'ca://', it will only connect to CA; if it starts with
- * 'pva://', it will only connect to PVA; otherwise it tries to connect to both
- * and uses the protocol that replies first.
+ * This {@link xal.ca.Channel} implementation can connect to ChannelAccess or PV
+ * Access. If the PV signal starts with 'ca://', it will only connect to CA; if
+ * it starts with 'pva://', it will only connect to PVA; otherwise it tries to
+ * connect to both and uses the protocol that replies first.
  *
  * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
  */
 public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
 
     private final Epics7ChannelSystem CHANNEL_SYSTEM;
+
+    //  Constants
+    public static final double C_DBL_DEF_TIME_IO = 5.0;       // default pend IO timeout
+    public static final double C_DBL_DEF_TIME_EVENT = 0.1;    // default pend event timeout
+
+    // Property names
+    private static final String DEF_TIME_IO = "c_dblDefTimeIO";
+    private static final String DEF_TIME_EVENT = "c_dblDefTimeEvent";
+
+    private static final String CA_PREFIX = "ca://";
+    private static final String PVA_PREFIX = "pva://";
 
     private volatile Channel caChannel;
     private volatile Channel pvaChannel;
@@ -59,48 +77,52 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
 
     private CountDownLatch connectionLatch;
 
-    private static final String CA_PREFIX = "ca://";
-    private static final String PVA_PREFIX = "pva://";
-
     Epics7Channel(String signalName, Epics7ChannelSystem CHANNEL_SYSTEM) {
         super(signalName);
 
         this.CHANNEL_SYSTEM = CHANNEL_SYSTEM;
+
+        // Load default timeouts from preferences if available, otherwise use hardcoded values.
+        java.util.prefs.Preferences defaults = Preferences.nodeForPackage(xal.ca.Channel.class);
+        m_dblTmIO = defaults.getDouble(DEF_TIME_IO, C_DBL_DEF_TIME_IO);
+        m_dblTmEvt = defaults.getDouble(DEF_TIME_EVENT, C_DBL_DEF_TIME_EVENT);
     }
 
     @Override
     public boolean connectAndWait(double timeout) {
-        if (connectionLatch == null || connectionLatch.getCount() == 0) {
-            requestConnection();
+        requestConnection();
 
+        // If not connected, wait for timeout.
+        if (!isConnected()) {
             try {
                 connectionLatch.await((long) timeout, TimeUnit.SECONDS);
             } catch (InterruptedException ex) {
                 Logger.getLogger(Epics7Channel.class
                         .getName()).log(Level.INFO, null, ex);
             }
-
         }
         return isConnected();
     }
 
     @Override
     public void requestConnection() {
-        connectionLatch = new CountDownLatch(1);
+        // Only request a new connection if not done previously.
+        if (!isConnected() && connectionLatch == null) {
+            connectionLatch = new CountDownLatch(1);
 
-        if (!m_strId.startsWith(CA_PREFIX)) {
-            synchronized (connectionLock) {
-                pvaChannel = CHANNEL_SYSTEM.getPvaChannelProvider().createChannel(
-                        m_strId.startsWith(PVA_PREFIX) ? m_strId.substring(PVA_PREFIX.length()) : m_strId, this, ChannelProvider.PRIORITY_DEFAULT);
+            if (!m_strId.startsWith(CA_PREFIX)) {
+                synchronized (connectionLock) {
+                    pvaChannel = CHANNEL_SYSTEM.getPvaChannelProvider().createChannel(
+                            m_strId.startsWith(PVA_PREFIX) ? m_strId.substring(PVA_PREFIX.length()) : m_strId, this, ChannelProvider.PRIORITY_DEFAULT);
+                }
+            }
+            if (!m_strId.startsWith(PVA_PREFIX)) {
+                synchronized (connectionLock) {
+                    caChannel = CHANNEL_SYSTEM.getCaChannelProvider().createChannel(
+                            m_strId.startsWith(CA_PREFIX) ? m_strId.substring(CA_PREFIX.length()) : m_strId, this, ChannelProvider.PRIORITY_DEFAULT);
+                }
             }
         }
-        if (!m_strId.startsWith(PVA_PREFIX)) {
-            synchronized (connectionLock) {
-                caChannel = CHANNEL_SYSTEM.getCaChannelProvider().createChannel(
-                        m_strId.startsWith(CA_PREFIX) ? m_strId.substring(CA_PREFIX.length()) : m_strId, this, ChannelProvider.PRIORITY_DEFAULT);
-            }
-        }
-
     }
 
     @Override
@@ -119,7 +141,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
         connectionFlag = false;
     }
 
-    //--------------- Implementing Channel Requester abstract methods ------------------
+    //---------------- Implementing ChannelRequester abstract methods ------------------
     @Override
     public void channelStateChange(Channel chnl, Channel.ConnectionState cs) {
         if (cs == Channel.ConnectionState.CONNECTED) {
@@ -167,6 +189,12 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     }
 
     @Override
+    public void channelCreated(Status status, Channel chnl) {
+        Logger.getLogger(Epics7Channel.class.getName()).log(Level.INFO, "{0} provider created a channel: {1}", new Object[]{chnl.getProvider().getProviderName(), chnl.getChannelName()});
+    }
+
+    //------------------- Implementing Requester abstract methods ----------------------
+    @Override
     public String getRequesterName() {
         if (nativeChannel != null) {
             return nativeChannel.getRequesterName();
@@ -175,14 +203,8 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     }
 
     @Override
-    public void channelCreated(Status status, Channel chnl) {
-        Logger.getLogger(Epics7Channel.class.getName()).log(Level.INFO, "{0} provider created a channel: {1}", new Object[]{chnl.getProvider().getProviderName(), chnl.getChannelName()});
-    }
-
-    @Override
     public void message(String message, MessageType mt) {
         Logger.getLogger(Epics7Channel.class.getName()).log(Level.INFO, message);
-//        Logger.getLogger(Epics7Channel.class.getName()).log(Level.INFO, "Channel {0} received the following message:\n{1}", new Object[]{nativeChannel.getChannelName(), message});
     }
     //---------------------------------------------------------------------------------
 
@@ -273,7 +295,38 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
 
     @Override
     public ChannelRecord getRawValueRecord() throws ConnectionException, GetException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        CountDownLatch doneSignal = new CountDownLatch(1);
+
+        GetListener listener = new GetListener(doneSignal);
+
+        getRawValueCallback(listener);
+
+        try {
+            doneSignal.await((long) m_dblTmIO, TimeUnit.SECONDS);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Epics7Channel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return listener.getRecord();
+    }
+
+    @Override
+    protected void getRawValueCallback(IEventSinkValue listener) throws ConnectionException, GetException {
+        ChannelGetRequesterImpl channelGetRequester = new ChannelGetRequesterImpl(this, listener);
+
+        CreateRequest createRequest = CreateRequest.create();
+        PVStructure pvRequest = createRequest.createRequest("value");
+        if (pvRequest != null) {
+            nativeChannel.createChannelGet(channelGetRequester, pvRequest);
+        }
+    }
+
+    @Override
+    protected void getRawValueCallback(IEventSinkValue listener, boolean attemptConnection) throws ConnectionException, GetException {
+        if (attemptConnection) {
+            connectAndWait();
+        }
+        getRawValueCallback(listener);
     }
 
     @Override
@@ -298,16 +351,6 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
 
     @Override
     public ChannelTimeRecord getRawTimeRecord() throws ConnectionException, GetException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    protected void getRawValueCallback(IEventSinkValue listener) throws ConnectionException, GetException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    protected void getRawValueCallback(IEventSinkValue listener, boolean attemptConnection) throws ConnectionException, GetException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -384,5 +427,57 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     @Override
     public void putRawValCallback(double[] newVal, PutListener listener) throws ConnectionException, PutException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+}
+
+class GetListener implements IEventSinkValue {
+
+    private CountDownLatch doneSignal;
+    private ChannelRecord record;
+
+    public GetListener(CountDownLatch doneSignal) {
+        this.doneSignal = doneSignal;
+    }
+
+    public ChannelRecord getRecord() {
+        return record;
+    }
+
+    @Override
+    public void eventValue(ChannelRecord record, xal.ca.Channel channel) {
+        this.record = record;
+        doneSignal.countDown();
+    }
+}
+
+class ChannelGetRequesterImpl implements ChannelGetRequester {
+
+    private final IEventSinkValue listener;
+    private final xal.ca.Channel channel;
+
+    public ChannelGetRequesterImpl(xal.ca.Channel channel, IEventSinkValue listener) {
+        this.channel = channel;
+        this.listener = listener;
+    }
+
+    @Override
+    public void channelGetConnect(Status status, ChannelGet channelGet, Structure structure) {
+        channelGet.get();
+    }
+
+    @Override
+    public void getDone(Status status, ChannelGet channelGet, PVStructure pvStructure, BitSet bitSet) {
+        ChannelRecord record = null;
+        listener.eventValue(record, channel);
+    }
+
+    @Override
+    public String getRequesterName() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void message(String message, MessageType messageType) {
+        Logger.getLogger(Epics7Channel.class.getName()).log(Level.INFO, message);
     }
 }
