@@ -178,6 +178,17 @@ public class Epics7ChannelFactory extends ChannelFactory {
         maxArrayBytes = Integer.parseInt(getProperty(CAJContext.class.getName() + ".max_array_bytes", String.valueOf(maxArrayBytes), _properties));
         maxSearchInterval = Float.parseFloat(getProperty(CAJContext.class.getName() + ".max_search_interval", String.valueOf(maxSearchInterval), _properties));
 
+        // loa configuration from properties with the same names as the environment variables.
+        addressList = System.getProperty("EPICS_CA_ADDR_LIST", addressList);
+        autoAddressList = Boolean.valueOf(System.getProperty("EPICS_CA_AUTO_ADDR_LIST", String.valueOf(autoAddressList)));
+        nameServersList = System.getProperty("EPICS_CA_NAME_SERVERS", nameServersList);
+        connectionTimeout = Float.parseFloat(System.getProperty("EPICS_CA_CONN_TMO", String.valueOf(connectionTimeout)));
+        beaconPeriod = Float.parseFloat(System.getProperty("EPICS_CA_BEACON_PERIOD", String.valueOf(beaconPeriod)));
+        repeaterPort = Integer.parseInt(System.getProperty("EPICS_CA_REPEATER_PORT", String.valueOf(repeaterPort)));
+        serverPort = Integer.parseInt(System.getProperty("EPICS_CA_SERVER_PORT", String.valueOf(serverPort)));
+        maxArrayBytes = Integer.parseInt(System.getProperty("EPICS_CA_MAX_ARRAY_BYTES", String.valueOf(maxArrayBytes)));
+        maxSearchInterval = Float.parseFloat(System.getProperty("EPICS_CA_MAX_SEARCH_PERIOD", String.valueOf(maxSearchInterval)));
+
         // Finally save the configuration in System properties.   
         System.setProperty(CAJContext.class.getName() + ".addr_list", addressList);
         System.setProperty(CAJContext.class.getName() + ".auto_addr_list", Boolean.toString(autoAddressList));
