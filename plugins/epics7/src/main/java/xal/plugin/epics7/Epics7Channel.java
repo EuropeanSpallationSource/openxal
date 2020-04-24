@@ -65,6 +65,8 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     // Property names
     private static final String DEF_TIME_IO = "c_dblDefTimeIO";
     private static final String DEF_TIME_EVENT = "c_dblDefTimeEvent";
+    
+    private static final String VALUE_FIELD_NAME = "value";
 
     private static final String CA_PREFIX = "ca://";
     private static final String PVA_PREFIX = "pva://";
@@ -295,14 +297,12 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
 
     @Override
     public ChannelRecord getRawValueRecord() throws ConnectionException, GetException {
-        CountDownLatch doneSignal = new CountDownLatch(1);
-
-        GetListener listener = new GetListener(doneSignal);
+        GetListener listener = new GetListener();
 
         getRawValueCallback(listener);
 
         try {
-            doneSignal.await((long) m_dblTmIO, TimeUnit.SECONDS);
+            listener.await((long) m_dblTmIO, TimeUnit.SECONDS);
         } catch (InterruptedException ex) {
             Logger.getLogger(Epics7Channel.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -312,12 +312,14 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
 
     @Override
     protected void getRawValueCallback(IEventSinkValue listener) throws ConnectionException, GetException {
-        ChannelGetRequesterImpl channelGetRequester = new ChannelGetRequesterImpl(this, listener);
+        if (isConnected()) {
+            ChannelGetRequesterImpl channelGetRequester = new ChannelGetRequesterImpl(this, listener);
 
-        CreateRequest createRequest = CreateRequest.create();
-        PVStructure pvRequest = createRequest.createRequest("value");
-        if (pvRequest != null) {
-            nativeChannel.createChannelGet(channelGetRequester, pvRequest);
+            CreateRequest createRequest = CreateRequest.create();
+            PVStructure pvRequest = createRequest.createRequest(VALUE_FIELD_NAME);
+            if (pvRequest != null) {
+                nativeChannel.createChannelGet(channelGetRequester, pvRequest);
+            }
         }
     }
 
@@ -331,7 +333,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
 
     @Override
     protected ChannelRecord getRawStringValueRecord() throws ConnectionException, GetException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return getRawValueRecord();
     }
 
     @Override
@@ -435,8 +437,8 @@ class GetListener implements IEventSinkValue {
     private CountDownLatch doneSignal;
     private ChannelRecord record;
 
-    public GetListener(CountDownLatch doneSignal) {
-        this.doneSignal = doneSignal;
+    public GetListener() {
+        this.doneSignal = new CountDownLatch(1);
     }
 
     public ChannelRecord getRecord() {
@@ -448,12 +450,17 @@ class GetListener implements IEventSinkValue {
         this.record = record;
         doneSignal.countDown();
     }
+
+    public void await(long timeout, TimeUnit unit) throws InterruptedException {
+        doneSignal.await(timeout, unit);
+    }
 }
 
 class ChannelGetRequesterImpl implements ChannelGetRequester {
 
     private final IEventSinkValue listener;
     private final xal.ca.Channel channel;
+    private static final String FIELD_NAME = "value";
 
     public ChannelGetRequesterImpl(xal.ca.Channel channel, IEventSinkValue listener) {
         this.channel = channel;
@@ -467,7 +474,7 @@ class ChannelGetRequesterImpl implements ChannelGetRequester {
 
     @Override
     public void getDone(Status status, ChannelGet channelGet, PVStructure pvStructure, BitSet bitSet) {
-        ChannelRecord record = null;
+        Epics7ChannelRecord record = new Epics7ChannelRecord(pvStructure, channel.channelName(), FIELD_NAME);
         listener.eventValue(record, channel);
     }
 
