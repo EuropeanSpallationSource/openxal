@@ -33,6 +33,7 @@ import org.epics.pvdata.pv.ScalarType;
 import org.epics.pvdata.pv.StringArrayData;
 import org.epics.pvdata.pv.Type;
 import xal.ca.ChannelRecord;
+import xal.ca.ChannelRecordImpl;
 import xal.tools.ArrayValue;
 import xal.tools.transforms.ValueTransform;
 
@@ -43,26 +44,28 @@ import xal.tools.transforms.ValueTransform;
  *
  * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
  */
-public class Epics7ChannelRecord extends ChannelRecord {
+public class Epics7ChannelRecord extends ChannelRecordImpl {
 
     protected PVStructure store;
     protected String channelName;
     protected String fieldName;
 
+    private static final String VALUE_FIELD_NAME = "value";
+
     /**
      * Constructor
      *
      * @param pvStructure
-     * @param fieldName
+     * @param channelName
      */
-    public Epics7ChannelRecord(PVStructure pvStructure, String channelName, String fieldName) {
+    public Epics7ChannelRecord(PVStructure pvStructure, String channelName) {
         super(() -> {
             return null;
         });
 
         store = pvStructure;
         this.channelName = channelName;
-        this.fieldName = fieldName;
+        this.fieldName = VALUE_FIELD_NAME;
     }
 
     /**
@@ -413,11 +416,13 @@ public class Epics7ChannelRecord extends ChannelRecord {
         return null;
     }
 
-    ChannelRecord applyTransform(final ValueTransform transform) throws Exception {
-        throw new Exception("Not implemented in Epics7ChannelRecord.");
+    @Override
+    public ChannelRecord applyTransform(ValueTransform transform) {
+        throw new UnsupportedOperationException("Not implemented in Epics7ChannelRecord."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    ArrayValue arrayValue() throws Exception {
-        throw new Exception("Not implemented in Epics7ChannelRecord. Use Epics7ChannelRecord#getStore() instead.");
+    @Override
+    public ArrayValue arrayValue() {
+        throw new UnsupportedOperationException("Not implemented in Epics7ChannelRecord."); //To change body of generated methods, choose Tools | Templates.
     }
 }
