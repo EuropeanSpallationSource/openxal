@@ -15,21 +15,39 @@ import xal.tools.transforms.ValueTransform;
  *
  * @author tap
  */
-public interface ChannelRecord {
+public class ChannelRecordImpl implements ChannelRecord {
+
+    /**
+     * internal data storage
+     */
+    protected ArrayValue _store;
+
+    /**
+     * Constructor
+     *
+     * @param adaptor from which to generate a record
+     */
+    public ChannelRecordImpl(final ValueAdaptor adaptor) {
+        _store = adaptor.getStore();
+    }
 
     /**
      * Get the number of elements in the array value.
      *
      * @return The length of the array.
      */
-    public int getCount();
+    public int getCount() {
+        return _store.getCount();
+    }
 
     /**
      * Get the native type of the data as a Java class.
      *
      * @return The native type of the data.
      */
-    public Class<?> getType();
+    public Class<?> getType() {
+        return _store.getType();
+    }
 
     /**
      * Get the data converted to a scalar byte. If the data is an array the the
@@ -37,7 +55,9 @@ public interface ChannelRecord {
      *
      * @return The data as a scalar byte.
      */
-    public byte byteValue();
+    public byte byteValue() {
+        return _store.byteValue();
+    }
 
     /**
      * Get the value of the array element identified by the index and convert it
@@ -46,14 +66,18 @@ public interface ChannelRecord {
      * @param index The index of the array element to get.
      * @return The data element at the index as a scalar byte.
      */
-    public byte byteValueAt(int index);
+    public byte byteValueAt(final int index) {
+        return _store.byteValueAt(index);
+    }
 
     /**
      * Get the data converted to a byte array.
      *
      * @return The data as a byte array.
      */
-    public byte[] byteArray();
+    public byte[] byteArray() {
+        return _store.byteArray();
+    }
 
     /**
      * Get the data converted to a scalar short. If the data is an array the the
@@ -61,7 +85,9 @@ public interface ChannelRecord {
      *
      * @return The data as a scalar short.
      */
-    public short shortValue();
+    public short shortValue() {
+        return _store.shortValue();
+    }
 
     /**
      * Get the value of the array element identified by the index and convert it
@@ -70,14 +96,18 @@ public interface ChannelRecord {
      * @param index The index of the array element to get.
      * @return The data element at the index as a scalar short.
      */
-    public short shortValueAt(int index);
+    public short shortValueAt(final int index) {
+        return _store.shortValueAt(index);
+    }
 
     /**
      * Get the data converted to a short array.
      *
      * @return The data as a short array.
      */
-    public short[] shortArray();
+    public short[] shortArray() {
+        return _store.shortArray();
+    }
 
     /**
      * Get the data converted to a scalar int. If the data is an array the the
@@ -85,7 +115,9 @@ public interface ChannelRecord {
      *
      * @return The data as a scalar int.
      */
-    public int intValue();
+    public int intValue() {
+        return _store.intValue();
+    }
 
     /**
      * Get the value of the array element identified by the index and convert it
@@ -94,14 +126,18 @@ public interface ChannelRecord {
      * @param index The index of the array element to get.
      * @return The data element at the index as a scalar int.
      */
-    public int intValueAt(int index);
+    public int intValueAt(final int index) {
+        return _store.intValueAt(index);
+    }
 
     /**
      * Get the data converted to a int array.
      *
      * @return The data as a int array.
      */
-    public int[] intArray();
+    public int[] intArray() {
+        return _store.intArray();
+    }
 
     /**
      * Get the data converted to a scalar float. If the data is an array the the
@@ -109,7 +145,9 @@ public interface ChannelRecord {
      *
      * @return The data as a scalar float.
      */
-    public float floatValue();
+    public float floatValue() {
+        return _store.floatValue();
+    }
 
     /**
      * Get the value of the array element identified by the index and convert it
@@ -118,14 +156,18 @@ public interface ChannelRecord {
      * @param index The index of the array element to get.
      * @return The data element at the index as a scalar float.
      */
-    public float floatValueAt(int index);
+    public float floatValueAt(final int index) {
+        return _store.floatValueAt(index);
+    }
 
     /**
      * Get the data converted to a float array.
      *
      * @return The data as a float array.
      */
-    public float[] floatArray();
+    public float[] floatArray() {
+        return _store.floatArray();
+    }
 
     /**
      * Get the data converted to a scalar double. If the data is an array the
@@ -133,7 +175,9 @@ public interface ChannelRecord {
      *
      * @return The data as a scalar double.
      */
-    public double doubleValue();
+    public double doubleValue() {
+        return _store.doubleValue();
+    }
 
     /**
      * Get the value of the array element identified by the index and convert it
@@ -142,14 +186,18 @@ public interface ChannelRecord {
      * @param index The index of the array element to get.
      * @return The data element at the index as a scalar double.
      */
-    public double doubleValueAt(int index);
+    public double doubleValueAt(final int index) {
+        return _store.doubleValueAt(index);
+    }
 
     /**
      * Get the data converted to a double array.
      *
      * @return The data as a double array.
      */
-    public double[] doubleArray();
+    public double[] doubleArray() {
+        return _store.doubleArray();
+    }
 
     /**
      * Get the data converted to a scalar string. If the data is an array the
@@ -157,7 +205,9 @@ public interface ChannelRecord {
      *
      * @return The data as a scalar string.
      */
-    public String stringValue();
+    public String stringValue() {
+        return _store.stringValue();
+    }
 
     /**
      * Get the value of the array element identified by the index and convert it
@@ -166,21 +216,27 @@ public interface ChannelRecord {
      * @param index The index of the array element to get.
      * @return The data element at the index as a scalar string.
      */
-    public String stringValueAt(int index);
+    public String stringValueAt(final int index) {
+        return _store.stringValueAt(index);
+    }
 
     /**
      * Get the data converted to a string array.
      *
      * @return The data as a string array.
      */
-    public String[] stringArray();
+    public String[] stringArray() {
+        return _store.stringArray();
+    }
 
     /**
      * Override toString to return a representation of the data as an array.
      *
      * @return A string representation of this object.
      */
-    public String toString();
+    public String toString() {
+        return "value: " + _store.toString();
+    }
 
     /**
      * Convert the _store from a raw value to a processed value.
@@ -188,12 +244,17 @@ public interface ChannelRecord {
      * @param transform The transform used to convert the store.
      * @return this instance as a convenience.
      */
-    ChannelRecord applyTransform(ValueTransform transform);
+    public ChannelRecord applyTransform(ValueTransform transform) {
+        _store = transform.convertFromRaw(_store);
+        return this;
+    }
 
     /**
      * Get the internal storage.
      *
      * @return The internal data storage.
      */
-    ArrayValue arrayValue();
+    public ArrayValue arrayValue() {
+        return _store;
+    }
 }

@@ -87,7 +87,7 @@ abstract public class Monitor {
      * @param adaptor The adaptor to the internal data record.
      */
     final protected void postValueRecord(IEventSinkValue listener, ValueAdaptor adaptor) {
-        ChannelRecord record = new ChannelRecord(adaptor);
+        ChannelRecord record = new ChannelRecordImpl(adaptor);
         record.applyTransform( m_xalChan.getValueTransform() );
         listener.eventValue(record, m_xalChan);
     }
@@ -99,7 +99,7 @@ abstract public class Monitor {
      * @param adaptor The adaptor to the internal data record.
      */
     final protected void postStatusRecord(IEventSinkValStatus listener, StatusAdaptor adaptor) {
-        ChannelStatusRecord record = new ChannelStatusRecord(adaptor);
+        ChannelStatusRecord record = new ChannelStatusRecordImpl(adaptor);
         record.applyTransform( m_xalChan.getValueTransform() );
         listener.eventValue(record, m_xalChan);
     }
@@ -111,7 +111,7 @@ abstract public class Monitor {
      * @param adaptor The adaptor to the internal data record.
      */
     final protected void postTimeRecord(IEventSinkValTime listener, TimeAdaptor adaptor) {
-        ChannelTimeRecord record = new ChannelTimeRecord(adaptor);
+        ChannelTimeRecord record = new ChannelTimeRecordImpl(adaptor);
         record.applyTransform( m_xalChan.getValueTransform() );
         listener.eventValue(record, m_xalChan);
     }
