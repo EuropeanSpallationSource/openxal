@@ -66,10 +66,13 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     private static final String DEF_TIME_IO = "c_dblDefTimeIO";
     private static final String DEF_TIME_EVENT = "c_dblDefTimeEvent";
 
-    // Request can contain the following fields: value, alarm, timeStamp, display, control
+    // Request can contain the following fields: value, alarm, timeStamp, display, control, valueAlarm
     static final String VALUE_REQUEST = "value";
     static final String STATUS_REQUEST = "value,alarm";
     static final String TIME_REQUEST = "value,alarm,timeStamp";
+    static final String CONTROL_REQUEST = "control";
+    static final String DISPLAY_REQUEST = "display";
+    static final String VALUE_ALARM_REQUEST = "valueAlarm";
 
     private static final String CA_PREFIX = "ca://";
     private static final String PVA_PREFIX = "pva://";
@@ -233,69 +236,76 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
         return true;
     }
 
+    private PVStructure getControl() throws ConnectionException, GetException {
+        PVStructure pvStructure = get(CONTROL_REQUEST);
+        PVStructure controlStructure = pvStructure.getStructureField(CONTROL_REQUEST);
+        return controlStructure;
+    }
+
+    private PVStructure getDisplay() throws ConnectionException, GetException {
+        PVStructure pvStructure = get(DISPLAY_REQUEST);
+        PVStructure displayStructure = pvStructure.getStructureField(DISPLAY_REQUEST);
+        return displayStructure;
+    }
+
+    private PVStructure getVAlueAlarm() throws ConnectionException, GetException {
+        PVStructure pvStructure = get(VALUE_ALARM_REQUEST);
+        PVStructure displayStructure = pvStructure.getStructureField(VALUE_ALARM_REQUEST);
+        return displayStructure;
+    }
+
     @Override
     public String getUnits() throws ConnectionException, GetException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public String[] getOperationLimitPVs() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public String[] getWarningLimitPVs() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public String[] getAlarmLimitPVs() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public String[] getDriveLimitPVs() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        PVStructure displayStructure = getDisplay();
+        return displayStructure.getStringField("units").get();
     }
 
     @Override
     public Number rawUpperDisplayLimit() throws ConnectionException, GetException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        PVStructure displayStructure = getDisplay();
+        return displayStructure.getDoubleField("limitHigh").get();
     }
 
     @Override
     public Number rawLowerDisplayLimit() throws ConnectionException, GetException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        PVStructure displayStructure = getControl();
+        return displayStructure.getDoubleField("limitLow").get();
     }
 
     @Override
     public Number rawUpperAlarmLimit() throws ConnectionException, GetException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        PVStructure alarmValueStructure = getVAlueAlarm();
+        return alarmValueStructure.getDoubleField("highAlarmLimit").get();
     }
 
     @Override
     public Number rawLowerAlarmLimit() throws ConnectionException, GetException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        PVStructure alarmValueStructure = getVAlueAlarm();
+        return alarmValueStructure.getDoubleField("lowAlarmLimit").get();
     }
 
     @Override
     public Number rawUpperWarningLimit() throws ConnectionException, GetException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        PVStructure alarmValueStructure = getVAlueAlarm();
+        return alarmValueStructure.getDoubleField("highWarningLimit").get();
     }
 
     @Override
     public Number rawLowerWarningLimit() throws ConnectionException, GetException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        PVStructure alarmValueStructure = getVAlueAlarm();
+        return alarmValueStructure.getDoubleField("lowWarningLimit").get();
     }
 
     @Override
     public Number rawUpperControlLimit() throws ConnectionException, GetException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        PVStructure controlStructure = getControl();
+        return controlStructure.getDoubleField("limitHigh").get();
     }
 
     @Override
     public Number rawLowerControlLimit() throws ConnectionException, GetException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        PVStructure controlStructure = getControl();
+        return controlStructure.getDoubleField("limitLow").get();
     }
 
     public PVStructure get(String request, boolean attemptConnection) throws ConnectionException, GetException {
@@ -463,14 +473,29 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    }
-
+    //----------------------------------------------------------------------------------
+    // The following methods are not implemented because they only work with the 
+    // Channel Access protocol.
+    @Override
+    public String[] getOperationLimitPVs() {
+        throw new UnsupportedOperationException("Not supported in EPICS7 (only CA)."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
+    public String[] getWarningLimitPVs() {
+        throw new UnsupportedOperationException("Not supported in EPICS7 (only CA)."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    @Override
+    public String[] getAlarmLimitPVs() {
+        throw new UnsupportedOperationException("Not supported in EPICS7 (only CA)."); //To change body of generated methods, choose Tools | Templates.
     }
+
+    @Override
+    public String[] getDriveLimitPVs() {
+        throw new UnsupportedOperationException("Not supported in EPICS7 (only CA)."); //To change body of generated methods, choose Tools | Templates.
+    }
+    //----------------------------------------------------------------------------------
 }
 
 class ChannelGetRequesterImpl implements ChannelGetRequester {
