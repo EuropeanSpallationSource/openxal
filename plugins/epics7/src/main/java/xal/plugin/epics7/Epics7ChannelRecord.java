@@ -415,10 +415,11 @@ public class Epics7ChannelRecord extends ChannelRecordImpl {
         }
         return null;
     }
-
+    
+    // TODO: implement transformations.
     @Override
     public ChannelRecord applyTransform(ValueTransform transform) {
-        throw new UnsupportedOperationException("Not implemented in Epics7ChannelRecord."); //To change body of generated methods, choose Tools | Templates.
+        return this;
     }
 
     @Override
