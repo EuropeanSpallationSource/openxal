@@ -225,12 +225,12 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
 
     @Override
     public boolean readAccess() throws ConnectionException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return true;
     }
 
     @Override
     public boolean writeAccess() throws ConnectionException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return true;
     }
 
     @Override
