@@ -238,74 +238,122 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
 
     private PVStructure getControl() throws ConnectionException, GetException {
         PVStructure pvStructure = get(CONTROL_REQUEST);
-        PVStructure controlStructure = pvStructure.getStructureField(CONTROL_REQUEST);
-        return controlStructure;
+        if (pvStructure != null) {
+            PVStructure controlStructure = pvStructure.getStructureField(CONTROL_REQUEST);
+            return controlStructure;
+        } else {
+            return null;
+        }
     }
 
     private PVStructure getDisplay() throws ConnectionException, GetException {
         PVStructure pvStructure = get(DISPLAY_REQUEST);
-        PVStructure displayStructure = pvStructure.getStructureField(DISPLAY_REQUEST);
-        return displayStructure;
+        if (pvStructure != null) {
+            PVStructure displayStructure = pvStructure.getStructureField(DISPLAY_REQUEST);
+            return displayStructure;
+        } else {
+            return null;
+        }
     }
 
     private PVStructure getVAlueAlarm() throws ConnectionException, GetException {
         PVStructure pvStructure = get(VALUE_ALARM_REQUEST);
-        PVStructure displayStructure = pvStructure.getStructureField(VALUE_ALARM_REQUEST);
-        return displayStructure;
+        if (pvStructure != null) {
+            PVStructure displayStructure = pvStructure.getStructureField(VALUE_ALARM_REQUEST);
+            return displayStructure;
+        } else {
+            return null;
+        }
     }
 
     @Override
     public String getUnits() throws ConnectionException, GetException {
         PVStructure displayStructure = getDisplay();
-        return displayStructure.getStringField("units").get();
+        if (displayStructure != null) {
+            return displayStructure.getStringField("units").get();
+        } else {
+            throw new GetException("The channel didn't return a \"display\" field.");
+        }
     }
 
     @Override
     public Number rawUpperDisplayLimit() throws ConnectionException, GetException {
         PVStructure displayStructure = getDisplay();
-        return displayStructure.getDoubleField("limitHigh").get();
+        if (displayStructure != null) {
+            return displayStructure.getDoubleField("limitHigh").get();
+        } else {
+            throw new GetException("The channel didn't return a \"display\" field.");
+        }
     }
 
     @Override
     public Number rawLowerDisplayLimit() throws ConnectionException, GetException {
-        PVStructure displayStructure = getControl();
-        return displayStructure.getDoubleField("limitLow").get();
+        PVStructure displayStructure = getDisplay();
+        if (displayStructure != null) {
+            return displayStructure.getDoubleField("limitLow").get();
+        } else {
+            throw new GetException("The channel didn't return a \"display\" field.");
+        }
     }
 
     @Override
     public Number rawUpperAlarmLimit() throws ConnectionException, GetException {
         PVStructure alarmValueStructure = getVAlueAlarm();
-        return alarmValueStructure.getDoubleField("highAlarmLimit").get();
+        if (alarmValueStructure != null) {
+            return alarmValueStructure.getDoubleField("highAlarmLimit").get();
+        } else {
+            throw new GetException("The channel didn't return a \"valueAlarm\" field.");
+        }
     }
 
     @Override
     public Number rawLowerAlarmLimit() throws ConnectionException, GetException {
         PVStructure alarmValueStructure = getVAlueAlarm();
-        return alarmValueStructure.getDoubleField("lowAlarmLimit").get();
+        if (alarmValueStructure != null) {
+            return alarmValueStructure.getDoubleField("lowAlarmLimit").get();
+        } else {
+            throw new GetException("The channel didn't return a \"valueAlarm\" field.");
+        }
     }
 
     @Override
     public Number rawUpperWarningLimit() throws ConnectionException, GetException {
         PVStructure alarmValueStructure = getVAlueAlarm();
-        return alarmValueStructure.getDoubleField("highWarningLimit").get();
+        if (alarmValueStructure != null) {
+            return alarmValueStructure.getDoubleField("highWarningLimit").get();
+        } else {
+            throw new GetException("The channel didn't return a \"valueAlarm\" field.");
+        }
     }
 
     @Override
     public Number rawLowerWarningLimit() throws ConnectionException, GetException {
         PVStructure alarmValueStructure = getVAlueAlarm();
-        return alarmValueStructure.getDoubleField("lowWarningLimit").get();
+        if (alarmValueStructure != null) {
+            return alarmValueStructure.getDoubleField("lowWarningLimit").get();
+        } else {
+            throw new GetException("The channel didn't return a \"valueAlarm\" field.");
+        }
     }
 
     @Override
     public Number rawUpperControlLimit() throws ConnectionException, GetException {
         PVStructure controlStructure = getControl();
-        return controlStructure.getDoubleField("limitHigh").get();
+        if (controlStructure != null) {
+            return controlStructure.getDoubleField("limitHigh").get();
+        } else {
+            throw new GetException("The channel didn't return a \"control\" field.");
+        }
     }
 
     @Override
     public Number rawLowerControlLimit() throws ConnectionException, GetException {
         PVStructure controlStructure = getControl();
-        return controlStructure.getDoubleField("limitLow").get();
+        if (controlStructure != null) {
+            return controlStructure.getDoubleField("limitLow").get();
+        } else {
+            throw new GetException("The channel didn't return a \"control\" field.");
+        }
     }
 
     public PVStructure get(String request, boolean attemptConnection) throws ConnectionException, GetException {
