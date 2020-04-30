@@ -298,7 +298,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    private ChannelRecord get(String request, boolean attemptConnection) throws ConnectionException, GetException {
+    public PVStructure get(String request, boolean attemptConnection) throws ConnectionException, GetException {
         GetListener listener = new GetListener();
 
         getCallback(request, listener, attemptConnection);
@@ -309,18 +309,20 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
             Logger.getLogger(Epics7Channel.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        return listener.getRecord();
+        return listener.getPvStructure();
     }
 
-    private void getCallback(String request, IEventSinkValue listener, boolean attemptConnection) throws ConnectionException, GetException {
+    public PVStructure get(String request) throws ConnectionException, GetException {
+        return get(request, true);
+    }
+
+    public void getCallback(String request, final EventListener listener, boolean attemptConnection) throws ConnectionException, GetException {
         if (attemptConnection) {
             connectAndWait();
         }
         if (isConnected()) {
-            ChannelGetRequesterImpl channelGetRequester = new ChannelGetRequesterImpl(this, request,
-                    (record, channel) -> {
-                        listener.eventValue(record, channel);
-                    });
+            ChannelGetRequesterImpl channelGetRequester = new ChannelGetRequesterImpl(
+                    (s, cg, pvStructure, bs) -> listener.event(s, cg, pvStructure, bs));
 
             CreateRequest createRequest = CreateRequest.create();
             PVStructure pvRequest = createRequest.createRequest(request);
@@ -330,21 +332,30 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
         }
     }
 
+    public void getCallback(String request, EventListener listener) throws ConnectionException, GetException {
+        getCallback(request, listener, true);
+    }
+
     @Override
     public ChannelRecord getRawValueRecord() throws ConnectionException, GetException {
-        return get(VALUE_REQUEST, true);
+        return new Epics7ChannelRecord(get(VALUE_REQUEST), channelName());
     }
 
     @Override
     protected void getRawValueCallback(IEventSinkValue listener) throws ConnectionException, GetException {
-        getCallback(VALUE_REQUEST, listener, true);
+        getCallback(VALUE_REQUEST,
+                (status, channelGet, pvStructure, bitSet) -> {
+                    ChannelRecord record = new Epics7ChannelRecord(pvStructure, this.channelName());
+                    listener.eventValue(record, this);
+                });
     }
 
     @Override
     protected void getRawValueCallback(IEventSinkValue listener, boolean attemptConnection) throws ConnectionException, GetException {
         getCallback(VALUE_REQUEST,
-                (record, channel) -> {
-                    listener.eventValue(record, channel);
+                (status, channelGet, pvStructure, bitSet) -> {
+                    ChannelRecord record = new Epics7ChannelRecord(pvStructure, this.channelName());
+                    listener.eventValue(record, this);
                 }, attemptConnection);
     }
 
@@ -355,7 +366,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
 
     @Override
     public ChannelStatusRecord getRawStatusRecord() throws ConnectionException, GetException {
-        return (ChannelStatusRecord) get(STATUS_REQUEST, true);
+        return new Epics7ChannelStatusRecord(get(STATUS_REQUEST), channelName());
     }
 
     @Override
@@ -365,7 +376,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
 
     @Override
     public ChannelTimeRecord getRawTimeRecord() throws ConnectionException, GetException {
-        return (ChannelTimeRecord) get(TIME_REQUEST, true);
+        return new Epics7ChannelTimeRecord(get(TIME_REQUEST), channelName());
     }
 
     @Override
@@ -376,9 +387,10 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     @Override
     public void getRawValueTimeCallback(IEventSinkValTime listener, boolean attemptConnection) throws ConnectionException, GetException {
         getCallback(TIME_REQUEST,
-                (record, channel) -> {
-                    listener.eventValue((ChannelTimeRecord) record, channel);
-                }, true);
+                (status, channelGet, pvStructure, bitSet) -> {
+                    ChannelTimeRecord record = new Epics7ChannelTimeRecord(pvStructure, this.channelName());
+                    listener.eventValue(record, this);
+                });
     }
 
     @Override
@@ -450,41 +462,22 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     public void putRawValCallback(double[] newVal, PutListener listener) throws ConnectionException, PutException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-}
 
-class GetListener implements IEventSinkValue {
-
-    private CountDownLatch doneSignal;
-    private ChannelRecord record;
-
-    public GetListener() {
-        this.doneSignal = new CountDownLatch(1);
     }
 
-    public ChannelRecord getRecord() {
-        return record;
     }
 
     @Override
-    public void eventValue(ChannelRecord record, xal.ca.Channel channel) {
-        this.record = record;
-        doneSignal.countDown();
     }
 
-    public void await(long timeout, TimeUnit unit) throws InterruptedException {
-        doneSignal.await(timeout, unit);
     }
 }
 
 class ChannelGetRequesterImpl implements ChannelGetRequester {
 
     private final EventListener listener;
-    private final xal.ca.Channel channel;
-    private final String request;
 
-    public ChannelGetRequesterImpl(xal.ca.Channel channel, String request, EventListener listener) {
-        this.channel = channel;
-        this.request = request;
+    public ChannelGetRequesterImpl(EventListener listener) {
         this.listener = listener;
     }
 
@@ -495,22 +488,7 @@ class ChannelGetRequesterImpl implements ChannelGetRequester {
 
     @Override
     public void getDone(Status status, ChannelGet channelGet, PVStructure pvStructure, BitSet bitSet) {
-        ChannelRecord record = null;
-        switch (request) {
-            case Epics7Channel.VALUE_REQUEST:
-                record = new Epics7ChannelRecord(pvStructure, channel.channelName());
-                break;
-            case Epics7Channel.STATUS_REQUEST:
-                record = new Epics7ChannelStatusRecord(pvStructure, channel.channelName());
-                break;
-            case Epics7Channel.TIME_REQUEST:
-                record = new Epics7ChannelTimeRecord(pvStructure, channel.channelName());
-                break;
-            default:
-                break;
-        }
-
-        listener.event(record, channel);
+        listener.event(status, channelGet, pvStructure, bitSet);
     }
 
     @Override
@@ -522,9 +500,4 @@ class ChannelGetRequesterImpl implements ChannelGetRequester {
     public void message(String message, MessageType messageType) {
         Logger.getLogger(Epics7Channel.class.getName()).log(Level.INFO, message);
     }
-}
-
-interface EventListener {
-
-    public void event(ChannelRecord record, xal.ca.Channel channel);
 }
