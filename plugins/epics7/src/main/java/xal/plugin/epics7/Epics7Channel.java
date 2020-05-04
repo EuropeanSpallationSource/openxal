@@ -379,8 +379,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
             connectAndWait();
         }
         if (isConnected()) {
-            ChannelGetRequesterImpl channelGetRequester = new ChannelGetRequesterImpl(
-                    (s, cg, pvStructure, bs) -> listener.event(s, cg, pvStructure, bs));
+            ChannelGetRequesterImpl channelGetRequester = new ChannelGetRequesterImpl(listener);
 
             CreateRequest createRequest = CreateRequest.create();
             PVStructure pvRequest = createRequest.createRequest(request);
