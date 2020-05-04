@@ -237,12 +237,12 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     // --------- Get properties ---------
     @Override
     public Class<?> elementType() throws ConnectionException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public int elementCount() throws ConnectionException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
@@ -625,22 +625,22 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     // Channel Access protocol.
     @Override
     public String[] getOperationLimitPVs() {
-        throw new UnsupportedOperationException("Not supported in EPICS7 (only CA)."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported in EPICS7 (only CA).");
     }
 
     @Override
     public String[] getWarningLimitPVs() {
-        throw new UnsupportedOperationException("Not supported in EPICS7 (only CA)."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported in EPICS7 (only CA).");
     }
 
     @Override
     public String[] getAlarmLimitPVs() {
-        throw new UnsupportedOperationException("Not supported in EPICS7 (only CA)."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported in EPICS7 (only CA).");
     }
 
     @Override
     public String[] getDriveLimitPVs() {
-        throw new UnsupportedOperationException("Not supported in EPICS7 (only CA)."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported in EPICS7 (only CA).");
     }
     //----------------------------------------------------------------------------------
 
@@ -673,7 +673,7 @@ class ChannelGetRequesterImpl implements ChannelGetRequester {
 
     @Override
     public String getRequesterName() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
@@ -723,7 +723,7 @@ class ChannelPutRequesterImpl implements ChannelPutRequester {
 
     @Override
     public String getRequesterName() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override

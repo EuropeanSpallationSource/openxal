@@ -89,34 +89,41 @@ public class Epics7ChannelRecord extends ChannelRecordImpl {
             case scalar:
                 return 1;
             case scalarArray:
-                ScalarType sType = ((PVScalarArray) valueField).getScalarArray().getElementType();
-                switch (sType) {
-                    case pvByte:
-                    case pvUByte:
-                        return store.getScalarArrayField(fieldName, ScalarType.pvByte).getLength();
-                    case pvDouble:
-                        return store.getScalarArrayField(fieldName, ScalarType.pvDouble).getLength();
-                    case pvFloat:
-                        return store.getScalarArrayField(fieldName, ScalarType.pvFloat).getLength();
-                    case pvInt:
-                        return store.getScalarArrayField(fieldName, ScalarType.pvInt).getLength();
-                    case pvUInt:
-                        return store.getScalarArrayField(fieldName, ScalarType.pvUInt).getLength();
-                    case pvLong:
-                        return store.getScalarArrayField(fieldName, ScalarType.pvLong).getLength();
-                    case pvULong:
-                        return store.getScalarArrayField(fieldName, ScalarType.pvULong).getLength();
-                    case pvShort:
-                        return store.getScalarArrayField(fieldName, ScalarType.pvShort).getLength();
-                    case pvUShort:
-                        return store.getScalarArrayField(fieldName, ScalarType.pvUShort).getLength();
-                    case pvString:
-                        return store.getScalarArrayField(fieldName, ScalarType.pvString).getLength();
-                    case pvBoolean:
-                        return store.getScalarArrayField(fieldName, ScalarType.pvBoolean).getLength();
-                    default:
-                        break;
-                }
+                return getCountArray(valueField);
+            default:
+                break;
+        }
+        return 0;
+    }
+
+    private int getCountArray(PVField valueField) {
+        ScalarType sType = ((PVScalarArray) valueField).getScalarArray().getElementType();
+        switch (sType) {
+            case pvByte:
+            case pvUByte:
+                return store.getScalarArrayField(fieldName, ScalarType.pvByte).getLength();
+            case pvDouble:
+                return store.getScalarArrayField(fieldName, ScalarType.pvDouble).getLength();
+            case pvFloat:
+                return store.getScalarArrayField(fieldName, ScalarType.pvFloat).getLength();
+            case pvInt:
+                return store.getScalarArrayField(fieldName, ScalarType.pvInt).getLength();
+            case pvUInt:
+                return store.getScalarArrayField(fieldName, ScalarType.pvUInt).getLength();
+            case pvLong:
+                return store.getScalarArrayField(fieldName, ScalarType.pvLong).getLength();
+            case pvULong:
+                return store.getScalarArrayField(fieldName, ScalarType.pvULong).getLength();
+            case pvShort:
+                return store.getScalarArrayField(fieldName, ScalarType.pvShort).getLength();
+            case pvUShort:
+                return store.getScalarArrayField(fieldName, ScalarType.pvUShort).getLength();
+            case pvString:
+                return store.getScalarArrayField(fieldName, ScalarType.pvString).getLength();
+            case pvBoolean:
+                return store.getScalarArrayField(fieldName, ScalarType.pvBoolean).getLength();
+            default:
+                break;
         }
         return 0;
     }
@@ -200,7 +207,8 @@ public class Epics7ChannelRecord extends ChannelRecordImpl {
             return store.getByteField(fieldName).get();
         } catch (Exception e) {
             Logger.getLogger(Epics7ChannelRecord.class.getName()).log(Level.SEVERE,
-                    "Type of field {0} in {1} is not byte. Type = {2}. Use the corresponding method.", new Object[]{fieldName, channelName, getType().getCanonicalName()});
+                    "Type of field {0} in {1} is not byte. Type = {2}. Use the corresponding method.",
+                    new Object[]{fieldName, channelName, getType().getCanonicalName()});
             return 0;
         }
     }
@@ -212,7 +220,8 @@ public class Epics7ChannelRecord extends ChannelRecordImpl {
             return byteArray.get().getByte(index);
         } catch (Exception e) {
             Logger.getLogger(Epics7ChannelRecord.class.getName()).log(Level.SEVERE,
-                    "Type of field {0} in {1} is not byte[]. Type = {2}. Use the corresponding method.", new Object[]{fieldName, channelName, getType().getCanonicalName()});
+                    "Type of field {0} in {1} is not byte[]. Type = {2}. Use the corresponding method.",
+                    new Object[]{fieldName, channelName, getType().getCanonicalName()});
             return 0;
         }
     }
@@ -224,7 +233,8 @@ public class Epics7ChannelRecord extends ChannelRecordImpl {
             return byteArray.get().toArray(new byte[byteArray.getLength()]);
         } catch (Exception e) {
             Logger.getLogger(Epics7ChannelRecord.class.getName()).log(Level.SEVERE,
-                    "Type of field {0} in {1} is not byte[]. Type = {2}. Use the corresponding method.", new Object[]{fieldName, channelName, getType().getCanonicalName()});
+                    "Type of field {0} in {1} is not byte[]. Type = {2}. Use the corresponding method.",
+                    new Object[]{fieldName, channelName, getType().getCanonicalName()});
             return new byte[]{};
         }
     }
@@ -235,7 +245,8 @@ public class Epics7ChannelRecord extends ChannelRecordImpl {
             return store.getShortField(fieldName).get();
         } catch (Exception e) {
             Logger.getLogger(Epics7ChannelRecord.class.getName()).log(Level.SEVERE,
-                    "Type of field {0} in {1} is not short. Type = {2}. Use the corresponding method.", new Object[]{fieldName, channelName, getType().getCanonicalName()});
+                    "Type of field {0} in {1} is not short. Type = {2}. Use the corresponding method.",
+                    new Object[]{fieldName, channelName, getType().getCanonicalName()});
             return 0;
         }
     }
@@ -247,7 +258,8 @@ public class Epics7ChannelRecord extends ChannelRecordImpl {
             return shortArray.get().getShort(index);
         } catch (Exception e) {
             Logger.getLogger(Epics7ChannelRecord.class.getName()).log(Level.SEVERE,
-                    "Type of field {0} in {1} is not short[]. Type = {2}. Use the corresponding method.", new Object[]{fieldName, channelName, getType().getCanonicalName()});
+                    "Type of field {0} in {1} is not short[]. Type = {2}. Use the corresponding method.",
+                    new Object[]{fieldName, channelName, getType().getCanonicalName()});
             return 0;
         }
     }
@@ -259,7 +271,8 @@ public class Epics7ChannelRecord extends ChannelRecordImpl {
             return shortArray.get().toArray(new short[shortArray.getLength()]);
         } catch (Exception e) {
             Logger.getLogger(Epics7ChannelRecord.class.getName()).log(Level.SEVERE,
-                    "Type of field {0} in {1} is not short[]. Type = {2}. Use the corresponding method.", new Object[]{fieldName, channelName, getType().getCanonicalName()});
+                    "Type of field {0} in {1} is not short[]. Type = {2}. Use the corresponding method.",
+                    new Object[]{fieldName, channelName, getType().getCanonicalName()});
             return new short[]{};
         }
     }
@@ -270,7 +283,8 @@ public class Epics7ChannelRecord extends ChannelRecordImpl {
             return store.getIntField(fieldName).get();
         } catch (Exception e) {
             Logger.getLogger(Epics7ChannelRecord.class.getName()).log(Level.SEVERE,
-                    "Type of field {0} in {1} is not int. Type = {2}. Use the corresponding method.", new Object[]{fieldName, channelName, getType().getCanonicalName()});
+                    "Type of field {0} in {1} is not int. Type = {2}. Use the corresponding method.",
+                    new Object[]{fieldName, channelName, getType().getCanonicalName()});
             return 0;
         }
     }
@@ -282,7 +296,8 @@ public class Epics7ChannelRecord extends ChannelRecordImpl {
             return intArray.get().getInt(index);
         } catch (Exception e) {
             Logger.getLogger(Epics7ChannelRecord.class.getName()).log(Level.SEVERE,
-                    "Type of field {0} in {1} is not int[]. Type = {2}. Use the corresponding method.", new Object[]{fieldName, channelName, getType().getCanonicalName()});
+                    "Type of field {0} in {1} is not int[]. Type = {2}. Use the corresponding method.",
+                    new Object[]{fieldName, channelName, getType().getCanonicalName()});
             return 0;
         }
     }
@@ -294,7 +309,8 @@ public class Epics7ChannelRecord extends ChannelRecordImpl {
             return intArray.get().toArray(new int[intArray.getLength()]);
         } catch (Exception e) {
             Logger.getLogger(Epics7ChannelRecord.class.getName()).log(Level.SEVERE,
-                    "Type of field {0} in {1} is not int[]. Type = {2}. Use the corresponding method.", new Object[]{fieldName, channelName, getType().getCanonicalName()});
+                    "Type of field {0} in {1} is not int[]. Type = {2}. Use the corresponding method.",
+                    new Object[]{fieldName, channelName, getType().getCanonicalName()});
             return new int[]{};
         }
     }
@@ -305,7 +321,8 @@ public class Epics7ChannelRecord extends ChannelRecordImpl {
             return store.getFloatField(fieldName).get();
         } catch (Exception e) {
             Logger.getLogger(Epics7ChannelRecord.class.getName()).log(Level.SEVERE,
-                    "Type of field {0} in {1} is not float. Type = {2}. Use the corresponding method.", new Object[]{fieldName, channelName, getType().getCanonicalName()});
+                    "Type of field {0} in {1} is not float. Type = {2}. Use the corresponding method.",
+                    new Object[]{fieldName, channelName, getType().getCanonicalName()});
             return Float.NaN;
         }
     }
@@ -317,7 +334,8 @@ public class Epics7ChannelRecord extends ChannelRecordImpl {
             return floatArray.get().getFloat(index);
         } catch (Exception e) {
             Logger.getLogger(Epics7ChannelRecord.class.getName()).log(Level.SEVERE,
-                    "Type of field {0} in {1} is not float[]. Type = {2}. Use the corresponding method.", new Object[]{fieldName, channelName, getType().getCanonicalName()});
+                    "Type of field {0} in {1} is not float[]. Type = {2}. Use the corresponding method.",
+                    new Object[]{fieldName, channelName, getType().getCanonicalName()});
             return Float.NaN;
         }
     }
@@ -329,7 +347,8 @@ public class Epics7ChannelRecord extends ChannelRecordImpl {
             return floatArray.get().toArray(new float[floatArray.getLength()]);
         } catch (Exception e) {
             Logger.getLogger(Epics7ChannelRecord.class.getName()).log(Level.SEVERE,
-                    "Type of field {0} in {1} is not float[]. Type = {2}. Use the corresponding method.", new Object[]{fieldName, channelName, getType().getCanonicalName()});
+                    "Type of field {0} in {1} is not float[]. Type = {2}. Use the corresponding method.",
+                    new Object[]{fieldName, channelName, getType().getCanonicalName()});
             return new float[]{Float.NaN};
         }
     }
@@ -340,7 +359,8 @@ public class Epics7ChannelRecord extends ChannelRecordImpl {
             return store.getDoubleField(fieldName).get();
         } catch (Exception e) {
             Logger.getLogger(Epics7ChannelRecord.class.getName()).log(Level.SEVERE,
-                    "Type of field {0} in {1} is not double. Type = {2}. Use the corresponding method.", new Object[]{fieldName, channelName, getType().getCanonicalName()});
+                    "Type of field {0} in {1} is not double. Type = {2}. Use the corresponding method.",
+                    new Object[]{fieldName, channelName, getType().getCanonicalName()});
             return Double.NaN;
         }
     }
@@ -352,7 +372,8 @@ public class Epics7ChannelRecord extends ChannelRecordImpl {
             return doubleArray.get().getDouble(index);
         } catch (Exception e) {
             Logger.getLogger(Epics7ChannelRecord.class.getName()).log(Level.SEVERE,
-                    "Type of field {0} in {1} is not double[]. Type = {2}. Use the corresponding method.", new Object[]{fieldName, channelName, getType().getCanonicalName()});
+                    "Type of field {0} in {1} is not double[]. Type = {2}. Use the corresponding method.",
+                    new Object[]{fieldName, channelName, getType().getCanonicalName()});
             return Double.NaN;
         }
     }
@@ -364,7 +385,8 @@ public class Epics7ChannelRecord extends ChannelRecordImpl {
             return doubleArray.get().toArray(new double[doubleArray.getLength()]);
         } catch (Exception e) {
             Logger.getLogger(Epics7ChannelRecord.class.getName()).log(Level.SEVERE,
-                    "Type of field {0} in {1} is not double[]. Type = {2}. Use the corresponding method.", new Object[]{fieldName, channelName, getType().getCanonicalName()});
+                    "Type of field {0} in {1} is not double[]. Type = {2}. Use the corresponding method.",
+                    new Object[]{fieldName, channelName, getType().getCanonicalName()});
             return new double[]{Double.NaN};
         }
     }
@@ -375,7 +397,8 @@ public class Epics7ChannelRecord extends ChannelRecordImpl {
             return store.getStringField(fieldName).get();
         } catch (Exception e) {
             Logger.getLogger(Epics7ChannelRecord.class.getName()).log(Level.SEVERE,
-                    "Type of field {0} in {1} is not String. Type = {2}. Use the corresponding method.", new Object[]{fieldName, channelName, getType().getCanonicalName()});
+                    "Type of field {0} in {1} is not String. Type = {2}. Use the corresponding method.",
+                    new Object[]{fieldName, channelName, getType().getCanonicalName()});
             return null;
         }
     }
@@ -389,7 +412,8 @@ public class Epics7ChannelRecord extends ChannelRecordImpl {
             return stringArrayData.data[index];
         } catch (Exception e) {
             Logger.getLogger(Epics7ChannelRecord.class.getName()).log(Level.SEVERE,
-                    "Type of field {0} in {1} is not String[]. Type = {2}. Use the corresponding method.", new Object[]{fieldName, channelName, getType().getCanonicalName()});
+                    "Type of field {0} in {1} is not String[]. Type = {2}. Use the corresponding method.",
+                    new Object[]{fieldName, channelName, getType().getCanonicalName()});
             return null;
         }
     }
@@ -403,8 +427,9 @@ public class Epics7ChannelRecord extends ChannelRecordImpl {
             return stringArrayData.data;
         } catch (Exception e) {
             Logger.getLogger(Epics7ChannelRecord.class.getName()).log(Level.SEVERE,
-                    "Type of field {0} in {1} is not String[]. Type = {2}. Use the corresponding method.", new Object[]{fieldName, channelName, getType().getCanonicalName()});
-            return null;
+                    "Type of field {0} in {1} is not String[]. Type = {2}. Use the corresponding method.",
+                    new Object[]{fieldName, channelName, getType().getCanonicalName()});
+            return new String[]{};
         }
     }
 
@@ -413,9 +438,9 @@ public class Epics7ChannelRecord extends ChannelRecordImpl {
         if (store != null) {
             return "value: " + store.toString();
         }
-        return null;
+        return "";
     }
-    
+
     // TODO: implement transformations.
     @Override
     public ChannelRecord applyTransform(ValueTransform transform) {
@@ -424,6 +449,6 @@ public class Epics7ChannelRecord extends ChannelRecordImpl {
 
     @Override
     public ArrayValue arrayValue() {
-        throw new UnsupportedOperationException("Not implemented in Epics7ChannelRecord."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not implemented in Epics7ChannelRecord.");
     }
 }
