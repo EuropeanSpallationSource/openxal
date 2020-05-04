@@ -25,10 +25,26 @@ import org.epics.pvaccess.client.Channel;
 import org.epics.pvaccess.client.ChannelGet;
 import org.epics.pvaccess.client.ChannelGetRequester;
 import org.epics.pvaccess.client.ChannelProvider;
+import org.epics.pvaccess.client.ChannelPut;
+import org.epics.pvaccess.client.ChannelPutRequester;
 import org.epics.pvaccess.client.ChannelRequester;
 import org.epics.pvdata.copy.CreateRequest;
+import org.epics.pvdata.factory.PVDataFactory;
 import org.epics.pvdata.misc.BitSet;
 import org.epics.pvdata.pv.MessageType;
+import org.epics.pvdata.pv.PVByte;
+import org.epics.pvdata.pv.PVByteArray;
+import org.epics.pvdata.pv.PVDouble;
+import org.epics.pvdata.pv.PVDoubleArray;
+import org.epics.pvdata.pv.PVField;
+import org.epics.pvdata.pv.PVFloat;
+import org.epics.pvdata.pv.PVFloatArray;
+import org.epics.pvdata.pv.PVInt;
+import org.epics.pvdata.pv.PVIntArray;
+import org.epics.pvdata.pv.PVShort;
+import org.epics.pvdata.pv.PVShortArray;
+import org.epics.pvdata.pv.PVString;
+import org.epics.pvdata.pv.PVStringArray;
 import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.Status;
 import org.epics.pvdata.pv.Structure;
@@ -218,6 +234,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     }
     //---------------------------------------------------------------------------------
 
+    // --------- Get properties ---------
     @Override
     public Class<?> elementType() throws ConnectionException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -358,6 +375,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
         }
     }
 
+    // --------- Get ---------
     public PVStructure get(String request, boolean attemptConnection) throws ConnectionException, GetException {
         GetListener listener = new GetListener();
 
@@ -377,17 +395,14 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     }
 
     public void getCallback(String request, final EventListener listener, boolean attemptConnection) throws ConnectionException, GetException {
-        if (attemptConnection) {
-            connectAndWait();
-        }
-        if (isConnected()) {
-            ChannelGetRequesterImpl channelGetRequester = new ChannelGetRequesterImpl(listener);
+        checkConnection("ChannelGet", attemptConnection);
 
-            CreateRequest createRequest = CreateRequest.create();
-            PVStructure pvRequest = createRequest.createRequest(request);
-            if (pvRequest != null) {
-                nativeChannel.createChannelGet(channelGetRequester, pvRequest);
-            }
+        ChannelGetRequesterImpl channelGetRequester = new ChannelGetRequesterImpl(listener);
+
+        CreateRequest createRequest = CreateRequest.create();
+        PVStructure pvRequest = createRequest.createRequest(request);
+        if (pvRequest != null) {
+            nativeChannel.createChannelGet(channelGetRequester, pvRequest);
         }
     }
 
@@ -452,8 +467,11 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
                 });
     }
 
+    // --------- Monitor ---------
     @Override
     public xal.ca.Monitor addMonitorValTime(IEventSinkValTime listener, int intMaskFire) throws ConnectionException, xal.ca.MonitorException {
+        checkConnection("addMonitorValTime");
+
         return Epics7Monitor.createNewMonitor(this, TIME_REQUEST, (pvStructure) -> {
             ChannelTimeRecord record = new Epics7ChannelTimeRecord(pvStructure, this.channelName());
             listener.eventValue(record, this);
@@ -462,6 +480,8 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
 
     @Override
     public xal.ca.Monitor addMonitorValStatus(IEventSinkValStatus listener, int intMaskFire) throws ConnectionException, xal.ca.MonitorException {
+        checkConnection("addMonitorValStatus");
+
         return Epics7Monitor.createNewMonitor(this, STATUS_REQUEST, (pvStructure) -> {
             ChannelStatusRecord record = new Epics7ChannelStatusRecord(pvStructure, this.channelName());
             listener.eventValue(record, this);
@@ -470,65 +490,134 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
 
     @Override
     public xal.ca.Monitor addMonitorValue(IEventSinkValue listener, int intMaskFire) throws ConnectionException, xal.ca.MonitorException {
+        checkConnection("addMonitorValue");
+
         return Epics7Monitor.createNewMonitor(this, VALUE_REQUEST, (pvStructure) -> {
             ChannelRecord record = new Epics7ChannelRecord(pvStructure, this.channelName());
             listener.eventValue(record, this);
         }, intMaskFire);
     }
 
+    // --------- Put ---------
+    public void putRawValCallback(PutListener listener, EventListener putListener) throws ConnectionException, PutException {
+        checkConnection("putRawValCallback");
+        // If listener == null, wait for putDone event.
+        if (listener == null) {
+            listener = new PutListenerImpl();
+        }
+
+        ChannelPutRequester channelPutRequester = new ChannelPutRequesterImpl(listener, this, putListener);
+
+        CreateRequest createRequest = CreateRequest.create();
+        PVStructure pvRequest = createRequest.createRequest(VALUE_REQUEST);
+
+        nativeChannel.createChannelPut(channelPutRequester, pvRequest);
+
+        if (listener instanceof PutListenerImpl) {
+            try {
+                ((PutListenerImpl) listener).await((long) m_dblTmIO, TimeUnit.SECONDS);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Epics7Channel.class.getName()).log(Level.SEVERE, null, ex);
+                throw new PutException("Timeout");
+            }
+        }
+    }
+
     @Override
     public void putRawValCallback(String newVal, PutListener listener) throws ConnectionException, PutException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        putRawValCallback(listener, (pvStructure) -> {
+            PVString pvString = pvStructure.getStringField(Epics7Channel.VALUE_REQUEST);
+            pvString.put(newVal);
+        });
     }
 
     @Override
     public void putRawValCallback(byte newVal, PutListener listener) throws ConnectionException, PutException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        putRawValCallback(listener, (pvStructure) -> {
+            PVByte pvByte = pvStructure.getByteField(Epics7Channel.VALUE_REQUEST);
+            pvByte.put(newVal);
+        }
+        );
     }
 
     @Override
     public void putRawValCallback(short newVal, PutListener listener) throws ConnectionException, PutException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        putRawValCallback(listener, (pvStructure) -> {
+            PVShort pvShort = pvStructure.getShortField(Epics7Channel.VALUE_REQUEST);
+            pvShort.put(newVal);
+        });
     }
 
     @Override
     public void putRawValCallback(int newVal, PutListener listener) throws ConnectionException, PutException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        putRawValCallback(listener, (pvStructure) -> {
+            PVInt pvInt = pvStructure.getIntField(Epics7Channel.VALUE_REQUEST);
+            pvInt.put(newVal);
+        });
     }
 
     @Override
     public void putRawValCallback(float newVal, PutListener listener) throws ConnectionException, PutException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        putRawValCallback(listener, (pvStructure) -> {
+            PVFloat pvFloat = pvStructure.getFloatField(Epics7Channel.VALUE_REQUEST);
+            pvFloat.put(newVal);
+        });
     }
 
     @Override
     public void putRawValCallback(double newVal, PutListener listener) throws ConnectionException, PutException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        putRawValCallback(listener, (pvStructure) -> {
+            PVDouble pvDouble = pvStructure.getDoubleField(Epics7Channel.VALUE_REQUEST);
+            pvDouble.put(newVal);
+        });
+    }
+
+    @Override
+    public void putRawValCallback(String[] newVal, PutListener listener) throws ConnectionException, PutException {
+        putRawValCallback(listener, (pvStructure) -> {
+            PVStringArray pvStringArray = pvStructure.getSubField(PVStringArray.class, Epics7Channel.VALUE_REQUEST);
+            pvStringArray.put(0, newVal.length, newVal, 0);
+        });
     }
 
     @Override
     public void putRawValCallback(byte[] newVal, PutListener listener) throws ConnectionException, PutException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        putRawValCallback(listener, (pvStructure) -> {
+            PVByteArray pvByteArray = pvStructure.getSubField(PVByteArray.class, Epics7Channel.VALUE_REQUEST);
+            pvByteArray.put(0, newVal.length, newVal, 0);
+        });
     }
 
     @Override
     public void putRawValCallback(short[] newVal, PutListener listener) throws ConnectionException, PutException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        putRawValCallback(listener, (pvStructure) -> {
+            PVShortArray pvShortArray = pvStructure.getSubField(PVShortArray.class, Epics7Channel.VALUE_REQUEST);
+            pvShortArray.put(0, newVal.length, newVal, 0);
+        });
     }
 
     @Override
     public void putRawValCallback(int[] newVal, PutListener listener) throws ConnectionException, PutException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        putRawValCallback(listener, (pvStructure) -> {
+            PVIntArray pvIntArray = pvStructure.getSubField(PVIntArray.class, Epics7Channel.VALUE_REQUEST);
+            pvIntArray.put(0, newVal.length, newVal, 0);
+        });
     }
 
     @Override
     public void putRawValCallback(float[] newVal, PutListener listener) throws ConnectionException, PutException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        putRawValCallback(listener, (pvStructure) -> {
+            PVFloatArray pvFloatArray = pvStructure.getSubField(PVFloatArray.class, Epics7Channel.VALUE_REQUEST);
+            pvFloatArray.put(0, newVal.length, newVal, 0);
+        });
     }
 
     @Override
     public void putRawValCallback(double[] newVal, PutListener listener) throws ConnectionException, PutException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        putRawValCallback(listener, (pvStructure) -> {
+            PVDoubleArray pvDoubleArray = pvStructure.getSubField(PVDoubleArray.class, Epics7Channel.VALUE_REQUEST);
+            pvDoubleArray.put(0, newVal.length, newVal, 0);
+        });
     }
 
     //----------------------------------------------------------------------------------
@@ -554,6 +643,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
         throw new UnsupportedOperationException("Not supported in EPICS7 (only CA)."); //To change body of generated methods, choose Tools | Templates.
     }
     //----------------------------------------------------------------------------------
+
 }
 
 class ChannelGetRequesterImpl implements ChannelGetRequester {
@@ -566,12 +656,19 @@ class ChannelGetRequesterImpl implements ChannelGetRequester {
 
     @Override
     public void channelGetConnect(Status status, ChannelGet channelGet, Structure structure) {
+        channelGet.lastRequest();
         channelGet.get();
     }
 
     @Override
     public void getDone(Status status, ChannelGet channelGet, PVStructure pvStructure, BitSet bitSet) {
-        listener.event(pvStructure);
+        if (status.isSuccess()) {
+            listener.event(pvStructure);
+        } else {
+            Logger.getLogger(Epics7Channel.class.getName()).log(Level.SEVERE,
+                    "GetDone was not successful for {0}",
+                    channelGet.getChannel().getChannelName());
+        }
     }
 
     @Override
@@ -582,5 +679,73 @@ class ChannelGetRequesterImpl implements ChannelGetRequester {
     @Override
     public void message(String message, MessageType messageType) {
         Logger.getLogger(Epics7Channel.class.getName()).log(Level.INFO, message);
+    }
+}
+
+class ChannelPutRequesterImpl implements ChannelPutRequester {
+
+    private final PutListener listener;
+    private final Epics7Channel channel;
+    private final EventListener put;
+
+    protected ChannelPutRequesterImpl(PutListener listener, Epics7Channel channel, EventListener put) {
+        this.listener = listener;
+        this.channel = channel;
+        this.put = put;
+    }
+
+    @Override
+    public void channelPutConnect(Status status, ChannelPut channelPut, Structure structure) {
+        channelPut.lastRequest();
+        if (status.isSuccess()) {
+            PVStructure pvStructure = PVDataFactory.getPVDataCreate().createPVStructure(structure);
+
+            put.event(pvStructure);
+
+            BitSet bitSet = new BitSet(pvStructure.getNumberFields());
+            PVField val = pvStructure.getSubField(Epics7Channel.VALUE_REQUEST);
+            bitSet.set(val.getFieldOffset());
+            channelPut.put(pvStructure, bitSet);
+        } else {
+            Logger.getLogger(Epics7Channel.class.getName()).severe("channelPutConnect failed");
+        }
+    }
+
+    @Override
+    public void putDone(Status status, ChannelPut channelPut) {
+        listener.putCompleted(channel);
+    }
+
+    @Override
+    public void getDone(Status status, ChannelPut channelPut, PVStructure pvStructure, BitSet bitSet) {
+        // Not used.
+    }
+
+    @Override
+    public String getRequesterName() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void message(String message, MessageType messageType) {
+        Logger.getLogger(Epics7Channel.class.getName()).log(Level.INFO, message);
+    }
+};
+
+class PutListenerImpl implements PutListener {
+
+    private final CountDownLatch doneSignal;
+
+    public PutListenerImpl() {
+        this.doneSignal = new CountDownLatch(1);
+    }
+
+    @Override
+    public void putCompleted(xal.ca.Channel chan) {
+        doneSignal.countDown();
+    }
+
+    public void await(long timeout, TimeUnit unit) throws InterruptedException {
+        doneSignal.await(timeout, unit);
     }
 }

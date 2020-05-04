@@ -29,7 +29,7 @@ import org.epics.pvdata.pv.PVStructure;
  */
 class GetListener implements EventListener {
 
-    private CountDownLatch doneSignal;
+    private final CountDownLatch doneSignal;
     private PVStructure pvStructure;
 
     public GetListener() {
