@@ -454,7 +454,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
 
     @Override
     public xal.ca.Monitor addMonitorValTime(IEventSinkValTime listener, int intMaskFire) throws ConnectionException, xal.ca.MonitorException {
-        return new Epics7Monitor(this, TIME_REQUEST, (pvStructure) -> {
+        return Epics7Monitor.createNewMonitor(this, TIME_REQUEST, (pvStructure) -> {
             ChannelTimeRecord record = new Epics7ChannelTimeRecord(pvStructure, this.channelName());
             listener.eventValue(record, this);
         }, intMaskFire);
@@ -462,7 +462,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
 
     @Override
     public xal.ca.Monitor addMonitorValStatus(IEventSinkValStatus listener, int intMaskFire) throws ConnectionException, xal.ca.MonitorException {
-        return new Epics7Monitor(this, STATUS_REQUEST, (pvStructure) -> {
+        return Epics7Monitor.createNewMonitor(this, STATUS_REQUEST, (pvStructure) -> {
             ChannelStatusRecord record = new Epics7ChannelStatusRecord(pvStructure, this.channelName());
             listener.eventValue(record, this);
         }, intMaskFire);
@@ -470,7 +470,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
 
     @Override
     public xal.ca.Monitor addMonitorValue(IEventSinkValue listener, int intMaskFire) throws ConnectionException, xal.ca.MonitorException {
-        return new Epics7Monitor(this, VALUE_REQUEST, (pvStructure) -> {
+        return Epics7Monitor.createNewMonitor(this, VALUE_REQUEST, (pvStructure) -> {
             ChannelRecord record = new Epics7ChannelRecord(pvStructure, this.channelName());
             listener.eventValue(record, this);
         }, intMaskFire);

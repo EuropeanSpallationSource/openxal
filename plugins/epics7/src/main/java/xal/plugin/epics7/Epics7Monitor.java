@@ -42,15 +42,26 @@ public class Epics7Monitor extends xal.ca.Monitor implements MonitorRequester {
     private volatile Monitor nativeMonitor;
     private final EventListener listener;
 
-    protected Epics7Monitor(Epics7Channel channel, String request, EventListener listener, int intMaskEvent) throws ConnectionException {
+    private Epics7Monitor(Epics7Channel channel, EventListener listener, int intMaskEvent) throws ConnectionException {
         super(channel, intMaskEvent);
+        this.listener = listener;
 
+    }
+
+    public static Epics7Monitor createNewMonitor(Epics7Channel channel, String request, EventListener listener, int intMaskEvent) throws ConnectionException {
+        Epics7Monitor monitor = new Epics7Monitor(channel, listener, intMaskEvent);
+
+        monitor.createRequest(channel, request);
+
+        return monitor;
+    }
+
+    private void createRequest(Epics7Channel channel, String request) {
         CreateRequest createRequest = CreateRequest.create();
         PVStructure pvRequest = createRequest.createRequest(request);
 
         nativeChannel = channel.getNativeChannel();
         nativeMonitor = nativeChannel.createMonitor(this, pvRequest);
-        this.listener = listener;
     }
 
     @Override
@@ -59,7 +70,7 @@ public class Epics7Monitor extends xal.ca.Monitor implements MonitorRequester {
     }
 
     @Override
-    protected void begin() throws xal.ca.MonitorException {
+    protected void begin() throws MonitorException {
         nativeMonitor.start();
     }
 
