@@ -1075,7 +1075,18 @@ abstract public class Channel {
         this.putValCallback(newVal, null);
     }
 
+    
+    /**
+     *  Synchronously put a value to the channel process variable.
+     *  @param  newVal      value sent to process variable
+     *  @throws  xal.ca.ConnectionException     channel is not connected
+     *  @throws  xal.ca.PutException            channel access failure, including
+     */
+    public void putVal(String[] newVal) throws ConnectionException, PutException {
+        this.putValCallback(newVal, null);
+    }
 
+    
     /**
      *  Synchronously put a value to the channel process variable.
      *  @param  newVal      value sent to process variable
@@ -1222,6 +1233,20 @@ abstract public class Channel {
      * @throws xal.ca.ConnectionException     channel is not connected
      * @throws xal.ca.PutException        general put failure
      */
+    final public void putValCallback(String[] newVal, PutListener listener) throws ConnectionException, PutException {
+        String[] rawArray = valueTransform.convertToRaw(ArrayValue.stringStore(newVal)).stringArray();
+        putRawValCallback(rawArray, listener);
+    }
+
+
+    /**
+     * Asynchronously put a value to the channel process variable.  Fire the specified callback
+     * when put is complete.
+     * @param  newVal      value sent to process variable
+     * @param  listener The receiver of the callback event
+     * @throws xal.ca.ConnectionException     channel is not connected
+     * @throws xal.ca.PutException        general put failure
+     */
     final public void putValCallback(byte[] newVal, PutListener listener) throws ConnectionException, PutException {
         byte[] rawArray = valueTransform.convertToRaw( ArrayValue.byteStore(newVal) ).byteArray();
         putRawValCallback(rawArray, listener);
@@ -1349,6 +1374,16 @@ abstract public class Channel {
      */
     abstract public void putRawValCallback(double newVal, PutListener listener) throws ConnectionException, PutException;
 
+    /**
+     * Asynchronously put a raw value to the channel process variable. Fire the
+     * specified callback when put is complete.
+     *
+     * @param newVal value sent to process variable
+     * @param listener The receiver of the callback event
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.PutException general put failure
+     */
+    abstract public void putRawValCallback(String[] newVal, PutListener listener) throws ConnectionException, PutException;
 
     /**
      * Asynchronously put a raw value to the channel process variable.  Fire the specified callback

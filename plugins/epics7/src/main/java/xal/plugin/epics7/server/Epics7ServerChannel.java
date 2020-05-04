@@ -302,5 +302,10 @@ public class Epics7ServerChannel extends Channel implements IServerChannel {
     public void setSettable(boolean settable) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
+    @Override
+    public void putRawValCallback(String[] newVal, PutListener listener) throws ConnectionException, PutException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
     
 }
