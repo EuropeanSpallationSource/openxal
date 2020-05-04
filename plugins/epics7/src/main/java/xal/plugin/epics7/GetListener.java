@@ -19,10 +19,7 @@ package xal.plugin.epics7;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import org.epics.pvaccess.client.ChannelGet;
-import org.epics.pvdata.misc.BitSet;
 import org.epics.pvdata.pv.PVStructure;
-import org.epics.pvdata.pv.Status;
 
 /**
  * Implementation of EventListener that creates a latch and has an await method
@@ -44,7 +41,7 @@ class GetListener implements EventListener {
     }
 
     @Override
-    public void event(Status status, ChannelGet channelGet, PVStructure pvStructure, BitSet bitSet) {
+    public void event(PVStructure pvStructure) {
         this.pvStructure = pvStructure;
         doneSignal.countDown();
     }

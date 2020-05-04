@@ -17,10 +17,7 @@
  */
 package xal.plugin.epics7;
 
-import org.epics.pvaccess.client.ChannelGet;
-import org.epics.pvdata.misc.BitSet;
 import org.epics.pvdata.pv.PVStructure;
-import org.epics.pvdata.pv.Status;
 
 /**
  *
@@ -28,5 +25,5 @@ import org.epics.pvdata.pv.Status;
  */
 public interface EventListener {
 
-    public void event(Status status, ChannelGet channelGet, PVStructure pvStructure, BitSet bitSet);
+    public void event(PVStructure pvStructure);
 }
