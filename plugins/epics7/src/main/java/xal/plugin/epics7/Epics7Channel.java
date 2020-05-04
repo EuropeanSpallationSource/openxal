@@ -40,8 +40,6 @@ import xal.ca.GetException;
 import xal.ca.IEventSinkValStatus;
 import xal.ca.IEventSinkValTime;
 import xal.ca.IEventSinkValue;
-import xal.ca.Monitor;
-import xal.ca.MonitorException;
 import xal.ca.PutException;
 import xal.ca.PutListener;
 import xal.tools.apputils.Preferences;
@@ -94,6 +92,10 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
         java.util.prefs.Preferences defaults = Preferences.nodeForPackage(xal.ca.Channel.class);
         m_dblTmIO = defaults.getDouble(DEF_TIME_IO, C_DBL_DEF_TIME_IO);
         m_dblTmEvt = defaults.getDouble(DEF_TIME_EVENT, C_DBL_DEF_TIME_EVENT);
+    }
+
+    protected Channel getNativeChannel() {
+        return nativeChannel;
     }
 
     @Override
@@ -451,18 +453,27 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     }
 
     @Override
-    public Monitor addMonitorValTime(IEventSinkValTime listener, int intMaskFire) throws ConnectionException, MonitorException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public xal.ca.Monitor addMonitorValTime(IEventSinkValTime listener, int intMaskFire) throws ConnectionException, xal.ca.MonitorException {
+        return new Epics7Monitor(this, TIME_REQUEST, (pvStructure) -> {
+            ChannelTimeRecord record = new Epics7ChannelTimeRecord(pvStructure, this.channelName());
+            listener.eventValue(record, this);
+        }, intMaskFire);
     }
 
     @Override
-    public Monitor addMonitorValStatus(IEventSinkValStatus listener, int intMaskFire) throws ConnectionException, MonitorException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public xal.ca.Monitor addMonitorValStatus(IEventSinkValStatus listener, int intMaskFire) throws ConnectionException, xal.ca.MonitorException {
+        return new Epics7Monitor(this, STATUS_REQUEST, (pvStructure) -> {
+            ChannelStatusRecord record = new Epics7ChannelStatusRecord(pvStructure, this.channelName());
+            listener.eventValue(record, this);
+        }, intMaskFire);
     }
 
     @Override
-    public Monitor addMonitorValue(IEventSinkValue listener, int intMaskFire) throws ConnectionException, MonitorException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public xal.ca.Monitor addMonitorValue(IEventSinkValue listener, int intMaskFire) throws ConnectionException, xal.ca.MonitorException {
+        return new Epics7Monitor(this, VALUE_REQUEST, (pvStructure) -> {
+            ChannelRecord record = new Epics7ChannelRecord(pvStructure, this.channelName());
+            listener.eventValue(record, this);
+        }, intMaskFire);
     }
 
     @Override
