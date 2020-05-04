@@ -19,6 +19,7 @@ package xal.plugin.epics7;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.epics.pvaccess.client.Channel;
 import org.epics.pvdata.copy.CreateRequest;
 import org.epics.pvdata.monitor.Monitor;
 import org.epics.pvdata.monitor.MonitorElement;
@@ -28,24 +29,28 @@ import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.Status;
 import org.epics.pvdata.pv.Structure;
 import xal.ca.ConnectionException;
+import xal.ca.MonitorException;
 
 /**
  * Monitor implementation for Epics7.
  *
  * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
  */
-public class Epics7Monitor extends xal.ca.Monitor {
+public class Epics7Monitor extends xal.ca.Monitor implements MonitorRequester {
 
+    private volatile Channel nativeChannel;
     private volatile Monitor nativeMonitor;
+    private final EventListener listener;
 
     protected Epics7Monitor(Epics7Channel channel, String request, EventListener listener, int intMaskEvent) throws ConnectionException {
         super(channel, intMaskEvent);
 
-        MonitorRequester monitorRequester = new MonitorRequesterImpl(listener, this);
         CreateRequest createRequest = CreateRequest.create();
         PVStructure pvRequest = createRequest.createRequest(request);
 
-        nativeMonitor = channel.getNativeChannel().createMonitor(monitorRequester, pvRequest);
+        nativeChannel = channel.getNativeChannel();
+        nativeMonitor = nativeChannel.createMonitor(this, pvRequest);
+        this.listener = listener;
     }
 
     @Override
@@ -55,47 +60,45 @@ public class Epics7Monitor extends xal.ca.Monitor {
 
     @Override
     protected void begin() throws xal.ca.MonitorException {
-        // Not used. The monitor starts when the channel is connected.
+        nativeMonitor.start();
     }
 
-    class MonitorRequesterImpl implements MonitorRequester {
-
-        private final EventListener listener;
-        private final xal.ca.Monitor monitor;
-
-        public MonitorRequesterImpl(EventListener listener, xal.ca.Monitor monitor) {
-            this.listener = listener;
-            this.monitor = monitor;
-        }
-
-        @Override
-        public void monitorConnect(Status status, Monitor monitor, Structure structure) {
-            monitor.start();
-        }
-
-        @Override
-        public void monitorEvent(Monitor monitor) {
-            MonitorElement element;
-            while ((element = monitor.poll()) != null) {
-                listener.event(element.getPVStructure());
-
-                monitor.release(element);
-            }
-        }
-
-        @Override
-        public void unlisten(Monitor monitor) {
-            this.monitor.clear();
-        }
-
-        @Override
-        public String getRequesterName() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public void message(String message, MessageType messageType) {
-            Logger.getLogger(Epics7Monitor.class.getName()).log(Level.INFO, message);
+    //---------------- Implementing MonitorRequester abstract methods ------------------
+    @Override
+    public void monitorConnect(Status status, Monitor monitor, Structure structure) {
+        try {
+            begin();
+        } catch (MonitorException ex) {
+            Logger.getLogger(Epics7Monitor.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
+    @Override
+    public void monitorEvent(Monitor monitor) {
+        MonitorElement element;
+        while ((element = monitor.poll()) != null) {
+            listener.event(element.getPVStructure());
+
+            monitor.release(element);
+        }
+    }
+
+    @Override
+    public void unlisten(Monitor monitor) {
+        clear();
+    }
+
+    @Override
+    public String getRequesterName() {
+        if (nativeChannel != null) {
+            return nativeChannel.getRequesterName();
+        }
+        return null;
+    }
+
+    @Override
+    public void message(String message, MessageType messageType) {
+        Logger.getLogger(Epics7Monitor.class.getName()).log(Level.INFO, message);
+    }
+    //---------------------------------------------------------------------------------
 }
