@@ -83,45 +83,47 @@ public class Epics7ChannelRecord extends ChannelRecordImpl {
 
     @Override
     public int getCount() {
-        PVField valueField = store.getSubField(fieldName);
-        Type type = valueField.getField().getType();
-        switch (type) {
-            case scalar:
-                return 1;
-            case scalarArray:
-                return getCountArray(valueField);
-            default:
-                break;
+        if (store != null) {
+            PVField valueField = store.getSubField(VALUE_FIELD_NAME);
+            Type type = valueField.getField().getType();
+            switch (type) {
+                case scalar:
+                    return 1;
+                case scalarArray:
+                    return getCountArray(store, valueField);
+                default:
+                    break;
+            }
         }
         return 0;
     }
 
-    private int getCountArray(PVField valueField) {
+    public static int getCountArray(PVStructure structure, PVField valueField) {
         ScalarType sType = ((PVScalarArray) valueField).getScalarArray().getElementType();
         switch (sType) {
             case pvByte:
             case pvUByte:
-                return store.getScalarArrayField(fieldName, ScalarType.pvByte).getLength();
+                return structure.getScalarArrayField(VALUE_FIELD_NAME, ScalarType.pvByte).getLength();
             case pvDouble:
-                return store.getScalarArrayField(fieldName, ScalarType.pvDouble).getLength();
+                return structure.getScalarArrayField(VALUE_FIELD_NAME, ScalarType.pvDouble).getLength();
             case pvFloat:
-                return store.getScalarArrayField(fieldName, ScalarType.pvFloat).getLength();
+                return structure.getScalarArrayField(VALUE_FIELD_NAME, ScalarType.pvFloat).getLength();
             case pvInt:
-                return store.getScalarArrayField(fieldName, ScalarType.pvInt).getLength();
+                return structure.getScalarArrayField(VALUE_FIELD_NAME, ScalarType.pvInt).getLength();
             case pvUInt:
-                return store.getScalarArrayField(fieldName, ScalarType.pvUInt).getLength();
+                return structure.getScalarArrayField(VALUE_FIELD_NAME, ScalarType.pvUInt).getLength();
             case pvLong:
-                return store.getScalarArrayField(fieldName, ScalarType.pvLong).getLength();
+                return structure.getScalarArrayField(VALUE_FIELD_NAME, ScalarType.pvLong).getLength();
             case pvULong:
-                return store.getScalarArrayField(fieldName, ScalarType.pvULong).getLength();
+                return structure.getScalarArrayField(VALUE_FIELD_NAME, ScalarType.pvULong).getLength();
             case pvShort:
-                return store.getScalarArrayField(fieldName, ScalarType.pvShort).getLength();
+                return structure.getScalarArrayField(VALUE_FIELD_NAME, ScalarType.pvShort).getLength();
             case pvUShort:
-                return store.getScalarArrayField(fieldName, ScalarType.pvUShort).getLength();
+                return structure.getScalarArrayField(VALUE_FIELD_NAME, ScalarType.pvUShort).getLength();
             case pvString:
-                return store.getScalarArrayField(fieldName, ScalarType.pvString).getLength();
+                return structure.getScalarArrayField(VALUE_FIELD_NAME, ScalarType.pvString).getLength();
             case pvBoolean:
-                return store.getScalarArrayField(fieldName, ScalarType.pvBoolean).getLength();
+                return structure.getScalarArrayField(VALUE_FIELD_NAME, ScalarType.pvBoolean).getLength();
             default:
                 break;
         }
@@ -130,15 +132,17 @@ public class Epics7ChannelRecord extends ChannelRecordImpl {
 
     @Override
     public Class<?> getType() {
-        PVField valueField = store.getSubField(fieldName);
-        Type type = valueField.getField().getType();
-        switch (type) {
-            case scalar:
-                return getScalarType((PVScalar) valueField);
-            case scalarArray:
-                return getScalarArrayType((PVScalarArray) valueField);
-            default:
-                break;
+        if (store != null) {
+            PVField valueField = store.getSubField(fieldName);
+            Type type = valueField.getField().getType();
+            switch (type) {
+                case scalar:
+                    return getScalarType((PVScalar) valueField);
+                case scalarArray:
+                    return getScalarArrayType((PVScalarArray) valueField);
+                default:
+                    break;
+            }
         }
         return null;
     }

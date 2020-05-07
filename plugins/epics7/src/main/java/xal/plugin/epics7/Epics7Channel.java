@@ -237,12 +237,26 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     // --------- Get properties ---------
     @Override
     public Class<?> elementType() throws ConnectionException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        try {
+            ChannelRecord record = getRawValueRecord();
+            return record.getType();
+        } catch (GetException ex) {
+            Logger.getLogger(Epics7Channel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return null;
     }
 
     @Override
     public int elementCount() throws ConnectionException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        try {
+            ChannelRecord record = getRawValueRecord();
+            return record.getCount();
+        } catch (GetException ex) {
+            Logger.getLogger(Epics7Channel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return 0;
     }
 
     @Override
@@ -723,7 +737,7 @@ class ChannelPutRequesterImpl implements ChannelPutRequester {
 
     @Override
     public String getRequesterName() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return channel.getNativeChannel().getRequesterName();
     }
 
     @Override
