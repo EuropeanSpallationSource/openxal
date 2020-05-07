@@ -17,6 +17,14 @@
  */
 package xal.plugin.epics7.server;
 
+import org.epics.pvdata.factory.PVDataFactory;
+import org.epics.pvdata.factory.StandardFieldFactory;
+import org.epics.pvdata.pv.PVDataCreate;
+import org.epics.pvdata.pv.PVStructure;
+import org.epics.pvdata.pv.ScalarType;
+import org.epics.pvdata.pv.StandardField;
+import org.epics.pvdata.pv.Structure;
+import org.epics.pvdatabase.PVRecord;
 import xal.ca.Channel;
 import xal.ca.ChannelRecord;
 import xal.ca.ChannelStatusRecord;
@@ -33,24 +41,53 @@ import xal.ca.PutException;
 import xal.ca.PutListener;
 
 /**
+ * Server channel implementation. Only PVAccess for the moment.
  *
  * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
  */
 public class Epics7ServerChannel extends Channel implements IServerChannel {
 
-    @Override
-    public boolean connectAndWait(double timeout) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    // Record associated with this channel.    
+    private PVRecord record;
+    private final Epics7ServerChannelSystem CHANNEL_SYSTEM;
+
+    private static final String PROPERTIES = "alarm,timeStamp,display,control";
+    private static final String VA_PROPERTY = ",valueAlarm";
+    private static final String ALL_PROPERTIES = PROPERTIES + VA_PROPERTY;
+
+    public Epics7ServerChannel(String signalName, Epics7ServerChannelSystem CHANNEL_SYSTEM) {
+        super(signalName);
+
+        this.CHANNEL_SYSTEM = CHANNEL_SYSTEM;
     }
 
+    // Always return true because there is no connection to be made.
+    @Override
+    public boolean connectAndWait(double timeout) {
+        requestConnection();
+        connectionFlag = true;
+        return isConnected();
+    }
+
+    // No connection to be made, just create the record. By default its type is double.
     @Override
     public void requestConnection() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (record == null) {
+            StandardField standardField = StandardFieldFactory.getStandardField();
+            Structure structure = standardField.scalar(ScalarType.pvDouble, ALL_PROPERTIES);
+            PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
+            PVStructure pvStructure = pvDataCreate.createPVStructure(structure);
+            record = new PVRecord(m_strId, pvStructure);
+            CHANNEL_SYSTEM.addRecord(record);
+        }
     }
 
     @Override
     public void disconnect() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (record != null) {
+            CHANNEL_SYSTEM.removeRecord(record);
+            connectionFlag = false;
+        }
     }
 
     @Override
@@ -307,5 +344,5 @@ public class Epics7ServerChannel extends Channel implements IServerChannel {
     public void putRawValCallback(String[] newVal, PutListener listener) throws ConnectionException, PutException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
 }
