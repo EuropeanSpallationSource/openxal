@@ -31,8 +31,8 @@ import xal.ca.ChannelSystem;
  */
 public class Epics7ChannelSystem extends ChannelSystem {
 
-    private final ChannelProvider caChannelProvider;
-    private final ChannelProvider pvaChannelProvider;
+    private ChannelProvider caChannelProvider;
+    private ChannelProvider pvaChannelProvider;
     private volatile boolean initialized = false;
 
     protected ChannelProvider getCaChannelProvider() {
@@ -44,6 +44,16 @@ public class Epics7ChannelSystem extends ChannelSystem {
     }
 
     protected Epics7ChannelSystem() {
+    }
+
+    protected static Epics7ChannelSystem newEpics7ChannelSystem() {
+        Epics7ChannelSystem epics7ChannelSystem = new Epics7ChannelSystem();
+
+        epics7ChannelSystem.initialize();
+        return epics7ChannelSystem;
+    }
+
+    protected void initialize() {
         // Load CAJ configuration in a similar fashion as the PV Access library.
         loadJcaConfig(false);
 
@@ -221,7 +231,7 @@ public class Epics7ChannelSystem extends ChannelSystem {
             addressList = System.getProperty("EPICS_CAS_BEACON_ADDR_LIST", addressList);
             repeaterPort = Integer.parseInt(System.getProperty("EPICS_CAS_BEACON_PORT", String.valueOf(repeaterPort)));
         }
-        
+
         // Finally save the configuration in System properties.   
         System.setProperty(CAJContext.class.getName() + ".addr_list", addressList);
         System.setProperty(CAJContext.class.getName() + ".auto_addr_list", Boolean.toString(autoAddressList));
