@@ -18,7 +18,7 @@
 package xal.plugin.epics7.server;
 
 import xal.ca.Channel;
-import xal.ca.IServerChannelFactory;
+import xal.ca.ChannelFactory;
 import xal.plugin.epics7.Epics7ChannelFactory;
 import xal.plugin.epics7.server.Epics7ServerChannelSystem;
 
@@ -26,22 +26,26 @@ import xal.plugin.epics7.server.Epics7ServerChannelSystem;
  *
  * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
  */
-public class Epics7ServerChannelFactory extends Epics7ChannelFactory implements IServerChannelFactory {
+public class Epics7ServerChannelFactory extends Epics7ChannelFactory {
 
     // EPICS7 channel system
-    private static final Epics7ServerChannelSystem CHANNEL_SYSTEM = Epics7ServerChannelSystem.newEpics7ServerChannelSystem();
+    private static final Epics7ServerChannelSystem SERVER_CHANNEL_SYSTEM = Epics7ServerChannelSystem.newEpics7ServerChannelSystem();
 
     public Epics7ServerChannelFactory() {
     }
 
     @Override
     protected Channel newChannel(String signalName) {
-        return new Epics7ServerChannel(signalName, CHANNEL_SYSTEM);
+        return new Epics7ServerChannel(signalName, SERVER_CHANNEL_SYSTEM);
+    }
+
+    @Override
+    protected void dispose(ChannelFactory channelFactory) {
+        SERVER_CHANNEL_SYSTEM.dispose();
     }
 
     @Override
     public void printInfo() {
         System.out.println("Epics7ServerChannelFactory: using EPICS7 Open XAL plugin.");
     }
-
 }

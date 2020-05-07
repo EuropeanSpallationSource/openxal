@@ -78,6 +78,14 @@ public class Epics7ServerChannelSystem extends Epics7ChannelSystem {
             Logger.getLogger(Epics7ServerChannelSystem.class.getName()).log(Level.SEVERE, null, ex);
         }
 
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                dispose();
+            }
+        });
+        t.setDaemon(false);
+        Runtime.getRuntime().addShutdownHook(t);
     }
 
     @Override

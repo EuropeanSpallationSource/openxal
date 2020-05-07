@@ -50,6 +50,7 @@ public class Epics7ChannelSystem extends ChannelSystem {
         Epics7ChannelSystem epics7ChannelSystem = new Epics7ChannelSystem();
 
         epics7ChannelSystem.initialize();
+
         return epics7ChannelSystem;
     }
 

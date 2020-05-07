@@ -48,7 +48,8 @@ public class Epics7ChannelFactory extends ChannelFactory {
         return CHANNEL_SYSTEM.isInitialized();
     }
 
-    public void dispose() {
+    @Override
+    protected void dispose(ChannelFactory channelFactory) {
         CHANNEL_SYSTEM.dispose();
     }
 

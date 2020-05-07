@@ -3,55 +3,78 @@
  *
  * Created on August 26, 2002, 1:24 PM
  */
-
 package xal.ca;
 
 import xal.tools.transforms.ValueTransform;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-
 
 /**
  * ChannelFactory is a factory for generating channels.
  *
- * @author  tap
+ * @author tap
  */
 abstract public class ChannelFactory {
-    /** default channel factory instance */
+
+    /**
+     * default channel factory instance
+     */
     static final private ChannelFactory DEFAULT_FACTORY;
-    
-    
-    /** map of channels keyed by signal name */
-    private final Map<String,Channel> CHANNEL_MAP;
-    
-    
+
+    static final private List<ChannelFactory> FACTORY_LIST = new ArrayList<>();
+
+    /**
+     * map of channels keyed by signal name
+     */
+    private final Map<String, Channel> CHANNEL_MAP;
+
     static {
         DEFAULT_FACTORY = newFactory();
+        synchronized (FACTORY_LIST) {
+            FACTORY_LIST.add(DEFAULT_FACTORY);
+        }
     }
-    
-    
-    /** Creates a new instance of ChannelFactory */
+
+    /**
+     * Creates a new instance of ChannelFactory
+     */
     protected ChannelFactory() {
         CHANNEL_MAP = new HashMap<>();
     }
-	
-	
-	/**
-	 * Initialize the channel system
-	 * @return true if the initialization was successful and false if not
-	 */
-	abstract public boolean init();
-    
-    
-    /**  
-     * Get a channel associated with the signal name.  If the channel is already 
-     * in our map, then return it, otherwise create a new one and add it to our channel map.
+
+    /**
+     * Initialize the channel system
+     *
+     * @return true if the initialization was successful and false if not
+     */
+    abstract public boolean init();
+
+    protected void dispose(ChannelFactory channelFactory) {
+        FACTORY_LIST.remove(channelFactory);
+    }
+
+    /**
+     * Dispose all channel systems
+     */
+    public void disposeAll() {
+        for (ChannelFactory channelFactory : FACTORY_LIST) {
+            channelFactory.dispose(channelFactory);
+        }
+    }
+
+    /**
+     * Get a channel associated with the signal name. If the channel is already
+     * in our map, then return it, otherwise create a new one and add it to our
+     * channel map.
+     *
      * @param signalName The PV signal name of the channel
      * @return The channel corresponding to the signal name
      */
-    public Channel getChannel( final String signalName ) {
+    public Channel getChannel(final String signalName) {
         Channel channel;
         synchronized (CHANNEL_MAP) {
             if (!CHANNEL_MAP.containsKey(signalName)) {
@@ -61,19 +84,20 @@ abstract public class ChannelFactory {
                 channel = CHANNEL_MAP.get(signalName);
             }
         }
-        
+
         return channel;
     }
-    
-    
-    /**  
-     * Get a channel associated with the signal name and transform.  If the channel is already 
-     * in our map, then return it, otherwise create a new one and add it to our channel map.
+
+    /**
+     * Get a channel associated with the signal name and transform. If the
+     * channel is already in our map, then return it, otherwise create a new one
+     * and add it to our channel map.
+     *
      * @param signalName The PV signal name of the channel
      * @param transform The channel's value transform
      * @return The channel corresponding to the signal name
      */
-    public Channel getChannel( final String signalName, final ValueTransform transform ) {
+    public Channel getChannel(final String signalName, final ValueTransform transform) {
         final String channelID = Channel.generateId(signalName, transform);
         synchronized (CHANNEL_MAP) {
             if (!CHANNEL_MAP.containsKey(channelID)) {
@@ -86,90 +110,100 @@ abstract public class ChannelFactory {
             }
         }
     }
-    
-    
-    /** 
-	 * Create a concrete channel which makes an appropriate low level channel
-	 * @param signalName PV for which to create a new channel
-	 * @return a new channel for the specified signal name
-	 */
-    abstract protected Channel newChannel( final String signalName );
-    
-    
+
     /**
-     * Create a new channel for the given signal name and set its value transform.
+     * Create a concrete channel which makes an appropriate low level channel
+     *
+     * @param signalName PV for which to create a new channel
+     * @return a new channel for the specified signal name
+     */
+    abstract protected Channel newChannel(final String signalName);
+
+    /**
+     * Create a new channel for the given signal name and set its value
+     * transform.
+     *
      * @param signalName The PV signal name
      * @param transform The value transform to use in the channel
      * @return The new channel
      */
     protected Channel newChannel(String signalName, ValueTransform transform) {
-        Channel channel = newChannel( signalName );
-        channel.setValueTransform( transform );
+        Channel channel = newChannel(signalName);
+        channel.setValueTransform(transform);
         return channel;
     }
-    
-    
-    /** 
-     * Get the default factory which determines the low level channel implementation
+
+    /**
+     * Get the default factory which determines the low level channel
+     * implementation
+     *
      * @return The default channel factory
      */
     static public ChannelFactory defaultFactory() {
         return DEFAULT_FACTORY;
     }
-    
-    
-    /** 
-     * Get the associated channel system from the channel factory implementation.
+
+    /**
+     * Get the associated channel system from the channel factory
+     * implementation.
+     *
      * @return The channel system
      */
     abstract protected ChannelSystem channelSystem();
-    
-    
-    /** 
-	 * get the defualt system which handles static behavior of Channels 
-	 * @return the channel system associated with the default channel factory
-	 */
+
+    /**
+     * get the defualt system which handles static behavior of Channels
+     *
+     * @return the channel system associated with the default channel factory
+     */
     static ChannelSystem defaultSystem() {
         return DEFAULT_FACTORY.channelSystem();
     }
-    
-    
-    /** 
-	 * Instantiate a new ChannelFactory
-	 * @return a new channel factory
-	 */
+
+    /**
+     * Instantiate a new ChannelFactory
+     *
+     * @return a new channel factory
+     */
     static protected ChannelFactory newFactory() {
-		try {
-			// effectively returns ChannelFactoryPlugin.getChannelFactoryInstance()
-			final Class<?> pluginClass = Class.forName( "xal.ca.ChannelFactoryPlugin" );
-			final Method creatorMethod = pluginClass.getMethod( "getChannelFactoryInstance" );
-			return (ChannelFactory)creatorMethod.invoke( null );
-		}
-		catch( Exception exception ) {
-			exception.printStackTrace();
-			throw new RuntimeException( "Failed to load the ChannelFactoryPlugin: " + exception.getMessage() );
-		}
+        try {
+            // effectively returns ChannelFactoryPlugin.getChannelFactoryInstance()
+            final Class<?> pluginClass = Class.forName("xal.ca.ChannelFactoryPlugin");
+            final Method creatorMethod = pluginClass.getMethod("getChannelFactoryInstance");
+            ChannelFactory channelFactory = (ChannelFactory) creatorMethod.invoke(null);
+            synchronized (FACTORY_LIST) {
+                FACTORY_LIST.add(channelFactory);
+            }
+            return channelFactory;
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            throw new RuntimeException("Failed to load the ChannelFactoryPlugin: " + exception.getMessage());
+        }
     }
 
-	
-	/**
-	 * Instantiate a new server ChannelFactory
-	 * @return a new server channel factory
-	 */
-	public static ChannelFactory newServerFactory() {
-		try {
-			// effectively returns ChannelFactoryPlugin.getServerChannelFactoryInstance()
-			final Class<?> pluginClass = Class.forName( "xal.ca.ChannelFactoryPlugin" );
-			final Method creatorMethod = pluginClass.getMethod( "getServerChannelFactoryInstance" );
-			return (ChannelFactory)creatorMethod.invoke( null );
-		}
-		catch( Exception exception ) {
-			exception.printStackTrace();
-			throw new RuntimeException( "Failed to load the ChannelFactoryPlugin: " + exception.getMessage() );
-		}
-	}
+    /**
+     * Instantiate a new server ChannelFactory
+     *
+     * @return a new server channel factory
+     */
+    public static ChannelFactory newServerFactory() {
+        try {
+            // effectively returns ChannelFactoryPlugin.getServerChannelFactoryInstance()
+            final Class<?> pluginClass = Class.forName("xal.ca.ChannelFactoryPlugin");
+            final Method creatorMethod = pluginClass.getMethod("getServerChannelFactoryInstance");
+            ChannelFactory channelFactory = (ChannelFactory) creatorMethod.invoke(null);
+            synchronized (FACTORY_LIST) {
+                FACTORY_LIST.add(channelFactory);
+            }
+            return channelFactory;
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            throw new RuntimeException("Failed to load the ChannelFactoryPlugin: " + exception.getMessage());
+        }
+    }
 
-
-    /** Print information about this factory */
+    /**
+     * Print information about this factory
+     */
     abstract public void printInfo();
 }
