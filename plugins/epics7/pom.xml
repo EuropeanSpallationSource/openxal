@@ -14,7 +14,12 @@
             <groupId>org.epics</groupId>
             <artifactId>epics-core</artifactId>
             <type>pom</type>
-            <version>7.0.5-SNAPSHOT</version>
+            <version>7.0.6.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.epics</groupId>
+            <artifactId>epics-pvdatabase</artifactId>
+            <version>4.3.2-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>
