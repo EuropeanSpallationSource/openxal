@@ -18,42 +18,30 @@
 package xal.plugin.epics7.server;
 
 import xal.ca.Channel;
-import xal.ca.ChannelFactory;
-import xal.ca.ChannelSystem;
 import xal.ca.IServerChannelFactory;
+import xal.plugin.epics7.Epics7ChannelFactory;
+import xal.plugin.epics7.server.Epics7ServerChannelSystem;
 
 /**
  *
  * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
  */
-public class Epics7ServerChannelFactory extends ChannelFactory implements IServerChannelFactory {
+public class Epics7ServerChannelFactory extends Epics7ChannelFactory implements IServerChannelFactory {
+
+    // EPICS7 channel system
+    private static final Epics7ServerChannelSystem CHANNEL_SYSTEM = Epics7ServerChannelSystem.newEpics7ServerChannelSystem();
 
     public Epics7ServerChannelFactory() {
     }
 
     @Override
-    public boolean init() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     protected Channel newChannel(String signalName) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    protected ChannelSystem channelSystem() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return new Epics7ServerChannel(signalName, CHANNEL_SYSTEM);
     }
 
     @Override
     public void printInfo() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void dispose() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        System.out.println("Epics7ServerChannelFactory: using EPICS7 Open XAL plugin.");
     }
 
 }

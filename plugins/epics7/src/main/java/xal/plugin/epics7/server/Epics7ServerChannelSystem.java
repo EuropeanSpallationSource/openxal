@@ -17,37 +17,77 @@
  */
 package xal.plugin.epics7.server;
 
-import xal.ca.ChannelSystem;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.epics.pvaccess.PVAException;
+import org.epics.pvaccess.client.ChannelProvider;
+import org.epics.pvaccess.server.ServerContext;
+import org.epics.pvaccess.server.impl.remote.ServerContextImpl;
+import org.epics.pvdatabase.PVDatabase;
+import org.epics.pvdatabase.PVDatabaseFactory;
+import org.epics.pvdatabase.PVRecord;
+import org.epics.pvdatabase.pva.ChannelProviderLocalFactory;
+import xal.plugin.epics7.Epics7ChannelSystem;
 
 /**
  *
  * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
  */
-public class Epics7ServerChannelSystem extends ChannelSystem {
+public class Epics7ServerChannelSystem extends Epics7ChannelSystem {
 
-    @Override   
-    public void setDebugMode(boolean debugFlag) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    private ChannelProvider channelProvider;
+    private PVDatabase master;
+    private ServerContext context;
+
+    public static Epics7ServerChannelSystem newEpics7ServerChannelSystem() {
+        Epics7ServerChannelSystem epics7ServerChannelSystem = new Epics7ServerChannelSystem();
+
+        epics7ServerChannelSystem.initialize();
+
+        return epics7ServerChannelSystem;
+    }
+
+    /**
+     * Once a record is created by the ChannelFactory, it must be added to the
+     * master database to be able to serve the PV.
+     *
+     * @param record
+     */
+    public synchronized void addRecord(PVRecord record) {
+        master.addRecord(record);
+    }
+
+    /**
+     * To remove a record from the master database.
+     *
+     * @param record
+     */
+    public synchronized void removeRecord(PVRecord record) {
+        master.removeRecord(record);
     }
 
     @Override
-    public void flushIO() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    protected void initialize() {
+        loadJcaConfig(true);
+
+        channelProvider = ChannelProviderLocalFactory.getChannelProviderLocal();
+        master = PVDatabaseFactory.getMaster();
+        try {
+            context = ServerContextImpl.startPVAServer(channelProvider.getProviderName(), 0, true, null);
+        } catch (PVAException ex) {
+            Logger.getLogger(Epics7ServerChannelSystem.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }
 
     @Override
-    public boolean pendIO(double timeout) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void dispose() {
+        try {
+            context.destroy();
+        } catch (PVAException | IllegalStateException ex) {
+            Logger.getLogger(Epics7ServerChannelSystem.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        master.destroy();
+        channelProvider.destroy();
     }
-
-    @Override
-    public void pendEvent(double timeout) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void printInfo() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-    
 }
