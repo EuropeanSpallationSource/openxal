@@ -33,8 +33,8 @@ public class Epics7ChannelTimeRecord extends Epics7ChannelStatusRecord implement
 
     private static final String TIMESTAMP_FIELD_NAME = "timeStamp";
 
-    private static final String SECONDS_FIELD_NAME = "secondsPastEpoch";
-    private static final String NANOSECONDS_FIELD_NAME = "nanoseconds";
+    public static final String SECONDS_FIELD_NAME = "secondsPastEpoch";
+    public static final String NANOSECONDS_FIELD_NAME = "nanoseconds";
 
     /**
      * Creates new Epics7ChannelStatusRecord

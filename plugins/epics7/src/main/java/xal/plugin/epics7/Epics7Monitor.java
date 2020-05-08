@@ -39,10 +39,10 @@ import xal.ca.MonitorException;
 public class Epics7Monitor extends xal.ca.Monitor implements MonitorRequester {
 
     private volatile Channel nativeChannel;
-    private volatile Monitor nativeMonitor;
-    private final EventListener listener;
+    protected volatile Monitor nativeMonitor;
+    protected final EventListener listener;
 
-    private Epics7Monitor(Epics7Channel channel, EventListener listener, int intMaskEvent) throws ConnectionException {
+    protected Epics7Monitor(Epics7Channel channel, EventListener listener, int intMaskEvent) throws ConnectionException {
         super(channel, intMaskEvent);
         this.listener = listener;
 

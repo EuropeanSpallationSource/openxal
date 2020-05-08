@@ -79,15 +79,20 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     // Property names
     private static final String DEF_TIME_IO = "c_dblDefTimeIO";
     private static final String DEF_TIME_EVENT = "c_dblDefTimeEvent";
-
+   
+    // Fields
+    public static final String VALUE_FIELD = "value";
+    public static final String ALARM_FIELD = "alarm";
+    public static final String DISPLAY_FIELD = "display";
+    public static final String VALUE_ALARM_FIELD = "valueAlarm";
+    public static final String CONTROL_FIELD = "control";
+    public static final String TIMESTAMP_FIELD = "timeStamp";
+        
     // Request can contain the following fields: value, alarm, timeStamp, display, control, valueAlarm
-    static final String VALUE_REQUEST = "value";
-    static final String STATUS_REQUEST = "value,alarm";
-    static final String TIME_REQUEST = "value,alarm,timeStamp";
-    static final String CONTROL_REQUEST = "control";
-    static final String DISPLAY_REQUEST = "display";
-    static final String VALUE_ALARM_REQUEST = "valueAlarm";
-
+    public static final String VALUE_REQUEST = VALUE_FIELD;
+    public static final String STATUS_REQUEST = VALUE_FIELD + "," + ALARM_FIELD;
+    public static final String TIME_REQUEST = STATUS_REQUEST + "," + TIMESTAMP_FIELD;
+    
     private static final String CA_PREFIX = "ca://";
     private static final String PVA_PREFIX = "pva://";
 
@@ -99,7 +104,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
 
     private CountDownLatch connectionLatch;
 
-    Epics7Channel(String signalName, Epics7ChannelSystem CHANNEL_SYSTEM) {
+    public Epics7Channel(String signalName, Epics7ChannelSystem CHANNEL_SYSTEM) {
         super(signalName);
 
         this.CHANNEL_SYSTEM = CHANNEL_SYSTEM;
@@ -259,20 +264,22 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
         return 0;
     }
 
+    // TODO
     @Override
     public boolean readAccess() throws ConnectionException {
         return true;
     }
 
+    // TODO
     @Override
     public boolean writeAccess() throws ConnectionException {
         return true;
     }
 
     private PVStructure getControl() throws ConnectionException, GetException {
-        PVStructure pvStructure = get(CONTROL_REQUEST);
+        PVStructure pvStructure = get(CONTROL_FIELD);
         if (pvStructure != null) {
-            PVStructure controlStructure = pvStructure.getStructureField(CONTROL_REQUEST);
+            PVStructure controlStructure = pvStructure.getStructureField(CONTROL_FIELD);
             return controlStructure;
         } else {
             return null;
@@ -280,9 +287,9 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     }
 
     private PVStructure getDisplay() throws ConnectionException, GetException {
-        PVStructure pvStructure = get(DISPLAY_REQUEST);
+        PVStructure pvStructure = get(DISPLAY_FIELD);
         if (pvStructure != null) {
-            PVStructure displayStructure = pvStructure.getStructureField(DISPLAY_REQUEST);
+            PVStructure displayStructure = pvStructure.getStructureField(DISPLAY_FIELD);
             return displayStructure;
         } else {
             return null;
@@ -290,9 +297,9 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     }
 
     private PVStructure getVAlueAlarm() throws ConnectionException, GetException {
-        PVStructure pvStructure = get(VALUE_ALARM_REQUEST);
+        PVStructure pvStructure = get(VALUE_ALARM_FIELD);
         if (pvStructure != null) {
-            PVStructure displayStructure = pvStructure.getStructureField(VALUE_ALARM_REQUEST);
+            PVStructure displayStructure = pvStructure.getStructureField(VALUE_ALARM_FIELD);
             return displayStructure;
         } else {
             return null;
