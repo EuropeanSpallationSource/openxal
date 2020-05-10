@@ -68,13 +68,15 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
 
     public Epics7ServerChannel(String signalName, Epics7ServerChannelSystem CHANNEL_SYSTEM) {
         super(signalName, CHANNEL_SYSTEM);
-        
+
         // Removing protocol in case it is defined.
         if (m_strId.startsWith("ca://") || m_strId.startsWith("pva://")) {
             m_strId = m_strId.substring(m_strId.indexOf("://") + 3);
         }
 
         this.CHANNEL_SYSTEM = CHANNEL_SYSTEM;
+
+        requestConnection();
     }
 
     // Always return true because there is no connection to be made.
@@ -86,7 +88,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
 
     // No connection to be made, just create the record. By default its type is double.
     @Override
-    public void requestConnection() {
+    public final void requestConnection() {
         if (pvRecord == null) {
             addRecord(ScalarType.pvDouble, false);
             connectionFlag = true;
@@ -100,9 +102,6 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
     }
 
     private void addRecord(ScalarType scalarType, boolean array) {
-        if (pvRecord != null) {
-            removeRecord();
-        }
         StandardField standardField = StandardFieldFactory.getStandardField();
 
         String properties = PROPERTIES;
@@ -118,22 +117,19 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         }
         PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
         PVStructure pvStructure = pvDataCreate.createPVStructure(structure);
-        pvRecord = new PVRecord(m_strId, pvStructure);
+        PVRecord newPVRecord = new PVRecord(m_strId, pvStructure);
+        if (pvRecord != null) {
+            // TODO: Copy metadata from old record to new record
+            removeRecord();
+        }
+        pvRecord = newPVRecord;
+
         CHANNEL_SYSTEM.addRecord(pvRecord);
     }
 
     private void removeRecord() {
         if (pvRecord != null) {
             CHANNEL_SYSTEM.removeRecord(pvRecord);
-        }
-    }
-
-    @Override
-    public Class<?> elementType() throws ConnectionException {
-        if (pvRecord != null) {
-            return pvRecord.getPVStructure().getStructure().getField(VALUE_FIELD).getType().getClass();
-        } else {
-            return null;
         }
     }
 

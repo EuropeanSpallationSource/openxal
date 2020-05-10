@@ -32,7 +32,7 @@ import xal.ca.ChannelSystem;
 public class Epics7ChannelFactory extends ChannelFactory {
 
     // EPICS7 channel system
-    private static final Epics7ChannelSystem CHANNEL_SYSTEM = Epics7ChannelSystem.newEpics7ChannelSystem();
+    private static Epics7ChannelSystem CHANNEL_SYSTEM = Epics7ChannelSystem.newEpics7ChannelSystem();
 
     public Epics7ChannelFactory() {
     }

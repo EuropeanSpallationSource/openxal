@@ -29,9 +29,10 @@ import xal.plugin.epics7.server.Epics7ServerChannelSystem;
 public class Epics7ServerChannelFactory extends Epics7ChannelFactory {
 
     // EPICS7 channel system
-    private static final Epics7ServerChannelSystem SERVER_CHANNEL_SYSTEM = Epics7ServerChannelSystem.newEpics7ServerChannelSystem();
+    private static Epics7ServerChannelSystem SERVER_CHANNEL_SYSTEM;
 
     public Epics7ServerChannelFactory() {
+        SERVER_CHANNEL_SYSTEM = Epics7ServerChannelSystem.newEpics7ServerChannelSystem();
     }
 
     @Override

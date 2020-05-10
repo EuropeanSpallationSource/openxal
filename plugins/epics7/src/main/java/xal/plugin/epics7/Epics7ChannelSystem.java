@@ -252,17 +252,17 @@ public class Epics7ChannelSystem extends ChannelSystem {
 
     @Override
     public void flushIO() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        // NOP
     }
 
     @Override
     public boolean pendIO(double timeout) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return true;
     }
 
     @Override
     public void pendEvent(double timeout) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        // NOP
     }
 
     @Override

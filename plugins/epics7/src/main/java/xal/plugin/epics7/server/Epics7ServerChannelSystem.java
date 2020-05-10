@@ -81,21 +81,22 @@ public class Epics7ServerChannelSystem extends Epics7ChannelSystem {
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
-                dispose();
+                context.dispose();
+                master.destroy();
+                channelProvider.destroy();
             }
         });
         t.setDaemon(false);
         Runtime.getRuntime().addShutdownHook(t);
     }
 
+    // Disposing the context and clearing all the records.
     @Override
     public void dispose() {
-        try {
-            context.destroy();
-        } catch (PVAException | IllegalStateException ex) {
-            Logger.getLogger(Epics7ServerChannelSystem.class.getName()).log(Level.SEVERE, null, ex);
+        for (String recordName : master.getRecordNames()) {
+            PVRecord pvRecord = master.findRecord(recordName);
+            master.removeRecord(pvRecord);
         }
-        master.destroy();
-        channelProvider.destroy();
+        context.dispose();
     }
 }
