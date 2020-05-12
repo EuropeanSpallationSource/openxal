@@ -32,9 +32,11 @@ import xal.ca.ChannelSystem;
 public class Epics7ChannelFactory extends ChannelFactory {
 
     // EPICS7 channel system
-    private static Epics7ChannelSystem CHANNEL_SYSTEM = Epics7ChannelSystem.newEpics7ChannelSystem();
+    private static Epics7ChannelSystem CHANNEL_SYSTEM;
 
     public Epics7ChannelFactory() {
+        if (CHANNEL_SYSTEM == null)
+        CHANNEL_SYSTEM = Epics7ChannelSystem.newEpics7ChannelSystem();
     }
 
     /**
@@ -45,16 +47,25 @@ public class Epics7ChannelFactory extends ChannelFactory {
      */
     @Override
     public boolean init() {
+        if (CHANNEL_SYSTEM == null) {
+            return false;
+        }
         return CHANNEL_SYSTEM.isInitialized();
     }
 
     @Override
-    protected void dispose(ChannelFactory channelFactory) {
-        CHANNEL_SYSTEM.dispose();
+    protected void dispose() {
+        if (CHANNEL_SYSTEM != null) {
+            CHANNEL_SYSTEM.dispose();
+            CHANNEL_SYSTEM = null;
+        }
     }
 
     @Override
     protected Channel newChannel(String signalName) {
+        if (CHANNEL_SYSTEM == null) {
+            return null;
+        }
         return new Epics7Channel(signalName, CHANNEL_SYSTEM);
     }
 

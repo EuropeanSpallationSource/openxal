@@ -19,34 +19,55 @@ package xal.plugin.epics7.server;
 
 import xal.ca.Channel;
 import xal.ca.ChannelFactory;
-import xal.plugin.epics7.Epics7ChannelFactory;
+import xal.ca.ChannelSystem;
 import xal.plugin.epics7.server.Epics7ServerChannelSystem;
 
 /**
  *
  * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
  */
-public class Epics7ServerChannelFactory extends Epics7ChannelFactory {
+public class Epics7ServerChannelFactory extends ChannelFactory {
 
     // EPICS7 channel system
-    private static Epics7ServerChannelSystem SERVER_CHANNEL_SYSTEM;
+    private static Epics7ServerChannelSystem CHANNEL_SYSTEM;
 
     public Epics7ServerChannelFactory() {
-        SERVER_CHANNEL_SYSTEM = Epics7ServerChannelSystem.newEpics7ServerChannelSystem();
+        if (CHANNEL_SYSTEM == null) {
+            CHANNEL_SYSTEM = Epics7ServerChannelSystem.newEpics7ServerChannelSystem();
+        }
     }
 
     @Override
     protected Channel newChannel(String signalName) {
-        return new Epics7ServerChannel(signalName, SERVER_CHANNEL_SYSTEM);
+        if (CHANNEL_SYSTEM == null) {
+            return null;
+        }
+        return new Epics7ServerChannel(signalName, CHANNEL_SYSTEM);
     }
 
     @Override
-    protected void dispose(ChannelFactory channelFactory) {
-        SERVER_CHANNEL_SYSTEM.dispose();
+    protected void dispose() {
+        if (CHANNEL_SYSTEM != null) {
+            CHANNEL_SYSTEM.dispose();
+            CHANNEL_SYSTEM = null;
+        }
     }
 
     @Override
     public void printInfo() {
         System.out.println("Epics7ServerChannelFactory: using EPICS7 Open XAL plugin.");
+    }
+
+    @Override
+    public boolean init() {
+        if (CHANNEL_SYSTEM == null) {
+            return false;
+        }
+        return CHANNEL_SYSTEM.isInitialized();
+    }
+
+    @Override
+    protected ChannelSystem channelSystem() {
+        return CHANNEL_SYSTEM;
     }
 }

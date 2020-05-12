@@ -79,7 +79,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     // Property names
     private static final String DEF_TIME_IO = "c_dblDefTimeIO";
     private static final String DEF_TIME_EVENT = "c_dblDefTimeEvent";
-   
+
     // Fields
     public static final String VALUE_FIELD = "value";
     public static final String ALARM_FIELD = "alarm";
@@ -87,12 +87,12 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     public static final String VALUE_ALARM_FIELD = "valueAlarm";
     public static final String CONTROL_FIELD = "control";
     public static final String TIMESTAMP_FIELD = "timeStamp";
-        
+
     // Request can contain the following fields: value, alarm, timeStamp, display, control, valueAlarm
     public static final String VALUE_REQUEST = VALUE_FIELD;
     public static final String STATUS_REQUEST = VALUE_FIELD + "," + ALARM_FIELD;
     public static final String TIME_REQUEST = STATUS_REQUEST + "," + TIMESTAMP_FIELD;
-    
+
     private static final String CA_PREFIX = "ca://";
     private static final String PVA_PREFIX = "pva://";
 
@@ -183,6 +183,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
                     if (connectionFlag) {
                         if (caChannel != null) {
                             caChannel.destroy();
+                            caChannel = null;
                         }
                         return;
                     } else {
@@ -192,6 +193,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
                     if (connectionFlag) {
                         if (pvaChannel != null) {
                             pvaChannel.destroy();
+                            pvaChannel = null;
                         }
                         return;
                     } else {
@@ -200,16 +202,16 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
                 } else {
                     throw new RuntimeException();
                 }
-            }
-            // Notify listeners.
-            if (connectionProxy != null) {
-                connectionProxy.connectionMade(this);
-            }
 
-            connectionFlag = true;
+                connectionFlag = true;
+                // Notify listeners.
+                if (connectionProxy != null) {
+                    connectionProxy.connectionMade(this);
+                }
 
-            // Releasing the connection latch.
-            connectionLatch.countDown();
+                // Releasing the connection latch.
+                connectionLatch.countDown();
+            }
         } else if (cs == Channel.ConnectionState.DISCONNECTED && chnl == nativeChannel) {
             // Notify listeners if the channel that is in used is disconnected.
             if (connectionProxy != null) {
@@ -751,7 +753,7 @@ class ChannelPutRequesterImpl implements ChannelPutRequester {
     public void message(String message, MessageType messageType) {
         Logger.getLogger(Epics7Channel.class.getName()).log(Level.INFO, message);
     }
-};
+}
 
 class PutListenerImpl implements PutListener {
 

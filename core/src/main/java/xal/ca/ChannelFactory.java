@@ -23,7 +23,7 @@ abstract public class ChannelFactory {
     /**
      * default channel factory instance
      */
-    static final private ChannelFactory DEFAULT_FACTORY;
+    static private ChannelFactory DEFAULT_FACTORY;
 
     static final private List<ChannelFactory> FACTORY_LIST = new ArrayList<>();
 
@@ -34,9 +34,6 @@ abstract public class ChannelFactory {
 
     static {
         DEFAULT_FACTORY = newFactory();
-        synchronized (FACTORY_LIST) {
-            FACTORY_LIST.add(DEFAULT_FACTORY);
-        }
     }
 
     /**
@@ -53,17 +50,29 @@ abstract public class ChannelFactory {
      */
     abstract public boolean init();
 
-    protected void dispose(ChannelFactory channelFactory) {
-        FACTORY_LIST.remove(channelFactory);
+    abstract protected void dispose();
+
+    public void destroy() {
+        dispose();
+        if (this == DEFAULT_FACTORY) {
+            DEFAULT_FACTORY = null;
+        }
+        synchronized (FACTORY_LIST) {
+            FACTORY_LIST.remove(this);
+        }
     }
 
     /**
      * Dispose all channel systems
      */
-    public void disposeAll() {
-        for (ChannelFactory channelFactory : FACTORY_LIST) {
-            channelFactory.dispose(channelFactory);
+    public static void disposeAll() {
+        synchronized (FACTORY_LIST) {
+            for (ChannelFactory channelFactory : FACTORY_LIST) {
+                channelFactory.dispose();
+            }
+            FACTORY_LIST.clear();
         }
+        DEFAULT_FACTORY = null;
     }
 
     /**
@@ -140,6 +149,9 @@ abstract public class ChannelFactory {
      * @return The default channel factory
      */
     static public ChannelFactory defaultFactory() {
+        if (DEFAULT_FACTORY == null) {
+            DEFAULT_FACTORY = newFactory();
+        }
         return DEFAULT_FACTORY;
     }
 
@@ -157,6 +169,8 @@ abstract public class ChannelFactory {
      * @return the channel system associated with the default channel factory
      */
     static ChannelSystem defaultSystem() {
+        if (DEFAULT_FACTORY == null)
+            defaultFactory();
         return DEFAULT_FACTORY.channelSystem();
     }
 

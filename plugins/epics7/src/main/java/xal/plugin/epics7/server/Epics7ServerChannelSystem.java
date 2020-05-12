@@ -82,7 +82,6 @@ public class Epics7ServerChannelSystem extends Epics7ChannelSystem {
             @Override
             public void run() {
                 context.dispose();
-                master.destroy();
                 channelProvider.destroy();
             }
         });
@@ -93,10 +92,7 @@ public class Epics7ServerChannelSystem extends Epics7ChannelSystem {
     // Disposing the context and clearing all the records.
     @Override
     public void dispose() {
-        for (String recordName : master.getRecordNames()) {
-            PVRecord pvRecord = master.findRecord(recordName);
-            master.removeRecord(pvRecord);
-        }
         context.dispose();
+        channelProvider.destroy();
     }
 }
