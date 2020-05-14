@@ -17,6 +17,17 @@
  */
 package xal.plugin.epics7.server;
 
+import com.cosylab.epics.caj.cas.util.MemoryProcessVariable;
+import gov.aps.jca.CAException;
+import gov.aps.jca.dbr.DBR;
+import gov.aps.jca.dbr.DBRType;
+import gov.aps.jca.dbr.DBR_Byte;
+import gov.aps.jca.dbr.DBR_Double;
+import gov.aps.jca.dbr.DBR_Float;
+import gov.aps.jca.dbr.DBR_Int;
+import gov.aps.jca.dbr.DBR_Short;
+import gov.aps.jca.dbr.DBR_String;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.epics.pvdata.factory.PVDataFactory;
 import org.epics.pvdata.factory.StandardFieldFactory;
@@ -60,7 +71,9 @@ import xal.plugin.epics7.Epics7ChannelTimeRecord;
 public class Epics7ServerChannel extends Epics7Channel implements IServerChannel {
 
     // Record associated with this channel.    
+    private MemoryProcessVariable memoryProcessVariable;
     private PVRecord pvRecord;
+
     private final Epics7ServerChannelSystem CHANNEL_SYSTEM;
 
     private static final String PROPERTIES = ALARM_FIELD + "," + TIMESTAMP_FIELD + ","
@@ -90,6 +103,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
     @Override
     public final void requestConnection() {
         if (pvRecord == null) {
+            addCAPV(DBRType.DOUBLE);
             addRecord(ScalarType.pvDouble, false);
             connectionFlag = true;
         }
@@ -97,8 +111,21 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
 
     @Override
     public void disconnect() {
+        removeCAPV();
         removeRecord();
         connectionFlag = false;
+    }
+
+    private void addCAPV(DBRType type) {
+        MemoryProcessVariable newMemoryProcessVariable = new MemoryProcessVariable(m_strId, null, type, new double[]{0.0});
+
+        if (memoryProcessVariable != null) {
+            // TODO: Copy metadata from old record to new record
+            removeCAPV();
+        }
+        memoryProcessVariable = newMemoryProcessVariable;
+
+        CHANNEL_SYSTEM.addMemPV(memoryProcessVariable);
     }
 
     private void addRecord(ScalarType scalarType, boolean array) {
@@ -127,9 +154,17 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         CHANNEL_SYSTEM.addRecord(pvRecord);
     }
 
+    private void removeCAPV() {
+        if (memoryProcessVariable != null) {
+            CHANNEL_SYSTEM.removeMemPV(memoryProcessVariable);
+            memoryProcessVariable = null;
+        }
+    }
+
     private void removeRecord() {
         if (pvRecord != null) {
             CHANNEL_SYSTEM.removeRecord(pvRecord);
+            pvRecord = null;
         }
     }
 
@@ -261,10 +296,18 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
     @Override
     public void putRawValCallback(String newVal, PutListener listener) throws ConnectionException, PutException {
         if (elementType() != String.class) {
+            addCAPV(DBRType.STRING);
             addRecord(ScalarType.pvString, false);
         }
 
         pvRecord.getPVStructure().getStringField(VALUE_FIELD).put(newVal);
+
+        DBR dbr = new DBR_String(new String[]{newVal});
+        try {
+            memoryProcessVariable.write(dbr, null);
+        } catch (CAException ex) {
+            Logger.getLogger(Epics7ServerChannel.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         updateTimeStampAlarmsAndTriggerListener(listener);
     }
@@ -272,10 +315,18 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
     @Override
     public void putRawValCallback(byte newVal, PutListener listener) throws ConnectionException, PutException {
         if (elementType() != byte.class) {
+            addCAPV(DBRType.BYTE);
             addRecord(ScalarType.pvByte, false);
         }
 
         pvRecord.getPVStructure().getByteField(VALUE_FIELD).put(newVal);
+
+        DBR dbr = new DBR_Byte(new byte[]{newVal});
+        try {
+            memoryProcessVariable.write(dbr, null);
+        } catch (CAException ex) {
+            Logger.getLogger(Epics7ServerChannel.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         updateTimeStampAlarmsAndTriggerListener(listener);
     }
@@ -283,10 +334,18 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
     @Override
     public void putRawValCallback(short newVal, PutListener listener) throws ConnectionException, PutException {
         if (elementType() != short.class) {
+            addCAPV(DBRType.SHORT);
             addRecord(ScalarType.pvShort, false);
         }
 
         pvRecord.getPVStructure().getShortField(VALUE_FIELD).put(newVal);
+
+        DBR dbr = new DBR_Short(new short[]{newVal});
+        try {
+            memoryProcessVariable.write(dbr, null);
+        } catch (CAException ex) {
+            Logger.getLogger(Epics7ServerChannel.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         updateTimeStampAlarmsAndTriggerListener(listener);
     }
@@ -294,10 +353,18 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
     @Override
     public void putRawValCallback(int newVal, PutListener listener) throws ConnectionException, PutException {
         if (elementType() != int.class) {
+            addCAPV(DBRType.INT);
             addRecord(ScalarType.pvInt, false);
         }
 
         pvRecord.getPVStructure().getIntField(VALUE_FIELD).put(newVal);
+
+        DBR dbr = new DBR_Int(new int[]{newVal});
+        try {
+            memoryProcessVariable.write(dbr, null);
+        } catch (CAException ex) {
+            Logger.getLogger(Epics7ServerChannel.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         updateTimeStampAlarmsAndTriggerListener(listener);
     }
@@ -305,10 +372,18 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
     @Override
     public void putRawValCallback(float newVal, PutListener listener) throws ConnectionException, PutException {
         if (elementType() != float.class) {
+            addCAPV(DBRType.FLOAT);
             addRecord(ScalarType.pvFloat, false);
         }
 
         pvRecord.getPVStructure().getFloatField(VALUE_FIELD).put(newVal);
+
+        DBR dbr = new DBR_Float(new float[]{newVal});
+        try {
+            memoryProcessVariable.write(dbr, null);
+        } catch (CAException ex) {
+            Logger.getLogger(Epics7ServerChannel.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         updateTimeStampAlarmsAndTriggerListener(listener);
     }
@@ -316,10 +391,18 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
     @Override
     public void putRawValCallback(double newVal, PutListener listener) throws ConnectionException, PutException {
         if (elementType() != double.class) {
+            addCAPV(DBRType.DOUBLE);
             addRecord(ScalarType.pvDouble, false);
         }
 
         pvRecord.getPVStructure().getDoubleField(VALUE_FIELD).put(newVal);
+
+        DBR dbr = new DBR_Double(new double[]{newVal});
+        try {
+            memoryProcessVariable.write(dbr, null);
+        } catch (CAException ex) {
+            Logger.getLogger(Epics7ServerChannel.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         updateTimeStampAlarmsAndTriggerListener(listener);
     }
@@ -327,10 +410,18 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
     @Override
     public void putRawValCallback(String[] newVal, PutListener listener) throws ConnectionException, PutException {
         if (elementType() != String[].class) {
+            addCAPV(DBRType.STRING);
             addRecord(ScalarType.pvString, true);
         }
 
         pvRecord.getPVStructure().getSubField(PVStringArray.class, Epics7Channel.VALUE_REQUEST).put(0, newVal.length, newVal, 0);
+
+        DBR dbr = new DBR_String(newVal);
+        try {
+            memoryProcessVariable.write(dbr, null);
+        } catch (CAException ex) {
+            Logger.getLogger(Epics7ServerChannel.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         updateTimeStampAlarmsAndTriggerListener(listener);
     }
@@ -338,10 +429,18 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
     @Override
     public void putRawValCallback(byte[] newVal, PutListener listener) throws ConnectionException, PutException {
         if (elementType() != byte[].class) {
+            addCAPV(DBRType.BYTE);
             addRecord(ScalarType.pvByte, true);
         }
 
         pvRecord.getPVStructure().getSubField(PVByteArray.class, Epics7Channel.VALUE_REQUEST).put(0, newVal.length, newVal, 0);
+
+        DBR dbr = new DBR_String(newVal);
+        try {
+            memoryProcessVariable.write(dbr, null);
+        } catch (CAException ex) {
+            Logger.getLogger(Epics7ServerChannel.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         updateTimeStampAlarmsAndTriggerListener(listener);
     }
@@ -349,10 +448,18 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
     @Override
     public void putRawValCallback(short[] newVal, PutListener listener) throws ConnectionException, PutException {
         if (elementType() != short[].class) {
+            addCAPV(DBRType.SHORT);
             addRecord(ScalarType.pvShort, true);
         }
 
         pvRecord.getPVStructure().getSubField(PVShortArray.class, Epics7Channel.VALUE_REQUEST).put(0, newVal.length, newVal, 0);
+
+        DBR dbr = new DBR_Short(newVal);
+        try {
+            memoryProcessVariable.write(dbr, null);
+        } catch (CAException ex) {
+            Logger.getLogger(Epics7ServerChannel.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         updateTimeStampAlarmsAndTriggerListener(listener);
     }
@@ -360,10 +467,18 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
     @Override
     public void putRawValCallback(int[] newVal, PutListener listener) throws ConnectionException, PutException {
         if (elementType() != int[].class) {
+            addCAPV(DBRType.INT);
             addRecord(ScalarType.pvInt, true);
         }
 
         pvRecord.getPVStructure().getSubField(PVIntArray.class, Epics7Channel.VALUE_REQUEST).put(0, newVal.length, newVal, 0);
+
+        DBR dbr = new DBR_Int(newVal);
+        try {
+            memoryProcessVariable.write(dbr, null);
+        } catch (CAException ex) {
+            Logger.getLogger(Epics7ServerChannel.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         updateTimeStampAlarmsAndTriggerListener(listener);
     }
@@ -371,10 +486,18 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
     @Override
     public void putRawValCallback(float[] newVal, PutListener listener) throws ConnectionException, PutException {
         if (elementType() != float[].class) {
+            addCAPV(DBRType.FLOAT);
             addRecord(ScalarType.pvFloat, true);
         }
 
         pvRecord.getPVStructure().getSubField(PVFloatArray.class, Epics7Channel.VALUE_REQUEST).put(0, newVal.length, newVal, 0);
+
+        DBR dbr = new DBR_Float(newVal);
+        try {
+            memoryProcessVariable.write(dbr, null);
+        } catch (CAException ex) {
+            Logger.getLogger(Epics7ServerChannel.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         updateTimeStampAlarmsAndTriggerListener(listener);
     }
@@ -382,10 +505,18 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
     @Override
     public void putRawValCallback(double[] newVal, PutListener listener) throws ConnectionException, PutException {
         if (elementType() != double[].class) {
+            addCAPV(DBRType.DOUBLE);
             addRecord(ScalarType.pvDouble, true);
         }
 
         pvRecord.getPVStructure().getSubField(PVDoubleArray.class, Epics7Channel.VALUE_REQUEST).put(0, newVal.length, newVal, 0);
+
+        DBR dbr = new DBR_Double(newVal);
+        try {
+            memoryProcessVariable.write(dbr, null);
+        } catch (CAException ex) {
+            Logger.getLogger(Epics7ServerChannel.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         updateTimeStampAlarmsAndTriggerListener(listener);
     }

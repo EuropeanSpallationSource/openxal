@@ -17,6 +17,11 @@
  */
 package xal.plugin.epics7.server;
 
+import com.cosylab.epics.caj.cas.ProcessVariableEventDispatcher;
+import com.cosylab.epics.caj.cas.util.DefaultServerImpl;
+import com.cosylab.epics.caj.cas.util.MemoryProcessVariable;
+import gov.aps.jca.CAException;
+import gov.aps.jca.JCALibrary;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.epics.pvaccess.PVAException;
@@ -35,9 +40,12 @@ import xal.plugin.epics7.Epics7ChannelSystem;
  */
 public class Epics7ServerChannelSystem extends Epics7ChannelSystem {
 
-    private ChannelProvider channelProvider;
+    private ChannelProvider pvaChannelProvider;
     private PVDatabase master;
-    private ServerContext context;
+    private gov.aps.jca.cas.ServerContext caContext;
+    private ServerContext pvaContext;
+    private DefaultServerImpl CHANNEL_SERVER;
+    private ProcessVariableEventDispatcher processVariableEventDispatcher;
 
     public static Epics7ServerChannelSystem newEpics7ServerChannelSystem() {
         Epics7ServerChannelSystem epics7ServerChannelSystem = new Epics7ServerChannelSystem();
@@ -57,6 +65,20 @@ public class Epics7ServerChannelSystem extends Epics7ChannelSystem {
         master.addRecord(record);
     }
 
+    public synchronized void addMemPV(MemoryProcessVariable memoryProcessVariable) {
+        CHANNEL_SERVER.registerProcessVaribale(memoryProcessVariable);
+        CHANNEL_SERVER.registerProcessVaribale(memoryProcessVariable.getName() + ".VAL", memoryProcessVariable);
+
+        processVariableEventDispatcher = new ProcessVariableEventDispatcher(memoryProcessVariable);
+        memoryProcessVariable.setEventCallback(processVariableEventDispatcher);
+    }
+
+    void removeMemPV(MemoryProcessVariable memoryProcessVariable) {
+        CHANNEL_SERVER.unregisterProcessVaribale(memoryProcessVariable.getName());
+        CHANNEL_SERVER.unregisterProcessVaribale(memoryProcessVariable.getName() + ".VAL");
+        memoryProcessVariable.destroy();
+    }
+
     /**
      * To remove a record from the master database.
      *
@@ -70,19 +92,22 @@ public class Epics7ServerChannelSystem extends Epics7ChannelSystem {
     protected void initialize() {
         loadJcaConfig(true);
 
-        channelProvider = ChannelProviderLocalFactory.getChannelProviderLocal();
+        pvaChannelProvider = ChannelProviderLocalFactory.getChannelProviderLocal();
         master = PVDatabaseFactory.getMaster();
         try {
-            context = ServerContextImpl.startPVAServer(channelProvider.getProviderName(), 0, true, null);
-        } catch (PVAException ex) {
+            CHANNEL_SERVER = new DefaultServerImpl();
+            caContext = JCALibrary.getInstance().createServerContext(JCALibrary.CHANNEL_ACCESS_SERVER_JAVA, CHANNEL_SERVER);
+            pvaContext = ServerContextImpl.startPVAServer(pvaChannelProvider.getProviderName(), 0, true, null);
+        } catch (PVAException | CAException ex) {
             Logger.getLogger(Epics7ServerChannelSystem.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
-                context.dispose();
-                channelProvider.destroy();
+                caContext.dispose();
+                pvaContext.dispose();
+                pvaChannelProvider.destroy();
             }
         });
         t.setDaemon(false);
@@ -92,7 +117,8 @@ public class Epics7ServerChannelSystem extends Epics7ChannelSystem {
     // Disposing the context and clearing all the records.
     @Override
     public void dispose() {
-        context.dispose();
-        channelProvider.destroy();
+        caContext.dispose();
+        pvaContext.dispose();
+        pvaChannelProvider.destroy();
     }
 }
