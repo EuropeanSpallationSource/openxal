@@ -64,7 +64,12 @@ import xal.plugin.epics7.Epics7ChannelStatusRecord;
 import xal.plugin.epics7.Epics7ChannelTimeRecord;
 
 /**
- * Server channel implementation. Only PVAccess for the moment.
+ * Server channel implementation. It creates PVAccess and CA channels,
+ * independently of the signal prefix. This is done to ensure backwards
+ * compatibility.
+ *
+ * Gets are done on the PVRecord, while sets are done to both PVRecord and CA
+ * PV, so that they are always in sync.
  *
  * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
  */
@@ -529,6 +534,8 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         } else {
             Logger.getLogger(Epics7ServerChannel.class.getName()).severe("Couldn't find \"display\" field.");
         }
+
+        memoryProcessVariable.setUnits(units);
     }
 
     @Override
@@ -539,6 +546,8 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         } else {
             Logger.getLogger(Epics7ServerChannel.class.getName()).severe("Couldn't find \"display\" field.");
         }
+
+        memoryProcessVariable.setLowerDispLimit(lowerLimit);
     }
 
     @Override
@@ -549,6 +558,8 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         } else {
             Logger.getLogger(Epics7ServerChannel.class.getName()).severe("Couldn't find  \"display\" field.");
         }
+
+        memoryProcessVariable.setUpperDispLimit(upperLimit);
     }
 
     @Override
@@ -559,6 +570,8 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         } else {
             Logger.getLogger(Epics7ServerChannel.class.getName()).severe("Couldn't find  \"valueAlarm\" field.");
         }
+
+        memoryProcessVariable.setLowerAlarmLimit(lowerLimit);
     }
 
     @Override
@@ -569,6 +582,8 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         } else {
             Logger.getLogger(Epics7ServerChannel.class.getName()).severe("Couldn't find  \"valueAlarm\" field.");
         }
+
+        memoryProcessVariable.setUpperAlarmLimit(upperLimit);
     }
 
     @Override
@@ -579,6 +594,8 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         } else {
             Logger.getLogger(Epics7ServerChannel.class.getName()).severe("Couldn't find  \"valueAlarm\" field.");
         }
+
+        memoryProcessVariable.setLowerWarningLimit(lowerLimit);
     }
 
     @Override
@@ -589,6 +606,8 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         } else {
             Logger.getLogger(Epics7ServerChannel.class.getName()).severe("Couldn't find  \"valueAlarm\" field.");
         }
+
+        memoryProcessVariable.setUpperWarningLimit(upperLimit);
     }
 
     @Override
@@ -599,6 +618,8 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         } else {
             Logger.getLogger(Epics7ServerChannel.class.getName()).severe("Couldn't find  \"control\" field.");
         }
+
+        memoryProcessVariable.setLowerCtrlLimit(lowerLimit);
     }
 
     @Override
@@ -609,6 +630,8 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         } else {
             Logger.getLogger(Epics7ServerChannel.class.getName()).severe("Couldn't find  \"control\" field.");
         }
+
+        memoryProcessVariable.setUpperCtrlLimit(upperLimit);
     }
 
     @Override
