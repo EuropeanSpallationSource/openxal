@@ -610,6 +610,10 @@ abstract public class Channel {
         return getValueRecord().shortValue();
     }
 
+    public short getValShort() throws ConnectionException, GetException    {
+        return getValueRecord().shortValue();
+    }
+
     public int getValInt() throws ConnectionException, GetException    {
         return getValueRecord().intValue();
     }
@@ -640,6 +644,10 @@ abstract public class Channel {
 
     public int[] getArrInt() throws ConnectionException, GetException    {
         return getValueRecord().intArray();
+    }
+
+    public short[] getArrShort() throws ConnectionException, GetException    {
+        return getValueRecord().shortArray();
     }
 
     public float[] getArrFlt() throws ConnectionException, GetException    {
