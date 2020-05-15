@@ -35,8 +35,9 @@ public class Epics7ChannelFactory extends ChannelFactory {
     private static Epics7ChannelSystem CHANNEL_SYSTEM;
 
     public Epics7ChannelFactory() {
-        if (CHANNEL_SYSTEM == null)
-        CHANNEL_SYSTEM = Epics7ChannelSystem.newEpics7ChannelSystem();
+        if (CHANNEL_SYSTEM == null) {
+            CHANNEL_SYSTEM = Epics7ChannelSystem.newEpics7ChannelSystem();
+        }
     }
 
     /**
@@ -65,6 +66,9 @@ public class Epics7ChannelFactory extends ChannelFactory {
     protected Channel newChannel(String signalName) {
         if (CHANNEL_SYSTEM == null) {
             return null;
+        }
+        if (isTest()) {
+            signalName += TEST_SUFFIX;
         }
         return new Epics7Channel(signalName, CHANNEL_SYSTEM);
     }

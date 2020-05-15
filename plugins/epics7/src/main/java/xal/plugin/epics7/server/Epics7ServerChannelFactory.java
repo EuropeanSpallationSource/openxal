@@ -42,6 +42,9 @@ public class Epics7ServerChannelFactory extends ChannelFactory {
         if (CHANNEL_SYSTEM == null) {
             return null;
         }
+        if (isTest()) {
+            signalName += TEST_SUFFIX;
+        }
         return new Epics7ServerChannel(signalName, CHANNEL_SYSTEM);
     }
 

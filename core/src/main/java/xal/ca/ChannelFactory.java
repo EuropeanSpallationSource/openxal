@@ -27,6 +27,9 @@ abstract public class ChannelFactory {
 
     static final private List<ChannelFactory> FACTORY_LIST = new ArrayList<>();
 
+    private boolean test = false;
+    protected static final String TEST_SUFFIX = ":TEST";
+
     /**
      * map of channels keyed by signal name
      */
@@ -169,8 +172,9 @@ abstract public class ChannelFactory {
      * @return the channel system associated with the default channel factory
      */
     static ChannelSystem defaultSystem() {
-        if (DEFAULT_FACTORY == null)
+        if (DEFAULT_FACTORY == null) {
             defaultFactory();
+        }
         return DEFAULT_FACTORY.channelSystem();
     }
 
@@ -220,4 +224,21 @@ abstract public class ChannelFactory {
      * Print information about this factory
      */
     abstract public void printInfo();
+
+    /**
+     * Sets the test flag. If the test flag is on, the factory will add a prefix
+     * to the signal names to distinguish from the original signals.
+     *
+     * This is a useful feature to test applications, which can run a server
+     * with the test flag and the client will connect to the test channels.
+     *
+     * @param test
+     */
+    public void setTest(boolean test) {
+        this.test = test;
+    }
+
+    public boolean isTest() {
+        return test;
+    }
 }
