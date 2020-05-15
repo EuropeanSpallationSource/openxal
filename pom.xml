@@ -88,7 +88,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.2</version>
                 <configuration>
-                    <argLine>${surefireArgLine} -Dxal.tests.root=${project.build.directory}/test-classes -Duser.language=en -Duser.region=US</argLine>
+                    <argLine>@{surefireArgLine} -Dxal.tests.root=${project.build.directory}/test-classes -Duser.language=en -Duser.region=US</argLine>
                     <systemPropertyVariables>
                         <propertyName>build.tests.root</propertyName>
                         <buildDirectory>${project.build.directory}/test-classes</buildDirectory>
