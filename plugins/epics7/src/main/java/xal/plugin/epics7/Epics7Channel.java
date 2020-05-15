@@ -126,7 +126,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
         // If not connected, wait for timeout.
         if (!isConnected()) {
             try {
-                connectionLatch.await((long) timeout, TimeUnit.SECONDS);
+                connectionLatch.await((long) (1000 * timeout), TimeUnit.MILLISECONDS);
             } catch (InterruptedException ex) {
                 Logger.getLogger(Epics7Channel.class
                         .getName()).log(Level.INFO, null, ex);
@@ -405,7 +405,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
         getCallback(request, listener, attemptConnection);
 
         try {
-            listener.await((long) m_dblTmIO, TimeUnit.SECONDS);
+            listener.await((long) (1000 * m_dblTmIO), TimeUnit.MILLISECONDS);
         } catch (InterruptedException ex) {
             Logger.getLogger(Epics7Channel.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -538,7 +538,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
 
         if (listener instanceof PutListenerImpl) {
             try {
-                ((PutListenerImpl) listener).await((long) m_dblTmIO, TimeUnit.SECONDS);
+                ((PutListenerImpl) listener).await((long) (1000 * m_dblTmIO), TimeUnit.MILLISECONDS);
             } catch (InterruptedException ex) {
                 Logger.getLogger(Epics7Channel.class.getName()).log(Level.SEVERE, null, ex);
                 throw new PutException("Timeout");

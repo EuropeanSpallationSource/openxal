@@ -81,6 +81,10 @@ public class TestGetValue {
         Channel caChannel = channelFactoryClient.getChannel("ca://" + channelName);
         Channel pvaChannel = channelFactoryClient.getChannel("pva://" + channelName);
 
+        // Reducing timeouts to shorten the tests in case they fail
+        caChannel.setIoTimeout(0.2);
+        pvaChannel.setIoTimeout(0.2);
+
         if (value instanceof Float) {
             Assert.assertEquals((float) value, caChannel.getValFlt(), 1e-6);
             Assert.assertEquals((float) value, pvaChannel.getValFlt(), 1e-6);
