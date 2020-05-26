@@ -17,9 +17,7 @@
  */
 package xal.plugin.epics7;
 
-import java.util.logging.Handler;
 import java.util.logging.Level;
-import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import org.epics.pvaccess.client.Channel;
 import org.epics.pvaccess.client.ChannelGet;
@@ -33,10 +31,6 @@ import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.ScalarType;
 import org.epics.pvdata.pv.Status;
 import org.epics.pvdata.pv.Structure;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static xal.plugin.epics7.Epics7Channel.ALARM_FIELD;
@@ -49,25 +43,6 @@ import static xal.plugin.epics7.Epics7Channel.TIMESTAMP_FIELD;
  * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
  */
 public class ChannelGetRequesterImplTest {
-
-    public ChannelGetRequesterImplTest() {
-    }
-
-    @BeforeClass
-    public static void setUpClass() {
-    }
-
-    @AfterClass
-    public static void tearDownClass() {
-    }
-
-    @Before
-    public void setUp() {
-    }
-
-    @After
-    public void tearDown() {
-    }
 
     private class ChannelGetTestImpl implements ChannelGet {
 
@@ -115,28 +90,6 @@ public class ChannelGetRequesterImplTest {
             destroyCalled = true;
         }
     }
-
-    private class HandlerImpl extends Handler {
-
-        public Level level;
-        public String message;
-
-        @Override
-        public void publish(LogRecord record) {
-            level = record.getLevel();
-            message = record.getMessage();
-        }
-
-        @Override
-        public void flush() {
-            //
-        }
-
-        @Override
-        public void close() throws SecurityException {
-            //
-        }
-    };
 
     /**
      * Test of channelGetConnect method, of class ChannelGetRequesterImpl.

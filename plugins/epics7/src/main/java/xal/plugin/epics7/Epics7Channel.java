@@ -748,7 +748,7 @@ class ChannelPutRequesterImpl implements ChannelPutRequester {
 
     @Override
     public String getRequesterName() {
-        return channel.getNativeChannel().getRequesterName();
+        return channel.getRequesterName();
     }
 
     @Override
