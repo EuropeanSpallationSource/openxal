@@ -42,21 +42,6 @@
     </properties>
     
     <dependencies>
-        <!--        <dependency>
-            <groupId>org.epics</groupId>
-            <artifactId>pvDataJava</artifactId>
-            <version>5.0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.epics</groupId>
-            <artifactId>pvDatabaseJava</artifactId>
-            <version>4.1.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.epics</groupId>
-            <artifactId>pvAccessJava</artifactId>
-            <version>4.1.1</version>
-        </dependency>-->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>

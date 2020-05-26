@@ -175,6 +175,8 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     //---------------- Implementing ChannelRequester abstract methods ------------------
     @Override
     public void channelStateChange(Channel chnl, Channel.ConnectionState cs) {
+        Logger.getLogger(Epics7Channel.class.getName()).log(Level.FINE, "{0} provider: channel {1} changed status to {2}", new Object[]{chnl.getProvider().getProviderName(), chnl.getChannelName(), cs});
+
         if (cs == Channel.ConnectionState.CONNECTED) {
             // If the other channel is connected, destroy the channel that invoked this method.
             // Otherwise, use use it.
@@ -223,7 +225,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
 
     @Override
     public void channelCreated(Status status, Channel chnl) {
-        Logger.getLogger(Epics7Channel.class.getName()).log(Level.INFO, "{0} provider created a channel: {1}", new Object[]{chnl.getProvider().getProviderName(), chnl.getChannelName()});
+        Logger.getLogger(Epics7Channel.class.getName()).log(Level.FINE, "{0} provider created a channel: {1}", new Object[]{chnl.getProvider().getProviderName(), chnl.getChannelName()});
     }
 
     //------------------- Implementing Requester abstract methods ----------------------
