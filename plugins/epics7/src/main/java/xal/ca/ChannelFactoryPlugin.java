@@ -29,7 +29,7 @@ import xal.plugin.epics7.server.Epics7ServerChannelFactory;
 public class ChannelFactoryPlugin {
 
     private ChannelFactoryPlugin() {
-        throw new IllegalStateException("Utility class");
+        // Factory class
     }
 
     /**
