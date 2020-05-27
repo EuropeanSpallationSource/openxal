@@ -34,11 +34,24 @@ import org.epics.pvaccess.client.ChannelRPC;
 import org.epics.pvaccess.client.ChannelRPCRequester;
 import org.epics.pvaccess.client.ChannelRequester;
 import org.epics.pvaccess.client.GetFieldRequester;
+import org.epics.pvdata.factory.PVDataFactory;
+import org.epics.pvdata.factory.StandardFieldFactory;
+import org.epics.pvdata.misc.BitSet;
 import org.epics.pvdata.monitor.Monitor;
+import org.epics.pvdata.monitor.MonitorElement;
 import org.epics.pvdata.monitor.MonitorRequester;
 import org.epics.pvdata.pv.MessageType;
+import org.epics.pvdata.pv.PVDataCreate;
 import org.epics.pvdata.pv.PVField;
 import org.epics.pvdata.pv.PVStructure;
+import org.epics.pvdata.pv.ScalarType;
+import org.epics.pvdata.pv.Status;
+import org.epics.pvdata.pv.Structure;
+import static xal.plugin.epics7.Epics7Channel.ALARM_FIELD;
+import static xal.plugin.epics7.Epics7Channel.CONTROL_FIELD;
+import static xal.plugin.epics7.Epics7Channel.DISPLAY_FIELD;
+import static xal.plugin.epics7.Epics7Channel.TIMESTAMP_FIELD;
+import static xal.plugin.epics7.Epics7Channel.VALUE_ALARM_FIELD;
 
 /**
  *
@@ -127,6 +140,61 @@ public class TestChannel implements Channel {
 
     @Override
     public Monitor createMonitor(MonitorRequester monitorRequester, PVStructure pvRequest) {
+        Monitor monitor = new Monitor() {
+            boolean poll = true;
+
+            @Override
+            public Status start() {
+                return null;
+            }
+
+            @Override
+            public Status stop() {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public MonitorElement poll() {
+                if (poll) {
+                    poll = false;
+                    return new MonitorElement() {
+                        @Override
+                        public PVStructure getPVStructure() {
+                            Structure structure = StandardFieldFactory.getStandardField().scalar(ScalarType.pvDouble, ALARM_FIELD + "," + TIMESTAMP_FIELD + ","
+                                    + DISPLAY_FIELD + "," + CONTROL_FIELD + "," + VALUE_ALARM_FIELD);
+
+                            PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
+                            PVStructure pvStructure = pvDataCreate.createPVStructure(structure);
+
+                            return pvStructure;
+                        }
+
+                        @Override
+                        public BitSet getChangedBitSet() {
+                            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                        }
+
+                        @Override
+                        public BitSet getOverrunBitSet() {
+                            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                        }
+                    };
+                } else {
+                    return null;
+                }
+            }
+
+            @Override
+            public void release(MonitorElement monitorElement) {
+                //
+            }
+
+            @Override
+            public void destroy() {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+        };
+        monitorRequester.monitorEvent(monitor);
         return null;
     }
 

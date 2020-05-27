@@ -683,11 +683,16 @@ public class Epics7ChannelTest {
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
             public void getCallback(String request, final EventListener listener, boolean attemptConnection) throws ConnectionException, GetException {
-                methodCalled = true;
+                Structure structure = StandardFieldFactory.getStandardField().scalar(ScalarType.pvDouble, ALARM_FIELD + "," + TIMESTAMP_FIELD + ","
+                        + DISPLAY_FIELD + "," + CONTROL_FIELD);
+
+                PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
+                PVStructure pvStructure = pvDataCreate.createPVStructure(structure);
+                listener.event(pvStructure);
             }
         };
 
-        instance.getRawValueCallback(null);
+        instance.getRawValueCallback((record, chan) -> methodCalled = true);
         assertEquals(methodCalled, true);
     }
 
@@ -870,10 +875,12 @@ public class Epics7ChannelTest {
     @Test
     public void testAddMonitorValTime() throws Exception {
         System.out.println("addMonitorValTime");
+        methodCalled = false;
 
         Epics7Channel instance = new Epics7Channel("Test", Epics7TestChannelSystem.newEpics7ChannelSystem());
 
-        Monitor result = instance.addMonitorValTime(null, 0);
+        Monitor result = instance.addMonitorValTime((record, chan) -> methodCalled = true, 0);
+        assertEquals(methodCalled, true);
     }
 
     /**
@@ -882,9 +889,15 @@ public class Epics7ChannelTest {
     @Test
     public void testAddMonitorValStatus() throws Exception {
         System.out.println("addMonitorValStatus");
-        Epics7Channel instance = new Epics7Channel("Test", Epics7TestChannelSystem.newEpics7ChannelSystem());
+        methodCalled = false;
 
-        Monitor result = instance.addMonitorValStatus(null, 0);
+        Epics7Channel instance = new Epics7Channel("Test", Epics7TestChannelSystem.newEpics7ChannelSystem());
+        try {
+            Monitor result = instance.addMonitorValStatus((record, chan) -> methodCalled = true, 0);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        assertEquals(methodCalled, true);
     }
 
     /**
@@ -893,9 +906,12 @@ public class Epics7ChannelTest {
     @Test
     public void testAddMonitorValue() throws Exception {
         System.out.println("addMonitorValue");
+        methodCalled = false;
+
         Epics7Channel instance = new Epics7Channel("Test", Epics7TestChannelSystem.newEpics7ChannelSystem());
 
-        Monitor result = instance.addMonitorValue(null, 0);
+        Monitor result = instance.addMonitorValue((record, chan) -> methodCalled = true, 0);
+        assertEquals(methodCalled, true);
     }
 
     /**
