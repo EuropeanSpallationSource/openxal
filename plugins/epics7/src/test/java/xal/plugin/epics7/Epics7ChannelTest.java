@@ -275,6 +275,28 @@ public class Epics7ChannelTest {
     }
 
     /**
+     * Test of elementType method, of class Epics7Channel.
+     */
+    @Test
+    public void testElementType_GetException() throws Exception {
+        System.out.println("elementType_GetException");
+
+        HandlerImpl handler = new HandlerImpl();
+        Logger.getLogger(Epics7Channel.class.getName()).addHandler(handler);
+
+        Epics7Channel instance = new Epics7Channel("Test", null) {
+            public ChannelRecord getRawValueRecord() throws ConnectionException, GetException {
+                throw new GetException();
+            }
+        };
+
+        instance.elementType();
+
+        assertEquals(handler.message, null);
+        assertEquals(handler.level, Level.SEVERE);
+    }
+
+    /**
      * Test of elementCount method, of class Epics7Channel.
      */
     @Test
@@ -298,6 +320,28 @@ public class Epics7ChannelTest {
         };
         int result = instance.elementCount();
         assertEquals(expResult, result);
+    }
+
+    /**
+     * Test of elementCount method, of class Epics7Channel.
+     */
+    @Test
+    public void testElementCount_GetException() throws Exception {
+        System.out.println("elementCount_GetException");
+
+        HandlerImpl handler = new HandlerImpl();
+        Logger.getLogger(Epics7Channel.class.getName()).addHandler(handler);
+
+        Epics7Channel instance = new Epics7Channel("Test", null) {
+            public ChannelRecord getRawValueRecord() throws ConnectionException, GetException {
+                throw new GetException();
+            }
+        };
+
+        instance.elementCount();
+
+        assertEquals(handler.message, null);
+        assertEquals(handler.level, Level.SEVERE);
     }
 
     /**
@@ -802,7 +846,6 @@ public class Epics7ChannelTest {
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
             public void getCallback(String request, final EventListener listener, boolean attemptConnection) throws ConnectionException, GetException {
-                methodCalled = true;
                 Structure structure = StandardFieldFactory.getStandardField().scalar(ScalarType.pvDouble, ALARM_FIELD + "," + TIMESTAMP_FIELD + ","
                         + DISPLAY_FIELD + "," + CONTROL_FIELD);
 
@@ -1180,11 +1223,7 @@ public class Epics7ChannelTest {
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
             public PVStructure get(String request) {
-                Structure structure = StandardFieldFactory.getStandardField().scalar(ScalarType.pvDouble, "");
-
-                PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
-                PVStructure pvStructure = pvDataCreate.createPVStructure(structure);
-                return pvStructure;
+                return null;
             }
         };
 
@@ -1206,11 +1245,7 @@ public class Epics7ChannelTest {
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
             public PVStructure get(String request) {
-                Structure structure = StandardFieldFactory.getStandardField().scalar(ScalarType.pvDouble, "");
-
-                PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
-                PVStructure pvStructure = pvDataCreate.createPVStructure(structure);
-                return pvStructure;
+                return null;
             }
         };
         boolean exceptionThrown = false;
@@ -1231,11 +1266,7 @@ public class Epics7ChannelTest {
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
             public PVStructure get(String request) {
-                Structure structure = StandardFieldFactory.getStandardField().scalar(ScalarType.pvDouble, "");
-
-                PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
-                PVStructure pvStructure = pvDataCreate.createPVStructure(structure);
-                return pvStructure;
+                return null;
             }
         };
         boolean exceptionThrown = false;
@@ -1256,11 +1287,7 @@ public class Epics7ChannelTest {
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
             public PVStructure get(String request) {
-                Structure structure = StandardFieldFactory.getStandardField().scalar(ScalarType.pvDouble, "");
-
-                PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
-                PVStructure pvStructure = pvDataCreate.createPVStructure(structure);
-                return pvStructure;
+                return null;
             }
         };
         boolean exceptionThrown = false;
@@ -1281,11 +1308,7 @@ public class Epics7ChannelTest {
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
             public PVStructure get(String request) {
-                Structure structure = StandardFieldFactory.getStandardField().scalar(ScalarType.pvDouble, "");
-
-                PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
-                PVStructure pvStructure = pvDataCreate.createPVStructure(structure);
-                return pvStructure;
+                return null;
             }
         };
         boolean exceptionThrown = false;
@@ -1306,11 +1329,7 @@ public class Epics7ChannelTest {
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
             public PVStructure get(String request) {
-                Structure structure = StandardFieldFactory.getStandardField().scalar(ScalarType.pvDouble, "");
-
-                PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
-                PVStructure pvStructure = pvDataCreate.createPVStructure(structure);
-                return pvStructure;
+                return null;
             }
         };
         boolean exceptionThrown = false;
@@ -1331,11 +1350,7 @@ public class Epics7ChannelTest {
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
             public PVStructure get(String request) {
-                Structure structure = StandardFieldFactory.getStandardField().scalar(ScalarType.pvDouble, "");
-
-                PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
-                PVStructure pvStructure = pvDataCreate.createPVStructure(structure);
-                return pvStructure;
+                return null;
             }
         };
         boolean exceptionThrown = false;
@@ -1356,11 +1371,7 @@ public class Epics7ChannelTest {
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
             public PVStructure get(String request) {
-                Structure structure = StandardFieldFactory.getStandardField().scalar(ScalarType.pvDouble, "");
-
-                PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
-                PVStructure pvStructure = pvDataCreate.createPVStructure(structure);
-                return pvStructure;
+                return null;
             }
         };
         boolean exceptionThrown = false;
@@ -1381,11 +1392,7 @@ public class Epics7ChannelTest {
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
             public PVStructure get(String request) {
-                Structure structure = StandardFieldFactory.getStandardField().scalar(ScalarType.pvDouble, "");
-
-                PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
-                PVStructure pvStructure = pvDataCreate.createPVStructure(structure);
-                return pvStructure;
+                return null;
             }
         };
         boolean exceptionThrown = false;

@@ -271,8 +271,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     private PVStructure getControl() throws ConnectionException, GetException {
         PVStructure pvStructure = get(CONTROL_FIELD);
         if (pvStructure != null) {
-            PVStructure controlStructure = pvStructure.getStructureField(CONTROL_FIELD);
-            return controlStructure;
+            return pvStructure.getStructureField(CONTROL_FIELD);
         } else {
             return null;
         }
@@ -281,8 +280,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     private PVStructure getDisplay() throws ConnectionException, GetException {
         PVStructure pvStructure = get(DISPLAY_FIELD);
         if (pvStructure != null) {
-            PVStructure displayStructure = pvStructure.getStructureField(DISPLAY_FIELD);
-            return displayStructure;
+            return pvStructure.getStructureField(DISPLAY_FIELD);
         } else {
             return null;
         }
@@ -291,8 +289,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     private PVStructure getVAlueAlarm() throws ConnectionException, GetException {
         PVStructure pvStructure = get(VALUE_ALARM_FIELD);
         if (pvStructure != null) {
-            PVStructure alarmValueStructure = pvStructure.getStructureField(VALUE_ALARM_FIELD);
-            return alarmValueStructure;
+            return pvStructure.getStructureField(VALUE_ALARM_FIELD);
         } else {
             return null;
         }
