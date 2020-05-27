@@ -31,7 +31,7 @@ public class Epics7ChannelTimeRecord extends Epics7ChannelStatusRecord implement
 
     protected Timestamp timestamp;
 
-    private static final String TIMESTAMP_FIELD_NAME = "timeStamp";
+    public static final String TIMESTAMP_FIELD_NAME = "timeStamp";
 
     public static final String SECONDS_FIELD_NAME = "secondsPastEpoch";
     public static final String NANOSECONDS_FIELD_NAME = "nanoseconds";

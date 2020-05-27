@@ -39,7 +39,6 @@ import org.epics.pvdata.monitor.MonitorRequester;
 import org.epics.pvdata.pv.MessageType;
 import org.epics.pvdata.pv.PVField;
 import org.epics.pvdata.pv.PVStructure;
-import org.epics.pvdata.pv.Status;
 
 /**
  *
@@ -112,7 +111,7 @@ public class TestChannel implements Channel {
 
     @Override
     public ChannelPut createChannelPut(ChannelPutRequester channelPutRequester, PVStructure pvRequest) {
-        channelPutRequester.putDone(null,null);
+        channelPutRequester.putDone(null, null);
         return null;
     }
 

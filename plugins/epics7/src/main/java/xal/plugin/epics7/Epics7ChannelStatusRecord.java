@@ -30,10 +30,10 @@ public class Epics7ChannelStatusRecord extends Epics7ChannelRecord implements Ch
     protected int status;
     protected int severity;
 
-    private static final String ALARM_FIELD_NAME = "alarm";
+    public static final String ALARM_FIELD_NAME = "alarm";
 
-    private static final String STATUS_FIELD_NAME = "status";
-    private static final String SEVERITY_FIELD_NAME = "severity";
+    public static final String STATUS_FIELD_NAME = "status";
+    public static final String SEVERITY_FIELD_NAME = "severity";
 
     /**
      * Creates new Epics7ChannelStatusRecord

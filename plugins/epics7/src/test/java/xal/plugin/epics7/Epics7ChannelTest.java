@@ -38,6 +38,7 @@ import xal.ca.ChannelStatusRecord;
 import xal.ca.ChannelTimeRecord;
 import xal.ca.ConnectionException;
 import xal.ca.GetException;
+import xal.ca.IEventSinkValue;
 import xal.ca.Monitor;
 import xal.ca.PutException;
 import xal.ca.PutListener;
@@ -46,6 +47,12 @@ import static xal.plugin.epics7.Epics7Channel.CONTROL_FIELD;
 import static xal.plugin.epics7.Epics7Channel.DISPLAY_FIELD;
 import static xal.plugin.epics7.Epics7Channel.TIMESTAMP_FIELD;
 import static xal.plugin.epics7.Epics7Channel.VALUE_ALARM_FIELD;
+import static xal.plugin.epics7.Epics7ChannelStatusRecord.ALARM_FIELD_NAME;
+import static xal.plugin.epics7.Epics7ChannelStatusRecord.SEVERITY_FIELD_NAME;
+import static xal.plugin.epics7.Epics7ChannelStatusRecord.STATUS_FIELD_NAME;
+import static xal.plugin.epics7.Epics7ChannelTimeRecord.NANOSECONDS_FIELD_NAME;
+import static xal.plugin.epics7.Epics7ChannelTimeRecord.SECONDS_FIELD_NAME;
+import static xal.plugin.epics7.Epics7ChannelTimeRecord.TIMESTAMP_FIELD_NAME;
 
 /**
  *
@@ -92,12 +99,25 @@ public class Epics7ChannelTest {
     @Test
     public void testConnectAndWait() {
         System.out.println("connectAndWait");
-        double timeout = 1.0;
 
         Epics7Channel instance = new Epics7Channel("Test", Epics7TestChannelSystem.newEpics7ChannelSystem());
         Epics7Channel instance2 = new Epics7Channel("ca://TestCA", Epics7TestChannelSystem.newEpics7ChannelSystem());
         Epics7Channel instance3 = new Epics7Channel("pva://TestPVA", Epics7TestChannelSystem.newEpics7ChannelSystem());
 
+        assertEquals(instance.connectAndWait(0), false);
+        assertEquals(instance2.connectAndWait(0), false);
+        assertEquals(instance3.connectAndWait(0), false);
+
+        instance.disconnect();
+        instance2.disconnect();
+        instance3.disconnect();
+
+        double timeout = 1.0;
+        assertEquals(instance.connectAndWait(timeout), true);
+        assertEquals(instance2.connectAndWait(timeout), true);
+        assertEquals(instance3.connectAndWait(timeout), true);
+
+        // Again to test with a connected channel.
         assertEquals(instance.connectAndWait(timeout), true);
         assertEquals(instance2.connectAndWait(timeout), true);
         assertEquals(instance3.connectAndWait(timeout), true);
@@ -127,6 +147,15 @@ public class Epics7ChannelTest {
         assertEquals(instance.isConnected(), true);
         assertEquals(instance2.isConnected(), true);
         assertEquals(instance3.isConnected(), true);
+
+        //Requesting connection to a connected channel
+        instance.requestConnection();
+        instance2.requestConnection();
+        instance3.requestConnection();
+
+        assertEquals(instance.isConnected(), true);
+        assertEquals(instance2.isConnected(), true);
+        assertEquals(instance3.isConnected(), true);
     }
 
     /**
@@ -139,6 +168,21 @@ public class Epics7ChannelTest {
         Epics7Channel instance2 = new Epics7Channel("ca://TestCA", Epics7TestChannelSystem.newEpics7ChannelSystem());
         Epics7Channel instance3 = new Epics7Channel("pva://TestPVA", Epics7TestChannelSystem.newEpics7ChannelSystem());
 
+        // Testing disconnecting a disconnected channel
+        instance.disconnect();
+        instance2.disconnect();
+        instance3.disconnect();
+
+        // Conecting
+        instance.connectAndWait();
+        instance2.connectAndWait();
+        instance3.connectAndWait();
+
+        assertEquals(instance.isConnected(), true);
+        assertEquals(instance2.isConnected(), true);
+        assertEquals(instance3.isConnected(), true);
+
+        // Testing disconnecting a connected channel
         instance.disconnect();
         instance2.disconnect();
         instance3.disconnect();
@@ -586,11 +630,17 @@ public class Epics7ChannelTest {
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
             public void getCallback(String request, final EventListener listener, boolean attemptConnection) throws ConnectionException, GetException {
-                methodCalled = true;
+                Structure structure = StandardFieldFactory.getStandardField().scalar(ScalarType.pvDouble, ALARM_FIELD + "," + TIMESTAMP_FIELD + ","
+                        + DISPLAY_FIELD + "," + CONTROL_FIELD);
+
+                PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
+                PVStructure pvStructure = pvDataCreate.createPVStructure(structure);
+                listener.event(pvStructure);
             }
         };
+        
+        instance.getRawValueCallback((record, chan) -> methodCalled = true, true);
 
-        instance.getRawValueCallback(null, true);
         assertEquals(methodCalled, true);
     }
 
@@ -726,10 +776,21 @@ public class Epics7ChannelTest {
         Epics7Channel instance = new Epics7Channel("Test", null) {
             public void getCallback(String request, final EventListener listener, boolean attemptConnection) throws ConnectionException, GetException {
                 methodCalled = true;
+                Structure structure = StandardFieldFactory.getStandardField().scalar(ScalarType.pvDouble, ALARM_FIELD + "," + TIMESTAMP_FIELD + ","
+                        + DISPLAY_FIELD + "," + CONTROL_FIELD);
+
+                PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
+                PVStructure pvStructure = pvDataCreate.createPVStructure(structure);
+                pvStructure.getStructureField(ALARM_FIELD_NAME).getIntField(STATUS_FIELD_NAME).put(0);
+                pvStructure.getStructureField(ALARM_FIELD_NAME).getIntField(SEVERITY_FIELD_NAME).put(0);
+                pvStructure.getStructureField(TIMESTAMP_FIELD_NAME).getLongField(SECONDS_FIELD_NAME).put(0);
+                pvStructure.getStructureField(TIMESTAMP_FIELD_NAME).getIntField(NANOSECONDS_FIELD_NAME).put(0);
+
+                listener.event(pvStructure);
             }
         };
 
-        instance.getRawValueTimeCallback(null, true);
+        instance.getRawValueTimeCallback((record, chan) -> methodCalled = true, true);
         assertEquals(methodCalled, true);
     }
 

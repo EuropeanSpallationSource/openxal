@@ -70,11 +70,11 @@ import xal.tools.apputils.Preferences;
  */
 public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
 
-    private final Epics7ChannelSystem CHANNEL_SYSTEM;
+    private final Epics7ChannelSystem epics7ChannelSystem;
 
     //  Constants
-    public static final double C_DBL_DEF_TIME_IO = 5.0;       // default pend IO timeout
-    public static final double C_DBL_DEF_TIME_EVENT = 0.1;    // default pend event timeout
+    public static final double C_DBL_DEF_TIME_IO = 5.0; 
+    public static final double C_DBL_DEF_TIME_EVENT = 0.1;
 
     // Property names
     private static final String DEF_TIME_IO = "c_dblDefTimeIO";
@@ -107,7 +107,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     public Epics7Channel(String signalName, Epics7ChannelSystem CHANNEL_SYSTEM) {
         super(signalName);
 
-        this.CHANNEL_SYSTEM = CHANNEL_SYSTEM;
+        this.epics7ChannelSystem = CHANNEL_SYSTEM;
 
         // Load default timeouts from preferences if available, otherwise use hardcoded values.
         java.util.prefs.Preferences defaults = Preferences.nodeForPackage(xal.ca.Channel.class);
@@ -143,13 +143,13 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
 
             if (!m_strId.startsWith(CA_PREFIX)) {
                 synchronized (connectionLock) {
-                    pvaChannel = CHANNEL_SYSTEM.getPvaChannelProvider().createChannel(
+                    pvaChannel = epics7ChannelSystem.getPvaChannelProvider().createChannel(
                             m_strId.startsWith(PVA_PREFIX) ? m_strId.substring(PVA_PREFIX.length()) : m_strId, this, ChannelProvider.PRIORITY_DEFAULT);
                 }
             }
             if (!m_strId.startsWith(PVA_PREFIX)) {
                 synchronized (connectionLock) {
-                    caChannel = CHANNEL_SYSTEM.getCaChannelProvider().createChannel(
+                    caChannel = epics7ChannelSystem.getCaChannelProvider().createChannel(
                             m_strId.startsWith(CA_PREFIX) ? m_strId.substring(CA_PREFIX.length()) : m_strId, this, ChannelProvider.PRIORITY_DEFAULT);
                 }
             }
