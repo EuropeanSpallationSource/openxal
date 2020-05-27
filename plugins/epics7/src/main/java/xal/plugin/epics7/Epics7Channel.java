@@ -303,8 +303,8 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     private PVStructure getVAlueAlarm() throws ConnectionException, GetException {
         PVStructure pvStructure = get(VALUE_ALARM_FIELD);
         if (pvStructure != null) {
-            PVStructure displayStructure = pvStructure.getStructureField(VALUE_ALARM_FIELD);
-            return displayStructure;
+            PVStructure alarmValueStructure = pvStructure.getStructureField(VALUE_ALARM_FIELD);
+            return alarmValueStructure;
         } else {
             return null;
         }
