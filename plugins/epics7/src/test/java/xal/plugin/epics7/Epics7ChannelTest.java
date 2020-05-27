@@ -17,6 +17,9 @@
  */
 package xal.plugin.epics7;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.epics.pvaccess.client.Channel;
@@ -38,7 +41,6 @@ import xal.ca.ChannelStatusRecord;
 import xal.ca.ChannelTimeRecord;
 import xal.ca.ConnectionException;
 import xal.ca.GetException;
-import xal.ca.IEventSinkValue;
 import xal.ca.Monitor;
 import xal.ca.PutException;
 import xal.ca.PutListener;
@@ -121,6 +123,29 @@ public class Epics7ChannelTest {
         assertEquals(instance.connectAndWait(timeout), true);
         assertEquals(instance2.connectAndWait(timeout), true);
         assertEquals(instance3.connectAndWait(timeout), true);
+
+        // Testing InterruptedException
+        HandlerImpl handler = new HandlerImpl();
+        Logger.getLogger(Epics7Channel.class.getName()).addHandler(handler);
+
+        Thread thread = new Thread() {
+            public void run() {
+                assertEquals(instance.connectAndWait(timeout), false);
+            }
+        };
+
+        instance.disconnect();
+        thread.start();
+        thread.interrupt();
+
+        // Waiting for the other thread to finish...
+        try {
+            Thread.sleep(10);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Epics7ChannelTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        assertEquals(handler.message, null);
+        assertEquals(handler.level, Level.INFO);
     }
 
     /**
@@ -129,6 +154,7 @@ public class Epics7ChannelTest {
     @Test
     public void testRequestConnection() {
         System.out.println("requestConnection");
+
         Epics7Channel instance = new Epics7Channel("Test", Epics7TestChannelSystem.newEpics7ChannelSystem());
         instance.requestConnection();
 
@@ -156,6 +182,7 @@ public class Epics7ChannelTest {
         assertEquals(instance.isConnected(), true);
         assertEquals(instance2.isConnected(), true);
         assertEquals(instance3.isConnected(), true);
+
     }
 
     /**
@@ -638,7 +665,7 @@ public class Epics7ChannelTest {
                 listener.event(pvStructure);
             }
         };
-        
+
         instance.getRawValueCallback((record, chan) -> methodCalled = true, true);
 
         assertEquals(methodCalled, true);
@@ -1143,4 +1170,231 @@ public class Epics7ChannelTest {
         }
         assertEquals(exceptionGenerated, true);
     }
+
+    /**
+     *
+     */
+    @Test
+    public void getUnits_GetException() throws Exception {
+        System.out.println("rawUpperDisplayLimit");
+
+        Epics7Channel instance = new Epics7Channel("Test", null) {
+            public PVStructure get(String request) {
+                Structure structure = StandardFieldFactory.getStandardField().scalar(ScalarType.pvDouble, "");
+
+                PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
+                PVStructure pvStructure = pvDataCreate.createPVStructure(structure);
+                return pvStructure;
+            }
+        };
+
+        boolean exceptionThrown = false;
+        try {
+            instance.getUnits();
+        } catch (GetException ex) {
+            exceptionThrown = true;
+        }
+        assertEquals(exceptionThrown, true);
+    }
+
+    /**
+     *
+     */
+    @Test
+    public void rawUpperDisplayLimit_GetException() throws Exception {
+        System.out.println("rawUpperDisplayLimit");
+
+        Epics7Channel instance = new Epics7Channel("Test", null) {
+            public PVStructure get(String request) {
+                Structure structure = StandardFieldFactory.getStandardField().scalar(ScalarType.pvDouble, "");
+
+                PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
+                PVStructure pvStructure = pvDataCreate.createPVStructure(structure);
+                return pvStructure;
+            }
+        };
+        boolean exceptionThrown = false;
+        try {
+            instance.rawUpperDisplayLimit();
+        } catch (GetException ex) {
+            exceptionThrown = true;
+        }
+        assertEquals(exceptionThrown, true);
+    }
+
+    /**
+     *
+     */
+    @Test
+    public void rawLowerDisplayLimit_GetException() throws Exception {
+        System.out.println("rawUpperDisplayLimit");
+
+        Epics7Channel instance = new Epics7Channel("Test", null) {
+            public PVStructure get(String request) {
+                Structure structure = StandardFieldFactory.getStandardField().scalar(ScalarType.pvDouble, "");
+
+                PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
+                PVStructure pvStructure = pvDataCreate.createPVStructure(structure);
+                return pvStructure;
+            }
+        };
+        boolean exceptionThrown = false;
+        try {
+            instance.rawLowerDisplayLimit();
+        } catch (GetException ex) {
+            exceptionThrown = true;
+        }
+        assertEquals(exceptionThrown, true);
+    }
+
+    /**
+     *
+     */
+    @Test
+    public void rawUpperAlarmLimit_GetException() throws Exception {
+        System.out.println("rawUpperDisplayLimit");
+
+        Epics7Channel instance = new Epics7Channel("Test", null) {
+            public PVStructure get(String request) {
+                Structure structure = StandardFieldFactory.getStandardField().scalar(ScalarType.pvDouble, "");
+
+                PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
+                PVStructure pvStructure = pvDataCreate.createPVStructure(structure);
+                return pvStructure;
+            }
+        };
+        boolean exceptionThrown = false;
+        try {
+            instance.rawUpperAlarmLimit();
+        } catch (GetException ex) {
+            exceptionThrown = true;
+        }
+        assertEquals(exceptionThrown, true);
+    }
+
+    /**
+     *
+     */
+    @Test
+    public void rawLowerAlarmLimit_GetException() throws Exception {
+        System.out.println("rawUpperDisplayLimit");
+
+        Epics7Channel instance = new Epics7Channel("Test", null) {
+            public PVStructure get(String request) {
+                Structure structure = StandardFieldFactory.getStandardField().scalar(ScalarType.pvDouble, "");
+
+                PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
+                PVStructure pvStructure = pvDataCreate.createPVStructure(structure);
+                return pvStructure;
+            }
+        };
+        boolean exceptionThrown = false;
+        try {
+            instance.rawLowerAlarmLimit();
+        } catch (GetException ex) {
+            exceptionThrown = true;
+        }
+        assertEquals(exceptionThrown, true);
+    }
+
+    /**
+     *
+     */
+    @Test
+    public void rawUpperWarningLimit_GetException() throws Exception {
+        System.out.println("rawUpperDisplayLimit");
+
+        Epics7Channel instance = new Epics7Channel("Test", null) {
+            public PVStructure get(String request) {
+                Structure structure = StandardFieldFactory.getStandardField().scalar(ScalarType.pvDouble, "");
+
+                PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
+                PVStructure pvStructure = pvDataCreate.createPVStructure(structure);
+                return pvStructure;
+            }
+        };
+        boolean exceptionThrown = false;
+        try {
+            instance.rawUpperWarningLimit();
+        } catch (GetException ex) {
+            exceptionThrown = true;
+        }
+        assertEquals(exceptionThrown, true);
+    }
+
+    /**
+     *
+     */
+    @Test
+    public void rawLowerWarningLimit_GetException() throws Exception {
+        System.out.println("rawUpperDisplayLimit");
+
+        Epics7Channel instance = new Epics7Channel("Test", null) {
+            public PVStructure get(String request) {
+                Structure structure = StandardFieldFactory.getStandardField().scalar(ScalarType.pvDouble, "");
+
+                PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
+                PVStructure pvStructure = pvDataCreate.createPVStructure(structure);
+                return pvStructure;
+            }
+        };
+        boolean exceptionThrown = false;
+        try {
+            instance.rawLowerWarningLimit();
+        } catch (GetException ex) {
+            exceptionThrown = true;
+        }
+        assertEquals(exceptionThrown, true);
+    }
+
+    /**
+     *
+     */
+    @Test
+    public void rawUpperControlLimit_GetException() throws Exception {
+        System.out.println("rawUpperDisplayLimit");
+
+        Epics7Channel instance = new Epics7Channel("Test", null) {
+            public PVStructure get(String request) {
+                Structure structure = StandardFieldFactory.getStandardField().scalar(ScalarType.pvDouble, "");
+
+                PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
+                PVStructure pvStructure = pvDataCreate.createPVStructure(structure);
+                return pvStructure;
+            }
+        };
+        boolean exceptionThrown = false;
+        try {
+            instance.rawUpperControlLimit();
+        } catch (GetException ex) {
+            exceptionThrown = true;
+        }
+        assertEquals(exceptionThrown, true);
+    }
+
+    /**
+     *
+     */
+    @Test
+    public void rawLowerControlLimit_GetException() throws Exception {
+        System.out.println("rawUpperDisplayLimit");
+
+        Epics7Channel instance = new Epics7Channel("Test", null) {
+            public PVStructure get(String request) {
+                Structure structure = StandardFieldFactory.getStandardField().scalar(ScalarType.pvDouble, "");
+
+                PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
+                PVStructure pvStructure = pvDataCreate.createPVStructure(structure);
+                return pvStructure;
+            }
+        };
+        boolean exceptionThrown = false;
+        try {
+            instance.rawLowerControlLimit();
+        } catch (GetException ex) {
+            exceptionThrown = true;
+        }
+        assertEquals(exceptionThrown, true);
+    }
+
 }

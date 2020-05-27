@@ -73,7 +73,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     private final Epics7ChannelSystem epics7ChannelSystem;
 
     //  Constants
-    public static final double C_DBL_DEF_TIME_IO = 5.0; 
+    public static final double C_DBL_DEF_TIME_IO = 5.0;
     public static final double C_DBL_DEF_TIME_EVENT = 0.1;
 
     // Property names
@@ -104,10 +104,10 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
 
     private CountDownLatch connectionLatch;
 
-    public Epics7Channel(String signalName, Epics7ChannelSystem CHANNEL_SYSTEM) {
+    public Epics7Channel(String signalName, Epics7ChannelSystem epics7ChannelSystem) {
         super(signalName);
 
-        this.epics7ChannelSystem = CHANNEL_SYSTEM;
+        this.epics7ChannelSystem = epics7ChannelSystem;
 
         // Load default timeouts from preferences if available, otherwise use hardcoded values.
         java.util.prefs.Preferences defaults = Preferences.nodeForPackage(xal.ca.Channel.class);
@@ -181,30 +181,18 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
             // If the other channel is connected, destroy the channel that invoked this method.
             // Otherwise, use use it.
             synchronized (connectionLock) {
-                if (chnl == caChannel) {
-                    if (connectionFlag) {
-                        if (caChannel != null) {
-                            caChannel.destroy();
-                            caChannel = null;
-                        }
-                        return;
-                    } else {
-                        nativeChannel = caChannel;
+                if (connectionFlag) {
+                    if (chnl == caChannel) {
+                        caChannel = null;
+                    } else if (chnl == pvaChannel) {
+                        pvaChannel = null;
                     }
-                } else if (chnl == pvaChannel) {
-                    if (connectionFlag) {
-                        if (pvaChannel != null) {
-                            pvaChannel.destroy();
-                            pvaChannel = null;
-                        }
-                        return;
-                    } else {
-                        nativeChannel = pvaChannel;
-                    }
-                } else {
-                    throw new RuntimeException();
+                    chnl.destroy();
+
+                    return;
                 }
 
+                nativeChannel = chnl;
                 connectionFlag = true;
                 // Notify listeners.
                 if (connectionProxy != null) {
