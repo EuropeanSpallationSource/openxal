@@ -17,9 +17,6 @@
  */
 package xal.plugin.epics7;
 
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.epics.pvaccess.client.Channel;

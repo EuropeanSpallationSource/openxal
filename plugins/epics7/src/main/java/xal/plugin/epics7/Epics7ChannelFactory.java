@@ -17,6 +17,7 @@
  */
 package xal.plugin.epics7;
 
+import java.util.logging.Logger;
 import xal.ca.Channel;
 import xal.ca.ChannelFactory;
 import xal.ca.ChannelSystem;
@@ -35,6 +36,10 @@ public class Epics7ChannelFactory extends ChannelFactory {
     private static Epics7ChannelSystem CHANNEL_SYSTEM;
 
     public Epics7ChannelFactory() {
+        setChannelSystem();
+    }
+
+    private static void setChannelSystem() {
         if (CHANNEL_SYSTEM == null) {
             CHANNEL_SYSTEM = Epics7ChannelSystem.newEpics7ChannelSystem();
         }
@@ -80,6 +85,6 @@ public class Epics7ChannelFactory extends ChannelFactory {
 
     @Override
     public void printInfo() {
-        System.out.println("Epics7ChannelFactory: using EPICS7 Open XAL plugin.");
+        Logger.getLogger(Epics7ChannelFactory.class.getName()).info("Epics7ChannelFactory: using EPICS7 Open XAL plugin.");
     }
 }
