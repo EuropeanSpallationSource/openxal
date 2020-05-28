@@ -40,8 +40,8 @@ build.maven:
         paths:
             - "$SUBDIR/target/surefire-reports/TEST-*.xml"
             - "$SUBDIR/*/target/surefire-reports/TEST-*.xml"
-            - "$SUBDIR/target/jacoco.exec"
-            - "$SUBDIR/*/target/jacoco.exec"
+            - "$SUBDIR/target/site/jacoco/jacoco.xml"
+            - "$SUBDIR/*/target/site/jacoco/jacoco.xml"
         reports:
             junit:
                 - "$SUBDIR/target/surefire-reports/TEST-*.xml"
@@ -64,7 +64,7 @@ sonarqube.maven:
     <<: *maven
     stage: deploy
     script:
-        - 'mvn $MAVEN_CLI_OPTS -Dsonar.login=$SONARQUBE_TOKEN -Dsonar.branch.name=$CI_COMMIT_REF_NAME -Dsonar.junit.reportPaths=target/surefire-reports -Dsonar.jacoco.reportPaths="target/jacoco.exec, ../test/target/jacoco.exec" sonar:sonar'
+        - 'mvn $MAVEN_CLI_OPTS -Dsonar.login=$SONARQUBE_TOKEN -Dsonar.branch.name=$CI_COMMIT_REF_NAME -Dsonar.junit.reportPaths=target/surefire-reports -Dsonar.jacoco.xmlreportPaths="target/site/jacoco/jacoco.xml, ../test/target/site/jacoco/jacoco.xml" sonar:sonar'
     only:
         - branches@ess-crs/openxal
 
