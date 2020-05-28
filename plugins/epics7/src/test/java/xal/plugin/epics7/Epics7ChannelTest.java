@@ -892,11 +892,8 @@ public class Epics7ChannelTest {
         methodCalled = false;
 
         Epics7Channel instance = new Epics7Channel("Test", Epics7TestChannelSystem.newEpics7ChannelSystem());
-        try {
-            Monitor result = instance.addMonitorValStatus((record, chan) -> methodCalled = true, 0);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+
+        Monitor result = instance.addMonitorValStatus((record, chan) -> methodCalled = true, 0);
         assertEquals(methodCalled, true);
     }
 
