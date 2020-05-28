@@ -10,6 +10,38 @@
 
     <artifactId>openxal.core.test</artifactId>
     
+    <properties>
+        <main.basedir>${project.basedir}/..</main.basedir>
+    </properties>
+    
+    
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>             
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${main.basedir}/test/target/classes</outputDirectory>
+                            <resources>          
+                                <resource>
+                                    <directory>${main.basedir}/core/target/classes</directory>
+                                    <filtering>false</filtering>
+                                </resource>
+                            </resources>              
+                        </configuration>            
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+    
     <dependencies>
         <dependency>
             <groupId>net.sf.jsci</groupId>
