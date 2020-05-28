@@ -10,38 +10,6 @@
 
     <artifactId>openxal.core.test</artifactId>
     
-    <properties>
-        <main.basedir>${project.basedir}/..</main.basedir>
-    </properties>
-    
-    
-    <build>
-        <sourceDirectory>${main.basedir}/core</sourceDirectory> 
-        <outputDirectory>${main.basedir}/core/target/classes</outputDirectory>
-        
-        <plugins>            
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <executions>
-                    <!-- disabling default-compile -->
-                    <execution>
-                        <id>default-compile</id>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                        <phase>compile</phase>
-                        <configuration>
-                            <excludes>
-                                <exclude>**/*.java</exclude>
-                            </excludes>
-                        </configuration>
-                    </execution>                    
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
-    
     <dependencies>
         <dependency>
             <groupId>net.sf.jsci</groupId>
