@@ -54,7 +54,7 @@ public class Epics7ChannelFactory extends ChannelFactory {
     @Override
     public boolean init() {
         if (CHANNEL_SYSTEM == null) {
-            return false;
+            setChannelSystem();
         }
         return CHANNEL_SYSTEM.isInitialized();
     }
