@@ -51,7 +51,7 @@ public class Epics7ChannelFactoryTest {
         Epics7ChannelFactory instance = new Epics7ChannelFactory();
 
         instance.dispose();
-        assertEquals(false, instance.init());
+        assertEquals(null, instance.channelSystem());
         // Testing disposal of disposed system.
         instance.dispose();
     }
@@ -67,10 +67,10 @@ public class Epics7ChannelFactoryTest {
 
         Channel result = instance.newChannel(signalName);
         assertEquals(signalName, result.channelName());
-        
+
         instance.setTest(true);
         result = instance.newChannel(signalName);
-        assertEquals(signalName+":TEST", result.channelName());
+        assertEquals(signalName + ":TEST", result.channelName());
 
         instance.dispose();
         result = instance.newChannel(signalName);
