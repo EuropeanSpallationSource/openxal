@@ -310,8 +310,6 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     @Override
     public Number rawUpperDisplayLimit() throws ConnectionException, GetException {
         PVStructure displayStructure = getDisplay();
-        System.out.println("----------here");
-        System.out.println(displayStructure);
         if (displayStructure != null) {
             return displayStructure.getDoubleField("limitHigh").get();
         } else {

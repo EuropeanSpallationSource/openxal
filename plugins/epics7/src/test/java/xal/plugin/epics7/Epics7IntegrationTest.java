@@ -17,10 +17,10 @@
  */
 package xal.plugin.epics7;
 
-import org.junit.After;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import xal.ca.Channel;
@@ -37,33 +37,17 @@ public class Epics7IntegrationTest {
 
     private static final ChannelFactory channelFactoryServer = ChannelFactory.newServerFactory();
     private static final ChannelFactory channelFactoryClient = ChannelFactory.defaultFactory();
+    private static List<Channel> channelServerList = new ArrayList<>();
 
     public Epics7IntegrationTest() {
     }
 
-    @BeforeClass
-    public static void setUpClass() {
-        System.setProperty("EPICS_CA_AUTO_ADDR_LIST", "NO");
-        System.setProperty("EPICS_PVA_AUTO_ADDR_LIST", "NO");
-        System.setProperty("EPICS_CA_ADDR_LIST", "255.255.255.255");
-        System.setProperty("EPICS_PVA_ADDR_LIST", "255.255.255.255");
-    }
+    public static void server(String channelName, Object value) throws ConnectionException, PutException {
 
-    @AfterClass
-    public static void tearDownClass() {
-    }
-
-    @Before
-    public void setUp() {
-    }
-
-    @After
-    public void tearDown() {
-    }
-
-    public void test(String channelName, Object value) throws ConnectionException, PutException, GetException {
         Channel channelServer = channelFactoryServer.getChannel(channelName);
 
+        channelServerList.add(channelServer);
+        
         if (value instanceof Float) {
             channelServer.putVal((float) value);
         } else if (value instanceof Double) {
@@ -89,10 +73,49 @@ public class Epics7IntegrationTest {
         } else if (value instanceof String[]) {
             channelServer.putVal((String[]) value);
         }
+    }
 
+    @BeforeClass
+    public static void setUpClass() throws ConnectionException, PutException {
+        System.setProperty("EPICS_CA_AUTO_ADDR_LIST", "NO");
+        System.setProperty("EPICS_PVA_AUTO_ADDR_LIST", "NO");
+        System.setProperty("EPICS_CA_ADDR_LIST", "255.255.255.255");
+        System.setProperty("EPICS_PVA_ADDR_LIST", "255.255.255.255");
+        
+        server("Test:Channel_float", (float) 5.6);
+
+        server("Test:Channel_double", (double) 5.6);
+
+        server("Test:Channel_byte", (byte) 1);
+
+        server("Test:Channel_short", (short) 2);
+
+        server("Test:Channel_int", (int) 3);
+
+        server("Test:Channel_String", "Test string");
+
+        server("Test:Channel_floatArray", new float[]{(float) 1.2, (float) 5.6});
+
+        server("Test:Channel_doubleArray", new double[]{1.2, 5.6});
+
+        server("Test:Channel_byteArray", new byte[]{1, 0});
+
+        server("Test:Channel_shortArray", new short[]{2, 1, 0});
+
+        server("Test:Channel_intArray", new int[]{3, 2, 1, 0});
+
+        server("Test:Channel_StringArray", new String[]{"Test string", "Second String"});
+    }
+
+    @AfterClass
+    public static void tearDownClass() {
+        ChannelFactory.disposeAll();
+    }
+
+    public void test(String channelName, Object value) throws ConnectionException, PutException, GetException {
         Channel caChannel = channelFactoryClient.getChannel("ca://" + channelName);
         Channel pvaChannel = channelFactoryClient.getChannel("pva://" + channelName);
-
+try{
         // Reducing timeouts to shorten the tests in case they fail
         caChannel.setIoTimeout(0.2);
         pvaChannel.setIoTimeout(0.2);
@@ -174,6 +197,7 @@ public class Epics7IntegrationTest {
             Assert.assertArrayEquals((String[]) value, caChannel.getArrString());
             Assert.assertArrayEquals((String[]) value, pvaChannel.getArrString());
         }
+}catch(Exception e){e.printStackTrace();}
     }
 
     @Test
