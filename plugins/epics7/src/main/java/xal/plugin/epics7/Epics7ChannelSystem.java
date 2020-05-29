@@ -87,8 +87,8 @@ public class Epics7ChannelSystem extends ChannelSystem {
         }
     }
 
-    private String getProperty(String name, String defaultValue, Properties _properties) {
-        return System.getProperty(name, _properties.getProperty(name, defaultValue));
+    private String getProperty(String name, String defaultValue, Properties properties) {
+        return System.getProperty(name, properties.getProperty(name, defaultValue));
     }
 
     /**
@@ -267,7 +267,7 @@ public class Epics7ChannelSystem extends ChannelSystem {
 
     @Override
     public void printInfo() {
-        System.out.println("Epics7ChannelSystem: using EPICS7 Open XAL plugin.");
+        Logger.getLogger(Epics7ChannelSystem.class.getName()).info("Epics7ChannelSystem: using EPICS7 Open XAL plugin.");
     }
 
     public boolean isInitialized() {
