@@ -142,7 +142,7 @@ public class Epics7ChannelTest {
             Logger.getLogger(Epics7ChannelTest.class.getName()).log(Level.SEVERE, null, ex);
         }
         assertEquals(handler.message, null);
-        assertEquals(handler.level, Level.INFO);
+        assertEquals(Level.INFO, handler.level);
     }
 
     /**

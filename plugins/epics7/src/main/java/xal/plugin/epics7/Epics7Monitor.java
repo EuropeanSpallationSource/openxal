@@ -29,7 +29,6 @@ import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.Status;
 import org.epics.pvdata.pv.Structure;
 import xal.ca.ConnectionException;
-import xal.ca.MonitorException;
 
 /**
  * Monitor implementation for Epics7.
@@ -38,7 +37,7 @@ import xal.ca.MonitorException;
  */
 public class Epics7Monitor extends xal.ca.Monitor implements MonitorRequester {
 
-    private volatile Channel nativeChannel;
+    volatile Channel nativeChannel;
     protected volatile Monitor nativeMonitor;
     protected final EventListener listener;
 
@@ -70,18 +69,14 @@ public class Epics7Monitor extends xal.ca.Monitor implements MonitorRequester {
     }
 
     @Override
-    protected void begin() throws MonitorException {
+    protected void begin() {
         nativeMonitor.start();
     }
 
     //---------------- Implementing MonitorRequester abstract methods ------------------
     @Override
     public void monitorConnect(Status status, Monitor monitor, Structure structure) {
-        try {
-            begin();
-        } catch (MonitorException ex) {
-            Logger.getLogger(Epics7Monitor.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        begin();
     }
 
     @Override
