@@ -120,7 +120,7 @@ public class Epics7MonitorTest {
 
         };
 
-        instance.monitorConnect(null, null, null);
+        instance.monitorConnect(null, instance.nativeMonitor, null);
 
         assertEquals(true, methodCalled);
     }

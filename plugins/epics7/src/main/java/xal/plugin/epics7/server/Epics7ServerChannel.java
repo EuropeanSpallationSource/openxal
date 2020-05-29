@@ -37,6 +37,7 @@ import org.epics.pvdata.pv.PVDoubleArray;
 import org.epics.pvdata.pv.PVField;
 import org.epics.pvdata.pv.PVFloatArray;
 import org.epics.pvdata.pv.PVIntArray;
+import org.epics.pvdata.pv.PVLongArray;
 import org.epics.pvdata.pv.PVShortArray;
 import org.epics.pvdata.pv.PVStringArray;
 import org.epics.pvdata.pv.PVStructure;
@@ -79,7 +80,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
     private MemoryProcessVariable memoryProcessVariable;
     private PVRecord pvRecord;
 
-    private final Epics7ServerChannelSystem CHANNEL_SYSTEM;
+    private final Epics7ServerChannelSystem epics7ServerChannelSystem;
 
     private static final String PROPERTIES = ALARM_FIELD + "," + TIMESTAMP_FIELD + ","
             + DISPLAY_FIELD + "," + CONTROL_FIELD;
@@ -92,7 +93,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
             m_strId = m_strId.substring(m_strId.indexOf("://") + 3);
         }
 
-        this.CHANNEL_SYSTEM = CHANNEL_SYSTEM;
+        this.epics7ServerChannelSystem = CHANNEL_SYSTEM;
 
         requestConnection();
     }
@@ -130,7 +131,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         }
         memoryProcessVariable = newMemoryProcessVariable;
 
-        CHANNEL_SYSTEM.addMemPV(memoryProcessVariable);
+        epics7ServerChannelSystem.addMemPV(memoryProcessVariable);
     }
 
     private void addRecord(ScalarType scalarType, boolean array) {
@@ -156,19 +157,19 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         }
         pvRecord = newPVRecord;
 
-        CHANNEL_SYSTEM.addRecord(pvRecord);
+        epics7ServerChannelSystem.addRecord(pvRecord);
     }
 
     private void removeCAPV() {
         if (memoryProcessVariable != null) {
-            CHANNEL_SYSTEM.removeMemPV(memoryProcessVariable);
+            epics7ServerChannelSystem.removeMemPV(memoryProcessVariable);
             memoryProcessVariable = null;
         }
     }
 
     private void removeRecord() {
         if (pvRecord != null) {
-            CHANNEL_SYSTEM.removeRecord(pvRecord);
+            epics7ServerChannelSystem.removeRecord(pvRecord);
             pvRecord = null;
         }
     }
@@ -190,21 +191,23 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         return 0;
     }
 
-    private PVStructure getDisplay() {
+    protected PVStructure getDisplay() {
+        
+        System.out.println("ServerChannel");
         if (pvRecord != null) {
             return pvRecord.getPVStructure().getStructureField(DISPLAY_FIELD);
         }
         return null;
     }
 
-    private PVStructure getVAlueAlarm() {
+    protected PVStructure getVAlueAlarm() {
         if (pvRecord != null) {
             return pvRecord.getPVStructure().getStructureField(VALUE_ALARM_FIELD);
         }
         return null;
     }
 
-    private PVStructure getControl() {
+    protected PVStructure getControl() {
         if (pvRecord != null) {
             return pvRecord.getPVStructure().getStructureField(CONTROL_FIELD);
         }
@@ -374,6 +377,28 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         updateTimeStampAlarmsAndTriggerListener(listener);
     }
 
+    /**
+     * Long is not supported in EPICS3, so they are casted to int for CA.
+     */
+    @Override
+    public void putRawValCallback(long newVal, PutListener listener) throws ConnectionException, PutException {
+        if (elementType() != long.class) {
+            addCAPV(DBRType.INT);
+            addRecord(ScalarType.pvLong, false);
+        }
+
+        pvRecord.getPVStructure().getLongField(VALUE_FIELD).put(newVal);
+
+        DBR dbr = new DBR_Int(new int[]{(int) newVal});
+        try {
+            memoryProcessVariable.write(dbr, null);
+        } catch (CAException ex) {
+            Logger.getLogger(Epics7ServerChannel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        updateTimeStampAlarmsAndTriggerListener(listener);
+    }
+
     @Override
     public void putRawValCallback(float newVal, PutListener listener) throws ConnectionException, PutException {
         if (elementType() != float.class) {
@@ -479,6 +504,32 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         pvRecord.getPVStructure().getSubField(PVIntArray.class, Epics7Channel.VALUE_REQUEST).put(0, newVal.length, newVal, 0);
 
         DBR dbr = new DBR_Int(newVal);
+        try {
+            memoryProcessVariable.write(dbr, null);
+        } catch (CAException ex) {
+            Logger.getLogger(Epics7ServerChannel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        updateTimeStampAlarmsAndTriggerListener(listener);
+    }
+
+    /**
+     * Long is not supported in EPICS3, so they are casted to int for CA.
+     */
+    @Override
+    public void putRawValCallback(long[] newVal, PutListener listener) throws ConnectionException, PutException {
+        if (elementType() != long[].class) {
+            addCAPV(DBRType.INT);
+            addRecord(ScalarType.pvLong, true);
+        }
+
+        pvRecord.getPVStructure().getSubField(PVLongArray.class, Epics7Channel.VALUE_REQUEST).put(0, newVal.length, newVal, 0);
+
+        int[] newInt = new int[newVal.length];
+        for (int i = 0; i < newVal.length; i++) {
+            newInt[i] = (int) newVal[i];
+        }
+        DBR dbr = new DBR_Int(newInt);
         try {
             memoryProcessVariable.write(dbr, null);
         } catch (CAException ex) {

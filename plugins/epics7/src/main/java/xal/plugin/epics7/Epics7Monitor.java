@@ -76,7 +76,7 @@ public class Epics7Monitor extends xal.ca.Monitor implements MonitorRequester {
     //---------------- Implementing MonitorRequester abstract methods ------------------
     @Override
     public void monitorConnect(Status status, Monitor monitor, Structure structure) {
-        begin();
+        monitor.start();
     }
 
     @Override

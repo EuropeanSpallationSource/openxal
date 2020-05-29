@@ -41,6 +41,8 @@ import org.epics.pvdata.pv.PVFloat;
 import org.epics.pvdata.pv.PVFloatArray;
 import org.epics.pvdata.pv.PVInt;
 import org.epics.pvdata.pv.PVIntArray;
+import org.epics.pvdata.pv.PVLong;
+import org.epics.pvdata.pv.PVLongArray;
 import org.epics.pvdata.pv.PVShort;
 import org.epics.pvdata.pv.PVShortArray;
 import org.epics.pvdata.pv.PVString;
@@ -268,7 +270,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
         return true;
     }
 
-    private PVStructure getControl() throws ConnectionException, GetException {
+    protected PVStructure getControl() throws ConnectionException, GetException {
         PVStructure pvStructure = get(CONTROL_FIELD);
         if (pvStructure != null) {
             return pvStructure.getStructureField(CONTROL_FIELD);
@@ -277,7 +279,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
         }
     }
 
-    private PVStructure getDisplay() throws ConnectionException, GetException {
+    protected PVStructure getDisplay() throws ConnectionException, GetException {
         PVStructure pvStructure = get(DISPLAY_FIELD);
         if (pvStructure != null) {
             return pvStructure.getStructureField(DISPLAY_FIELD);
@@ -286,7 +288,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
         }
     }
 
-    private PVStructure getVAlueAlarm() throws ConnectionException, GetException {
+    protected PVStructure getVAlueAlarm() throws ConnectionException, GetException {
         PVStructure pvStructure = get(VALUE_ALARM_FIELD);
         if (pvStructure != null) {
             return pvStructure.getStructureField(VALUE_ALARM_FIELD);
@@ -308,6 +310,8 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     @Override
     public Number rawUpperDisplayLimit() throws ConnectionException, GetException {
         PVStructure displayStructure = getDisplay();
+        System.out.println("----------here");
+        System.out.println(displayStructure);
         if (displayStructure != null) {
             return displayStructure.getDoubleField("limitHigh").get();
         } else {
@@ -567,6 +571,14 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     }
 
     @Override
+    public void putRawValCallback(long newVal, PutListener listener) throws ConnectionException, PutException {
+        putRawValCallback(listener, (pvStructure) -> {
+            PVLong pvLong = pvStructure.getLongField(Epics7Channel.VALUE_REQUEST);
+            pvLong.put(newVal);
+        });
+    }
+
+    @Override
     public void putRawValCallback(float newVal, PutListener listener) throws ConnectionException, PutException {
         putRawValCallback(listener, (pvStructure) -> {
             PVFloat pvFloat = pvStructure.getFloatField(Epics7Channel.VALUE_REQUEST);
@@ -611,6 +623,14 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
         putRawValCallback(listener, (pvStructure) -> {
             PVIntArray pvIntArray = pvStructure.getSubField(PVIntArray.class, Epics7Channel.VALUE_REQUEST);
             pvIntArray.put(0, newVal.length, newVal, 0);
+        });
+    }
+
+    @Override
+    public void putRawValCallback(long[] newVal, PutListener listener) throws ConnectionException, PutException {
+        putRawValCallback(listener, (pvStructure) -> {
+            PVLongArray pvLongArray = pvStructure.getSubField(PVLongArray.class, Epics7Channel.VALUE_REQUEST);
+            pvLongArray.put(0, newVal.length, newVal, 0);
         });
     }
 
