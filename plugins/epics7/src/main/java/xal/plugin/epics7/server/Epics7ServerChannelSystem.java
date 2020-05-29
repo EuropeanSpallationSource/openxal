@@ -112,6 +112,17 @@ public class Epics7ServerChannelSystem extends Epics7ChannelSystem {
         });
         t.setDaemon(false);
         Runtime.getRuntime().addShutdownHook(t);
+
+        if (caContext == null || pvaContext == null) {
+            if (caContext == null) {
+                Logger.getLogger(Epics7ChannelSystem.class.getName(), "Channel Access server context could not be created.");
+            }
+            if (pvaContext == null) {
+                Logger.getLogger(Epics7ChannelSystem.class.getName(), "PV Access server context could not be created.");
+            }
+        } else {
+            initialized = true;
+        }
     }
 
     // Disposing the context and clearing all the records.
@@ -120,5 +131,6 @@ public class Epics7ServerChannelSystem extends Epics7ChannelSystem {
         caContext.dispose();
         pvaContext.dispose();
         pvaChannelProvider.destroy();
+        initialized = false;
     }
 }

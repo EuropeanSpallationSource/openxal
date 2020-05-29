@@ -33,7 +33,7 @@ public class Epics7ChannelSystem extends ChannelSystem {
 
     private ChannelProvider caChannelProvider;
     private ChannelProvider pvaChannelProvider;
-    private volatile boolean initialized = false;
+    protected volatile boolean initialized = false;
 
     protected ChannelProvider getCaChannelProvider() {
         return caChannelProvider;
@@ -78,10 +78,13 @@ public class Epics7ChannelSystem extends ChannelSystem {
         caChannelProvider = ChannelProviderRegistryFactory.getChannelProviderRegistry().getProvider("ca");
         pvaChannelProvider = ChannelProviderRegistryFactory.getChannelProviderRegistry().getProvider("pva");
 
-        if (caChannelProvider == null) {
-            Logger.getLogger(Epics7ChannelSystem.class.getName(), "Channel Access provider could not be created.");
-        } else if (pvaChannelProvider == null) {
-            Logger.getLogger(Epics7ChannelSystem.class.getName(), "PV Access provider could not be created.");
+        if (caChannelProvider == null || pvaChannelProvider == null) {
+            if (caChannelProvider == null) {
+                Logger.getLogger(Epics7ChannelSystem.class.getName(), "Channel Access provider could not be created.");
+            }
+            if (pvaChannelProvider == null) {
+                Logger.getLogger(Epics7ChannelSystem.class.getName(), "PV Access provider could not be created.");
+            }
         } else {
             initialized = true;
         }
@@ -277,5 +280,6 @@ public class Epics7ChannelSystem extends ChannelSystem {
     public void dispose() {
         org.epics.ca.ClientFactory.stop();
         org.epics.pvaccess.ClientFactory.stop();
+        initialized = false;
     }
 }
