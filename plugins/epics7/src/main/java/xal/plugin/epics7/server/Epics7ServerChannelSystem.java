@@ -41,7 +41,7 @@ import xal.plugin.epics7.Epics7ChannelSystem;
 public class Epics7ServerChannelSystem extends Epics7ChannelSystem {
 
     private ChannelProvider pvaChannelProvider;
-    private PVDatabase master;
+    protected PVDatabase master;
     private gov.aps.jca.cas.ServerContext caContext;
     private ServerContext pvaContext;
     private DefaultServerImpl channelServer;
