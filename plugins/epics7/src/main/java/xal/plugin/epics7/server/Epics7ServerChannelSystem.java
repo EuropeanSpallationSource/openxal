@@ -44,7 +44,7 @@ public class Epics7ServerChannelSystem extends Epics7ChannelSystem {
     private PVDatabase master;
     private gov.aps.jca.cas.ServerContext caContext;
     private ServerContext pvaContext;
-    private DefaultServerImpl CHANNEL_SERVER;
+    private DefaultServerImpl channelServer;
     private ProcessVariableEventDispatcher processVariableEventDispatcher;
 
     public static Epics7ServerChannelSystem newEpics7ServerChannelSystem() {
@@ -66,16 +66,16 @@ public class Epics7ServerChannelSystem extends Epics7ChannelSystem {
     }
 
     public synchronized void addMemPV(MemoryProcessVariable memoryProcessVariable) {
-        CHANNEL_SERVER.registerProcessVaribale(memoryProcessVariable);
-        CHANNEL_SERVER.registerProcessVaribale(memoryProcessVariable.getName() + ".VAL", memoryProcessVariable);
+        channelServer.registerProcessVaribale(memoryProcessVariable);
+        channelServer.registerProcessVaribale(memoryProcessVariable.getName() + ".VAL", memoryProcessVariable);
 
         processVariableEventDispatcher = new ProcessVariableEventDispatcher(memoryProcessVariable);
         memoryProcessVariable.setEventCallback(processVariableEventDispatcher);
     }
 
     void removeMemPV(MemoryProcessVariable memoryProcessVariable) {
-        CHANNEL_SERVER.unregisterProcessVaribale(memoryProcessVariable.getName());
-        CHANNEL_SERVER.unregisterProcessVaribale(memoryProcessVariable.getName() + ".VAL");
+        channelServer.unregisterProcessVaribale(memoryProcessVariable.getName());
+        channelServer.unregisterProcessVaribale(memoryProcessVariable.getName() + ".VAL");
         memoryProcessVariable.destroy();
     }
 
@@ -95,8 +95,8 @@ public class Epics7ServerChannelSystem extends Epics7ChannelSystem {
         pvaChannelProvider = ChannelProviderLocalFactory.getChannelProviderLocal();
         master = PVDatabaseFactory.getMaster();
         try {
-            CHANNEL_SERVER = new DefaultServerImpl();
-            caContext = JCALibrary.getInstance().createServerContext(JCALibrary.CHANNEL_ACCESS_SERVER_JAVA, CHANNEL_SERVER);
+            channelServer = new DefaultServerImpl();
+            caContext = JCALibrary.getInstance().createServerContext(JCALibrary.CHANNEL_ACCESS_SERVER_JAVA, channelServer);
             pvaContext = ServerContextImpl.startPVAServer(pvaChannelProvider.getProviderName(), 0, true, null);
         } catch (PVAException | CAException ex) {
             Logger.getLogger(Epics7ServerChannelSystem.class.getName()).log(Level.SEVERE, null, ex);

@@ -52,6 +52,7 @@ import static xal.plugin.epics7.Epics7ChannelStatusRecord.STATUS_FIELD_NAME;
 import static xal.plugin.epics7.Epics7ChannelTimeRecord.NANOSECONDS_FIELD_NAME;
 import static xal.plugin.epics7.Epics7ChannelTimeRecord.SECONDS_FIELD_NAME;
 import static xal.plugin.epics7.Epics7ChannelTimeRecord.TIMESTAMP_FIELD_NAME;
+import static xal.plugin.epics7.TestChannelProvider.CONNECTION_TIME;
 
 /**
  *
@@ -137,7 +138,7 @@ public class Epics7ChannelTest {
 
         // Waiting for the other thread to finish...
         try {
-            Thread.sleep(10);
+            Thread.sleep(CONNECTION_TIME/2);
         } catch (InterruptedException ex) {
             Logger.getLogger(Epics7ChannelTest.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -162,23 +163,23 @@ public class Epics7ChannelTest {
         instance3.requestConnection();
 
         try {
-            Thread.sleep(20);
+            Thread.sleep(CONNECTION_TIME+CONNECTION_TIME/2);
         } catch (InterruptedException ex) {
             //
         }
 
-        assertEquals(instance.isConnected(), true);
-        assertEquals(instance2.isConnected(), true);
-        assertEquals(instance3.isConnected(), true);
+        assertEquals(true, instance.isConnected());
+        assertEquals(true, instance2.isConnected());
+        assertEquals(true, instance3.isConnected());
 
         //Requesting connection to a connected channel
         instance.requestConnection();
         instance2.requestConnection();
         instance3.requestConnection();
 
-        assertEquals(instance.isConnected(), true);
-        assertEquals(instance2.isConnected(), true);
-        assertEquals(instance3.isConnected(), true);
+        assertEquals(true, instance.isConnected());
+        assertEquals(true, instance2.isConnected());
+        assertEquals(true, instance3.isConnected());
 
     }
 

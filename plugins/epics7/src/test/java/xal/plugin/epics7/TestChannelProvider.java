@@ -33,6 +33,8 @@ import org.epics.pvdata.factory.StatusFactory;
  */
 public class TestChannelProvider implements ChannelProvider {
 
+    protected static final int CONNECTION_TIME = 50;
+
     @Override
     public void destroy() {
         //
@@ -66,7 +68,7 @@ public class TestChannelProvider implements ChannelProvider {
         Thread thread = new Thread() {
             public void run() {
                 try {
-                    Thread.sleep(10);
+                    Thread.sleep(CONNECTION_TIME);
                 } catch (InterruptedException ex) {
                     //
                 }
