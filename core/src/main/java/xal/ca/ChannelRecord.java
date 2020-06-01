@@ -86,7 +86,6 @@ public interface ChannelRecord {
      * @return The data as a scalar int.
      */
     public int intValue();
-
     /**
      * Get the value of the array element identified by the index and convert it
      * to a int.
@@ -102,6 +101,30 @@ public interface ChannelRecord {
      * @return The data as a int array.
      */
     public int[] intArray();
+
+    /**
+     * Get the data converted to a scalar long. If the data is an array the the
+     * value of the first element is converted to a long and returned.
+     *
+     * @return The data as a scalar long.
+     */
+    public long longValue();
+
+    /**
+     * Get the value of the array element identified by the index and convert it
+     * to a long.
+     *
+     * @param index The index of the array element to get.
+     * @return The data element at the index as a scalar long.
+     */
+    public long longValueAt(int index);
+
+    /**
+     * Get the data converted to a long array.
+     *
+     * @return The data as a long array.
+     */
+    public long[] longArray();
 
     /**
      * Get the data converted to a scalar float. If the data is an array the the

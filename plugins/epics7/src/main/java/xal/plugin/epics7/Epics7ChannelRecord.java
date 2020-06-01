@@ -24,6 +24,7 @@ import org.epics.pvdata.pv.PVDoubleArray;
 import org.epics.pvdata.pv.PVField;
 import org.epics.pvdata.pv.PVFloatArray;
 import org.epics.pvdata.pv.PVIntArray;
+import org.epics.pvdata.pv.PVLongArray;
 import org.epics.pvdata.pv.PVScalar;
 import org.epics.pvdata.pv.PVScalarArray;
 import org.epics.pvdata.pv.PVShortArray;
@@ -316,6 +317,44 @@ public class Epics7ChannelRecord extends ChannelRecordImpl {
                     "Type of field {0} in {1} is not int[]. Type = {2}. Use the corresponding method.",
                     new Object[]{fieldName, channelName, getType().getCanonicalName()});
             return new int[]{};
+        }
+    }
+
+    @Override
+    public long longValue() {
+        try {
+            return store.getLongField(fieldName).get();
+        } catch (Exception e) {
+            Logger.getLogger(Epics7ChannelRecord.class.getName()).log(Level.SEVERE,
+                    "Type of field {0} in {1} is not long. Type = {2}. Use the corresponding method.",
+                    new Object[]{fieldName, channelName, getType().getCanonicalName()});
+            return 0;
+        }
+    }
+
+    @Override
+    public long longValueAt(final int index) {
+        PVLongArray longArray = (PVLongArray) store.getScalarArrayField(fieldName, ScalarType.pvLong);
+        try {
+            return longArray.get().getLong(index);
+        } catch (Exception e) {
+            Logger.getLogger(Epics7ChannelRecord.class.getName()).log(Level.SEVERE,
+                    "Type of field {0} in {1} is not long[]. Type = {2}. Use the corresponding method.",
+                    new Object[]{fieldName, channelName, getType().getCanonicalName()});
+            return 0;
+        }
+    }
+
+    @Override
+    public long[] longArray() {
+        PVLongArray longArray = (PVLongArray) store.getScalarArrayField(fieldName, ScalarType.pvLong);
+        try {
+            return longArray.get().toArray(new long[longArray.getLength()]);
+        } catch (Exception e) {
+            Logger.getLogger(Epics7ChannelRecord.class.getName()).log(Level.SEVERE,
+                    "Type of field {0} in {1} is not long[]. Type = {2}. Use the corresponding method.",
+                    new Object[]{fieldName, channelName, getType().getCanonicalName()});
+            return new long[]{};
         }
     }
 

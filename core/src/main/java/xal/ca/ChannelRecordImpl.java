@@ -140,6 +140,36 @@ public class ChannelRecordImpl implements ChannelRecord {
     }
 
     /**
+     * Get the data converted to a scalar long. If the data is an array the the
+     * value of the first element is converted to a long and returned.
+     *
+     * @return The data as a scalar long.
+     */
+    public long longValue() {
+        return _store.longValue();
+    }
+
+    /**
+     * Get the value of the array element identified by the index and convert it
+     * to a long.
+     *
+     * @param index The index of the array element to get.
+     * @return The data element at the index as a scalar long.
+     */
+    public long longValueAt(final int index) {
+        return _store.longValueAt(index);
+    }
+
+    /**
+     * Get the data converted to a long array.
+     *
+     * @return The data as a long array.
+     */
+    public long[] longArray() {
+        return _store.longArray();
+    }
+
+    /**
      * Get the data converted to a scalar float. If the data is an array the the
      * value of the first element is converted to a float and returned.
      *

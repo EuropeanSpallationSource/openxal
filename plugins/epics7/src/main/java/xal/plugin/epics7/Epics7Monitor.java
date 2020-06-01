@@ -37,7 +37,7 @@ import xal.ca.ConnectionException;
  */
 public class Epics7Monitor extends xal.ca.Monitor implements MonitorRequester {
 
-    volatile Channel nativeChannel;
+    protected volatile Channel nativeChannel;
     protected volatile Monitor nativeMonitor;
     protected final EventListener listener;
 
