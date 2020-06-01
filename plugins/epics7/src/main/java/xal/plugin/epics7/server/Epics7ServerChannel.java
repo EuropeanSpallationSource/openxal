@@ -192,7 +192,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
     }
 
     protected PVStructure getDisplay() {
-        
+
         System.out.println("ServerChannel");
         if (pvRecord != null) {
             return pvRecord.getPVStructure().getStructureField(DISPLAY_FIELD);
@@ -258,7 +258,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
     public Monitor addMonitorValTime(IEventSinkValTime listener, int intMaskFire) throws ConnectionException, MonitorException {
         checkConnection("addMonitorValTime");
 
-        return Epics7ServerMonitor.createNewMonitor(pvRecord, Epics7Channel.TIME_REQUEST, (pvStructure) -> {
+        return Epics7ServerMonitor.createNewMonitor(pvRecord, memoryProcessVariable, Epics7Channel.TIME_REQUEST, (pvStructure) -> {
             ChannelTimeRecord record = new Epics7ChannelTimeRecord(pvStructure, this.channelName());
             listener.eventValue(record, this);
         }, intMaskFire);
@@ -268,7 +268,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
     public Monitor addMonitorValStatus(IEventSinkValStatus listener, int intMaskFire) throws ConnectionException, MonitorException {
         checkConnection("addMonitorValStatus");
 
-        return Epics7ServerMonitor.createNewMonitor(pvRecord, Epics7Channel.STATUS_REQUEST, (pvStructure) -> {
+        return Epics7ServerMonitor.createNewMonitor(pvRecord, memoryProcessVariable, Epics7Channel.STATUS_REQUEST, (pvStructure) -> {
             ChannelStatusRecord record = new Epics7ChannelStatusRecord(pvStructure, this.channelName());
             listener.eventValue(record, this);
         }, intMaskFire);
@@ -278,7 +278,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
     public Monitor addMonitorValue(IEventSinkValue listener, int intMaskFire) throws ConnectionException, MonitorException {
         checkConnection("addMonitorValue");
 
-        return Epics7ServerMonitor.createNewMonitor(pvRecord, Epics7Channel.VALUE_REQUEST, (pvStructure) -> {
+        return Epics7ServerMonitor.createNewMonitor(pvRecord, memoryProcessVariable, Epics7Channel.VALUE_REQUEST, (pvStructure) -> {
             ChannelRecord record = new Epics7ChannelRecord(pvStructure, this.channelName());
             listener.eventValue(record, this);
         }, intMaskFire);
