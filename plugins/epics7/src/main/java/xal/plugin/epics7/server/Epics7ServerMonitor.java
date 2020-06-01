@@ -141,49 +141,79 @@ public class Epics7ServerMonitor extends Epics7Monitor implements MonitorRequest
         PVStructure pvStructure = record.getPVStructure();
 
         if (event.getType().isBYTE()) {
-            byte[] byteValue = ((DBR_CTRL_Byte) event).getByteValue();
-            if (pvStructure.getSubField(VALUE_FIELD).getField().getType() == Type.scalar) {
-                pvStructure.getByteField(VALUE_FIELD).put(byteValue[0]);
-            } else if (pvStructure.getSubField(VALUE_FIELD).getField().getType() == Type.scalarArray) {
-                pvStructure.getSubField(PVByteArray.class, Epics7Channel.VALUE_REQUEST).put(0, byteValue.length, byteValue, 0);
-            }
+            updateByteValue(event, pvStructure);
         } else if (event.getType().isDOUBLE()) {
-            double[] doubleValue = ((DBR_CTRL_Double) event).getDoubleValue();
-            if (pvStructure.getSubField(VALUE_FIELD).getField().getType() == Type.scalar) {
-                pvStructure.getDoubleField(VALUE_FIELD).put(doubleValue[0]);
-            } else if (pvStructure.getSubField(VALUE_FIELD).getField().getType() == Type.scalarArray) {
-                pvStructure.getSubField(PVDoubleArray.class, Epics7Channel.VALUE_REQUEST).put(0, doubleValue.length, doubleValue, 0);
-            }
+            updateDoubleValue(event, pvStructure);
         } else if (event.getType().isFLOAT()) {
-            float[] floatValue = ((DBR_CTRL_Float) event).getFloatValue();
-            if (pvStructure.getSubField(VALUE_FIELD).getField().getType() == Type.scalar) {
-                pvStructure.getFloatField(VALUE_FIELD).put(floatValue[0]);
-            } else if (pvStructure.getSubField(VALUE_FIELD).getField().getType() == Type.scalarArray) {
-                pvStructure.getSubField(PVFloatArray.class, Epics7Channel.VALUE_REQUEST).put(0, floatValue.length, floatValue, 0);
-            }
+            updateFloatValue(event, pvStructure);
         } else if (event.getType().isINT()) {
-            int[] intValue = ((DBR_CTRL_Int) event).getIntValue();
-            if (pvStructure.getSubField(VALUE_FIELD).getField().getType() == Type.scalar) {
-                pvStructure.getIntField(VALUE_FIELD).put(intValue[0]);
-            } else if (pvStructure.getSubField(VALUE_FIELD).getField().getType() == Type.scalarArray) {
-                pvStructure.getSubField(PVIntArray.class, Epics7Channel.VALUE_REQUEST).put(0, intValue.length, intValue, 0);
-            }
+            updateIntValue(event, pvStructure);
         } else if (event.getType().isSHORT()) {
-            short[] shortValue = ((DBR_CTRL_Short) event).getShortValue();
-            if (pvStructure.getSubField(VALUE_FIELD).getField().getType() == Type.scalar) {
-                pvStructure.getShortField(VALUE_FIELD).put(shortValue[0]);
-            } else if (pvStructure.getSubField(VALUE_FIELD).getField().getType() == Type.scalarArray) {
-                pvStructure.getSubField(PVShortArray.class, Epics7Channel.VALUE_REQUEST).put(0, shortValue.length, shortValue, 0);
-            }
+            updateShortValue(event, pvStructure);
         } else if (event.getType().isSTRING()) {
-            String[] StringValue = ((DBR_CTRL_String) event).getStringValue();
-            if (pvStructure.getSubField(VALUE_FIELD).getField().getType() == Type.scalar) {
-                pvStructure.getStringField(VALUE_FIELD).put(StringValue[0]);
-            } else if (pvStructure.getSubField(VALUE_FIELD).getField().getType() == Type.scalarArray) {
-                pvStructure.getSubField(PVStringArray.class, Epics7Channel.VALUE_REQUEST).put(0, StringValue.length, StringValue, 0);
-            }
+            updateStringValue(event, pvStructure);
         }
 
+        return pvStructure;
+    }
+
+    private PVStructure updateByteValue(DBR event, PVStructure pvStructure) {
+        byte[] byteValue = ((DBR_CTRL_Byte) event).getByteValue();
+        if (pvStructure.getSubField(VALUE_FIELD).getField().getType() == Type.scalar) {
+            pvStructure.getByteField(VALUE_FIELD).put(byteValue[0]);
+        } else if (pvStructure.getSubField(VALUE_FIELD).getField().getType() == Type.scalarArray) {
+            pvStructure.getSubField(PVByteArray.class, Epics7Channel.VALUE_REQUEST).put(0, byteValue.length, byteValue, 0);
+        }
+        return pvStructure;
+    }
+
+    private PVStructure updateDoubleValue(DBR event, PVStructure pvStructure) {
+        double[] doubleValue = ((DBR_CTRL_Double) event).getDoubleValue();
+        if (pvStructure.getSubField(VALUE_FIELD).getField().getType() == Type.scalar) {
+            pvStructure.getDoubleField(VALUE_FIELD).put(doubleValue[0]);
+        } else if (pvStructure.getSubField(VALUE_FIELD).getField().getType() == Type.scalarArray) {
+            pvStructure.getSubField(PVDoubleArray.class, Epics7Channel.VALUE_REQUEST).put(0, doubleValue.length, doubleValue, 0);
+        }
+        return pvStructure;
+    }
+
+    private PVStructure updateFloatValue(DBR event, PVStructure pvStructure) {
+        float[] floatValue = ((DBR_CTRL_Float) event).getFloatValue();
+        if (pvStructure.getSubField(VALUE_FIELD).getField().getType() == Type.scalar) {
+            pvStructure.getFloatField(VALUE_FIELD).put(floatValue[0]);
+        } else if (pvStructure.getSubField(VALUE_FIELD).getField().getType() == Type.scalarArray) {
+            pvStructure.getSubField(PVFloatArray.class, Epics7Channel.VALUE_REQUEST).put(0, floatValue.length, floatValue, 0);
+        }
+        return pvStructure;
+    }
+
+    private PVStructure updateIntValue(DBR event, PVStructure pvStructure) {
+        int[] intValue = ((DBR_CTRL_Int) event).getIntValue();
+        if (pvStructure.getSubField(VALUE_FIELD).getField().getType() == Type.scalar) {
+            pvStructure.getIntField(VALUE_FIELD).put(intValue[0]);
+        } else if (pvStructure.getSubField(VALUE_FIELD).getField().getType() == Type.scalarArray) {
+            pvStructure.getSubField(PVIntArray.class, Epics7Channel.VALUE_REQUEST).put(0, intValue.length, intValue, 0);
+        }
+        return pvStructure;
+    }
+
+    private PVStructure updateShortValue(DBR event, PVStructure pvStructure) {
+        short[] shortValue = ((DBR_CTRL_Short) event).getShortValue();
+        if (pvStructure.getSubField(VALUE_FIELD).getField().getType() == Type.scalar) {
+            pvStructure.getShortField(VALUE_FIELD).put(shortValue[0]);
+        } else if (pvStructure.getSubField(VALUE_FIELD).getField().getType() == Type.scalarArray) {
+            pvStructure.getSubField(PVShortArray.class, Epics7Channel.VALUE_REQUEST).put(0, shortValue.length, shortValue, 0);
+        }
+        return pvStructure;
+    }
+
+    private PVStructure updateStringValue(DBR event, PVStructure pvStructure) {
+        String[] stringValue = ((DBR_CTRL_String) event).getStringValue();
+        if (pvStructure.getSubField(VALUE_FIELD).getField().getType() == Type.scalar) {
+            pvStructure.getStringField(VALUE_FIELD).put(stringValue[0]);
+        } else if (pvStructure.getSubField(VALUE_FIELD).getField().getType() == Type.scalarArray) {
+            pvStructure.getSubField(PVStringArray.class, Epics7Channel.VALUE_REQUEST).put(0, stringValue.length, stringValue, 0);
+        }
         return pvStructure;
     }
 
