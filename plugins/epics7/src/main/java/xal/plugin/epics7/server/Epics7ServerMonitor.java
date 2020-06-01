@@ -69,9 +69,9 @@ import static xal.plugin.epics7.Epics7Channel.VALUE_FIELD;
  */
 public class Epics7ServerMonitor extends Epics7Monitor implements MonitorRequester, ProcessVariableEventCallback {
 
-    private ProcessVariableEventDispatcher processVariableEventDispatcher;
-    private MemoryProcessVariable memoryProcessVariable;
-    private PVRecord record;
+    protected ProcessVariableEventDispatcher processVariableEventDispatcher;
+    protected MemoryProcessVariable memoryProcessVariable;
+    protected PVRecord record;
 
     private Epics7ServerMonitor(EventListener listener, int intMaskEvent) throws ConnectionException {
         super(null, listener, intMaskEvent);
