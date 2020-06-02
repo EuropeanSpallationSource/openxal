@@ -111,6 +111,17 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         if (pvRecord == null) {
             addCAPV(DBRType.DOUBLE);
             addRecord(ScalarType.pvDouble, false);
+
+            // Adding a monitor to update the value on one protocol channel when the
+            // other one is updated by new data received in a put.
+            try {
+                Epics7ServerMonitor.createNewMonitor(pvRecord, memoryProcessVariable,
+                        Epics7Channel.VALUE_REQUEST, (pvS) -> {
+                        }, 0);
+            } catch (ConnectionException e) {
+                Logger.getLogger(Epics7ServerChannel.class.getName()).severe("Not possible to set callback to update value");
+            }
+
             connectionFlag = true;
         }
     }
@@ -192,8 +203,6 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
     }
 
     protected PVStructure getDisplay() {
-
-        System.out.println("ServerChannel");
         if (pvRecord != null) {
             return pvRecord.getPVStructure().getStructureField(DISPLAY_FIELD);
         }
