@@ -305,7 +305,8 @@ public class Epics7ChannelRecordTest {
         assertEquals(expResult, result);
 
         instance = newEpics7ChannelRecord(ScalarType.pvDouble);
-        expResult = 0;
+        instance.getStore().getDoubleField(Epics7Channel.VALUE_REQUEST).put(expResult);
+
         result = instance.byteValue();
         assertEquals(expResult, result);
     }
@@ -325,7 +326,8 @@ public class Epics7ChannelRecordTest {
         assertEquals(expResult, result);
 
         instance = newEpics7ChannelRecord(ScalarType.pvDouble);
-        expResult = 0;
+        instance.getStore().getDoubleField(Epics7Channel.VALUE_REQUEST).put(expResult);
+
         result = instance.byteValueAt(index);
         assertEquals(expResult, result);
     }
@@ -344,7 +346,8 @@ public class Epics7ChannelRecordTest {
         assertArrayEquals(expResult, result);
 
         instance = newEpics7ChannelRecord(ScalarType.pvDouble);
-        expResult = new byte[]{};
+        instance.getStore().getDoubleField(Epics7Channel.VALUE_REQUEST).put(3);
+        expResult = new byte[]{3};
         result = instance.byteArray();
         assertArrayEquals(expResult, result);
     }
@@ -382,7 +385,8 @@ public class Epics7ChannelRecordTest {
         assertEquals(expResult, result);
 
         instance = newEpics7ChannelRecord(ScalarType.pvDouble);
-        expResult = 0;
+        instance.getStore().getDoubleField(Epics7Channel.VALUE_REQUEST).put(expResult);
+
         result = instance.shortValueAt(index);
         assertEquals(expResult, result);
     }
@@ -401,7 +405,8 @@ public class Epics7ChannelRecordTest {
         assertArrayEquals(expResult, result);
 
         instance = newEpics7ChannelRecord(ScalarType.pvDouble);
-        expResult = new short[]{};
+        instance.getStore().getDoubleField(Epics7Channel.VALUE_REQUEST).put(3);
+        expResult = new short[]{3};
         result = instance.shortArray();
         assertArrayEquals(expResult, result);
     }
@@ -439,7 +444,8 @@ public class Epics7ChannelRecordTest {
         assertEquals(expResult, result);
 
         instance = newEpics7ChannelRecord(ScalarType.pvDouble);
-        expResult = 0;
+        instance.getStore().getDoubleField(Epics7Channel.VALUE_REQUEST).put(expResult);
+
         result = instance.intValueAt(index);
         assertEquals(expResult, result);
     }
@@ -458,7 +464,8 @@ public class Epics7ChannelRecordTest {
         assertArrayEquals(expResult, result);
 
         instance = newEpics7ChannelRecord(ScalarType.pvDouble);
-        expResult = new int[]{};
+        instance.getStore().getDoubleField(Epics7Channel.VALUE_REQUEST).put(3);
+        expResult = new int[]{3};
         result = instance.intArray();
         assertArrayEquals(expResult, result);
     }
@@ -476,7 +483,8 @@ public class Epics7ChannelRecordTest {
         assertEquals(expResult, result, 1e-6F);
 
         instance = newEpics7ChannelRecord(ScalarType.pvInt);
-        expResult = Float.NaN;
+        instance.getStore().getIntField(Epics7Channel.VALUE_REQUEST).put((int) expResult);
+
         result = instance.floatValue();
         assertEquals(expResult, result, 1e-6F);
     }
@@ -496,7 +504,8 @@ public class Epics7ChannelRecordTest {
         assertEquals(expResult, result, 1e-6F);
 
         instance = newEpics7ChannelRecord(ScalarType.pvInt);
-        expResult = Float.NaN;
+        instance.getStore().getIntField(Epics7Channel.VALUE_REQUEST).put((int) expResult);
+
         result = instance.floatValueAt(index);
         assertEquals(expResult, result, 1e-6F);
     }
@@ -515,7 +524,8 @@ public class Epics7ChannelRecordTest {
         assertArrayEquals(expResult, result, 1e-6F);
 
         instance = newEpics7ChannelRecord(ScalarType.pvInt);
-        expResult = new float[]{Float.NaN};
+        instance.getStore().getIntField(Epics7Channel.VALUE_REQUEST).put(3);
+        expResult = new float[]{3F};
         result = instance.floatArray();
         assertArrayEquals(expResult, result, 1e-6F);
     }
@@ -533,7 +543,8 @@ public class Epics7ChannelRecordTest {
         assertEquals(expResult, result, 1e-6F);
 
         instance = newEpics7ChannelRecord(ScalarType.pvInt);
-        expResult = Double.NaN;
+        instance.getStore().getIntField(Epics7Channel.VALUE_REQUEST).put((int) expResult);
+
         result = instance.doubleValue();
         assertEquals(expResult, result, 1e-6F);
     }
@@ -552,8 +563,9 @@ public class Epics7ChannelRecordTest {
         double result = instance.doubleValueAt(index);
         assertEquals(expResult, result, 1e-6F);
 
-        instance = newEpics7ChannelRecord(ScalarType.pvInt);
-        expResult = Double.NaN;
+        instance = newEpics7ChannelRecord(ScalarType.pvFloat);
+        instance.getStore().getFloatField(Epics7Channel.VALUE_REQUEST).put((float) expResult);
+
         result = instance.doubleValueAt(index);
         assertEquals(expResult, result, 1e-6F);
     }
@@ -572,7 +584,9 @@ public class Epics7ChannelRecordTest {
         assertArrayEquals(expResult, result, 1e-6F);
 
         instance = newEpics7ChannelRecord(ScalarType.pvInt);
-        expResult = new double[]{Double.NaN};
+        instance.getStore().getIntField(Epics7Channel.VALUE_REQUEST).put(3);
+        expResult = new double[]{3};
+
         result = instance.doubleArray();
         assertArrayEquals(expResult, result, 1e-6F);
     }
@@ -590,7 +604,9 @@ public class Epics7ChannelRecordTest {
         assertEquals(expResult, result);
 
         instance = newEpics7ChannelRecord(ScalarType.pvInt);
-        expResult = null;
+        instance.getStore().getIntField(Epics7Channel.VALUE_REQUEST).put(3);
+        expResult = "3";
+
         result = instance.stringValue();
         assertEquals(expResult, result);
     }
@@ -606,11 +622,14 @@ public class Epics7ChannelRecordTest {
         String expResult = "test";
         PVStringArray pvStringArray = instance.getStore().getSubField(PVStringArray.class, Epics7Channel.VALUE_REQUEST);
         pvStringArray.put(0, 1, new String[]{expResult}, 0);
+
         String result = instance.stringValueAt(index);
         assertEquals(expResult, result);
 
         instance = newEpics7ChannelRecord(ScalarType.pvInt);
-        expResult = null;
+        instance.getStore().getIntField(Epics7Channel.VALUE_REQUEST).put(3);
+        expResult = "3";
+
         result = instance.stringValueAt(index);
         assertEquals(expResult, result);
     }
@@ -629,7 +648,9 @@ public class Epics7ChannelRecordTest {
         assertArrayEquals(expResult, result);
 
         instance = newEpics7ChannelRecord(ScalarType.pvInt);
-        expResult = new String[]{};
+        instance.getStore().getIntField(Epics7Channel.VALUE_REQUEST).put(3);
+        expResult = new String[]{"3"};
+
         result = instance.stringArray();
         assertArrayEquals(expResult, result);
     }

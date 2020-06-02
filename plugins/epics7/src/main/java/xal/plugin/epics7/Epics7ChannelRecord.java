@@ -17,8 +17,8 @@
  */
 package xal.plugin.epics7;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.epics.pvdata.pv.BooleanArrayData;
+import org.epics.pvdata.pv.PVBooleanArray;
 import org.epics.pvdata.pv.PVByteArray;
 import org.epics.pvdata.pv.PVDoubleArray;
 import org.epics.pvdata.pv.PVField;
@@ -51,7 +51,7 @@ public class Epics7ChannelRecord extends ChannelRecordImpl {
     protected String channelName;
     protected String fieldName;
 
-    private static final String VALUE_FIELD_NAME = "value";
+    protected static final String VALUE_FIELD_NAME = "value";
 
     /**
      * Constructor
@@ -206,274 +206,195 @@ public class Epics7ChannelRecord extends ChannelRecordImpl {
         return null;
     }
 
+    private Object getValue() {
+        if (store != null) {
+            PVField valueField = store.getSubField(VALUE_FIELD_NAME);
+            Type type = valueField.getField().getType();
+            switch (type) {
+                case scalar:
+                    return getScalarValue((PVScalar) valueField);
+                case scalarArray:
+                    return getArrayValue((PVScalarArray) valueField);
+                default:
+                    break;
+            }
+        }
+        return null;
+    }
+
+    private Object getScalarValue(PVScalar pvScalar) {
+        ScalarType type = pvScalar.getScalar().getScalarType();
+        switch (type) {
+            case pvBoolean:
+                return new boolean[]{store.getBooleanField(fieldName).get()};
+            case pvByte:
+            case pvUByte:
+                return new byte[]{store.getByteField(fieldName).get()};
+            case pvDouble:
+                return new double[]{store.getDoubleField(fieldName).get()};
+            case pvFloat:
+                return new float[]{store.getFloatField(fieldName).get()};
+            case pvInt:
+            case pvUInt:
+                return new int[]{store.getIntField(fieldName).get()};
+            case pvLong:
+            case pvULong:
+                return new long[]{store.getLongField(fieldName).get()};
+            case pvShort:
+            case pvUShort:
+                return new short[]{store.getShortField(fieldName).get()};
+            case pvString:
+                return new String[]{store.getStringField(fieldName).get()};
+            default:
+                break;
+        }
+        return null;
+    }
+
+    private Object getArrayValue(PVScalarArray pvScalarArray) {
+        ScalarType type = pvScalarArray.getScalarArray().getElementType();
+        switch (type) {
+            case pvByte:
+            case pvUByte:
+                PVByteArray byteArray = (PVByteArray) store.getScalarArrayField(fieldName, ScalarType.pvByte);
+                return byteArray.get().toArray(new byte[byteArray.getLength()]);
+            case pvDouble:
+                PVDoubleArray doubleArray = (PVDoubleArray) store.getScalarArrayField(VALUE_FIELD_NAME, ScalarType.pvDouble);
+                return doubleArray.get().toArray(new double[doubleArray.getLength()]);
+            case pvFloat:
+                PVFloatArray floatArray = (PVFloatArray) store.getScalarArrayField(VALUE_FIELD_NAME, ScalarType.pvFloat);
+                return floatArray.get().toArray(new float[floatArray.getLength()]);
+            case pvInt:
+            case pvUInt:
+                PVIntArray intArray = (PVIntArray) store.getScalarArrayField(VALUE_FIELD_NAME, ScalarType.pvInt);
+                return intArray.get().toArray(new int[intArray.getLength()]);
+            case pvLong:
+            case pvULong:
+                PVLongArray longArray = (PVLongArray) store.getScalarArrayField(fieldName, ScalarType.pvLong);
+                return longArray.get().toArray(new long[longArray.getLength()]);
+            case pvShort:
+            case pvUShort:
+                PVShortArray shortArray = (PVShortArray) store.getScalarArrayField(VALUE_FIELD_NAME, ScalarType.pvShort);
+                return shortArray.get().toArray(new short[shortArray.getLength()]);
+            case pvString:
+                PVStringArray stringArray = (PVStringArray) store.getScalarArrayField(VALUE_FIELD_NAME, ScalarType.pvString);
+                StringArrayData stringArrayData = new StringArrayData();
+                stringArray.get(0, stringArray.getLength(), stringArrayData);
+                return stringArrayData.data;
+            case pvBoolean:
+                PVBooleanArray booleanArray = (PVBooleanArray) store.getScalarArrayField(fieldName, ScalarType.pvBoolean);
+                BooleanArrayData booleanArrayData = new BooleanArrayData();
+                booleanArray.get(0, booleanArray.getLength(), booleanArrayData);
+                return booleanArrayData.data;
+            default:
+                break;
+        }
+        return null;
+    }
+
     @Override
     public byte byteValue() {
-        try {
-            return store.getByteField(fieldName).get();
-        } catch (Exception e) {
-            Logger.getLogger(Epics7ChannelRecord.class.getName()).log(Level.SEVERE,
-                    "Type of field {0} in {1} is not byte. Type = {2}. Use the corresponding method.",
-                    new Object[]{fieldName, channelName, getType().getCanonicalName()});
-            return 0;
-        }
+        return ArrayValue.arrayValueFromArray(getValue()).byteValue();
     }
 
     @Override
     public byte byteValueAt(final int index) {
-        PVByteArray byteArray = (PVByteArray) store.getScalarArrayField(fieldName, ScalarType.pvByte);
-        try {
-            return byteArray.get().getByte(index);
-        } catch (Exception e) {
-            Logger.getLogger(Epics7ChannelRecord.class.getName()).log(Level.SEVERE,
-                    "Type of field {0} in {1} is not byte[]. Type = {2}. Use the corresponding method.",
-                    new Object[]{fieldName, channelName, getType().getCanonicalName()});
-            return 0;
-        }
+        return ArrayValue.arrayValueFromArray(getValue()).byteValueAt(index);
     }
 
     @Override
     public byte[] byteArray() {
-        PVByteArray byteArray = (PVByteArray) store.getScalarArrayField(fieldName, ScalarType.pvByte);
-        try {
-            return byteArray.get().toArray(new byte[byteArray.getLength()]);
-        } catch (Exception e) {
-            Logger.getLogger(Epics7ChannelRecord.class.getName()).log(Level.SEVERE,
-                    "Type of field {0} in {1} is not byte[]. Type = {2}. Use the corresponding method.",
-                    new Object[]{fieldName, channelName, getType().getCanonicalName()});
-            return new byte[]{};
-        }
+        return ArrayValue.arrayValueFromArray(getValue()).byteArray();
     }
 
     @Override
     public short shortValue() {
-        try {
-            return store.getShortField(fieldName).get();
-        } catch (Exception e) {
-            Logger.getLogger(Epics7ChannelRecord.class.getName()).log(Level.SEVERE,
-                    "Type of field {0} in {1} is not short. Type = {2}. Use the corresponding method.",
-                    new Object[]{fieldName, channelName, getType().getCanonicalName()});
-            return 0;
-        }
+        return ArrayValue.arrayValueFromArray(getValue()).shortValue();
     }
 
     @Override
     public short shortValueAt(final int index) {
-        PVShortArray shortArray = (PVShortArray) store.getScalarArrayField(fieldName, ScalarType.pvShort);
-        try {
-            return shortArray.get().getShort(index);
-        } catch (Exception e) {
-            Logger.getLogger(Epics7ChannelRecord.class.getName()).log(Level.SEVERE,
-                    "Type of field {0} in {1} is not short[]. Type = {2}. Use the corresponding method.",
-                    new Object[]{fieldName, channelName, getType().getCanonicalName()});
-            return 0;
-        }
+        return ArrayValue.arrayValueFromArray(getValue()).shortValueAt(index);
     }
 
     @Override
     public short[] shortArray() {
-        PVShortArray shortArray = (PVShortArray) store.getScalarArrayField(fieldName, ScalarType.pvShort);
-        try {
-            return shortArray.get().toArray(new short[shortArray.getLength()]);
-        } catch (Exception e) {
-            Logger.getLogger(Epics7ChannelRecord.class.getName()).log(Level.SEVERE,
-                    "Type of field {0} in {1} is not short[]. Type = {2}. Use the corresponding method.",
-                    new Object[]{fieldName, channelName, getType().getCanonicalName()});
-            return new short[]{};
-        }
+        return ArrayValue.arrayValueFromArray(getValue()).shortArray();
     }
 
     @Override
     public int intValue() {
-        try {
-            return store.getIntField(fieldName).get();
-        } catch (Exception e) {
-            Logger.getLogger(Epics7ChannelRecord.class.getName()).log(Level.SEVERE,
-                    "Type of field {0} in {1} is not int. Type = {2}. Use the corresponding method.",
-                    new Object[]{fieldName, channelName, getType().getCanonicalName()});
-            return 0;
-        }
+        return ArrayValue.arrayValueFromArray(getValue()).intValue();
     }
 
     @Override
     public int intValueAt(final int index) {
-        PVIntArray intArray = (PVIntArray) store.getScalarArrayField(fieldName, ScalarType.pvInt);
-        try {
-            return intArray.get().getInt(index);
-        } catch (Exception e) {
-            Logger.getLogger(Epics7ChannelRecord.class.getName()).log(Level.SEVERE,
-                    "Type of field {0} in {1} is not int[]. Type = {2}. Use the corresponding method.",
-                    new Object[]{fieldName, channelName, getType().getCanonicalName()});
-            return 0;
-        }
+        return ArrayValue.arrayValueFromArray(getValue()).intValueAt(index);
     }
 
     @Override
     public int[] intArray() {
-        PVIntArray intArray = (PVIntArray) store.getScalarArrayField(fieldName, ScalarType.pvInt);
-        try {
-            return intArray.get().toArray(new int[intArray.getLength()]);
-        } catch (Exception e) {
-            Logger.getLogger(Epics7ChannelRecord.class.getName()).log(Level.SEVERE,
-                    "Type of field {0} in {1} is not int[]. Type = {2}. Use the corresponding method.",
-                    new Object[]{fieldName, channelName, getType().getCanonicalName()});
-            return new int[]{};
-        }
+        return ArrayValue.arrayValueFromArray(getValue()).intArray();
     }
 
     @Override
     public long longValue() {
-        try {
-            return store.getLongField(fieldName).get();
-        } catch (Exception e) {
-            Logger.getLogger(Epics7ChannelRecord.class.getName()).log(Level.SEVERE,
-                    "Type of field {0} in {1} is not long. Type = {2}. Use the corresponding method.",
-                    new Object[]{fieldName, channelName, getType().getCanonicalName()});
-            return 0;
-        }
+        return ArrayValue.arrayValueFromArray(getValue()).longValue();
     }
 
     @Override
     public long longValueAt(final int index) {
-        PVLongArray longArray = (PVLongArray) store.getScalarArrayField(fieldName, ScalarType.pvLong);
-        try {
-            return longArray.get().getLong(index);
-        } catch (Exception e) {
-            Logger.getLogger(Epics7ChannelRecord.class.getName()).log(Level.SEVERE,
-                    "Type of field {0} in {1} is not long[]. Type = {2}. Use the corresponding method.",
-                    new Object[]{fieldName, channelName, getType().getCanonicalName()});
-            return 0;
-        }
+        return ArrayValue.arrayValueFromArray(getValue()).longValueAt(index);
     }
 
     @Override
     public long[] longArray() {
-        PVLongArray longArray = (PVLongArray) store.getScalarArrayField(fieldName, ScalarType.pvLong);
-        try {
-            return longArray.get().toArray(new long[longArray.getLength()]);
-        } catch (Exception e) {
-            Logger.getLogger(Epics7ChannelRecord.class.getName()).log(Level.SEVERE,
-                    "Type of field {0} in {1} is not long[]. Type = {2}. Use the corresponding method.",
-                    new Object[]{fieldName, channelName, getType().getCanonicalName()});
-            return new long[]{};
-        }
+        return ArrayValue.arrayValueFromArray(getValue()).longArray();
     }
 
     @Override
     public float floatValue() {
-        try {
-            return store.getFloatField(fieldName).get();
-        } catch (Exception e) {
-            Logger.getLogger(Epics7ChannelRecord.class.getName()).log(Level.SEVERE,
-                    "Type of field {0} in {1} is not float. Type = {2}. Use the corresponding method.",
-                    new Object[]{fieldName, channelName, getType().getCanonicalName()});
-            return Float.NaN;
-        }
+        return ArrayValue.arrayValueFromArray(getValue()).floatValue();
     }
 
     @Override
     public float floatValueAt(final int index) {
-        PVFloatArray floatArray = (PVFloatArray) store.getScalarArrayField(fieldName, ScalarType.pvFloat);
-        try {
-            return floatArray.get().getFloat(index);
-        } catch (Exception e) {
-            Logger.getLogger(Epics7ChannelRecord.class.getName()).log(Level.SEVERE,
-                    "Type of field {0} in {1} is not float[]. Type = {2}. Use the corresponding method.",
-                    new Object[]{fieldName, channelName, getType().getCanonicalName()});
-            return Float.NaN;
-        }
+        return ArrayValue.arrayValueFromArray(getValue()).floatValueAt(index);
     }
 
     @Override
     public float[] floatArray() {
-        PVFloatArray floatArray = (PVFloatArray) store.getScalarArrayField(fieldName, ScalarType.pvFloat);
-        try {
-            return floatArray.get().toArray(new float[floatArray.getLength()]);
-        } catch (Exception e) {
-            Logger.getLogger(Epics7ChannelRecord.class.getName()).log(Level.SEVERE,
-                    "Type of field {0} in {1} is not float[]. Type = {2}. Use the corresponding method.",
-                    new Object[]{fieldName, channelName, getType().getCanonicalName()});
-            return new float[]{Float.NaN};
-        }
+        return ArrayValue.arrayValueFromArray(getValue()).floatArray();
     }
 
     @Override
     public double doubleValue() {
-        try {
-            return store.getDoubleField(fieldName).get();
-        } catch (Exception e) {
-            Logger.getLogger(Epics7ChannelRecord.class.getName()).log(Level.SEVERE,
-                    "Type of field {0} in {1} is not double. Type = {2}. Use the corresponding method.",
-                    new Object[]{fieldName, channelName, getType().getCanonicalName()});
-            return Double.NaN;
-        }
+        return ArrayValue.arrayValueFromArray(getValue()).doubleValue();
     }
 
     @Override
     public double doubleValueAt(final int index) {
-        try {
-            PVDoubleArray doubleArray = (PVDoubleArray) store.getScalarArrayField(fieldName, ScalarType.pvDouble);
-            return doubleArray.get().getDouble(index);
-        } catch (Exception e) {
-            Logger.getLogger(Epics7ChannelRecord.class.getName()).log(Level.SEVERE,
-                    "Type of field {0} in {1} is not double[]. Type = {2}. Use the corresponding method.",
-                    new Object[]{fieldName, channelName, getType().getCanonicalName()});
-            return Double.NaN;
-        }
+        return ArrayValue.arrayValueFromArray(getValue()).doubleValueAt(index);
     }
 
     @Override
     public double[] doubleArray() {
-        PVDoubleArray doubleArray = (PVDoubleArray) store.getScalarArrayField(fieldName, ScalarType.pvDouble);
-        try {
-            return doubleArray.get().toArray(new double[doubleArray.getLength()]);
-        } catch (Exception e) {
-            Logger.getLogger(Epics7ChannelRecord.class.getName()).log(Level.SEVERE,
-                    "Type of field {0} in {1} is not double[]. Type = {2}. Use the corresponding method.",
-                    new Object[]{fieldName, channelName, getType().getCanonicalName()});
-            return new double[]{Double.NaN};
-        }
+        return ArrayValue.arrayValueFromArray(getValue()).doubleArray();
     }
 
     @Override
     public String stringValue() {
-        try {
-            return store.getStringField(fieldName).get();
-        } catch (Exception e) {
-            Logger.getLogger(Epics7ChannelRecord.class.getName()).log(Level.SEVERE,
-                    "Type of field {0} in {1} is not String. Type = {2}. Use the corresponding method.",
-                    new Object[]{fieldName, channelName, getType().getCanonicalName()});
-            return null;
-        }
+        return ArrayValue.arrayValueFromArray(getValue()).stringValue();
     }
 
     @Override
     public String stringValueAt(final int index) {
-        PVStringArray stringArray = (PVStringArray) store.getScalarArrayField(fieldName, ScalarType.pvString);
-        StringArrayData stringArrayData = new StringArrayData();
-        try {
-            stringArray.get(0, stringArray.getLength(), stringArrayData);
-            return stringArrayData.data[index];
-        } catch (Exception e) {
-            Logger.getLogger(Epics7ChannelRecord.class.getName()).log(Level.SEVERE,
-                    "Type of field {0} in {1} is not String[]. Type = {2}. Use the corresponding method.",
-                    new Object[]{fieldName, channelName, getType().getCanonicalName()});
-            return null;
-        }
+        return ArrayValue.arrayValueFromArray(getValue()).stringValueAt(index);
     }
 
     @Override
     public String[] stringArray() {
-        PVStringArray stringArray = (PVStringArray) store.getScalarArrayField(fieldName, ScalarType.pvString);
-        StringArrayData stringArrayData = new StringArrayData();
-        try {
-            stringArray.get(0, stringArray.getLength(), stringArrayData);
-            return stringArrayData.data;
-        } catch (Exception e) {
-            Logger.getLogger(Epics7ChannelRecord.class.getName()).log(Level.SEVERE,
-                    "Type of field {0} in {1} is not String[]. Type = {2}. Use the corresponding method.",
-                    new Object[]{fieldName, channelName, getType().getCanonicalName()});
-            return new String[]{};
-        }
+        return ArrayValue.arrayValueFromArray(getValue()).stringArray();
     }
 
     @Override
