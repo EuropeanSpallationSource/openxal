@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>EPICS7 Open XAL plugin documentation</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <p>The Open XAL EPICS7 plugin was introduced in v4.0. It enables communication with IOCs using both PV Access and Channel Access protocols, as well as the creation of EPICS softIOCs as part of Open XAL applications.</p>
+        <p>The other 2 plugins available are:</p>
+        <ul>
+            <li>jca: this is the plugin previously used. It implements the EPICS v3 protocol and uses the jca/caj Java library.</li>
+            <li>pvaccess: implements the PV access protocol, but no Channel Access. This plugin behaves slightly different than the jca plugin when trying to connect a channel that is not alive. Some applications might not function properly for this reason. Recommendation is NOT to use it.</li>
+        </ul>
+        <h2>Configuration</h2>
+        <p>The plugin will use the EPICS environment variables by default. This configuration can be overwritten by setting a set of Java preferences. The main tool to modify those preferences is the
+    <ac:link>
+        <ri:page ri:space-key="BPCRS" ri:content-title="User documentation for Open XAL Configurator" />
+        <ac:plain-text-link-body>
+            <![CDATA[Open XAL Configurator]]>
+        </ac:plain-text-link-body>
+    </ac:link>.</p>
+<p>If one needs to edit these preferences from a Java application, use the class <em>xal.​tools.​apputils.Preferences</em> as:</p>
+<pre> java.util.prefs.Preferences defaults = Preferences.nodeForPackage(Channel.class);</pre>
+<p>The names of the preferences are the same as the EPICS environment variables.</p>
+<p>Finally, the configuration can be modified when launching the application by setting properties for the JVM, or even using the <em>System.setProrperty()</em> method. The names of the properties are also the same as the EPICS environment variables. For example, one can do:</p>
+<pre> java -DEPICS_PVA_AUTO_ADDR_LIST=false -jar openxal.app.application.jar</pre>
+<p>For more information, please check the <em>loadConfig</em> method in <em>xal.plugin.epics7.Epics7ChannelSystem</em>.</p>
+<h2>Client usage</h2>
+<p>In general, EPICS communication is done implicitly by calling methods of SMF elements. The EPICS signal names used are taken from the SMF XML lattice files.</p>
+<p>By default, the plugin tries to connect using both Channel Access and PV Access protocols. If the channel exists in both protocols, it will use the one which replies first, which can make the behaviour non-deterministic. It is possible to set which protocol to use by adding the <em>ca://</em> or <em>pva://</em> prefix to the signal name.</p>
+<p>One can also explicitly connect to a channel by using the ChannelFactory class. First, get the Factory:</p>
+<pre> ChannelFactory channelFactory = ChannelFactory.defaultFactory();</pre>
+<p>Then use the method getChannel() to get the channel:</p>
+<pre> Channel channel = channelFactory.getChannel(&quot;PV:NAME&quot;);</pre>
+<p>and finally use any of the get methods to retrieve data from the channel, e.g.:</p>
+<pre> double result =&nbsp; channel.getValDbl();</pre>
+<p>To make a put, use the<em> putVal()</em> method, as in the following example:</p>
+<pre> channel.putVal(3.1416);&nbsp;</pre>
+<p>If the timestamp is also required, one can do as follows:</p>
+<pre> ChannelTimeRecord timeRecord = channel.getTimeRecord();<br /> Timestamp timestamp =&nbsp;timeRecord.getTimestamp();</pre>
+<p>And similarly for the alarm status:</p>
+<pre> ChannelStatusRecord statusRecord = channel.getStatusRecord();<br /> int status = statusRecord.status();<br /> int severity = statusRecord.severity();</pre>
+<h3>Monitors</h3>
+<p>The Channel can also be used to create monitors. Here you can find an example on how to create a monitor for value changes:</p>
+<pre> Monitor monitor = channel.addMonitorValue((record, chann) -&gt; {<br />     System.out.println(&quot;Value = &quot; + record.doubleValue());<br /> }, 0);</pre>
+<p>Here a lambda function is used, but in general the listener can be any class implementing&nbsp;<em>IEventSinkValue</em>.</p>
+<pre><br /></pre>
+<h2>Server usage</h2>
+<p>Similarly to the client,&nbsp;the plugin creates channels for both Channel Access and PV Access protocols. In this case, there is no option to disable one of the protocols. This option might be added in the future if it is required. The plugin ensures that if a put is done using one protocol, the value is updated for both protocols.</p>
+<p>In order to create a server channel, one first needs to get the factory:</p>
+<pre> ChannelFactory channelFactory = ChannelFactory.newServerFactory();</pre>
+<p><span style="letter-spacing: 0.0px;">The procedure to create the channel is exactly the same as for the client:</span></p>
+<pre>Channel channel = channelFactory.getChannel(&quot;TEST:SERVER:PV&quot;);</pre>
+<p>After that, the new channel is created and accepting connections. One can put new values the same way as for the client, as well as running monitors from the same code to check when a put is done externally.</p>
+<p><br /></p>
+<p>After finishing all the EPICS communications, it is advisable to free all resources by running:</p>
+<pre> ChannelFactory.disposeAll();</pre>
+</body>
+</html>
