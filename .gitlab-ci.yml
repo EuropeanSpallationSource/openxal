@@ -14,7 +14,7 @@ build.maven:
     <<: *maven
     stage: build
     script:
-        - 'mvn $MAVEN_CLI_OPTS -DskipTests -Dmaven.javadoc.skip=true install'
+        - 'mvn $MAVEN_CLI_OPTS -DskipTests -Dmaven.javadoc.skip=true clean install'
     artifacts:
         paths:
             - .m2/repository/org/xal/

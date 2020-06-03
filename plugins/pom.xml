@@ -15,8 +15,8 @@
     <modules>
         <module>mysql</module>
         <module>postgres</module>
-        <module>jca</module>
         <module>essrbac</module>
+        <module>epics7</module>
     </modules>
 
     <!-- For the local repository -->

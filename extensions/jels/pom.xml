@@ -21,7 +21,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>openxal.plugins.jca</artifactId>
+            <artifactId>openxal.plugins.epics7</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

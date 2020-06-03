@@ -866,7 +866,7 @@ class JcaChannel extends Channel {
         
         synchronized( dbr ) {
             ValueAdaptor adaptor = new DbrValueAdaptor( dbr );
-            record = new ChannelRecord( adaptor );
+            record = new ChannelRecordImpl( adaptor );
         }
         
         return record;
@@ -901,7 +901,7 @@ class JcaChannel extends Channel {
         
         synchronized( dbr ) {
             StatusAdaptor adaptor = new DbrStatusAdaptor( dbr );
-            record = new ChannelStatusRecord( adaptor );
+            record = new ChannelStatusRecordImpl( adaptor );
         }
         
         return record;
@@ -932,7 +932,7 @@ class JcaChannel extends Channel {
         
         synchronized(dbr) {
             TimeAdaptor adaptor = new DbrTimeAdaptor( dbr );
-            record = new ChannelTimeRecord( adaptor );
+            record = new ChannelTimeRecordImpl( adaptor );
         }
         
         return record;
@@ -1019,7 +1019,7 @@ class JcaChannel extends Channel {
 			_jcaChannel.get( timeDBRType, elementCount(), new gov.aps.jca.event.GetListener() {
 				public void getCompleted( final gov.aps.jca.event.GetEvent event ) {
 					final DbrTimeAdaptor adaptor = new DbrTimeAdaptor( event.getDBR() );
-					listener.eventValue( new ChannelTimeRecord( adaptor ), JcaChannel.this );
+					listener.eventValue( new ChannelTimeRecordImpl( adaptor ), JcaChannel.this );
 				}
 			});
 		}

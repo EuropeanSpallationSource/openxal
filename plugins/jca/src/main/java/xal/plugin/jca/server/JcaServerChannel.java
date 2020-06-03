@@ -27,6 +27,8 @@ import xal.tools.ArrayValue;
 
 import com.cosylab.epics.caj.cas.ProcessVariableEventDispatcher;
 import com.cosylab.epics.caj.cas.util.DefaultServerImpl;
+import xal.ca.ChannelRecordImpl;
+import xal.ca.ChannelTimeRecordImpl;
 
 /**
  * JcaServerChannel initiating client channel, so it is instantiate directly in
@@ -228,7 +230,7 @@ public class JcaServerChannel extends Channel implements IServerChannel {
 
     @Override
     public ChannelTimeRecord getRawTimeRecord() {
-        return new ChannelTimeRecord(new TimeAdaptor() {
+        return new ChannelTimeRecordImpl(new TimeAdaptor() {
             final BigDecimal EPOCH_SECONDS_OFFSET = new BigDecimal(7305 * 24 * 3600);     // offset from standard Java epoch
 
             private ArrayValue value = ArrayValue.arrayValueFromArray(pv.getValue());
@@ -265,7 +267,7 @@ public class JcaServerChannel extends Channel implements IServerChannel {
     public void getRawValueCallback(IEventSinkValue listener, boolean attemptConnection) throws ConnectionException,
             GetException {
         if (listener != null) {
-            listener.eventValue(new ChannelRecord(new ValueAdaptor() {
+            listener.eventValue(new ChannelRecordImpl(new ValueAdaptor() {
                 @Override
                 public ArrayValue getStore() {
                     return ArrayValue.arrayValueFromArray(pv.getValue());

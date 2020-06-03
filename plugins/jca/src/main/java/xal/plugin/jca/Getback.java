@@ -62,7 +62,7 @@ class Getback implements GetListener {
      */    
     public void getCompleted( final GetEvent event ) {
         DbrValueAdaptor adaptor = new DbrValueAdaptor( event.getDBR() );
-        listener.eventValue( new ChannelRecord(adaptor), channel );
+        listener.eventValue( new ChannelRecordImpl(adaptor), channel );
     }
     
     
