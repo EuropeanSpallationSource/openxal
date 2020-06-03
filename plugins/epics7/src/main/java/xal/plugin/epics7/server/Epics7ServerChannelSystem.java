@@ -90,7 +90,7 @@ public class Epics7ServerChannelSystem extends Epics7ChannelSystem {
 
     @Override
     protected void initialize() {
-        loadJcaConfig(true);
+        loadConfig(true);
 
         pvaChannelProvider = ChannelProviderLocalFactory.getChannelProviderLocal();
         master = PVDatabaseFactory.getMaster();

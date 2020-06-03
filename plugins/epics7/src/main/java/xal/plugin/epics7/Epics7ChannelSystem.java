@@ -19,12 +19,14 @@ package xal.plugin.epics7;
 
 import com.cosylab.epics.caj.CAJContext;
 import com.cosylab.epics.caj.impl.CAConstants;
-import java.io.FileInputStream;
 import java.util.Properties;
 import java.util.logging.Logger;
+import org.epics.pvaccess.PVAConstants;
 import org.epics.pvaccess.client.ChannelProvider;
 import org.epics.pvaccess.client.ChannelProviderRegistryFactory;
+import xal.ca.Channel;
 import xal.ca.ChannelSystem;
+import xal.tools.apputils.Preferences;
 
 /**
  * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
@@ -56,7 +58,7 @@ public class Epics7ChannelSystem extends ChannelSystem {
 
     protected void initialize() {
         // Load CAJ configuration in a similar fashion as the PV Access library.
-        loadJcaConfig(false);
+        loadConfig(false);
 
         // Initialising channel providers for both EPICS protocols.
         org.epics.ca.ClientFactory.start();
@@ -95,14 +97,14 @@ public class Epics7ChannelSystem extends ChannelSystem {
     }
 
     /**
-     * This method preloads the JCA configuration in a similar way as the PV
-     * Access library does.It takes the configuration from System properties,
-     * property files (user or system), or from environment variables, in that
-     * precedence order. It ignores the jca.use_env property.
+     * This method preloads the JCA and PVA configuration. It takes the
+     * configuration from Preferences or from environment variables, in that
+     * precedence order. It ignores the jca.use_env property and the JCALibrary
+     * file.
      *
      * @param isServer if server configuration has to be loaded.
      */
-    protected final void loadJcaConfig(boolean isServer) {
+    public static final void loadConfig(boolean isServer) {
         // Setting jca.use_env=false to load the configuration from system properties
         // that we define now.
         System.setProperty("jca.use_env", "false");
@@ -117,6 +119,13 @@ public class Epics7ChannelSystem extends ChannelSystem {
         int serverPort = CAConstants.CA_SERVER_PORT;
         int maxArrayBytes = 16384;
         float maxSearchInterval = (float) 60.0 * 5;
+
+        String pvaAddressList = "";
+        boolean pvaAutoAddressList = true;
+        float pvaConnectionTimeout = 30.0f;
+        float pvaBeaconPeriod = 15.0f;
+        int pvaBroadcastPort = PVAConstants.PVA_BROADCAST_PORT;
+        int pvaReceiveBufferSize = PVAConstants.MAX_TCP_RECV;
 
         // First try to load the configuration from environment variables.
         String tmp = System.getenv("EPICS_CA_ADDR_LIST");
@@ -183,60 +192,64 @@ public class Epics7ChannelSystem extends ChannelSystem {
             }
         }
 
+        tmp = System.getenv("EPICS_PVA_ADDR_LIST");
+        if (tmp != null) {
+            pvaAddressList = tmp;
+        }
+
+        tmp = System.getenv("EPICS_PVA_AUTO_ADDR_LIST");
+        if (tmp != null) {
+            pvaAutoAddressList = Boolean.parseBoolean(tmp);
+        }
+
+        tmp = System.getenv("EPICS_PVA_CONN_TMO");
+        if (tmp != null) {
+            pvaConnectionTimeout = Float.parseFloat(tmp);
+        }
+
+        tmp = System.getenv("EPICS_PVA_BEACON_PERIOD");
+        if (tmp != null) {
+            pvaBeaconPeriod = Float.parseFloat(tmp);
+        }
+
+        tmp = System.getenv("EPICS_PVA_BROADCAST_PORT");
+        if (tmp != null) {
+            pvaBroadcastPort = Integer.parseInt(tmp);
+        }
+
+        tmp = System.getenv("EPICS_PVA_MAX_ARRAY_BYTES");
+        if (tmp != null) {
+            pvaReceiveBufferSize = Integer.parseInt(tmp);
+        }
+
         // Then overwrite the values with property files or system properties, if available.
-        Properties _defaultProperties = new Properties();
-        Properties _properties = new Properties(_defaultProperties);
-        String fileSep = System.getProperty("file.separator");
-        String path = null;
-        try {
-            // system's properties
-            path = System.getProperty("java.home") + fileSep + "lib" + fileSep
-                    + "JCALibrary.properties";
-            _defaultProperties.load(new FileInputStream(path));
-        } catch (Throwable systemEx) {
-        }
+        java.util.prefs.Preferences defaults = Preferences.nodeForPackage(Channel.class);
 
-        try {
-            // properties
-            path = System.getProperty("gov.aps.jca.JCALibrary.properties", null);
-            if (path == null) {
-                path = System.getProperty("user.home") + fileSep + ".JCALibrary" + fileSep
-                        + "JCALibrary.properties";
-            }
-            _properties.load(new FileInputStream(path));
-        } catch (Throwable userEx) {
-        }
-
-        // load CAJ specific configuration
-        addressList = getProperty(CAJContext.class.getName() + ".addr_list", addressList, _properties);
-        autoAddressList = Boolean.valueOf(getProperty(CAJContext.class.getName() + ".auto_addr_list", String.valueOf(autoAddressList), _properties));
-        nameServersList = getProperty(CAJContext.class.getName() + ".name_servers", nameServersList, _properties);
-        connectionTimeout = Float.parseFloat(getProperty(CAJContext.class.getName() + ".connection_timeout", String.valueOf(connectionTimeout), _properties));
-        beaconPeriod = Float.parseFloat(getProperty(CAJContext.class.getName() + ".beacon_period", String.valueOf(beaconPeriod), _properties));
-        repeaterPort = Integer.parseInt(getProperty(CAJContext.class.getName() + ".repeater_port", String.valueOf(repeaterPort), _properties));
-        serverPort = Integer.parseInt(getProperty(CAJContext.class.getName() + ".server_port", String.valueOf(serverPort), _properties));
-        maxArrayBytes = Integer.parseInt(getProperty(CAJContext.class.getName() + ".max_array_bytes", String.valueOf(maxArrayBytes), _properties));
-        maxSearchInterval = Float.parseFloat(getProperty(CAJContext.class.getName() + ".max_search_interval", String.valueOf(maxSearchInterval), _properties));
-
-        // loa configuration from properties with the same names as the environment variables.
-        addressList = System.getProperty("EPICS_CA_ADDR_LIST", addressList);
-        autoAddressList = Boolean.valueOf(System.getProperty("EPICS_CA_AUTO_ADDR_LIST", String.valueOf(autoAddressList)));
-        nameServersList = System.getProperty("EPICS_CA_NAME_SERVERS", nameServersList);
-        connectionTimeout = Float.parseFloat(System.getProperty("EPICS_CA_CONN_TMO", String.valueOf(connectionTimeout)));
-        beaconPeriod = Float.parseFloat(System.getProperty("EPICS_CA_BEACON_PERIOD", String.valueOf(beaconPeriod)));
-        repeaterPort = Integer.parseInt(System.getProperty("EPICS_CA_REPEATER_PORT", String.valueOf(repeaterPort)));
-        serverPort = Integer.parseInt(System.getProperty("EPICS_CA_SERVER_PORT", String.valueOf(serverPort)));
-        maxArrayBytes = Integer.parseInt(System.getProperty("EPICS_CA_MAX_ARRAY_BYTES", String.valueOf(maxArrayBytes)));
-        maxSearchInterval = Float.parseFloat(System.getProperty("EPICS_CA_MAX_SEARCH_PERIOD", String.valueOf(maxSearchInterval)));
+        addressList = defaults.get("EPICS_CA_ADDR_LIST", addressList);
+        autoAddressList = defaults.getBoolean("EPICS_CA_AUTO_ADDR_LIST", autoAddressList);
+        nameServersList = defaults.get("EPICS_CA_NAME_SERVERS", nameServersList);
+        connectionTimeout = defaults.getFloat("EPICS_CA_CONN_TMO", connectionTimeout);
+        beaconPeriod = defaults.getFloat("EPICS_CA_BEACON_PERIOD", beaconPeriod);
+        repeaterPort = defaults.getInt("EPICS_CA_REPEATER_PORT", repeaterPort);
+        serverPort = defaults.getInt("EPICS_CA_SERVER_PORT", serverPort);
+        maxArrayBytes = defaults.getInt("EPICS_CA_MAX_ARRAY_BYTES", maxArrayBytes);
+        maxSearchInterval = defaults.getFloat("EPICS_CA_MAX_SEARCH_PERIOD", maxSearchInterval);
 
         if (isServer) {
-            addressList = System.getProperty("EPICS_CAS_ADDR_LIST", addressList);
-            serverPort = Integer.parseInt(System.getProperty("EPICS_CAS_SERVER_PORT", String.valueOf(serverPort)));
-            addressList = System.getProperty("EPICS_CAS_BEACON_ADDR_LIST", addressList);
-            repeaterPort = Integer.parseInt(System.getProperty("EPICS_CAS_BEACON_PORT", String.valueOf(repeaterPort)));
+            addressList = defaults.get("EPICS_CAS_ADDR_LIST", addressList);
+            serverPort = defaults.getInt("EPICS_CAS_SERVER_PORT", serverPort);
+            addressList = defaults.get("EPICS_CAS_BEACON_ADDR_LIST", addressList);
+            repeaterPort = defaults.getInt("EPICS_CAS_BEACON_PORT", repeaterPort);
         }
 
-        // Finally save the configuration in System properties.   
+        pvaAddressList = defaults.get("EPICS_PVA_ADDR_LIST", pvaAddressList);
+        pvaAutoAddressList = defaults.getBoolean("EPICS_PVA_AUTO_ADDR_LIST", pvaAutoAddressList);
+        pvaConnectionTimeout = defaults.getFloat("EPICS_PVA_CONN_TMO", pvaConnectionTimeout);
+        pvaBeaconPeriod = defaults.getFloat("EPICS_PVA_BEACON_PERIOD", pvaBeaconPeriod);
+        pvaBroadcastPort = defaults.getInt("EPICS_PVA_BROADCAST_PORT", pvaBroadcastPort);
+        pvaReceiveBufferSize = defaults.getInt("EPICS_PVA_MAX_ARRAY_BYTES", pvaReceiveBufferSize);
+
+        // Finally save the configuration in System properties.
         System.setProperty(CAJContext.class.getName() + ".addr_list", addressList);
         System.setProperty(CAJContext.class.getName() + ".auto_addr_list", Boolean.toString(autoAddressList));
         System.setProperty(CAJContext.class.getName() + ".name_servers", nameServersList);
@@ -246,6 +259,13 @@ public class Epics7ChannelSystem extends ChannelSystem {
         System.setProperty(CAJContext.class.getName() + ".server_port", Integer.toString(serverPort));
         System.setProperty(CAJContext.class.getName() + ".max_array_bytes", Integer.toString(maxArrayBytes));
         System.setProperty(CAJContext.class.getName() + ".max_search_interval", Float.toString(maxSearchInterval));
+
+        System.setProperty("EPICS_PVA_ADDR_LIST", pvaAddressList);
+        System.setProperty("EPICS_PVA_AUTO_ADDR_LIST", Boolean.toString(pvaAutoAddressList));
+        System.setProperty("EPICS_PVA_CONN_TMO", Float.toString(pvaConnectionTimeout));
+        System.setProperty("EPICS_PVA_BEACON_PERIOD", Float.toString(pvaBeaconPeriod));
+        System.setProperty("EPICS_PVA_BROADCAST_PORT", Integer.toString(pvaBroadcastPort));
+        System.setProperty("EPICS_PVA_MAX_ARRAY_BYTES", Integer.toString(pvaReceiveBufferSize));
     }
 
     @Override
