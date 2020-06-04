@@ -75,14 +75,14 @@ public class Epics7ServerChannelFactoryTest {
         System.out.println("printInfo");
         Epics7ServerChannelFactory instance = new Epics7ServerChannelFactory();
 
-        String message = "Epics7ServerChannelFactory: using EPICS7 Open XAL plugin.";
+        String message = "Using EPICS7 Open XAL plugin.";
 
         HandlerImpl handler = new HandlerImpl();
         Logger.getLogger(Epics7ServerChannelFactory.class.getName()).addHandler(handler);
 
         instance.printInfo();
 
-        assertEquals(message, handler.message);
+        assertTrue(handler.message.startsWith(message));
         assertEquals(handler.level, Level.INFO);
     }
 

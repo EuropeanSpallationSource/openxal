@@ -20,12 +20,14 @@ package xal.plugin.epics7;
 import com.cosylab.epics.caj.CAJContext;
 import com.cosylab.epics.caj.impl.CAConstants;
 import java.util.Properties;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.epics.pvaccess.PVAConstants;
 import org.epics.pvaccess.client.ChannelProvider;
 import org.epics.pvaccess.client.ChannelProviderRegistryFactory;
 import xal.ca.Channel;
 import xal.ca.ChannelSystem;
+import xal.plugin.epics7.server.Epics7ServerChannelSystem;
 import xal.tools.apputils.Preferences;
 
 /**
@@ -315,7 +317,37 @@ public class Epics7ChannelSystem extends ChannelSystem {
 
     @Override
     public void printInfo() {
-        Logger.getLogger(Epics7ChannelSystem.class.getName()).info("Epics7ChannelSystem: using EPICS7 Open XAL plugin.");
+        String className = this.getClass().getName();
+
+        String message = "";
+
+        message += "EPICS_CA_ADDR_LIST = " + System.getProperty(CAJContext.class.getName() + ".addr_list") + "\n";
+
+        message += "EPICS_CA_ADDR_LIST = " + System.getProperty(CAJContext.class.getName() + ".addr_list") + "\n";
+        message += "EPICS_CA_AUTO_ADDR_LIST = " + System.getProperty(CAJContext.class.getName() + ".auto_addr_list") + "\n";
+        message += "EPICS_CA_NAME_SERVERS = " + System.getProperty(CAJContext.class.getName() + ".name_servers") + "\n";
+        message += "EPICS_CA_CONN_TMO = " + System.getProperty(CAJContext.class.getName() + ".connection_timeout") + "\n";
+        message += "EPICS_CA_BEACON_PERIOD = " + System.getProperty(CAJContext.class.getName() + ".beacon_period") + "\n";
+        message += "EPICS_CA_REPEATER_PORT = " + System.getProperty(CAJContext.class.getName() + ".repeater_port") + "\n";
+        message += "EPICS_CA_SERVER_PORT = " + System.getProperty(CAJContext.class.getName() + ".server_port") + "\n";
+        message += "EPICS_CA_MAX_ARRAY_BYTES = " + System.getProperty(CAJContext.class.getName() + ".max_array_bytes") + "\n";
+        message += "EPICS_CA_MAX_SEARCH_PERIOD = " + System.getProperty(CAJContext.class.getName() + ".max_search_interval") + "\n";
+
+        if (className.equals(Epics7ServerChannelSystem.class.getName())) {
+            message += "EPICS_CAS_ADDR_LIST = " + System.getProperty(CAJContext.class.getName() + ".addr_list") + "\n";
+            message += "EPICS_CAS_SERVER_PORT = " + System.getProperty(CAJContext.class.getName() + ".server_port") + "\n";
+            message += "EPICS_CAS_BEACON_ADDR_LIST = " + System.getProperty(CAJContext.class.getName() + ".addr_list") + "\n";
+            message += "EPICS_CAS_BEACON_PORT = " + System.getProperty(CAJContext.class.getName() + ".server_port") + "\n";
+        }
+
+        message += "EPICS_PVA_ADDR_LIST = " + System.getProperty("EPICS_PVA_ADDR_LIST") + "\n";
+        message += "EPICS_PVA_AUTO_ADDR_LIST = " + System.getProperty("EPICS_PVA_AUTO_ADDR_LIST") + "\n";
+        message += "EPICS_PVA_CONN_TMO = " + System.getProperty("EPICS_PVA_CONN_TMO") + "\n";
+        message += "EPICS_PVA_BEACON_PERIOD = " + System.getProperty("EPICS_PVA_BEACON_PERIOD") + "\n";
+        message += "EPICS_PVA_BROADCAST_PORT = " + System.getProperty("EPICS_PVA_BROADCAST_PORT") + "\n";
+        message += "EPICS_PVA_MAX_ARRAY_BYTES = " + System.getProperty("EPICS_PVA_MAX_ARRAY_BYTES") + "\n";
+
+        Logger.getLogger(className).info(message);
     }
 
     public boolean isInitialized() {

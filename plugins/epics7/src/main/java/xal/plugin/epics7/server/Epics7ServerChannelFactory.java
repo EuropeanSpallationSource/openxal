@@ -63,7 +63,8 @@ public class Epics7ServerChannelFactory extends ChannelFactory {
 
     @Override
     public void printInfo() {
-       Logger.getLogger(Epics7ServerChannelFactory.class.getName()).info("Epics7ServerChannelFactory: using EPICS7 Open XAL plugin.");
+       Logger.getLogger(Epics7ServerChannelFactory.class.getName()).info("Using EPICS7 Open XAL plugin.");
+       CHANNEL_SYSTEM.printInfo();
     }
 
     @Override

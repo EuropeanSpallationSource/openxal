@@ -136,9 +136,9 @@ public class Epics7ChannelSystemTest {
         Epics7ChannelSystem instance = new Epics7ChannelSystem();
         instance.printInfo();
 
-        String message = "Epics7ChannelSystem: using EPICS7 Open XAL plugin.";
+        String message = "EPICS_CA_ADDR_LIST = ";
 
-        assertEquals(message, handler.message);
+        assertTrue(handler.message.startsWith(message));
         assertEquals(handler.level, Level.INFO);
     }
 }
