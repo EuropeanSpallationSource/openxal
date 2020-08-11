@@ -56,7 +56,7 @@
                                 <password>${artifactory.password}</password>
                                 <repoKey>OpenXAL/release</repoKey>
                                 <snapshotRepoKey>OpenXAL/snapshot</snapshotRepoKey>
-                                <includePatterns>**-${version}.jar</includePatterns>
+                                <includePatterns>**-${project.version}.jar</includePatterns>
                             </publisher>
                         </configuration>
                     </execution>
