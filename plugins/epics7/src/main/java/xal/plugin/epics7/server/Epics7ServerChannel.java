@@ -296,7 +296,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
     private void updateTimeStampAlarmsAndTriggerListener(PutListener listener) {
         long currentTimeMillis = System.currentTimeMillis();
 
-        int nanoSeconds = (int) (1e6 * currentTimeMillis % 1e9);
+        int nanoSeconds = (int) (1e6 * (currentTimeMillis % 1e3));
         long seconds = currentTimeMillis / 1000;
 
         PVStructure timeStampField = pvRecord.getPVStructure().getStructureField(TIMESTAMP_FIELD);
