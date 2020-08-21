@@ -293,7 +293,23 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         }, intMaskFire);
     }
 
-    private void updateTimeStampAlarmsAndTriggerListener(PutListener listener) {
+    private void beforeValueUpdated(Class<?> typeClass, DBRType dbrType, ScalarType scalarType, boolean array) throws ConnectionException {
+        if (elementType() != typeClass) {
+            addCAPV(dbrType);
+            addRecord(scalarType, array);
+        }
+
+        pvRecord.lock();
+        pvRecord.beginGroupPut();
+    }
+
+    private void afterValueUpdated(DBR dbr, PutListener listener) {
+        try {
+            memoryProcessVariable.write(dbr, null);
+        } catch (CAException ex) {
+            Logger.getLogger(Epics7ServerChannel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
         long currentTimeMillis = System.currentTimeMillis();
 
         int nanoSeconds = (int) (1e6 * (currentTimeMillis % 1e3));
@@ -308,82 +324,53 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         if (listener != null) {
             listener.putCompleted(this);
         }
+
+        pvRecord.endGroupPut();
+        pvRecord.unlock();
     }
 
     @Override
     public void putRawValCallback(String newVal, PutListener listener) throws ConnectionException, PutException {
-        if (elementType() != String.class) {
-            addCAPV(DBRType.STRING);
-            addRecord(ScalarType.pvString, false);
-        }
+        beforeValueUpdated(String.class, DBRType.STRING, ScalarType.pvString, false);
 
         pvRecord.getPVStructure().getStringField(VALUE_FIELD).put(newVal);
 
         DBR dbr = new DBR_String(new String[]{newVal});
-        try {
-            memoryProcessVariable.write(dbr, null);
-        } catch (CAException ex) {
-            Logger.getLogger(Epics7ServerChannel.class.getName()).log(Level.SEVERE, null, ex);
-        }
 
-        updateTimeStampAlarmsAndTriggerListener(listener);
+        afterValueUpdated(dbr, listener);
     }
 
     @Override
     public void putRawValCallback(byte newVal, PutListener listener) throws ConnectionException, PutException {
-        if (elementType() != byte.class) {
-            addCAPV(DBRType.BYTE);
-            addRecord(ScalarType.pvByte, false);
-        }
+        beforeValueUpdated(byte.class, DBRType.BYTE, ScalarType.pvByte, false);
 
         pvRecord.getPVStructure().getByteField(VALUE_FIELD).put(newVal);
 
         DBR dbr = new DBR_Byte(new byte[]{newVal});
-        try {
-            memoryProcessVariable.write(dbr, null);
-        } catch (CAException ex) {
-            Logger.getLogger(Epics7ServerChannel.class.getName()).log(Level.SEVERE, null, ex);
-        }
 
-        updateTimeStampAlarmsAndTriggerListener(listener);
+        afterValueUpdated(dbr, listener);
     }
 
     @Override
     public void putRawValCallback(short newVal, PutListener listener) throws ConnectionException, PutException {
-        if (elementType() != short.class) {
-            addCAPV(DBRType.SHORT);
-            addRecord(ScalarType.pvShort, false);
-        }
+        beforeValueUpdated(short.class, DBRType.SHORT, ScalarType.pvShort, false);
 
         pvRecord.getPVStructure().getShortField(VALUE_FIELD).put(newVal);
 
         DBR dbr = new DBR_Short(new short[]{newVal});
-        try {
-            memoryProcessVariable.write(dbr, null);
-        } catch (CAException ex) {
-            Logger.getLogger(Epics7ServerChannel.class.getName()).log(Level.SEVERE, null, ex);
-        }
 
-        updateTimeStampAlarmsAndTriggerListener(listener);
+        afterValueUpdated(dbr, listener);
     }
 
     @Override
     public void putRawValCallback(int newVal, PutListener listener) throws ConnectionException, PutException {
-        if (elementType() != int.class) {
-            addCAPV(DBRType.INT);
-            addRecord(ScalarType.pvInt, false);
-        }
+        beforeValueUpdated(int.class, DBRType.INT, ScalarType.pvInt, false);
 
         pvRecord.getPVStructure().getIntField(VALUE_FIELD).put(newVal);
 
         DBR dbr = new DBR_Int(new int[]{newVal});
-        try {
-            memoryProcessVariable.write(dbr, null);
-        } catch (CAException ex) {
-            Logger.getLogger(Epics7ServerChannel.class.getName()).log(Level.SEVERE, null, ex);
-        }
 
-        updateTimeStampAlarmsAndTriggerListener(listener);
+        afterValueUpdated(dbr, listener);
     }
 
     /**
@@ -391,135 +378,79 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
      */
     @Override
     public void putRawValCallback(long newVal, PutListener listener) throws ConnectionException, PutException {
-        if (elementType() != long.class) {
-            addCAPV(DBRType.INT);
-            addRecord(ScalarType.pvLong, false);
-        }
+        beforeValueUpdated(long.class, DBRType.INT, ScalarType.pvLong, false);
 
         pvRecord.getPVStructure().getLongField(VALUE_FIELD).put(newVal);
 
         DBR dbr = new DBR_Int(new int[]{(int) newVal});
-        try {
-            memoryProcessVariable.write(dbr, null);
-        } catch (CAException ex) {
-            Logger.getLogger(Epics7ServerChannel.class.getName()).log(Level.SEVERE, null, ex);
-        }
 
-        updateTimeStampAlarmsAndTriggerListener(listener);
+        afterValueUpdated(dbr, listener);
     }
 
     @Override
     public void putRawValCallback(float newVal, PutListener listener) throws ConnectionException, PutException {
-        if (elementType() != float.class) {
-            addCAPV(DBRType.FLOAT);
-            addRecord(ScalarType.pvFloat, false);
-        }
+        beforeValueUpdated(float.class, DBRType.FLOAT, ScalarType.pvFloat, false);
 
         pvRecord.getPVStructure().getFloatField(VALUE_FIELD).put(newVal);
 
         DBR dbr = new DBR_Float(new float[]{newVal});
-        try {
-            memoryProcessVariable.write(dbr, null);
-        } catch (CAException ex) {
-            Logger.getLogger(Epics7ServerChannel.class.getName()).log(Level.SEVERE, null, ex);
-        }
 
-        updateTimeStampAlarmsAndTriggerListener(listener);
+        afterValueUpdated(dbr, listener);
     }
 
     @Override
     public void putRawValCallback(double newVal, PutListener listener) throws ConnectionException, PutException {
-        if (elementType() != double.class) {
-            addCAPV(DBRType.DOUBLE);
-            addRecord(ScalarType.pvDouble, false);
-        }
+        beforeValueUpdated(double.class, DBRType.DOUBLE, ScalarType.pvDouble, false);
 
         pvRecord.getPVStructure().getDoubleField(VALUE_FIELD).put(newVal);
 
         DBR dbr = new DBR_Double(new double[]{newVal});
-        try {
-            memoryProcessVariable.write(dbr, null);
-        } catch (CAException ex) {
-            Logger.getLogger(Epics7ServerChannel.class.getName()).log(Level.SEVERE, null, ex);
-        }
 
-        updateTimeStampAlarmsAndTriggerListener(listener);
+        afterValueUpdated(dbr, listener);
     }
 
     @Override
     public void putRawValCallback(String[] newVal, PutListener listener) throws ConnectionException, PutException {
-        if (elementType() != String[].class) {
-            addCAPV(DBRType.STRING);
-            addRecord(ScalarType.pvString, true);
-        }
+        beforeValueUpdated(String[].class, DBRType.STRING, ScalarType.pvString, true);
 
         pvRecord.getPVStructure().getSubField(PVStringArray.class, Epics7Channel.VALUE_REQUEST).put(0, newVal.length, newVal, 0);
 
         DBR dbr = new DBR_String(newVal);
-        try {
-            memoryProcessVariable.write(dbr, null);
-        } catch (CAException ex) {
-            Logger.getLogger(Epics7ServerChannel.class.getName()).log(Level.SEVERE, null, ex);
-        }
 
-        updateTimeStampAlarmsAndTriggerListener(listener);
+        afterValueUpdated(dbr, listener);
     }
 
     @Override
     public void putRawValCallback(byte[] newVal, PutListener listener) throws ConnectionException, PutException {
-        if (elementType() != byte[].class) {
-            addCAPV(DBRType.BYTE);
-            addRecord(ScalarType.pvByte, true);
-        }
+        beforeValueUpdated(byte[].class, DBRType.BYTE, ScalarType.pvByte, true);
 
         pvRecord.getPVStructure().getSubField(PVByteArray.class, Epics7Channel.VALUE_REQUEST).put(0, newVal.length, newVal, 0);
 
         DBR dbr = new DBR_String(newVal);
-        try {
-            memoryProcessVariable.write(dbr, null);
-        } catch (CAException ex) {
-            Logger.getLogger(Epics7ServerChannel.class.getName()).log(Level.SEVERE, null, ex);
-        }
 
-        updateTimeStampAlarmsAndTriggerListener(listener);
+        afterValueUpdated(dbr, listener);
     }
 
     @Override
     public void putRawValCallback(short[] newVal, PutListener listener) throws ConnectionException, PutException {
-        if (elementType() != short[].class) {
-            addCAPV(DBRType.SHORT);
-            addRecord(ScalarType.pvShort, true);
-        }
+        beforeValueUpdated(short[].class, DBRType.SHORT, ScalarType.pvShort, true);
 
         pvRecord.getPVStructure().getSubField(PVShortArray.class, Epics7Channel.VALUE_REQUEST).put(0, newVal.length, newVal, 0);
 
         DBR dbr = new DBR_Short(newVal);
-        try {
-            memoryProcessVariable.write(dbr, null);
-        } catch (CAException ex) {
-            Logger.getLogger(Epics7ServerChannel.class.getName()).log(Level.SEVERE, null, ex);
-        }
 
-        updateTimeStampAlarmsAndTriggerListener(listener);
+        afterValueUpdated(dbr, listener);
     }
 
     @Override
     public void putRawValCallback(int[] newVal, PutListener listener) throws ConnectionException, PutException {
-        if (elementType() != int[].class) {
-            addCAPV(DBRType.INT);
-            addRecord(ScalarType.pvInt, true);
-        }
+        beforeValueUpdated(int[].class, DBRType.INT, ScalarType.pvInt, true);
 
         pvRecord.getPVStructure().getSubField(PVIntArray.class, Epics7Channel.VALUE_REQUEST).put(0, newVal.length, newVal, 0);
 
         DBR dbr = new DBR_Int(newVal);
-        try {
-            memoryProcessVariable.write(dbr, null);
-        } catch (CAException ex) {
-            Logger.getLogger(Epics7ServerChannel.class.getName()).log(Level.SEVERE, null, ex);
-        }
 
-        updateTimeStampAlarmsAndTriggerListener(listener);
+        afterValueUpdated(dbr, listener);
     }
 
     /**
@@ -527,10 +458,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
      */
     @Override
     public void putRawValCallback(long[] newVal, PutListener listener) throws ConnectionException, PutException {
-        if (elementType() != long[].class) {
-            addCAPV(DBRType.INT);
-            addRecord(ScalarType.pvLong, true);
-        }
+        beforeValueUpdated(long[].class, DBRType.INT, ScalarType.pvLong, true);
 
         pvRecord.getPVStructure().getSubField(PVLongArray.class, Epics7Channel.VALUE_REQUEST).put(0, newVal.length, newVal, 0);
 
@@ -539,51 +467,30 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
             newInt[i] = (int) newVal[i];
         }
         DBR dbr = new DBR_Int(newInt);
-        try {
-            memoryProcessVariable.write(dbr, null);
-        } catch (CAException ex) {
-            Logger.getLogger(Epics7ServerChannel.class.getName()).log(Level.SEVERE, null, ex);
-        }
 
-        updateTimeStampAlarmsAndTriggerListener(listener);
+        afterValueUpdated(dbr, listener);
     }
 
     @Override
     public void putRawValCallback(float[] newVal, PutListener listener) throws ConnectionException, PutException {
-        if (elementType() != float[].class) {
-            addCAPV(DBRType.FLOAT);
-            addRecord(ScalarType.pvFloat, true);
-        }
+        beforeValueUpdated(float[].class, DBRType.FLOAT, ScalarType.pvFloat, true);
 
         pvRecord.getPVStructure().getSubField(PVFloatArray.class, Epics7Channel.VALUE_REQUEST).put(0, newVal.length, newVal, 0);
 
         DBR dbr = new DBR_Float(newVal);
-        try {
-            memoryProcessVariable.write(dbr, null);
-        } catch (CAException ex) {
-            Logger.getLogger(Epics7ServerChannel.class.getName()).log(Level.SEVERE, null, ex);
-        }
 
-        updateTimeStampAlarmsAndTriggerListener(listener);
+        afterValueUpdated(dbr, listener);
     }
 
     @Override
     public void putRawValCallback(double[] newVal, PutListener listener) throws ConnectionException, PutException {
-        if (elementType() != double[].class) {
-            addCAPV(DBRType.DOUBLE);
-            addRecord(ScalarType.pvDouble, true);
-        }
+        beforeValueUpdated(double[].class, DBRType.DOUBLE, ScalarType.pvDouble, true);
 
         pvRecord.getPVStructure().getSubField(PVDoubleArray.class, Epics7Channel.VALUE_REQUEST).put(0, newVal.length, newVal, 0);
 
         DBR dbr = new DBR_Double(newVal);
-        try {
-            memoryProcessVariable.write(dbr, null);
-        } catch (CAException ex) {
-            Logger.getLogger(Epics7ServerChannel.class.getName()).log(Level.SEVERE, null, ex);
-        }
 
-        updateTimeStampAlarmsAndTriggerListener(listener);
+        afterValueUpdated(dbr, listener);
     }
 
     @Override
