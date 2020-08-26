@@ -37,11 +37,12 @@ abstract public class Electromagnet extends Magnet {
     
     /** the ID of this magnet's main power supply */
     protected String mainSupplyId;
-    
-    
-	// static initializer
+        
+    // static initializer
     static {
         registerType();
+        addReadBackHandle(MagnetMainSupply.FIELD_SET_HANDLE, FIELD_RB_HANDLE);
+        addReadBackHandle(MagnetMainSupply.CURRENT_SET_HANDLE, MagnetMainSupply.CURRENT_RB_HANDLE);
     }
 
     
