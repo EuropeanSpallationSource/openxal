@@ -76,6 +76,8 @@ public class RfCavity extends AcceleratorSeq {
 	// static initializer
     static {
         registerType();
+        addReadBackHandle(CAV_AMP_SET_HANDLE, CAV_AMP_AVG_HANDLE);
+        addReadBackHandle(CAV_PHASE_SET_HANDLE, CAV_PHASE_AVG_HANDLE);
     }
 
 

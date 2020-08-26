@@ -7,6 +7,8 @@ import xal.smf.data.BucketParser;
 import xal.smf.impl.qualify.*;
 
 import java.util.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -71,7 +73,14 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
 
     /** channel suite associated with this node */
     protected ChannelSuite channelSuite;
+    
+    /*  Map containing pairs of set and respective readback handle. */
+    protected static Map<String,String> readBackHandles = new HashMap<>();
 
+    protected enum ChannelType {
+        SET,
+        RB
+    };
 
     /** Derived class must furnish a unique type id */
     abstract public String getType();
@@ -285,6 +294,171 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
         tmpChan.connectAndWait();
 
         return tmpChan;
+    }
+
+    /**
+     * Get the channels corresponding to the specified handle and connect to
+     * them. This method is useful when setting a value and checking that the
+     * value was set.
+     *
+     * @param setHandle The set handle for the channel to get.
+     * @return A map containing the set and readback channels associated with
+     * this node and the specified set handle or null if there is no match.
+     * @throws xal.smf.NoSuchChannelException if no such channel as specified by
+     * the handle is associated with this node.
+     * @throws xal.ca.ConnectionException if the channel cannot be connected
+     */
+    public Map<ChannelType, Channel> getAndConnectChannelSetAndReadBack(String setHandle) throws NoSuchChannelException, ConnectionException {
+        Channel setChannel = getChannel(setHandle);
+        Channel redBackChannel = getChannel(getReadBackHandle(setHandle));
+        setChannel.connectAndWait();
+        redBackChannel.connectAndWait();
+
+        Map<ChannelType, Channel> map = new HashMap<>();
+        map.put(ChannelType.SET, setChannel);
+        map.put(ChannelType.RB, redBackChannel);
+
+        return map;
+    }
+
+    /**
+     * Add a readback handle corresponding to a set handle. This method should
+     * be called by each element that adds new set/readback handle pairs in the
+     * static initializer.
+     *
+     * @param setHandle The set handle.
+     * @param readBackHandle The corresponding readback handle.
+     */
+    protected static void addReadBackHandle(String setHandle, String readBackHandle) {
+        if (!readBackHandles.containsKey(setHandle)) {
+            readBackHandles.put(setHandle, readBackHandle);
+        }
+    }
+
+    /**
+     * Get the readback handle corresponding to a set channel.
+     *
+     * @param setHandle The set handle.
+     * @return The corresponding readback handle.
+     */
+    public static String getReadBackHandle(String setHandle) {
+        if (readBackHandles.containsKey(setHandle)) {
+            return readBackHandles.get(setHandle);
+        } else {
+            return setHandle;
+        }
+    }
+
+    /**
+     * Get the set handle corresponding to a readback channel.
+     *
+     * @param readBackHandle The readback handle.
+     * @return The corresponding set handle.
+     */
+    public static String getSetHandle(String readBackHandle) {
+        if (readBackHandles.containsValue(readBackHandle)) {
+            for (String setHandle : readBackHandles.keySet()) {
+                if (readBackHandles.get(setHandle).equals(readBackHandle)) {
+                    return setHandle;
+                }
+            }
+        }
+        return readBackHandle;
+    }
+
+    /**
+     * Set a value to the get channel corresponding to the set handle, and then
+     * check on the readback channel that the value is within an interval around
+     * the set value.
+       * 
+     * @param setHandle Handle corresponding to the set channel.
+     * @param value Value to be set.
+     * @param tolerance Defines an interval around the value (absolute value).
+     * @param delay Delay in seconds for the readback to reach the set value
+     * before failing.
+     * @return true if the value is set correctly, otherwise false.
+     * @throws ConnectionException
+     * @throws PutException
+     * @throws MonitorException
+     */
+    public boolean setValueAndVerify(String setHandle, Number value, Number tolerance, double delay) throws ConnectionException, PutException, MonitorException {
+        Map<ChannelType, Channel> channels;
+
+        try {
+            channels = getAndConnectChannelSetAndReadBack(setHandle);
+        } catch (NoSuchChannelException | ConnectionException ex) {
+            return false;
+        }
+
+        if (channels.get(ChannelType.SET) != null && channels.get(ChannelType.RB) != null) {
+            CountDownLatch latch = new CountDownLatch(1);
+
+            Channel rbChannel = channels.get(ChannelType.RB);
+            Channel setChannel = channels.get(ChannelType.SET);
+            Monitor monitor = null;
+            if (value instanceof Byte) {
+                monitor = rbChannel.addMonitorValue((record, chan) -> {
+                    if (Math.abs(record.byteValue() - value.byteValue()) <= tolerance.byteValue()) {
+                        latch.countDown();
+                    }
+                }, 0);
+                setChannel.putVal(value.byteValue());
+            } else if (value instanceof Float) {
+                monitor = rbChannel.addMonitorValue((record, chan) -> {
+                    if (Math.abs(record.floatValue() - value.floatValue()) <= tolerance.floatValue()) {
+                        latch.countDown();
+                    }
+                }, 0);
+                setChannel.putVal(value.floatValue());
+            } else if (value instanceof Double) {
+                monitor = rbChannel.addMonitorValue((record, chan) -> {
+                    if (Math.abs(record.doubleValue() - value.doubleValue()) <= tolerance.doubleValue()) {
+                        latch.countDown();
+                    }
+                }, 0);
+                setChannel.putVal(value.doubleValue());
+            } else if (value instanceof Short) {
+                monitor = rbChannel.addMonitorValue((record, chan) -> {
+                    if (Math.abs(record.shortValue() - value.shortValue()) <= tolerance.shortValue()) {
+                        latch.countDown();
+                    }
+                }, 0);
+                setChannel.putVal(value.shortValue());
+            } else if (value instanceof Integer) {
+                monitor = rbChannel.addMonitorValue((record, chan) -> {
+                    if (Math.abs(record.intValue() - value.intValue()) <= tolerance.intValue()) {
+                        latch.countDown();
+                    }
+                }, 0);
+                setChannel.putVal(value.intValue());
+            } else if (value instanceof Long) {
+                monitor = rbChannel.addMonitorValue((record, chan) -> {
+                    if (Math.abs(record.longValue() - value.longValue()) <= tolerance.longValue()) {
+                        latch.countDown();
+                    }
+                }, 0);
+                setChannel.putVal(value.longValue());
+            }
+
+            if (monitor == null) {
+                return false;
+            }
+
+            // Wait for the delay
+            try {
+                latch.await((long) (delay * 1000), TimeUnit.MILLISECONDS);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(AcceleratorNode.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            monitor.clear();
+
+            if (latch.getCount() == 0) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -658,5 +832,3 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
         return this.getId();
     }
 }
-
-
