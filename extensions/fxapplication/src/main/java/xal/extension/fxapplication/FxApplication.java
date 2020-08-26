@@ -166,7 +166,9 @@ abstract public class FxApplication extends Application {
         loadDefaultAcceleratorMenu.setOnAction(new LoadDefaultAcceleratorMenu(DOCUMENT));
         final MenuItem loadAcceleratorMenu = new MenuItem("Load Accelerator ...");
         loadAcceleratorMenu.setOnAction(new LoadAcceleratorMenu(DOCUMENT));
-        acceleratorMenu.getItems().addAll(loadDefaultAcceleratorMenu, loadAcceleratorMenu);
+        final MenuItem testModeMenu = new MenuItem("Enable Test Mode");
+        testModeMenu.setOnAction(new TestModeMenu(DOCUMENT, testModeMenu));
+        acceleratorMenu.getItems().addAll(loadDefaultAcceleratorMenu, loadAcceleratorMenu, testModeMenu);
         final Menu sequenceMenu = new Menu("Sequence");
 
         if (HAS_SEQUENCE && DOCUMENT.accelerator.getAccelerator() != null) {
@@ -449,6 +451,34 @@ class LoadDefaultAcceleratorMenu implements EventHandler {
         document.accelerator.setAccelerator(XMLDataManager.loadDefaultAccelerator());
     }
 
+}
+
+class TestModeMenu implements EventHandler {
+
+    private final XalFxDocument document;
+    private MenuItem testModeMenu;
+
+    public TestModeMenu(XalFxDocument DOCUMENT) {
+        this.document = DOCUMENT;
+    }
+
+    TestModeMenu(XalFxDocument DOCUMENT, MenuItem testModeMenu) {
+        this.document = DOCUMENT;
+        this.testModeMenu = testModeMenu;
+    }
+
+    @Override
+    public void handle(Event t) {
+        document.testMode = !document.testMode;
+
+        document.accelerator.setTestMode(document.testMode);
+
+        if (document.testMode) {
+            testModeMenu.setText("Disable Test Mode");
+        } else {
+            testModeMenu.setText("Enable Test Mode");
+        }
+    }
 }
 
 class LoadAcceleratorMenu implements EventHandler {

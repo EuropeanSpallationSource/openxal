@@ -46,6 +46,8 @@ abstract public class XalFxDocument {
     private final String HELP_WIKI_BASE;
     /** PageID of the Confluence page or web page with the help about the application */
     protected String HELP_PAGEID;
+    /** Test mode flag, disabled by default */
+    protected boolean testMode = false;
 
     public XalFxDocument() {
         this.HELP_WIKI_BASE = "https://confluence.esss.lu.se/pages/viewpage.action?pageId=";

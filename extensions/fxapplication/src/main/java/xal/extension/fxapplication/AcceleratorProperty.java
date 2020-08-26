@@ -9,7 +9,6 @@ package xal.extension.fxapplication;
 import java.util.HashSet;
 import java.util.Set;
 import javafx.beans.value.ChangeListener;
-import javafx.event.Event;
 import xal.smf.Accelerator;
 
 /**
@@ -35,6 +34,10 @@ public class AcceleratorProperty {
         synchronized( listeners ){
          return accelerator;
         }
+    }
+
+    public void setTestMode(boolean testMode) {
+        accelerator.channelSuite().getChannelFactory().setTest(testMode);
     }
 
     public void addChangeListener(ChangeListener listener){
