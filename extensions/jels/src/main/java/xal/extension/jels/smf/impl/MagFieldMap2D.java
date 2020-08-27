@@ -24,7 +24,7 @@ import xal.extension.jels.model.elem.FieldMapPoint;
 /**
  * 2D FieldMap element for static magnets.
  *
- * @author Juan F. Esteban Müller <JuanF.EstebanMuller@esss.se>
+ * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
  */
 public class MagFieldMap2D extends FieldMap {
 
@@ -32,8 +32,8 @@ public class MagFieldMap2D extends FieldMap {
         FieldComponent<double[][]> fieldComponentZ = loadFile2D(path, filename + ".bsz");
         FieldComponent<double[][]> fieldComponentR = loadFile2D(path, filename + ".bsr");
 
-        fieldComponents.put("z", fieldComponentZ);
-        fieldComponents.put("r", fieldComponentR);
+        magneticField.put("z", fieldComponentZ);
+        magneticField.put("r", fieldComponentR);
 
         // Computing other values used for integration.
         length = fieldComponentZ.getMax()[0];
@@ -47,8 +47,8 @@ public class MagFieldMap2D extends FieldMap {
 
     @Override
     public void saveFieldMap(String path, String filename) throws IOException, URISyntaxException {
-        FieldComponent<double[][]> fieldComponentZ = fieldComponents.get("z");
-        FieldComponent<double[][]> fieldComponentR = fieldComponents.get("r");
+        FieldComponent<double[][]> fieldComponentZ = magneticField.get("z");
+        FieldComponent<double[][]> fieldComponentR = magneticField.get("r");
 
         saveFile2D(path, filename + ".bsz", fieldComponentZ);
         saveFile2D(path, filename + ".bsr", fieldComponentR);
@@ -63,8 +63,8 @@ public class MagFieldMap2D extends FieldMap {
      */
     @Override
     public FieldMapPoint getFieldAt(double position) {
-        FieldComponent<double[][]> fieldComponentZ = fieldComponents.get("z");
-        FieldComponent<double[][]> fieldComponentR = fieldComponents.get("r");
+        FieldComponent<double[][]> fieldComponentZ = magneticField.get("z");
+        FieldComponent<double[][]> fieldComponentR = magneticField.get("r");
 
         if (position < -1e-6 || position > fieldComponentZ.getMax()[0] + 1e-6) {
             return null;

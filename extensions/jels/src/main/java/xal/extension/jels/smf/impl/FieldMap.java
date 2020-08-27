@@ -42,12 +42,13 @@ import xal.extension.jels.model.elem.FieldMapPoint;
  * to use the FieldMapFactory method, that will select the right FieldMap
  * subclass and make sure the field map is loaded only once.
  *
- * @author Juan F. Esteban Müller <JuanF.EstebanMuller@esss.se>
+ * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
  */
 public abstract class FieldMap {
 
     // Field components are stored here, the key pf the hashmap is the component (x,y,z,r).
-    protected HashMap<String, FieldComponent> fieldComponents = new HashMap<>();
+    protected HashMap<String, FieldComponent> electricField = new HashMap<>();
+    protected HashMap<String, FieldComponent> magneticField = new HashMap<>();
 
     protected static final Logger LOGGER = Logger.getLogger(FieldMap.class.getName());
 
@@ -68,7 +69,7 @@ public abstract class FieldMap {
         recalculateSliceLength();
     }
 
-    protected void recalculateSliceLength() {
+    protected final void recalculateSliceLength() {
         sliceLength = length / (numberOfPoints - 1);
 
         longitudinalPositions = new double[numberOfPoints];

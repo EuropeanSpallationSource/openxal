@@ -25,7 +25,7 @@ import xal.extension.jels.model.elem.FieldMapPoint;
  * 1D FieldMap element for RF cavities, assuming a radial dependence similar to
  * pillbox cavity.
  *
- * @author Juan F. Esteban Müller <JuanF.EstebanMuller@esss.se>
+ * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
  */
 public class RfFieldMap1D extends FieldMap {
 
@@ -46,7 +46,7 @@ public class RfFieldMap1D extends FieldMap {
         }
         fieldComponent.setField(field);
 
-        fieldComponents.put("z", fieldComponent);
+        electricField.put("z", fieldComponent);
 
         // Compute other values.
         length = fieldComponent.getMax()[0];
@@ -66,7 +66,7 @@ public class RfFieldMap1D extends FieldMap {
 
     @Override
     public void saveFieldMap(String path, String filename) throws IOException, URISyntaxException {
-        FieldComponent<double[]> fieldComponentZ = fieldComponents.get("z");
+        FieldComponent<double[]> fieldComponentZ = electricField.get("z");
 
         saveFile1D(path, filename + ".edz", fieldComponentZ);
     }
@@ -80,7 +80,7 @@ public class RfFieldMap1D extends FieldMap {
      */
     @Override
     public FieldMapPoint getFieldAt(double position) {
-        FieldComponent<double[]> fieldComponent = fieldComponents.get("z");
+        FieldComponent<double[]> fieldComponent = electricField.get("z");
 
         if (position < -1e-6 || position > fieldComponent.getMax()[0] + 1e-6) {
             return null;
