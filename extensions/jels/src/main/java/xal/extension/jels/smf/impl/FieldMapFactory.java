@@ -24,6 +24,12 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Factory class to get the right {@link xal.extension.jels.smf.impl.FieldMap}
+ * subclass.
+ *
+ * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
+ */
 public class FieldMapFactory {
 
     private static Map<String, FieldMap> instances = new HashMap<>();
@@ -77,11 +83,11 @@ public class FieldMapFactory {
 //                            fieldMap = new RfFieldMap2D(path, filename, numberOfPoints);
 //                        }
 //                        break;
-//                    case 3:
-//                        if (dynamic) {
-//                            fieldMap = new RfFieldMap3D(path, filename, numberOfPoints);
-//                        }
-//                        break;
+                    case 3:
+                        if (dynamic) {
+                            fieldMap = new RfFieldMap3D(path, filename, numberOfPoints);
+                        }
+                        break;
                     default:
                         return null;
                 }
