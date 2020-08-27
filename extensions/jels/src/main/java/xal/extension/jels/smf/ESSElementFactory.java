@@ -195,12 +195,13 @@ public final class ESSElementFactory {
      * @param fieldMapPath
      * @param aper Aperture details.
      * @param position Position of the field map.
+     * @param dimensions
      * @param numberOfPoints
      * @return RfFieldMap object.
      */
     public static ESSRfCavity createRfFieldMap(String name, double length, double frequency,
             double amplitude, double rfphase, String fieldFile, String fieldMapPath,
-            ApertureBucket aper, double position, int numberOfPoints) {
+            ApertureBucket aper, double position, int dimensions, int numberOfPoints) {
         RfFieldMap fm = new RfFieldMap(name + ":RFM");
         fm.setLength(length);
         fm.setPosition(length / 2);
@@ -211,7 +212,7 @@ public final class ESSElementFactory {
         fm.getFieldMapBucket().setFieldType(FieldMapFactory.FieldType.ELECTRIC);
 
         FieldMap fieldMap = FieldMapFactory.getInstance(fieldMapPath,
-                fieldFile, true, FieldMapFactory.FieldType.ELECTRIC, 1, numberOfPoints);
+                fieldFile, true, FieldMapFactory.FieldType.ELECTRIC, dimensions, numberOfPoints);
         fm.setFieldMap(fieldMap);
 
         ESSRfCavity cavity = createESSRfCavity(name, length, new AcceleratorNode[]{fm}, rfphase, amplitude * ((RfFieldMap1D) fieldMap).getFieldIntegral(), frequency, position);
