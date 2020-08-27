@@ -225,9 +225,9 @@ public final class ESSElementFactory {
      * @param name Name of the RF cavity.
      * @param length Length of the cavity in meters.
      * @param node Node to include in the cavity.
-     * @param phiS Phase.
-     * @param amplitude Amplitude.
-     * @param frequency Frequency at the start of the element.
+     * @param phiS Phase [deg].
+     * @param amplitude Amplitude [MV].
+     * @param frequency Frequency at the start of the element [MHz].
      * @param position Position of the cavity.
      * @return RfCavity object.
      */
@@ -243,9 +243,9 @@ public final class ESSElementFactory {
      * @param name Name of the RF cavity.
      * @param length Length of the cavity in meters.
      * @param nodes Nodes to include in the cavity.
-     * @param phiS Phase.
-     * @param amplitude Amplitude.
-     * @param frequency Frequency at the start of the element.
+     * @param phiS Phase [deg].
+     * @param amplitude Amplitude [MV].
+     * @param frequency Frequency at the start of the element [MHz].
      * @param position Position of the cavity.
      * @return RfCavity object.
      */
@@ -274,9 +274,9 @@ public final class ESSElementFactory {
      * @param name Name of the RF cavity.
      * @param length Length of the cavity in meters.
      * @param nodes Nodes to include in the cavity.
-     * @param phiS Phase.
-     * @param amplitude Amplitude.
-     * @param frequency Frequency at the start of the element.
+     * @param phiS Phase [deg].
+     * @param amplitude Amplitude [MV].
+     * @param frequency Frequency at the start of the element [MHz].
      * @param position Position of the cavity.
      * @return RfCavity object.
      */
