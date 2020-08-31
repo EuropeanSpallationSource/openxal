@@ -38,6 +38,46 @@ public class RfFieldMap3D extends FieldMap {
         FieldComponent<double[][][]> magneticFieldY = loadFile3D(path, filename + ".bdy");
         FieldComponent<double[][][]> magneticFieldZ = loadFile3D(path, filename + ".bdz");
 
+        // Normalizing the field map.
+        int numberOfPointsZ = electricFieldZ.getField().length;
+        int numberOfPointsY = electricFieldZ.getField()[0].length;
+        int numberOfPointsX = electricFieldZ.getField()[0][0].length;
+
+        double minX = electricFieldX.getMin()[1];
+        double minY = electricFieldY.getMin()[2];
+        double maxX = electricFieldX.getMax()[1];
+        double maxY = electricFieldY.getMax()[2];
+
+        double spacingX = (maxX - minX) / (numberOfPointsX - 1);
+        double spacingY = (maxY - minY) / (numberOfPointsY - 1);
+
+        int midPointX = (int) (-minX / spacingX);
+        int midPointY = (int) (-minY / spacingY);
+
+        double[][][] fieldX = electricFieldX.getField();
+        double[][][] fieldY = electricFieldY.getField();
+        double[][][] fieldZ = electricFieldZ.getField();
+
+        fieldIntegral = 0;
+        for (int i = 0; i < numberOfPointsZ; i++) {
+            fieldIntegral += Math.abs(fieldZ[i][midPointY][midPointX]);
+        }
+
+        fieldIntegral *= electricFieldZ.getMax()[0] / numberOfPointsZ;
+
+        for (int i = 0; i < numberOfPointsZ; i++) {
+            for (int j = 0; j < numberOfPointsY; j++) {
+                for (int k = 0; k < numberOfPointsX; k++) {
+                    fieldX[i][j][k] /= fieldIntegral;
+                    fieldY[i][j][k] /= fieldIntegral;
+                    fieldZ[i][j][k] /= fieldIntegral;
+                }
+            }
+        }
+//        electricFieldX.setField(fieldX);
+//        electricFieldY.setField(fieldY);
+//        electricFieldZ.setField(fieldZ);
+
         electricField.put("x", electricFieldX);
         electricField.put("y", electricFieldY);
         electricField.put("z", electricFieldZ);
@@ -46,9 +86,9 @@ public class RfFieldMap3D extends FieldMap {
         magneticField.put("z", magneticFieldZ);
 
         // Compute other values.
-        length = magneticFieldZ.getMax()[0];
+        length = electricFieldZ.getMax()[0];
         if (numberOfPoints == 0) {
-            numberOfPoints = magneticFieldZ.getField().length;
+            numberOfPoints = electricFieldZ.getField().length;
         }
         this.numberOfPoints = numberOfPoints;
 
@@ -201,7 +241,11 @@ public class RfFieldMap3D extends FieldMap {
         dFydy /= spacingY * normY;
         dFxdz /= spacingZ * normX;
         dFydz /= spacingZ * normY;
+        dFzdx /= spacingX * normZ;
+        dFzdy /= spacingY * normZ;
+        dFzdz /= spacingZ * normZ;
 
+        
         if (electricField) {
             fieldMapPoint.setEx(Fx0);
             fieldMapPoint.setEy(Fy0);

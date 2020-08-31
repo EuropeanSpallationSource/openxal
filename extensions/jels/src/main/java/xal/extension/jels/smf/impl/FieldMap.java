@@ -21,10 +21,14 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -83,7 +87,7 @@ public abstract class FieldMap {
         return coupled;
     }
 
-    protected void setCoupled(boolean coupled) {
+    protected final void setCoupled(boolean coupled) {
         this.coupled = coupled;
     }
 
@@ -172,6 +176,43 @@ public abstract class FieldMap {
      * ************************ File manipulation **************************
      */
     /**
+     * Check if a file is binary or ASCII.
+     *
+     * @param filename URL to the file.
+     * @return True if the file is ASCII, false if binary.
+     */
+    private static boolean isAscii(URL fileURL) {
+        boolean result = false;
+
+        InputStream stream = null;
+        try {
+            stream = fileURL.openStream();
+
+            result = true;
+            for (int i = 0; i < 15; i++) {
+                int c = stream.read();
+                if (c == -1) {
+                    break;
+                }
+                //(9)Horizontal Tab (10)Line feed  (11)Vertical tab (13)Carriage return (32)Space (126)tilde
+                if (!(c == 9 || c == 10 || c == 11 || c == 13 || (c >= 32 && c <= 126))) {
+                    result = false;
+                }
+            }
+        } catch (IOException ex) {
+        } finally {
+            if (stream != null) {
+                try {
+                    stream.close();
+                } catch (IOException ex) {
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
      * Loads fieldComponent from a 1D fieldmap file.
      *
      * @param path path to the file
@@ -179,10 +220,66 @@ public abstract class FieldMap {
      * @return
      */
     protected final FieldComponent loadFile1D(String path, String name) {
+        try {
+            URL fileURL = new URL(new URL(path), name);
+
+            if (isAscii(fileURL)) {
+                return loadASCIIFile1D(fileURL);
+            }
+        } catch (MalformedURLException ex) {
+            Logger.getLogger(FieldMap.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    /**
+     * Loads fieldComponent from a 2D fieldmap file.
+     *
+     * @param path path to the file
+     * @param name
+     * @return
+     */
+    protected final FieldComponent loadFile2D(String path, String name) {
+        try {
+            URL fileURL = new URL(new URL(path), name);
+
+            if (isAscii(fileURL)) {
+                return loadASCIIFile2D(fileURL);
+            }
+        } catch (MalformedURLException ex) {
+            Logger.getLogger(FieldMap.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    /**
+     * Loads fieldComponent from a 3D fieldmap file.
+     *
+     * @param path path to the file
+     * @param name
+     * @return
+     */
+    protected final FieldComponent loadFile3D(String path, String name) {
+        try {
+            URL fileURL = new URL(new URL(path), name);
+
+            if (isAscii(fileURL)) {
+                return loadASCIIFile3D(fileURL);
+            } else {
+
+                return loadBinaryFile3D(fileURL);
+            }
+        } catch (MalformedURLException ex) {
+            Logger.getLogger(FieldMap.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    private FieldComponent loadASCIIFile1D(URL fileURL) {
         FieldComponent fieldComponent = new FieldComponent();
 
         try {
-            BufferedReader br = new BufferedReader(new InputStreamReader(new URL(new URL(path), name).openStream()));
+            BufferedReader br = new BufferedReader(new InputStreamReader(fileURL.openStream()));
 
             // first line
             String line = br.readLine();
@@ -206,26 +303,18 @@ public abstract class FieldMap {
             br.close();
 
             fieldComponent.setField(field);
-
         } catch (IOException ex) {
-            LOGGER.log(Level.INFO, "Field map " + path + " not found.", ex);
+            LOGGER.log(Level.INFO, "Field map " + fileURL.toString() + " not found.", ex);
         }
 
         return fieldComponent;
     }
 
-    /**
-     * Loads fieldComponent from a 2D fieldmap file.
-     *
-     * @param path path to the file
-     * @param name
-     * @return
-     */
-    protected final FieldComponent loadFile2D(String path, String name) {
+    private FieldComponent loadASCIIFile2D(URL fileURL) {
         FieldComponent fieldComponent = new FieldComponent();
 
         try {
-            BufferedReader br = new BufferedReader(new InputStreamReader(new URL(new URL(path), name).openStream()));
+            BufferedReader br = new BufferedReader(new InputStreamReader(fileURL.openStream()));
 
             // first line
             String line = br.readLine();
@@ -262,24 +351,17 @@ public abstract class FieldMap {
 
             fieldComponent.setField(field);
         } catch (IOException ex) {
-            LOGGER.log(Level.INFO, "Field map " + path + " not found.", ex);
+            LOGGER.log(Level.INFO, "Field map " + fileURL.toString() + " not found.", ex);
         }
 
         return fieldComponent;
     }
 
-    /**
-     * Loads fieldComponent from a 3D fieldmap file.
-     *
-     * @param path path to the file
-     * @param name
-     * @return
-     */
-    protected final FieldComponent loadFile3D(String path, String name) {
+    private FieldComponent loadASCIIFile3D(URL fileURL) {
         FieldComponent fieldComponent = new FieldComponent();
 
         try {
-            BufferedReader br = new BufferedReader(new InputStreamReader(new URL(new URL(path), name).openStream()));
+            BufferedReader br = new BufferedReader(new InputStreamReader(fileURL.openStream()));
 
             // first line
             String line = br.readLine();
@@ -328,7 +410,114 @@ public abstract class FieldMap {
 
             fieldComponent.setField(field);
         } catch (IOException ex) {
-            LOGGER.log(Level.INFO, "Field map " + path + " not found.", ex);
+            LOGGER.log(Level.INFO, "Field map " + fileURL.toString() + " not found.", ex);
+        }
+
+        return fieldComponent;
+    }
+    
+    private FieldComponent loadBinaryFile3D(URL fileURL) {
+        FieldComponent fieldComponent = new FieldComponent();
+
+        try {
+            InputStream stream = fileURL.openStream();
+
+            int INT_BYTES = 4;
+            int FLOAT_BYTES = 4;
+            int DOUBLE_BYTES = 8;
+            byte[] intAux = new byte[INT_BYTES];
+            byte[] floatAux = new byte[FLOAT_BYTES];
+            byte[] doubleAux = new byte[DOUBLE_BYTES];
+
+            int nPointsZ = 0;
+            if (stream.read(intAux, 0, INT_BYTES) == INT_BYTES) {
+                nPointsZ = ByteBuffer.wrap(intAux).order(ByteOrder.LITTLE_ENDIAN).getInt() + 1;
+            } else {
+                throw new IOException();
+            }
+
+            double lengthZ = 0;
+            if (stream.read(doubleAux, 0, DOUBLE_BYTES) == DOUBLE_BYTES) {
+                lengthZ = ByteBuffer.wrap(doubleAux).order(ByteOrder.LITTLE_ENDIAN).getDouble();
+            } else {
+                throw new IOException();
+            }
+
+            int nPointsX = 0;
+            if (stream.read(intAux, 0, INT_BYTES) == INT_BYTES) {
+                nPointsX = ByteBuffer.wrap(intAux).order(ByteOrder.LITTLE_ENDIAN).getInt() + 1;
+            } else {
+                throw new IOException();
+            }
+
+            double minX = 0;
+            if (stream.read(doubleAux, 0, DOUBLE_BYTES) == DOUBLE_BYTES) {
+                minX = ByteBuffer.wrap(doubleAux).order(ByteOrder.LITTLE_ENDIAN).getDouble();
+            } else {
+                throw new IOException();
+            }
+
+            double maxX = 0;
+            if (stream.read(doubleAux, 0, DOUBLE_BYTES) == DOUBLE_BYTES) {
+                maxX = ByteBuffer.wrap(doubleAux).order(ByteOrder.LITTLE_ENDIAN).getDouble();
+            } else {
+                throw new IOException();
+            }
+
+            int nPointsY = 0;
+            if (stream.read(intAux, 0, INT_BYTES) == INT_BYTES) {
+                nPointsY = ByteBuffer.wrap(intAux).order(ByteOrder.LITTLE_ENDIAN).getInt() + 1;
+            } else {
+                throw new IOException();
+            }
+
+            double minY = 0;
+            if (stream.read(doubleAux, 0, DOUBLE_BYTES) == DOUBLE_BYTES) {
+                minY = ByteBuffer.wrap(doubleAux).order(ByteOrder.LITTLE_ENDIAN).getDouble();
+            } else {
+                throw new IOException();
+            }
+
+            double maxY = 0;
+            if (stream.read(doubleAux, 0, DOUBLE_BYTES) == DOUBLE_BYTES) {
+                maxY = ByteBuffer.wrap(doubleAux).order(ByteOrder.LITTLE_ENDIAN).getDouble();
+            } else {
+                throw new IOException();
+            }
+
+            double norm = 0;
+            if (stream.read(doubleAux, 0, DOUBLE_BYTES) == DOUBLE_BYTES) {
+                norm = ByteBuffer.wrap(doubleAux).order(ByteOrder.LITTLE_ENDIAN).getDouble();
+            } else {
+                throw new IOException();
+            }
+
+            fieldComponent.setMin(new double[]{0., minX, minY});
+            fieldComponent.setMax(new double[]{lengthZ, maxX, maxY});
+
+            double[][][] field = new double[nPointsZ][nPointsY][nPointsX];
+
+            fieldComponent.setNorm(norm);
+
+            for (int i = 0; i < nPointsZ; i++) {
+                for (int j = 0; j < nPointsY; j++) {
+                    for (int k = 0; k < nPointsX; k++) {
+                        float fieldPoint = 0;
+                        if (stream.read(floatAux, 0, FLOAT_BYTES) == FLOAT_BYTES) {
+                            fieldPoint = ByteBuffer.wrap(floatAux).order(ByteOrder.LITTLE_ENDIAN).getFloat();
+                        } else {
+                            throw new IOException();
+                        }
+                        field[i][j][k] = (double) fieldPoint;
+                    }
+                }
+            }
+
+            stream.close();
+
+            fieldComponent.setField(field);
+        } catch (IOException ex) {
+            LOGGER.log(Level.INFO, "Field map " + fileURL.toString() + " not found.", ex);
         }
 
         return fieldComponent;
