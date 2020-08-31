@@ -207,7 +207,7 @@ public final class ESSElementFactory {
         fm.setPosition(length / 2);
         fm.setFieldMapFile(fieldFile);
         fm.setAper(aper);
-        fm.setDimensions(1);
+        fm.setDimensions(dimensions);
         fm.setDynamic(true);
         fm.getFieldMapBucket().setFieldType(FieldMapFactory.FieldType.ELECTRIC);
 
@@ -215,7 +215,7 @@ public final class ESSElementFactory {
                 fieldFile, true, FieldMapFactory.FieldType.ELECTRIC, dimensions, numberOfPoints);
         fm.setFieldMap(fieldMap);
 
-        ESSRfCavity cavity = createESSRfCavity(name, length, new AcceleratorNode[]{fm}, rfphase, amplitude * ((RfFieldMap1D) fieldMap).getFieldIntegral(), frequency, position);
+        ESSRfCavity cavity = createESSRfCavity(name, length, new AcceleratorNode[]{fm}, rfphase, amplitude * fieldMap.getFieldIntegral(), frequency, position);
         return cavity;
     }
 

@@ -60,6 +60,7 @@ public abstract class FieldMap {
     protected double length;
     protected double sliceLength;
     protected double[] longitudinalPositions;
+    protected double fieldIntegral;
 
     // If the field couples different planes (e.g., solenoid).
     private boolean coupled = true;
@@ -415,7 +416,7 @@ public abstract class FieldMap {
 
         return fieldComponent;
     }
-    
+
     private FieldComponent loadBinaryFile3D(URL fileURL) {
         FieldComponent fieldComponent = new FieldComponent();
 
@@ -594,6 +595,10 @@ public abstract class FieldMap {
             }
             pw.close();
         }
+    }
+
+    public double getFieldIntegral() {
+        return fieldIntegral;
     }
 
     /**

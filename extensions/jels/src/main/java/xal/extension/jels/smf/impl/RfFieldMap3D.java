@@ -28,8 +28,6 @@ import xal.extension.jels.model.elem.FieldMapPoint;
  */
 public class RfFieldMap3D extends FieldMap {
 
-    private double fieldIntegral;
-
     public RfFieldMap3D(String path, String filename, int numberOfPoints) {
         FieldComponent<double[][][]> electricFieldX = loadFile3D(path, filename + ".edx");
         FieldComponent<double[][][]> electricFieldY = loadFile3D(path, filename + ".edy");
@@ -54,13 +52,16 @@ public class RfFieldMap3D extends FieldMap {
         int midPointX = (int) (-minX / spacingX);
         int midPointY = (int) (-minY / spacingY);
 
-        double[][][] fieldX = electricFieldX.getField();
-        double[][][] fieldY = electricFieldY.getField();
-        double[][][] fieldZ = electricFieldZ.getField();
+        double[][][] eFieldX = electricFieldX.getField();
+        double[][][] eFieldY = electricFieldY.getField();
+        double[][][] eFieldZ = electricFieldZ.getField();
+        double[][][] bFieldX = magneticFieldX.getField();
+        double[][][] bFieldY = magneticFieldY.getField();
+        double[][][] bFieldZ = magneticFieldZ.getField();
 
         fieldIntegral = 0;
         for (int i = 0; i < numberOfPointsZ; i++) {
-            fieldIntegral += Math.abs(fieldZ[i][midPointY][midPointX]);
+            fieldIntegral += Math.abs(eFieldZ[i][midPointY][midPointX]);
         }
 
         fieldIntegral *= electricFieldZ.getMax()[0] / numberOfPointsZ;
@@ -68,16 +69,16 @@ public class RfFieldMap3D extends FieldMap {
         for (int i = 0; i < numberOfPointsZ; i++) {
             for (int j = 0; j < numberOfPointsY; j++) {
                 for (int k = 0; k < numberOfPointsX; k++) {
-                    fieldX[i][j][k] /= fieldIntegral;
-                    fieldY[i][j][k] /= fieldIntegral;
-                    fieldZ[i][j][k] /= fieldIntegral;
+                    eFieldX[i][j][k] /= fieldIntegral;
+                    eFieldY[i][j][k] /= fieldIntegral;
+                    eFieldZ[i][j][k] /= fieldIntegral;
+                    bFieldX[i][j][k] /= fieldIntegral;
+                    bFieldY[i][j][k] /= fieldIntegral;
+                    bFieldZ[i][j][k] /= fieldIntegral;
                 }
             }
         }
-//        electricFieldX.setField(fieldX);
-//        electricFieldY.setField(fieldY);
-//        electricFieldZ.setField(fieldZ);
-
+        
         electricField.put("x", electricFieldX);
         electricField.put("y", electricFieldY);
         electricField.put("z", electricFieldZ);
@@ -93,10 +94,6 @@ public class RfFieldMap3D extends FieldMap {
         this.numberOfPoints = numberOfPoints;
 
         recalculateSliceLength();
-    }
-
-    public double getFieldIntegral() {
-        return fieldIntegral;
     }
 
     @Override
