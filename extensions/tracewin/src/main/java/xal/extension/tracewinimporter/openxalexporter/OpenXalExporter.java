@@ -453,7 +453,7 @@ public class OpenXalExporter {
         if (element.getGeom() == 100) {
             return ESSElementFactory.createRfFieldMap("R" + element.getName(), element.getLength(),
                     getFrequency(element) * 1e-6, element.getElectricIntensityFactor(), element.getRfPhase(),
-                    element.getFileName(), element.getBasePath(), aper, currentPosition, 0);
+                    element.getFileName(), element.getBasePath(), aper, currentPosition, 1, 0);
         } else if (element.getGeom() == 50) {
             MagnetMainSupply ps = ElementFactory.createMainSupply("M" + element.getName() + "-PS", acc);
 

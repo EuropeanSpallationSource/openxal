@@ -702,7 +702,7 @@ public class RfFieldMapTest extends SingleElementTest {
         fieldMapPath = fieldMapPath.substring(0, fieldMapPath.indexOf(fieldFile));
 
         RfCavity rfCavity = ESSElementFactory.createRfFieldMap("TestFM", length, frequency, cavAmp,
-                cavPh, fieldFile, fieldMapPath, new ApertureBucket(), 0, 0);
+                cavPh, fieldFile, fieldMapPath, new ApertureBucket(), 0, 1, 0);
 
         rfCavity.setXOffset(dx);
         rfCavity.setYOffset(dy);
@@ -735,7 +735,7 @@ public class RfFieldMapTest extends SingleElementTest {
         fieldMapPath = fieldMapPath.substring(0, fieldMapPath.indexOf(fieldFile));
 
         RfCavity rfCavity = ESSElementFactory.createRfFieldMap("TestFM", length, frequency, cavAmp,
-                cavPh, fieldFile, fieldMapPath, new ApertureBucket(), 0, 0);
+                cavPh, fieldFile, fieldMapPath, new ApertureBucket(), 0, 1, 0);
 
         sequence.addNode(rfCavity);
 

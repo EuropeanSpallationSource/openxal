@@ -24,7 +24,7 @@ import xal.extension.jels.model.elem.FieldMapPoint;
 /**
  * 3D FieldMap element for static magnets.
  *
- * @author Juan F. Esteban Müller <JuanF.EstebanMuller@esss.se>
+ * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
  */
 public class MagFieldMap3D extends FieldMap {
 
@@ -33,9 +33,9 @@ public class MagFieldMap3D extends FieldMap {
         FieldComponent<double[][][]> fieldComponentY = loadFile3D(path, filename + ".bsy");
         FieldComponent<double[][][]> fieldComponentZ = loadFile3D(path, filename + ".bsz");
 
-        fieldComponents.put("x", fieldComponentX);
-        fieldComponents.put("y", fieldComponentY);
-        fieldComponents.put("z", fieldComponentZ);
+        magneticField.put("x", fieldComponentX);
+        magneticField.put("y", fieldComponentY);
+        magneticField.put("z", fieldComponentZ);
 
         // Compute other values.
         length = fieldComponentZ.getMax()[0];
@@ -49,9 +49,9 @@ public class MagFieldMap3D extends FieldMap {
 
     @Override
     public void saveFieldMap(String path, String filename) throws IOException, URISyntaxException {
-        FieldComponent<double[][][]> fieldComponentX = fieldComponents.get("x");
-        FieldComponent<double[][][]> fieldComponentY = fieldComponents.get("y");
-        FieldComponent<double[][][]> fieldComponentZ = fieldComponents.get("z");
+        FieldComponent<double[][][]> fieldComponentX = magneticField.get("x");
+        FieldComponent<double[][][]> fieldComponentY = magneticField.get("y");
+        FieldComponent<double[][][]> fieldComponentZ = magneticField.get("z");
 
         saveFile3D(path, filename + ".bsx", fieldComponentX);
         saveFile3D(path, filename + ".bsy", fieldComponentY);
@@ -67,9 +67,9 @@ public class MagFieldMap3D extends FieldMap {
      */
     @Override
     public FieldMapPoint getFieldAt(double position) {
-        FieldComponent<double[][][]> fieldComponentX = fieldComponents.get("x");
-        FieldComponent<double[][][]> fieldComponentY = fieldComponents.get("y");
-        FieldComponent<double[][][]> fieldComponentZ = fieldComponents.get("z");
+        FieldComponent<double[][][]> fieldComponentX = magneticField.get("x");
+        FieldComponent<double[][][]> fieldComponentY = magneticField.get("y");
+        FieldComponent<double[][][]> fieldComponentZ = magneticField.get("z");
 
         if (position < 0.0 || position > fieldComponentZ.getMax()[0]) {
             return null;
