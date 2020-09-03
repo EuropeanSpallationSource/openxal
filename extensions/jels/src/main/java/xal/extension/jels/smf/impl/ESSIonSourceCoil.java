@@ -51,6 +51,7 @@ public class ESSIonSourceCoil extends AcceleratorNode {
 
     public ESSIonSourceCoil(String strId, ChannelFactory channelFactory) {
         super(strId, channelFactory);
+        addReadBackHandle(I_SET_HANDLE, I_HANDLE);
     }
     
     

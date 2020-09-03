@@ -83,6 +83,9 @@ public class ESSIonSourceMFC extends AcceleratorNode {
      */
     public ESSIonSourceMFC(final String strId, final ChannelFactory channelFactory) {
         super(strId, channelFactory);
+        addReadBackHandle(H_2_FLOW_S_HANDLE, H_2_FLOW_RB_HANDLE);
+        addReadBackHandle(VOLTAGE_SET_HANDLE, VOLTAGE_RB_HANDLE);
+        addReadBackHandle(CURRENT_SET_HANDLE, CURRENT_RB_HANDLE);
     }
 
     /**

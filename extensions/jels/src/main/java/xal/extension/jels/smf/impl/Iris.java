@@ -74,6 +74,9 @@ public class Iris extends AcceleratorNode {
      */
     public Iris(final String strId, final ChannelFactory channelFactory) {
         super(strId, channelFactory);
+        addReadBackHandle(APERTURE_SET_HANDLE, APERTURE_RB_HANDLE);
+        addReadBackHandle(OFFSET_X_SET_HANDLE, OFFSET_X_RB_HANDLE);
+        addReadBackHandle(OFFSET_Y_SET_HANDLE, OFFSET_Y_RB_HANDLE);
     }
 
     /**

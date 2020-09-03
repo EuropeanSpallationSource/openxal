@@ -74,6 +74,9 @@ public class Chopper extends AcceleratorNode {
      */
     public Chopper(final String strId, final ChannelFactory channelFactory) {
         super(strId, channelFactory);
+        addReadBackHandle(LENGTH_SET_HANDLE, LENGTH_RB_HANDLE);
+        addReadBackHandle(DELAY_SET_HANDLE, DELAY_RB_HANDLE);
+        addReadBackHandle(STATUS_SET_HANDLE, STATUS_RB_HANDLE);
     }
 
     /**

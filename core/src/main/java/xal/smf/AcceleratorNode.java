@@ -75,7 +75,7 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
     protected ChannelSuite channelSuite;
     
     /*  Map containing pairs of set and respective readback handle. */
-    protected static Map<String,String> readBackHandles = new HashMap<>();
+    protected Map<String,String> readBackHandles = new HashMap<>();
 
     protected enum ChannelType {
         SET,
@@ -329,10 +329,19 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
      * @param setHandle The set handle.
      * @param readBackHandle The corresponding readback handle.
      */
-    protected static void addReadBackHandle(String setHandle, String readBackHandle) {
+    protected final void addReadBackHandle(String setHandle, String readBackHandle) {
         if (!readBackHandles.containsKey(setHandle)) {
             readBackHandles.put(setHandle, readBackHandle);
         }
+    }
+
+    /**
+     * Get a map with all set and readback handle pairs.
+     *
+     * @return The map with all set/readback handle pairs.
+     */
+    public Map<String, String> getReadBackHandleMap() {
+        return readBackHandles;
     }
 
     /**
@@ -341,7 +350,7 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
      * @param setHandle The set handle.
      * @return The corresponding readback handle.
      */
-    public static String getReadBackHandle(String setHandle) {
+    public String getReadBackHandle(String setHandle) {
         if (readBackHandles.containsKey(setHandle)) {
             return readBackHandles.get(setHandle);
         } else {
@@ -355,7 +364,7 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
      * @param readBackHandle The readback handle.
      * @return The corresponding set handle.
      */
-    public static String getSetHandle(String readBackHandle) {
+    public String getSetHandle(String readBackHandle) {
         if (readBackHandles.containsValue(readBackHandle)) {
             for (String setHandle : readBackHandles.keySet()) {
                 if (readBackHandles.get(setHandle).equals(readBackHandle)) {

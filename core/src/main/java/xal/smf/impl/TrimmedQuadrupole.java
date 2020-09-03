@@ -170,7 +170,7 @@ public class TrimmedQuadrupole extends Quadrupole implements TrimmedMagnet {
 		}
 	}
 
-    
+
     /** 
 	 * Set the trim power supply field contribution in the magnet.  If cycle enable 
      * is true then the magnet is cycled before the field is set to the specified value.

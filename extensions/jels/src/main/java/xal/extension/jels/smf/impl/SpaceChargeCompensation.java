@@ -24,21 +24,22 @@ import xal.ca.GetException;
 import xal.ca.PutException;
 import xal.smf.AcceleratorNode;
 import xal.smf.impl.qualify.ElementTypeManager;
+
 /**
  * The implementation of the Gas flow element for Space Charge Compensation.
- * 
+ *
  * @author Natalia Milas <natalia.milas@esss.se>
  */
 public class SpaceChargeCompensation extends AcceleratorNode {
-     /*
+    /*
      *  Constants
      */
     public static final String s_strType = "SCC";
-    
+
     public static final String N2FLOW_RB_HANDLE = "n2flowRB";
     private Channel n2flowRC = null;
     public static final String N2FLOW_SET_HANDLE = "n2flowS";
-    private Channel n2flowSC = null;    
+    private Channel n2flowSC = null;
 
     static {
         registerType();
@@ -53,6 +54,7 @@ public class SpaceChargeCompensation extends AcceleratorNode {
 
     /**
      * Override to provide type signature
+     *
      * @return String type
      */
     @Override
@@ -65,6 +67,7 @@ public class SpaceChargeCompensation extends AcceleratorNode {
      */
     public SpaceChargeCompensation(final String strId, final ChannelFactory channelFactory) {
         super(strId, channelFactory);
+        addReadBackHandle(N2FLOW_SET_HANDLE, N2FLOW_RB_HANDLE);
     }
 
     /**
@@ -81,7 +84,7 @@ public class SpaceChargeCompensation extends AcceleratorNode {
         n2flowRC = lazilyGetAndConnect(N2FLOW_RB_HANDLE, n2flowRC);
         return n2flowRC.getValDbl();
     }
-   
+
     /*
      *  Process variable Puts 
      */
@@ -89,5 +92,4 @@ public class SpaceChargeCompensation extends AcceleratorNode {
         n2flowSC = lazilyGetAndConnect(N2FLOW_SET_HANDLE, n2flowSC);
         n2flowSC.putVal(dblVal);
     }
-   
 }

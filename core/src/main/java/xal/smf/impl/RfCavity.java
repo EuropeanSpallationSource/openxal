@@ -76,8 +76,6 @@ public class RfCavity extends AcceleratorSeq {
 	// static initializer
     static {
         registerType();
-        addReadBackHandle(CAV_AMP_SET_HANDLE, CAV_AMP_AVG_HANDLE);
-        addReadBackHandle(CAV_PHASE_SET_HANDLE, CAV_PHASE_AVG_HANDLE);
     }
 
 
@@ -85,6 +83,8 @@ public class RfCavity extends AcceleratorSeq {
 	public RfCavity( final String strId, final ChannelFactory channelFactory, final int intReserve ) {
 		super( strId, channelFactory, intReserve );
 		setRfField( new RfCavityBucket() );
+                addReadBackHandle(CAV_AMP_SET_HANDLE, CAV_AMP_AVG_HANDLE);
+                addReadBackHandle(CAV_PHASE_SET_HANDLE, CAV_PHASE_AVG_HANDLE);
 	}
 
 
@@ -243,17 +243,17 @@ public class RfCavity extends AcceleratorSeq {
 		try {
 			final Property property = Property.valueOf( propertyName );		// throws IllegalArgumentException if no matching property
 			switch( property ) {
-				case AMPLITUDE:
+                    case AMPLITUDE:
 					return new Channel[] { findChannel( CAV_AMP_AVG_HANDLE ) };
-				case PHASE:
+                    case PHASE:
 					return new Channel[] { findChannel( CAV_PHASE_AVG_HANDLE ) };
-				default:
+                    default:
 					throw new IllegalArgumentException( "Unsupported RfCavity live channels property: " + propertyName );
-			}
-		}
+                }
+            }
 		catch( IllegalArgumentException exception ) {
 			return super.getLivePropertyChannels( propertyName );
-		}
+        }
 	}
 
 

@@ -41,8 +41,6 @@ abstract public class Electromagnet extends Magnet {
     // static initializer
     static {
         registerType();
-        addReadBackHandle(MagnetMainSupply.FIELD_SET_HANDLE, FIELD_RB_HANDLE);
-        addReadBackHandle(MagnetMainSupply.CURRENT_SET_HANDLE, MagnetMainSupply.CURRENT_RB_HANDLE);
     }
 
     
@@ -56,6 +54,8 @@ abstract public class Electromagnet extends Magnet {
 	public Electromagnet( final String strId, final ChannelFactory channelFactory )     {
 		super( strId, channelFactory );
 		_useFieldReadback = true;		// by default use the field readback
+                addReadBackHandle(MagnetMainSupply.FIELD_SET_HANDLE, FIELD_RB_HANDLE);
+                addReadBackHandle(MagnetMainSupply.CURRENT_SET_HANDLE, MagnetMainSupply.CURRENT_RB_HANDLE);
 	}
 
 
@@ -237,14 +237,14 @@ abstract public class Electromagnet extends Magnet {
 					return new Channel[] { fieldChannel };
 				default:
 					throw new IllegalArgumentException( "Unsupported Electromagnet live channels property: " + propertyName );
-			}
+		}
 		}
 		catch( IllegalArgumentException exception ) {
-			return super.getLivePropertyChannels( propertyName );
+                    return super.getLivePropertyChannels( propertyName );
 		}
 	}
 
-        
+
     /**
      * Set the cycle enable state of the magnet.  If enabled, the magnet will 
      * be cycled when the field is set.

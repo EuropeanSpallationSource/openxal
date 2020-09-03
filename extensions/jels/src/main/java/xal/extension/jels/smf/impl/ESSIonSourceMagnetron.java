@@ -71,6 +71,7 @@ public class ESSIonSourceMagnetron extends AcceleratorNode {
      */
     public ESSIonSourceMagnetron(final String strId, final ChannelFactory channelFactory) {
         super(strId, channelFactory);
+        addReadBackHandle(FORWD_PRW_S_HANDLE, FORWD_PRW_RB_HANDLE);
     }
 
     /**

@@ -120,7 +120,7 @@ abstract public class PermanentMagnet extends Magnet {
 		}
 	}
 
-    
+
     /** 
      * returns the field of the magnet (T /(m^ (n-1))), n=1 for dipole,
      * 2 for quad etc.

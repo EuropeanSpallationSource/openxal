@@ -65,6 +65,7 @@ public class RepellerElectrode extends AcceleratorNode {
      */
     public RepellerElectrode(final String strId, final ChannelFactory channelFactory) {
         super(strId, channelFactory);
+        addReadBackHandle(STATUS_SET_HANDLE, STATUS_RB_HANDLE);
     }
 
     /**
