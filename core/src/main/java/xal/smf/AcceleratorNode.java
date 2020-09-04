@@ -338,7 +338,8 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
     /**
      * Get a map with all set and readback handle pairs.
      *
-     * @return The map with all set/readback handle pairs.
+     * @return The map with all set/readback handle pairs. The key is the set
+     * handle and the value is the readback.
      */
     public Map<String, String> getReadBackHandleMap() {
         return readBackHandles;
