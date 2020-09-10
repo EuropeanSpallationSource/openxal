@@ -112,6 +112,10 @@ abstract public class FxApplication extends Application {
         this.STAGE_TITLE = applicationName;
     }
 
+    public XalFxDocument getDocument() {
+        return DOCUMENT;
+    }
+
     /**
      * This method sets the default fonts for Open XAL applications (Source Sans
      * Pro). It is public to be able to use it from application that don't
@@ -134,9 +138,13 @@ abstract public class FxApplication extends Application {
         StyleManager.getInstance().addUserAgentStylesheet(FxApplication.class.getResource("/styles/DefaultFontStyle.css").toExternalForm());
     }
 
-    // Call this before start() (so that you can add items to MENU_BAR etc after)
+    /**
+     * This is called at the beginning of start(), after calling the setup()
+     * method. It generates the menu bar (so that you can add items to MENU_BAR
+     * etc after). Then start() calls beforeStart() for application specific
+     * startup preparations.
+     */
     protected void initialize() {
-
         Logger.getLogger(FxApplication.class.getName()).log(Level.INFO, "Loading default accelerator {0}", XMLDataManager.defaultPath());
         DOCUMENT.accelerator.setAccelerator(XMLDataManager.loadDefaultAccelerator());
 
@@ -221,8 +229,26 @@ abstract public class FxApplication extends Application {
 
     }
 
+    /**
+     * start() calls this method before initialize(). It should be used to
+     * define the DOCUMENT variable.
+     */
+    public abstract void setup(Stage stage);
+
+    /**
+     * start() calls this method after initialize() and before showing the
+     * scene. For example, here the user can modify the menu bar.
+     */
+    public void beforeStart(Stage stage) {
+        // Default implementation does nothing.
+    }
+
     @Override
     public void start(Stage stage) throws IOException {
+        setup(stage);
+
+        initialize();
+
         setStage(stage);
 
         VBox root = new VBox();
@@ -245,6 +271,13 @@ abstract public class FxApplication extends Application {
         //YIL It is probably very bad to set this here but I am a stupid person.
         DOCUMENT.sourceString = new SimpleStringProperty(DOCUMENT.DEFAULT_FILENAME);
         DOCUMENT.sourceString.addListener((observable, oldValue, newValue) -> stage.setTitle(STAGE_TITLE + ": " + newValue));
+
+        loader.<Controller>getController().setApplication(this);
+
+        beforeStart(stage);
+
+        loader.<Controller>getController().beforeStart();
+
         stage.show();
     }
 
