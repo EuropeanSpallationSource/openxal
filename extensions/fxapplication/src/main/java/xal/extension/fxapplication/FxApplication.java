@@ -1,11 +1,22 @@
 /*
- * JavaFX Application abstract class
+ * Copyright (C) 2020 European Spallation Source ERIC
  *
- * Created on January 19, 2018
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 package xal.extension.fxapplication;
 
-import com.sun.javafx.css.StyleManager;
 import java.io.File;
 import java.io.IOException;
 import javafx.application.Application;
@@ -56,13 +67,20 @@ import xal.smf.data.XMLDataManager;
  * For now the FxApplication does nothing (except inheriting all from
  * Application)
  *
- * @author Yngve Levinsen <yngve.levinsen@esss.se>
+ * @author Yngve Levinsen <yngve.levinsen@ess.eu>
  */
 abstract public class FxApplication extends Application {
 
     protected String MAIN_SCENE = "/fxml/Scene.fxml";
     protected String CSS_STYLE = "/styles/Styles.css";
     private String STAGE_TITLE = "Demo Application";
+
+    private enum THEME {
+        DEFAULT,
+        DARK
+    }
+
+    private THEME theme = THEME.DEFAULT;
 
     protected XalFxDocument DOCUMENT;
 
@@ -116,12 +134,7 @@ abstract public class FxApplication extends Application {
         return DOCUMENT;
     }
 
-    /**
-     * This method sets the default fonts for Open XAL applications (Source Sans
-     * Pro). It is public to be able to use it from application that don't
-     * extend FxApplication.
-     */
-    public static void setDefaultFonts() {
+    private static void setDefaultFonts(Scene scene) {
         Font.loadFont(FxApplication.class.getResource("/fonts/SourceSansPro-SemiBoldItalic.ttf").toExternalForm(), 10);
         Font.loadFont(FxApplication.class.getResource("/fonts/SourceSansPro-Black.ttf").toExternalForm(), 10);
         Font.loadFont(FxApplication.class.getResource("/fonts/SourceSansPro-BlackItalic.ttf").toExternalForm(), 10);
@@ -135,7 +148,25 @@ abstract public class FxApplication extends Application {
         Font.loadFont(FxApplication.class.getResource("/fonts/SourceSansPro-Regular.ttf").toExternalForm(), 10);
         Font.loadFont(FxApplication.class.getResource("/fonts/SourceSansPro-SemiBold.ttf").toExternalForm(), 10);
 
-        StyleManager.getInstance().addUserAgentStylesheet(FxApplication.class.getResource("/styles/DefaultFontStyle.css").toExternalForm());
+        scene.getStylesheets().add(FxApplication.class.getResource("/styles/DefaultFontStyle.css").toExternalForm());
+    }
+
+    /**
+     * This method sets the default Style for Open XAL applications (including
+     * Source Sans Pro font). It is public and static to be able to use it from
+     * application that don't extend FxApplication.
+     */
+    public static void setOxalStyle(Scene scene) {
+        scene.getStylesheets().clear();
+        setUserAgentStylesheet(null);
+        setDefaultFonts(scene);
+    }
+
+    public static void setOxalDarkStyle(Scene scene) {
+        scene.getStylesheets().clear();
+        setUserAgentStylesheet(null);
+        setDefaultFonts(scene);
+        scene.getStylesheets().add(FxApplication.class.getResource("/styles/modena_dark.css").toExternalForm());
     }
 
     /**
@@ -200,12 +231,34 @@ abstract public class FxApplication extends Application {
             eLogMenu.getItems().addAll(openLogMenu, makePostMenu);
         }
 
+        final Menu viewMenu = new Menu("View");
+        final MenuItem switchThemeMenu;
+        if (theme == THEME.DEFAULT) {
+            switchThemeMenu = new MenuItem("Set dark Theme");
+        } else {
+            switchThemeMenu = new MenuItem("Set default Theme");
+        }
+        switchThemeMenu.setOnAction((e) -> {
+            if (theme == THEME.DEFAULT) {
+                theme = THEME.DARK;
+                setOxalDarkStyle(stage.getScene());
+                stage.getScene().getStylesheets().add(CSS_STYLE);
+                switchThemeMenu.setText("Set default Theme");
+            } else {
+                theme = THEME.DEFAULT;
+                setOxalStyle(stage.getScene());
+                stage.getScene().getStylesheets().add(CSS_STYLE);
+                switchThemeMenu.setText("Set dark Theme");
+            }
+        });
+        viewMenu.getItems().add(switchThemeMenu);
+
         final Menu helpMenu = new Menu("Help");
         final MenuItem aboutMenu = new MenuItem("About");
         aboutMenu.setOnAction(new HelpMenu(DOCUMENT));
         helpMenu.getItems().add(aboutMenu);
 
-        MENU_BAR.getMenus().addAll(fileMenu, editMenu, acceleratorMenu, eLogMenu, helpMenu);
+        MENU_BAR.getMenus().addAll(fileMenu, editMenu, acceleratorMenu, eLogMenu, viewMenu, helpMenu);
 
         DOCUMENT.accelerator.addChangeListener((ChangeListener) (ObservableValue o, Object oldVal, Object newVal) -> {
             if (HAS_SEQUENCE && DOCUMENT.accelerator.getAccelerator() != null) {
@@ -258,10 +311,12 @@ abstract public class FxApplication extends Application {
         root.getChildren().add(MENU_BAR);
         root.getChildren().add(loader.load());
 
-        // Loading and setting default font.
-        setDefaultFonts();
-
         Scene scene = new Scene(root);
+
+        // Loading and setting default font.
+        setDefaultFonts(scene);
+        // Set default style and application specific CSS
+        setOxalStyle(scene);
         scene.getStylesheets().add(CSS_STYLE);
 
         stage.getProperties().put("hostServices", this.getHostServices());

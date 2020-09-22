@@ -39,7 +39,7 @@ import xal.extension.application.ApplicationStatus;
  * the running application instance. Provides status information to clients on
  * the local network.
  *
- * @author tap, Juan F. Esteban Müller <JuanF.EstebanMuller@esss.se>
+ * @author tap, Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
  */
 public class FxApplicationStatusService implements ApplicationStatus {
 
