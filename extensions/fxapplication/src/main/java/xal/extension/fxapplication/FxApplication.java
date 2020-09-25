@@ -33,6 +33,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.MenuBar;
 import javafx.scene.Scene;
@@ -45,6 +46,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Modality;
@@ -309,7 +311,9 @@ abstract public class FxApplication extends Application {
         FXMLLoader loader = new FXMLLoader(getClass().getResource(MAIN_SCENE));
 
         root.getChildren().add(MENU_BAR);
-        root.getChildren().add(loader.load());
+        Node applicationScene = loader.load();
+        VBox.setVgrow(applicationScene, Priority.ALWAYS);
+        root.getChildren().add(applicationScene);
 
         Scene scene = new Scene(root);
 
