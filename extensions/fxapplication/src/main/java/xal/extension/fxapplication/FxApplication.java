@@ -265,7 +265,6 @@ abstract public class FxApplication extends Application {
         DOCUMENT.accelerator.addChangeListener((ChangeListener) (ObservableValue o, Object oldVal, Object newVal) -> {
             if (HAS_SEQUENCE && DOCUMENT.accelerator.getAccelerator() != null) {
                 DOCUMENT.sequence.set(null);
-                groupSequence.getSelectedToggle().setSelected(false);
                 int menu_num = sequenceMenu.getItems().size() - 1;
                 sequenceMenu.getItems().remove(0, menu_num);
                 groupSequence.getToggles().clear();

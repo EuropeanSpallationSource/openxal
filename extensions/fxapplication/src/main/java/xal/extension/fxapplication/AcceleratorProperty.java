@@ -24,7 +24,7 @@ import xal.smf.Accelerator;
 
 /**
  * Monitors changes in the accelerator
- * 
+ *
  * @author Natalia Milas <natalia.milas@ess.eu>
  */
 public class AcceleratorProperty {
@@ -34,16 +34,17 @@ public class AcceleratorProperty {
     private final Set<ChangeListener> listeners = new HashSet<>();
 
     public void setAccelerator(Accelerator accelerator) {
-        synchronized( listeners ){
-          Accelerator old_accelerator = this.accelerator;
-          this.accelerator = accelerator;
-          listeners.forEach(listener -> listener.changed(null, old_accelerator, this.accelerator));
+        synchronized (listeners) {
+            Accelerator old_accelerator = this.accelerator;
+            this.accelerator = accelerator;
+            listeners.forEach(listener -> listener.changed(null, old_accelerator, this.accelerator));
         }
-    }    
+
+    }
 
     public Accelerator getAccelerator() {
-        synchronized( listeners ){
-         return accelerator;
+        synchronized (listeners) {
+            return accelerator;
         }
     }
 
@@ -51,16 +52,16 @@ public class AcceleratorProperty {
         accelerator.channelSuite().getChannelFactory().setTest(testMode);
     }
 
-    public void addChangeListener(ChangeListener listener){
-        synchronized( listeners ){
-          listeners.add(listener);
+    public void addChangeListener(ChangeListener listener) {
+        synchronized (listeners) {
+            listeners.add(listener);
         }
-    };
+    }
 
-    public void removeChangeListener(ChangeListener listener){
-        synchronized( listeners ){
-          listeners.remove(listener);
+    public void removeChangeListener(ChangeListener listener) {
+        synchronized (listeners) {
+            listeners.remove(listener);
         }
-    };
+    }
 
 }
