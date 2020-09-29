@@ -45,6 +45,7 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -215,9 +216,6 @@ abstract public class FxApplication extends Application {
         if (HAS_SEQUENCE && DOCUMENT.accelerator.getAccelerator() != null) {
             buildSequenceMenu(DOCUMENT.accelerator.getAccelerator(), sequenceMenu, groupSequence);
             acceleratorMenu.getItems().addAll(new SeparatorMenuItem(), sequenceMenu);
-            final MenuItem addCombo = new MenuItem("Add new Combo Sequence");
-            addCombo.setOnAction(new AddCombo(DOCUMENT, groupSequence));
-            sequenceMenu.getItems().add(addCombo);
         }
 
         final Menu eLogMenu = new Menu("eLog");
@@ -265,11 +263,22 @@ abstract public class FxApplication extends Application {
         DOCUMENT.accelerator.addChangeListener((ChangeListener) (ObservableValue o, Object oldVal, Object newVal) -> {
             if (HAS_SEQUENCE && DOCUMENT.accelerator.getAccelerator() != null) {
                 DOCUMENT.sequence.set(null);
-                int menu_num = sequenceMenu.getItems().size() - 1;
-                sequenceMenu.getItems().remove(0, menu_num);
+                sequenceMenu.getItems().clear();
                 groupSequence.getToggles().clear();
                 buildSequenceMenu(DOCUMENT.accelerator.getAccelerator(), sequenceMenu, groupSequence);
                 Logger.getLogger(FxApplication.class.getName()).log(Level.INFO, "Rebuilding Sequence Menu.");
+            }
+        });
+
+        DOCUMENT.sequence.addListener((ChangeListener<? super String>) (ObservableValue<? extends String> o, String oldVal, String newVal) -> {
+            if (DOCUMENT.sequence == null) {
+                ((RadioMenuItem) sequenceMenu.getItems().get(0)).setSelected(true);
+            } else {
+                for (Toggle item : groupSequence.getToggles()) {
+                    if (((RadioMenuItem) item).getText().equals(newVal)) {
+                        ((RadioMenuItem) item).setSelected(true);
+                    }
+                }
             }
         });
 
@@ -340,32 +349,35 @@ abstract public class FxApplication extends Application {
     }
 
     public void buildSequenceMenu(Accelerator accelerator, Menu sequenceMenu, ToggleGroup groupSequence) {
+        RadioMenuItem acceleratorItem = new RadioMenuItem("Full Accelerator");
+        acceleratorItem.setToggleGroup(groupSequence);
+        acceleratorItem.setOnAction((e) -> DOCUMENT.getSequenceProperty().set(null));
+        sequenceMenu.getItems().addAll(acceleratorItem, new SeparatorMenuItem());
+
         //Populate the Sequence Menu with the sequences of the machine
         List<AcceleratorSeq> seqItem = accelerator.getSequences();
-        int k = 0;
 
         for (AcceleratorSeq item : seqItem) { //AddSequences
             RadioMenuItem addedItem = new RadioMenuItem(item.toString());
-            sequenceMenu.getItems().add(k, addedItem);
+            sequenceMenu.getItems().add(addedItem);
             addedItem.setToggleGroup(groupSequence);
             addedItem.setOnAction(new SelectSequenceMenu(DOCUMENT));
-            k++;
         }
 
-        sequenceMenu.getItems().add(k, new SeparatorMenuItem());
+        sequenceMenu.getItems().add(new SeparatorMenuItem());
 
         List<AcceleratorSeqCombo> seqCombo = accelerator.getComboSequences();
-        k++;
         for (AcceleratorSeqCombo item : seqCombo) { //AddCombos
             RadioMenuItem addedItem = new RadioMenuItem(item.toString());
-            sequenceMenu.getItems().add(k, addedItem);
+            sequenceMenu.getItems().add(addedItem);
             addedItem.setToggleGroup(groupSequence);
             addedItem.setOnAction(new SelectSequenceMenu(DOCUMENT));
-            k++;
         }
+        sequenceMenu.getItems().add(new SeparatorMenuItem());
 
-        sequenceMenu.getItems().add(k, new SeparatorMenuItem());
-
+        final MenuItem addCombo = new MenuItem("Add new Combo Sequence");
+        addCombo.setOnAction(new AddCombo(DOCUMENT, groupSequence));
+        sequenceMenu.getItems().add(addCombo);
     }
 
     /**
