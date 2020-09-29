@@ -656,7 +656,7 @@ class AddCombo implements EventHandler {
         Stage stage;
         Parent root;
         URL url = null;
-        String sceneFile = "/xal/extension/fxapplication/resources/CreateComboSequence.fxml";
+        String sceneFile = "/xal/extension/fxapplication/CreateComboSequence.fxml";
         try {
             stage = new Stage();
             url = getClass().getResource(sceneFile);
