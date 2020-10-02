@@ -235,7 +235,7 @@ public class AcceleratorTreeView extends VBox {
     }
 
     private void updateFilterMenu() {
-        filterMenu.getItems().remove(3, filterMenu.getItems().size() - 1);
+        filterMenu.getItems().remove(3, filterMenu.getItems().size());
 
         currentSeq.getAllNodes().stream().map(n -> n.getType()).distinct().sorted().forEachOrdered(t -> {
             if (!t.equals("sequence")) {
