@@ -1,0 +1,13 @@
+.root{
+    -fx-font-family:'Source Sans Pro';
+}
+
+.triangle-shape {
+    -fx-shape: "M 0 -3.5 v 7 l 4 -3.5 z";
+    -fx-background-color: -fx-text-background-color;
+    -fx-background-insets: 4 4 4 4 ;
+    -fx-min-width: 15;
+    -fx-max-width: 15;
+    -fx-min-height: 15;
+    -fx-max-height: 15;
+}

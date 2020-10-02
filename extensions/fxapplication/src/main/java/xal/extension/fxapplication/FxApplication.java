@@ -137,7 +137,7 @@ abstract public class FxApplication extends Application {
         return DOCUMENT;
     }
 
-    private static void setDefaultFonts(Scene scene) {
+    private static void setDefaultStyle(Scene scene) {
         Font.loadFont(FxApplication.class.getResource("/fonts/SourceSansPro-SemiBoldItalic.ttf").toExternalForm(), 10);
         Font.loadFont(FxApplication.class.getResource("/fonts/SourceSansPro-Black.ttf").toExternalForm(), 10);
         Font.loadFont(FxApplication.class.getResource("/fonts/SourceSansPro-BlackItalic.ttf").toExternalForm(), 10);
@@ -151,7 +151,7 @@ abstract public class FxApplication extends Application {
         Font.loadFont(FxApplication.class.getResource("/fonts/SourceSansPro-Regular.ttf").toExternalForm(), 10);
         Font.loadFont(FxApplication.class.getResource("/fonts/SourceSansPro-SemiBold.ttf").toExternalForm(), 10);
 
-        scene.getStylesheets().add(FxApplication.class.getResource("/styles/DefaultFontStyle.css").toExternalForm());
+        scene.getStylesheets().add(FxApplication.class.getResource("/styles/DefaultStyle.css").toExternalForm());
     }
 
     /**
@@ -162,13 +162,13 @@ abstract public class FxApplication extends Application {
     public static void setOxalStyle(Scene scene) {
         scene.getStylesheets().clear();
         setUserAgentStylesheet(null);
-        setDefaultFonts(scene);
+        setDefaultStyle(scene);
     }
 
     public static void setOxalDarkStyle(Scene scene) {
         scene.getStylesheets().clear();
         setUserAgentStylesheet(null);
-        setDefaultFonts(scene);
+        setDefaultStyle(scene);
         scene.getStylesheets().add(FxApplication.class.getResource("/styles/modena_dark.css").toExternalForm());
     }
 
@@ -325,8 +325,6 @@ abstract public class FxApplication extends Application {
 
         Scene scene = new Scene(root);
 
-        // Loading and setting default font.
-        setDefaultFonts(scene);
         // Set default style and application specific CSS
         setOxalStyle(scene);
         scene.getStylesheets().add(CSS_STYLE);
