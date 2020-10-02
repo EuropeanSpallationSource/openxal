@@ -20,7 +20,6 @@ package xal.plugin.epics7;
 import com.cosylab.epics.caj.CAJContext;
 import com.cosylab.epics.caj.impl.CAConstants;
 import java.util.Properties;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.epics.pvaccess.PVAConstants;
 import org.epics.pvaccess.client.ChannelProvider;
@@ -357,6 +356,8 @@ public class Epics7ChannelSystem extends ChannelSystem {
     public void dispose() {
         org.epics.ca.ClientFactory.stop();
         org.epics.pvaccess.ClientFactory.stop();
+        caChannelProvider = null;
+        pvaChannelProvider = null;
         initialized = false;
     }
 }

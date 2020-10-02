@@ -17,10 +17,13 @@
  */
 package xal.plugin.epics7.server;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 import xal.ca.Channel;
 import xal.ca.ChannelFactory;
 import xal.ca.ChannelSystem;
+import xal.plugin.epics7.FinishedThreadHook;
 import xal.plugin.epics7.server.Epics7ServerChannelSystem;
 
 /**
@@ -32,13 +35,23 @@ public class Epics7ServerChannelFactory extends ChannelFactory {
     // EPICS7 channel system
     private static Epics7ServerChannelSystem CHANNEL_SYSTEM;
 
+    // To keep track of the threads using the Epics7ChannelSystem
+    public static final List<Thread> threadList = new ArrayList<>();
+
     public Epics7ServerChannelFactory() {
         setChannelSystem();
     }
 
-    private static void setChannelSystem() {
+    private void setChannelSystem() {
         if (CHANNEL_SYSTEM == null) {
             CHANNEL_SYSTEM = Epics7ServerChannelSystem.newEpics7ServerChannelSystem();
+        }
+        synchronized (threadList) {
+            if (!threadList.contains(Thread.currentThread())) {
+                threadList.add(Thread.currentThread());
+                FinishedThreadHook finishedThreadHook = new FinishedThreadHook(Thread.currentThread(), threadList, CHANNEL_SYSTEM);
+                finishedThreadHook.start();
+            }
         }
     }
 
@@ -63,8 +76,8 @@ public class Epics7ServerChannelFactory extends ChannelFactory {
 
     @Override
     public void printInfo() {
-       Logger.getLogger(Epics7ServerChannelFactory.class.getName()).info("Using EPICS7 Open XAL plugin.");
-       CHANNEL_SYSTEM.printInfo();
+        Logger.getLogger(Epics7ServerChannelFactory.class.getName()).info("Using EPICS7 Open XAL plugin.");
+        CHANNEL_SYSTEM.printInfo();
     }
 
     @Override
@@ -78,5 +91,5 @@ public class Epics7ServerChannelFactory extends ChannelFactory {
     @Override
     protected ChannelSystem channelSystem() {
         return CHANNEL_SYSTEM;
-    }
+    }    
 }

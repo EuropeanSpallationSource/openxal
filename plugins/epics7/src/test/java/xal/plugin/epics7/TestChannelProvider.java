@@ -33,7 +33,7 @@ import org.epics.pvdata.factory.StatusFactory;
  */
 public class TestChannelProvider implements ChannelProvider {
 
-    protected static final int CONNECTION_TIME = 50;
+    protected static final int CONNECTION_TIME = 100;
 
     @Override
     public void destroy() {
