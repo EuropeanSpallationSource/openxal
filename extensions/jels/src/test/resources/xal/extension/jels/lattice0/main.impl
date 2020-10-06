@@ -12,4 +12,9 @@
     <device class="xal.extension.jels.smf.impl.ESSRfGap" type="RG"/>
     <device class="xal.smf.impl.Marker" type="marker"/>
     <device class="xal.smf.impl.BPM" type="BPM"/>
+    <device class="xal.smf.impl.CurrentMonitor" type="BCM"/>
+    <device class="xal.extension.jels.smf.impl.ESSIonSourceMagnetron" type="ISM"/>
+    <device class="xal.extension.jels.smf.impl.ESSIonSourceMFC" type="ISMFC"/>
+    <device class="xal.extension.jels.smf.impl.ESSIonSourceCoil" type="ISC"/>
+    <device class="xal.extension.jels.smf.impl.RfqDummy" type="RFQ"/>
 </deviceMapping>
