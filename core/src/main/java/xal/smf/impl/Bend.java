@@ -64,32 +64,4 @@ public class Bend extends Dipole {
         return HORIZONTAL;
     }
     
-
-    /**
-     * Get the dipole bend magnet bending angle.
-     */
-    public double getDfltBendAngle() {
-        return m_bucMagnet.getBendAngle();
-    }
-    
-    /** returns design path length in meters */
-    public double getDfltPathLength() {
-        return m_bucMagnet.getPathLength();
-    }
-    
-    /** returns dipole rotation angle for entrance pole face (deg) */
-    public double getEntrRotAngle() {
-        return m_bucMagnet.getDipoleEntrRotAngle();
-    }
-    
-    /** returns dipole rotation angle for exit pole face (deg) */
-    public double getExitRotAngle() {
-        return m_bucMagnet.getDipoleExitRotAngle();
-    }
-    
-    /** returns quadrupole component for bend dipole */
-    public double getQuadComponent() {
-        return m_bucMagnet.getDipoleQuadComponent();
-    }
-    
 }

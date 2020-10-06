@@ -33,6 +33,8 @@ public final class AttributeBucketFactory {
         registerClass(new RotationBucket());
         registerClass(new TwissBucket());
         registerClass(new SequenceBucket());
+        registerClass(new DipoleBucket());
+        registerClass(new DipoleCorrBucket());
         
         
         buildCtorMap();

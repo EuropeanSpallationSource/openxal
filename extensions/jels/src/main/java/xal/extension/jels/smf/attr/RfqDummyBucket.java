@@ -93,11 +93,6 @@ public class RfqDummyBucket extends AttributeBucket {
         return c_strType;
     }
 
-    @Override
-    public String[] getAttrNames() {
-        return c_arrNames;
-    }
-
     public double getAttC11() {
         return m_attC11.getDouble();
     }

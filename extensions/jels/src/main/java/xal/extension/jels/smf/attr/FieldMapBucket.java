@@ -76,11 +76,6 @@ public class FieldMapBucket extends AttributeBucket {
         return c_strType;
     }
 
-    @Override
-    public String[] getAttrNames() {
-        return c_arrNames;
-    }
-
     public FieldMapBucket() {
         super();
 

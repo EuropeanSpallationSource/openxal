@@ -65,9 +65,14 @@ public abstract class Magnet extends AcceleratorNode implements MagnetType {
      * Set the attribute bucket containing the machine magnet info
      */
 
-    public void setMagBucket(MagnetBucket buc) 
-        { m_bucMagnet = buc; super.addBucket(buc); };
-    
+    public void setMagBucket(MagnetBucket buc) {
+        if (m_bucMagnet != null) {
+            m_mapAttrs.remove(m_bucMagnet.getType(), m_bucMagnet);
+        }
+        m_bucMagnet = buc;
+        super.addBucket(buc);
+    }
+
     
     /**
      *

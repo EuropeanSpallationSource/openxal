@@ -58,18 +58,6 @@ public class ESSRfCavityBucket extends RfCavityBucket {
         return c_strType;
     }
 
-    /**
-     * Override virtual to provide type signature
-     */
-    @Override
-    public String[] getAttrNames() {
-        String[] attrs = super.getAttrNames();
-        String[] allAttrs = new String[attrs.length + c_arrNames.length];
-        System.arraycopy(attrs, 0, allAttrs, 0, attrs.length);
-        System.arraycopy(c_arrNames, 0, allAttrs, attrs.length, c_arrNames.length);
-        return allAttrs;
-    }
-
     public ESSRfCavityBucket() {
         super();
 

@@ -1,6 +1,7 @@
 package xal.smf.impl;
 
 import xal.ca.ChannelFactory;
+import xal.smf.attr.DipoleCorrBucket;
 
 /** 
  * Base class for dipole correctors.
@@ -14,6 +15,7 @@ public abstract class DipoleCorr extends Dipole {
 	/** Primary Constructor */
 	public DipoleCorr( final String strId, final ChannelFactory channelFactory )     {
 		super( strId, channelFactory );
+                setMagBucket(new DipoleCorrBucket());
 	}
 
     /**
@@ -24,4 +26,3 @@ public abstract class DipoleCorr extends Dipole {
         return true;
     }
 }
-
