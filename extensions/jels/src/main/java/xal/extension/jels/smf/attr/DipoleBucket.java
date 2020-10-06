@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 European Spallation Source ERIC.
+ * Copyright (C) 2020 European Spallation Source ERIC.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,9 +32,9 @@ import xal.smf.impl.qualify.MagnetType;
  * a square-edged magnet)
  *
  * @author Ivo List
- * @author Juan F. Esteban Müller <JuanF.EstebanMuller@esss.se>
+ * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
  */
-public class MagnetBucket extends xal.smf.attr.MagnetBucket {
+public class DipoleBucket extends xal.smf.attr.DipoleBucket {
 
     /**
      * ID for serializable version
@@ -58,21 +58,7 @@ public class MagnetBucket extends xal.smf.attr.MagnetBucket {
         // Orientation of the magnet (H/V)
         "orientation"};
 
-    /**
-     * Override virtual to provide type signature
-     *
-     * @return attribute names
-     */
-    @Override
-    public String[] getAttrNames() {
-        String[] attrs = super.getAttrNames();
-        String[] allAttrs = new String[attrs.length + c_arrNames.length];
-        System.arraycopy(attrs, 0, allAttrs, 0, attrs.length);
-        System.arraycopy(c_arrNames, 0, allAttrs, attrs.length, c_arrNames.length);
-        return allAttrs;
-    }
-
-    public MagnetBucket() {
+    public DipoleBucket() {
         super();
 
         m_attGap = new Attribute(0.0);

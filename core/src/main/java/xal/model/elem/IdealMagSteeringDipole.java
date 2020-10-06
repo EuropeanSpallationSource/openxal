@@ -17,7 +17,7 @@ import xal.model.IProbe;
 import xal.model.ModelException;
 import xal.model.PropagationException;
 import xal.sim.scenario.LatticeElement;
-import xal.smf.impl.Electromagnet;
+import xal.smf.attr.DipoleCorrBucket;
 import xal.smf.impl.Magnet;
 import xal.tools.beam.IConstants;
 import xal.tools.beam.PhaseMap;
@@ -302,7 +302,7 @@ public class IdealMagSteeringDipole extends ThinElectromagnet {
 	public void initializeFrom(LatticeElement element) {
 		super.initializeFrom(element);
 		Magnet magnet = (Magnet) element.getHardwareNode();
-                if(magnet.getMagBucket().getSlices()!=1){
+                if(((DipoleCorrBucket)magnet.getMagBucket()).getSlices()!=1){
                     setEffLength(element.getLength());
                 } else {
                     setEffLength(magnet.getEffLength());		

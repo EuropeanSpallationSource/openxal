@@ -18,8 +18,8 @@
 package xal.extension.jels.smf.impl;
 
 import java.util.Arrays;
-import xal.extension.jels.smf.attr.MagnetBucket;
 import xal.ca.ChannelFactory;
+import xal.extension.jels.smf.attr.DipoleBucket;
 import xal.smf.impl.Magnet;
 import xal.smf.impl.qualify.ElementTypeManager;
 
@@ -49,8 +49,6 @@ public class Bend extends xal.smf.impl.Bend {
         ElementTypeManager typeManager = ElementTypeManager.defaultManager();
         typeManager.registerType(Bend.class, s_strType);
     }
-
-    private final MagnetBucket m_bucESSMagnet = new MagnetBucket();
 
     /**
      * Creates Bend with horizontal orientation.
@@ -92,8 +90,8 @@ public class Bend extends xal.smf.impl.Bend {
      */
     public Bend(String strId, int orientation, ChannelFactory channelFactory) {
         super(strId, channelFactory);
+        setMagBucket(new DipoleBucket());
         setOrientation(orientation);
-        setMagBucket(m_bucESSMagnet);
     }
 
     /**
@@ -115,77 +113,77 @@ public class Bend extends xal.smf.impl.Bend {
      * VERTICAL
      */
     public void setOrientation(int orientation) {
-        m_bucESSMagnet.setOrientation(orientation);
+        ((DipoleBucket)getMagBucket()).setOrientation(orientation);
     }
 
     /**
      * @return total gap of magnet (m)
      */
     public double getGap() {
-        return m_bucESSMagnet.getGap();
+        return ((DipoleBucket)getMagBucket()).getGap();
     }
 
     /**
      * @param value total gap of magnet (m)
      */
     public void setGap(double value) {
-        m_bucESSMagnet.setGap(value);
+        ((DipoleBucket)getMagBucket()).setGap(value);
     }
 
     /**
      * @return Upstream edge face Fringe-field factor (default = 0.45)
      */
     public double getEntrK1() {
-        return m_bucESSMagnet.getEntrFringeFieldFactorK1();
+        return ((DipoleBucket)getMagBucket()).getEntrFringeFieldFactorK1();
     }
 
     /**
      * @param value Upstream edge face Fringe-field factor (default = 0.45)
      */
     public void setEntrK1(double value) {
-        m_bucESSMagnet.setEntrFringeFieldFactorK1(value);
+        ((DipoleBucket)getMagBucket()).setEntrFringeFieldFactorK1(value);
     }
 
     /**
      * @return Upstream edge face Fringe-field factor (default = 2.80)
      */
     public double getEntrK2() {
-        return m_bucESSMagnet.getEntrFringeFieldFactorK2();
+        return ((DipoleBucket)getMagBucket()).getEntrFringeFieldFactorK2();
     }
 
     /**
      * @param value Upstream edge face Fringe-field factor (default = 2.80)
      */
     public void setEntrK2(double value) {
-        m_bucESSMagnet.setEntrFringeFieldFactorK2(value);
+        ((DipoleBucket)getMagBucket()).setEntrFringeFieldFactorK2(value);
     }
 
     /**
      * @return Downstream edge face Fringe-field factor (default = 0.45)
      */
     public double getExitK1() {
-        return m_bucESSMagnet.getExitFringeFieldFactorK1();
+        return ((DipoleBucket)getMagBucket()).getExitFringeFieldFactorK1();
     }
 
     /**
      * @param value Downstream edge face Fringe-field factor (default = 0.45)
      */
     public void setExitK1(double value) {
-        m_bucESSMagnet.setExitFringeFieldFactorK1(value);
+        ((DipoleBucket)getMagBucket()).setExitFringeFieldFactorK1(value);
     }
 
     /**
      * @return Downstream edge face Fringe-field factor (default = 2.80)
      */
     public double getExitK2() {
-        return m_bucESSMagnet.getExitFringeFieldFactorK2();
+        return ((DipoleBucket)getMagBucket()).getExitFringeFieldFactorK2();
     }
 
     /**
      * @param value Downstream edge face Fringe-field factor (default = 2.80)
      */
     public void setExitK2(double value) {
-        m_bucESSMagnet.setExitFringeFieldFactorK2(value);
+        ((DipoleBucket)getMagBucket()).setExitFringeFieldFactorK2(value);
     }
 
     /**
@@ -196,7 +194,7 @@ public class Bend extends xal.smf.impl.Bend {
      */
     @Override
     public int getOrientation() {
-        return m_bucESSMagnet.getOrientation();
+        return ((DipoleBucket)getMagBucket()).getOrientation();
     }
 
     /**

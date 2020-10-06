@@ -43,8 +43,6 @@ public class RotationBucket extends AttributeBucket  {
     /** Override virtual to provide type signature */
     public String getType()         { return c_strType; };
     
-    public String[] getAttrNames()  { return c_arrNames; };
-    
     
     
     public RotationBucket() {

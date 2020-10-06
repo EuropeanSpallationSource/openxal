@@ -43,8 +43,6 @@ public class SequenceBucket extends AttributeBucket {
     
     /** Furnish a unique type id  */
     public String getType()         { return c_strType; };
-
-    public String[] getAttrNames()  { return c_arrNames; };
     
 
      
