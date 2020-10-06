@@ -73,20 +73,20 @@ import xal.smf.data.XMLDataManager;
  * @author Yngve Levinsen <yngve.levinsen@ess.eu>
  */
 abstract public class FxApplication extends Application {
-
+    
     protected String MAIN_SCENE = "/fxml/Scene.fxml";
     protected String CSS_STYLE = "/styles/Styles.css";
     private String STAGE_TITLE = "Demo Application";
-
+    
     private enum THEME {
         DEFAULT,
         DARK
     }
-
+    
     private THEME theme = THEME.DEFAULT;
-
+    
     protected XalFxDocument DOCUMENT;
-
+    
     final private Date LAUNCH_TIME;
 
     // Set to false if this application doesn't save/load xml files
@@ -94,9 +94,9 @@ abstract public class FxApplication extends Application {
 
     // Set to false if this application doesn't need the machine sequences
     protected boolean HAS_SEQUENCE = true;
-
+    
     protected MenuBar MENU_BAR;
-
+    
     private static Stage stage; // **Declare static Stage**
 
     /**
@@ -113,30 +113,30 @@ abstract public class FxApplication extends Application {
      */
     protected FxApplication(final URL[] urls) {
         super();
-
+        
         LAUNCH_TIME = new Date();
     }
-
+    
     private void setStage(Stage stage) {
         this.stage = stage;
     }
-
+    
     static public Stage getStage() {
         return stage;
     }
-
+    
     public String getApplicationName() {
         return STAGE_TITLE;
     }
-
+    
     public void setApplicationName(String applicationName) {
         this.STAGE_TITLE = applicationName;
     }
-
+    
     public XalFxDocument getDocument() {
         return DOCUMENT;
     }
-
+    
     private static void setDefaultStyle(Scene scene) {
         Font.loadFont(FxApplication.class.getResource("/fonts/SourceSansPro-SemiBoldItalic.ttf").toExternalForm(), 10);
         Font.loadFont(FxApplication.class.getResource("/fonts/SourceSansPro-Black.ttf").toExternalForm(), 10);
@@ -150,7 +150,7 @@ abstract public class FxApplication extends Application {
         Font.loadFont(FxApplication.class.getResource("/fonts/SourceSansPro-LightItalic.ttf").toExternalForm(), 10);
         Font.loadFont(FxApplication.class.getResource("/fonts/SourceSansPro-Regular.ttf").toExternalForm(), 10);
         Font.loadFont(FxApplication.class.getResource("/fonts/SourceSansPro-SemiBold.ttf").toExternalForm(), 10);
-
+        
         scene.getStylesheets().add(FxApplication.class.getResource("/styles/DefaultStyle.css").toExternalForm());
     }
 
@@ -164,7 +164,7 @@ abstract public class FxApplication extends Application {
         setUserAgentStylesheet(null);
         setDefaultStyle(scene);
     }
-
+    
     public static void setOxalDarkStyle(Scene scene) {
         scene.getStylesheets().clear();
         setUserAgentStylesheet(null);
@@ -179,117 +179,120 @@ abstract public class FxApplication extends Application {
      * startup preparations.
      */
     protected void initialize() {
-        Logger.getLogger(FxApplication.class.getName()).log(Level.INFO, "Loading default accelerator {0}", XMLDataManager.defaultPath());
-        DOCUMENT.accelerator.setAccelerator(XMLDataManager.loadDefaultAccelerator());
-
-        MENU_BAR = new MenuBar();
-
-        Menu fileMenu = new Menu("File");
-        if (HAS_DOCUMENTS) {
-            MenuItem newFileMenu = new MenuItem("New");
-            newFileMenu.setOnAction(new NewFileMenu(DOCUMENT));
-            final MenuItem saveFileMenu = new MenuItem("Save");
-            saveFileMenu.setOnAction(new SaveFileMenu(DOCUMENT, false));
-            final MenuItem saveAsFileMenu = new MenuItem("Save as..");
-            saveAsFileMenu.setOnAction(new SaveFileMenu(DOCUMENT, true));
-            final MenuItem loadFileMenu = new MenuItem("Load");
-            loadFileMenu.setOnAction(new LoadFileMenu(DOCUMENT));
-            fileMenu.getItems().addAll(newFileMenu, saveFileMenu, saveAsFileMenu, loadFileMenu);
-        }
-        final MenuItem exitMenu = new MenuItem("Exit");
-        exitMenu.setOnAction(new ExitMenu());
-        fileMenu.getItems().addAll(exitMenu);
-
-        final Menu editMenu = new Menu("Edit");
-
-        final ToggleGroup groupSequence = new ToggleGroup();
-        final Menu acceleratorMenu = new Menu("Accelerator");
-        final MenuItem loadDefaultAcceleratorMenu = new MenuItem("Load Default Accelerator");
-        loadDefaultAcceleratorMenu.setOnAction(new LoadDefaultAcceleratorMenu(DOCUMENT));
-        final MenuItem loadAcceleratorMenu = new MenuItem("Load Accelerator ...");
-        loadAcceleratorMenu.setOnAction(new LoadAcceleratorMenu(DOCUMENT));
-        final MenuItem testModeMenu = new MenuItem("Enable Test Mode");
-        testModeMenu.setOnAction(new TestModeMenu(DOCUMENT, testModeMenu));
-        acceleratorMenu.getItems().addAll(loadDefaultAcceleratorMenu, loadAcceleratorMenu, testModeMenu);
-        final Menu sequenceMenu = new Menu("Sequence");
-
-        if (HAS_SEQUENCE && DOCUMENT.accelerator.getAccelerator() != null) {
-            buildSequenceMenu(DOCUMENT.accelerator.getAccelerator(), sequenceMenu, groupSequence);
-            acceleratorMenu.getItems().addAll(new SeparatorMenuItem(), sequenceMenu);
-        }
-
-        final Menu eLogMenu = new Menu("eLog");
-        final MenuItem openLogMenu = new MenuItem("Open");
-        openLogMenu.setOnAction(new UrlMenu(DOCUMENT));
-        final MenuItem makePostMenu = new MenuItem("Post Screen Shot");
-        makePostMenu.setOnAction(new ELogMenu(DOCUMENT, "image"));
-        final MenuItem makePostDataMenu = new MenuItem("Post Data");
-        makePostDataMenu.setOnAction(new ELogMenu(DOCUMENT, "file"));
-        if (HAS_DOCUMENTS) {
-            eLogMenu.getItems().addAll(openLogMenu, makePostMenu, makePostDataMenu);
-        } else {
-            eLogMenu.getItems().addAll(openLogMenu, makePostMenu);
-        }
-
-        final Menu viewMenu = new Menu("View");
-        final MenuItem switchThemeMenu;
-        if (theme == THEME.DEFAULT) {
-            switchThemeMenu = new MenuItem("Set dark Theme");
-        } else {
-            switchThemeMenu = new MenuItem("Set default Theme");
-        }
-        switchThemeMenu.setOnAction((e) -> {
-            if (theme == THEME.DEFAULT) {
-                theme = THEME.DARK;
-                setOxalDarkStyle(stage.getScene());
-                stage.getScene().getStylesheets().add(CSS_STYLE);
-                switchThemeMenu.setText("Set default Theme");
-            } else {
-                theme = THEME.DEFAULT;
-                setOxalStyle(stage.getScene());
-                stage.getScene().getStylesheets().add(CSS_STYLE);
-                switchThemeMenu.setText("Set dark Theme");
+        try {
+            Logger.getLogger(FxApplication.class.getName()).log(Level.INFO, "Loading default accelerator {0}", XMLDataManager.defaultPath());
+            DOCUMENT.accelerator.setAccelerator(XMLDataManager.loadDefaultAccelerator());
+            
+            MENU_BAR = new MenuBar();
+            
+            Menu fileMenu = new Menu("File");
+            if (HAS_DOCUMENTS) {
+                MenuItem newFileMenu = new MenuItem("New");
+                newFileMenu.setOnAction(new NewFileMenu(DOCUMENT));
+                final MenuItem saveFileMenu = new MenuItem("Save");
+                saveFileMenu.setOnAction(new SaveFileMenu(DOCUMENT, false));
+                final MenuItem saveAsFileMenu = new MenuItem("Save as..");
+                saveAsFileMenu.setOnAction(new SaveFileMenu(DOCUMENT, true));
+                final MenuItem loadFileMenu = new MenuItem("Load");
+                loadFileMenu.setOnAction(new LoadFileMenu(DOCUMENT));
+                fileMenu.getItems().addAll(newFileMenu, saveFileMenu, saveAsFileMenu, loadFileMenu);
             }
-        });
-        viewMenu.getItems().add(switchThemeMenu);
-
-        final Menu helpMenu = new Menu("Help");
-        final MenuItem aboutMenu = new MenuItem("About");
-        aboutMenu.setOnAction(new HelpMenu(DOCUMENT));
-        helpMenu.getItems().add(aboutMenu);
-
-        MENU_BAR.getMenus().addAll(fileMenu, editMenu, acceleratorMenu, eLogMenu, viewMenu, helpMenu);
-
-        DOCUMENT.accelerator.addChangeListener((ChangeListener) (ObservableValue o, Object oldVal, Object newVal) -> {
+            final MenuItem exitMenu = new MenuItem("Exit");
+            exitMenu.setOnAction(new ExitMenu());
+            fileMenu.getItems().addAll(exitMenu);
+            
+            final Menu editMenu = new Menu("Edit");
+            
+            final ToggleGroup groupSequence = new ToggleGroup();
+            final Menu acceleratorMenu = new Menu("Accelerator");
+            final MenuItem loadDefaultAcceleratorMenu = new MenuItem("Load Default Accelerator");
+            loadDefaultAcceleratorMenu.setOnAction(new LoadDefaultAcceleratorMenu(DOCUMENT));
+            final MenuItem loadAcceleratorMenu = new MenuItem("Load Accelerator ...");
+            loadAcceleratorMenu.setOnAction(new LoadAcceleratorMenu(DOCUMENT));
+            final MenuItem testModeMenu = new MenuItem("Enable Test Mode");
+            testModeMenu.setOnAction(new TestModeMenu(DOCUMENT, testModeMenu));
+            acceleratorMenu.getItems().addAll(loadDefaultAcceleratorMenu, loadAcceleratorMenu, testModeMenu);
+            final Menu sequenceMenu = new Menu("Sequence");
+            
             if (HAS_SEQUENCE && DOCUMENT.accelerator.getAccelerator() != null) {
-                DOCUMENT.sequence.set(null);
-                sequenceMenu.getItems().clear();
-                groupSequence.getToggles().clear();
                 buildSequenceMenu(DOCUMENT.accelerator.getAccelerator(), sequenceMenu, groupSequence);
-                Logger.getLogger(FxApplication.class.getName()).log(Level.INFO, "Rebuilding Sequence Menu.");
+                acceleratorMenu.getItems().addAll(new SeparatorMenuItem(), sequenceMenu);
             }
-        });
-
-        DOCUMENT.sequence.addListener((ChangeListener<? super String>) (ObservableValue<? extends String> o, String oldVal, String newVal) -> {
-            if (DOCUMENT.sequence == null) {
-                ((RadioMenuItem) sequenceMenu.getItems().get(0)).setSelected(true);
+            
+            final Menu eLogMenu = new Menu("eLog");
+            final MenuItem openLogMenu = new MenuItem("Open");
+            openLogMenu.setOnAction(new UrlMenu(DOCUMENT));
+            final MenuItem makePostMenu = new MenuItem("Post Screen Shot");
+            makePostMenu.setOnAction(new ELogMenu(DOCUMENT, "image"));
+            final MenuItem makePostDataMenu = new MenuItem("Post Data");
+            makePostDataMenu.setOnAction(new ELogMenu(DOCUMENT, "file"));
+            if (HAS_DOCUMENTS) {
+                eLogMenu.getItems().addAll(openLogMenu, makePostMenu, makePostDataMenu);
             } else {
-                for (Toggle item : groupSequence.getToggles()) {
-                    if (((RadioMenuItem) item).getText().equals(newVal)) {
-                        ((RadioMenuItem) item).setSelected(true);
+                eLogMenu.getItems().addAll(openLogMenu, makePostMenu);
+            }
+            
+            final Menu viewMenu = new Menu("View");
+            final MenuItem switchThemeMenu;
+            if (theme == THEME.DEFAULT) {
+                switchThemeMenu = new MenuItem("Set dark Theme");
+            } else {
+                switchThemeMenu = new MenuItem("Set default Theme");
+            }
+            switchThemeMenu.setOnAction((e) -> {
+                if (theme == THEME.DEFAULT) {
+                    theme = THEME.DARK;
+                    setOxalDarkStyle(stage.getScene());
+                    stage.getScene().getStylesheets().add(CSS_STYLE);
+                    switchThemeMenu.setText("Set default Theme");
+                } else {
+                    theme = THEME.DEFAULT;
+                    setOxalStyle(stage.getScene());
+                    stage.getScene().getStylesheets().add(CSS_STYLE);
+                    switchThemeMenu.setText("Set dark Theme");
+                }
+            });
+            viewMenu.getItems().add(switchThemeMenu);
+            
+            final Menu helpMenu = new Menu("Help");
+            final MenuItem aboutMenu = new MenuItem("About");
+            aboutMenu.setOnAction(new HelpMenu(DOCUMENT));
+            helpMenu.getItems().add(aboutMenu);
+            
+            MENU_BAR.getMenus().addAll(fileMenu, editMenu, acceleratorMenu, eLogMenu, viewMenu, helpMenu);
+            
+            DOCUMENT.accelerator.addChangeListener((ChangeListener) (ObservableValue o, Object oldVal, Object newVal) -> {
+                if (HAS_SEQUENCE && DOCUMENT.accelerator.getAccelerator() != null) {
+                    DOCUMENT.sequence.set(null);
+                    sequenceMenu.getItems().clear();
+                    groupSequence.getToggles().clear();
+                    buildSequenceMenu(DOCUMENT.accelerator.getAccelerator(), sequenceMenu, groupSequence);
+                    Logger.getLogger(FxApplication.class.getName()).log(Level.INFO, "Rebuilding Sequence Menu.");
+                }
+            });
+            
+            DOCUMENT.sequence.addListener((ChangeListener<? super String>) (ObservableValue<? extends String> o, String oldVal, String newVal) -> {
+                if (DOCUMENT.sequence == null) {
+                    ((RadioMenuItem) sequenceMenu.getItems().get(0)).setSelected(true);
+                } else {
+                    for (Toggle item : groupSequence.getToggles()) {
+                        if (((RadioMenuItem) item).getText().equals(newVal)) {
+                            ((RadioMenuItem) item).setSelected(true);
+                        }
                     }
                 }
+            });
+
+            // display the menu bar at the top of the screen consistent with the Mac look and feel
+            final String os = System.getProperty("os.name");
+            if (os != null && os.startsWith("Mac")) {
+                MENU_BAR.useSystemMenuBarProperty().set(true);
             }
-        });
-
-        // display the menu bar at the top of the screen consistent with the Mac look and feel
-        final String os = System.getProperty("os.name");
-        if (os != null && os.startsWith("Mac")) {
-            MENU_BAR.useSystemMenuBarProperty().set(true);
+            
+            registerApplicationStatusService();
+        } catch (Exception e) {
+            Logger.getLogger(getClass().getName()).log(Level.WARNING, "Exception in the initialize method.", e);
         }
-
-        registerApplicationStatusService();
-
     }
 
     /**
@@ -305,47 +308,55 @@ abstract public class FxApplication extends Application {
     public void beforeStart(Stage stage) {
         // Default implementation does nothing.
     }
-
+    
     @Override
     public void start(Stage stage) throws IOException {
-        setup(stage);
-
+        try {
+            setup(stage);
+        } catch (Exception e) {
+            Logger.getLogger(getClass().getName()).log(Level.WARNING, "Error in the setup method of FxApplication.", e);
+        }
+        
         initialize();
-
+        
         setStage(stage);
-
+        
         VBox root = new VBox();
-
+        
         FXMLLoader loader = new FXMLLoader(getClass().getResource(MAIN_SCENE));
-
+        
         root.getChildren().add(MENU_BAR);
         Node applicationScene = loader.load();
         VBox.setVgrow(applicationScene, Priority.ALWAYS);
         root.getChildren().add(applicationScene);
-
+        
         Scene scene = new Scene(root);
 
         // Set default style and application specific CSS
         setOxalStyle(scene);
         scene.getStylesheets().add(CSS_STYLE);
-
+        
         stage.getProperties().put("hostServices", this.getHostServices());
-
+        
         stage.setTitle(STAGE_TITLE);
         stage.setScene(scene);
         //YIL It is probably very bad to set this here but I am a stupid person.
         DOCUMENT.sourceString = new SimpleStringProperty(DOCUMENT.DEFAULT_FILENAME);
         DOCUMENT.sourceString.addListener((observable, oldValue, newValue) -> stage.setTitle(STAGE_TITLE + ": " + newValue));
-
+        
         loader.<Controller>getController().setApplication(this);
-
-        beforeStart(stage);
-
+        
+        try {
+            beforeStart(stage);
+        } catch (Exception e) {
+            Logger.getLogger(getClass().getName()).log(Level.WARNING, "Error in the beforeStart method of FxApplication.", e);
+        }
+        
         loader.<Controller>getController().beforeStart();
-
+        
         stage.show();
     }
-
+    
     public void buildSequenceMenu(Accelerator accelerator, Menu sequenceMenu, ToggleGroup groupSequence) {
         RadioMenuItem acceleratorItem = new RadioMenuItem("Full Accelerator");
         acceleratorItem.setToggleGroup(groupSequence);
@@ -354,16 +365,16 @@ abstract public class FxApplication extends Application {
 
         //Populate the Sequence Menu with the sequences of the machine
         List<AcceleratorSeq> seqItem = accelerator.getSequences();
-
+        
         for (AcceleratorSeq item : seqItem) { //AddSequences
             RadioMenuItem addedItem = new RadioMenuItem(item.toString());
             sequenceMenu.getItems().add(addedItem);
             addedItem.setToggleGroup(groupSequence);
             addedItem.setOnAction(new SelectSequenceMenu(DOCUMENT));
         }
-
+        
         sequenceMenu.getItems().add(new SeparatorMenuItem());
-
+        
         List<AcceleratorSeqCombo> seqCombo = accelerator.getComboSequences();
         for (AcceleratorSeqCombo item : seqCombo) { //AddCombos
             RadioMenuItem addedItem = new RadioMenuItem(item.toString());
@@ -372,7 +383,7 @@ abstract public class FxApplication extends Application {
             addedItem.setOnAction(new SelectSequenceMenu(DOCUMENT));
         }
         sequenceMenu.getItems().add(new SeparatorMenuItem());
-
+        
         final MenuItem addCombo = new MenuItem("Add new Combo Sequence");
         addCombo.setOnAction(new AddCombo(DOCUMENT, groupSequence));
         sequenceMenu.getItems().add(addCombo);
@@ -385,7 +396,7 @@ abstract public class FxApplication extends Application {
     final protected void registerApplicationStatusService() {
         // check to see if the startup flag has disabled application services
         Boolean shouldRegister = Boolean.valueOf(System.getProperty("registerApplicationService", "true"));
-
+        
         if (shouldRegister.booleanValue()) {
             try {
                 ServiceDirectory.defaultDirectory().registerService(ApplicationStatus.class, STAGE_TITLE, new FxApplicationStatusService(this));
@@ -398,7 +409,7 @@ abstract public class FxApplication extends Application {
             Logger.getLogger("global").log(Level.CONFIG, "Application services disabled.");
         }
     }
-
+    
     void showAllWindows() {
         Platform.runLater(getStage()::toFront);
     }
@@ -412,7 +423,7 @@ abstract public class FxApplication extends Application {
     public void stop() {
         System.exit(0);
     }
-
+    
     void quit() {
         Platform.exit();
     }
@@ -426,17 +437,17 @@ abstract public class FxApplication extends Application {
     public Date getLaunchTime() {
         return LAUNCH_TIME;
     }
-
+    
 }
 
 abstract class FileMenuItem implements EventHandler {
-
+    
     protected XalFxDocument document;
-
+    
     public FileMenuItem(XalFxDocument document) {
         this.document = document;
     }
-
+    
     @Override
     public void handle(Event t) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -444,27 +455,27 @@ abstract class FileMenuItem implements EventHandler {
 }
 
 class NewFileMenu extends FileMenuItem {
-
+    
     public NewFileMenu(XalFxDocument document) {
         super(document);
     }
-
+    
     @Override
     public void handle(Event t) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
+    
 }
 
 class SaveFileMenu extends FileMenuItem {
-
+    
     private final boolean saveAs;
-
+    
     public SaveFileMenu(XalFxDocument document, boolean saveAs) {
         super(document);
         this.saveAs = saveAs;
     }
-
+    
     @Override
     public void handle(Event t) {
         if (saveAs || !document.sourceSetAndValid()) {
@@ -494,15 +505,15 @@ class SaveFileMenu extends FileMenuItem {
         }
         //saveDocumentAs( final URL url )
     }
-
+    
 }
 
 class LoadFileMenu extends FileMenuItem {
-
+    
     public LoadFileMenu(XalFxDocument document) {
         super(document);
     }
-
+    
     @Override
     public void handle(Event t) {
         FileChooser fileChooser = new FileChooser();
@@ -526,11 +537,11 @@ class LoadFileMenu extends FileMenuItem {
             }
         }
     }
-
+    
 }
 
 class ExitMenu implements EventHandler {
-
+    
     @Override
     public void handle(Event t) {
         Logger.getLogger(ExitMenu.class.getName()).log(Level.INFO, "Exit button clicked");
@@ -539,41 +550,41 @@ class ExitMenu implements EventHandler {
 }
 
 class LoadDefaultAcceleratorMenu implements EventHandler {
-
+    
     private final XalFxDocument document;
-
+    
     public LoadDefaultAcceleratorMenu(XalFxDocument document) {
         this.document = document;
     }
-
+    
     @Override
     public void handle(Event t) {
         Logger.getLogger(LoadDefaultAcceleratorMenu.class.getName()).log(Level.INFO, "Loading default accelerator.");
         document.accelerator.setAccelerator(XMLDataManager.loadDefaultAccelerator());
     }
-
+    
 }
 
 class TestModeMenu implements EventHandler {
-
+    
     private final XalFxDocument document;
     private MenuItem testModeMenu;
-
+    
     public TestModeMenu(XalFxDocument DOCUMENT) {
         this.document = DOCUMENT;
     }
-
+    
     TestModeMenu(XalFxDocument DOCUMENT, MenuItem testModeMenu) {
         this.document = DOCUMENT;
         this.testModeMenu = testModeMenu;
     }
-
+    
     @Override
     public void handle(Event t) {
         document.testMode = !document.testMode;
-
+        
         document.accelerator.setTestMode(document.testMode);
-
+        
         if (document.testMode) {
             testModeMenu.setText("Disable Test Mode");
         } else {
@@ -583,13 +594,13 @@ class TestModeMenu implements EventHandler {
 }
 
 class LoadAcceleratorMenu implements EventHandler {
-
+    
     private final XalFxDocument document;
-
+    
     public LoadAcceleratorMenu(XalFxDocument DOCUMENT) {
         this.document = DOCUMENT;
     }
-
+    
     @Override
     public void handle(Event t) {
         FileChooser fileChooser = new FileChooser();
@@ -609,13 +620,13 @@ class LoadAcceleratorMenu implements EventHandler {
             alert.setTitle("Load Accelerator Warning");
             alert.setHeaderText("Empty or invalid file selected");
             alert.setContentText("How to proceed?");
-
+            
             ButtonType buttonTypeLoad = new ButtonType("Load Default Accelerator");
             ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
             alert.getButtonTypes().setAll(buttonTypeLoad, buttonTypeCancel);
-
+            
             Optional<ButtonType> result = alert.showAndWait();
-
+            
             if (result.get() == buttonTypeLoad) {
                 Logger.getLogger(LoadAcceleratorMenu.class.getName()).log(Level.INFO, "Loading default accelerator.");
                 document.accelerator.setAccelerator(XMLDataManager.loadDefaultAccelerator());
@@ -625,11 +636,11 @@ class LoadAcceleratorMenu implements EventHandler {
             }
         }
     }
-
+    
 }
 
 class SelectSequenceMenu implements EventHandler {
-
+    
     protected final XalFxDocument document;
 
     /*
@@ -638,7 +649,7 @@ class SelectSequenceMenu implements EventHandler {
     public SelectSequenceMenu(XalFxDocument DOCUMENT) {
         this.document = DOCUMENT;
     }
-
+    
     @Override
     public void handle(Event t) {
         final RadioMenuItem getSeqName = (RadioMenuItem) t.getSource();
@@ -648,7 +659,7 @@ class SelectSequenceMenu implements EventHandler {
 }
 
 class AddCombo implements EventHandler {
-
+    
     protected final XalFxDocument document;
     protected final ToggleGroup groupSequence;
 
@@ -659,10 +670,10 @@ class AddCombo implements EventHandler {
         this.document = DOCUMENT;
         this.groupSequence = groupSequence;
     }
-
+    
     @Override
     public void handle(Event t) {
-
+        
         Stage stage;
         Parent root;
         URL url = null;
@@ -703,19 +714,19 @@ class AddCombo implements EventHandler {
             System.out.println("    ----------------------------------------\n");
         }
     }
-
+    
 }
 
 class ELogMenu implements EventHandler {
-
+    
     protected XalFxDocument document;
     protected String docType;
-
+    
     public ELogMenu(XalFxDocument document, String docType) {
         this.document = document;
         this.docType = docType;
     }
-
+    
     @Override
     public void handle(Event t) {
         document.eLogPost(docType);
@@ -723,13 +734,13 @@ class ELogMenu implements EventHandler {
 }
 
 class HelpMenu implements EventHandler {
-
+    
     protected XalFxDocument document;
-
+    
     public HelpMenu(XalFxDocument document) {
         this.document = document;
     }
-
+    
     @Override
     public void handle(Event t) {
         document.help();
@@ -737,13 +748,13 @@ class HelpMenu implements EventHandler {
 }
 
 class UrlMenu implements EventHandler {
-
+    
     protected XalFxDocument document;
-
+    
     public UrlMenu(XalFxDocument document) {
         this.document = document;
     }
-
+    
     @Override
     public void handle(Event t) {
         document.openUrl(xal.extension.jelog.ElogServer.getElogURL());
