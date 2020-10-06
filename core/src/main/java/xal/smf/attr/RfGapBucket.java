@@ -238,9 +238,7 @@ public class RfGapBucket extends AttributeBucket {
     
     /** Override virtual to provide type signature */
     public String getType() { return c_strType; };
-    
-    public String[] getAttrNames()  { return c_arrNames; };
-    
+        
     public double   getLength()  { return m_attLength.getDouble(); };
     public double   getAmpFactor()  { return m_attAmpFactor.getDouble(); };
     public double   getPhaseFactor()      { return m_attPhaseFactor.getDouble(); };
