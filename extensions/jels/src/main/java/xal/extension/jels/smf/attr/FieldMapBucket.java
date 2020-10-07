@@ -85,11 +85,11 @@ public class FieldMapBucket extends AttributeBucket {
         m_attDimensions = new Attribute(0);
         m_attNumberOfPoints = new Attribute(0);
 
-        super.registerAttribute(c_arrNames[0], m_attFieldMapFile);
-        super.registerAttribute(c_arrNames[1], m_attDynamic);
-        super.registerAttribute(c_arrNames[2], m_attFieldType);
-        super.registerAttribute(c_arrNames[3], m_attDimensions);
-        super.registerAttribute(c_arrNames[4], m_attNumberOfPoints);
+        super.registerAttribute(c_arrNames[0], m_attFieldMapFile, "Path of the fieldmap file.");
+        super.registerAttribute(c_arrNames[1], m_attDynamic, "Flag describing if the field is static (false) or dynamic (true).");
+        super.registerAttribute(c_arrNames[2], m_attFieldType, "Either \"electric\" or \"magnetic\".");
+        super.registerAttribute(c_arrNames[3], m_attDimensions, "Number of dimensions of the field map (1, 2, or 3).");
+        super.registerAttribute(c_arrNames[4], m_attNumberOfPoints, "Number of points to used in the longitudinal direction (0=default).");
     }
 
     public String getFieldMapFile() {

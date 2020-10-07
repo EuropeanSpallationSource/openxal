@@ -81,10 +81,10 @@ public class ApertureBucket extends AttributeBucket {
         m_attAperY  = new Attribute(new double[] {0.0});
         m_attAperPos  = new Attribute(new double[] {0.0});
         
-        super.registerAttribute(c_arrNames[0], m_attShape);
-        super.registerAttribute(c_arrNames[1], m_attAperX);
-        super.registerAttribute(c_arrNames[2], m_attAperY);
-        super.registerAttribute(c_arrNames[3], m_attAperPos);
+        super.registerAttribute(c_arrNames[0], m_attShape, "Aperture shape. 0=unknown, 1=ellipse, 2=rectangle, 3=diamond, 11=irregular.");
+        super.registerAttribute(c_arrNames[1], m_attAperX, "Aperture in the horizontal plane.");
+        super.registerAttribute(c_arrNames[2], m_attAperY, "Aperture in the vertical plane.");
+        super.registerAttribute(c_arrNames[3], m_attAperPos, "Position in the element.");
     };
 
     

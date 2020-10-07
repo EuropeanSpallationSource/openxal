@@ -54,7 +54,7 @@ public class SequenceBucket extends AttributeBucket {
         String sa[] = new String[2]; // can have at most 2 predecessors
         m_attPredecessors  = new Attribute(sa);
         
-        super.registerAttribute(c_arrNames[0], m_attPredecessors);
+        super.registerAttribute(c_arrNames[0], m_attPredecessors, "Preceding sequences (max 2).");
     };
 
     
