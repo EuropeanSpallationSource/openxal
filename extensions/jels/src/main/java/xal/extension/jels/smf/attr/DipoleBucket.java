@@ -68,12 +68,12 @@ public class DipoleBucket extends xal.smf.attr.DipoleBucket {
         m_attExitFringeFieldFactorK2 = new Attribute(2.8);
         m_attOrientation = new Attribute("");
 
-        super.registerAttribute(c_arrNames[0], m_attGap);
-        super.registerAttribute(c_arrNames[1], m_attEntrFringeFieldFactorK1);
-        super.registerAttribute(c_arrNames[2], m_attEntrFringeFieldFactorK2);
-        super.registerAttribute(c_arrNames[3], m_attExitFringeFieldFactorK1);
-        super.registerAttribute(c_arrNames[4], m_attExitFringeFieldFactorK2);
-        super.registerAttribute(c_arrNames[5], m_attOrientation);
+        super.registerAttribute(c_arrNames[0], m_attGap, "Total gap of magnet (m).");
+        super.registerAttribute(c_arrNames[1], m_attEntrFringeFieldFactorK1, "Entry Fringe-field factor K1.");
+        super.registerAttribute(c_arrNames[2], m_attEntrFringeFieldFactorK2, "Entry Fringe-field factor K2.");
+        super.registerAttribute(c_arrNames[3], m_attExitFringeFieldFactorK1, "Exit Fringe-field factor K1.");
+        super.registerAttribute(c_arrNames[4], m_attExitFringeFieldFactorK2, "Exit Fringe-field factor K2.");
+        super.registerAttribute(c_arrNames[5], m_attOrientation, "Orientation of the magnet (H/V).");
     }
 
     /**

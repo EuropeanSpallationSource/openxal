@@ -66,10 +66,10 @@ public class ESSRfCavityBucket extends RfCavityBucket {
         m_attSTF_startCoefs = new Attribute(new double[]{});
         m_attSTFPrime_startCoefs = new Attribute(new double[]{});
 
-        super.registerAttribute(c_arrNames[0], m_attTTF_startCoefs);
-        super.registerAttribute(c_arrNames[1], m_attTTFPrime_startCoefs);
-        super.registerAttribute(c_arrNames[2], m_attSTF_startCoefs);
-        super.registerAttribute(c_arrNames[3], m_attSTFPrime_startCoefs);
+        super.registerAttribute(c_arrNames[0], m_attTTF_startCoefs, "Quadratic fit coefficients for the transit time factor as a function of beta for the start cells (constant, linear, quad).");
+        super.registerAttribute(c_arrNames[1], m_attTTFPrime_startCoefs, "Quadratic fit coefficients for the transit time factor prime as a function of beta for the start cells (constant, linear, quad).");
+        super.registerAttribute(c_arrNames[2], m_attSTF_startCoefs, "Quadratic fit coefficients for the \"S transit time factor\" as a function of beta for the start cells (constant, linear, quad).");
+        super.registerAttribute(c_arrNames[3], m_attSTFPrime_startCoefs, "Quadratic fit coefficients for the \"S transit time factor\" prime as a function of beta for the start cells (constant, linear, quad).");
     }
 
     public double[] getTTF_startCoefs() {

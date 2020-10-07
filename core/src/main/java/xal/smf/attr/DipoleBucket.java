@@ -46,11 +46,11 @@ public class DipoleBucket extends MagnetBucket {
         m_attDipoleExitRotAngle = new Attribute(0.0);
         m_attDipoleQuadComponent = new Attribute(0.0);
         
-        super.registerAttribute(c_arrNames[0], m_attBendAngle);
-        super.registerAttribute(c_arrNames[1], m_attPathLength);
-        super.registerAttribute(c_arrNames[2], m_attDipoleEntrRotAngle);
-        super.registerAttribute(c_arrNames[3], m_attDipoleExitRotAngle);
-	super.registerAttribute(c_arrNames[4], m_attDipoleQuadComponent);
+        super.registerAttribute(c_arrNames[0], m_attBendAngle, "Bend angle for dipoles (deg).");
+        super.registerAttribute(c_arrNames[1], m_attPathLength, "Path length  (m).");
+        super.registerAttribute(c_arrNames[2], m_attDipoleEntrRotAngle, "Dipole rotation angle for entrance pole face (deg).");
+        super.registerAttribute(c_arrNames[3], m_attDipoleExitRotAngle, "Dipole rotation angle for exit pole face (deg).");
+	super.registerAttribute(c_arrNames[4], m_attDipoleQuadComponent, "Quadrupole component for bend dipole.");
     }
 
     private final static String c_strType = "dipole";

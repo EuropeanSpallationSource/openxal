@@ -22,7 +22,10 @@ public abstract class AttributeBucket implements java.io.Serializable, DataListe
 	static final private long serialVersionUID = 1L;
 	
     /** map of attributes keyed by value */
-    private Map<String,Attribute> m_mapAttrs;
+    private Map<String,Attribute> m_mapAttrs = new HashMap<>();
+    
+    /** map of attribute descriptions keyed by value */
+    private Map<String,String> m_mapDescriptions = new HashMap<>();
     
     
     /** Derived class must furnish a unique type id */
@@ -57,9 +60,8 @@ public abstract class AttributeBucket implements java.io.Serializable, DataListe
             Attribute attribute = getAttr(name);
             if ( attribute == null ) {
                 continue;
-                //throw MissingAttributeException.newException(this, name);
             }
-            Object value = attribute.getObject();
+
             String stringValue = attribute.stringValue();
             
             if ( stringValue.length() > 0 ) {
@@ -80,6 +82,10 @@ public abstract class AttributeBucket implements java.io.Serializable, DataListe
     
     public Attribute   getAttr(String strName)  { 
         return m_mapAttrs.get(strName); 
+    };
+    
+    public String getAttrDescription(String strName)  { 
+        return m_mapDescriptions.get(strName); 
     };
     
     public String[]  getAttrNames()    {
@@ -191,13 +197,18 @@ public abstract class AttributeBucket implements java.io.Serializable, DataListe
     
     /** AttributeBucket should only be instantiated by a derived class */
     protected AttributeBucket() {
-        m_mapAttrs = new HashMap<String,Attribute>();
     }
 
     
     /** Used by derived classes to define particular attributes  */
     protected void registerAttribute(String strName, Attribute attr)    {
+        registerAttribute(strName, attr, new String());
+    };
+    
+    /** Used by derived classes to define particular attributes  */
+    protected void registerAttribute(String strName, Attribute attr, String description)    {
         m_mapAttrs.put(strName, attr);
+        m_mapDescriptions.put(strName, description);
     };
     
     

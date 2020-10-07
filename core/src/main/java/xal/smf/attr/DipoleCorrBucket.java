@@ -25,7 +25,7 @@ public class DipoleCorrBucket extends DipoleBucket {
 
     // number of slices in which thin correctors are split
     private Attribute m_attSlices;
-    // effetive length of  each slice
+    // effective length of each slice
     private Attribute m_attSlicesEffLength;
 
     public DipoleCorrBucket() {
@@ -34,8 +34,8 @@ public class DipoleCorrBucket extends DipoleBucket {
         m_attSlices = new Attribute(1);
         m_attSlicesEffLength = new Attribute(new double[]{1.0});
 
-        super.registerAttribute(c_arrNames[0], m_attSlices);
-        super.registerAttribute(c_arrNames[1], m_attSlicesEffLength);
+        super.registerAttribute(c_arrNames[0], m_attSlices, "Number of slices in which thin correctors are split.");
+        super.registerAttribute(c_arrNames[1], m_attSlicesEffLength, "Effective length of each slice (m).");
     }
 
     private final static String c_strType = "steerer";

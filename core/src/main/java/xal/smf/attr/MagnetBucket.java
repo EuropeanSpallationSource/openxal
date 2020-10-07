@@ -52,11 +52,11 @@ public class MagnetBucket extends AttributeBucket {
         m_attFldNorm = new Attribute(new double[] {} );
         m_attFldTang = new Attribute(new double[] {} );
 	
-        super.registerAttribute(c_arrNames[0], m_attLenEff);
-        super.registerAttribute(c_arrNames[1], m_attFldDflt);
-        super.registerAttribute(c_arrNames[2], m_attPolarity);
-        super.registerAttribute(c_arrNames[3], m_attFldNorm);
-        super.registerAttribute(c_arrNames[4], m_attFldTang);
+        super.registerAttribute(c_arrNames[0], m_attLenEff, "Effective length (m).");
+        super.registerAttribute(c_arrNames[1], m_attFldDflt, "Design field strength (T/m^(n-1)), n=1 for dipole, 2 for quad...");
+        super.registerAttribute(c_arrNames[2], m_attPolarity, "Magnet polarity ( 1 or -1).");
+        super.registerAttribute(c_arrNames[3], m_attFldNorm, "Normal field multipole coefficients.");
+        super.registerAttribute(c_arrNames[4], m_attFldTang, "Skew field multipole coefficients.");
     }
     
      
