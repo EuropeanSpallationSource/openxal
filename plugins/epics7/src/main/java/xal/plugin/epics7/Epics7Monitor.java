@@ -29,6 +29,7 @@ import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.Status;
 import org.epics.pvdata.pv.Structure;
 import xal.ca.ConnectionException;
+import xal.ca.PutException;
 
 /**
  * Monitor implementation for Epics7.
@@ -83,7 +84,11 @@ public class Epics7Monitor extends xal.ca.Monitor implements MonitorRequester {
     public void monitorEvent(Monitor monitor) {
         MonitorElement element;
         while ((element = monitor.poll()) != null) {
-            listener.event(element.getPVStructure());
+            try {
+                listener.event(element.getPVStructure());
+            } catch (PutException ex) {
+                Logger.getLogger(Epics7Monitor.class.getName()).log(Level.SEVERE, null, ex);
+            }
 
             monitor.release(element);
         }
