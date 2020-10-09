@@ -60,6 +60,7 @@ import org.epics.pvdata.pv.Type;
 import org.epics.pvdatabase.PVRecord;
 import org.epics.pvdatabase.pva.MonitorFactory;
 import xal.ca.ConnectionException;
+import xal.ca.PutException;
 import static xal.plugin.epics7.Epics7Channel.VALUE_FIELD;
 
 /**
@@ -117,7 +118,11 @@ public class Epics7ServerMonitor extends Epics7Monitor implements MonitorRequest
     public void monitorEvent(Monitor monitor) {
         MonitorElement element;
         while ((element = monitor.poll()) != null) {
-            listener.event(element.getPVStructure());
+            try {
+                listener.event(element.getPVStructure());
+            } catch (PutException ex) {
+                Logger.getLogger(Epics7ServerMonitor.class.getName()).log(Level.SEVERE, null, ex);
+            }
 
             // Update the CA channel.
             updateMpv(element.getPVStructure());
@@ -129,7 +134,11 @@ public class Epics7ServerMonitor extends Epics7Monitor implements MonitorRequest
     @Override
     public void postEvent(int select, DBR event) {
         PVStructure pvStructure = updatePvRecord(event);
-        listener.event(pvStructure);
+        try {
+            listener.event(pvStructure);
+        } catch (PutException ex) {
+            Logger.getLogger(Epics7ServerMonitor.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @Override

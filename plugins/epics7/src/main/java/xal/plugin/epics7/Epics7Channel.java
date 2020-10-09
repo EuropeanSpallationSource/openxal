@@ -539,7 +539,11 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     public void putRawValCallback(String newVal, PutListener listener) throws ConnectionException, PutException {
         putRawValCallback(listener, (pvStructure) -> {
             PVString pvString = pvStructure.getStringField(Epics7Channel.VALUE_REQUEST);
-            pvString.put(newVal);
+            if (pvString != null) {
+                pvString.put(newVal);
+            } else {
+                throw new PutException("The record has no String field");
+            }
         });
     }
 
@@ -547,16 +551,23 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     public void putRawValCallback(byte newVal, PutListener listener) throws ConnectionException, PutException {
         putRawValCallback(listener, (pvStructure) -> {
             PVByte pvByte = pvStructure.getByteField(Epics7Channel.VALUE_REQUEST);
-            pvByte.put(newVal);
-        }
-        );
+            if (pvByte != null) {
+                pvByte.put(newVal);
+            } else {
+                throw new PutException("The record has no Byte field");
+            }
+        });
     }
 
     @Override
     public void putRawValCallback(short newVal, PutListener listener) throws ConnectionException, PutException {
         putRawValCallback(listener, (pvStructure) -> {
             PVShort pvShort = pvStructure.getShortField(Epics7Channel.VALUE_REQUEST);
-            pvShort.put(newVal);
+            if (pvShort != null) {
+                pvShort.put(newVal);
+            } else {
+                throw new PutException("The record has no Short field");
+            }
         });
     }
 
@@ -564,7 +575,11 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     public void putRawValCallback(int newVal, PutListener listener) throws ConnectionException, PutException {
         putRawValCallback(listener, (pvStructure) -> {
             PVInt pvInt = pvStructure.getIntField(Epics7Channel.VALUE_REQUEST);
-            pvInt.put(newVal);
+            if (pvInt != null) {
+                pvInt.put(newVal);
+            } else {
+                throw new PutException("The record has no Int field");
+            }
         });
     }
 
@@ -572,7 +587,11 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     public void putRawValCallback(long newVal, PutListener listener) throws ConnectionException, PutException {
         putRawValCallback(listener, (pvStructure) -> {
             PVLong pvLong = pvStructure.getLongField(Epics7Channel.VALUE_REQUEST);
-            pvLong.put(newVal);
+            if (pvLong != null) {
+                pvLong.put(newVal);
+            } else {
+                throw new PutException("The record has no Long field");
+            }
         });
     }
 
@@ -580,7 +599,11 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     public void putRawValCallback(float newVal, PutListener listener) throws ConnectionException, PutException {
         putRawValCallback(listener, (pvStructure) -> {
             PVFloat pvFloat = pvStructure.getFloatField(Epics7Channel.VALUE_REQUEST);
-            pvFloat.put(newVal);
+            if (pvFloat != null) {
+                pvFloat.put(newVal);
+            } else {
+                throw new PutException("The record has no Float field");
+            }
         });
     }
 
@@ -588,7 +611,11 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     public void putRawValCallback(double newVal, PutListener listener) throws ConnectionException, PutException {
         putRawValCallback(listener, (pvStructure) -> {
             PVDouble pvDouble = pvStructure.getDoubleField(Epics7Channel.VALUE_REQUEST);
-            pvDouble.put(newVal);
+            if (pvDouble != null) {
+                pvDouble.put(newVal);
+            } else {
+                throw new PutException("The record has no Double field");
+            }
         });
     }
 
@@ -596,55 +623,89 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     public void putRawValCallback(String[] newVal, PutListener listener) throws ConnectionException, PutException {
         putRawValCallback(listener, (pvStructure) -> {
             PVStringArray pvStringArray = pvStructure.getSubField(PVStringArray.class, Epics7Channel.VALUE_REQUEST);
-            pvStringArray.put(0, newVal.length, newVal, 0);
+            if (pvStringArray != null) {
+                pvStringArray.put(0, newVal.length, newVal, 0);
+            } else {
+                throw new PutException("The record has no String Array field");
+            }
         });
     }
 
     @Override
     public void putRawValCallback(byte[] newVal, PutListener listener) throws ConnectionException, PutException {
         putRawValCallback(listener, (pvStructure) -> {
-            PVByteArray pvByteArray = pvStructure.getSubField(PVByteArray.class, Epics7Channel.VALUE_REQUEST);
-            pvByteArray.put(0, newVal.length, newVal, 0);
+            PVByteArray pvByteArray = pvStructure.getSubField(PVByteArray.class,
+                    Epics7Channel.VALUE_REQUEST);
+            if (pvByteArray != null) {
+                pvByteArray.put(0, newVal.length, newVal, 0);
+            } else {
+                throw new PutException("The record has no Byte Array field");
+            }
         });
     }
 
     @Override
     public void putRawValCallback(short[] newVal, PutListener listener) throws ConnectionException, PutException {
         putRawValCallback(listener, (pvStructure) -> {
-            PVShortArray pvShortArray = pvStructure.getSubField(PVShortArray.class, Epics7Channel.VALUE_REQUEST);
-            pvShortArray.put(0, newVal.length, newVal, 0);
+            PVShortArray pvShortArray = pvStructure.getSubField(PVShortArray.class,
+                    Epics7Channel.VALUE_REQUEST);
+            if (pvShortArray != null) {
+                pvShortArray.put(0, newVal.length, newVal, 0);
+            } else {
+                throw new PutException("The record has no Short Array field");
+            }
         });
     }
 
     @Override
     public void putRawValCallback(int[] newVal, PutListener listener) throws ConnectionException, PutException {
         putRawValCallback(listener, (pvStructure) -> {
-            PVIntArray pvIntArray = pvStructure.getSubField(PVIntArray.class, Epics7Channel.VALUE_REQUEST);
-            pvIntArray.put(0, newVal.length, newVal, 0);
+            PVIntArray pvIntArray = pvStructure.getSubField(PVIntArray.class,
+                    Epics7Channel.VALUE_REQUEST);
+            if (pvIntArray != null) {
+                pvIntArray.put(0, newVal.length, newVal, 0);
+            } else {
+                throw new PutException("The record has no Int Array field");
+            }
         });
     }
 
     @Override
     public void putRawValCallback(long[] newVal, PutListener listener) throws ConnectionException, PutException {
         putRawValCallback(listener, (pvStructure) -> {
-            PVLongArray pvLongArray = pvStructure.getSubField(PVLongArray.class, Epics7Channel.VALUE_REQUEST);
-            pvLongArray.put(0, newVal.length, newVal, 0);
+            PVLongArray pvLongArray = pvStructure.getSubField(PVLongArray.class,
+                    Epics7Channel.VALUE_REQUEST);
+            if (pvLongArray != null) {
+                pvLongArray.put(0, newVal.length, newVal, 0);
+            } else {
+                throw new PutException("The record has no Long Array field");
+            }
         });
     }
 
     @Override
     public void putRawValCallback(float[] newVal, PutListener listener) throws ConnectionException, PutException {
         putRawValCallback(listener, (pvStructure) -> {
-            PVFloatArray pvFloatArray = pvStructure.getSubField(PVFloatArray.class, Epics7Channel.VALUE_REQUEST);
-            pvFloatArray.put(0, newVal.length, newVal, 0);
+            PVFloatArray pvFloatArray = pvStructure.getSubField(PVFloatArray.class,
+                    Epics7Channel.VALUE_REQUEST);
+            if (pvFloatArray != null) {
+                pvFloatArray.put(0, newVal.length, newVal, 0);
+            } else {
+                throw new PutException("The record has no Float Array field");
+            }
         });
     }
 
     @Override
     public void putRawValCallback(double[] newVal, PutListener listener) throws ConnectionException, PutException {
         putRawValCallback(listener, (pvStructure) -> {
-            PVDoubleArray pvDoubleArray = pvStructure.getSubField(PVDoubleArray.class, Epics7Channel.VALUE_REQUEST);
-            pvDoubleArray.put(0, newVal.length, newVal, 0);
+            PVDoubleArray pvDoubleArray = pvStructure.getSubField(PVDoubleArray.class,
+                    Epics7Channel.VALUE_REQUEST);
+            if (pvDoubleArray != null) {
+                pvDoubleArray.put(0, newVal.length, newVal, 0);
+            } else {
+                throw new PutException("The record has no Double Array field");
+            }
         });
     }
 
@@ -669,6 +730,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     @Override
     public String[] getDriveLimitPVs() {
         throw new UnsupportedOperationException("Not supported in EPICS7 (only CA).");
+
     }
     //----------------------------------------------------------------------------------
 
@@ -691,7 +753,11 @@ class ChannelGetRequesterImpl implements ChannelGetRequester {
     @Override
     public void getDone(Status status, ChannelGet channelGet, PVStructure pvStructure, BitSet bitSet) {
         if (status.isSuccess()) {
-            listener.event(pvStructure);
+            try {
+                listener.event(pvStructure);
+            } catch (PutException ex) {
+                Logger.getLogger(ChannelGetRequesterImpl.class.getName()).log(Level.SEVERE, null, ex);
+            }
         } else {
             Logger.getLogger(Epics7Channel.class.getName()).log(Level.SEVERE,
                     "GetDone was not successful for {0}",
@@ -728,7 +794,11 @@ class ChannelPutRequesterImpl implements ChannelPutRequester {
         if (status.isSuccess()) {
             PVStructure pvStructure = PVDataFactory.getPVDataCreate().createPVStructure(structure);
 
-            put.event(pvStructure);
+            try {
+                put.event(pvStructure);
+            } catch (PutException ex) {
+                Logger.getLogger(ChannelPutRequesterImpl.class.getName()).log(Level.SEVERE, null, ex);
+            }
 
             BitSet bitSet = new BitSet(pvStructure.getNumberFields());
             PVField val = pvStructure.getSubField(Epics7Channel.VALUE_REQUEST);

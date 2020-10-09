@@ -619,7 +619,11 @@ public class Epics7ChannelTest {
                 PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
                 PVStructure pvStructure = pvDataCreate.createPVStructure(structure);
 
-                listener.event(pvStructure);
+                try {
+                    listener.event(pvStructure);
+                } catch (PutException ex) {
+                    Logger.getLogger(Epics7ChannelTest.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         };
 
@@ -686,7 +690,11 @@ public class Epics7ChannelTest {
 
                 PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
                 PVStructure pvStructure = pvDataCreate.createPVStructure(structure);
-                listener.event(pvStructure);
+                try {
+                    listener.event(pvStructure);
+                } catch (PutException ex) {
+                    Logger.getLogger(Epics7ChannelTest.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         };
 
@@ -709,7 +717,11 @@ public class Epics7ChannelTest {
 
                 PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
                 PVStructure pvStructure = pvDataCreate.createPVStructure(structure);
-                listener.event(pvStructure);
+                try {
+                    listener.event(pvStructure);
+                } catch (PutException ex) {
+                    Logger.getLogger(Epics7ChannelTest.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         };
 
@@ -859,7 +871,11 @@ public class Epics7ChannelTest {
                 pvStructure.getStructureField(TIMESTAMP_FIELD_NAME).getLongField(SECONDS_FIELD_NAME).put(0);
                 pvStructure.getStructureField(TIMESTAMP_FIELD_NAME).getIntField(NANOSECONDS_FIELD_NAME).put(0);
 
-                listener.event(pvStructure);
+                try {
+                    listener.event(pvStructure);
+                } catch (PutException ex) {
+                    Logger.getLogger(Epics7ChannelTest.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         };
 

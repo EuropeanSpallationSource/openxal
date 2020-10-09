@@ -17,6 +17,7 @@
  */
 package xal.plugin.epics7;
 
+import xal.ca.PutException;
 import org.epics.pvdata.pv.PVStructure;
 
 /**
@@ -25,5 +26,5 @@ import org.epics.pvdata.pv.PVStructure;
  */
 public interface EventListener {
 
-    public void event(PVStructure pvStructure);
+    public void event(PVStructure pvStructure) throws PutException;
 }
