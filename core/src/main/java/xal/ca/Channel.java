@@ -1032,6 +1032,17 @@ abstract public class Channel {
      *  @throws  xal.ca.ConnectionException     channel is not connected
      *  @throws  xal.ca.PutException            channel access failure, including
      */
+    public void putVal(Object newVal) throws ConnectionException, PutException    {
+        this.putValCallback(newVal, null);
+    }
+
+
+    /**
+     *  Synchronously put a value to the channel process variable.
+     *  @param  newVal      value sent to process variable
+     *  @throws  xal.ca.ConnectionException     channel is not connected
+     *  @throws  xal.ca.PutException            channel access failure, including
+     */
     public void putVal(String newVal) throws ConnectionException, PutException    {
         this.putValCallback(newVal, null);
     }
@@ -1177,6 +1188,46 @@ abstract public class Channel {
      */
     public void putVal(double[] newVal) throws ConnectionException, PutException    {
         this.putValCallback(newVal, null);
+    }
+    
+    /**
+     * Asynchronously put a value to the channel process variable.  Fire the specified callback
+     * when put is complete.
+     * @param  newVal      value sent to process variable
+     * @param  listener The receiver of the callback event
+     * @throws xal.ca.ConnectionException     channel is not connected
+     * @throws xal.ca.PutException        general put failure
+     */
+    final public void putValCallback(Object newVal, PutListener listener) throws ConnectionException, PutException {
+        if (newVal instanceof String) {
+            this.putValCallback((String) newVal, listener);
+        } else if (newVal instanceof Byte) {
+            this.putValCallback((byte) newVal, listener);
+        } else if (newVal instanceof Short) {
+            this.putValCallback((short) newVal, listener);
+        } else if (newVal instanceof Integer) {
+            this.putValCallback((int) newVal, listener);
+        } else if (newVal instanceof Long) {
+            this.putValCallback((long) newVal, listener);
+        } else if (newVal instanceof Float) {
+            this.putValCallback((float) newVal, listener);
+        } else if (newVal instanceof Double) {
+            this.putValCallback((double) newVal, listener);
+        } else if (newVal instanceof String[]) {
+            this.putValCallback((String[]) newVal, listener);
+        } else if (newVal instanceof byte[]) {
+            this.putValCallback((byte[]) newVal, listener);
+        } else if (newVal instanceof short[]) {
+            this.putValCallback((short[]) newVal, listener);
+        } else if (newVal instanceof int[]) {
+            this.putValCallback((int[]) newVal, listener);
+        } else if (newVal instanceof long[]) {
+            this.putValCallback((long[]) newVal, listener);
+        } else if (newVal instanceof float[]) {
+            this.putValCallback((float[]) newVal, listener);
+        } else if (newVal instanceof double[]) {
+            this.putValCallback((double[]) newVal, listener);
+        }
     }
 
     /**
