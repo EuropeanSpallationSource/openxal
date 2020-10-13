@@ -81,6 +81,15 @@ public class NPM extends BPM {
     }
 
     /**
+     * Overriding this method since NPM is not a type of BPM. The subclass was
+     * made to reduce boilerplate code.
+     */
+    @Override
+    public boolean isKindOf(String compType) {
+        return s_strType.equals(compType);
+    }
+
+    /**
      * Constructor
      */
     public NPM(final String strId, final ChannelFactory channelFactory) {
