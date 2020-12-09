@@ -18,6 +18,8 @@
 package xal.extension.fxapplication.widgets;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Logger;
@@ -71,28 +73,31 @@ public class AcceleratorTreeView extends VBox {
     private XalFxDocument document;
 
     private final TreeView acceleratorTreeView = new TreeView();
+    HBox titlebar = new HBox();
     HBox titlebox = new HBox();
     MenuButton filterMenu = new MenuButton();
 
     private final Map<String, CheckMenuItem> typeMap = new TreeMap<>();
     private AcceleratorSeq currentSeq;
 
+    private boolean multipleSelectionFlag = false;
+    private final Object lock = new Object();
+
     public AcceleratorTreeView() {
         // Top bar
-        HBox hbox = new HBox();
         titlebox.setPadding(new Insets(5));
         HBox.setHgrow(titlebox, Priority.ALWAYS);
         filterMenu.setText("Filter");
         ObservableList<MenuItem> menuItems = filterMenu.getItems();
         MenuItem menuItemSelectAll = new MenuItem("Select All Types");
-        MenuItem menuItemUnselectAll = new MenuItem("Unselect All Types");
-        menuItemSelectAll.setOnAction((e) -> typeMap.values().forEach(item -> item.setSelected(true)));
-        menuItemUnselectAll.setOnAction((e) -> typeMap.values().forEach(item -> item.setSelected(false)));
+        MenuItem menuItemDeselecttAll = new MenuItem("Deselect All Types");
+        menuItemSelectAll.setOnAction((e) -> this.selectAllFilters());
+        menuItemDeselecttAll.setOnAction((e) -> this.deselectAllFilters());
         menuItems.add(menuItemSelectAll);
-        menuItems.add(menuItemUnselectAll);
+        menuItems.add(menuItemDeselecttAll);
         menuItems.add(new SeparatorMenuItem());
-        hbox.getChildren().addAll(titlebox, filterMenu);
-        getChildren().add(hbox);
+        titlebar.getChildren().addAll(titlebox, filterMenu);
+        getChildren().add(titlebar);
 
         // TreeView
         acceleratorTreeView.setCellFactory(p -> new AcceleratorNodeTreeCell());
@@ -116,9 +121,9 @@ public class AcceleratorTreeView extends VBox {
     }
 
     /**
-     * Returns the property to 
-     * 
-     * @return 
+     * Returns the property to
+     *
+     * @return
      */
     public ReadOnlyObjectProperty<TreeItem<AcceleratorNode>> selectedItemProperty() {
         return acceleratorTreeView.getSelectionModel().selectedItemProperty();
@@ -136,7 +141,11 @@ public class AcceleratorTreeView extends VBox {
         this.document = document;
         update(document.getAccelerator());
 
-        document.getAcceleratorProperty().addChangeListener((ov, t, t1) -> update(document.getAccelerator()));
+        document.getAcceleratorProperty().addChangeListener((ov, t, t1) -> {
+            // Clearing the typeMap so that filter is reseted to all selected.
+            typeMap.clear();
+            update(document.getAccelerator());
+        });
         document.getSequenceProperty().addListener((ov, t, t1) -> {
             Accelerator accelerator = document.getAccelerator();
             AcceleratorSeq seq = accelerator.getSequence(document.getSequence());
@@ -180,7 +189,9 @@ public class AcceleratorTreeView extends VBox {
             titlebox.getChildren().clear();
             Label acceleratorName = new Label(currentSeq.getAccelerator().getSystemId());
             acceleratorName.setStyle("-fx-font-weight: bold;");
-            acceleratorName.setOnMouseReleased((e) -> update(document.getAccelerator()));
+            // When the accelerator name is clicked, the sequence property is
+            // set to null and updateTreeView() is triggered.
+            acceleratorName.setOnMouseReleased((e) -> document.getSequenceProperty().setValue(null));
             Label separator = new Label();
             separator.getStyleClass().add("triangle-shape");
             Label sequenceName = new Label(currentSeq.getId());
@@ -209,11 +220,18 @@ public class AcceleratorTreeView extends VBox {
             }
         } else {
             for (AcceleratorNode node : parentSeq.getNodes()) {
-                if (node instanceof AcceleratorSeq) {
-                    URL iconPath = getClass().getResource("icons/32/SEQ.png");
-                    if (node instanceof RfCavity) {
-                        iconPath = getClass().getResource("icons/32/CAVM.png");
+                if (node instanceof RfCavity) {
+                    URL iconPath = getClass().getResource("icons/32/CAVM.png");
+                    ImageView icon = new ImageView(iconPath.toExternalForm());
+                    acceleratorNodeItem = new TreeItem<>(node, icon);
+                    addSequence((AcceleratorSeq) node, acceleratorNodeItem);
+                    // Add this node if it is selected in the filter or if it has children visible.
+                    if (typeMap.get(node.getType()).isSelected() || !acceleratorNodeItem.getChildren().isEmpty()) {
+                        parentNode.getChildren().add(acceleratorNodeItem);
                     }
+                } else if (node instanceof AcceleratorSeq) {
+                    // Sequences are always shown.
+                    URL iconPath = getClass().getResource("icons/32/SEQ.png");
                     ImageView icon = new ImageView(iconPath.toExternalForm());
                     acceleratorNodeItem = new TreeItem<>(node, icon);
                     addSequence((AcceleratorSeq) node, acceleratorNodeItem);
@@ -221,6 +239,7 @@ public class AcceleratorTreeView extends VBox {
                 } else {
                     if (typeMap.get(node.getType()).isSelected()) {
                         URL iconPath = getClass().getResource("icons/32/" + AcceleratorNodeIcon.getIcon(node.getType()));
+                        // Icon by default when missing.
                         if (iconPath == null) {
                             iconPath = getClass().getResource("icons/32/BBX.png");
                         }
@@ -234,14 +253,167 @@ public class AcceleratorTreeView extends VBox {
         }
     }
 
+    /**
+     * Hides the filter menu. Then the application must make sure to define the
+     * right filter.
+     */
+    public void hideFilterMenu() {
+        titlebar.getChildren().remove(filterMenu);
+    }
+
+    /**
+     * Shows the filter menu.
+     */
+    public void showFilterMenu() {
+        if (!titlebar.getChildren().contains(filterMenu)) {
+            titlebar.getChildren().add(filterMenu);
+        }
+    }
+
+    /**
+     * Convenience method to select all filters. The Tree is updated only once.
+     */
+    public void selectAllFilters() {
+        synchronized (lock) {
+            multipleSelectionFlag = true;
+        }
+        typeMap.values().forEach(item -> item.setSelected(true));
+
+        updateTreeView();
+        synchronized (lock) {
+            multipleSelectionFlag = false;
+        }
+    }
+
+    /**
+     * Convenience method to deselect all filters. The Tree is updated only
+     * once.
+     */
+    public void deselectAllFilters() {
+        synchronized (lock) {
+            multipleSelectionFlag = true;
+        }
+        typeMap.values().forEach(item -> item.setSelected(false));
+
+        updateTreeView();
+        synchronized (lock) {
+            multipleSelectionFlag = false;
+        }
+    }
+
+    /**
+     * Get the list of element types that are selected in the filter.
+     *
+     * @return An array of Strings with the selected types.
+     */
+    public String[] getSelectedFilters() {
+        List<String> filters = new ArrayList<>();
+        typeMap.keySet().forEach(item -> {
+            if (typeMap.get(item).isSelected()) {
+                filters.add(item);
+            }
+        });
+        String[] filtersArray = new String[filters.size()];
+
+        return filters.toArray(filtersArray);
+    }
+
+    /**
+     *
+     * @return true if all filters are selected.
+     */
+    public boolean areAllFiltersSelected() {
+        boolean allFiltersSelectedFlag = true;
+
+        for (String item : typeMap.keySet()) {
+            if (!typeMap.get(item).isSelected()) {
+                allFiltersSelectedFlag = false;
+            }
+        }
+
+        return allFiltersSelectedFlag;
+    }
+
+    /**
+     * Convenience method to select some filters.The Tree is updated only once.
+     *
+     * @param unselectOthers flag to disable the filters not passed as
+     * arguments.
+     * @param elementTypes Strings with element types to be selected.
+     */
+    public void selectFilters(String[] elementTypes, boolean unselectOthers) {
+        synchronized (lock) {
+            multipleSelectionFlag = true;
+        }
+
+        for (String type : typeMap.keySet()) {
+            if (unselectOthers) {
+                typeMap.get(type).setSelected(false);
+            }
+            for (String elementType : elementTypes) {
+                if (type.equals(elementType)) {
+                    typeMap.get(type).setSelected(true);
+                }
+            }
+        }
+
+        updateTreeView();
+        synchronized (lock) {
+            multipleSelectionFlag = false;
+        }
+    }
+
+    /**
+     * Convenience method to select some filters.The Tree is updated only once.
+     *
+     * @param elementTypes Strings with element types to be selected.
+     */
+    public void selectFilters(String[] elementTypes) {
+        selectFilters(elementTypes, false);
+    }
+
+    /**
+     * Convenience method to deselect some filters.The Tree is updated only
+     * once.
+     *
+     * @param elementTypes Strings with element types to be unselected.
+     */
+    public void deselectFilters(String[] elementTypes) {
+        synchronized (lock) {
+            multipleSelectionFlag = true;
+        }
+
+        for (String elementType : elementTypes) {
+            for (String type : typeMap.keySet()) {
+                if (type.equals(elementType)) {
+                    typeMap.get(type).setSelected(false);
+                }
+            }
+        }
+        updateTreeView();
+        synchronized (lock) {
+            multipleSelectionFlag = false;
+        }
+    }
+
     private void updateFilterMenu() {
         filterMenu.getItems().remove(3, filterMenu.getItems().size());
+
+        boolean allFiltersSelectedFlag = areAllFiltersSelected();
+        String[] filters = getSelectedFilters();
+
+        typeMap.clear();
 
         currentSeq.getAllNodes().stream().map(n -> n.getType()).distinct().sorted().forEachOrdered(t -> {
             if (!t.equals("sequence")) {
                 addTypeMenuItem(t);
             }
         });
+
+        if (!allFiltersSelectedFlag) {
+            this.selectFilters(filters, true);
+        }
+
     }
 
     private void addTypeMenuItem(String type) {
@@ -249,7 +421,13 @@ public class AcceleratorTreeView extends VBox {
 
         menuItem.setSelected(true);
         menuItem.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            updateTreeView();
+            // Update the AcceleratorTreeView only if one element is selected.
+            // If a multiple selection is being done, the update must be done manually.
+            synchronized (lock) {
+                if (!multipleSelectionFlag) {
+                    updateTreeView();
+                }
+            }
         });
 
         typeMap.put(type, menuItem);
