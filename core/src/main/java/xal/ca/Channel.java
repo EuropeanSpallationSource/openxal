@@ -1227,6 +1227,8 @@ abstract public class Channel {
             this.putValCallback((float[]) newVal, listener);
         } else if (newVal instanceof double[]) {
             this.putValCallback((double[]) newVal, listener);
+        } else {
+            throw new PutException("Type " + newVal.getClass().getName() + " not valid");
         }
     }
 
