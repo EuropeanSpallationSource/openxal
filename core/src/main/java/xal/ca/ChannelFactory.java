@@ -28,7 +28,7 @@ abstract public class ChannelFactory {
     static final private List<ChannelFactory> FACTORY_LIST = new ArrayList<>();
 
     private boolean test = false;
-    protected static final String TEST_SUFFIX = ":TEST";
+    protected String TEST_SUFFIX = ":TEST";
 
     /**
      * map of channels keyed by signal name
@@ -240,5 +240,19 @@ abstract public class ChannelFactory {
 
     public boolean isTest() {
         return test;
+    }
+
+    /**
+     * This method allows to define a suffix for all PVs when the test mode is
+     * enabled. By default, the suffix is ":TEST".
+     *
+     * @param suffix
+     */
+    public void setTestSuffix(String suffix) {
+        this.TEST_SUFFIX = suffix;
+    }
+
+    public String getTestSuffix() {
+        return this.TEST_SUFFIX;
     }
 }
