@@ -181,9 +181,17 @@ abstract public class FxApplication extends Application {
     protected void initialize() {
         try {
             if (HAS_SEQUENCE) {
-                // TODO: add exception handling if loadDefaultAccelerator() raises an exception
+                String acceleratorMainPath = XMLDataManager.defaultPath();
+                if (acceleratorMainPath == null) {
+                    acceleratorMainPath = latticeErrorDialog("Default accelerator not set", "Press OK to open file dialog to select the path to the accelerator lattice files or Cancel to close the application.");
+                }
+                while (!new File(acceleratorMainPath).exists()) {
+                    acceleratorMainPath = latticeErrorDialog("Default accelerator lattice not found", "Press OK to open file dialog to select the path to the accelerator lattice files or Cancel to close the application.");
+                }
+
+                DOCUMENT.acceleratorXMLManager = XMLDataManager.managerWithFilePath(acceleratorMainPath);
                 Logger.getLogger(FxApplication.class.getName()).log(Level.INFO, "Loading default accelerator {0}", XMLDataManager.defaultPath());
-                DOCUMENT.accelerator.setAccelerator(XMLDataManager.loadDefaultAccelerator());
+                DOCUMENT.accelerator.setAccelerator(DOCUMENT.acceleratorXMLManager.getAccelerator());
             }
 
             MENU_BAR = new MenuBar();
@@ -441,6 +449,42 @@ abstract public class FxApplication extends Application {
         return LAUNCH_TIME;
     }
 
+
+    private String latticeErrorDialog(String title, String message) {
+        String acceleratorMainPath = null;
+        Alert alert = new Alert(AlertType.CONFIRMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(title);
+        alert.setContentText(message);
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == ButtonType.OK) {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Load accelerator lattice files");
+            fileChooser.setInitialFileName("main.xal");
+
+            //Set extension filter
+            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Open XAL lattice" + " (*.xal)", "*.xal");
+            fileChooser.getExtensionFilters().add(extFilter);
+
+            //Show open file dialog
+            File selectedFile = fileChooser.showOpenDialog(null);
+            if (selectedFile == null) {
+                Logger.getLogger(LoadFileMenu.class.getName()).log(Level.INFO, "No lattice file selected.");
+                acceleratorMainPath = latticeErrorDialog("No lattice file selected.", message);
+            } else {
+                if (selectedFile.exists() && selectedFile.canRead()) {
+                    acceleratorMainPath = selectedFile.getAbsolutePath();
+                    XMLDataManager.setDefaultPath(acceleratorMainPath);
+                } else {
+                    Logger.getLogger(LoadFileMenu.class.getName()).log(Level.SEVERE, "Could not open {0}", acceleratorMainPath);
+                }
+            }
+        } else {
+            System.exit(0);
+        }
+        return acceleratorMainPath;
+    }
 }
 
 abstract class FileMenuItem implements EventHandler {

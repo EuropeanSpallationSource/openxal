@@ -32,6 +32,7 @@ import javafx.stage.Stage;
 import eu.ess.jelog.Attachment;
 import xal.extension.jelog.XALPostEntryDialog;
 import xal.smf.Accelerator;
+import xal.smf.data.XMLDataManager;
 
 
 /**
@@ -48,6 +49,8 @@ abstract public class XalFxDocument {
     /** The persistent storage URL for the document */
     protected URL source;
     protected boolean hasChanges;
+    /** The accelerator XML manager object */
+    protected XMLDataManager acceleratorXMLManager;
     /** The accelerator file in use */
     protected AcceleratorProperty accelerator;
     /** The selected Sequence/ComboSequence */
