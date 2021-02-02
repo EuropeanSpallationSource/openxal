@@ -64,7 +64,7 @@ import xal.smf.impl.RfCavity;
  * update the tree every time either the accelerator or the sequence is changed.
  * Double clicking a sequence results in setting the sequence in the document.
  * <p>
- * One can also define listener for single and double click events. (TODO)
+ * One can also define listener for single and double click events.
  *
  * @author Juan F. Esteban Müller <juanf.estebanmuller@ess.eu>
  */
@@ -82,6 +82,8 @@ public class AcceleratorTreeView extends VBox {
 
     private boolean multipleSelectionFlag = false;
     private final Object lock = new Object();
+
+    private EventHandler<MouseEvent> doubleClickEH;
 
     public AcceleratorTreeView() {
         // Top bar
@@ -103,8 +105,8 @@ public class AcceleratorTreeView extends VBox {
         acceleratorTreeView.setCellFactory(p -> new AcceleratorNodeTreeCell());
 
         // Set actions on mouse double-click
-        EventHandler<MouseEvent> eh = (MouseEvent event) -> {
-            if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
+        doubleClickEH = (MouseEvent event) -> {
+            if (document != null && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
                 TreeItem<AcceleratorNode> selectedItem = (TreeItem<AcceleratorNode>) acceleratorTreeView.getSelectionModel().getSelectedItem();
                 if (selectedItem != null && selectedItem.getValue() instanceof AcceleratorSeq
                         && !selectedItem.getValue().getId().equals(document.getSequence())
@@ -114,10 +116,26 @@ public class AcceleratorTreeView extends VBox {
                 }
             }
         };
-        acceleratorTreeView.addEventHandler(MouseEvent.MOUSE_CLICKED, eh);
+        acceleratorTreeView.addEventHandler(MouseEvent.MOUSE_CLICKED, doubleClickEH);
 
         getChildren().add(acceleratorTreeView);
         VBox.setVgrow(acceleratorTreeView, Priority.ALWAYS);
+    }
+
+    public void addClickEventHandler(EventHandler<MouseEvent> eventHandler) {
+        acceleratorTreeView.addEventHandler(MouseEvent.MOUSE_CLICKED, eventHandler);
+    }
+
+    public void removeClickEventHandler(EventHandler<MouseEvent> eventHandler) {
+        acceleratorTreeView.removeEventHandler(MouseEvent.MOUSE_CLICKED, eventHandler);
+    }
+
+    public void enableDefaultClickEventHandler() {
+        acceleratorTreeView.addEventHandler(MouseEvent.MOUSE_CLICKED, doubleClickEH);
+    }
+
+    public void disableDefaultClickEventHandler() {
+        acceleratorTreeView.removeEventHandler(MouseEvent.MOUSE_CLICKED, doubleClickEH);
     }
 
     /**
@@ -204,7 +222,8 @@ public class AcceleratorTreeView extends VBox {
     }
 
     /**
-     * Recursive method to add sequences and child nodes to the TreeView.
+     * Recursive method to add sequences and child nodes to the TreeView. It
+     * also supports combo sequences.
      *
      * @param parentSeq
      * @param parentNode
