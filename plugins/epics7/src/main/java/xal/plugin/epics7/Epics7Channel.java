@@ -172,6 +172,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
         }
         nativeChannel = null;
         connectionFlag = false;
+        connectionLatch = null;
     }
 
     //---------------- Implementing ChannelRequester abstract methods ------------------

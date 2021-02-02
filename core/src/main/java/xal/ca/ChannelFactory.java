@@ -226,7 +226,7 @@ abstract public class ChannelFactory {
     abstract public void printInfo();
 
     /**
-     * Sets the test flag. If the test flag is on, the factory will add a prefix
+     * Sets the test flag. If the test flag is on, the factory will add a suffix
      * to the signal names to distinguish from the original signals.
      *
      * This is a useful feature to test applications, which can run a server
@@ -236,6 +236,20 @@ abstract public class ChannelFactory {
      */
     public void setTest(boolean test) {
         this.test = test;
+        if (test) {
+            for (Channel channel : CHANNEL_MAP.values()) {
+                channel.setChannelName(channel.channelName() + TEST_SUFFIX);
+                channel.disconnect();
+                channel.requestConnection();
+            }
+        } else {
+            for (String channelName : CHANNEL_MAP.keySet()) {
+                Channel channel = CHANNEL_MAP.get(channelName);
+                channel.setChannelName(channelName);
+                channel.disconnect();
+                channel.requestConnection();
+            }
+        }
     }
 
     public boolean isTest() {
