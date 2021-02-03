@@ -469,6 +469,13 @@ public class AcceleratorTreeView extends VBox {
     }
 
     /**
+     * Clear the selection.
+     */
+    public void clearSelection() {
+        acceleratorTreeView.getSelectionModel().clearSelection();
+    }
+
+    /**
      * Select the node with the given node ID, if found on the TreeView. It
      * automatically expand all parent node and scroll to make the selected node
      * visible, if needed.
@@ -491,7 +498,7 @@ public class AcceleratorTreeView extends VBox {
                 acceleratorTreeView.getSelectionModel().select(treeItem);
                 // Scroll to the item if not visible.
                 int selectedIndex = acceleratorTreeView.getSelectionModel().getSelectedIndex();
-                ObservableList<Node> childrenUnmodifiable = getChildrenUnmodifiable();
+                ObservableList<Node> childrenUnmodifiable = acceleratorTreeView.getChildrenUnmodifiable();
                 VirtualFlow get = (VirtualFlow) childrenUnmodifiable.get(0);
                 if (selectedIndex >= get.getLastVisibleCell().getIndex() || selectedIndex <= get.getFirstVisibleCell().getIndex()) {
                     acceleratorTreeView.scrollTo(selectedIndex);
