@@ -812,7 +812,6 @@ public class XMLDataManager {
     	
 		private final String deviceMappingSchema = "/xal/schemas/impl.xsd";
 		
-    	final private HashMap<String, String> _deviceMap;
 		
 		/** factory for generating accelerator nodes */
 		final private AcceleratorNodeFactory NODE_FACTORY;
@@ -821,7 +820,6 @@ public class XMLDataManager {
 		/** Constructor */
     	public DeviceManager( final ChannelFactory channelFactory ) {
 			NODE_FACTORY = new AcceleratorNodeFactory( channelFactory );
-    		_deviceMap = new HashMap<String, String>();
     	}
 		
 		
@@ -830,10 +828,6 @@ public class XMLDataManager {
 			return NODE_FACTORY;
 		}
     	
-		
-//    	public Map<String, String> getDeviceMap() {
-//    		return _deviceMap;
-//    	}
 		
     	public void setURL( final String url ) {
     		final XmlDataAdaptor deviceMappingDocumentAdaptor = XmlDataAdaptor.adaptorForUrl( url, false, deviceMappingSchema );
@@ -849,7 +843,6 @@ public class XMLDataManager {
 					@SuppressWarnings("unchecked")	// cast to AcceleratorNode class
 					final Class<AcceleratorNode> deviceClass = (Class<AcceleratorNode>)Class.forName( deviceClassName );
 					NODE_FACTORY.registerNodeClass( deviceType, softType, deviceClass );
-					_deviceMap.put( deviceType, deviceClassName );
 				}
 				catch( ClassNotFoundException exception ) {
 					exception.printStackTrace();
