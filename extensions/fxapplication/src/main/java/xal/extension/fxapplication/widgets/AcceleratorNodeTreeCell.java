@@ -27,6 +27,7 @@ import javafx.scene.control.TreeCell;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
+import xal.smf.Accelerator;
 import xal.smf.AcceleratorNode;
 
 /**
@@ -76,6 +77,9 @@ public class AcceleratorNodeTreeCell extends TreeCell<AcceleratorNode> {
 
             // Update Labels
             String classNameInfo = item.getId();
+            if (item instanceof Accelerator) {
+                classNameInfo = ((Accelerator) item).getSystemId();
+            }
 
             classNameInfoLabel.setText(classNameInfo);
             classNameInfoLabel.setManaged(classNameInfo != null);
