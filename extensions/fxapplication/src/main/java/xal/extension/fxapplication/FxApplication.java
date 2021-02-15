@@ -30,6 +30,7 @@ import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
@@ -75,7 +76,7 @@ import xal.smf.data.XMLDataManager;
 abstract public class FxApplication extends Application {
 
     protected String MAIN_SCENE = "/fxml/Scene.fxml";
-    protected String CSS_STYLE = "/styles/Styles.css";
+    protected static String CSS_STYLE = "/styles/Styles.css";
     private String STAGE_TITLE = "Demo Application";
 
     private enum THEME {
@@ -83,7 +84,7 @@ abstract public class FxApplication extends Application {
         DARK
     }
 
-    private THEME theme = THEME.DEFAULT;
+    private static THEME theme = THEME.DEFAULT;
 
     protected XalFxDocument DOCUMENT;
 
@@ -137,7 +138,7 @@ abstract public class FxApplication extends Application {
         return DOCUMENT;
     }
 
-    private static void setDefaultStyle(Scene scene) {
+    private static void setDefaultStyle() {
         Font.loadFont(FxApplication.class.getResource("/fonts/SourceSansPro-SemiBoldItalic.ttf").toExternalForm(), 10);
         Font.loadFont(FxApplication.class.getResource("/fonts/SourceSansPro-Black.ttf").toExternalForm(), 10);
         Font.loadFont(FxApplication.class.getResource("/fonts/SourceSansPro-BlackItalic.ttf").toExternalForm(), 10);
@@ -150,8 +151,6 @@ abstract public class FxApplication extends Application {
         Font.loadFont(FxApplication.class.getResource("/fonts/SourceSansPro-LightItalic.ttf").toExternalForm(), 10);
         Font.loadFont(FxApplication.class.getResource("/fonts/SourceSansPro-Regular.ttf").toExternalForm(), 10);
         Font.loadFont(FxApplication.class.getResource("/fonts/SourceSansPro-SemiBold.ttf").toExternalForm(), 10);
-
-        scene.getStylesheets().add(FxApplication.class.getResource("/styles/DefaultStyle.css").toExternalForm());
     }
 
     /**
@@ -160,16 +159,25 @@ abstract public class FxApplication extends Application {
      * application that don't extend FxApplication.
      */
     public static void setOxalStyle(Scene scene) {
-        scene.getStylesheets().clear();
-        setUserAgentStylesheet(null);
-        setDefaultStyle(scene);
+        theme = THEME.DEFAULT;
+        setTheme(scene);
     }
 
     public static void setOxalDarkStyle(Scene scene) {
-        scene.getStylesheets().clear();
+        theme = THEME.DARK;
+        setTheme(scene);
+    }
+
+    public static void setTheme(Scene scene) {
+        ObservableList<String> styleSheets = scene.getStylesheets();
         setUserAgentStylesheet(null);
-        setDefaultStyle(scene);
-        scene.getStylesheets().add(FxApplication.class.getResource("/styles/modena_dark.css").toExternalForm());
+        setDefaultStyle();
+        styleSheets.clear();
+        styleSheets.add(FxApplication.class.getResource("/styles/DefaultStyle.css").toExternalForm());
+        if (theme == THEME.DARK) {
+            styleSheets.add(FxApplication.class.getResource("/styles/modena_dark.css").toExternalForm());
+        }
+        styleSheets.add(FxApplication.class.getResource(CSS_STYLE).toExternalForm());
     }
 
     /**
@@ -252,14 +260,11 @@ abstract public class FxApplication extends Application {
             }
             switchThemeMenu.setOnAction((e) -> {
                 if (theme == THEME.DEFAULT) {
-                    theme = THEME.DARK;
                     setOxalDarkStyle(stage.getScene());
-                    stage.getScene().getStylesheets().add(CSS_STYLE);
                     switchThemeMenu.setText("Set default Theme");
                 } else {
                     theme = THEME.DEFAULT;
                     setOxalStyle(stage.getScene());
-                    stage.getScene().getStylesheets().add(CSS_STYLE);
                     switchThemeMenu.setText("Set dark Theme");
                 }
             });
@@ -326,44 +331,57 @@ abstract public class FxApplication extends Application {
             setup(stage);
         } catch (Exception e) {
             Logger.getLogger(getClass().getName()).log(Level.WARNING, "Error in the setup method of FxApplication.", e);
+            throw (e);
         }
 
-        initialize();
+        FXMLLoader loader = null;
+        try {
+            initialize();
 
-        setStage(stage);
+            setStage(stage);
 
-        VBox root = new VBox();
+            VBox root = new VBox();
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource(MAIN_SCENE));
+            loader = new FXMLLoader(getClass().getResource(MAIN_SCENE));
 
-        root.getChildren().add(MENU_BAR);
-        Node applicationScene = loader.load();
-        VBox.setVgrow(applicationScene, Priority.ALWAYS);
-        root.getChildren().add(applicationScene);
+            root.getChildren().add(MENU_BAR);
+            Node applicationScene = loader.load();
+            VBox.setVgrow(applicationScene, Priority.ALWAYS);
+            root.getChildren().add(applicationScene);
 
-        Scene scene = new Scene(root);
+            Scene scene = new Scene(root);
 
-        // Set default style and application specific CSS
-        setOxalStyle(scene);
-        scene.getStylesheets().add(CSS_STYLE);
+            // Set default style and application specific CSS
+            setOxalStyle(scene);
+            scene.getStylesheets().add(CSS_STYLE);
 
-        stage.getProperties().put("hostServices", this.getHostServices());
+            stage.getProperties().put("hostServices", this.getHostServices());
 
-        stage.setTitle(STAGE_TITLE);
-        stage.setScene(scene);
-        //YIL It is probably very bad to set this here but I am a stupid person.
-        DOCUMENT.sourceString = new SimpleStringProperty(DOCUMENT.DEFAULT_FILENAME);
-        DOCUMENT.sourceString.addListener((observable, oldValue, newValue) -> stage.setTitle(STAGE_TITLE + ": " + newValue));
+            stage.setTitle(STAGE_TITLE);
+            stage.setScene(scene);
+            //YIL It is probably very bad to set this here but I am a stupid person.
+            DOCUMENT.sourceString = new SimpleStringProperty(DOCUMENT.DEFAULT_FILENAME);
+            DOCUMENT.sourceString.addListener((observable, oldValue, newValue) -> stage.setTitle(STAGE_TITLE + ": " + newValue));
 
-        loader.<Controller>getController().setApplication(this);
+            loader.<Controller>getController().setApplication(this);
+        } catch (Exception e) {
+            Logger.getLogger(getClass().getName()).log(Level.WARNING, "Error loading the scene.", e);
+            throw (e);
+        }
 
         try {
             beforeStart(stage);
         } catch (Exception e) {
             Logger.getLogger(getClass().getName()).log(Level.WARNING, "Error in the beforeStart method of FxApplication.", e);
+            throw (e);
         }
 
-        loader.<Controller>getController().beforeStart();
+        try {
+            loader.<Controller>getController().beforeStart();
+        } catch (Exception e) {
+            Logger.getLogger(getClass().getName()).log(Level.WARNING, "Error in the beforeStart method of Controller.", e);
+            throw (e);
+        }
 
         stage.show();
     }
@@ -448,7 +466,6 @@ abstract public class FxApplication extends Application {
     public Date getLaunchTime() {
         return LAUNCH_TIME;
     }
-
 
     private String latticeErrorDialog(String title, String message) {
         String acceleratorMainPath = null;
@@ -607,6 +624,7 @@ class LoadDefaultAcceleratorMenu implements EventHandler {
     @Override
     public void handle(Event t) {
         Logger.getLogger(LoadDefaultAcceleratorMenu.class.getName()).log(Level.INFO, "Loading default accelerator.");
+        document.acceleratorXMLManager = XMLDataManager.getDefaultInstance();
         document.accelerator.setAccelerator(XMLDataManager.loadDefaultAccelerator());
     }
 
@@ -661,6 +679,7 @@ class LoadAcceleratorMenu implements EventHandler {
         File selectedFile = fileChooser.showOpenDialog(null);
         if (selectedFile != null) {
             Logger.getLogger(LoadAcceleratorMenu.class.getName()).log(Level.INFO, "Loading accelerator from file.");
+            document.acceleratorXMLManager = XMLDataManager.managerWithFilePath(selectedFile.getAbsolutePath());
             document.accelerator.setAccelerator(XMLDataManager.acceleratorWithPath(selectedFile.getAbsolutePath()));
         } else {
             Alert alert = new Alert(AlertType.WARNING);
@@ -676,6 +695,7 @@ class LoadAcceleratorMenu implements EventHandler {
 
             if (result.get() == buttonTypeLoad) {
                 Logger.getLogger(LoadAcceleratorMenu.class.getName()).log(Level.INFO, "Loading default accelerator.");
+                document.acceleratorXMLManager = XMLDataManager.getDefaultInstance();
                 document.accelerator.setAccelerator(XMLDataManager.loadDefaultAccelerator());
             } else {
                 Logger.getLogger(LoadAcceleratorMenu.class.getName()).log(Level.INFO, "No accelerator selected.");
