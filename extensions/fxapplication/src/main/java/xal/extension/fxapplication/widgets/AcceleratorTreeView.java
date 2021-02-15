@@ -36,6 +36,8 @@ import javafx.scene.control.MultipleSelectionModel;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.control.skin.TableViewSkin;
+import javafx.scene.control.skin.TreeViewSkin;
 import javafx.scene.control.skin.VirtualFlow;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -73,17 +75,21 @@ public class AcceleratorTreeView extends VBox {
     private XalFxDocument document;
 
     private final TreeView acceleratorTreeView = new TreeView();
-    HBox titlebar = new HBox();
-    HBox titlebox = new HBox();
-    MenuButton filterMenu = new MenuButton();
 
     private final Map<String, CheckMenuItem> typeMap = new TreeMap<>();
     private AcceleratorSeq currentSeq;
 
+    private boolean alwaysShowRfCavities = false;
+    private boolean showAcceleratorNode = false;
     private boolean multipleSelectionFlag = false;
     private final Object lock = new Object();
 
     private EventHandler<MouseEvent> doubleClickEH;
+
+    private final HBox titlebar = new HBox();
+    private final HBox titlebox = new HBox();
+    private final MenuButton filterMenu = new MenuButton();
+    private final HBox bottombar = new HBox();
 
     public AcceleratorTreeView() {
         // Top bar
@@ -118,8 +124,16 @@ public class AcceleratorTreeView extends VBox {
         };
         acceleratorTreeView.addEventHandler(MouseEvent.MOUSE_CLICKED, doubleClickEH);
 
-        getChildren().add(acceleratorTreeView);
+        getChildren().addAll(acceleratorTreeView, bottombar);
         VBox.setVgrow(acceleratorTreeView, Priority.ALWAYS);
+    }
+
+    public HBox getTitlebar() {
+        return titlebar;
+    }
+
+    public HBox getBottombar() {
+        return bottombar;
     }
 
     public void addClickEventHandler(EventHandler<MouseEvent> eventHandler) {
@@ -195,9 +209,9 @@ public class AcceleratorTreeView extends VBox {
         TreeItem<AcceleratorNode> rootNode = new TreeItem<>(currentSeq, icon);
         rootNode.setExpanded(true);
         acceleratorTreeView.setRoot(rootNode);
-        // Hide root node when showing full accelerator.
         if (currentSeq instanceof Accelerator) {
-            acceleratorTreeView.setShowRoot(false);
+            // Hide root node when showing full accelerator if flag disabled (default)
+            acceleratorTreeView.setShowRoot(showAcceleratorNode);
             titlebox.getChildren().clear();
             Label acceleratorName = new Label(((Accelerator) currentSeq).getSystemId());
             acceleratorName.setStyle("-fx-font-weight: bold;");
@@ -221,6 +235,24 @@ public class AcceleratorTreeView extends VBox {
         Logger.getLogger(getClass().getName()).fine("Updating accelerator treeview.");
     }
 
+    public boolean isShowAcceleratorNode() {
+        return showAcceleratorNode;
+    }
+
+    public void setShowAcceleratorNode(boolean showAcceleratorNode) {
+        this.showAcceleratorNode = showAcceleratorNode;
+        acceleratorTreeView.setShowRoot(showAcceleratorNode);
+    }
+
+    public boolean isAlwaysShowRfCavities() {
+        return alwaysShowRfCavities;
+    }
+
+    public void setAlwaysShowRfCavities(boolean alwaysShowRfCavities) {
+        this.alwaysShowRfCavities = alwaysShowRfCavities;
+        updateTreeView();
+    }
+
     /**
      * Recursive method to add sequences and child nodes to the TreeView. It
      * also supports combo sequences.
@@ -239,25 +271,31 @@ public class AcceleratorTreeView extends VBox {
             }
         } else {
             for (AcceleratorNode node : parentSeq.getNodes()) {
+                URL iconPath = getClass().getResource("icons/32/" + AcceleratorNodeIcon.getIcon(node.getClass()));
                 if (node instanceof RfCavity) {
-                    URL iconPath = getClass().getResource("icons/32/CAVM.png");
+                    // Icon by default when missing.
+                    if (iconPath == null) {
+                        iconPath = getClass().getResource("icons/32/CAVM.png");
+                    }
                     ImageView icon = new ImageView(iconPath.toExternalForm());
                     acceleratorNodeItem = new TreeItem<>(node, icon);
                     addSequence((AcceleratorSeq) node, acceleratorNodeItem);
-                    // Add this node if it is selected in the filter or if it has children visible.
-                    if (typeMap.get(node.getType()).isSelected() || !acceleratorNodeItem.getChildren().isEmpty()) {
+                    // Add RfCavity node if it is selected in the filter or if it has children visible.
+                    if (alwaysShowRfCavities || typeMap.get(node.getType()).isSelected() || !acceleratorNodeItem.getChildren().isEmpty()) {
                         parentNode.getChildren().add(acceleratorNodeItem);
                     }
                 } else if (node instanceof AcceleratorSeq) {
-                    // Sequences are always shown.
-                    URL iconPath = getClass().getResource("icons/32/SEQ.png");
+                    // Icon by default when missing.
+                    if (iconPath == null) {
+                        iconPath = getClass().getResource("icons/32/SEQ.png");
+                    }
                     ImageView icon = new ImageView(iconPath.toExternalForm());
                     acceleratorNodeItem = new TreeItem<>(node, icon);
                     addSequence((AcceleratorSeq) node, acceleratorNodeItem);
+                    // Sequences are always shown.
                     parentNode.getChildren().add(acceleratorNodeItem);
                 } else {
                     if (typeMap.get(node.getType()).isSelected()) {
-                        URL iconPath = getClass().getResource("icons/32/" + AcceleratorNodeIcon.getIcon(node.getType()));
                         // Icon by default when missing.
                         if (iconPath == null) {
                             iconPath = getClass().getResource("icons/32/BBX.png");
@@ -451,6 +489,35 @@ public class AcceleratorTreeView extends VBox {
 
         typeMap.put(type, menuItem);
         filterMenu.getItems().add(menuItem);
+    }
+
+    /**
+     * Returns the AcceleratorNode of the selected item.
+     *
+     * @return The AcceleratorNode or null if none selected.
+     */
+    public TreeItem<AcceleratorNode> getSelectedItem() {
+        MultipleSelectionModel<TreeItem<AcceleratorNode>> selectionModel = acceleratorTreeView.getSelectionModel();
+        TreeItem<AcceleratorNode> selectedItem = selectionModel.getSelectedItem();
+        if (selectedItem != null) {
+            return selectedItem;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Returns the AcceleratorNode of the selected item.
+     *
+     * @return The AcceleratorNode or null if none selected.
+     */
+    public AcceleratorNode getSelectedNode() {
+        TreeItem<AcceleratorNode> selectedItem = getSelectedItem();
+        if (selectedItem != null) {
+            return selectedItem.getValue();
+        } else {
+            return null;
+        }
     }
 
     /**
