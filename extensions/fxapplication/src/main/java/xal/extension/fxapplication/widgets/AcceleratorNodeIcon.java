@@ -41,18 +41,33 @@ public class AcceleratorNodeIcon {
             XmlDataAdaptor document_adaptor = XmlDataAdaptor.adaptorForUrl(getClass().getResource("iconMapping.xml"), false);
             DataAdaptor iconMapping = document_adaptor.childAdaptor("iconMapping");
             for (DataAdaptor element : iconMapping.childAdaptors()) {
-                map.put(element.stringValue("type"), element.stringValue("icon"));
+                map.put(element.stringValue("class"), element.stringValue("icon"));
             }
-        } catch (XmlDataAdaptor.ParseException | XmlDataAdaptor.ResourceNotFoundException  ex) {
+        } catch (XmlDataAdaptor.ParseException | XmlDataAdaptor.ResourceNotFoundException ex) {
             Logger.getLogger(AcceleratorNodeIcon.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    public static String getIcon(String nodeType) {
+    /**
+     * Try to find an icon for the given class. If not, check if any superclass
+     * of the given class matches one icon form the list.
+     *
+     * @param cls
+     * @return
+     */
+    public static String getIcon(Class cls) {
         if (instance == null) {
             instance = new AcceleratorNodeIcon();
         }
+        String icon = instance.map.get(cls.getCanonicalName());
 
-        return instance.map.get(nodeType);
+        if (icon == null) {
+            Class superClass = cls.getSuperclass();
+            if (superClass != null) {
+                return getIcon(superClass);
+            }
+        }
+
+        return icon;
     }
 }
