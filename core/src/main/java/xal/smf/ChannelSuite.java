@@ -307,6 +307,8 @@ class SignalSuite {
 	 */
 	public void update( final DataAdaptor adaptor ) {
 		final List<DataAdaptor> channelAdaptors = adaptor.childAdaptors( "channel" );
+                if (channelAdaptors == null)
+                    return;
 		for ( final DataAdaptor channelAdaptor : channelAdaptors  ) {
 			final String handle = channelAdaptor.stringValue("handle");
 
@@ -338,6 +340,8 @@ class SignalSuite {
 		}
 
 		final List<DataAdaptor> transformAdaptors = adaptor.childAdaptors( "transform" );
+                if (transformAdaptors == null)
+                    return;
 		for ( final DataAdaptor transformAdaptor : transformAdaptors ) {
 			final String name = transformAdaptor.stringValue( "name" );
 			final ValueTransform transform = TransformFactory.getTransform( transformAdaptor );
