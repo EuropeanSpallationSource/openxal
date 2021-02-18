@@ -232,7 +232,7 @@ public class ChannelSuite implements DataListener {
         
         if ( channel == null ) {                    // if the channel was never cached ...
             final String signal = getSignal( handle );      // lookup the signal
-            if ( signal != null ) {                 // get the channel from the channel factory
+            if ( signal != null && !signal.equals("")) {                 // get the channel from the channel factory
                 final ValueTransform transform = getTransform( handle );
                 if ( transform != null ) {
                     channel = CHANNEL_FACTORY.getChannel( signal, transform );

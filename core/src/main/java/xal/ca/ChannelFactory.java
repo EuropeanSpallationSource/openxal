@@ -87,7 +87,9 @@ abstract public class ChannelFactory {
      * @return The channel corresponding to the signal name
      */
     public Channel getChannel(final String signalName) {
-        Channel channel;
+        if (signalName.equals("")) {
+            return null;
+        }        Channel channel;
         synchronized (CHANNEL_MAP) {
             if (!CHANNEL_MAP.containsKey(signalName)) {
                 channel = newChannel(signalName);
@@ -110,6 +112,9 @@ abstract public class ChannelFactory {
      * @return The channel corresponding to the signal name
      */
     public Channel getChannel(final String signalName, final ValueTransform transform) {
+        if (signalName.equals("")) {
+            return null;
+        }
         final String channelID = Channel.generateId(signalName, transform);
         synchronized (CHANNEL_MAP) {
             if (!CHANNEL_MAP.containsKey(channelID)) {
