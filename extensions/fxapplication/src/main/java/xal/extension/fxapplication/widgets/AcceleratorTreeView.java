@@ -36,8 +36,6 @@ import javafx.scene.control.MultipleSelectionModel;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import javafx.scene.control.skin.TableViewSkin;
-import javafx.scene.control.skin.TreeViewSkin;
 import javafx.scene.control.skin.VirtualFlow;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -193,6 +191,10 @@ public class AcceleratorTreeView extends VBox {
 
     }
 
+    public void refresh() {
+        acceleratorTreeView.refresh();
+    }
+
     /**
      * Update the TreeView with a new accelerator sequence.
      *
@@ -206,6 +208,7 @@ public class AcceleratorTreeView extends VBox {
 
     private void updateTreeView() {
         ImageView icon = new ImageView(getClass().getResource("icons/32/SEQ.png").toExternalForm());
+
         TreeItem<AcceleratorNode> rootNode = new TreeItem<>(currentSeq, icon);
         rootNode.setExpanded(true);
         acceleratorTreeView.setRoot(rootNode);
@@ -254,58 +257,84 @@ public class AcceleratorTreeView extends VBox {
     }
 
     /**
+     * This method allows to add a node in the TreeView after adding it to the
+     * accelerator, avoiding to reload the full treeview.
+     *
+     * @param node
+     * @return
+     */
+    public TreeItem<AcceleratorNode> addElement(AcceleratorNode node) {
+        AcceleratorNode parent = node.getParent();
+        TreeItem<AcceleratorNode> parentItem = findElement(parent.getId());
+        return addElement(node, parentItem);
+    }
+
+    private TreeItem<AcceleratorNode> addElement(AcceleratorNode node, TreeItem<AcceleratorNode> parentItem) {
+        TreeItem<AcceleratorNode> item = newItem(node);
+        addItem(item, parentItem);
+        refresh();
+
+        return item;
+    }
+
+    private TreeItem<AcceleratorNode> newItem(AcceleratorNode node) {
+        TreeItem<AcceleratorNode> item = new TreeItem<>(node, getIcon(node));
+        return item;
+    }
+
+    private void addItem(TreeItem<AcceleratorNode> item, TreeItem<AcceleratorNode> parentItem) {
+        AcceleratorNode node = item.getValue();
+        if (node instanceof RfCavity) {
+            // Add RfCavity node if it is selected in the filter or if it has children visible.
+            if (alwaysShowRfCavities || typeMap.get(node.getType()).isSelected() || !item.getChildren().isEmpty()) {
+                parentItem.getChildren().add(item);
+            }
+        } else if (node instanceof AcceleratorSeq) {
+
+            // Sequences are always shown.
+            parentItem.getChildren().add(item);
+        } else {
+            if (typeMap.get(node.getType()).isSelected()) {
+                parentItem.getChildren().add(item);
+            }
+        }
+    }
+
+    private ImageView getIcon(AcceleratorNode node) {
+        URL iconPath = getClass().getResource("icons/32/" + AcceleratorNodeIcon.getIcon(node.getClass()));
+        // Icon by default when missing.
+        if (node instanceof RfCavity && iconPath == null) {
+            iconPath = getClass().getResource("icons/32/CAVM.png");
+        } else if (node instanceof AcceleratorSeq && iconPath == null) {
+            iconPath = getClass().getResource("icons/32/SEQ.png");
+        } else if (iconPath == null) {
+            iconPath = getClass().getResource("icons/32/BBX.png");
+        }
+        return new ImageView(iconPath.toExternalForm());
+    }
+
+    /**
      * Recursive method to add sequences and child nodes to the TreeView. It
      * also supports combo sequences.
      *
      * @param parentSeq
-     * @param parentNode
+     * @param parentItem
      */
-    private void addSequence(AcceleratorSeq parentSeq, TreeItem<AcceleratorNode> parentNode) {
-        TreeItem<AcceleratorNode> acceleratorNodeItem;
+    private void addSequence(AcceleratorSeq parentSeq, TreeItem<AcceleratorNode> parentItem) {
         if (parentSeq instanceof AcceleratorSeqCombo) {
             for (AcceleratorSeq seq : ((AcceleratorSeqCombo) parentSeq).getConstituents()) {
-                ImageView icon = new ImageView(getClass().getResource("icons/32/SEQ.png").toExternalForm());
-                acceleratorNodeItem = new TreeItem<>(seq, icon);
-                addSequence(seq, acceleratorNodeItem);
-                parentNode.getChildren().add(acceleratorNodeItem);
+                TreeItem<AcceleratorNode> item = newItem(seq);
+                addSequence(seq, item);
+                addItem(item, parentItem);
             }
         } else {
             for (AcceleratorNode node : parentSeq.getNodes()) {
-                URL iconPath = getClass().getResource("icons/32/" + AcceleratorNodeIcon.getIcon(node.getClass()));
-                if (node instanceof RfCavity) {
-                    // Icon by default when missing.
-                    if (iconPath == null) {
-                        iconPath = getClass().getResource("icons/32/CAVM.png");
-                    }
-                    ImageView icon = new ImageView(iconPath.toExternalForm());
-                    acceleratorNodeItem = new TreeItem<>(node, icon);
-                    addSequence((AcceleratorSeq) node, acceleratorNodeItem);
-                    // Add RfCavity node if it is selected in the filter or if it has children visible.
-                    if (alwaysShowRfCavities || typeMap.get(node.getType()).isSelected() || !acceleratorNodeItem.getChildren().isEmpty()) {
-                        parentNode.getChildren().add(acceleratorNodeItem);
-                    }
-                } else if (node instanceof AcceleratorSeq) {
-                    // Icon by default when missing.
-                    if (iconPath == null) {
-                        iconPath = getClass().getResource("icons/32/SEQ.png");
-                    }
-                    ImageView icon = new ImageView(iconPath.toExternalForm());
-                    acceleratorNodeItem = new TreeItem<>(node, icon);
-                    addSequence((AcceleratorSeq) node, acceleratorNodeItem);
-                    // Sequences are always shown.
-                    parentNode.getChildren().add(acceleratorNodeItem);
-                } else {
-                    if (typeMap.get(node.getType()).isSelected()) {
-                        // Icon by default when missing.
-                        if (iconPath == null) {
-                            iconPath = getClass().getResource("icons/32/BBX.png");
-                        }
-                        ImageView icon = new ImageView(iconPath.toExternalForm());
-                        acceleratorNodeItem = new TreeItem<>(node, icon);
-                        parentNode.getChildren().add(acceleratorNodeItem);
-                    }
-
+                TreeItem<AcceleratorNode> item = newItem(node);
+                // Add children nodes recursively for sequenes.
+                if (node instanceof AcceleratorSeq) {
+                    addSequence((AcceleratorSeq) node, item);
                 }
+                addItem(item, parentItem);
             }
         }
     }
@@ -578,5 +607,33 @@ public class AcceleratorTreeView extends VBox {
             }
         }
         return false;
+    }
+
+    public void replaceElement(AcceleratorNode nodeBefore, AcceleratorNode nodeAfter) {
+        if (nodeBefore != nodeAfter) {
+            TreeItem<AcceleratorNode> item = findElement(nodeBefore.getId());
+            item.setValue(nodeAfter);
+            item.setGraphic(getIcon(nodeAfter));
+        }
+    }
+
+    public TreeItem<AcceleratorNode> findElement(String nodeId) {
+        return findElement(acceleratorTreeView.getRoot(), nodeId);
+    }
+
+    private TreeItem<AcceleratorNode> findElement(TreeItem<AcceleratorNode> parentNode, String nodeId) {
+        for (TreeItem<AcceleratorNode> treeItem : parentNode.getChildren()) {
+            if (nodeId.equals(treeItem.getValue().getId())) {
+                return treeItem;
+            }
+
+            // Check also the children recursively.
+            TreeItem<AcceleratorNode> child = findElement(treeItem, nodeId);
+            if (child != null) {
+                return child;
+            }
+
+        }
+        return null;
     }
 }
