@@ -153,6 +153,12 @@ abstract public class XalFxDocument {
     abstract public void loadDocument(final URL url);
 
     /**
+     * Subclasses need to implement this method for creating a new document.
+     *
+     */
+    abstract public void newDocument();
+
+    /**
      * Save this document to its persistent storage source.
      */
     public void saveDocument() {

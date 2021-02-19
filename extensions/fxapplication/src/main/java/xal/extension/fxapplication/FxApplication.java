@@ -32,7 +32,6 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -55,6 +54,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.FileChooser;
 import xal.extension.application.ApplicationStatus;
+import xal.extension.jelog.ElogServer;
 import xal.extension.service.ServiceDirectory;
 import xal.extension.service.ServiceException;
 import xal.smf.Accelerator;
@@ -207,17 +207,17 @@ abstract public class FxApplication extends Application {
             Menu fileMenu = new Menu("File");
             if (HAS_DOCUMENTS) {
                 MenuItem newFileMenu = new MenuItem("New");
-                newFileMenu.setOnAction(new NewFileMenu(DOCUMENT));
+                newFileMenu.setOnAction((e) -> newFileMenuHandler());
                 final MenuItem saveFileMenu = new MenuItem("Save");
-                saveFileMenu.setOnAction(new SaveFileMenu(DOCUMENT, false));
+                saveFileMenu.setOnAction((e) -> saveFileMenuHandler(false));
                 final MenuItem saveAsFileMenu = new MenuItem("Save as..");
-                saveAsFileMenu.setOnAction(new SaveFileMenu(DOCUMENT, true));
+                saveAsFileMenu.setOnAction((e) -> saveFileMenuHandler(true));
                 final MenuItem loadFileMenu = new MenuItem("Load");
-                loadFileMenu.setOnAction(new LoadFileMenu(DOCUMENT));
+                loadFileMenu.setOnAction((e) -> loadFileMenuHandler());
                 fileMenu.getItems().addAll(newFileMenu, saveFileMenu, saveAsFileMenu, loadFileMenu);
             }
             final MenuItem exitMenu = new MenuItem("Exit");
-            exitMenu.setOnAction(new ExitMenu());
+            exitMenu.setOnAction((e) -> exitMenuHandler());
             fileMenu.getItems().addAll(exitMenu);
 
             final Menu editMenu = new Menu("Edit");
@@ -225,11 +225,11 @@ abstract public class FxApplication extends Application {
             final ToggleGroup groupSequence = new ToggleGroup();
             final Menu acceleratorMenu = new Menu("Accelerator");
             final MenuItem loadDefaultAcceleratorMenu = new MenuItem("Load Default Accelerator");
-            loadDefaultAcceleratorMenu.setOnAction(new LoadDefaultAcceleratorMenu(DOCUMENT));
+            loadDefaultAcceleratorMenu.setOnAction((e) -> loadDefaultAcceleratorMenuHandler());
             final MenuItem loadAcceleratorMenu = new MenuItem("Load Accelerator ...");
-            loadAcceleratorMenu.setOnAction(new LoadAcceleratorMenu(DOCUMENT));
+            loadAcceleratorMenu.setOnAction((e) -> loadAcceleratorMenuHandler());
             final MenuItem testModeMenu = new MenuItem("Enable Test Mode");
-            testModeMenu.setOnAction(new TestModeMenu(DOCUMENT, testModeMenu));
+            testModeMenu.setOnAction((e) -> testModeMenuHandler(e));
             acceleratorMenu.getItems().addAll(loadDefaultAcceleratorMenu, loadAcceleratorMenu, testModeMenu);
             final Menu sequenceMenu = new Menu("Sequence");
 
@@ -240,11 +240,11 @@ abstract public class FxApplication extends Application {
 
             final Menu eLogMenu = new Menu("eLog");
             final MenuItem openLogMenu = new MenuItem("Open");
-            openLogMenu.setOnAction(new UrlMenu(DOCUMENT));
+            openLogMenu.setOnAction((e) -> urlMenuHandler());
             final MenuItem makePostMenu = new MenuItem("Post Screen Shot");
-            makePostMenu.setOnAction(new ELogMenu(DOCUMENT, "image"));
+            makePostMenu.setOnAction((e) -> eLogMenuHandler("image"));
             final MenuItem makePostDataMenu = new MenuItem("Post Data");
-            makePostDataMenu.setOnAction(new ELogMenu(DOCUMENT, "file"));
+            makePostDataMenu.setOnAction((e) -> eLogMenuHandler("file"));
             if (HAS_DOCUMENTS) {
                 eLogMenu.getItems().addAll(openLogMenu, makePostMenu, makePostDataMenu);
             } else {
@@ -272,7 +272,7 @@ abstract public class FxApplication extends Application {
 
             final Menu helpMenu = new Menu("Help");
             final MenuItem aboutMenu = new MenuItem("About");
-            aboutMenu.setOnAction(new HelpMenu(DOCUMENT));
+            aboutMenu.setOnAction((e) -> helpMenuHandler());
             helpMenu.getItems().add(aboutMenu);
 
             MENU_BAR.getMenus().addAll(fileMenu, editMenu, acceleratorMenu, eLogMenu, viewMenu, helpMenu);
@@ -399,7 +399,7 @@ abstract public class FxApplication extends Application {
             RadioMenuItem addedItem = new RadioMenuItem(item.toString());
             sequenceMenu.getItems().add(addedItem);
             addedItem.setToggleGroup(groupSequence);
-            addedItem.setOnAction(new SelectSequenceMenu(DOCUMENT));
+            addedItem.setOnAction((e) -> selectSequenceMenuHandler(e));
         }
 
         sequenceMenu.getItems().add(new SeparatorMenuItem());
@@ -409,12 +409,12 @@ abstract public class FxApplication extends Application {
             RadioMenuItem addedItem = new RadioMenuItem(item.toString());
             sequenceMenu.getItems().add(addedItem);
             addedItem.setToggleGroup(groupSequence);
-            addedItem.setOnAction(new SelectSequenceMenu(DOCUMENT));
+            addedItem.setOnAction((e) -> selectSequenceMenuHandler(e));
         }
         sequenceMenu.getItems().add(new SeparatorMenuItem());
 
         final MenuItem addCombo = new MenuItem("Add new Combo Sequence");
-        addCombo.setOnAction(new AddCombo(DOCUMENT, groupSequence));
+        addCombo.setOnAction((e) -> addComboHandler(groupSequence, e));
         sequenceMenu.getItems().add(addCombo);
     }
 
@@ -487,14 +487,14 @@ abstract public class FxApplication extends Application {
             //Show open file dialog
             File selectedFile = fileChooser.showOpenDialog(null);
             if (selectedFile == null) {
-                Logger.getLogger(LoadFileMenu.class.getName()).log(Level.INFO, "No lattice file selected.");
+                Logger.getLogger(getClass().getName()).log(Level.INFO, "No lattice file selected.");
                 acceleratorMainPath = latticeErrorDialog("No lattice file selected.", message);
             } else {
                 if (selectedFile.exists() && selectedFile.canRead()) {
                     acceleratorMainPath = selectedFile.getAbsolutePath();
                     XMLDataManager.setDefaultPath(acceleratorMainPath);
                 } else {
-                    Logger.getLogger(LoadFileMenu.class.getName()).log(Level.SEVERE, "Could not open {0}", acceleratorMainPath);
+                    Logger.getLogger(getClass().getName()).log(Level.SEVERE, "Could not open {0}", acceleratorMainPath);
                 }
             }
         } else {
@@ -502,172 +502,105 @@ abstract public class FxApplication extends Application {
         }
         return acceleratorMainPath;
     }
-}
 
-abstract class FileMenuItem implements EventHandler {
-
-    protected XalFxDocument document;
-
-    public FileMenuItem(XalFxDocument document) {
-        this.document = document;
+    /* *****************
+    * Menubar handlers *
+    ********************/
+    /**
+     * Handles creation of new files. By default it calls the newDocument()
+     * method of the XalFxDocument class, which must be implemented by
+     * subclasses.
+     */
+    protected void newFileMenuHandler() {
+        DOCUMENT.newDocument();
     }
 
-    @Override
-    public void handle(Event t) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-}
-
-class NewFileMenu extends FileMenuItem {
-
-    public NewFileMenu(XalFxDocument document) {
-        super(document);
-    }
-
-    @Override
-    public void handle(Event t) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-}
-
-class SaveFileMenu extends FileMenuItem {
-
-    private final boolean saveAs;
-
-    public SaveFileMenu(XalFxDocument document, boolean saveAs) {
-        super(document);
-        this.saveAs = saveAs;
-    }
-
-    @Override
-    public void handle(Event t) {
-        if (saveAs || !document.sourceSetAndValid()) {
+    /**
+     * Handles saving of files. It creates a saving dialog by default, and then
+     * calls the saveDocument() method of the XalFxDocument class.
+     */
+    protected void saveFileMenuHandler(boolean saveAs) {
+        if (saveAs || !DOCUMENT.sourceSetAndValid()) {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Save Application State");
-            fileChooser.setInitialFileName(document.DEFAULT_FILENAME);
+            fileChooser.setInitialFileName(DOCUMENT.DEFAULT_FILENAME);
 
             //Set extension filter
-            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(document.FILETYPE_DESCRIPTION + " (" + document.WILDCARD_FILE_EXTENSION + ")", document.WILDCARD_FILE_EXTENSION);
+            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(DOCUMENT.FILETYPE_DESCRIPTION + " (" + DOCUMENT.WILDCARD_FILE_EXTENSION + ")", DOCUMENT.WILDCARD_FILE_EXTENSION);
             fileChooser.getExtensionFilters().add(extFilter);
 
             //Show save file dialog
             File selectedFile = fileChooser.showSaveDialog(null);
             if (selectedFile != null) {
-                document.setSource(selectedFile);
+                DOCUMENT.setSource(selectedFile);
             } else {
-                Logger.getLogger(SaveFileMenu.class.getName()).log(Level.WARNING, "Selected file is null {0}", selectedFile);
+                Logger.getLogger(getClass().getName()).log(Level.WARNING, "Selected file is null {0}", selectedFile);
             }
         } else {
-            Logger.getLogger(SaveFileMenu.class.getName()).log(Level.FINER, "Using existing file path {0}", document.source);
+            Logger.getLogger(getClass().getName()).log(Level.FINER, "Using existing file path {0}", DOCUMENT.source);
         }
-        if (document.sourceSetAndValid()) {
-            document.saveDocument();
-            Logger.getLogger(SaveFileMenu.class.getName()).log(Level.FINEST, "Document saved");
+        if (DOCUMENT.sourceSetAndValid()) {
+            DOCUMENT.saveDocument();
+            Logger.getLogger(getClass().getName()).log(Level.FINEST, "Document saved");
         } else {
-            Logger.getLogger(SaveFileMenu.class.getName()).log(Level.SEVERE, "Could not get a good document path {0}", document.source);
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "Could not get a good document path {0}", DOCUMENT.source);
         }
-        //saveDocumentAs( final URL url )
     }
 
-}
-
-class LoadFileMenu extends FileMenuItem {
-
-    public LoadFileMenu(XalFxDocument document) {
-        super(document);
-    }
-
-    @Override
-    public void handle(Event t) {
+    /**
+     * Handles loading of files. It creates a loading dialog by default, and
+     * then calls the loadDocument() method of the XalFxDocument class.
+     */
+    protected void loadFileMenuHandler() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Load Application State");
         //fileChooser.setInitialFileName(document.DEFAULT_FILENAME);
 
         //Set extension filter
-        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(document.FILETYPE_DESCRIPTION + " (" + document.WILDCARD_FILE_EXTENSION + ")", document.WILDCARD_FILE_EXTENSION);
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(DOCUMENT.FILETYPE_DESCRIPTION + " (" + DOCUMENT.WILDCARD_FILE_EXTENSION + ")", DOCUMENT.WILDCARD_FILE_EXTENSION);
         fileChooser.getExtensionFilters().add(extFilter);
 
         //Show save file dialog
         File selectedFile = fileChooser.showOpenDialog(null);
         if (selectedFile == null) {
-            Logger.getLogger(LoadFileMenu.class.getName()).log(Level.INFO, "No file selected for loading");
+            Logger.getLogger(getClass().getName()).log(Level.INFO, "No file selected for loading");
         } else {
             if (selectedFile.exists() && selectedFile.canRead()) {
-                document.setSource(selectedFile);
-                document.loadDocument(document.source);
+                DOCUMENT.setSource(selectedFile);
+                DOCUMENT.loadDocument(DOCUMENT.source);
             } else {
-                Logger.getLogger(LoadFileMenu.class.getName()).log(Level.SEVERE, "Could not open {0}", document.source);
+                Logger.getLogger(getClass().getName()).log(Level.SEVERE, "Could not open {0}", DOCUMENT.source);
             }
         }
     }
 
-}
-
-class ExitMenu implements EventHandler {
-
-    @Override
-    public void handle(Event t) {
-        Logger.getLogger(ExitMenu.class.getName()).log(Level.INFO, "Exit button clicked");
+    /**
+     * Handles exit the application. Can be overriden to add cleanup routines.
+     */
+    protected void exitMenuHandler() {
+        Logger.getLogger(getClass().getName()).log(Level.INFO, "Exit button clicked");
         Platform.exit();
     }
-}
 
-class LoadDefaultAcceleratorMenu implements EventHandler {
+    protected void testModeMenuHandler(Event e) {
+        DOCUMENT.testMode = !DOCUMENT.testMode;
 
-    private final XalFxDocument document;
+        DOCUMENT.accelerator.setTestMode(DOCUMENT.testMode);
 
-    public LoadDefaultAcceleratorMenu(XalFxDocument document) {
-        this.document = document;
-    }
-
-    @Override
-    public void handle(Event t) {
-        Logger.getLogger(LoadDefaultAcceleratorMenu.class.getName()).log(Level.INFO, "Loading default accelerator.");
-        document.acceleratorXMLManager = XMLDataManager.getDefaultInstance();
-        document.accelerator.setAccelerator(XMLDataManager.loadDefaultAccelerator());
-    }
-
-}
-
-class TestModeMenu implements EventHandler {
-
-    private final XalFxDocument document;
-    private MenuItem testModeMenu;
-
-    public TestModeMenu(XalFxDocument DOCUMENT) {
-        this.document = DOCUMENT;
-    }
-
-    TestModeMenu(XalFxDocument DOCUMENT, MenuItem testModeMenu) {
-        this.document = DOCUMENT;
-        this.testModeMenu = testModeMenu;
-    }
-
-    @Override
-    public void handle(Event t) {
-        document.testMode = !document.testMode;
-
-        document.accelerator.setTestMode(document.testMode);
-
-        if (document.testMode) {
-            testModeMenu.setText("Disable Test Mode");
+        if (DOCUMENT.testMode) {
+            ((MenuItem) e.getSource()).setText("Disable Test Mode");
         } else {
-            testModeMenu.setText("Enable Test Mode");
+            ((MenuItem) e.getSource()).setText("Enable Test Mode");
         }
     }
-}
 
-class LoadAcceleratorMenu implements EventHandler {
-
-    private final XalFxDocument document;
-
-    public LoadAcceleratorMenu(XalFxDocument DOCUMENT) {
-        this.document = DOCUMENT;
+    protected void loadDefaultAcceleratorMenuHandler() {
+        Logger.getLogger(getClass().getName()).log(Level.INFO, "Loading default accelerator.");
+        DOCUMENT.acceleratorXMLManager = XMLDataManager.getDefaultInstance();
+        DOCUMENT.accelerator.setAccelerator(XMLDataManager.loadDefaultAccelerator());
     }
 
-    @Override
-    public void handle(Event t) {
+    protected void loadAcceleratorMenuHandler() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Load Accelerator");
 
@@ -678,9 +611,9 @@ class LoadAcceleratorMenu implements EventHandler {
         //Show save file dialog
         File selectedFile = fileChooser.showOpenDialog(null);
         if (selectedFile != null) {
-            Logger.getLogger(LoadAcceleratorMenu.class.getName()).log(Level.INFO, "Loading accelerator from file.");
-            document.acceleratorXMLManager = XMLDataManager.managerWithFilePath(selectedFile.getAbsolutePath());
-            document.accelerator.setAccelerator(XMLDataManager.acceleratorWithPath(selectedFile.getAbsolutePath()));
+            Logger.getLogger(getClass().getName()).log(Level.INFO, "Loading accelerator from file.");
+            DOCUMENT.acceleratorXMLManager = XMLDataManager.managerWithFilePath(selectedFile.getAbsolutePath());
+            DOCUMENT.accelerator.setAccelerator(XMLDataManager.acceleratorWithPath(selectedFile.getAbsolutePath()));
         } else {
             Alert alert = new Alert(AlertType.WARNING);
             alert.setTitle("Load Accelerator Warning");
@@ -694,53 +627,23 @@ class LoadAcceleratorMenu implements EventHandler {
             Optional<ButtonType> result = alert.showAndWait();
 
             if (result.get() == buttonTypeLoad) {
-                Logger.getLogger(LoadAcceleratorMenu.class.getName()).log(Level.INFO, "Loading default accelerator.");
-                document.acceleratorXMLManager = XMLDataManager.getDefaultInstance();
-                document.accelerator.setAccelerator(XMLDataManager.loadDefaultAccelerator());
+                Logger.getLogger(getClass().getName()).log(Level.INFO, "Loading default accelerator.");
+                DOCUMENT.acceleratorXMLManager = XMLDataManager.getDefaultInstance();
+                DOCUMENT.accelerator.setAccelerator(XMLDataManager.loadDefaultAccelerator());
             } else {
-                Logger.getLogger(LoadAcceleratorMenu.class.getName()).log(Level.INFO, "No accelerator selected.");
-                document.accelerator.setAccelerator(null);
+                Logger.getLogger(getClass().getName()).log(Level.INFO, "No accelerator selected.");
+                DOCUMENT.accelerator.setAccelerator(null);
             }
         }
     }
 
-}
-
-class SelectSequenceMenu implements EventHandler {
-
-    protected final XalFxDocument document;
-
-    /*
-    * CONTRUCTOR
-     */
-    public SelectSequenceMenu(XalFxDocument DOCUMENT) {
-        this.document = DOCUMENT;
-    }
-
-    @Override
-    public void handle(Event t) {
+    protected void selectSequenceMenuHandler(Event t) {
         final RadioMenuItem getSeqName = (RadioMenuItem) t.getSource();
-        document.setSequence(getSeqName.getText());
-        Logger.getLogger(FxApplication.class.getName()).log(Level.INFO, "Sequence Selected: {0}", document.getSequence());
-    }
-}
-
-class AddCombo implements EventHandler {
-
-    protected final XalFxDocument document;
-    protected final ToggleGroup groupSequence;
-
-    /*
-    * CONTRUCTOR
-     */
-    public AddCombo(XalFxDocument DOCUMENT, ToggleGroup groupSequence) {
-        this.document = DOCUMENT;
-        this.groupSequence = groupSequence;
+        DOCUMENT.setSequence(getSeqName.getText());
+        Logger.getLogger(getClass().getName()).log(Level.INFO, "Sequence Selected: {0}", DOCUMENT.getSequence());
     }
 
-    @Override
-    public void handle(Event t) {
-
+    protected void addComboHandler(ToggleGroup groupSequence, Event t) {
         Stage stage;
         Parent root;
         URL url = null;
@@ -755,18 +658,18 @@ class AddCombo implements EventHandler {
             stage.setTitle("Create a Combo Sequence");
             stage.initModality(Modality.APPLICATION_MODAL);
             CreateComboSequenceController loginController = loader.getController();
-            loginController.setProperties(document.accelerator.getAccelerator());
+            loginController.setProperties(DOCUMENT.accelerator.getAccelerator());
             loginController.loggedInProperty().addListener((ObservableValue<? extends Boolean> obs, Boolean wasLoggedIn, Boolean isNowLoggedIn) -> {
                 if (isNowLoggedIn) {
                     if (loginController.getComboName() != null) {
                         AcceleratorSeqCombo comboSequence = new AcceleratorSeqCombo(loginController.getComboName(), loginController.getNewComboSequence());
                         MenuItem addComboMenu = (MenuItem) t.getSource();
                         RadioMenuItem addedItem = new RadioMenuItem(loginController.getComboName());
-                        addedItem.setOnAction(new SelectSequenceMenu(document));
+                        addedItem.setOnAction((e) -> selectSequenceMenuHandler(e));
                         addedItem.setToggleGroup(groupSequence);
                         groupSequence.selectToggle(addedItem);
-                        document.setSequence(loginController.getComboName());
-                        Logger.getLogger(AddCombo.class.getName()).log(Level.INFO, "Sequence Selected: {0}", document.getSequence());
+                        DOCUMENT.setSequence(loginController.getComboName());
+                        Logger.getLogger(getClass().getName()).log(Level.INFO, "Sequence Selected: {0}", DOCUMENT.getSequence());
                         int index = addComboMenu.getParentMenu().getItems().size() - 2;
                         addComboMenu.getParentMenu().getItems().add(index, addedItem);
                     }
@@ -782,48 +685,15 @@ class AddCombo implements EventHandler {
         }
     }
 
-}
-
-class ELogMenu implements EventHandler {
-
-    protected XalFxDocument document;
-    protected String docType;
-
-    public ELogMenu(XalFxDocument document, String docType) {
-        this.document = document;
-        this.docType = docType;
+    protected void eLogMenuHandler(String docType) {
+        DOCUMENT.eLogPost(docType);
     }
 
-    @Override
-    public void handle(Event t) {
-        document.eLogPost(docType);
-    }
-}
-
-class HelpMenu implements EventHandler {
-
-    protected XalFxDocument document;
-
-    public HelpMenu(XalFxDocument document) {
-        this.document = document;
+    protected void helpMenuHandler() {
+        DOCUMENT.help();
     }
 
-    @Override
-    public void handle(Event t) {
-        document.help();
-    }
-}
-
-class UrlMenu implements EventHandler {
-
-    protected XalFxDocument document;
-
-    public UrlMenu(XalFxDocument document) {
-        this.document = document;
-    }
-
-    @Override
-    public void handle(Event t) {
-        document.openUrl(xal.extension.jelog.ElogServer.getElogURL());
+    protected void urlMenuHandler() {
+        DOCUMENT.openUrl(ElogServer.getElogURL());
     }
 }
