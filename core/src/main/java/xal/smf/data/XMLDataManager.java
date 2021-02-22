@@ -631,6 +631,7 @@ public class XMLDataManager {
             XmlDataAdaptor docAdaptor = XmlDataAdaptor.newEmptyDocumentAdaptor();
 
             DataAdaptor sourceAdaptor = docAdaptor.createChild( SOURCE_TAG );
+            sourceAdaptor.setValue("version" , CURRENT_VERSION);
 
             writeOpticsRef( sourceAdaptor );
             writeTableGroupRefs( sourceAdaptor );
