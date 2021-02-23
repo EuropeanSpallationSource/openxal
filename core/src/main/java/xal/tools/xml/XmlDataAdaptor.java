@@ -658,10 +658,13 @@ public class XmlDataAdaptor implements FileDataAdaptor {
             DocumentBuilder builder = factory.newDocumentBuilder();
             DOMImplementation implementation = builder.getDOMImplementation();
             String docTag = dataHandler.dataLabel();
-            DocumentType docType = 
-                implementation.createDocumentType(docTag, null, dtdUri);
+            
             Document document = builder.newDocument();
-            document.appendChild(docType);
+            if (docTag != null && dtdUri != null) {
+                DocumentType docType
+                        = implementation.createDocumentType(docTag, null, dtdUri);
+                document.appendChild(docType);
+            }
 
             adaptor = new XmlDataAdaptor(document);
             adaptor.writeNode(dataHandler);
@@ -721,7 +724,3 @@ public class XmlDataAdaptor implements FileDataAdaptor {
         }
     }
 }
-
-
-
-
