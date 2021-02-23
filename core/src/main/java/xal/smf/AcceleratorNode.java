@@ -214,6 +214,13 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
         }
     }
     
+    /**
+     * write the attributes of the Node.
+     * Subclasses can be override this method
+     * to write a different set of attributes
+     *
+     * @param adaptor 
+     */
     protected void writeAttributes(DataAdaptor adaptor) {
         adaptor.setValue("id", m_strId);
         adaptor.setValue("len", m_dblLen);
