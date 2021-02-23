@@ -203,17 +203,7 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
 
     /** implement DataListener interface */
     public void write(DataAdaptor adaptor) {
-        adaptor.setValue( "id", m_strId );
-        adaptor.setValue("pid", m_strPId);
-        adaptor.setValue("eid", m_strEId);
-        adaptor.setValue( "type", getType() );
-		if ( getSoftType() != null ) {
-			adaptor.setValue( "softType", getSoftType() );
-		}
-        adaptor.setValue( "status", m_bolStatus );
-        adaptor.setValue( "pos", m_dblPos );
-        adaptor.setValue("s", m_dblS);
-        adaptor.setValue( "len", m_dblLen );
+        writeAttributes(adaptor);
 
         Collection<AttributeBucket> buckets = getBuckets();
         if (!buckets.isEmpty()) {
@@ -221,6 +211,28 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
         }
         if (!channelSuite.getHandles().isEmpty()) {
             adaptor.writeNode(channelSuite);
+        }
+    }
+    
+    protected void writeAttributes(DataAdaptor adaptor) {
+        adaptor.setValue("id", m_strId);
+        adaptor.setValue("len", m_dblLen);
+        adaptor.setValue("pos", m_dblPos);
+        adaptor.setValue("type", getType());
+        if (m_strPId != null) {
+            adaptor.setValue("pid", m_strPId);
+        }
+        if (m_strEId != null) {
+            adaptor.setValue("eid", m_strEId);
+        }
+        if (getSoftType() != null) {
+            adaptor.setValue("softType", getSoftType());
+        }
+        if (m_bolStatus == false) {
+            adaptor.setValue("status", m_bolStatus);
+        }
+        if (m_dblS != 0) {
+            adaptor.setValue("s", m_dblS);
         }
     }
     // end DataListener interface -tap

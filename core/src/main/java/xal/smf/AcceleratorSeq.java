@@ -180,6 +180,14 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
 		writeDeeply( adaptor );
     }
         
+    protected void writeAttributes(DataAdaptor adaptor) {
+        adaptor.setValue("id", m_strId);
+        adaptor.setValue("len", m_dblLen);
+        adaptor.setValue("pos", m_dblPos);
+        if (!getType().equals(s_strType)) {
+            adaptor.setValue("type", getType());
+        }
+    }
 
     /** base constructor */
     public AcceleratorSeq( final String strId ) {

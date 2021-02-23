@@ -155,14 +155,6 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
      * @param adaptor The adaptor to which the accelerator's data is written
      */
     public void write(DataAdaptor adaptor) {
-        adaptor.setValue("system", m_strSysId);
-        adaptor.setValue("ver", m_strVer);     // what if several inputs?
-
-        Date today = new Date();
-        SimpleDateFormat dateFormatter = new SimpleDateFormat("MM.dd.yyyy");
-        String dateString = dateFormatter.format(today);
-        adaptor.setValue("date", dateString);
-
         // Combo sequences are problematic as they are only defined in Accelerator
         for (AcceleratorSeqCombo seq : getComboSequences()) {
 			final DataAdaptor constituentAdaptor = adaptor.createChild("comboseq");
@@ -170,6 +162,16 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
         }
 
         super.write(adaptor);
+    
+        
+    protected void writeAttributes(DataAdaptor adaptor) {
+        adaptor.setValue("system", m_strSysId);
+        adaptor.setValue("ver", m_strVer);
+        
+        Date today = new Date();
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy.MM.dd");
+        String dateString = dateFormatter.format(today);
+        adaptor.setValue("date", dateString);
     }
     
     
