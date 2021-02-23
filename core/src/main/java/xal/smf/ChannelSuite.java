@@ -360,11 +360,13 @@ class SignalSuite {
 			final DataAdaptor channelAdaptor = adaptor.createChild("channel");
 			final SignalEntry signalEntry = entry.getValue();
 
-			channelAdaptor.setValue( "handle", entry.getKey() );
-			channelAdaptor.setValue( "signal", signalEntry.signal() );
-			channelAdaptor.setValue( "settable", signalEntry.settable() );
-			channelAdaptor.setValue( "valid", signalEntry.isValid() );
-			if ( signalEntry.getTransformKey() != null ) {
+                        channelAdaptor.setValue("handle", entry.getKey());
+                        channelAdaptor.setValue("signal", signalEntry.signal());
+                        channelAdaptor.setValue("settable", signalEntry.settable());
+                        if (!signalEntry.isValid()) {
+                            channelAdaptor.setValue("valid", signalEntry.isValid());
+                        }
+                        if (signalEntry.getTransformKey() != null ) {
 				channelAdaptor.setValue( "transform", signalEntry.getTransformKey() );
 			}
 		}
