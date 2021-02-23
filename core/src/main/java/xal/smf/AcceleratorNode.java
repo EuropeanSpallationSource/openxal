@@ -105,10 +105,6 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
 
 		m_mapAttrs = new HashMap<String,AttributeBucket>();
 
-		setAlign(new AlignmentBucket());
-		setAper(new ApertureBucket());
-		setTwiss(new TwissBucket());
-
 		channelSuite = new ChannelSuite( channelFactory );
 	}
 
@@ -220,9 +216,12 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
         adaptor.setValue( "len", m_dblLen );
 
         Collection<AttributeBucket> buckets = getBuckets();
-        adaptor.writeNode( new BucketParser(buckets) );
-
-        adaptor.writeNode(channelSuite);
+        if (!buckets.isEmpty()) {
+            adaptor.writeNode(new BucketParser(buckets));
+        }
+        if (!channelSuite.getHandles().isEmpty()) {
+            adaptor.writeNode(channelSuite);
+        }
     }
     // end DataListener interface -tap
 
