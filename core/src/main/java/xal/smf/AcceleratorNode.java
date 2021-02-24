@@ -213,6 +213,18 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
             adaptor.writeNode(channelSuite);
         }
     }
+
+
+    /**
+     * method to write status of the node into a separate file
+     */
+    public void writeStatus(DataAdaptor adaptor) {
+        if (m_bolStatus == false && getAccelerator().hasStatusFile()) {
+            DataAdaptor childAdaptor = adaptor.createChild(dataLabel());
+            childAdaptor.setValue("id", m_strId);
+            childAdaptor.setValue("status", m_bolStatus);
+        }
+    }
     
     /**
      * write the attributes of the Node.
@@ -235,7 +247,7 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
         if (getSoftType() != null) {
             adaptor.setValue("softType", getSoftType());
         }
-        if (m_bolStatus == false) {
+        if (m_bolStatus == false && getAccelerator().hasStatusFile()) {
             adaptor.setValue("status", m_bolStatus);
         }
         if (m_dblS != 0) {

@@ -45,6 +45,12 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
 	
 	/** Model element mapping */
 	private ElementMapping     elementMapping;
+        
+        // by default, status flags are exported to a different file.
+        private boolean statusFile = true;
+        
+        // by default, power supplies are exported to a different file.
+        private boolean powerSuppliesFile = true;
 
     
     // DataAdaptor interface ----------------------
@@ -55,6 +61,22 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
      * @return The accelerator's tag
      */
     public String dataLabel() { return "xdxf"; }
+
+    public boolean hasStatusFile() {
+        return statusFile;
+    }
+
+    public void setStatusFile(boolean statusFile) {
+        this.statusFile = statusFile;
+    }
+
+    public boolean hasPowerSuppliesFile() {
+        return powerSuppliesFile;
+    }
+
+    public void setPowerSuppliesFile(boolean powerSuppliesFile) {
+        this.powerSuppliesFile = powerSuppliesFile;
+    }
     
     
     /**
@@ -173,8 +195,22 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
         String dateString = dateFormatter.format(today);
         adaptor.setValue("date", dateString);
     }
-    
-    
+ 
+    /**
+     * method to write status of the node into a separate file
+     */
+    public void writeStatus(DataAdaptor adaptor) {
+        DataAdaptor seqAdaptor = adaptor.createChild(dataLabel());
+        writeAttributes(seqAdaptor);
+        m_arrNodes.forEach(node -> {
+            node.writeStatus(seqAdaptor);
+        });
+
+        if (seqAdaptor.childAdaptors().isEmpty()) {
+            adaptor.removeChild(seqAdaptor);
+        }
+    }
+
     /** 
 	 * Add a combo sequence generated from the comboAdaptor
 	 * @param comboAdaptor The data adaptor from which to generate the combo sequence

@@ -464,6 +464,18 @@ public class XmlDataAdaptor implements FileDataAdaptor {
         return childAdaptor;
     }
     
+       
+    /**
+     * Remove a child DataAdaptor
+     */
+    public void removeChild(DataAdaptor adaptor) {
+        XmlDataAdaptor childAdaptor = (XmlDataAdaptor) adaptor;
+
+        this.childNodes.remove(childAdaptor.mainNode);
+
+        mainNode.removeChild(childAdaptor.mainNode);
+    }
+    
     
     /** append a node associated with the listener */
     public void writeNode(DataListener listener) {

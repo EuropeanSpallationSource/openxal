@@ -268,6 +268,15 @@ public class Hdf5DataAdaptor implements FileDataAdaptor {
     }
 
     @Override
+    public void removeChild(DataAdaptor adaptor) {
+        Hdf5DataAdaptor childAdaptor = (Hdf5DataAdaptor) adaptor;
+
+        this.childNodes.remove(childAdaptor.mainNode);
+
+        mainNode.removeChild(childAdaptor.mainNode);
+    }
+
+    @Override
     public void writeNode(DataListener listener) {
         String tagName = listener.dataLabel();
 

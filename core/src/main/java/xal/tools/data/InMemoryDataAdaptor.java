@@ -222,6 +222,14 @@ public class InMemoryDataAdaptor implements DataAdaptor {
         return child;
     }
     
+    @Override
+    public void removeChild(DataAdaptor adaptor) {
+        String label = adaptor.name();
+        List<DataAdaptor> subnodes = SUBNODE_MAP.get(label);
+        if ( subnodes == null ) {
+            subnodes.remove(adaptor);
+        }
+    }
     
     /** write the listener as a new node and append it to the data tree */
     public void writeNode( final DataListener listener ) {
