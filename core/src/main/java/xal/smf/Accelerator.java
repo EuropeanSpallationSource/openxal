@@ -47,10 +47,10 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
 	private ElementMapping     elementMapping;
         
         // by default, status flags are exported to a different file.
-        private boolean statusFile = true;
+        private boolean statusFile;
         
         // by default, power supplies are exported to a different file.
-        private boolean powerSuppliesFile = true;
+        private boolean powerSuppliesFile;
 
     
     // DataAdaptor interface ----------------------
@@ -184,12 +184,36 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
         }
 
         super.write(adaptor);
-    
         
+        // Write power supplies into the same file if this flag is false. Otherwise, they will be saved on a separated file.
+        if (powerSuppliesFile == false) {
+            _writePowerSupplies(adaptor);
+        }
+    }
+
+    /**
+     * Write power supplies to the given data adaptor, including the accelerator
+     * node.
+     *
+     * @param adaptor
+     */
+    public void writePowerSupplies(DataAdaptor adaptor) {
+        String tagName = dataLabel();
+        DataAdaptor childAdaptor = adaptor.createChild(tagName);
+        writeAttributes(childAdaptor);
+        _writePowerSupplies(childAdaptor);
+    }
+
+    private void _writePowerSupplies(DataAdaptor adaptor) {
+        // write out power supplies
+        DataAdaptor powerSuppliesAdaptor = adaptor.createChild("powersupplies");
+        getMagnetMainSupplies().forEach(mps -> mps.write(powerSuppliesAdaptor.createChild("ps")));
+    }
+
     protected void writeAttributes(DataAdaptor adaptor) {
         adaptor.setValue("system", m_strSysId);
         adaptor.setValue("ver", m_strVer);
-        
+
         Date today = new Date();
         SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy.MM.dd");
         String dateString = dateFormatter.format(today);

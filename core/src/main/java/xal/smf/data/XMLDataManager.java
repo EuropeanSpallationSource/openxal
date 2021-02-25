@@ -31,7 +31,8 @@ import xal.tools.data.EditContext;
 import xal.tools.xml.XmlDataAdaptor;
 import xal.tools.xml.XmlTableIO;
 
-/** ****************************************************************************
+/**
+ * ****************************************************************************
  * The XMLDataManager is the central class providing XML specific access to the
  * optics file (which represents static accelerator data) and the table files
  * (which represent dynamic data). A single main file lists the references to
@@ -64,6 +65,11 @@ public class XMLDataManager {
     private AcceleratorManager acceleratorManager;
     private TableManager tableManager;
     private ElementMapping elementMapping;
+
+    // by default, status flags are exported to a different file.
+    private boolean statusFile = true;
+    // by default, power supplies are exported to a different file.
+    private boolean powerSuppliesFile = true;
 
     /**
      * Primary Constructor
@@ -359,8 +365,48 @@ public class XMLDataManager {
     /**
      * Get the URL spec for the hardware status
      */
-    public String getHardwareStatusURLSpec() {
-        return acceleratorManager.getHardwareStatusURLSpec();
+    public String getHardwareStatusUrlSpec() {
+        return acceleratorManager.getHardwareStatusUrlSpec();
+    }
+
+    /**
+     * Get the URL spec for the power supplies
+     */
+    public String getPowerSuppliesUrlSpec() {
+        return acceleratorManager.getPowerSuppliesUrlSpec();
+    }
+
+    /**
+     * Get the URL spec to the device mapping file.
+     *
+     * @return The URL spec to the device mapping file.
+     */
+    public String getDeviceMappingUrlSpec() {
+        return DEVICE_MANAGER.getUrl();
+    }
+
+    /**
+     * Set the URL spec to the device mapping file
+     *
+     */
+    public void setDeviceMappingUrlSpec(String urlSpec) {
+        DEVICE_MANAGER.setURL(urlSpec);
+    }
+
+    public String getElementMappingUrlSpec() {
+        return acceleratorManager.getElementMappingUrlSpec();
+    }
+
+    public void setElementMappingUrlSpec(String elementMappingUrlSpec) {
+        acceleratorManager.setElementMappingUrlSpec(elementMappingUrlSpec);
+    }
+
+    public String getTimingManagerUrlSpec() {
+        return mainManager.getTimingManagerUrlSpec();
+    }
+
+    public void setTimingManagerUrlSpec(String timingManagerUrlSpec) {
+        mainManager.setTimingManagerUrlSpec(timingManagerUrlSpec);
     }
 
     /**
@@ -473,14 +519,45 @@ public class XMLDataManager {
      * edit context to the appropriate files for the table groups and the main
      * file which references these sources.
      *
+     * Juan: since input from many different files are merged to produce the
+     * Accelerator object, it is not possible to establish a 1-to-1 mapping
+     * between the Accelerator object and the files. Therefore some design
+     * choices have been taken here.
+     * <p>
+     * - all the elements of the accelerator are saved on the same file,
+     * specified by OPTICS_TAG. Therefore no optics_extra are generated.
+     * <p>
+     * - magnets power supplies are saved on a separate file, specified by
+     * POWERSUPPLIES_TAG.
+     * <p>
+     * - all status flags set to false are saved on a separate file, specified
+     * by HARDWARE_STATUS_TAG.
+     * <p>
+     * - if the accelerator is loaded from XML files, saving will result in
+     * merging all optics_extra files in the same optics file and also losing
+     * all comments of the original XML files.
+     *
      * @param accelerator The accelerator which holds the optics and the edit
      * context.
      */
     public void writeAccelerator(Accelerator accelerator) {
         EditContext editContext = accelerator.editContext();
 
+        accelerator.setStatusFile(statusFile);
+        accelerator.setPowerSuppliesFile(powerSuppliesFile);
+
         writeEditContext(editContext);
+        if (statusFile) {
+            writeStatus(accelerator);
+        }
+        if (powerSuppliesFile) {
+            writePowerSupplies(accelerator);
+        }
         writeOptics(accelerator);
+        writeDeviceMapping(accelerator);
+        writeElementMapping(accelerator);
+        writeTimingManager(accelerator);
+
         writeMain();
     }
 
@@ -492,6 +569,26 @@ public class XMLDataManager {
      */
     public void writeOptics(Accelerator accelerator) {
         acceleratorManager.write(accelerator);
+    }
+
+    /**
+     * Write the hardware status part of the accelerator to a file using the
+     * location set in this data manager.
+     *
+     * @param accelerator The accelerator to extract the status flags.
+     */
+    public void writeStatus(Accelerator accelerator) {
+        acceleratorManager.writeStatus(accelerator);
+    }
+
+    /**
+     * Write the power supplies of the accelerator to a file using the location
+     * set in this data manager.
+     *
+     * @param accelerator The accelerator that contains the power supplies.
+     */
+    public void writePowerSupplies(Accelerator accelerator) {
+        acceleratorManager.writePowerSupplies(accelerator);
     }
 
     /**
@@ -516,6 +613,32 @@ public class XMLDataManager {
     }
 
     /**
+     * Write the device mapping defined by the accelerator node factory.
+     */
+    public void writeDeviceMapping(Accelerator accelerator) {
+        DEVICE_MANAGER.writeDeviceMapping(accelerator);
+    }
+
+    /**
+     * Write the element mapping defined by the accelerator.
+     */
+    public void writeElementMapping(Accelerator accelerator) {
+        acceleratorManager.writeElementMapping(accelerator);
+    }
+
+    /**
+     * Write the Timing Manager.
+     */
+    public void writeTimingManager(Accelerator accelerator) {
+        TIMING_MANAGER._timingCenter = accelerator.getTimingCenter();
+        if (!TIMING_MANAGER.getTimingCenter().getHandles().isEmpty()) {
+            String timingURL = absoluteUrlSpec(getTimingManagerUrlSpec());
+            TIMING_MANAGER.setURLSpec(timingURL, null);
+            TIMING_MANAGER.writeTimingCenter(null);
+        }
+    }
+
+    /**
      * ***********************************************************************
      * Handle read/write for the Main XML reference sources. This manager is
      * used to handle the references to the optics file and the dynamic table
@@ -535,6 +658,8 @@ public class XMLDataManager {
 
         static final private String HARDWARE_STATUS_TAG = "hardware_status";
 
+        static final private String POWERSUPPLIES_TAG = "powersupplies";
+
         static final private String TIMING_TAG = "timing_source";
         static final private String TIMING_URL_KEY = "url";
         static final private String TIMING_NAME_KEY = "name";
@@ -549,7 +674,11 @@ public class XMLDataManager {
         static final private String TABLE_GROUP_KEY = "name";
         static final private String TABLE_GROUP_URL_KEY = "url";
 
+        static final private String URL_KEY = "url";
+
         protected URL mainUrl;
+        protected String timingUrl;
+        private static final String defaultTimingUrl = "timingManager.tim";
         /**
          * URL of main XML source
          */
@@ -589,6 +718,20 @@ public class XMLDataManager {
         }
 
         /**
+         * get the Timing manager URL spec
+         */
+        public String getTimingManagerUrlSpec() {
+            return timingUrl != null ? timingUrl : defaultTimingUrl;
+        }
+
+        /**
+         * set the Timing manager URL spec
+         */
+        public void setTimingManagerUrlSpec(final String urlSpec) {
+            timingUrl = urlSpec;
+        }
+
+        /**
          * Sample XML input file to parse
          * <sources>
          * <optics name="optics" url="file:./sns_mebt.xml"/>
@@ -624,14 +767,22 @@ public class XMLDataManager {
             // fetch the hardware status reference
             final DataAdaptor hardwareStatusRefAdaptor = sourcesAdaptor.childAdaptor(HARDWARE_STATUS_TAG);
             if (hardwareStatusRefAdaptor != null) {
-                final String hardwareStatusURLSpec = hardwareStatusRefAdaptor.stringValue(OPTICS_URL_KEY);
-                acceleratorManager.setHardwareStatusURLSpec(hardwareStatusURLSpec);
+                final String hardwareStatusURLSpec = hardwareStatusRefAdaptor.stringValue(URL_KEY);
+                acceleratorManager.setHardwareStatusUrlSpec(hardwareStatusURLSpec);
+            }
+
+            // fetch the power supplies reference
+            final DataAdaptor powersuppliesRefAdaptor = sourcesAdaptor.childAdaptor(POWERSUPPLIES_TAG);
+            if (powersuppliesRefAdaptor != null) {
+                final String powersuppliesUrlSpec = powersuppliesRefAdaptor.stringValue(URL_KEY);
+                acceleratorManager.setPowerSuppliesUrlSpec(powersuppliesUrlSpec);
             }
 
             // fetch the timing reference
             final DataAdaptor timingReferenceAdaptor = sourcesAdaptor.childAdaptor(TIMING_TAG);
             if (timingReferenceAdaptor != null) {
                 final String timingRelativeURL = timingReferenceAdaptor.stringValue(TIMING_URL_KEY);
+                setTimingManagerUrlSpec(timingRelativeURL);
                 final String timingURL = absoluteUrlSpec(timingRelativeURL);
                 TIMING_MANAGER.setURLSpec(timingURL, acceleratorManager.xdxfSchema);
             }
@@ -640,13 +791,14 @@ public class XMLDataManager {
             final DataAdaptor deviceMappingReferenceAdaptor = sourcesAdaptor.childAdaptor(DEVICEMAPPING_TAG);
             if (deviceMappingReferenceAdaptor != null) {
                 final String deviceMappingURL = deviceMappingReferenceAdaptor.stringValue(DEVICEMAPPING_URL_KEY);
-                DEVICE_MANAGER.setURL(absoluteUrlSpec(deviceMappingURL));
+                DEVICE_MANAGER.setURL(deviceMappingURL);
             }
 
             // fetch the model configuration
             final DataAdaptor daModelConfig = sourcesAdaptor.childAdaptor(MODELCONFIG_TAG);
             if (daModelConfig != null) {
                 final String strUrlModelCfg = daModelConfig.stringValue(MODELCONFIG_URL_KEY);
+                setElementMappingUrlSpec(strUrlModelCfg);
                 final String urlModelConfig = absoluteUrlSpec(strUrlModelCfg);
                 elementMapping = FileBasedElementMapping.loadFrom(urlModelConfig, FileBasedElementMapping.elementMappingSchema);
             } else {
@@ -674,7 +826,12 @@ public class XMLDataManager {
             sourceAdaptor.setValue("version", CURRENT_VERSION);
 
             writeOpticsRef(sourceAdaptor);
+            writeHardwareStatusRef(sourceAdaptor);
+            writePowersuppliesRef(sourceAdaptor);
             writeTableGroupRefs(sourceAdaptor);
+            writeDeviceMappingRefs(sourceAdaptor);
+            writeElementMappingRefs(sourceAdaptor);
+            writeTimingManagerRefs(sourceAdaptor);
 
             docAdaptor.writeToUrl(mainUrl);
         }
@@ -687,8 +844,29 @@ public class XMLDataManager {
 
             adaptor.setValue(OPTICS_NAME_KEY, OPTICS_NAME);
 
-            String opticsUrlSpec = opticsUrlSpec();
-            adaptor.setValue(OPTICS_URL_KEY, opticsUrlSpec);
+            adaptor.setValue(OPTICS_URL_KEY, opticsUrlSpec());
+        }
+
+        /**
+         * write the Hardware Status reference if it exists
+         */
+        private void writeHardwareStatusRef(final DataAdaptor parentAdaptor) {
+            if (getHardwareStatusUrlSpec() != null) {
+                DataAdaptor adaptor = parentAdaptor.createChild(HARDWARE_STATUS_TAG);
+
+                adaptor.setValue(URL_KEY, getHardwareStatusUrlSpec());
+            }
+        }
+
+        /**
+         * write the Hardware Status reference if it exists
+         */
+        private void writePowersuppliesRef(final DataAdaptor parentAdaptor) {
+            if (getPowerSuppliesUrlSpec() != null) {
+                DataAdaptor adaptor = parentAdaptor.createChild(POWERSUPPLIES_TAG);
+
+                adaptor.setValue(URL_KEY, getPowerSuppliesUrlSpec());
+            }
         }
 
         /**
@@ -702,7 +880,28 @@ public class XMLDataManager {
                 final DataAdaptor adaptor = parentAdaptor.createChild(TABLE_GROUP_TAG);
 
                 adaptor.setValue(TABLE_GROUP_KEY, tableGroup);
-                adaptor.setValue(TABLE_GROUP_URL_KEY, tableGroupUrl);
+                adaptor.setValue(URL_KEY, tableGroupUrl);
+            }
+        }
+
+        private void writeDeviceMappingRefs(final DataAdaptor parentAdaptor) {
+            DataAdaptor adaptor = parentAdaptor.createChild(DEVICEMAPPING_TAG);
+
+            adaptor.setValue(URL_KEY, getDeviceMappingUrlSpec());
+        }
+
+        private void writeElementMappingRefs(final DataAdaptor parentAdaptor) {
+            DataAdaptor adaptor = parentAdaptor.createChild(MODELCONFIG_TAG);
+
+            adaptor.setValue(URL_KEY, getElementMappingUrlSpec());
+        }
+
+        private void writeTimingManagerRefs(final DataAdaptor parentAdaptor) {
+            if (!TIMING_MANAGER.getTimingCenter().getHandles().isEmpty()) {
+//            if (TIMING_MANAGER.getTimingCenter() != null) {
+                DataAdaptor adaptor = parentAdaptor.createChild(TIMING_TAG);
+
+                adaptor.setValue(URL_KEY, getTimingManagerUrlSpec());
             }
         }
     }
@@ -716,19 +915,23 @@ public class XMLDataManager {
         private final ChannelFactory CHANNEL_FACTORY;
         private String dtdUrlSpec;
         private String opticsUrlSpec;
+        private String hardwareStatusUrlSpec;
+        private String powerSuppliesUrlSpec;
+        private String elementMappingUrlSpec;
         private List<String> extraUrlSpecs;
-        private String _hardwareStatusURLSpec;
         private String xdxfSchema;
         public static final String acceleratorTag = "xdxf";
+        private final String defaultHardwareStatusUrlSpec = "hardware_status.xdxf";
+        private final String defaultPowerSuppliesUrlSpec = "power_supplies.xdxf";
+        private final String defaultElementMappingUrlSpec = "elementMapping.impl";
 
         /**
          * Constructor
          */
         public AcceleratorManager(final ChannelFactory channelFactory) {
             CHANNEL_FACTORY = channelFactory;
-            dtdUrlSpec = "xdxf.dtd";     // default DTD file
+            dtdUrlSpec = null;     // by default, no DTD file is used
             extraUrlSpecs = new ArrayList<String>();
-            _hardwareStatusURLSpec = null;
             xdxfSchema = "/xal/schemas/xdxf.xsd";
         }
 
@@ -770,15 +973,31 @@ public class XMLDataManager {
         /**
          * get the hardware status URL spec
          */
-        public String getHardwareStatusURLSpec() {
-            return _hardwareStatusURLSpec;
+        public String getHardwareStatusUrlSpec() {
+            return hardwareStatusUrlSpec;
         }
 
         /**
          * set the hardware status URL spec
          */
-        public void setHardwareStatusURLSpec(final String urlSpec) {
-            _hardwareStatusURLSpec = urlSpec;
+        public void setHardwareStatusUrlSpec(final String urlSpec) {
+            hardwareStatusUrlSpec = urlSpec;
+        }
+
+        public String getPowerSuppliesUrlSpec() {
+            return powerSuppliesUrlSpec;
+        }
+
+        public void setPowerSuppliesUrlSpec(String urlSpec) {
+            powerSuppliesUrlSpec = urlSpec;
+        }
+
+        public String getElementMappingUrlSpec() {
+            return elementMappingUrlSpec;
+        }
+
+        public void setElementMappingUrlSpec(String elementMappingUrlSpec) {
+            this.elementMappingUrlSpec = elementMappingUrlSpec;
         }
 
         /**
@@ -813,6 +1032,8 @@ public class XMLDataManager {
 
             loadHardwareStatus(accelerator, isValidating);
 
+            loadPowersupplies(accelerator, isValidating);
+
             return accelerator;
         }
 
@@ -829,8 +1050,17 @@ public class XMLDataManager {
          * load hardware status if any
          */
         protected void loadHardwareStatus(final Accelerator accelerator, final boolean isValidating) {
-            if (_hardwareStatusURLSpec != null) {
-                updateAccelerator(_hardwareStatusURLSpec, accelerator, isValidating);
+            if (hardwareStatusUrlSpec != null) {
+                updateAccelerator(hardwareStatusUrlSpec, accelerator, isValidating);
+            }
+        }
+
+        /**
+         * load power supplies if any
+         */
+        protected void loadPowersupplies(final Accelerator accelerator, final boolean isValidating) {
+            if (powerSuppliesUrlSpec != null) {
+                updateAccelerator(powerSuppliesUrlSpec, accelerator, isValidating);
             }
         }
 
@@ -865,6 +1095,46 @@ public class XMLDataManager {
             XmlDataAdaptor adaptor = XmlDataAdaptor.newDocumentAdaptor(accelerator, dtdUrlSpec);
             adaptor.writeToUrlSpec(absoluteUrlSpec);
         }
+
+        /**
+         * write the status flags out to the hardware status file
+         */
+        public void writeStatus(final Accelerator accelerator) throws XmlDataAdaptor.WriteException, XmlDataAdaptor.CreationException {
+            if (hardwareStatusUrlSpec == null) {
+                hardwareStatusUrlSpec = defaultHardwareStatusUrlSpec;
+            }
+            String absoluteUrlSpec = absoluteUrlSpec(hardwareStatusUrlSpec);
+            XmlDataAdaptor adaptor = XmlDataAdaptor.newEmptyDocumentAdaptor();
+            accelerator.writeStatus(adaptor);
+            adaptor.writeToUrlSpec(absoluteUrlSpec);
+        }
+
+        /**
+         * write the power supplies out to the corresponding file
+         */
+        public void writePowerSupplies(final Accelerator accelerator) throws XmlDataAdaptor.WriteException, XmlDataAdaptor.CreationException {
+            if (powerSuppliesUrlSpec == null) {
+                powerSuppliesUrlSpec = defaultPowerSuppliesUrlSpec;
+            }
+            String absoluteUrlSpec = absoluteUrlSpec(powerSuppliesUrlSpec);
+            XmlDataAdaptor adaptor = XmlDataAdaptor.newEmptyDocumentAdaptor();
+
+            accelerator.writePowerSupplies(adaptor);
+            adaptor.writeToUrlSpec(absoluteUrlSpec);
+        }
+
+        /**
+         * write the element mapping out to the corresponding file
+         */
+        public void writeElementMapping(final Accelerator accelerator) throws XmlDataAdaptor.WriteException, XmlDataAdaptor.CreationException {
+            if (elementMappingUrlSpec == null) {
+                elementMappingUrlSpec = defaultElementMappingUrlSpec;
+            }
+            String absoluteUrlSpec = absoluteUrlSpec(elementMappingUrlSpec);
+
+            elementMapping = accelerator.getElementMapping();
+            ((FileBasedElementMapping) elementMapping).saveTo(absoluteUrlSpec);
+        }
     }
 
     /**
@@ -878,27 +1148,36 @@ public class XMLDataManager {
 
         private final String deviceMappingSchema = "/xal/schemas/impl.xsd";
 
+        private static final String defaultUrl = "deviceMapping.impl";
+
+        private String url;
+
+        private final ChannelFactory channelFactory;
         /**
          * factory for generating accelerator nodes
          */
-        final private AcceleratorNodeFactory NODE_FACTORY;
+        private AcceleratorNodeFactory NODE_FACTORY;
 
         /**
          * Constructor
          */
         public DeviceManager(final ChannelFactory channelFactory) {
-            NODE_FACTORY = new AcceleratorNodeFactory(channelFactory);
+            this.channelFactory = channelFactory;
         }
 
         /**
          * get the accelerator node factory
          */
         public AcceleratorNodeFactory getNodeFactory() {
-            return NODE_FACTORY;
+            return (NODE_FACTORY != null) ? NODE_FACTORY : parseDeviceMapping();
         }
 
-        public void setURL(final String url) {
-            final XmlDataAdaptor deviceMappingDocumentAdaptor = XmlDataAdaptor.adaptorForUrl(url, false, deviceMappingSchema);
+        public AcceleratorNodeFactory parseDeviceMapping() {
+            NODE_FACTORY = new AcceleratorNodeFactory(channelFactory);
+
+            String urlSpec = absoluteUrlSpec(url);
+
+            final XmlDataAdaptor deviceMappingDocumentAdaptor = XmlDataAdaptor.adaptorForUrl(urlSpec, false, deviceMappingSchema);
             final DataAdaptor deviceMappingAdaptor = deviceMappingDocumentAdaptor.childAdaptor(DeviceManager.DEVICE_MAPPING);
 
             final List<DataAdaptor> deviceAdaptors = deviceMappingAdaptor.childAdaptors(DEVICE_TAG);
@@ -915,6 +1194,44 @@ public class XMLDataManager {
                     exception.printStackTrace();
                 }
             }
+
+            return NODE_FACTORY;
+        }
+
+        public String getUrl() {
+            return url;
+        }
+
+        public void setURL(final String url) {
+            this.url = url;
+        }
+
+        public void writeDeviceMapping(Accelerator accelerator) {
+            NODE_FACTORY = accelerator.getNodeFactory();
+
+            Map<String, Class<?>> classTable = NODE_FACTORY.getClassTable();
+
+            if (url == null) {
+                url = defaultUrl;
+            }
+            String absoluteUrlSpec = absoluteUrlSpec(url);
+            XmlDataAdaptor adaptor = XmlDataAdaptor.newEmptyDocumentAdaptor();
+
+            DataAdaptor dmAdaptor = adaptor.createChild(DEVICE_MAPPING);
+
+            for (String typeString : classTable.keySet()) {
+                String type = typeString.contains(".") ? typeString.substring(0, typeString.indexOf('.')) : typeString;
+                String softType = typeString.contains(".") ? typeString.substring(typeString.indexOf('.') + 1) : null;
+
+                DataAdaptor typeAdaptor = dmAdaptor.createChild(DEVICE_TAG);
+                typeAdaptor.setValue("type", type);
+                if (softType != null) {
+                    typeAdaptor.setValue("softType", softType);
+                }
+                typeAdaptor.setValue("class", classTable.get(typeString).getCanonicalName());
+            }
+
+            adaptor.writeToUrlSpec(absoluteUrlSpec);
         }
     }
 
@@ -936,7 +1253,6 @@ public class XMLDataManager {
         /**
          * Map of url associated with group
          */
-
         public TableManager() {
             tableGroupUrlMap = new HashMap<String, String>();
         }

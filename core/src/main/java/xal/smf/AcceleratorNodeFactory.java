@@ -123,6 +123,14 @@ public final class AcceleratorNodeFactory {
 		
         return createNode( nodeID, nodeType );
     }
+    
+    /**
+     * Return the class table used by this node factory.
+     * @return 
+     */
+    public Map<String, Class<?>> getClassTable() {
+        return _classTable;
+    }
 }
 
 

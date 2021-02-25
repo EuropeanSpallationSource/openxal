@@ -19,6 +19,7 @@ import xal.model.ModelException;
 import xal.model.elem.IdealDrift;
 import xal.model.elem.IdealRfCavityDrift;
 import xal.model.elem.Marker;
+import xal.smf.Accelerator;
 import xal.tools.data.DataAdaptor;
 import xal.tools.xml.XmlDataAdaptor;
 
@@ -172,6 +173,45 @@ public class FileBasedElementMapping extends ElementMapping {
         // Return the completed collection of (hardware node, modeling element) associations
         return mapHwToModElem;
     }
+    
+    /**
+     *
+     * @author Juan F. Esteban Müller
+     * @since Feb 25, 2021
+     */
+    public void saveTo(String urlModelConfig) {
+        XmlDataAdaptor daDoc = XmlDataAdaptor.newEmptyDocumentAdaptor();
+
+        DataAdaptor daCfg = daDoc.createChild("configuration");
+
+        daCfg.setValue("debug", bolDebug);
+        daCfg.setValue("divMags", bolDivMags);
+        daCfg.setValue("subsectionCtrOrigin", bolSubsectionCtrOrigin);
+
+        DataAdaptor daElements = daCfg.createChild("elements");
+
+        DataAdaptor defaultElement = daElements.createChild("default");
+        defaultElement.setValue("type", getDefaultElementType().getCanonicalName());
+
+        DataAdaptor defaultSequence = daElements.createChild("sequence");
+        defaultSequence.setValue("type", getDefaultSequenceType().getCanonicalName());
+
+        DataAdaptor defaultDrift = daElements.createChild("drift");
+        defaultDrift.setValue("type", getDrift().getCanonicalName());
+
+        DataAdaptor defaultRfCavDrift = daElements.createChild("rfcavdrift");
+        defaultRfCavDrift.setValue("type", getRfCavityDrift().getCanonicalName());
+
+        DataAdaptor daAssoc = daCfg.createChild("associations");
+
+        for (String type : elementMapping.keySet()) {
+            DataAdaptor srcDas = daAssoc.createChild("map");
+            srcDas.setValue("smf", type);
+            srcDas.setValue("model", elementMapping.get(type).getCanonicalName());
+        }
+
+        daDoc.writeToUrlSpec(urlModelConfig);
+    }
 
 
     /* 
@@ -310,10 +350,20 @@ public class FileBasedElementMapping extends ElementMapping {
 		clsDriftElem = (Class<? extends IComponent>) Class.forName(stringValue);
 		
 	}
+
+    private  Class<? extends IComponent> getDrift() {
+        return clsDriftElem;
+
+    }
     
     @SuppressWarnings( "unchecked" )
     private void setRfCavityDrift(String strClsName) throws ClassNotFoundException {
         this.clsRfCavDriftElem = (Class<? extends IComponent>) Class.forName(strClsName);
+    }
+
+    private  Class<? extends IComponent> getRfCavityDrift() {
+        return clsRfCavDriftElem;
+
     }
 
 	@SuppressWarnings( "unchecked" )
