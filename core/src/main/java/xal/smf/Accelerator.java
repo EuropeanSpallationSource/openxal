@@ -444,6 +444,15 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
     public void addComboSequence( final AcceleratorSeqCombo comboSequence ) {
 		_comboSequences.put( comboSequence.getId(), comboSequence );
 	}
+    
+    
+    /** 
+	 * Remove a combo sequence from this accelerator
+	 * @param comboSequenceId The ID of the combo sequence to remove.
+	 */
+        public void removeComboSequence( String comboSequenceId ) {
+		_comboSequences.remove(comboSequenceId);
+	}
 	
 	
 	/**
