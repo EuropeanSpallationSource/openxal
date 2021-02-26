@@ -576,15 +576,17 @@ public abstract class ElementSeq implements IComposite {
         setHardwareNodeId(strSmfId);
 //      setId(latticeElement.getNode().getId());
 
-        AlignmentBucket alignmentBucket = latticeElement.getHardwareNode().getAlign(); 
-        setAlignX(alignmentBucket.getX());
-        setAlignY(alignmentBucket.getY());
-        setAlignZ(alignmentBucket.getZ());
+        AlignmentBucket alignmentBucket = latticeElement.getHardwareNode().getAlign();
         
-        setPhiX(alignmentBucket.getPitch());
-        setPhiY(alignmentBucket.getYaw());
-        setPhiZ(alignmentBucket.getRoll());
-                
+        if (alignmentBucket != null) {
+            setAlignX(alignmentBucket.getX());
+            setAlignY(alignmentBucket.getY());
+            setAlignZ(alignmentBucket.getZ());
+
+            setPhiX(alignmentBucket.getPitch());
+            setPhiY(alignmentBucket.getYaw());
+            setPhiZ(alignmentBucket.getRoll());
+        }
     }
     
     /**  

@@ -91,6 +91,10 @@ class H5Node {
         childNodes.add(node);
     }
 
+    public void removeChild(H5Node node) {
+        childNodes.remove(node);
+    }
+
     H5Node createElement(String tagName) {
         H5Node node = new H5Node(tagName);
         node.setOwnerDocument(this);

@@ -105,10 +105,6 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
 
 		m_mapAttrs = new HashMap<String,AttributeBucket>();
 
-		setAlign(new AlignmentBucket());
-		setAper(new ApertureBucket());
-		setTwiss(new TwissBucket());
-
 		channelSuite = new ChannelSuite( channelFactory );
 	}
 
@@ -207,22 +203,56 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
 
     /** implement DataListener interface */
     public void write(DataAdaptor adaptor) {
-        adaptor.setValue( "id", m_strId );
-        adaptor.setValue("pid", m_strPId);
-        adaptor.setValue("eid", m_strEId);
-        adaptor.setValue( "type", getType() );
-		if ( getSoftType() != null ) {
-			adaptor.setValue( "softType", getSoftType() );
-		}
-        adaptor.setValue( "status", m_bolStatus );
-        adaptor.setValue( "pos", m_dblPos );
-        adaptor.setValue("s", m_dblS);
-        adaptor.setValue( "len", m_dblLen );
+        writeAttributes(adaptor);
 
         Collection<AttributeBucket> buckets = getBuckets();
-        adaptor.writeNode( new BucketParser(buckets) );
+        if (!buckets.isEmpty()) {
+            adaptor.writeNode(new BucketParser(buckets));
+        }
+        if (!channelSuite.getHandles().isEmpty()) {
+            adaptor.writeNode(channelSuite);
+        }
+    }
 
-        adaptor.writeNode(channelSuite);
+
+    /**
+     * method to write status of the node into a separate file
+     */
+    public void writeStatus(DataAdaptor adaptor) {
+        if (m_bolStatus == false && getAccelerator().hasStatusFile()) {
+            DataAdaptor childAdaptor = adaptor.createChild(dataLabel());
+            childAdaptor.setValue("id", m_strId);
+            childAdaptor.setValue("status", m_bolStatus);
+        }
+    }
+    
+    /**
+     * write the attributes of the Node.
+     * Subclasses can be override this method
+     * to write a different set of attributes
+     *
+     * @param adaptor 
+     */
+    protected void writeAttributes(DataAdaptor adaptor) {
+        adaptor.setValue("id", m_strId);
+        adaptor.setValue("len", m_dblLen);
+        adaptor.setValue("pos", m_dblPos);
+        adaptor.setValue("type", getType());
+        if (m_strPId != null) {
+            adaptor.setValue("pid", m_strPId);
+        }
+        if (m_strEId != null) {
+            adaptor.setValue("eid", m_strEId);
+        }
+        if (getSoftType() != null) {
+            adaptor.setValue("softType", getSoftType());
+        }
+        if (m_bolStatus == false && getAccelerator().hasStatusFile()) {
+            adaptor.setValue("status", m_bolStatus);
+        }
+        if (m_dblS != 0) {
+            adaptor.setValue("s", m_dblS);
+        }
     }
     // end DataListener interface -tap
 
@@ -626,59 +656,99 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
 
     /** returns the bucket containing the alignment parameters
      *   - see attr.AlignBucket  */
-    public AlignmentBucket  getAlign()          { return m_bucAlign; };
+    public AlignmentBucket getAlign() {
+        if (m_bucAlign == null) {
+            setAlign(new AlignmentBucket());
+        }
+        return m_bucAlign;
+    }
 
     /**
      * returns device pitch angle in degrees
+     *
      * @return pitch angle
      */
     public double getPitchAngle() {
-    	return m_bucAlign.getPitch();
+        if (m_bucAlign != null) {
+            return getAlign().getPitch();
+        } else {
+            return new AlignmentBucket().getPitch();
+        }
     }
 
     /**
      * returns device yaw angle in degrees
+     *
      * @return yaw angle
      */
     public double getYawAngle() {
-    	return m_bucAlign.getYaw();
+        if (m_bucAlign != null) {
+            return getAlign().getYaw();
+        } else {
+            return new AlignmentBucket().getYaw();
+        }
     }
 
     /**
      * returns device roll angle in degrees
+     *
      * @return roll angle
      */
     public double getRollAngle() {
-    	return m_bucAlign.getRoll();
+        if (m_bucAlign != null) {
+            return getAlign().getRoll();
+        } else {
+            return new AlignmentBucket().getRoll();
+        }
     }
 
     /**
      * returns device x offset
+     *
      * @return x offset
      */
     public double getXOffset() {
-    	return m_bucAlign.getX();
+        if (m_bucAlign != null) {
+            return getAlign().getX();
+        } else {
+            return new AlignmentBucket().getX();
+        }
     }
 
     /**
      * returns device y offset
+     *
      * @return y offset
      */
     public double getYOffset() {
-    	return m_bucAlign.getY();
+        if (m_bucAlign != null) {
+            return getAlign().getY();
+        } else {
+            return new AlignmentBucket().getY();
+        }
     }
 
     /**
      * returns device z offset
+     *
      * @return z offset
      */
     public double getZOffset() {
-    	return m_bucAlign.getZ();
+        if (m_bucAlign != null) {
+            return m_bucAlign.getZ();
+        } else {
+            return new AlignmentBucket().getZ();
+        }
     }
 
     /** returns the bucket containing the Aperture parameters
      *   - see attr.ApertureBucket  */
-    public ApertureBucket   getAper()           { return m_bucAper; };
+    public ApertureBucket getAper() {
+        if (m_bucAper == null) {
+            setAper(new ApertureBucket());
+        }
+        return m_bucAper;
+    }
 
     /** sets the bucket containing the twiss parameters
      *   - see attr.TwissBucket  */
@@ -698,7 +768,7 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
      * @param angle pitch angle in degree
      */
     public void setPitchAngle(double angle) {
-    	m_bucAlign.setPitch(angle);
+    	getAlign().setPitch(angle);
     }
 
     /**
@@ -706,7 +776,7 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
      * @param angle yaw angle in degree
      */
     public void setYawAngle(double angle) {
-    	m_bucAlign.setYaw(angle);
+    	getAlign().setYaw(angle);
     }
 
     /**
@@ -714,7 +784,7 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
      * @param angle roll angle in degree
      */
     public void setRollAngle(double angle) {
-    	m_bucAlign.setRoll(angle);
+    	getAlign().setRoll(angle);
     }
 
     /**
@@ -722,7 +792,7 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
      * @param offset x offset
      */
     public void setXOffset(double offset) {
-    	m_bucAlign.setX(offset);
+    	getAlign().setX(offset);
     }
 
     /**
@@ -730,7 +800,7 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
      * @param offset y offset
      */
     public void setYOffset(double offset) {
-    	m_bucAlign.setY(offset);
+    	getAlign().setY(offset);
     }
 
     /**
@@ -738,7 +808,7 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
      * @param offset z offset
      */
     public void setZOffset(double offset) {
-    	m_bucAlign.setZ(offset);
+    	getAlign().setZ(offset);
     }
 
     /*

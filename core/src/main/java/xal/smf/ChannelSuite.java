@@ -307,6 +307,8 @@ class SignalSuite {
 	 */
 	public void update( final DataAdaptor adaptor ) {
 		final List<DataAdaptor> channelAdaptors = adaptor.childAdaptors( "channel" );
+                if (channelAdaptors == null)
+                    return;
 		for ( final DataAdaptor channelAdaptor : channelAdaptors  ) {
 			final String handle = channelAdaptor.stringValue("handle");
 
@@ -338,6 +340,8 @@ class SignalSuite {
 		}
 
 		final List<DataAdaptor> transformAdaptors = adaptor.childAdaptors( "transform" );
+                if (transformAdaptors == null)
+                    return;
 		for ( final DataAdaptor transformAdaptor : transformAdaptors ) {
 			final String name = transformAdaptor.stringValue( "name" );
 			final ValueTransform transform = TransformFactory.getTransform( transformAdaptor );
@@ -356,11 +360,13 @@ class SignalSuite {
 			final DataAdaptor channelAdaptor = adaptor.createChild("channel");
 			final SignalEntry signalEntry = entry.getValue();
 
-			channelAdaptor.setValue( "handle", entry.getKey() );
-			channelAdaptor.setValue( "signal", signalEntry.signal() );
-			channelAdaptor.setValue( "settable", signalEntry.settable() );
-			channelAdaptor.setValue( "valid", signalEntry.isValid() );
-			if ( signalEntry.getTransformKey() != null ) {
+                        channelAdaptor.setValue("handle", entry.getKey());
+                        channelAdaptor.setValue("signal", signalEntry.signal());
+                        channelAdaptor.setValue("settable", signalEntry.settable());
+                        if (!signalEntry.isValid()) {
+                            channelAdaptor.setValue("valid", signalEntry.isValid());
+                        }
+                        if (signalEntry.getTransformKey() != null ) {
 				channelAdaptor.setValue( "transform", signalEntry.getTransformKey() );
 			}
 		}

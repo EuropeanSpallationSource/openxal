@@ -422,6 +422,11 @@ public class TransientDataAdaptor implements DataAdaptor {
     }
     
     
+    @Override
+    public void removeChild(DataAdaptor adaptor) {
+        this.m_lstKids.remove(adaptor);
+    }
+    
     
     
     /** 

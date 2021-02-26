@@ -142,6 +142,9 @@ public interface DataAdaptor {
     /** Create an new empty child adaptor with label */
     public DataAdaptor createChild( String label );
     
+    /** Remove a child adaptor */
+    public void removeChild( DataAdaptor adaptor );
+    
     
     /** write the listener as a new node and append it to the data tree */
     public void writeNode( DataListener listener );
