@@ -1142,12 +1142,7 @@ public class XMLDataManager {
         }
 
         public void writeFieldMaps(final Accelerator accelerator) {
-            TypeQualifier qualifier = new TypeQualifier() {
-                @Override
-                public boolean match(AcceleratorNode node) {
-                    return node instanceof IFileBasedFieldMap;
-                }
-            };
+            TypeQualifier qualifier = (node) -> node instanceof IFileBasedFieldMap;
             // Field Maps - get a list of unique field maps.
             List<AcceleratorNode> fieldMapNodes = accelerator.getAllInclusiveNodesWithQualifier(qualifier);
             for (AcceleratorNode fieldMapNode : fieldMapNodes) {
