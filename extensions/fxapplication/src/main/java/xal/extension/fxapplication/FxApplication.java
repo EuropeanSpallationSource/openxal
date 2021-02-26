@@ -523,7 +523,7 @@ abstract public class FxApplication extends Application {
         if (saveAs || !DOCUMENT.sourceSetAndValid()) {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Save Application State");
-            fileChooser.setInitialFileName(DOCUMENT.DEFAULT_FILENAME);
+            fileChooser.setInitialFileName(DOCUMENT.getDefaultFilename());
 
             //Set extension filter
             FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(DOCUMENT.FILETYPE_DESCRIPTION + " (" + DOCUMENT.WILDCARD_FILE_EXTENSION + ")", DOCUMENT.WILDCARD_FILE_EXTENSION);
@@ -608,7 +608,7 @@ abstract public class FxApplication extends Application {
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("XAL files (*.xal)", "*.xal");
         fileChooser.getExtensionFilters().add(extFilter);
 
-        //Show save file dialog
+        //Show open file dialog
         File selectedFile = fileChooser.showOpenDialog(null);
         if (selectedFile != null) {
             Logger.getLogger(getClass().getName()).log(Level.INFO, "Loading accelerator from file.");

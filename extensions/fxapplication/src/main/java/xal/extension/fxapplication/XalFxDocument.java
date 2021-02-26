@@ -47,6 +47,7 @@ abstract public class XalFxDocument {
     protected String FILETYPE_DESCRIPTION = "Any XML File";
     protected String WILDCARD_FILE_EXTENSION = "*.xml";
     protected String DEFAULT_FILENAME = "DefaultFileName.xml";
+
     protected SimpleStringProperty sourceString;
     /**
      * The persistent storage URL for the document
@@ -235,11 +236,32 @@ abstract public class XalFxDocument {
         return accelerator.getAccelerator();
     }
 
+    public void setAccelerator(Accelerator accelerator) {
+        this.accelerator.setAccelerator(accelerator);
+    }
+
     public AcceleratorProperty getAcceleratorProperty() {
         return accelerator;
     }
 
     public XMLDataManager getAcceleratorXMLManager() {
         return acceleratorXMLManager;
+    }
+
+    public void setAcceleratorXMLManager(XMLDataManager xmlDataManager) {
+        this.acceleratorXMLManager = xmlDataManager;
+        this.accelerator.setAccelerator(xmlDataManager.getAccelerator());
+    }
+
+    public String getFiletypeDescription() {
+        return FILETYPE_DESCRIPTION;
+    }
+
+    public String getWildcardFileExtension() {
+        return WILDCARD_FILE_EXTENSION;
+    }
+
+    public String getDefaultFilename() {
+        return DEFAULT_FILENAME;
     }
 }
