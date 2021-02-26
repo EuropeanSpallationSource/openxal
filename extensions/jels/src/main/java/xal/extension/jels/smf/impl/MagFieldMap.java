@@ -17,12 +17,15 @@
  */
 package xal.extension.jels.smf.impl;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import xal.ca.ChannelFactory;
 import xal.extension.jels.smf.attr.FieldMapBucket;
+import xal.smf.IFileBasedFieldMap;
 import xal.smf.ISplittable;
 import xal.smf.attr.AttributeBucket;
 import xal.smf.impl.Electromagnet;
@@ -44,7 +47,7 @@ import xal.tools.xml.XmlDataAdaptor;
  * @author Juan F. Esteban Müller <JuanF.EstebanMuller@esss.se>
  *
  */
-public class MagFieldMap extends Electromagnet implements ISplittable {
+public class MagFieldMap extends Electromagnet implements ISplittable, IFileBasedFieldMap {
 
     public static final String s_strType = "MFM";
 
@@ -162,5 +165,16 @@ public class MagFieldMap extends Electromagnet implements ISplittable {
 
     public void setDynamic(boolean b) {
         m_bucFieldMap.setDynamic(b);
+    }
+
+    @Override
+    public void writeFieldMap(String fieldMapPath) {
+        try {
+            if (!new File(fieldMapPath, getFieldMapFile()).exists()) {
+                fieldMap.saveFieldMap(fieldMapPath, getFieldMapFile());
+            }
+        } catch (URISyntaxException | IOException ex) {
+            Logger.getLogger(RfFieldMap.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }

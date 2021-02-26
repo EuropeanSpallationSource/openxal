@@ -24,7 +24,9 @@ import xal.sim.scenario.FileBasedElementMapping;
 import xal.smf.Accelerator;
 import xal.smf.AcceleratorNode;
 import xal.smf.AcceleratorNodeFactory;
+import xal.smf.IFileBasedFieldMap;
 import xal.smf.TimingCenter;
+import xal.smf.impl.qualify.TypeQualifier;
 import xal.tools.URLUtil;
 import xal.tools.data.DataAdaptor;
 import xal.tools.data.EditContext;
@@ -557,6 +559,7 @@ public class XMLDataManager {
         writeDeviceMapping(accelerator);
         writeElementMapping(accelerator);
         writeTimingManager(accelerator);
+        writeFieldMaps(accelerator);
 
         writeMain();
     }
@@ -624,6 +627,13 @@ public class XMLDataManager {
      */
     public void writeElementMapping(Accelerator accelerator) {
         acceleratorManager.writeElementMapping(accelerator);
+    }
+
+    /**
+     * Write the field maps used by the accelerator.
+     */
+    public void writeFieldMaps(Accelerator accelerator) {
+        acceleratorManager.writeFieldMaps(accelerator);
     }
 
     /**
@@ -878,7 +888,6 @@ public class XMLDataManager {
             for (final String tableGroup : tableGroups) {
                 final String tableGroupUrl = urlSpecForTableGroup(tableGroup);
                 final DataAdaptor adaptor = parentAdaptor.createChild(TABLE_GROUP_TAG);
-
                 adaptor.setValue(TABLE_GROUP_KEY, tableGroup);
                 adaptor.setValue(URL_KEY, tableGroupUrl);
             }
@@ -886,21 +895,17 @@ public class XMLDataManager {
 
         private void writeDeviceMappingRefs(final DataAdaptor parentAdaptor) {
             DataAdaptor adaptor = parentAdaptor.createChild(DEVICEMAPPING_TAG);
-
             adaptor.setValue(URL_KEY, getDeviceMappingUrlSpec());
         }
 
         private void writeElementMappingRefs(final DataAdaptor parentAdaptor) {
             DataAdaptor adaptor = parentAdaptor.createChild(MODELCONFIG_TAG);
-
             adaptor.setValue(URL_KEY, getElementMappingUrlSpec());
         }
 
         private void writeTimingManagerRefs(final DataAdaptor parentAdaptor) {
             if (!TIMING_MANAGER.getTimingCenter().getHandles().isEmpty()) {
-//            if (TIMING_MANAGER.getTimingCenter() != null) {
                 DataAdaptor adaptor = parentAdaptor.createChild(TIMING_TAG);
-
                 adaptor.setValue(URL_KEY, getTimingManagerUrlSpec());
             }
         }
@@ -1134,6 +1139,21 @@ public class XMLDataManager {
 
             elementMapping = accelerator.getElementMapping();
             ((FileBasedElementMapping) elementMapping).saveTo(absoluteUrlSpec);
+        }
+
+        public void writeFieldMaps(final Accelerator accelerator) {
+            TypeQualifier qualifier = new TypeQualifier() {
+                @Override
+                public boolean match(AcceleratorNode node) {
+                    return node instanceof IFileBasedFieldMap;
+                }
+            };
+            // Field Maps - get a list of unique field maps.
+            List<AcceleratorNode> fieldMapNodes = accelerator.getAllInclusiveNodesWithQualifier(qualifier);
+            for (AcceleratorNode fieldMapNode : fieldMapNodes) {
+                IFileBasedFieldMap fieldMap = (IFileBasedFieldMap) fieldMapNode;
+                fieldMap.writeFieldMap(mainUrl().toString());
+            }
         }
     }
 

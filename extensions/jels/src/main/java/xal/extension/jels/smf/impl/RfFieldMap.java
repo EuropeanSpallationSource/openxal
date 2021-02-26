@@ -17,6 +17,8 @@
  */
 package xal.extension.jels.smf.impl;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.logging.Level;
@@ -24,6 +26,7 @@ import java.util.logging.Logger;
 import xal.smf.ISplittable;
 import xal.extension.jels.smf.attr.FieldMapBucket;
 import xal.ca.ChannelFactory;
+import xal.smf.IFileBasedFieldMap;
 import xal.smf.attr.AttributeBucket;
 import xal.smf.impl.RfGap;
 import xal.smf.impl.qualify.ElementTypeManager;
@@ -44,7 +47,7 @@ import xal.tools.xml.XmlDataAdaptor;
  * @author Juan F. Esteban Müller <JuanF.EstebanMuller@esss.se>
  *
  */
-public class RfFieldMap extends RfGap implements ISplittable {
+public class RfFieldMap extends RfGap implements ISplittable, IFileBasedFieldMap {
 
     public static final String s_strType = "RFM";
 
@@ -149,17 +152,17 @@ public class RfFieldMap extends RfGap implements ISplittable {
     @Override
     public void update(DataAdaptor adaptor) {
         super.update(adaptor);
-        String fieldMapPath = null;
 
         try {
-            fieldMapPath = new URI(((XmlDataAdaptor) adaptor).document().getDocumentURI()).resolve(".").toString();
+            if (adaptor instanceof XmlDataAdaptor) {
+                String fieldMapPath = new URI(((XmlDataAdaptor) adaptor).document().getDocumentURI()).resolve(".").toString();
+                fieldMap = FieldMapFactory.getInstance(fieldMapPath, getFieldMapFile(),
+                        m_bucFieldMap.getDynamic(), m_bucFieldMap.getFieldType(),
+                        m_bucFieldMap.getDimensions(), m_bucFieldMap.getNumberOfPoints());
+            }
         } catch (URISyntaxException ex) {
             Logger.getLogger(RfFieldMap.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-        fieldMap = FieldMapFactory.getInstance(fieldMapPath, getFieldMapFile(),
-                m_bucFieldMap.getDynamic(), m_bucFieldMap.getFieldType(),
-                m_bucFieldMap.getDimensions(), m_bucFieldMap.getNumberOfPoints());
     }
 
     @Override
@@ -178,5 +181,16 @@ public class RfFieldMap extends RfGap implements ISplittable {
 
     public void setDynamic(boolean b) {
         m_bucFieldMap.setDynamic(b);
+    }
+
+    @Override
+    public void writeFieldMap(String fieldMapPath) {
+        try {
+            if (!new File(fieldMapPath, getFieldMapFile()).exists()) {
+                fieldMap.saveFieldMap(fieldMapPath, getFieldMapFile());
+            }
+        } catch (URISyntaxException | IOException ex) {
+            Logger.getLogger(RfFieldMap.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }
