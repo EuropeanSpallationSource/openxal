@@ -61,6 +61,7 @@ import xal.smf.Accelerator;
 import xal.smf.AcceleratorSeq;
 import xal.smf.AcceleratorSeqCombo;
 import xal.smf.data.XMLDataManager;
+import xal.tools.xml.XmlDataAdaptor.ParseException;
 
 /**
  * The Application class handles defines the core of an application. It is often
@@ -612,28 +613,33 @@ abstract public class FxApplication extends Application {
         File selectedFile = fileChooser.showOpenDialog(null);
         if (selectedFile != null) {
             Logger.getLogger(getClass().getName()).log(Level.INFO, "Loading accelerator from file.");
-            DOCUMENT.acceleratorXMLManager = XMLDataManager.managerWithFilePath(selectedFile.getAbsolutePath());
-            DOCUMENT.accelerator.setAccelerator(XMLDataManager.acceleratorWithPath(selectedFile.getAbsolutePath()));
-        } else {
-            Alert alert = new Alert(AlertType.WARNING);
-            alert.setTitle("Load Accelerator Warning");
-            alert.setHeaderText("Empty or invalid file selected");
-            alert.setContentText("How to proceed?");
+            try {
+                XMLDataManager acceleratorXMLManager = XMLDataManager.managerWithFilePath(selectedFile.getAbsolutePath());
+                Accelerator accelerator = XMLDataManager.acceleratorWithPath(selectedFile.getAbsolutePath());
+                DOCUMENT.acceleratorXMLManager = acceleratorXMLManager;
+                DOCUMENT.accelerator.setAccelerator(accelerator);
+            } catch (ParseException ex) {
+                Alert alert = new Alert(AlertType.WARNING);
+                alert.setTitle("Load Accelerator Warning");
+                alert.setHeaderText("Invalid file selected");
+                alert.setContentText("How to proceed?");
 
-            ButtonType buttonTypeLoad = new ButtonType("Load Default Accelerator");
-            ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
-            alert.getButtonTypes().setAll(buttonTypeLoad, buttonTypeCancel);
+                ButtonType buttonTypeLoad = new ButtonType("Load Default Accelerator");
+                ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
+                alert.getButtonTypes().setAll(buttonTypeLoad, buttonTypeCancel);
 
-            Optional<ButtonType> result = alert.showAndWait();
+                Optional<ButtonType> result = alert.showAndWait();
 
-            if (result.get() == buttonTypeLoad) {
-                Logger.getLogger(getClass().getName()).log(Level.INFO, "Loading default accelerator.");
-                DOCUMENT.acceleratorXMLManager = XMLDataManager.getDefaultInstance();
-                DOCUMENT.accelerator.setAccelerator(XMLDataManager.loadDefaultAccelerator());
-            } else {
-                Logger.getLogger(getClass().getName()).log(Level.INFO, "No accelerator selected.");
-                DOCUMENT.accelerator.setAccelerator(null);
+                if (result.get() == buttonTypeLoad) {
+                    Logger.getLogger(getClass().getName()).log(Level.INFO, "Loading default accelerator.");
+                    DOCUMENT.acceleratorXMLManager = XMLDataManager.getDefaultInstance();
+                    DOCUMENT.accelerator.setAccelerator(XMLDataManager.loadDefaultAccelerator());
+                } else {
+                    Logger.getLogger(getClass().getName()).log(Level.INFO, "No accelerator selected.");
+                }
             }
+        } else {
+            Logger.getLogger(getClass().getName()).log(Level.INFO, "No accelerator selected.");
         }
     }
 
