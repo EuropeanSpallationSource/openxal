@@ -10,8 +10,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
-import javax.swing.text.StyledEditorKit.BoldAction;
-
 import xal.model.IComponent;
 import xal.model.IComposite;
 import xal.model.Sector;
@@ -19,7 +17,6 @@ import xal.model.ModelException;
 import xal.model.elem.IdealDrift;
 import xal.model.elem.IdealRfCavityDrift;
 import xal.model.elem.Marker;
-import xal.smf.Accelerator;
 import xal.tools.data.DataAdaptor;
 import xal.tools.xml.XmlDataAdaptor;
 
@@ -353,7 +350,6 @@ public class FileBasedElementMapping extends ElementMapping {
 
     private  Class<? extends IComponent> getDrift() {
         return clsDriftElem;
-
     }
     
     @SuppressWarnings( "unchecked" )
@@ -363,7 +359,6 @@ public class FileBasedElementMapping extends ElementMapping {
 
     private  Class<? extends IComponent> getRfCavityDrift() {
         return clsRfCavDriftElem;
-
     }
 
 	@SuppressWarnings( "unchecked" )
