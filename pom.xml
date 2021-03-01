@@ -11,7 +11,7 @@
         <main.basedir>${project.basedir}</main.basedir>     <!-- For the local repository -->
         <surefireArgLine></surefireArgLine>                 <!-- To be able to run tests on Netbeans -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <javafx-version>15</javafx-version>
+        <javafx-version>16-ea+7</javafx-version>
     </properties>
     
     
