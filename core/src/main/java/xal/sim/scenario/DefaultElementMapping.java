@@ -74,6 +74,18 @@ public class DefaultElementMapping extends ElementMapping {
 	public Class<? extends IComposite> getDefaultSequenceType() {
 	    return Sector.class;
 	}
+        
+        
+	@Override
+	public Class<? extends IComponent> getDriftType() {
+		return IdealDrift.class;
+	}
+        
+        
+	@Override
+	public Class<? extends IComponent> getRfCavityDriftType() {
+		return IdealRfCavityDrift.class;
+	}
 
 	/**
 	 * Creates a new, general drift space.

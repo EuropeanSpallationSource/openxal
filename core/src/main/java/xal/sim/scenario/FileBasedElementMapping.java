@@ -9,6 +9,8 @@ package xal.sim.scenario;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xal.model.IComponent;
 import xal.model.IComposite;
@@ -194,10 +196,10 @@ public class FileBasedElementMapping extends ElementMapping {
         defaultSequence.setValue("type", getDefaultSequenceType().getCanonicalName());
 
         DataAdaptor defaultDrift = daElements.createChild("drift");
-        defaultDrift.setValue("type", getDrift().getCanonicalName());
+        defaultDrift.setValue("type", getDriftType().getCanonicalName());
 
         DataAdaptor defaultRfCavDrift = daElements.createChild("rfcavdrift");
-        defaultRfCavDrift.setValue("type", getRfCavityDrift().getCanonicalName());
+        defaultRfCavDrift.setValue("type", getRfCavityDriftType().getCanonicalName());
 
         DataAdaptor daAssoc = daCfg.createChild("associations");
 
@@ -241,6 +243,23 @@ public class FileBasedElementMapping extends ElementMapping {
 	protected FileBasedElementMapping() {
 	}
 	
+        public FileBasedElementMapping(ElementMapping elementMapping) {
+            bolSubsectionCtrOrigin = elementMapping.bolSubsectionCtrOrigin;
+            bolDebug = elementMapping.bolDebug;
+            bolSubsectionCtrOrigin = elementMapping.bolSubsectionCtrOrigin;
+
+            this.elementMapping = elementMapping.elementMapping;
+
+            try {
+                setDefaultElement(elementMapping.getDefaultElementType().getCanonicalName());
+                setDefaultSequence(elementMapping.getDefaultSequenceType().getCanonicalName());
+                setDrift(elementMapping.getDriftType().getCanonicalName());
+                setRfCavityDrift(elementMapping.getRfCavityDriftType().getCanonicalName());
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(FileBasedElementMapping.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
 	
 	/*
 	 * ElementMapping Requirements
@@ -348,7 +367,7 @@ public class FileBasedElementMapping extends ElementMapping {
 		
 	}
 
-    private  Class<? extends IComponent> getDrift() {
+    protected  Class<? extends IComponent> getDriftType() {
         return clsDriftElem;
     }
     
@@ -357,7 +376,7 @@ public class FileBasedElementMapping extends ElementMapping {
         this.clsRfCavDriftElem = (Class<? extends IComponent>) Class.forName(strClsName);
     }
 
-    private  Class<? extends IComponent> getRfCavityDrift() {
+    protected  Class<? extends IComponent> getRfCavityDriftType() {
         return clsRfCavDriftElem;
     }
 

@@ -131,6 +131,32 @@ public final class AcceleratorNodeFactory {
     public Map<String, Class<?>> getClassTable() {
         return _classTable;
     }
+
+    public static AcceleratorNodeFactory getDefaultFactory() {
+        AcceleratorNodeFactory factory = new AcceleratorNodeFactory();
+
+        factory.registerNodeClass("sequence", AcceleratorSeq.class);
+        factory.registerNodeClass("dh", Dipole.class);
+        factory.registerNodeClass("dhe", EDipole.class);
+        factory.registerNodeClass("dve", EDipole.class);
+        factory.registerNodeClass("QSC", Quadrupole.class);
+        factory.registerNodeClass("q", Quadrupole.class);
+        factory.registerNodeClass("qhe", EQuad.class);
+        factory.registerNodeClass("qve", EQuad.class);
+        factory.registerNodeClass("pq", PermQuadrupole.class);
+        factory.registerNodeClass("S", Sextupole.class);
+        factory.registerNodeClass("SOL", Solenoid.class);
+        factory.registerNodeClass("rfgap", RfGap.class);
+        factory.registerNodeClass("bcm", Marker.class);
+        factory.registerNodeClass("dch", DipoleCorr.class);
+        factory.registerNodeClass("dcv", DipoleCorr.class);
+        factory.registerNodeClass("EKick", ExtractionKicker.class);
+        factory.registerNodeClass("bpm", BPM.class);
+        factory.registerNodeClass("bsm", BunchShapeMonitor.class);
+        factory.registerNodeClass("blm", BLM.class);
+        factory.registerNodeClass("ws", Marker.class);
+        factory.registerNodeClass("marker", Marker.class);
+        
+        return factory;
+    }
 }
-
-

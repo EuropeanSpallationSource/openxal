@@ -10,6 +10,7 @@ import xal.ca.ChannelFactory;
 import java.util.*;
 import java.lang.reflect.*;
 import java.text.*;
+import xal.sim.scenario.DefaultElementMapping;
 
 /** 
  * The hierarchical tree of accelerator nodes, elements and sequences of elements.
@@ -321,6 +322,10 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
 
 		// initialize the timing center
 		_timingCenter = new TimingCenter();
+                
+                _nodeFactory = AcceleratorNodeFactory.getDefaultFactory();
+                
+                elementMapping = DefaultElementMapping.getInstance();
 	}
 
 
