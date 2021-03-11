@@ -290,7 +290,6 @@ public class AcceleratorTreeView extends VBox {
                 parentItem.getChildren().add(item);
             }
         } else if (node instanceof AcceleratorSeq) {
-
             // Sequences are always shown.
             parentItem.getChildren().add(item);
         } else {

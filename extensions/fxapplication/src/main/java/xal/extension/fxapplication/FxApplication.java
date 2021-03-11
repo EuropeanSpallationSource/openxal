@@ -198,9 +198,12 @@ abstract public class FxApplication extends Application {
                     acceleratorMainPath = latticeErrorDialog("Default accelerator lattice not found", "Press OK to open file dialog to select the path to the accelerator lattice files or Cancel to close the application.");
                 }
 
-                DOCUMENT.acceleratorXMLManager = XMLDataManager.managerWithFilePath(acceleratorMainPath);
+                setAcceleratorWithPath(acceleratorMainPath);
                 Logger.getLogger(FxApplication.class.getName()).log(Level.INFO, "Loading default accelerator {0}", XMLDataManager.defaultPath());
-                DOCUMENT.accelerator.setAccelerator(DOCUMENT.acceleratorXMLManager.getAccelerator());
+                if (DOCUMENT.getAccelerator() == null) {
+                    Logger.getLogger(FxApplication.class.getName()).log(Level.INFO, "Problems loading default accelerator and no other accelerator selected.\nAborting loading of application.");
+                    stop();
+                }
             }
 
             MENU_BAR = new MenuBar();
@@ -597,8 +600,41 @@ abstract public class FxApplication extends Application {
 
     protected void loadDefaultAcceleratorMenuHandler() {
         Logger.getLogger(getClass().getName()).log(Level.INFO, "Loading default accelerator.");
-        DOCUMENT.acceleratorXMLManager = XMLDataManager.getDefaultInstance();
-        DOCUMENT.accelerator.setAccelerator(XMLDataManager.loadDefaultAccelerator());
+        setAcceleratorWithPath(XMLDataManager.defaultPath());
+    }
+
+    protected void setAcceleratorWithPath(String acceleratorPath) {
+        try {
+            XMLDataManager acceleratorXMLManager = XMLDataManager.managerWithFilePath(acceleratorPath);
+            Accelerator accelerator = acceleratorXMLManager.getAccelerator();
+            DOCUMENT.acceleratorXMLManager = acceleratorXMLManager;
+            DOCUMENT.accelerator.setAccelerator(accelerator);
+        } catch (ParseException | ClassCastException ex) {
+            Alert alert = new Alert(AlertType.WARNING);
+            alert.setTitle("Load Accelerator Warning");
+            if (ex instanceof ParseException) {
+                alert.setHeaderText("Invalid file selected");
+            } else if (ex instanceof ClassCastException) {
+                alert.setHeaderText("File not compatible with this Open XAL version");
+            }
+            alert.setContentText("How to proceed?");
+
+            ButtonType buttonTypeLoad = new ButtonType("Load Accelerator");
+            ButtonType buttonTypeLoadDefault = new ButtonType("Load Default Accelerator");
+            ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
+            alert.getButtonTypes().setAll(buttonTypeLoad, buttonTypeLoadDefault, buttonTypeCancel);
+
+            Optional<ButtonType> result = alert.showAndWait();
+
+            if (result.get() == buttonTypeLoad) {
+                loadAcceleratorMenuHandler();
+            } else if (result.get() == buttonTypeLoadDefault) {
+                Logger.getLogger(getClass().getName()).log(Level.INFO, "Loading default accelerator.");
+                setAcceleratorWithPath(XMLDataManager.defaultPath());
+            } else {
+                Logger.getLogger(getClass().getName()).log(Level.INFO, "No accelerator selected.");
+            }
+        }
     }
 
     protected void loadAcceleratorMenuHandler() {
@@ -613,31 +649,7 @@ abstract public class FxApplication extends Application {
         File selectedFile = fileChooser.showOpenDialog(null);
         if (selectedFile != null) {
             Logger.getLogger(getClass().getName()).log(Level.INFO, "Loading accelerator from file.");
-            try {
-                XMLDataManager acceleratorXMLManager = XMLDataManager.managerWithFilePath(selectedFile.getAbsolutePath());
-                Accelerator accelerator = XMLDataManager.acceleratorWithPath(selectedFile.getAbsolutePath());
-                DOCUMENT.acceleratorXMLManager = acceleratorXMLManager;
-                DOCUMENT.accelerator.setAccelerator(accelerator);
-            } catch (ParseException ex) {
-                Alert alert = new Alert(AlertType.WARNING);
-                alert.setTitle("Load Accelerator Warning");
-                alert.setHeaderText("Invalid file selected");
-                alert.setContentText("How to proceed?");
-
-                ButtonType buttonTypeLoad = new ButtonType("Load Default Accelerator");
-                ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
-                alert.getButtonTypes().setAll(buttonTypeLoad, buttonTypeCancel);
-
-                Optional<ButtonType> result = alert.showAndWait();
-
-                if (result.get() == buttonTypeLoad) {
-                    Logger.getLogger(getClass().getName()).log(Level.INFO, "Loading default accelerator.");
-                    DOCUMENT.acceleratorXMLManager = XMLDataManager.getDefaultInstance();
-                    DOCUMENT.accelerator.setAccelerator(XMLDataManager.loadDefaultAccelerator());
-                } else {
-                    Logger.getLogger(getClass().getName()).log(Level.INFO, "No accelerator selected.");
-                }
-            }
+            setAcceleratorWithPath(selectedFile.getAbsolutePath());
         } else {
             Logger.getLogger(getClass().getName()).log(Level.INFO, "No accelerator selected.");
         }
