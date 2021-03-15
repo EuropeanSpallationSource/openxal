@@ -71,9 +71,9 @@ public abstract class ElementMapping {
 	public abstract Class<? extends IComposite> getDefaultSequenceType();
         
         
-	protected abstract Class<? extends IComponent> getDriftType();
+	public abstract Class<? extends IComponent> getDriftType();
         
-        protected abstract Class<? extends IComponent> getRfCavityDriftType();
+        public abstract Class<? extends IComponent> getRfCavityDriftType();
         
         
 	/**

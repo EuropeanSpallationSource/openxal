@@ -350,33 +350,28 @@ public class FileBasedElementMapping extends ElementMapping {
      * Internal Support
      */
     
-    @SuppressWarnings( "unchecked" )
-    private void setDefaultElement(String stringValue) throws ClassNotFoundException {
-        clsDefaultElem = (Class<? extends IComponent>) Class.forName(stringValue);      
+    public void setDefaultElement(String stringValue) throws ClassNotFoundException {
+        clsDefaultElem = (Class<? extends IComponent>) Class.forName(stringValue);
     }
-    
-    @SuppressWarnings("unchecked")
-    private void setDefaultSequence(String strClassType) throws ClassNotFoundException {
+
+    public void setDefaultSequence(String strClassType) throws ClassNotFoundException {
         this.clsDefaultSeq = (Class<? extends IComposite>) Class.forName(strClassType);
     }
 
+    public void setDrift(String stringValue) throws ClassNotFoundException {
+        clsDriftElem = (Class<? extends IComponent>) Class.forName(stringValue);
 
-    @SuppressWarnings( "unchecked" )
-	private void setDrift(String stringValue) throws ClassNotFoundException {
-		clsDriftElem = (Class<? extends IComponent>) Class.forName(stringValue);
-		
-	}
+    }
 
-    protected  Class<? extends IComponent> getDriftType() {
+    public Class<? extends IComponent> getDriftType() {
         return clsDriftElem;
     }
-    
-    @SuppressWarnings( "unchecked" )
-    private void setRfCavityDrift(String strClsName) throws ClassNotFoundException {
+
+    public void setRfCavityDrift(String strClsName) throws ClassNotFoundException {
         this.clsRfCavDriftElem = (Class<? extends IComponent>) Class.forName(strClsName);
     }
 
-    protected  Class<? extends IComponent> getRfCavityDriftType() {
+    public  Class<? extends IComponent> getRfCavityDriftType() {
         return clsRfCavDriftElem;
     }
 

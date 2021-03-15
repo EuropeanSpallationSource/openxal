@@ -91,12 +91,12 @@ public class JElsElementMapping extends ElementMapping {
     }
 
     @Override
-    protected Class<? extends IComponent> getDriftType() {
+    public Class<? extends IComponent> getDriftType() {
         return IdealDrift.class;
     }
 
     @Override
-    protected Class<? extends IComponent> getRfCavityDriftType() {
+    public Class<? extends IComponent> getRfCavityDriftType() {
         return IdealRfCavityDrift.class;
     }
 }

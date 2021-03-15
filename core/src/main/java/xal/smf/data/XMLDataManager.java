@@ -66,7 +66,7 @@ public class XMLDataManager {
     private MainManager mainManager;
     private AcceleratorManager acceleratorManager;
     private TableManager tableManager;
-    private ElementMapping elementMapping;
+    private FileBasedElementMapping elementMapping;
 
     // by default, status flags are exported to a different file.
     private boolean statusFile = true;
@@ -77,11 +77,8 @@ public class XMLDataManager {
      * Primary Constructor
      */
     public XMLDataManager(final String urlPath, final ChannelFactory channelFactory) {
-        DEVICE_MANAGER = new DeviceManager(channelFactory);
-        TIMING_MANAGER = new TimingDataManager(channelFactory);
-        acceleratorManager = new AcceleratorManager(channelFactory);
-        tableManager = new TableManager();
-        mainManager = new MainManager(urlPath);
+        this(channelFactory);
+        mainManager.setMainUrlSpec(urlPath);
         try {
             mainManager.refresh();
         } catch (XmlDataAdaptor.ResourceNotFoundException exception) {
@@ -89,6 +86,14 @@ public class XMLDataManager {
             System.err.println(exception);
             exception.printStackTrace();
         }
+    }
+
+    private XMLDataManager(ChannelFactory channelFactory) {
+        DEVICE_MANAGER = new DeviceManager(channelFactory);
+        TIMING_MANAGER = new TimingDataManager(channelFactory);
+        acceleratorManager = new AcceleratorManager(channelFactory);
+        tableManager = new TableManager();
+        mainManager = new MainManager();
     }
 
     /**
@@ -103,6 +108,18 @@ public class XMLDataManager {
      */
     static public XMLDataManager getInstance(final URL url) {
         return new XMLDataManager(url.toString());
+    }
+
+    /**
+     * Create and return a new empty XMLDataManager. The sources take default
+     * values unless they are specified afterwards.
+     *
+     * @param channelFactory the channel factory for generating channels within
+     * the accelerator (nodes, timing, etc.)
+     * @return The new XMLDataManager
+     */
+    static public XMLDataManager newEmptyManager(ChannelFactory channelFactory) {
+        return new XMLDataManager(channelFactory);
     }
 
     /**
@@ -372,10 +389,24 @@ public class XMLDataManager {
     }
 
     /**
+     * Set the URL spec for the hardware status
+     */
+    public void setHardwareStatusUrlSpec(String urlSpec) {
+        acceleratorManager.setHardwareStatusUrlSpec(urlSpec);
+    }
+
+    /**
      * Get the URL spec for the power supplies
      */
     public String getPowerSuppliesUrlSpec() {
         return acceleratorManager.getPowerSuppliesUrlSpec();
+    }
+
+    /**
+     * Set the URL spec for the power supplies
+     */
+    public void setPowerSuppliesUrlSpec(String urlSpec) {
+        acceleratorManager.setPowerSuppliesUrlSpec(urlSpec);
     }
 
     /**
@@ -549,12 +580,8 @@ public class XMLDataManager {
         accelerator.setPowerSuppliesFile(powerSuppliesFile);
 
         writeEditContext(editContext);
-        if (statusFile) {
-            writeStatus(accelerator);
-        }
-        if (powerSuppliesFile) {
-            writePowerSupplies(accelerator);
-        }
+        writeStatus(accelerator);
+        writePowerSupplies(accelerator);
         writeOptics(accelerator);
         writeDeviceMapping(accelerator);
         writeElementMapping(accelerator);
@@ -581,7 +608,9 @@ public class XMLDataManager {
      * @param accelerator The accelerator to extract the status flags.
      */
     public void writeStatus(Accelerator accelerator) {
-        acceleratorManager.writeStatus(accelerator);
+        if (statusFile) {
+            acceleratorManager.writeStatus(accelerator);
+        }
     }
 
     /**
@@ -591,7 +620,9 @@ public class XMLDataManager {
      * @param accelerator The accelerator that contains the power supplies.
      */
     public void writePowerSupplies(Accelerator accelerator) {
-        acceleratorManager.writePowerSupplies(accelerator);
+        if (powerSuppliesFile) {
+            acceleratorManager.writePowerSupplies(accelerator);
+        }
     }
 
     /**
@@ -695,10 +726,13 @@ public class XMLDataManager {
         protected String mainSchema = "/xal/schemas/main.xsd";
 
         /**
-         * Constructor
+         * Constructors
          */
         public MainManager(final String urlSpec) {
             setMainUrlSpec(urlSpec);
+        }
+
+        public MainManager() {
         }
 
         /**
@@ -810,9 +844,9 @@ public class XMLDataManager {
                 final String strUrlModelCfg = daModelConfig.stringValue(MODELCONFIG_URL_KEY);
                 setElementMappingUrlSpec(strUrlModelCfg);
                 final String urlModelConfig = absoluteUrlSpec(strUrlModelCfg);
-                elementMapping = FileBasedElementMapping.loadFrom(urlModelConfig, FileBasedElementMapping.elementMappingSchema);
+                elementMapping = (FileBasedElementMapping) FileBasedElementMapping.loadFrom(urlModelConfig, FileBasedElementMapping.elementMappingSchema);
             } else {
-                elementMapping = DefaultElementMapping.getInstance();
+                elementMapping = new FileBasedElementMapping(DefaultElementMapping.getInstance());
             }
 
             // fetch the table group references
@@ -926,9 +960,12 @@ public class XMLDataManager {
         private List<String> extraUrlSpecs;
         private String xdxfSchema;
         public static final String acceleratorTag = "xdxf";
-        private final String defaultHardwareStatusUrlSpec = "hardware_status.xdxf";
-        private final String defaultPowerSuppliesUrlSpec = "power_supplies.xdxf";
-        private final String defaultElementMappingUrlSpec = "elementMapping.impl";
+        private static final String defaultOpticsUrlSpec = "lattice.xdxf";
+        private static final String defaultHardwareStatusUrlSpec = "hardwareStatus.xdxf";
+        private static final String defaultPowerSuppliesUrlSpec = "powerSupplies.xdxf";
+        private static final String defaultElementMappingUrlSpec = "elementMapping.impl";
+
+        private boolean emptyStatus = false;
 
         /**
          * Constructor
@@ -979,7 +1016,11 @@ public class XMLDataManager {
          * get the hardware status URL spec
          */
         public String getHardwareStatusUrlSpec() {
-            return hardwareStatusUrlSpec;
+            if (emptyStatus) {
+                return null;
+            } else {
+                return hardwareStatusUrlSpec;
+            }
         }
 
         /**
@@ -1096,6 +1137,9 @@ public class XMLDataManager {
          * write the accelerator out to the optics file
          */
         public void write(final Accelerator accelerator) throws XmlDataAdaptor.WriteException, XmlDataAdaptor.CreationException {
+            if (opticsUrlSpec == null) {
+                opticsUrlSpec = defaultOpticsUrlSpec;
+            }
             String absoluteUrlSpec = absoluteUrlSpec(opticsUrlSpec);
             XmlDataAdaptor adaptor = XmlDataAdaptor.newDocumentAdaptor(accelerator, dtdUrlSpec);
             adaptor.writeToUrlSpec(absoluteUrlSpec);
@@ -1111,7 +1155,10 @@ public class XMLDataManager {
             String absoluteUrlSpec = absoluteUrlSpec(hardwareStatusUrlSpec);
             XmlDataAdaptor adaptor = XmlDataAdaptor.newEmptyDocumentAdaptor();
             accelerator.writeStatus(adaptor);
-            adaptor.writeToUrlSpec(absoluteUrlSpec);
+            emptyStatus = adaptor.childAdaptors().isEmpty();
+            if (!emptyStatus) {
+                adaptor.writeToUrlSpec(absoluteUrlSpec);
+            }
         }
 
         /**
@@ -1137,8 +1184,8 @@ public class XMLDataManager {
             }
             String absoluteUrlSpec = absoluteUrlSpec(elementMappingUrlSpec);
 
-            elementMapping = accelerator.getElementMapping();
-            ((FileBasedElementMapping) elementMapping).saveTo(absoluteUrlSpec);
+            elementMapping = new FileBasedElementMapping(accelerator.getElementMapping());
+            elementMapping.saveTo(absoluteUrlSpec);
         }
 
         public void writeFieldMaps(final Accelerator accelerator) {
