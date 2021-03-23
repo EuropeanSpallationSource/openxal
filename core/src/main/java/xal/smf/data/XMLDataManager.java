@@ -19,7 +19,6 @@ import org.w3c.dom.DocumentType;
 
 import xal.ca.ChannelFactory;
 import xal.sim.scenario.DefaultElementMapping;
-import xal.sim.scenario.ElementMapping;
 import xal.sim.scenario.FileBasedElementMapping;
 import xal.smf.Accelerator;
 import xal.smf.AcceleratorNode;

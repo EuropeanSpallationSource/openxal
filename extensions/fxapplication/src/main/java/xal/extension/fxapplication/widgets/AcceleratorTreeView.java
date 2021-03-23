@@ -265,8 +265,12 @@ public class AcceleratorTreeView extends VBox {
      */
     public TreeItem<AcceleratorNode> addElement(AcceleratorNode node) {
         AcceleratorNode parent = node.getParent();
-        TreeItem<AcceleratorNode> parentItem = findElement(parent.getId());
-        return addElement(node, parentItem);
+        if (parent instanceof Accelerator) {
+            return addElement(node, acceleratorTreeView.getRoot());
+        } else {
+            TreeItem<AcceleratorNode> parentItem = findElement(parent.getId());
+            return addElement(node, parentItem);
+        }
     }
 
     private TreeItem<AcceleratorNode> addElement(AcceleratorNode node, TreeItem<AcceleratorNode> parentItem) {
@@ -284,6 +288,9 @@ public class AcceleratorTreeView extends VBox {
 
     private void addItem(TreeItem<AcceleratorNode> item, TreeItem<AcceleratorNode> parentItem) {
         AcceleratorNode node = item.getValue();
+        if (!(node instanceof AcceleratorSeq) && typeMap.get(node.getType()) == null) {
+            addTypeMenuItem(node.getType());
+        }
         if (node instanceof RfCavity) {
             // Add RfCavity node if it is selected in the filter or if it has children visible.
             if (alwaysShowRfCavities || typeMap.get(node.getType()).isSelected() || !item.getChildren().isEmpty()) {
@@ -498,7 +505,6 @@ public class AcceleratorTreeView extends VBox {
         if (!allFiltersSelectedFlag) {
             this.selectFilters(filters, true);
         }
-
     }
 
     private void addTypeMenuItem(String type) {
@@ -574,6 +580,10 @@ public class AcceleratorTreeView extends VBox {
      * Select the node with the given node ID, if found on the TreeView. It
      * automatically expand all parent node and scroll to make the selected node
      * visible, if needed.
+     * <p>
+     * If called right after the TreeView is updated, make sure it is called
+     * using Platform.runLater() to make sure it is executed after the TreeView
+     * is updated.
      *
      * @param nodeId The element's node ID.
      * @return True if the element has been found.
