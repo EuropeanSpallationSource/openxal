@@ -22,4 +22,5 @@
     <device icon="BLM.png" class="xal.smf.impl.BLM"/>
     <device icon="marker.png" class="xal.smf.impl.Marker"/>
     <device icon="SEQ.png" class="xal.smf.AcceleratorSeq"/>
+    <device icon="PS.png" class="xal.smf.impl.MagnetPowerSupply"/>
 </iconMapping>

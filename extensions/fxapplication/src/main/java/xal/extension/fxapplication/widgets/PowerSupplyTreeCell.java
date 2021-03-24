@@ -20,17 +20,16 @@ package xal.extension.fxapplication.widgets;
 import java.lang.reflect.InvocationTargetException;
 import static java.util.logging.Level.WARNING;
 import javafx.scene.layout.StackPane;
-import xal.smf.Accelerator;
-import xal.smf.AcceleratorNode;
+import xal.smf.impl.MagnetPowerSupply;
 
 /**
  *
  * @author Juan F. Esteban Müller <juanf.estebanmuller@ess.eu>
  */
-public class AcceleratorNodeTreeCell extends ElementTreeCell<AcceleratorNode> {
+public class PowerSupplyTreeCell extends ElementTreeCell<MagnetPowerSupply> {
 
     @Override
-    protected void updateItem(AcceleratorNode item, boolean empty) {
+    protected void updateItem(MagnetPowerSupply item, boolean empty) {
 
         super.updateItem(item, empty);
 
@@ -42,9 +41,6 @@ public class AcceleratorNodeTreeCell extends ElementTreeCell<AcceleratorNode> {
 
             // Update Labels
             String classNameInfo = item.getId();
-            if (item instanceof Accelerator) {
-                classNameInfo = ((Accelerator) item).getSystemId();
-            }
 
             classNameInfoLabel.setText(classNameInfo);
             classNameInfoLabel.setManaged(classNameInfo != null);
