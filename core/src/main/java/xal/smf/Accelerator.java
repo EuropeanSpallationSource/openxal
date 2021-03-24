@@ -311,11 +311,11 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
 		//System.out.println( "Instantiating Accelerator with channel factory: " + channelFactory );
 
 		m_strSysId = sysId;
-		_comboSequences = new HashMap<String,AcceleratorSeqCombo>();
+		_comboSequences = new LinkedHashMap<String,AcceleratorSeqCombo>();
 
 		// Create hash maps to hold the main and trim power supplies
-		magnetMainSupplies = new HashMap<String,MagnetMainSupply>();
-		magnetTrimSupplies = new HashMap<String,MagnetTrimSupply>();
+		magnetMainSupplies = new LinkedHashMap<String,MagnetMainSupply>();
+		magnetTrimSupplies = new LinkedHashMap<String,MagnetTrimSupply>();
 
 		// Create an edit context to hold dynamic data -tap 6/7/2002
 		editContext = new EditContext();
