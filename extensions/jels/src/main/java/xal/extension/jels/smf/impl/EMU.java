@@ -21,9 +21,8 @@ import xal.ca.Channel;
 import xal.ca.ChannelFactory;
 import xal.ca.ConnectionException;
 import xal.ca.GetException;
-import xal.extension.jels.smf.attr.NPMBucket;
 import xal.smf.AcceleratorNode;
-import xal.smf.attr.AttributeBucket;
+import xal.smf.ChannelHandle;
 import xal.smf.impl.qualify.ElementTypeManager;
 
 /**
@@ -38,17 +37,23 @@ public class EMU extends AcceleratorNode {
      */
     public static final String s_strType = "EMU";
 
-    // EMU channel handles              
+    // EMU channel handles           
+    @ChannelHandle   
     public static final String EMITT_X_HANDLE = "xEmitt";
     private Channel emittXC = null;
+    @ChannelHandle
     public static final String EMITT_Y_HANDLE = "yEmitt";
     private Channel emittYC = null;
+    @ChannelHandle
     public static final String ALPHA_Y_TWISS_HANDLE = "yAlphaTwiss";
     private Channel alphayTwissC = null;
+    @ChannelHandle
     public static final String BETA_Y_TWISS_HANDLE = "yBetaTwiss";
     private Channel betayTwissC = null;
+    @ChannelHandle
     public static final String ALPHA_X_TWISS_HANDLE = "xAlphaTwiss";
     private Channel alphaxTwissC = null;
+    @ChannelHandle
     public static final String BETA_X_TWISS_HANDLE = "xBetaTwiss";
     private Channel betaxTwissC = null;
 

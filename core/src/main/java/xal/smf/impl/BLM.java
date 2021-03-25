@@ -27,18 +27,21 @@ public class BLM extends AcceleratorNode {
     /**
      * BLMs official avg channel handle
      */
+    @ChannelHandle
     public static final String LOSS_AVG_HANDLE = "lossAvg";
     private Channel lossAvgC = null;
 
     /**
      * BLMs official integrated channel handle
      */
+    @ChannelHandle
     public static final String LOSS_INT_HANDLE = "lossInt";
     private Channel lossIntC = null;
     
    /**
      * BLM official tAvgLen channel handle
      */
+    @ChannelHandle
     public static final String T_AVG_LEN_HANDLE = "tAvgLen";
     private Channel tAvgLenC = null;
 

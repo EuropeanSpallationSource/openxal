@@ -23,6 +23,7 @@ import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.ca.PutException;
 import xal.smf.AcceleratorNode;
+import xal.smf.ChannelHandle;
 import xal.smf.impl.qualify.ElementTypeManager;
 
 /**
@@ -37,16 +38,22 @@ public class Chopper extends AcceleratorNode {
      */
     public static final String s_strType = "CHP";
 
+    @ChannelHandle
     public static final String LENGTH_RB_HANDLE = "lengthRB";
     private Channel lengthRC = null;
+    @ChannelHandle(readback=Chopper.LENGTH_RB_HANDLE)
     public static final String LENGTH_SET_HANDLE = "lengthS";
     private Channel lengthSC = null;
+    @ChannelHandle
     public static final String DELAY_RB_HANDLE = "delayRB";
     private Channel delayRC = null;
+    @ChannelHandle(readback=Chopper.DELAY_RB_HANDLE)
     public static final String DELAY_SET_HANDLE = "delayS";
     private Channel delaySC = null;
+    @ChannelHandle
     public static final String STATUS_RB_HANDLE = "statusRB";
     private Channel statusRC = null;
+    @ChannelHandle(readback=Chopper.STATUS_RB_HANDLE)
     public static final String STATUS_SET_HANDLE = "statusS";
     private Channel statusSC = null;
 
@@ -74,9 +81,6 @@ public class Chopper extends AcceleratorNode {
      */
     public Chopper(final String strId, final ChannelFactory channelFactory) {
         super(strId, channelFactory);
-        addReadBackHandle(LENGTH_SET_HANDLE, LENGTH_RB_HANDLE);
-        addReadBackHandle(DELAY_SET_HANDLE, DELAY_RB_HANDLE);
-        addReadBackHandle(STATUS_SET_HANDLE, STATUS_RB_HANDLE);
     }
 
     /**

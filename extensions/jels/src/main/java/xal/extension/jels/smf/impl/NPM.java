@@ -22,6 +22,7 @@ import xal.ca.ChannelFactory;
 import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.extension.jels.smf.attr.NPMBucket;
+import xal.smf.ChannelHandle;
 import xal.smf.attr.AttributeBucket;
 import xal.smf.impl.BPM;
 import xal.smf.impl.qualify.ElementTypeManager;
@@ -45,20 +46,28 @@ public class NPM extends BPM {
     protected NPMBucket npmBucket;
 
     // NPM channel handles
+    @ChannelHandle
     public static final String Y_P_AVG_HANDLE = "ypAvg";
     private Channel ypAvgC = null;
+    @ChannelHandle
     public static final String X_P_AVG_HANDLE = "xpAvg";
     private Channel xpAvgC = null;
+    @ChannelHandle
     public static final String SIGMA_Y_AVG_HANDLE = "ySigma";
     private Channel sigmayAvgC = null;
+    @ChannelHandle
     public static final String SIGMA_X_AVG_HANDLE = "xSigma";
     private Channel sigmaxAvgC = null;
+    @ChannelHandle
     public static final String ALPHA_Y_TWISS_HANDLE = "yAlphaTwiss";
     private Channel alphayTwissC = null;
+    @ChannelHandle
     public static final String BETA_Y_TWISS_HANDLE = "yBetaTwiss";
     private Channel betayTwissC = null;
+    @ChannelHandle
     public static final String ALPHA_X_TWISS_HANDLE = "xAlphaTwiss";
     private Channel alphaxTwissC = null;
+    @ChannelHandle
     public static final String BETA_X_TWISS_HANDLE = "xBetaTwiss";
     private Channel betaxTwissC = null;
 

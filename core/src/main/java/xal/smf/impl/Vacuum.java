@@ -37,6 +37,7 @@ public abstract class Vacuum extends AcceleratorNode  {
     /**
      * vacuum official pressure channel handle
      */
+    @ChannelHandle
     public static final String PRESS_HANDLE = "P";
     private Channel pressC = null;
 

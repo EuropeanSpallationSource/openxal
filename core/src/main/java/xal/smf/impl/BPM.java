@@ -31,46 +31,55 @@ public class BPM extends AcceleratorNode {
     /**
      * BPMs official xAvg channel handle
      */
+    @ChannelHandle
     public static final String X_AVG_HANDLE = "xAvg";
     private Channel xAvgC = null;
     /**
      * BPMs official yAvg channel handle
      */
+    @ChannelHandle
     public static final String Y_AVG_HANDLE = "yAvg";
     private Channel yAvgC = null;
     /**
      * BPMs official ampAvg channel handle
      */
+    @ChannelHandle
     public static final String AMP_AVG_HANDLE = "amplitudeAvg";
     private Channel ampAvgC = null;
     /**
      * BPMs official phaseAvg channel handle
      */
+    @ChannelHandle
     public static final String PHASE_AVG_HANDLE = "phaseAvg";
     private Channel phaseAvgC = null;
     /**
      * BPMs official x turn-by-turn channel handle
      */
+    @ChannelHandle
     public static final String X_TBT_HANDLE = "xTBT";
     private Channel xTBTC = null;
     /**
      * BPMs official y turn-by-turn channel handle
      */
+    @ChannelHandle
     public static final String Y_TBT_HANDLE = "yTBT";
     private Channel yTBTC = null;
     /**
      * BPMs official amplitude turn-by-turn channel handle
      */
+    @ChannelHandle
     public static final String AMP_TBT_HANDLE = "ampTBT";
     private Channel ampTBTC = null;
     /**
      * BPMs official phase turn-by-turn channel handle
      */
+    @ChannelHandle
     public static final String PHASE_TBT_HANDLE = "phaseTBT";
     private Channel phaseTBTC = null;
     /**
      * BPM official tAvgLen channel handle
      */
+    @ChannelHandle
     public static final String T_AVG_LEN_HANDLE = "tAvgLen";
     private Channel tAvgLenC = null;
 

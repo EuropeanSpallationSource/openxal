@@ -6,6 +6,7 @@ import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.tools.data.DataAdaptor;
 import xal.smf.AcceleratorNode;
+import xal.smf.ChannelHandle;
 import xal.smf.attr.AttributeBucket;
 import xal.smf.attr.MagnetBucket;
 import xal.smf.impl.qualify.ElementTypeManager;
@@ -30,6 +31,7 @@ public class Electrostatic extends AcceleratorNode {
 	protected boolean _useFieldReadback;
     
     /** field readback handle */
+    @ChannelHandle
     public static final String FIELD_RB_HANDLE = "fieldRB";
     
     /** the ID of this magnet's main power supply */

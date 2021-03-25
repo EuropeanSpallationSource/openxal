@@ -30,6 +30,7 @@ abstract public class Electromagnet extends Magnet {
     public static final String      s_strType   = "emag";
 	
     /** field readback handle */
+    @ChannelHandle
     public static final String FIELD_RB_HANDLE = "fieldRB";
     
 	/** indicates whether to use the actual field readback or the field setting in the getField() method */
@@ -54,8 +55,6 @@ abstract public class Electromagnet extends Magnet {
 	public Electromagnet( final String strId, final ChannelFactory channelFactory )     {
 		super( strId, channelFactory );
 		_useFieldReadback = true;		// by default use the field readback
-                addReadBackHandle(MagnetMainSupply.FIELD_SET_HANDLE, FIELD_RB_HANDLE);
-                addReadBackHandle(MagnetMainSupply.CURRENT_SET_HANDLE, MagnetMainSupply.CURRENT_RB_HANDLE);
 	}
 
 

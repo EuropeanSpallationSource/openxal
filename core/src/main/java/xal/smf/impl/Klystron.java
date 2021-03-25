@@ -1,21 +1,25 @@
 package xal.smf.impl;
 
 import xal.ca.Channel;
-import xal.ca.ChannelFactory;
 import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.ca.PutException;
 import xal.tools.data.DataAdaptor;
 import xal.tools.data.DataListener;
 import xal.smf.Accelerator;
+import xal.smf.ChannelHandle;
 import xal.smf.ChannelSuite;
 import xal.smf.NoSuchChannelException;
 
 public class Klystron implements DataListener {
 
+        @ChannelHandle(readback=Klystron.KLYS_AMP_RB_HANDLE)
 	static public final String KLYS_AMP_SET_HANDLE = "klysAmpSet";
+        @ChannelHandle(readback=Klystron.KLYS_PHASE_SET_HANDLE)
 	static public final String KLYS_PHASE_SET_HANDLE = "klysPhaseSet";
+        @ChannelHandle
 	static public final String KLYS_AMP_RB_HANDLE = "klysAmp";
+        @ChannelHandle
 	static public final String KLYS_PHASE_RB_HANDLE = "klysPhase";
 	
 	protected Accelerator accelerator;
