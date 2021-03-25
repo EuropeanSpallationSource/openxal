@@ -18,18 +18,11 @@
 package xal.extension.fxapplication.widgets;
 
 import java.util.logging.Logger;
-import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.value.ChangeListener;
-import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
-import javafx.scene.control.MultipleSelectionModel;
 import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
-import javafx.scene.control.skin.VirtualFlow;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import xal.extension.fxapplication.XalFxDocument;
@@ -53,15 +46,8 @@ import xal.smf.AcceleratorSeqCombo;
  * <p>
  * @author Juan F. Esteban Müller <juanf.estebanmuller@ess.eu>
  */
-public class ComboSequencesTreeView extends VBox {
+public class ComboSequencesTreeView extends XalTreeView<AcceleratorNode> {
 
-    private final TreeView comboSequencesTreeView = new TreeView();
-
-    private final HBox titlebar = new HBox();
-    private final HBox titlebox = new HBox();
-    
-    private final HBox bottombar = new HBox();
-    
     public ComboSequencesTreeView() {
         // Top bar
         titlebox.setPadding(new Insets(5));
@@ -70,27 +56,10 @@ public class ComboSequencesTreeView extends VBox {
         titlebar.getChildren().add(titlebox);
 
         // TreeView
-        comboSequencesTreeView.setCellFactory(p -> new AcceleratorNodeTreeCell());
+        treeView.setCellFactory(p -> new AcceleratorNodeTreeCell());
 
-        getChildren().addAll(titlebar, comboSequencesTreeView, bottombar);
-        VBox.setVgrow(comboSequencesTreeView, Priority.ALWAYS);
-    }
-
-    public HBox getTitlebar() {
-        return titlebar;
-    }
-
-    public HBox getBottombar() {
-        return bottombar;
-    }
-
-    /**
-     * Returns the property to
-     *
-     * @return
-     */
-    public ReadOnlyObjectProperty<TreeItem<AcceleratorNode>> selectedItemProperty() {
-        return comboSequencesTreeView.getSelectionModel().selectedItemProperty();
+        getChildren().addAll(titlebar, treeView, bottombar);
+        VBox.setVgrow(treeView, Priority.ALWAYS);
     }
 
     /**
@@ -101,6 +70,7 @@ public class ComboSequencesTreeView extends VBox {
      * is expected to be decoupled from the document, then use the update
      * method.
      */
+    @Override
     public void setDocument(XalFxDocument document) {
         update(document.getAccelerator());
         document.getAcceleratorProperty().addChangeListener((ChangeListener<Accelerator>) (ov, oldAccelerator, newAccelerator) -> {
@@ -108,11 +78,12 @@ public class ComboSequencesTreeView extends VBox {
         });
     }
 
+    @Override
     public void update(Accelerator accelerator) {
         TreeItem<AcceleratorNode> rootNode = new TreeItem<>(null, null);
         rootNode.setExpanded(true);
-        comboSequencesTreeView.setRoot(rootNode);
-        comboSequencesTreeView.setShowRoot(false);
+        treeView.setRoot(rootNode);
+        treeView.setShowRoot(false);
 
         ImageView icon;
         TreeItem<AcceleratorNode> seqNodeItem;
@@ -124,78 +95,14 @@ public class ComboSequencesTreeView extends VBox {
 
         Logger.getLogger(getClass().getName()).fine("Updating combo sequences treeview.");
     }
-  /**
-     * Returns the AcceleratorNode of the selected item.
-     *
-     * @return The AcceleratorNode or null if none selected.
-     */
-    public AcceleratorNode getSelectedNode() {
-        MultipleSelectionModel<TreeItem<AcceleratorNode>> selectionModel = comboSequencesTreeView.getSelectionModel();
-        TreeItem<AcceleratorNode> selectedItem = selectionModel.getSelectedItem();
-        if (selectedItem != null) {
-            return selectedItem.getValue();
-        } else {
-            return null;
-        }
-    }
-    
-    /**
-     * Returns the node ID of the selected item.
-     *
-     * @return The node ID or null if none selected.
-     */
-    public String getSelectedNodeId() {
-        MultipleSelectionModel<TreeItem<AcceleratorNode>> selectionModel = comboSequencesTreeView.getSelectionModel();
-        TreeItem<AcceleratorNode> selectedItem = selectionModel.getSelectedItem();
-        if (selectedItem != null) {
-            return selectedItem.getValue().getId();
-        } else {
-            return null;
-        }
+
+    @Override
+    public TreeItem<AcceleratorNode> addElement(AcceleratorNode combo) {
+        return addElement(combo, treeView.getRoot());
     }
 
-    /**
-     * Clear the selection.
-     */
-    public void clearSelection() {
-        comboSequencesTreeView.getSelectionModel().clearSelection();
-    }
-
-    /**
-     * Select the node with the given node ID, if found on the TreeView. It
-     * automatically expand all parent node and scroll to make the selected node
-     * visible, if needed.
-     *
-     * @param nodeId The element's node ID.
-     * @return True if the element has been found.
-     */
-    public boolean selectElement(String nodeId) {
-        return selectElement(comboSequencesTreeView.getRoot(), nodeId);
-    }
-
-    private boolean selectElement(TreeItem<AcceleratorNode> parentNode, String nodeId) {
-        for (TreeItem<AcceleratorNode> treeItem : parentNode.getChildren()) {
-            if (nodeId.equals(treeItem.getValue().getId())) {
-                // Expand all parent items.
-                for (TreeItem parent = treeItem; parent.getParent() != null; parent = parent.getParent()) {
-                    parent.getParent().setExpanded(true);
-                }
-                // Select the element.
-                comboSequencesTreeView.getSelectionModel().select(treeItem);
-                // Scroll to the item if not visible.
-                int selectedIndex = comboSequencesTreeView.getSelectionModel().getSelectedIndex();
-                ObservableList<Node> childrenUnmodifiable = comboSequencesTreeView.getChildrenUnmodifiable();
-                VirtualFlow get = (VirtualFlow) childrenUnmodifiable.get(0);
-                if (selectedIndex >= get.getLastVisibleCell().getIndex() || selectedIndex <= get.getFirstVisibleCell().getIndex()) {
-                    comboSequencesTreeView.scrollTo(selectedIndex);
-                }
-                return true;
-            }
-            // Check also the children recursively.
-            if (selectElement(treeItem, nodeId)) {
-                return true;
-            }
-        }
-        return false;
+    @Override
+    protected String getId(TreeItem<AcceleratorNode> selectedItem) {
+        return selectedItem.getValue().getId();
     }
 }

@@ -19,18 +19,11 @@ package xal.extension.fxapplication.widgets;
 
 import java.net.URL;
 import java.util.logging.Logger;
-import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.value.ChangeListener;
-import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
-import javafx.scene.control.MultipleSelectionModel;
 import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
-import javafx.scene.control.skin.VirtualFlow;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import xal.extension.fxapplication.XalFxDocument;
@@ -54,14 +47,7 @@ import xal.smf.impl.MagnetPowerSupply;
  * <p>
  * @author Juan F. Esteban Müller <juanf.estebanmuller@ess.eu>
  */
-public class PowerSuppliesTreeView extends VBox {
-
-    private final TreeView powerSuppliesTreeView = new TreeView();
-
-    private final HBox titlebar = new HBox();
-    private final HBox titlebox = new HBox();
-
-    private final HBox bottombar = new HBox();
+public class PowerSuppliesTreeView extends XalTreeView<MagnetPowerSupply> {
 
     public PowerSuppliesTreeView() {
         // Top bar
@@ -71,37 +57,21 @@ public class PowerSuppliesTreeView extends VBox {
         titlebar.getChildren().add(titlebox);
 
         // TreeView
-        powerSuppliesTreeView.setCellFactory(p -> new PowerSupplyTreeCell());
+        treeView.setCellFactory(p -> new PowerSupplyTreeCell());
 
-        getChildren().addAll(titlebar, powerSuppliesTreeView, bottombar);
-        VBox.setVgrow(powerSuppliesTreeView, Priority.ALWAYS);
-    }
-
-    public HBox getTitlebar() {
-        return titlebar;
-    }
-
-    public HBox getBottombar() {
-        return bottombar;
-    }
-
-    /**
-     * Returns the property to
-     *
-     * @return
-     */
-    public ReadOnlyObjectProperty<TreeItem<MagnetPowerSupply>> selectedItemProperty() {
-        return powerSuppliesTreeView.getSelectionModel().selectedItemProperty();
+        getChildren().addAll(titlebar, treeView, bottombar);
+        VBox.setVgrow(treeView, Priority.ALWAYS);
     }
 
     /**
      * This method uses the accelerator property to update the tree every time
-     * the accelerator or the sequence is changed, and vice versa.
+     * the accelerator is changed, and vice versa.
      * <p>
      * Use this method for full integration with the document. If the TreeView
      * is expected to be decoupled from the document, then use the update
      * method.
      */
+    @Override
     public void setDocument(XalFxDocument document) {
         update(document.getAccelerator());
         document.getAcceleratorProperty().addChangeListener((ChangeListener<Accelerator>) (ov, oldAccelerator, newAccelerator) -> {
@@ -109,11 +79,12 @@ public class PowerSuppliesTreeView extends VBox {
         });
     }
 
+    @Override
     public void update(Accelerator accelerator) {
         TreeItem<MagnetPowerSupply> rootNode = new TreeItem<>(null, null);
         rootNode.setExpanded(true);
-        powerSuppliesTreeView.setRoot(rootNode);
-        powerSuppliesTreeView.setShowRoot(false);
+        treeView.setRoot(rootNode);
+        treeView.setShowRoot(false);
 
         ImageView icon;
         TreeItem<MagnetPowerSupply> seqNodeItem;
@@ -130,78 +101,13 @@ public class PowerSuppliesTreeView extends VBox {
         Logger.getLogger(getClass().getName()).fine("Updating power supplies treeview.");
     }
 
-    /**
-     * Returns the AcceleratorNode of the selected item.
-     *
-     * @return The AcceleratorNode or null if none selected.
-     */
-    public MagnetPowerSupply getSelectedNode() {
-        MultipleSelectionModel<TreeItem<MagnetPowerSupply>> selectionModel = powerSuppliesTreeView.getSelectionModel();
-        TreeItem<MagnetPowerSupply> selectedItem = selectionModel.getSelectedItem();
-        if (selectedItem != null) {
-            return selectedItem.getValue();
-        } else {
-            return null;
-        }
+    @Override
+    public TreeItem<MagnetPowerSupply> addElement(MagnetPowerSupply ps) {
+        return addElement(ps, treeView.getRoot());
     }
 
-    /**
-     * Returns the node ID of the selected item.
-     *
-     * @return The node ID or null if none selected.
-     */
-    public String getSelectedNodeId() {
-        MultipleSelectionModel<TreeItem<MagnetPowerSupply>> selectionModel = powerSuppliesTreeView.getSelectionModel();
-        TreeItem<MagnetPowerSupply> selectedItem = selectionModel.getSelectedItem();
-        if (selectedItem != null) {
-            return selectedItem.getValue().getId();
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Clear the selection.
-     */
-    public void clearSelection() {
-        powerSuppliesTreeView.getSelectionModel().clearSelection();
-    }
-
-    /**
-     * Select the node with the given node ID, if found on the TreeView. It
-     * automatically expand all parent node and scroll to make the selected node
-     * visible, if needed.
-     *
-     * @param nodeId The element's node ID.
-     * @return True if the element has been found.
-     */
-    public boolean selectElement(String nodeId) {
-        return selectElement(powerSuppliesTreeView.getRoot(), nodeId);
-    }
-
-    private boolean selectElement(TreeItem<MagnetPowerSupply> parentNode, String nodeId) {
-        for (TreeItem<MagnetPowerSupply> treeItem : parentNode.getChildren()) {
-            if (nodeId.equals(treeItem.getValue().getId())) {
-                // Expand all parent items.
-                for (TreeItem parent = treeItem; parent.getParent() != null; parent = parent.getParent()) {
-                    parent.getParent().setExpanded(true);
-                }
-                // Select the element.
-                powerSuppliesTreeView.getSelectionModel().select(treeItem);
-                // Scroll to the item if not visible.
-                int selectedIndex = powerSuppliesTreeView.getSelectionModel().getSelectedIndex();
-                ObservableList<Node> childrenUnmodifiable = powerSuppliesTreeView.getChildrenUnmodifiable();
-                VirtualFlow get = (VirtualFlow) childrenUnmodifiable.get(0);
-                if (selectedIndex >= get.getLastVisibleCell().getIndex() || selectedIndex <= get.getFirstVisibleCell().getIndex()) {
-                    powerSuppliesTreeView.scrollTo(selectedIndex);
-                }
-                return true;
-            }
-            // Check also the children recursively.
-            if (selectElement(treeItem, nodeId)) {
-                return true;
-            }
-        }
-        return false;
+    @Override
+    protected String getId(TreeItem<MagnetPowerSupply> selectedItem) {
+        return selectedItem.getValue().getId();
     }
 }

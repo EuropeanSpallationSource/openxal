@@ -17,26 +17,19 @@
  */
 package xal.extension.fxapplication.widgets;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Logger;
-import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.MultipleSelectionModel;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
-import javafx.scene.control.skin.VirtualFlow;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -59,7 +52,8 @@ import xal.smf.impl.RfCavity;
  * {@link update(AcceleratorSeq acceleratorSeq) update} method to set the
  * accelerator sequence that will be shown.
  * <p>
- * For integration with the application document, use the
+ * For integration with the application document, use the private
+ * EventHandler<MouseEvent> doubleClickEH;
  * {@link setDocument(XalFxDocument document) setDocument} method. It will
  * update the tree every time either the accelerator or the sequence is changed.
  * Double clicking a sequence results in setting the sequence in the document.
@@ -68,13 +62,12 @@ import xal.smf.impl.RfCavity;
  *
  * @author Juan F. Esteban Müller <juanf.estebanmuller@ess.eu>
  */
-public class AcceleratorTreeView extends VBox {
+public class AcceleratorTreeView extends XalTreeView<AcceleratorNode> {
 
     private XalFxDocument document;
 
-    private final TreeView acceleratorTreeView = new TreeView();
-
     private final Map<String, CheckMenuItem> typeMap = new TreeMap<>();
+
     private AcceleratorSeq currentSeq;
 
     private boolean alwaysShowRfCavities = false;
@@ -82,12 +75,7 @@ public class AcceleratorTreeView extends VBox {
     private boolean multipleSelectionFlag = false;
     private final Object lock = new Object();
 
-    private EventHandler<MouseEvent> doubleClickEH;
-
-    private final HBox titlebar = new HBox();
-    private final HBox titlebox = new HBox();
     private final MenuButton filterMenu = new MenuButton();
-    private final HBox bottombar = new HBox();
 
     public AcceleratorTreeView() {
         // Top bar
@@ -106,12 +94,12 @@ public class AcceleratorTreeView extends VBox {
         getChildren().add(titlebar);
 
         // TreeView
-        acceleratorTreeView.setCellFactory(p -> new AcceleratorNodeTreeCell());
+        treeView.setCellFactory(p -> new AcceleratorNodeTreeCell());
 
         // Set actions on mouse double-click
         doubleClickEH = (MouseEvent event) -> {
             if (document != null && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
-                TreeItem<AcceleratorNode> selectedItem = (TreeItem<AcceleratorNode>) acceleratorTreeView.getSelectionModel().getSelectedItem();
+                TreeItem<AcceleratorNode> selectedItem = (TreeItem<AcceleratorNode>) treeView.getSelectionModel().getSelectedItem();
                 if (selectedItem != null && selectedItem.getValue() instanceof AcceleratorSeq
                         && !selectedItem.getValue().getId().equals(document.getSequence())
                         && document.getAccelerator().getSequences().contains((AcceleratorSeq) selectedItem.getValue())) {
@@ -120,43 +108,10 @@ public class AcceleratorTreeView extends VBox {
                 }
             }
         };
-        acceleratorTreeView.addEventHandler(MouseEvent.MOUSE_CLICKED, doubleClickEH);
+        treeView.addEventHandler(MouseEvent.MOUSE_CLICKED, doubleClickEH);
 
-        getChildren().addAll(acceleratorTreeView, bottombar);
-        VBox.setVgrow(acceleratorTreeView, Priority.ALWAYS);
-    }
-
-    public HBox getTitlebar() {
-        return titlebar;
-    }
-
-    public HBox getBottombar() {
-        return bottombar;
-    }
-
-    public void addClickEventHandler(EventHandler<MouseEvent> eventHandler) {
-        acceleratorTreeView.addEventHandler(MouseEvent.MOUSE_CLICKED, eventHandler);
-    }
-
-    public void removeClickEventHandler(EventHandler<MouseEvent> eventHandler) {
-        acceleratorTreeView.removeEventHandler(MouseEvent.MOUSE_CLICKED, eventHandler);
-    }
-
-    public void enableDefaultClickEventHandler() {
-        acceleratorTreeView.addEventHandler(MouseEvent.MOUSE_CLICKED, doubleClickEH);
-    }
-
-    public void disableDefaultClickEventHandler() {
-        acceleratorTreeView.removeEventHandler(MouseEvent.MOUSE_CLICKED, doubleClickEH);
-    }
-
-    /**
-     * Returns the property to
-     *
-     * @return
-     */
-    public ReadOnlyObjectProperty<TreeItem<AcceleratorNode>> selectedItemProperty() {
-        return acceleratorTreeView.getSelectionModel().selectedItemProperty();
+        getChildren().addAll(treeView, bottombar);
+        VBox.setVgrow(treeView, Priority.ALWAYS);
     }
 
     /**
@@ -167,10 +122,10 @@ public class AcceleratorTreeView extends VBox {
      * is expected to be decoupled from the document, then use the update
      * method.
      */
+    @Override
     public void setDocument(XalFxDocument document) {
         this.document = document;
         update(document.getAccelerator());
-
         document.getAcceleratorProperty().addChangeListener((ov, t, t1) -> {
             // Clearing the typeMap so that filter is reseted to all selected.
             typeMap.clear();
@@ -188,54 +143,6 @@ public class AcceleratorTreeView extends VBox {
                 update(seq);
             }
         });
-
-    }
-
-    public void refresh() {
-        acceleratorTreeView.refresh();
-    }
-
-    /**
-     * Update the TreeView with a new accelerator sequence.
-     *
-     * @param acceleratorSeq
-     */
-    public void update(AcceleratorSeq acceleratorSeq) {
-        currentSeq = acceleratorSeq;
-        updateFilterMenu();
-        updateTreeView();
-    }
-
-    private void updateTreeView() {
-        ImageView icon = new ImageView(getClass().getResource("icons/32/SEQ.png").toExternalForm());
-
-        TreeItem<AcceleratorNode> rootNode = new TreeItem<>(currentSeq, icon);
-        rootNode.setExpanded(true);
-        acceleratorTreeView.setRoot(rootNode);
-        if (currentSeq instanceof Accelerator) {
-            // Hide root node when showing full accelerator if flag disabled (default)
-            acceleratorTreeView.setShowRoot(showAcceleratorNode);
-            titlebox.getChildren().clear();
-            Label acceleratorName = new Label(((Accelerator) currentSeq).getSystemId());
-            acceleratorName.setStyle("-fx-font-weight: bold;");
-            titlebox.getChildren().add(acceleratorName);
-        } else {
-            acceleratorTreeView.setShowRoot(true);
-            titlebox.getChildren().clear();
-            Label acceleratorName = new Label(currentSeq.getAccelerator().getSystemId());
-            acceleratorName.setStyle("-fx-font-weight: bold;");
-            // When the accelerator name is clicked, the sequence property is
-            // set to null and updateTreeView() is triggered.
-            acceleratorName.setOnMouseReleased((e) -> document.getSequenceProperty().setValue(null));
-            Label separator = new Label();
-            separator.getStyleClass().add("triangle-shape");
-            Label sequenceName = new Label(currentSeq.getId());
-            titlebox.getChildren().addAll(acceleratorName, separator, sequenceName);
-        }
-
-        addSequence(currentSeq, rootNode);
-
-        Logger.getLogger(getClass().getName()).fine("Updating accelerator treeview.");
     }
 
     public boolean isShowAcceleratorNode() {
@@ -244,7 +151,7 @@ public class AcceleratorTreeView extends VBox {
 
     public void setShowAcceleratorNode(boolean showAcceleratorNode) {
         this.showAcceleratorNode = showAcceleratorNode;
-        acceleratorTreeView.setShowRoot(showAcceleratorNode);
+        treeView.setShowRoot(showAcceleratorNode);
     }
 
     public boolean isAlwaysShowRfCavities() {
@@ -263,30 +170,19 @@ public class AcceleratorTreeView extends VBox {
      * @param node
      * @return
      */
+    @Override
     public TreeItem<AcceleratorNode> addElement(AcceleratorNode node) {
         AcceleratorNode parent = node.getParent();
         if (parent instanceof Accelerator) {
-            return addElement(node, acceleratorTreeView.getRoot());
+            return addElement(node, treeView.getRoot());
         } else {
             TreeItem<AcceleratorNode> parentItem = findElement(parent.getId());
             return addElement(node, parentItem);
         }
     }
 
-    private TreeItem<AcceleratorNode> addElement(AcceleratorNode node, TreeItem<AcceleratorNode> parentItem) {
-        TreeItem<AcceleratorNode> item = newItem(node);
-        addItem(item, parentItem);
-        refresh();
-
-        return item;
-    }
-
-    private TreeItem<AcceleratorNode> newItem(AcceleratorNode node) {
-        TreeItem<AcceleratorNode> item = new TreeItem<>(node, getIcon(node));
-        return item;
-    }
-
-    private void addItem(TreeItem<AcceleratorNode> item, TreeItem<AcceleratorNode> parentItem) {
+    @Override
+    protected void addItem(TreeItem<AcceleratorNode> item, TreeItem<AcceleratorNode> parentItem) {
         AcceleratorNode node = item.getValue();
         if (!(node instanceof AcceleratorSeq) && typeMap.get(node.getType()) == null) {
             addTypeMenuItem(node.getType());
@@ -304,19 +200,6 @@ public class AcceleratorTreeView extends VBox {
                 parentItem.getChildren().add(item);
             }
         }
-    }
-
-    private ImageView getIcon(AcceleratorNode node) {
-        URL iconPath = getClass().getResource("icons/32/" + AcceleratorNodeIcon.getIcon(node.getClass()));
-        // Icon by default when missing.
-        if (node instanceof RfCavity && iconPath == null) {
-            iconPath = getClass().getResource("icons/32/CAVM.png");
-        } else if (node instanceof AcceleratorSeq && iconPath == null) {
-            iconPath = getClass().getResource("icons/32/SEQ.png");
-        } else if (iconPath == null) {
-            iconPath = getClass().getResource("icons/32/BBX.png");
-        }
-        return new ImageView(iconPath.toExternalForm());
     }
 
     /**
@@ -343,6 +226,59 @@ public class AcceleratorTreeView extends VBox {
                 addItem(item, parentItem);
             }
         }
+    }
+
+    public void replaceElement(AcceleratorNode nodeBefore, AcceleratorNode nodeAfter) {
+        if (nodeBefore != nodeAfter) {
+            TreeItem<AcceleratorNode> item = findElement(nodeBefore.getId());
+            item.setValue(nodeAfter);
+            item.setGraphic(getIcon(nodeAfter));
+        }
+    }
+
+    @Override
+    public void update(Accelerator accelerator) {
+        update((AcceleratorSeq) accelerator);
+    }
+
+    /**
+     * Update the TreeView with a new accelerator sequence.
+     *
+     * @param acceleratorSeq
+     */
+    public void update(AcceleratorSeq acceleratorSeq) {
+        currentSeq = acceleratorSeq;
+        updateFilterMenu();
+        updateTreeView();
+    }
+
+    protected void updateTreeView() {
+        ImageView icon = new ImageView(getClass().getResource("icons/32/SEQ.png").toExternalForm());
+        TreeItem<AcceleratorNode> rootNode = new TreeItem<>(currentSeq, icon);
+        rootNode.setExpanded(true);
+        treeView.setRoot(rootNode);
+        if (currentSeq instanceof Accelerator) {
+            // Hide root node when showing full accelerator if flag disabled (default)
+            treeView.setShowRoot(showAcceleratorNode);
+            titlebox.getChildren().clear();
+            Label acceleratorName = new Label(((Accelerator) currentSeq).getSystemId());
+            acceleratorName.setStyle("-fx-font-weight: bold;");
+            titlebox.getChildren().add(acceleratorName);
+        } else {
+            treeView.setShowRoot(true);
+            titlebox.getChildren().clear();
+            Label acceleratorName = new Label(currentSeq.getAccelerator().getSystemId());
+            acceleratorName.setStyle("-fx-font-weight: bold;");
+            // When the accelerator name is clicked, the sequence property is
+            // set to null and updateTreeView() is triggered.
+            acceleratorName.setOnMouseReleased(e -> document.getSequenceProperty().setValue(null));
+            Label separator = new Label();
+            separator.getStyleClass().add("triangle-shape");
+            Label sequenceName = new Label(currentSeq.getId());
+            titlebox.getChildren().addAll(acceleratorName, separator, sequenceName);
+        }
+        addSequence(currentSeq, rootNode);
+        Logger.getLogger(getClass().getName()).fine("Updating accelerator treeview.");
     }
 
     /**
@@ -525,124 +461,8 @@ public class AcceleratorTreeView extends VBox {
         filterMenu.getItems().add(menuItem);
     }
 
-    /**
-     * Returns the AcceleratorNode of the selected item.
-     *
-     * @return The AcceleratorNode or null if none selected.
-     */
-    public TreeItem<AcceleratorNode> getSelectedItem() {
-        MultipleSelectionModel<TreeItem<AcceleratorNode>> selectionModel = acceleratorTreeView.getSelectionModel();
-        TreeItem<AcceleratorNode> selectedItem = selectionModel.getSelectedItem();
-        if (selectedItem != null) {
-            return selectedItem;
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Returns the AcceleratorNode of the selected item.
-     *
-     * @return The AcceleratorNode or null if none selected.
-     */
-    public AcceleratorNode getSelectedNode() {
-        TreeItem<AcceleratorNode> selectedItem = getSelectedItem();
-        if (selectedItem != null) {
-            return selectedItem.getValue();
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Returns the node ID of the selected item.
-     *
-     * @return The node ID or null if none selected.
-     */
-    public String getSelectedNodeId() {
-        MultipleSelectionModel<TreeItem<AcceleratorNode>> selectionModel = acceleratorTreeView.getSelectionModel();
-        TreeItem<AcceleratorNode> selectedItem = selectionModel.getSelectedItem();
-        if (selectedItem != null) {
-            return selectedItem.getValue().getId();
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Clear the selection.
-     */
-    public void clearSelection() {
-        acceleratorTreeView.getSelectionModel().clearSelection();
-    }
-
-    /**
-     * Select the node with the given node ID, if found on the TreeView. It
-     * automatically expand all parent node and scroll to make the selected node
-     * visible, if needed.
-     * <p>
-     * If called right after the TreeView is updated, make sure it is called
-     * using Platform.runLater() to make sure it is executed after the TreeView
-     * is updated.
-     *
-     * @param nodeId The element's node ID.
-     * @return True if the element has been found.
-     */
-    public boolean selectElement(String nodeId) {
-        return selectElement(acceleratorTreeView.getRoot(), nodeId);
-    }
-
-    private boolean selectElement(TreeItem<AcceleratorNode> parentNode, String nodeId) {
-        for (TreeItem<AcceleratorNode> treeItem : parentNode.getChildren()) {
-            if (nodeId.equals(treeItem.getValue().getId())) {
-                // Expand all parent items.
-                for (TreeItem parent = treeItem; parent.getParent() != null; parent = parent.getParent()) {
-                    parent.getParent().setExpanded(true);
-                }
-                // Select the element.
-                acceleratorTreeView.getSelectionModel().select(treeItem);
-                // Scroll to the item if not visible.
-                int selectedIndex = acceleratorTreeView.getSelectionModel().getSelectedIndex();
-                ObservableList<Node> childrenUnmodifiable = acceleratorTreeView.getChildrenUnmodifiable();
-                VirtualFlow get = (VirtualFlow) childrenUnmodifiable.get(0);
-                if (selectedIndex >= get.getLastVisibleCell().getIndex() || selectedIndex <= get.getFirstVisibleCell().getIndex()) {
-                    acceleratorTreeView.scrollTo(selectedIndex);
-                }
-                return true;
-            }
-            // Check also the children recursively.
-            if (selectElement(treeItem, nodeId)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public void replaceElement(AcceleratorNode nodeBefore, AcceleratorNode nodeAfter) {
-        if (nodeBefore != nodeAfter) {
-            TreeItem<AcceleratorNode> item = findElement(nodeBefore.getId());
-            item.setValue(nodeAfter);
-            item.setGraphic(getIcon(nodeAfter));
-        }
-    }
-
-    public TreeItem<AcceleratorNode> findElement(String nodeId) {
-        return findElement(acceleratorTreeView.getRoot(), nodeId);
-    }
-
-    private TreeItem<AcceleratorNode> findElement(TreeItem<AcceleratorNode> parentNode, String nodeId) {
-        for (TreeItem<AcceleratorNode> treeItem : parentNode.getChildren()) {
-            if (nodeId.equals(treeItem.getValue().getId())) {
-                return treeItem;
-            }
-
-            // Check also the children recursively.
-            TreeItem<AcceleratorNode> child = findElement(treeItem, nodeId);
-            if (child != null) {
-                return child;
-            }
-
-        }
-        return null;
+    @Override
+    protected String getId(TreeItem<AcceleratorNode> selectedItem) {
+        return selectedItem.getValue().getId();
     }
 }
