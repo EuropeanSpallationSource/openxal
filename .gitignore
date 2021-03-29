@@ -2,6 +2,7 @@
 build/**/*
 build
 /doc
+*.patch
 
 # Eclipse
 .classpath
@@ -14,6 +15,7 @@ log/
 target/
 dependency-reduced-pom.xml
 .flattened-pom.xml
+.factorypath
 
 # Vim
 .*.swp
@@ -25,6 +27,7 @@ dependency-reduced-pom.xml
 nb-configuration.xml
 nbactions.xml
 *.versionsBackup
+.nbproject
 
 # IntelliJ
 .idea

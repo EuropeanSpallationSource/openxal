@@ -5,3 +5,4 @@ target/
 .sonar/
 sonar-project.properties
 temp/
+test.out

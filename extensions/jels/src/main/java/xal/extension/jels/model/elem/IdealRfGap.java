@@ -126,7 +126,7 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
      * gap.
      */
     private int indCell = 0;
-    
+
     private double m_dblAmpFactor;
     private double m_dblPhaseFactor;
 
@@ -218,16 +218,16 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
     }
 
     /**
-     * Set the phase delay of the RF in the cavity with respect to the synchronous
-     * particle. The actual energy gain from the gap is given by qETLcos(dblPhi)
-     * where dbkPhi is the phase delay.
+     * Set the phase delay of the RF in the cavity with respect to the
+     * synchronous particle. The actual energy gain from the gap is given by
+     * qETLcos(dblPhi) where dbkPhi is the phase delay.
      *
      * @param cavPhase phase delay of the RF w.r.t. synchronous particle (in
      * <bold>radians</bold>).
      */
     @Override
     public void setPhase(double cavPhase) {
-        m_dblPhase = cavPhase + m_dblPhaseFactor;
+        m_dblPhase = cavPhase;
     }
 
     /**
@@ -247,7 +247,7 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
      */
     @Override
     public void setE0(double cavAmp) {
-        E0 = cavAmp * m_dblAmpFactor;
+        E0 = cavAmp;
     }
 
     /**
@@ -332,19 +332,15 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
             phiS += structureMode * Math.PI * indCell;
         }
 
+        // Applying phase offset
+        phiS += m_dblPhaseFactor;
+
         if (getE0() == 0) {
             matPhi = PhaseMatrix.identity();
         } else {
             double mass = probe.getSpeciesRestEnergy();
             double gammaStart = probe.getGamma();
             double betaStart = probe.getBeta();
-
-            double gammaEnd;
-            double betaEnd;
-            double gammaAvg;
-            double betaAvg;
-            double gammaMiddle;
-            double betaMiddle;
 
             double kx;
             double ky;
@@ -353,40 +349,28 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
 
             double symplecticityFactor;
 
-            double E0TL;
-            double E0TL_scaled;
+            double E0TL = getE0() * getCellLength();
+            // Applying amplitude relative error
+            E0TL *= m_dblAmpFactor;
+
+            double gammaMiddle = gammaStart + E0TL / mass * Math.cos(phiS) / 2;
+            double betaMiddle = computeBetaFromGamma(gammaMiddle);
+
+            double E0TL_scaled = E0TL * TTFFit.evaluateAt(betaMiddle);
+
+            energyGain = E0TL_scaled * Math.cos(phiS);
+            
+            double gammaEnd = gammaStart + energyGain / mass;
+            double betaEnd = computeBetaFromGamma(gammaEnd);
+            double gammaAvg = (gammaEnd + gammaStart) / 2;
+            double betaAvg = computeBetaFromGamma(gammaAvg);
 
             if (TTFFit.getCoef(0) != 0) {
-                E0TL = getE0() * getCellLength();
-                gammaMiddle = gammaStart + E0TL / mass * Math.cos(phiS) / 2;
-                betaMiddle = computeBetaFromGamma(gammaMiddle);
-
-                E0TL_scaled = E0TL * TTFFit.evaluateAt(betaMiddle);
                 double kToverT = -betaMiddle * TTFFit.derivativeAt(betaMiddle) / TTFFit.evaluateAt(betaMiddle);
-
-                energyGain = E0TL_scaled * Math.cos(phiS);
-                gammaEnd = gammaStart + energyGain / mass;
-                betaEnd = computeBetaFromGamma(gammaEnd);
-                gammaAvg = (gammaEnd + gammaStart) / 2;
-                betaAvg = computeBetaFromGamma(gammaAvg);
-
                 deltaPhi = E0TL_scaled / mass * Math.sin(phiS) / (Math.pow(gammaAvg, 3) * Math.pow(betaAvg, 2)) * (kToverT);
                 kx = 1 - E0TL_scaled / (2 * mass) * Math.cos(phiS) / (Math.pow(betaAvg, 2) * Math.pow(gammaAvg, 3)) * (Math.pow(gammaAvg, 2) + kToverT);
                 ky = 1 - E0TL_scaled / (2 * mass) * Math.cos(phiS) / (Math.pow(betaAvg, 2) * Math.pow(gammaAvg, 3)) * (Math.pow(gammaAvg, 2) - kToverT);
             } else {
-                E0TL = getE0() * getCellLength();
-                gammaMiddle = gammaStart + E0TL / mass * Math.cos(phiS) / 2;
-                betaMiddle = computeBetaFromGamma(gammaMiddle);
-                
-                E0TL_scaled = E0TL * TTFFit.evaluateAt(betaMiddle);
-                
-                energyGain = E0TL_scaled * Math.cos(phiS);
-                gammaEnd = gammaStart + energyGain / mass;
-                betaEnd = computeBetaFromGamma(gammaEnd);
-
-                gammaAvg = (gammaEnd + gammaStart) / 2;
-                betaAvg = computeBetaFromGamma(gammaAvg);
-
                 kx = 1 - E0TL_scaled / (2 * mass) * Math.cos(phiS) / (Math.pow(betaAvg, 2) * gammaAvg);
                 ky = kx;
             }
@@ -411,10 +395,10 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
 
         matPhi.setElem(6, 6, 1);
         //matPhi = applyErrors(matPhi,cellLength);
-        
+
         // Jan 2019 - Natalia Milas
         // apply alignment and rotation errors
-        matPhi = applyErrors(matPhi,0.0);
+        matPhi = applyErrors(matPhi, 0.0);
 
         return new PhaseMap(matPhi);
     }
@@ -458,12 +442,12 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
             TTFFit = rfgap.getTTFFit();
         }
         structureMode = rfgap.getStructureMode();
-        
-        m_dblETL = rfgap.getGapDfltE0TL()*1e6;
-        m_dblFreq = rfgap.getGapDfltFrequency()*1e6;
-        m_dblPhase = rfgap.getGapDfltPhase()*Math.PI/180.;
-        E0 = rfgap.getGapDfltAmp()*1e6;
-               
+
+        m_dblETL = rfgap.getGapDfltE0TL() * 1e6;
+        m_dblFreq = rfgap.getGapDfltFrequency() * 1e6;
+        m_dblPhase = rfgap.getGapDfltPhase() * Math.PI / 180.;
+        E0 = rfgap.getGapDfltAmp() * 1e6;
+
         m_dblAmpFactor = rfgap.getRfGap().getAmpFactor();
         m_dblPhaseFactor = rfgap.getRfGap().getPhaseFactor();
     }
