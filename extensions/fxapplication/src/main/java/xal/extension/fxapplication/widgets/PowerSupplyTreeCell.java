@@ -23,10 +23,12 @@ import javafx.scene.layout.StackPane;
 import xal.smf.impl.MagnetPowerSupply;
 
 /**
+ * An ElementTreeCell that shows a MagnetPowerSupply using an icon and the node
+ * ID of the power supply.
  *
  * @author Juan F. Esteban Müller <juanf.estebanmuller@ess.eu>
  */
-public class PowerSupplyTreeCell extends ElementTreeCell<MagnetPowerSupply> {
+class PowerSupplyTreeCell extends ElementTreeCell<MagnetPowerSupply> {
 
     @Override
     protected void updateItem(MagnetPowerSupply item, boolean empty) {

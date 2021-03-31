@@ -63,14 +63,6 @@ public class PowerSuppliesTreeView extends XalTreeView<MagnetPowerSupply> {
         VBox.setVgrow(treeView, Priority.ALWAYS);
     }
 
-    /**
-     * This method uses the accelerator property to update the tree every time
-     * the accelerator is changed, and vice versa.
-     * <p>
-     * Use this method for full integration with the document. If the TreeView
-     * is expected to be decoupled from the document, then use the update
-     * method.
-     */
     @Override
     public void setDocument(XalFxDocument document) {
         update(document.getAccelerator());

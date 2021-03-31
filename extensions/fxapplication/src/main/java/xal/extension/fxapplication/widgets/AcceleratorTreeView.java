@@ -44,7 +44,9 @@ import xal.smf.AcceleratorSeqCombo;
 import xal.smf.impl.RfCavity;
 
 /**
- * This class extends TreeView to add buttons on top to add/remove elements.
+ * This class extends XalTreeView to represent the Accelerator tree or a
+ * sequence. It supports both normal AcceleratorSeq and AcceleratorSeqCombo
+ * objects.
  *
  * The widget can be used independently or coupled to the application document.
  * <p>
@@ -52,13 +54,12 @@ import xal.smf.impl.RfCavity;
  * {@link update(AcceleratorSeq acceleratorSeq) update} method to set the
  * accelerator sequence that will be shown.
  * <p>
- * For integration with the application document, use the private
- * EventHandler<MouseEvent> doubleClickEH;
+ * For integration with the application document, use the
  * {@link setDocument(XalFxDocument document) setDocument} method. It will
  * update the tree every time either the accelerator or the sequence is changed.
  * Double clicking a sequence results in setting the sequence in the document.
- * <p>
- * One can also define listener for single and double click events.
+ *
+ * See also {@link  xal.extension.fxapplication.widgets.XalTreeView}.
  *
  * @author Juan F. Esteban Müller <juanf.estebanmuller@ess.eu>
  */
@@ -114,14 +115,6 @@ public class AcceleratorTreeView extends XalTreeView<AcceleratorNode> {
         VBox.setVgrow(treeView, Priority.ALWAYS);
     }
 
-    /**
-     * This method uses the accelerator property to update the tree every time
-     * the accelerator or the sequence is changed, and vice versa.
-     * <p>
-     * Use this method for full integration with the document. If the TreeView
-     * is expected to be decoupled from the document, then use the update
-     * method.
-     */
     @Override
     public void setDocument(XalFxDocument document) {
         this.document = document;
@@ -163,13 +156,6 @@ public class AcceleratorTreeView extends XalTreeView<AcceleratorNode> {
         updateTreeView();
     }
 
-    /**
-     * This method allows to add a node in the TreeView after adding it to the
-     * accelerator, avoiding to reload the full treeview.
-     *
-     * @param node
-     * @return
-     */
     @Override
     public TreeItem<AcceleratorNode> addElement(AcceleratorNode node) {
         AcceleratorNode parent = node.getParent();

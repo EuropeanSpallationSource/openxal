@@ -31,19 +31,8 @@ import xal.smf.AcceleratorNode;
 import xal.smf.AcceleratorSeqCombo;
 
 /**
- * This class extends TreeView to add buttons on top to add/remove elements.
+ * This class extends XalTreeView to show a list of Combo Sequences.
  *
- * The widget can be used independently or coupled to the application document.
- * <p>
- * In the first case, use the {@link update(Accelerator accelerator) update}
- * method to set the accelerator that will be shown.
- * <p>
- * For integration with the application document, use the
- * {@link setDocument(XalFxDocument document) setDocument} method. It will
- * update the tree every time either the accelerator is changed.
- * <p>
- * One can also define listener for single and double click events.
- * <p>
  * @author Juan F. Esteban Müller <juanf.estebanmuller@ess.eu>
  */
 public class ComboSequencesTreeView extends XalTreeView<AcceleratorNode> {
@@ -62,14 +51,6 @@ public class ComboSequencesTreeView extends XalTreeView<AcceleratorNode> {
         VBox.setVgrow(treeView, Priority.ALWAYS);
     }
 
-    /**
-     * This method uses the accelerator property to update the tree every time
-     * the accelerator or the sequence is changed, and vice versa.
-     * <p>
-     * Use this method for full integration with the document. If the TreeView
-     * is expected to be decoupled from the document, then use the update
-     * method.
-     */
     @Override
     public void setDocument(XalFxDocument document) {
         update(document.getAccelerator());

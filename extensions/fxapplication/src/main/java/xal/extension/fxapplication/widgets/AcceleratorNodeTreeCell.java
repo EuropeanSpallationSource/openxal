@@ -24,10 +24,12 @@ import xal.smf.Accelerator;
 import xal.smf.AcceleratorNode;
 
 /**
+ * An ElementTreeCell that shows an AcceleratorNode using an icon and the node
+ * ID of the element.
  *
  * @author Juan F. Esteban Müller <juanf.estebanmuller@ess.eu>
  */
-public class AcceleratorNodeTreeCell extends ElementTreeCell<AcceleratorNode> {
+class AcceleratorNodeTreeCell extends ElementTreeCell<AcceleratorNode> {
 
     @Override
     protected void updateItem(AcceleratorNode item, boolean empty) {

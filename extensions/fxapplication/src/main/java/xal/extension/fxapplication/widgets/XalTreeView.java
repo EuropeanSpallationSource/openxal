@@ -36,6 +36,27 @@ import xal.smf.AcceleratorSeq;
 import xal.smf.impl.RfCavity;
 
 /**
+ * This class represents a VBox that contains a titlebar, a TreeView, and a
+ * Bottom bar. The TreeView is supposed to contain elements of the XAL SMF.
+ * <p>
+ * It implements methods to add, remove, find, and select elements in the
+ * TreeView.
+ * <p>
+ * The title bar can be used to add a title referring to the TreeView, and
+ * buttons for functions like filters.
+ * <p>
+ * The bottom bar is intended for buttons to add/remove elements.
+ * <p>
+ * The widget can be used independently or coupled to the application document.
+ * <p>
+ * In the first case, use the {@link update(Accelerator accelerator) update}
+ * method to set the accelerator that will be used to get the data.
+ * <p>
+ * For integration with the application document, use the
+ * {@link setDocument(XalFxDocument document) setDocument} method. It will
+ * update the tree every time either the accelerator is changed.
+ * <p>
+ * One can also define listener for single and double click events.
  *
  * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
  */
@@ -51,32 +72,67 @@ public abstract class XalTreeView<T> extends VBox {
     public XalTreeView() {
     }
 
+    /**
+     * Get the HBox object that is defined above the TreeView.
+     *
+     * @return
+     */
     public HBox getTitlebar() {
         return titlebar;
     }
 
+    /**
+     * Get the HBox object that is defined below the TreeView.
+     *
+     * @return
+     */
     public HBox getBottombar() {
         return bottombar;
     }
 
+    /**
+     * Adds a new click event handler to the TreeView.
+     *
+     * @param eventHandler
+     */
     public void addClickEventHandler(EventHandler<MouseEvent> eventHandler) {
-        treeView.addEventHandler(MouseEvent.MOUSE_CLICKED, eventHandler);
-    }
-
-    public void removeClickEventHandler(EventHandler<MouseEvent> eventHandler) {
-        treeView.removeEventHandler(MouseEvent.MOUSE_CLICKED, eventHandler);
-    }
-
-    public void enableDefaultClickEventHandler() {
-        treeView.addEventHandler(MouseEvent.MOUSE_CLICKED, doubleClickEH);
-    }
-
-    public void disableDefaultClickEventHandler() {
-        treeView.removeEventHandler(MouseEvent.MOUSE_CLICKED, doubleClickEH);
+        if (eventHandler != null) {
+            treeView.addEventHandler(MouseEvent.MOUSE_CLICKED, eventHandler);
+        }
     }
 
     /**
-     * Returns the property to
+     * Removes a click event handler from the TreeView.
+     *
+     * @param eventHandler
+     */
+    public void removeClickEventHandler(EventHandler<MouseEvent> eventHandler) {
+        if (eventHandler != null) {
+            treeView.removeEventHandler(MouseEvent.MOUSE_CLICKED, eventHandler);
+        }
+    }
+
+    /**
+     * Enables the default click event handler in the TreeView. The default
+     * click event handler must be initialized by the subclass constructor.
+     */
+    public void enableDefaultClickEventHandler() {
+        if (doubleClickEH != null) {
+            treeView.addEventHandler(MouseEvent.MOUSE_CLICKED, doubleClickEH);
+        }
+    }
+
+    /**
+     * Disables the default click event handler in the TreeView.
+     */
+    public void disableDefaultClickEventHandler() {
+        if (doubleClickEH != null) {
+            treeView.removeEventHandler(MouseEvent.MOUSE_CLICKED, doubleClickEH);
+        }
+    }
+
+    /**
+     * Returns the selected item property of the TreeView.
      *
      * @return
      */
@@ -84,8 +140,22 @@ public abstract class XalTreeView<T> extends VBox {
         return treeView.getSelectionModel().selectedItemProperty();
     }
 
+    /**
+     * This method uses the accelerator property to update the tree every time
+     * the accelerator is changed, and vice versa.
+     * <p>
+     * Use this method for full integration with the document. If the TreeView
+     * is expected to be decoupled from the document, then use the update
+     * method.
+     */
     public abstract void setDocument(XalFxDocument document);
-    
+
+    /**
+     * The method should repopulate the TreeView using the data from the
+     * Accelerator object passed as an argument.
+     *
+     * @param accelerator
+     */
     public abstract void update(Accelerator accelerator);
 
     public void refresh() {
@@ -132,9 +202,9 @@ public abstract class XalTreeView<T> extends VBox {
     }
 
     /**
-     * Returns the AcceleratorNode of the selected item.
+     * Returns the TreeItem object corresponding to the selected item.
      *
-     * @return The AcceleratorNode or null if none selected.
+     * @return The TreeItem or null if none selected.
      */
     public TreeItem<T> getSelectedItem() {
         MultipleSelectionModel<TreeItem<T>> selectionModel = treeView.getSelectionModel();
@@ -147,9 +217,9 @@ public abstract class XalTreeView<T> extends VBox {
     }
 
     /**
-     * Returns the AcceleratorNode of the selected item.
+     * Returns the object represented by the selected TreeItem.
      *
-     * @return The AcceleratorNode or null if none selected.
+     * @return The object or null if none selected.
      */
     public T getSelectedNode() {
         TreeItem<T> selectedItem = getSelectedItem();
@@ -175,6 +245,13 @@ public abstract class XalTreeView<T> extends VBox {
         }
     }
 
+    /**
+     * This method should be implemented by subclasses to get the node ID
+     * corresponding to a TreeItem object.
+     *
+     * @param selectedItem
+     * @return
+     */
     protected abstract String getId(TreeItem<T> selectedItem);
 
     /**
@@ -226,6 +303,13 @@ public abstract class XalTreeView<T> extends VBox {
         return false;
     }
 
+    /**
+     * Find the TreeItem element with the following node ID.
+     *
+     * @param nodeId The element's node ID.
+     * @return TreeItem of the element with the given node ID or null if not
+     * found.
+     */
     public TreeItem<T> findElement(String nodeId) {
         return findElement(treeView.getRoot(), nodeId);
     }
@@ -243,5 +327,4 @@ public abstract class XalTreeView<T> extends VBox {
         }
         return null;
     }
-
 }

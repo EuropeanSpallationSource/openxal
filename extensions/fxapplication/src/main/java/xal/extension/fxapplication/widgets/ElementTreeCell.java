@@ -26,10 +26,11 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 
 /**
+ * An TreeCell that can hold an icon and text. It also set the CSS style.
  *
  * @author Juan F. Esteban Müller <juanf.estebanmuller@ess.eu>
  */
-public class ElementTreeCell<T> extends TreeCell<T> {
+class ElementTreeCell<T> extends TreeCell<T> {
 
     protected static final Logger LOGGER = Logger.getLogger(ElementTreeCell.class.getName());
 
