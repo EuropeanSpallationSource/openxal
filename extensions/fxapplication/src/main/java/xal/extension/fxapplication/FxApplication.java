@@ -19,12 +19,14 @@ package xal.extension.fxapplication;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import javafx.application.Application;
 import java.net.URL;
 import java.util.Date;
 import javafx.beans.property.SimpleStringProperty;
 import java.util.List;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
@@ -41,12 +43,15 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
@@ -275,9 +280,11 @@ abstract public class FxApplication extends Application {
             viewMenu.getItems().add(switchThemeMenu);
 
             final Menu helpMenu = new Menu("Help");
+            final MenuItem docMenu = new MenuItem("Documentation");
+            docMenu.setOnAction((e) -> helpMenuHandler());
             final MenuItem aboutMenu = new MenuItem("About");
-            aboutMenu.setOnAction((e) -> helpMenuHandler());
-            helpMenu.getItems().add(aboutMenu);
+            aboutMenu.setOnAction((e) -> aboutMenuHandler());
+            helpMenu.getItems().addAll(docMenu, aboutMenu);
 
             MENU_BAR.getMenus().addAll(fileMenu, editMenu, acceleratorMenu, eLogMenu, viewMenu, helpMenu);
 
@@ -709,6 +716,79 @@ abstract public class FxApplication extends Application {
 
     protected void helpMenuHandler() {
         DOCUMENT.help();
+    }
+
+    protected void aboutMenuHandler() {
+        String aboutFile = "/About.properties";
+        try {
+            String oxalVersionFile = "/oxal_version.properties";
+            String oxalVersion;
+
+            Properties properties = new Properties();
+            InputStream propertyStream = getClass().getResourceAsStream(oxalVersionFile);
+            properties.load(propertyStream);
+
+            try {
+                oxalVersion = properties.getProperty("version");
+                System.out.println("OXAL version = " + oxalVersion);
+            } finally {
+                propertyStream.close();
+            }
+
+            String applicationName;
+            String version;
+            String date;
+            String authors;
+            String organization;
+            String description;
+
+            properties = new Properties();
+            propertyStream = getClass().getResourceAsStream(aboutFile);
+            properties.load(propertyStream);
+
+            try {
+                applicationName = properties.getProperty("name");
+                version = properties.getProperty("version");
+                date = properties.getProperty("date");
+                authors = properties.getProperty("authors");
+                organization = properties.getProperty("organization");
+                description = properties.getProperty("description");
+            } finally {
+                propertyStream.close();
+            }
+
+            Dialog dialog = new Dialog();
+            dialog.setTitle("About");
+            dialog.setHeaderText(applicationName);
+
+            dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
+
+            // Create the username and password labels and fields.
+            GridPane grid = new GridPane();
+            grid.setHgap(10);
+            grid.setVgap(10);
+
+            grid.add(new Label("Version:"), 0, 0);
+            grid.add(new Label(version), 1, 0);
+            grid.add(new Label("Date:"), 0, 1);
+            grid.add(new Label(date), 1, 1);
+            grid.add(new Label("Author(s):"), 0, 2);
+            grid.add(new Label(authors), 1, 2);
+            grid.add(new Label("Organization:"), 0, 3);
+            grid.add(new Label(organization), 1, 3);
+            grid.add(new Label("Description:"), 0, 4);
+            grid.add(new Label(description), 1, 4);
+            grid.add(new Label("Developed using:"), 0, 5);
+            grid.add(new Label("Open XAL FxApplication framework"), 1, 5);
+            grid.add(new Label("Running on:"), 0, 6);
+            grid.add(new Label("Open XAL version " + oxalVersion), 1, 6);
+
+            dialog.getDialogPane().setContent(grid);
+
+            dialog.showAndWait();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     protected void urlMenuHandler() {

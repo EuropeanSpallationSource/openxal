@@ -200,7 +200,7 @@ abstract public class XalFxDocument {
      * Method for redirecting to the applications web page/internal page.
      */
     public void help() {
-        if (HELP_PAGEID.length() > 1) {
+        if (HELP_PAGEID != null && HELP_PAGEID.length() > 1) {
             openUrl(HELP_WIKI_BASE + HELP_PAGEID);
         }
 
