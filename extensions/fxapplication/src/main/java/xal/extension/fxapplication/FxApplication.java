@@ -99,6 +99,9 @@ abstract public class FxApplication extends Application {
     // Set to false if this application doesn't save/load xml files
     protected boolean HAS_DOCUMENTS = true;
 
+    // Set to false if this application doesn't need to load an accelerator
+    protected boolean HAS_ACCELERATOR = true;
+
     // Set to false if this application doesn't need the machine sequences
     protected boolean HAS_SEQUENCE = true;
 
@@ -192,9 +195,14 @@ abstract public class FxApplication extends Application {
      * etc after). Then start() calls beforeStart() for application specific
      * startup preparations.
      */
-    protected void initialize() {
+    private void initialize() {
+        // If an application requires sequences, then force HAS_SEQUENCE=true
+        if (HAS_SEQUENCE) {
+            HAS_ACCELERATOR = true;
+        }
+
         try {
-            if (HAS_SEQUENCE) {
+            if (HAS_ACCELERATOR) {
                 String acceleratorMainPath = XMLDataManager.defaultPath();
                 if (acceleratorMainPath == null) {
                     acceleratorMainPath = latticeErrorDialog("Default accelerator not set", "Press OK to open file dialog to select the path to the accelerator lattice files or Cancel to close the application.");
@@ -231,20 +239,22 @@ abstract public class FxApplication extends Application {
 
             final Menu editMenu = new Menu("Edit");
 
-            final ToggleGroup groupSequence = new ToggleGroup();
             final Menu acceleratorMenu = new Menu("Accelerator");
-            final MenuItem loadDefaultAcceleratorMenu = new MenuItem("Load Default Accelerator");
-            loadDefaultAcceleratorMenu.setOnAction((e) -> loadDefaultAcceleratorMenuHandler());
-            final MenuItem loadAcceleratorMenu = new MenuItem("Load Accelerator ...");
-            loadAcceleratorMenu.setOnAction((e) -> loadAcceleratorMenuHandler());
-            final MenuItem testModeMenu = new MenuItem("Enable Test Mode");
-            testModeMenu.setOnAction((e) -> testModeMenuHandler(e));
-            acceleratorMenu.getItems().addAll(loadDefaultAcceleratorMenu, loadAcceleratorMenu, testModeMenu);
             final Menu sequenceMenu = new Menu("Sequence");
+            final ToggleGroup groupSequence = new ToggleGroup();
+            if (HAS_ACCELERATOR) {
+                final MenuItem loadDefaultAcceleratorMenu = new MenuItem("Load Default Accelerator");
+                loadDefaultAcceleratorMenu.setOnAction((e) -> loadDefaultAcceleratorMenuHandler());
+                final MenuItem loadAcceleratorMenu = new MenuItem("Load Accelerator ...");
+                loadAcceleratorMenu.setOnAction((e) -> loadAcceleratorMenuHandler());
+                final MenuItem testModeMenu = new MenuItem("Enable Test Mode");
+                testModeMenu.setOnAction((e) -> testModeMenuHandler(e));
+                acceleratorMenu.getItems().addAll(loadDefaultAcceleratorMenu, loadAcceleratorMenu, testModeMenu);
 
-            if (HAS_SEQUENCE && DOCUMENT.accelerator.getAccelerator() != null) {
-                buildSequenceMenu(DOCUMENT.accelerator.getAccelerator(), sequenceMenu, groupSequence);
-                acceleratorMenu.getItems().addAll(new SeparatorMenuItem(), sequenceMenu);
+                if (HAS_SEQUENCE && DOCUMENT.accelerator.getAccelerator() != null) {
+                    buildSequenceMenu(DOCUMENT.accelerator.getAccelerator(), sequenceMenu, groupSequence);
+                    acceleratorMenu.getItems().addAll(new SeparatorMenuItem(), sequenceMenu);
+                }
             }
 
             final Menu eLogMenu = new Menu("eLog");
@@ -286,7 +296,11 @@ abstract public class FxApplication extends Application {
             aboutMenu.setOnAction((e) -> aboutMenuHandler());
             helpMenu.getItems().addAll(docMenu, aboutMenu);
 
-            MENU_BAR.getMenus().addAll(fileMenu, editMenu, acceleratorMenu, eLogMenu, viewMenu, helpMenu);
+            MENU_BAR.getMenus().addAll(fileMenu, editMenu);
+            if (HAS_ACCELERATOR) {
+                MENU_BAR.getMenus().add(acceleratorMenu);
+            }
+            MENU_BAR.getMenus().addAll(eLogMenu, viewMenu, helpMenu);
 
             DOCUMENT.accelerator.addChangeListener((ChangeListener) (ObservableValue o, Object oldVal, Object newVal) -> {
                 if (HAS_SEQUENCE && DOCUMENT.accelerator.getAccelerator() != null) {
