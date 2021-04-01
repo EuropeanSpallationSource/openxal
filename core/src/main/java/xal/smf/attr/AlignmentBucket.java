@@ -72,13 +72,13 @@ public class AlignmentBucket extends AttributeBucket  {
         m_attAngYaw   = new Attribute(0.0);
         m_attAngRoll  = new Attribute(0.0);
         
-        super.registerAttribute(c_arrNames[0], m_attDspX);
-        super.registerAttribute(c_arrNames[1], m_attDspY);
-        super.registerAttribute(c_arrNames[2], m_attDspZ);
+        super.registerAttribute(c_arrNames[0], m_attDspX, "X plane offset (m).");
+        super.registerAttribute(c_arrNames[1], m_attDspY, "Y plane offset (m).");
+        super.registerAttribute(c_arrNames[2], m_attDspZ, "Z plane offset (m).");
         
-        super.registerAttribute(c_arrNames[3], m_attAngPitch);
-        super.registerAttribute(c_arrNames[4], m_attAngYaw);
-        super.registerAttribute(c_arrNames[5], m_attAngRoll);
+        super.registerAttribute(c_arrNames[3], m_attAngPitch, "Pitch angle (deg).");
+        super.registerAttribute(c_arrNames[4], m_attAngYaw, "Yaw angle (deg).");
+        super.registerAttribute(c_arrNames[5], m_attAngRoll, "Roll angle (deg).");
     };
     
 

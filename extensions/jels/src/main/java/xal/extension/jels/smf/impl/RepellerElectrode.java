@@ -23,6 +23,7 @@ import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.ca.PutException;
 import xal.smf.AcceleratorNode;
+import xal.smf.ChannelHandle;
 import xal.smf.impl.qualify.ElementTypeManager;
 /**
  * The implementation of the Repeller Electrode class.
@@ -35,8 +36,10 @@ public class RepellerElectrode extends AcceleratorNode {
      */
     public static final String s_strType = "REP";
 
+    @ChannelHandle
     public static final String STATUS_RB_HANDLE = "statusRB";
     private Channel statusRC = null;
+    @ChannelHandle(readback=RepellerElectrode.STATUS_RB_HANDLE)
     public static final String STATUS_SET_HANDLE = "statusS";
     private Channel statusSC = null;
 
@@ -65,7 +68,6 @@ public class RepellerElectrode extends AcceleratorNode {
      */
     public RepellerElectrode(final String strId, final ChannelFactory channelFactory) {
         super(strId, channelFactory);
-        addReadBackHandle(STATUS_SET_HANDLE, STATUS_RB_HANDLE);
     }
 
     /**

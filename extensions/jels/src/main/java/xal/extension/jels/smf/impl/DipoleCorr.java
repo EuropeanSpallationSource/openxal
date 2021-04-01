@@ -2,7 +2,7 @@ package xal.extension.jels.smf.impl;
 
 import java.util.Arrays;
 import xal.ca.ChannelFactory;
-import xal.extension.jels.smf.attr.MagnetBucket;
+import xal.extension.jels.smf.attr.DipoleCorrBucket;
 import xal.smf.impl.Magnet;
 import xal.smf.impl.qualify.ElementTypeManager;
 import xal.smf.impl.qualify.MagnetType;
@@ -14,14 +14,13 @@ import xal.smf.impl.qualify.MagnetType;
  */
 public class DipoleCorr extends xal.smf.impl.DipoleCorr {
 
-    private final MagnetBucket m_bucESSMagnet = new MagnetBucket();
 
     /**
      * Primary Constructor
      */
     public DipoleCorr(final String strId, int orientation, final ChannelFactory channelFactory) {
         super(strId, channelFactory);
-        setMagBucket(m_bucESSMagnet);
+        setMagBucket(new DipoleCorrBucket());
         setOrientation(orientation);
     }
 
@@ -70,7 +69,7 @@ public class DipoleCorr extends xal.smf.impl.DipoleCorr {
      * VERTICAL
      */
     public void setOrientation(int orientation) {
-        m_bucESSMagnet.setOrientation(orientation);
+        ((DipoleCorrBucket) getMagBucket()).setOrientation(orientation);
     }
 
     /**
@@ -81,7 +80,7 @@ public class DipoleCorr extends xal.smf.impl.DipoleCorr {
      */
     @Override
     public int getOrientation() {
-        return m_bucESSMagnet.getOrientation();
+        return ((DipoleCorrBucket) getMagBucket()).getOrientation();
     }
 
     @Override

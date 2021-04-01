@@ -21,8 +21,8 @@ import xal.ca.Channel;
 import xal.ca.ChannelFactory;
 import xal.ca.ConnectionException;
 import xal.ca.GetException;
-import xal.ca.PutException;
 import xal.smf.AcceleratorNode;
+import xal.smf.ChannelHandle;
 import xal.smf.impl.qualify.ElementTypeManager;
 /**
  * The implementation of the Repeller Electrode class.
@@ -35,10 +35,13 @@ public class Doppler extends AcceleratorNode {
      */
     public static final String s_strType = "DPL";
     
+    @ChannelHandle
     public static final String FRACTION_H_R_HANDLE = "fractionH+";
     private Channel fractionHRC = null;
+    @ChannelHandle
     public static final String FRACTION_H2_R_HANDLE = "fractionH2+";
     private Channel fractionH2RC = null; 
+    @ChannelHandle
     public static final String FRACTION_H3_R_HANDLE = "fractionH3+";
     private Channel fractionH3RC = null; 
 

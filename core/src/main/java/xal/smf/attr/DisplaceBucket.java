@@ -47,10 +47,7 @@ public class DisplaceBucket extends AttributeBucket  {
                                 
     /** Override virtual to provide type signature */
     public String getType()         { return c_strType; };
-    
-    public String[] getAttrNames()  { return c_arrNames; };
-    
-    
+     
     
     
     public DisplaceBucket() {
@@ -60,9 +57,9 @@ public class DisplaceBucket extends AttributeBucket  {
         m_attDspY = new Attribute(0.0);
         m_attDspZ = new Attribute(0.0);
         
-        super.registerAttribute(c_arrNames[0], m_attDspX);
-        super.registerAttribute(c_arrNames[1], m_attDspY);
-        super.registerAttribute(c_arrNames[2], m_attDspZ);
+        super.registerAttribute(c_arrNames[0], m_attDspX, "X plane offset [m].");
+        super.registerAttribute(c_arrNames[1], m_attDspY, "Y plane offset [m].");
+        super.registerAttribute(c_arrNames[2], m_attDspZ, "Z plane offset [m].");
     };
     
 

@@ -1,5 +1,6 @@
 package xal.extension.jels.smf;
 
+import xal.extension.jels.smf.attr.DipoleBucket;
 import xal.extension.jels.smf.impl.Bend;
 import xal.extension.jels.smf.impl.DipoleCorr;
 import xal.extension.jels.smf.impl.ESSDTLTank;
@@ -113,13 +114,14 @@ public final class ESSElementFactory {
         addElectromagnetChannels(name, "B", bend.channelSuite());
         bend.setPosition(position);
         bend.setLength(len);
-        bend.getMagBucket().setPathLength(len);
 
-        bend.getMagBucket().setDipoleEntrRotAngle(-entryAngle);
-        bend.getMagBucket().setBendAngle(alpha);
-        bend.getMagBucket().setDipoleExitRotAngle(-exitAngle);
+        DipoleBucket dipoleBucket = ((DipoleBucket) bend.getMagBucket());
+        dipoleBucket.setDipoleEntrRotAngle(-entryAngle);
+        dipoleBucket.setBendAngle(alpha);
+        dipoleBucket.setPathLength(len);
+        dipoleBucket.setDipoleExitRotAngle(-exitAngle);
 //        bend.setDfltField(B0);
-        bend.getMagBucket().setDipoleQuadComponent(quadComp);
+        dipoleBucket.setDipoleQuadComponent(quadComp);
 
         bend.setGap(gap);
         bend.setEntrK1(enterK1);

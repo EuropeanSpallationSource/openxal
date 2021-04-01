@@ -590,7 +590,7 @@ public abstract class FieldMap {
         for (int i = 0; i < field.length; i++) {
             for (int j = 0; j < field[0].length; j++) {
                 for (int k = 0; k < field[0][0].length; k++) {
-                    pw.printf("%f%n", field[i][j][k]);
+                    pw.printf("%e%n", field[i][j][k]);
                 }
             }
             pw.close();

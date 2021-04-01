@@ -23,6 +23,7 @@ import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.ca.PutException;
 import xal.smf.AcceleratorNode;
+import xal.smf.ChannelHandle;
 import xal.smf.NoSuchChannelException;
 import xal.smf.impl.qualify.ElementTypeManager;
 
@@ -36,14 +37,17 @@ public class ESSIonSourceMagnetron extends AcceleratorNode {
     public static final String s_strType = "ISM";
 
     // Ion Source's magnetron channel handles
+    @ChannelHandle
     public static final String FORWD_PRW_RB_HANDLE = "forwdPrwRB";
 
     private Channel forwdPrwRBC = null;
 
+    @ChannelHandle
     public static final String FORWD_PRW_R_HANDLE = "forwdPrwR";
 
     private Channel forwdPrwRC = null;
 
+    @ChannelHandle(readback=ESSIonSourceMagnetron.FORWD_PRW_RB_HANDLE)
     public static final String FORWD_PRW_S_HANDLE = "forwdPrwS";
 
     private Channel forwdPrwSC = null;
@@ -71,7 +75,6 @@ public class ESSIonSourceMagnetron extends AcceleratorNode {
      */
     public ESSIonSourceMagnetron(final String strId, final ChannelFactory channelFactory) {
         super(strId, channelFactory);
-        addReadBackHandle(FORWD_PRW_S_HANDLE, FORWD_PRW_RB_HANDLE);
     }
 
     /**

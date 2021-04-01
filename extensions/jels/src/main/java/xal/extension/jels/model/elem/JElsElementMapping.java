@@ -89,4 +89,14 @@ public class JElsElementMapping extends ElementMapping {
     public Class<? extends IComposite> getDefaultSequenceType() {
         return Sector.class;
     }
+
+    @Override
+    public Class<? extends IComponent> getDriftType() {
+        return IdealDrift.class;
+    }
+
+    @Override
+    public Class<? extends IComponent> getRfCavityDriftType() {
+        return IdealRfCavityDrift.class;
+    }
 }

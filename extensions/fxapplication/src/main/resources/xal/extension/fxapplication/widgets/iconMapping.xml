@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<iconMapping>
+    <device icon="Q.png" class="xal.smf.impl.Quadrupole"/>
+    <device icon="Q.png" class="xal.smf.impl.PermQuadrupole"/>
+    <device icon="CAVM.png" class="xal.smf.impl.RfCavity"/>
+    <device icon="Sol.png" class="xal.smf.impl.Solenoid"/>
+    <device icon="Sol.png" class="xal.extension.jels.smf.impl.MagFieldMap"/>
+    <device icon="COR.png" class="xal.smf.impl.DipoleCorr"/>
+    <device icon="BND.png" class="xal.smf.impl.Bend"/>
+    <device icon="CAV.png" class="xal.smf.impl.RfGap"/>
+    <device icon="BPM.png" class="xal.smf.impl.BPM"/>
+    <device icon="BCM.png" class="xal.smf.impl.CurrentMonitor"/>
+    <device icon="NPM.png" class="xal.extension.jels.smf.impl.NPM"/>
+    <device icon="TNK.png" class="xal.extension.jels.smf.impl.ESSDTLTank"/>
+    <device icon="IS.png" class="xal.extension.jels.smf.impl.ESSIonSourceMagnetron"/>
+    <device icon="Sol.png" class="xal.extension.jels.smf.impl.ESSIonSourceCoil"/>
+    <device icon="CHOP.png" class="xal.extension.jels.smf.impl.Chopper"/>
+    <device icon="IRIS.png" class="xal.extension.jels.smf.impl.Iris"/>
+    <device icon="EMU.png" class="xal.extension.jels.smf.impl.EMU"/>
+    <device icon="RFQ.png" class="xal.extension.jels.smf.impl.RfqDummy"/>
+    <device icon="WS.png" class="xal.smf.impl.WireScanner"/>
+    <device icon="BLM.png" class="xal.smf.impl.BLM"/>
+    <device icon="marker.png" class="xal.smf.impl.Marker"/>
+    <device icon="SEQ.png" class="xal.smf.AcceleratorSeq"/>
+    <device icon="PS.png" class="xal.smf.impl.MagnetPowerSupply"/>
+</iconMapping>

@@ -69,151 +69,216 @@ public class ProfileMonitor extends AcceleratorNode {
 
 
     // real time readback signals     
+    @ChannelHandle
     public static final String POS_HANDLE =    "position"; 
     public Channel PosC = null;
+    @ChannelHandle
     public static final String RT_GRAPH_HANDLE =    "RTGraph"; 
     private Channel RTGraphC = null;
 
     // action signals
+    @ChannelHandle
     public static final String ABORT_SCAN_HANDLE =    "abortScan"; 
     private Channel AbortScanC = null;
+    @ChannelHandle
     public static final String BEGIN_SCAN_HANDLE =    "beginScan"; 
     private Channel BeginScanC = null;
+    @ChannelHandle
     public static final String CHANGE_PARAMS_HANDLE =    "ChangeParams"; 
     private Channel ChangeParamsC = null;
+    @ChannelHandle
     public static final String ACCEPT_PARAMS_HANDLE =    "AcceptParams"; 
     private Channel AcceptParamsC = null;
+    @ChannelHandle
     public static final String STAT_ARRAD_HANDLE =    "statusArray"; 
     public Channel StatArrayC = null;
+    @ChannelHandle
     public static final String VDATA_ARRAD_HANDLE =    "vDataArray"; 
     public Channel VDataArrayC = null;
+    @ChannelHandle
     public static final String DDATA_ARRAD_HANDLE =    "dDataArray"; 
     public Channel DDataArrayC = null;
+    @ChannelHandle
     public static final String HDATA_ARRAD_HANDLE =    "hDataArray"; 
     public Channel HDataArrayC = null;
+    @ChannelHandle
     public static final String POS_ARRAD_HANDLE =    "positionArray"; 
     public Channel PosArrayC = null;
 
     // wire setting signals
+    @ChannelHandle
     public static final String STEPS_HANDLE =    "nSteps"; 
     private Channel StepsC = null;
+    @ChannelHandle
     public static final String STEP1_POS_HANDLE =    "Step1Pos"; 
     private Channel Step1PosC = null;
+    @ChannelHandle
     public static final String POS_SPACING_HANDLE =    "PosSpacing"; 
     private Channel PosSpacingC = null;
+    @ChannelHandle
     public static final String NO_MEAS_HANDLE =    "NoMeas"; 
     private Channel NoMeasC = null;
+    @ChannelHandle
     public static final String SCAN_LEN_HANDLE =    "scanLength"; 
     private Channel ScanLengthC = null;
+    @ChannelHandle
     public static final String BIAS_HANDLE =    "Bias"; 
     private Channel BiasC = null;
 
     // Fitted data signals
+    @ChannelHandle
     public static final String V_AREA_F_HANDLE =    "vAreaF"; 
     private Channel VAreaFC = null;
+    @ChannelHandle
     public static final String V_AMP_F_HANDLE =    "vAmpF"; 
     private Channel VAmpFC = null;
+    @ChannelHandle
     public static final String V_MEAN_F_HANDLE =    "vMeanF"; 
     private Channel VMeanFC = null;
+    @ChannelHandle
     public static final String V_SIGMA_F_HANDLE =    "vSigmaF"; 
     private Channel VSigmaFC = null;
+    @ChannelHandle
     public static final String V_OFFST_F_HANDLE =    "vOffstF"; 
     private Channel VOffstFC = null;
+    @ChannelHandle
     public static final String V_SLOPE_F_HANDLE =    "vSlopeF"; 
     private Channel VSlopeFC = null;
 
+    @ChannelHandle
     public static final String V_AREA_M_HANDLE =    "vAreaM"; 
     private Channel VAreaMC = null;
+    @ChannelHandle
     public static final String V_AMP_M_HANDLE =    "vAmpM"; 
     private Channel VAmpMC = null;
+    @ChannelHandle
     public static final String V_MEAN_M_HANDLE =    "vMeanM"; 
     private Channel VMeanMC = null;
+    @ChannelHandle
     public static final String V_SIGMA_M_HANDLE =    "vSigmaM"; 
     private Channel VSigmaMC = null;
+    @ChannelHandle
     public static final String V_OFFST_M_HANDLE =    "vOffstM"; 
     private Channel VOffstMC = null;
+    @ChannelHandle
     public static final String V_SLOPE_M_HANDLE =    "vSlopeM"; 
     private Channel VSlopeMC = null;
 
+    @ChannelHandle
     public static final String D_AREA_F_HANDLE =    "dAreaF"; 
     private Channel DAreaFC = null;
+    @ChannelHandle
     public static final String D_AMP_F_HANDLE =    "dAmpF"; 
     private Channel DAmpFC = null;
+    @ChannelHandle
     public static final String D_MEAN_F_HANDLE =    "dMeanF"; 
     private Channel DMeanFC = null;
+    @ChannelHandle
     public static final String D_SIGMA_F_HANDLE =    "dSigmaF"; 
     private Channel DSigmaFC = null;
+    @ChannelHandle
     public static final String D_OFFST_F_HANDLE =    "dOffstF"; 
     private Channel DOffstFC = null;
+    @ChannelHandle
     public static final String D_SLOPE_F_HANDLE =    "dSlopeF"; 
     private Channel DSlopeFC = null;
 
+    @ChannelHandle
     public static final String D_AREA_M_HANDLE =    "dAreaM"; 
     private Channel DAreaMC = null;
+    @ChannelHandle
     public static final String D_AMP_M_HANDLE =    "dAmpM"; 
     private Channel DAmpMC = null;
+    @ChannelHandle
     public static final String D_MEAN_M_HANDLE =    "dMeanM"; 
     private Channel DMeanMC = null;
+    @ChannelHandle
     public static final String D_SIGMA_M_HANDLE =    "dSigmaM"; 
     private Channel DSigmaMC = null;
+    @ChannelHandle
     public static final String D_OFFST_M_HANDLE =    "dOffstM"; 
     private Channel DOffstMC = null;
+    @ChannelHandle
     public static final String D_SLOPE_M_HANDLE =    "dSlopeM"; 
     private Channel DSlopeMC = null;
 
+    @ChannelHandle
     public static final String H_AREA_F_HANDLE =    "hAreaF"; 
     private Channel HAreaFC = null;
+    @ChannelHandle
     public static final String H_AMP_F_HANDLE =    "hAmpF"; 
     private Channel HAmpFC = null;
+    @ChannelHandle
     public static final String H_MEAN_F_HANDLE =    "hMeanF"; 
     private Channel HMeanFC = null;
+    @ChannelHandle
     public static final String H_SIGMA_F_HANDLE =    "hSigmaF"; 
     private Channel HSigmaFC = null;
+    @ChannelHandle
     public static final String H_OFFST_F_HANDLE =    "hOffstF"; 
     private Channel HOffstFC = null;
+    @ChannelHandle
     public static final String H_SLOPE_F_HANDLE =    "hSlopeF"; 
     private Channel HSlopeFC = null;
 
+    @ChannelHandle
     public static final String H_AREA_M_HANDLE =    "hAreaM"; 
     private Channel HAreaMC = null;
+    @ChannelHandle
     public static final String H_AMP_M_HANDLE =    "hAmpM"; 
     private Channel HAmpMC = null;
+    @ChannelHandle
     public static final String H_MEAN_M_HANDLE =    "hMeanM"; 
     private Channel HMeanMC = null;
+    @ChannelHandle
     public static final String H_SIGMA_M_HANDLE =    "hSigmaM"; 
     private Channel HSigmaMC = null;
+    @ChannelHandle
     public static final String H_OFFST_M_HANDLE =    "hOffstM"; 
     private Channel HOffstMC = null;
+    @ChannelHandle
     public static final String H_SLOPE_M_HANDLE =    "hSlopeM"; 
     private Channel HSlopeMC = null;
 
+    @ChannelHandle
     public static final String V_FIT_HANDLE =    "vFit"; 
     public Channel VFitC = null;
+    @ChannelHandle
     public static final String D_FIT_HANDLE =    "dFit"; 
     public Channel DFitC = null;
+    @ChannelHandle
     public static final String H_FIT_HANDLE =    "hFit"; 
     public Channel HFitC = null;
 
     // wire position signals
+    @ChannelHandle
     public static final String V_POS_HANDLE =    "vPos"; 
     private Channel VPosC = null;
+    @ChannelHandle
     public static final String D_POS_HANDLE =	 "dPos"; 
     private Channel DPosC = null;
+    @ChannelHandle
     public static final String H_POS_HANDLE =    "hPos";
     private Channel HPosC = null;
 
     // raw data signals
+    @ChannelHandle
     public static final String V_RAW_HANDLE =    "vRaw"; 
     private Channel VRawC = null;
+    @ChannelHandle
     public static final String D_RAW_HANDLE =	 "dRaw"; 
     private Channel DRawC = null;
+    @ChannelHandle
     public static final String H_RAW_HANDLE =    "hRaw";
     private Channel HRawC = null;
     
+    @ChannelHandle
     public static final String V_REAL_DATA_HANDLE =    "vRealData"; 
     private Channel VRealDataC = null;    
+    @ChannelHandle
     public static final String D_REAL_DATA_HANDLE =    "dRealData"; 
     private Channel DRealDataC = null; 
+    @ChannelHandle
     public static final String H_REAL_DATA_HANDLE =    "hRealData"; 
     private Channel HRealDataC = null;     
     

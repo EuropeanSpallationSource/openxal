@@ -23,6 +23,7 @@ import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.ca.PutException;
 import xal.smf.AcceleratorNode;
+import xal.smf.ChannelHandle;
 import xal.smf.impl.qualify.ElementTypeManager;
 
 /**
@@ -37,16 +38,22 @@ public class Iris extends AcceleratorNode {
      */
     public static final String s_strType = "IRIS";
 
+    @ChannelHandle(readback=Iris.APERTURE_RB_HANDLE)
     public static final String APERTURE_SET_HANDLE = "apertureS";
     private Channel apertureSC = null;
+    @ChannelHandle
     public static final String APERTURE_RB_HANDLE = "apertureRB";
     private Channel apertureRBC = null;
+    @ChannelHandle(readback=Iris.OFFSET_X_RB_HANDLE)
     public static final String OFFSET_X_SET_HANDLE = "xOffsetS";
     private Channel offsetXSC = null;
+    @ChannelHandle
     public static final String OFFSET_X_RB_HANDLE = "xOffsetRB";
     private Channel offsetXRBC = null;
+    @ChannelHandle(readback=Iris.OFFSET_Y_RB_HANDLE)
     public static final String OFFSET_Y_SET_HANDLE = "yOffsetS";
     private Channel offsetYSC = null;
+    @ChannelHandle
     public static final String OFFSET_Y_RB_HANDLE = "yOffsetRB";
     private Channel offsetYRBC = null;
 
@@ -74,9 +81,6 @@ public class Iris extends AcceleratorNode {
      */
     public Iris(final String strId, final ChannelFactory channelFactory) {
         super(strId, channelFactory);
-        addReadBackHandle(APERTURE_SET_HANDLE, APERTURE_RB_HANDLE);
-        addReadBackHandle(OFFSET_X_SET_HANDLE, OFFSET_X_RB_HANDLE);
-        addReadBackHandle(OFFSET_Y_SET_HANDLE, OFFSET_Y_RB_HANDLE);
     }
 
     /**

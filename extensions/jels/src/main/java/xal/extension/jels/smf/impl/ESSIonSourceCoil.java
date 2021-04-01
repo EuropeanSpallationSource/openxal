@@ -23,6 +23,7 @@ import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.ca.PutException;
 import xal.smf.AcceleratorNode;
+import xal.smf.ChannelHandle;
 import xal.smf.impl.qualify.ElementTypeManager;
 
 /**
@@ -35,9 +36,11 @@ public class ESSIonSourceCoil extends AcceleratorNode {
 
     public static final String s_strType = "ISC";
 
-    // Coils channel handles    
+    // Coils channel handles 
+    @ChannelHandle
     public static final String I_HANDLE = "I";
     private Channel iC = null;
+    @ChannelHandle(readback=ESSIonSourceCoil.I_HANDLE)
     public static final String I_SET_HANDLE = "I_Set";
     private Channel iSetC = null;
 
@@ -51,7 +54,6 @@ public class ESSIonSourceCoil extends AcceleratorNode {
 
     public ESSIonSourceCoil(String strId, ChannelFactory channelFactory) {
         super(strId, channelFactory);
-        addReadBackHandle(I_SET_HANDLE, I_HANDLE);
     }
     
     

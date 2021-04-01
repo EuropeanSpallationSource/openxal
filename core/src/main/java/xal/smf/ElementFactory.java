@@ -1,6 +1,7 @@
 package xal.smf;
 
 import xal.smf.attr.ApertureBucket;
+import xal.smf.attr.DipoleBucket;
 import xal.smf.impl.BPM;
 import xal.smf.impl.Bend;
 import xal.smf.impl.DipoleCorr;
@@ -246,13 +247,14 @@ public class ElementFactory {
         }
         bend.setPosition(position);
         bend.setLength(len);
-        bend.getMagBucket().setPathLength(len);
 
-        bend.getMagBucket().setDipoleEntrRotAngle(-entry_angle);
-        bend.getMagBucket().setBendAngle(alpha);
-        bend.getMagBucket().setDipoleExitRotAngle(-exit_angle);
+        DipoleBucket dipoleBucket = ((DipoleBucket) bend.getMagBucket());
+        dipoleBucket.setDipoleEntrRotAngle(-entry_angle);
+        dipoleBucket.setBendAngle(alpha);
+        dipoleBucket.setPathLength(len);
+        dipoleBucket.setDipoleExitRotAngle(-exit_angle);
         bend.setDfltField(B0);
-        bend.getMagBucket().setDipoleQuadComponent(quadComp);
+        dipoleBucket.setDipoleQuadComponent(quadComp);
         bend.setAper(aper);
 
         return bend;

@@ -1,5 +1,6 @@
 package xal.smf;
 
+import java.lang.reflect.Field;
 import xal.ca.*;
 import xal.tools.data.*;
 import xal.smf.attr.*;
@@ -73,9 +74,6 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
 
     /** channel suite associated with this node */
     protected ChannelSuite channelSuite;
-    
-    /*  Map containing pairs of set and respective readback handle. */
-    protected Map<String,String> readBackHandles = new HashMap<>();
 
     protected enum ChannelType {
         SET,
@@ -104,10 +102,6 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
 		m_bolValid = true;
 
 		m_mapAttrs = new HashMap<String,AttributeBucket>();
-
-		setAlign(new AlignmentBucket());
-		setAper(new ApertureBucket());
-		setTwiss(new TwissBucket());
 
 		channelSuite = new ChannelSuite( channelFactory );
 	}
@@ -207,22 +201,56 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
 
     /** implement DataListener interface */
     public void write(DataAdaptor adaptor) {
-        adaptor.setValue( "id", m_strId );
-        adaptor.setValue("pid", m_strPId);
-        adaptor.setValue("eid", m_strEId);
-        adaptor.setValue( "type", getType() );
-		if ( getSoftType() != null ) {
-			adaptor.setValue( "softType", getSoftType() );
-		}
-        adaptor.setValue( "status", m_bolStatus );
-        adaptor.setValue( "pos", m_dblPos );
-        adaptor.setValue("s", m_dblS);
-        adaptor.setValue( "len", m_dblLen );
+        writeAttributes(adaptor);
 
         Collection<AttributeBucket> buckets = getBuckets();
-        adaptor.writeNode( new BucketParser(buckets) );
+        if (!buckets.isEmpty()) {
+            adaptor.writeNode(new BucketParser(buckets));
+        }
+        if (!channelSuite.getHandles().isEmpty()) {
+            adaptor.writeNode(channelSuite);
+        }
+    }
 
-        adaptor.writeNode(channelSuite);
+
+    /**
+     * method to write status of the node into a separate file
+     */
+    public void writeStatus(DataAdaptor adaptor) {
+        if (m_bolStatus == false && getAccelerator().hasStatusFile()) {
+            DataAdaptor childAdaptor = adaptor.createChild(dataLabel());
+            childAdaptor.setValue("id", m_strId);
+            childAdaptor.setValue("status", m_bolStatus);
+        }
+    }
+    
+    /**
+     * write the attributes of the Node.
+     * Subclasses can be override this method
+     * to write a different set of attributes
+     *
+     * @param adaptor 
+     */
+    protected void writeAttributes(DataAdaptor adaptor) {
+        adaptor.setValue("id", m_strId);
+        adaptor.setValue("len", m_dblLen);
+        adaptor.setValue("pos", m_dblPos);
+        adaptor.setValue("type", getType());
+        if (m_strPId != null) {
+            adaptor.setValue("pid", m_strPId);
+        }
+        if (m_strEId != null) {
+            adaptor.setValue("eid", m_strEId);
+        }
+        if (getSoftType() != null) {
+            adaptor.setValue("softType", getSoftType());
+        }
+        if (m_bolStatus == false && getAccelerator().hasStatusFile()) {
+            adaptor.setValue("status", m_bolStatus);
+        }
+        if (m_dblS != 0) {
+            adaptor.setValue("s", m_dblS);
+        }
     }
     // end DataListener interface -tap
 
@@ -297,6 +325,44 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
     }
 
     /**
+     *
+     * @return a list with expected channel handles by default.
+     */
+    public Collection<String> getDefaultHandles() {
+        List<String> defaultHandles = new ArrayList<>();
+
+        for (Field field : getAllFields()) {
+            if (field.isAnnotationPresent(ChannelHandle.class)) {
+                try {
+                    defaultHandles.add((String) field.get(this));
+                } catch (IllegalArgumentException | IllegalAccessException ex) {
+                    Logger.getLogger(AcceleratorNode.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+
+        return defaultHandles;
+    }
+
+    private List<Field> getAllFields() {
+        return getAllFields(null, this.getClass());
+    }
+    
+    private static List<Field> getAllFields(List<Field> fields, Class<?> cls) {
+        if (fields == null) {
+            fields = new ArrayList<>();
+        }
+
+        fields.addAll(Arrays.asList(cls.getDeclaredFields()));
+
+        if (cls.getSuperclass() != null) {
+            getAllFields(fields, cls.getSuperclass());
+        }
+
+        return fields;
+    }
+
+    /**
      * Get the channels corresponding to the specified handle and connect to
      * them. This method is useful when setting a value and checking that the
      * value was set.
@@ -308,9 +374,9 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
      * the handle is associated with this node.
      * @throws xal.ca.ConnectionException if the channel cannot be connected
      */
-    public Map<ChannelType, Channel> getAndConnectChannelSetAndReadBack(String setHandle) throws NoSuchChannelException, ConnectionException {
+    public Map<ChannelType, Channel> getAndConnectChannelSetAndReadback(String setHandle) throws NoSuchChannelException, ConnectionException {
         Channel setChannel = getChannel(setHandle);
-        Channel redBackChannel = getChannel(getReadBackHandle(setHandle));
+        Channel redBackChannel = getChannel(getReadbackHandle(setHandle));
         setChannel.connectAndWait();
         redBackChannel.connectAndWait();
 
@@ -322,27 +388,39 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
     }
 
     /**
-     * Add a readback handle corresponding to a set handle. This method should
-     * be called by each element that adds new set/readback handle pairs in the
-     * static initializer.
-     *
-     * @param setHandle The set handle.
-     * @param readBackHandle The corresponding readback handle.
-     */
-    protected final void addReadBackHandle(String setHandle, String readBackHandle) {
-        if (!readBackHandles.containsKey(setHandle)) {
-            readBackHandles.put(setHandle, readBackHandle);
-        }
-    }
-
-    /**
      * Get a map with all set and readback handle pairs.
      *
      * @return The map with all set/readback handle pairs. The key is the set
      * handle and the value is the readback.
      */
-    public Map<String, String> getReadBackHandleMap() {
-        return readBackHandles;
+    public Map<String, String> getReadbackHandleMap() {
+        Map<String, String> readbackHandles = new HashMap<>();
+
+        for (Field field : getAllFields(null, this.getClass())) {
+            if (field.isAnnotationPresent(ChannelHandle.class)) {
+                try {
+                    String setHandle = (String) field.get(this);
+                    String readbackHandle = field.getAnnotation(ChannelHandle.class).readback();
+                    if (readbackHandle.equals("")) {
+                        readbackHandle = setHandle;
+                    }
+                    if (!readbackHandles.containsKey(setHandle) || !readbackHandle.equals("")) {
+                        // Remove the readbackHandle if the setHandle is been processed.
+                        if (readbackHandles.containsKey(readbackHandle)) {
+                            readbackHandles.remove(readbackHandle);
+                        }
+                        // Do not add a readbackHandle if the setHandle has already been processed.
+                        if (!readbackHandles.containsValue(readbackHandle)) {
+                            readbackHandles.put(setHandle, readbackHandle);
+                        }
+                    }
+                } catch (IllegalArgumentException | IllegalAccessException ex) {
+                    Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+
+        return readbackHandles;
     }
 
     /**
@@ -351,29 +429,52 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
      * @param setHandle The set handle.
      * @return The corresponding readback handle.
      */
-    public String getReadBackHandle(String setHandle) {
-        if (readBackHandles.containsKey(setHandle)) {
-            return readBackHandles.get(setHandle);
-        } else {
-            return setHandle;
+    public String getReadbackHandle(String setHandle) {
+        for (Field field : getAllFields(null, this.getClass())) {
+            if (field.isAnnotationPresent(ChannelHandle.class)) {
+                try {
+                    if (((String) field.get(this)).equals(setHandle)) {
+                        String readback = field.getAnnotation(ChannelHandle.class).readback();
+                        if (readback.equals("")) {
+                            return setHandle;
+                        } else {
+                            return readback;
+                        }
+                    }
+                } catch (IllegalArgumentException ex) {
+                    Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
+                } catch (IllegalAccessException ex) {
+                    Logger.getLogger(AcceleratorNode.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
         }
+        return null;
     }
+
 
     /**
      * Get the set handle corresponding to a readback channel.
      *
-     * @param readBackHandle The readback handle.
+     * @param readbackHandle The readback handle.
      * @return The corresponding set handle.
      */
-    public String getSetHandle(String readBackHandle) {
-        if (readBackHandles.containsValue(readBackHandle)) {
-            for (String setHandle : readBackHandles.keySet()) {
-                if (readBackHandles.get(setHandle).equals(readBackHandle)) {
-                    return setHandle;
+    public String getSetHandle(String readbackHandle) {
+        String setHandle = null;
+        for (Field field : getAllFields(null, this.getClass())) {
+            if (field.isAnnotationPresent(ChannelHandle.class)) {
+                try {
+                    String readback = field.getAnnotation(ChannelHandle.class).readback();
+                    if (readback.equals(readbackHandle)) {
+                        return (String) field.get(this);
+                    } else if (((String) field.get(this)).equals(readbackHandle)) {
+                        setHandle = readbackHandle;
+                    }
+                } catch (IllegalArgumentException | IllegalAccessException ex) {
+                    Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }
-        return readBackHandle;
+        return setHandle;
     }
 
     /**
@@ -395,7 +496,7 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
         Map<ChannelType, Channel> channels;
 
         try {
-            channels = getAndConnectChannelSetAndReadBack(setHandle);
+            channels = getAndConnectChannelSetAndReadback(setHandle);
         } catch (NoSuchChannelException | ConnectionException ex) {
             return false;
         }
@@ -626,59 +727,99 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
 
     /** returns the bucket containing the alignment parameters
      *   - see attr.AlignBucket  */
-    public AlignmentBucket  getAlign()          { return m_bucAlign; };
+    public AlignmentBucket getAlign() {
+        if (m_bucAlign == null) {
+            setAlign(new AlignmentBucket());
+        }
+        return m_bucAlign;
+    }
 
     /**
      * returns device pitch angle in degrees
+     *
      * @return pitch angle
      */
     public double getPitchAngle() {
-    	return m_bucAlign.getPitch();
+        if (m_bucAlign != null) {
+            return getAlign().getPitch();
+        } else {
+            return new AlignmentBucket().getPitch();
+        }
     }
 
     /**
      * returns device yaw angle in degrees
+     *
      * @return yaw angle
      */
     public double getYawAngle() {
-    	return m_bucAlign.getYaw();
+        if (m_bucAlign != null) {
+            return getAlign().getYaw();
+        } else {
+            return new AlignmentBucket().getYaw();
+        }
     }
 
     /**
      * returns device roll angle in degrees
+     *
      * @return roll angle
      */
     public double getRollAngle() {
-    	return m_bucAlign.getRoll();
+        if (m_bucAlign != null) {
+            return getAlign().getRoll();
+        } else {
+            return new AlignmentBucket().getRoll();
+        }
     }
 
     /**
      * returns device x offset
+     *
      * @return x offset
      */
     public double getXOffset() {
-    	return m_bucAlign.getX();
+        if (m_bucAlign != null) {
+            return getAlign().getX();
+        } else {
+            return new AlignmentBucket().getX();
+        }
     }
 
     /**
      * returns device y offset
+     *
      * @return y offset
      */
     public double getYOffset() {
-    	return m_bucAlign.getY();
+        if (m_bucAlign != null) {
+            return getAlign().getY();
+        } else {
+            return new AlignmentBucket().getY();
+        }
     }
 
     /**
      * returns device z offset
+     *
      * @return z offset
      */
     public double getZOffset() {
-    	return m_bucAlign.getZ();
+        if (m_bucAlign != null) {
+            return m_bucAlign.getZ();
+        } else {
+            return new AlignmentBucket().getZ();
+        }
     }
 
     /** returns the bucket containing the Aperture parameters
      *   - see attr.ApertureBucket  */
-    public ApertureBucket   getAper()           { return m_bucAper; };
+    public ApertureBucket getAper() {
+        if (m_bucAper == null) {
+            setAper(new ApertureBucket());
+        }
+        return m_bucAper;
+    }
 
     /** sets the bucket containing the twiss parameters
      *   - see attr.TwissBucket  */
@@ -698,7 +839,7 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
      * @param angle pitch angle in degree
      */
     public void setPitchAngle(double angle) {
-    	m_bucAlign.setPitch(angle);
+    	getAlign().setPitch(angle);
     }
 
     /**
@@ -706,7 +847,7 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
      * @param angle yaw angle in degree
      */
     public void setYawAngle(double angle) {
-    	m_bucAlign.setYaw(angle);
+    	getAlign().setYaw(angle);
     }
 
     /**
@@ -714,7 +855,7 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
      * @param angle roll angle in degree
      */
     public void setRollAngle(double angle) {
-    	m_bucAlign.setRoll(angle);
+    	getAlign().setRoll(angle);
     }
 
     /**
@@ -722,7 +863,7 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
      * @param offset x offset
      */
     public void setXOffset(double offset) {
-    	m_bucAlign.setX(offset);
+    	getAlign().setX(offset);
     }
 
     /**
@@ -730,7 +871,7 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
      * @param offset y offset
      */
     public void setYOffset(double offset) {
-    	m_bucAlign.setY(offset);
+    	getAlign().setY(offset);
     }
 
     /**
@@ -738,7 +879,7 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
      * @param offset z offset
      */
     public void setZOffset(double offset) {
-    	m_bucAlign.setZ(offset);
+    	getAlign().setZ(offset);
     }
 
     /*

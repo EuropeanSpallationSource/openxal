@@ -30,6 +30,7 @@ import xal.smf.impl.Magnet;
 import xal.smf.impl.Marker;
 import xal.smf.impl.RfCavity;
 import xal.smf.ISplittable;
+import xal.smf.attr.DipoleCorrBucket;
 
 /**
  * <p>
@@ -651,7 +652,7 @@ public class LatticeSequence extends LatticeElement implements Iterable<LatticeE
             }
 
             // We need to split steering magnets and place a center marker.
-            if (smfNodeCurr instanceof DipoleCorr && ((Magnet) smfNodeCurr).getMagBucket().getSlices() != 1) {
+            if (smfNodeCurr instanceof DipoleCorr && ((DipoleCorrBucket) ((DipoleCorr)smfNodeCurr).getMagBucket()).getSlices() != 1) {
                 // Adding a center marker
                 String strNodeId = smfNodeCurr.getId();
                 double dblPosCtr = latElem.getCenterPosition();
@@ -663,10 +664,11 @@ public class LatticeSequence extends LatticeElement implements Iterable<LatticeE
                 this.addLatticeElement(latCtrElem);
 
                 // Spliting the element in equally long slices.
-                int numberOfSlices = ((Magnet) smfNodeCurr).getMagBucket().getSlices();
+                DipoleCorrBucket corrBucket = ((DipoleCorrBucket)((DipoleCorr) smfNodeCurr).getMagBucket());
+                int numberOfSlices = corrBucket.getSlices();
                 double length = ((Magnet) smfNodeCurr).getEffLength();
                 double sliceLength = length / numberOfSlices;
-                double[] sliceEffLength = ((Magnet) smfNodeCurr).getMagBucket().getSlicesEffLength();                
+                double[] sliceEffLength = corrBucket.getSlicesEffLength();                
 
                 // Move first slice
                 latElem.dblElemCntrPos -= length / 2.0 - sliceLength / 2.0;

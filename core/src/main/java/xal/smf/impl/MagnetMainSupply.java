@@ -18,8 +18,11 @@ import xal.ca.*;
  */
 public class MagnetMainSupply extends MagnetPowerSupply {
     // channel handles
-    public static final String CYCLE_ENABLE_HANDLE = "cycleEnable"; 
+    @ChannelHandle
+    public static final String CYCLE_ENABLE_HANDLE = "cycleEnable";
+    @ChannelHandle(readback=MagnetMainSupply.FIELD_RB_HANDLE)
     public static final String FIELD_SET_HANDLE = "fieldSet"; 
+    @ChannelHandle
     public static final String FIELD_RB_HANDLE = "psFieldRB";
 	public static final String FIELD_BOOK_HANDLE = "B_Book";		// MPS - field setpoint about which warnings and alarms are specified
     

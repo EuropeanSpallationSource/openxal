@@ -180,7 +180,30 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
 		writeDeeply( adaptor );
     }
         
+    protected void writeAttributes(DataAdaptor adaptor) {
+        adaptor.setValue("id", m_strId);
+        adaptor.setValue("len", m_dblLen);
+        adaptor.setValue("pos", m_dblPos);
+        if (!getType().equals(s_strType)) {
+            adaptor.setValue("type", getType());
+        }
+    }
 
+    /**
+     * method to write status of the node into a separate file
+     */
+    public void writeStatus(DataAdaptor adaptor) {
+        DataAdaptor seqAdaptor = adaptor.createChild(dataLabel());
+        seqAdaptor.setValue("id", m_strId);
+        m_arrNodes.forEach(node -> {
+            node.writeStatus(seqAdaptor);
+        });
+
+        if (seqAdaptor.childAdaptors().isEmpty()) {
+            adaptor.removeChild(seqAdaptor);
+        }
+    }
+    
     /** base constructor */
     public AcceleratorSeq( final String strId ) {
         this( strId, 0 );
@@ -1005,13 +1028,7 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
                 }
             } 
         }            
-        
-        return aperProfile;        
+
+        return aperProfile;
     }
-    
-    
-    
 }
-
-
-

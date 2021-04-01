@@ -9,7 +9,9 @@ import xal.ca.ChannelFactory;
 /** node representing a simple marker */
 public class Marker extends AcceleratorNode {
 	/** for generaic marker */
-    public static final String s_strType   = "marker";
+    public static String s_strType   = "marker";
+    
+    public static String s_strSoftType   = null;
 	
     /** for vacuum window */
     public static final String VIW = "VIW";
@@ -29,8 +31,6 @@ public class Marker extends AcceleratorNode {
 	/** Laser Stripper */
 	public static final String LASER_STRIPPER = "LStrp";
 	
-    /** the type of quadrupole (horizontal or vertical) */
-    protected String _type;
 
 
 	/**
@@ -55,6 +55,9 @@ public class Marker extends AcceleratorNode {
     /** Overriden to provide type signature */
     public String getType()   { return s_strType; }
 
+    /** Overriden to provide type signature */
+    public String getSoftType()   { return s_strSoftType; }
+
 
 	// static initializer
 	static {
@@ -78,10 +81,16 @@ public class Marker extends AcceleratorNode {
       * @param adaptor The data provider.
       */
      public void update( final DataAdaptor adaptor ) {
-         if ( adaptor.hasAttribute( "type" ) ) {
-             _type = adaptor.stringValue( "type" );
+         if (adaptor.hasAttribute("type")) {
+             s_strType = adaptor.stringValue("type");
          }
-         super.update( adaptor );
+         if (adaptor.hasAttribute("softType")) {
+             s_strSoftType = adaptor.stringValue("softType");
+             if (s_strSoftType.equals("")) {
+                 s_strSoftType = null;
+             }
+         }
+         super.update(adaptor);
      }
      
     /** 
@@ -92,7 +101,7 @@ public class Marker extends AcceleratorNode {
       * @return true if the node is a match and false otherwise.
       */
      public boolean isKindOf( final String type ) {
-         return type.equalsIgnoreCase( _type ) || super.isKindOf( type );
+         return type.equalsIgnoreCase( s_strType ) || super.isKindOf( type );
      }
           
 }

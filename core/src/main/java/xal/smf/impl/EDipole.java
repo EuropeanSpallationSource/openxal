@@ -3,6 +3,7 @@ package xal.smf.impl;
 import xal.smf.impl.qualify.ElementTypeManager;
 import xal.tools.data.DataAdaptor;
 import xal.ca.ChannelFactory;
+import xal.smf.attr.DipoleBucket;
 
 public class EDipole extends Electrostatic {
 	/** standard type for instances of this class */
@@ -19,7 +20,7 @@ public class EDipole extends Electrostatic {
 	/** vertical dipole type */
     public static final String VERTICAL_TYPE = "DVE";
 
-
+    
 	// static initialization
     static {
         registerType();
@@ -37,6 +38,7 @@ public class EDipole extends Electrostatic {
 	/** Primary Constructor */
 	public EDipole( final String strId, final ChannelFactory channelFactory ) {
 		super( strId, channelFactory );
+                setMagBucket(new DipoleBucket());
 	}
 
 
@@ -65,12 +67,12 @@ public class EDipole extends Electrostatic {
      * Get the dipole bend magnet bending angle.
      */
     public double getDfltBendAngle() {
-        return m_bucMagnet.getBendAngle();
+        return ((DipoleBucket) getMagBucket()).getBendAngle();
     }
     
     /** returns design path length in meters */
     public double getDfltPathLength() {
-        return m_bucMagnet.getPathLength();
+        return ((DipoleBucket) getMagBucket()).getPathLength();
     }
     
     /**

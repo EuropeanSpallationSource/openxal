@@ -14,6 +14,7 @@ import xal.ca.GetException;
 import xal.ca.PutException;
 import xal.smf.AcceleratorNode;
 import xal.smf.AcceleratorSeq;
+import xal.smf.ChannelHandle;
 import xal.smf.attr.AttributeBucket;
 import xal.smf.attr.RfCavityBucket;
 import xal.smf.impl.qualify.ElementTypeManager;
@@ -42,13 +43,21 @@ public class RfCavity extends AcceleratorSeq {
     /*
      * Constant PV signal names
      */
+    @ChannelHandle(readback=RfCavity.CAV_AMP_AVG_HANDLE)
     static public final String CAV_AMP_SET_HANDLE = "cavAmpSet";
+    @ChannelHandle(readback=RfCavity.CAV_PHASE_AVG_HANDLE)
     static public final String CAV_PHASE_SET_HANDLE = "cavPhaseSet";
+    @ChannelHandle
     static public final String CAV_AMP_AVG_HANDLE = "cavAmpAvg";
+    @ChannelHandle
     static public final String CAV_PHASE_AVG_HANDLE = "cavPhaseAvg";
+    @ChannelHandle
     static public final String DELTA_TRF_START_HANDLE = "deltaTRFStart";
+    @ChannelHandle
     static public final String DELTA_TRF_END_HANDLE = "deltaTRFEnd";
+    @ChannelHandle
     static public final String T_DELAY_HANDLE = "tDelay";
+    @ChannelHandle
 	static public final String BLANK_BEAM_HANDLE = "blankBeam";
 
     /** accelerator node type */
@@ -83,8 +92,6 @@ public class RfCavity extends AcceleratorSeq {
 	public RfCavity( final String strId, final ChannelFactory channelFactory, final int intReserve ) {
 		super( strId, channelFactory, intReserve );
 		setRfField( new RfCavityBucket() );
-                addReadBackHandle(CAV_AMP_SET_HANDLE, CAV_AMP_AVG_HANDLE);
-                addReadBackHandle(CAV_PHASE_SET_HANDLE, CAV_PHASE_AVG_HANDLE);
 	}
 
 

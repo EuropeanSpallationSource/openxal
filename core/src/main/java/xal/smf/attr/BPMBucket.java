@@ -45,9 +45,9 @@ public class BPMBucket extends AttributeBucket  {
         m_attLength = new Attribute(0.0);
         m_attOrientation = new Attribute(1);
 
-        super.registerAttribute(c_arrNames[0], m_attFrequency);
-        super.registerAttribute(c_arrNames[1], m_attLength);
-        super.registerAttribute(c_arrNames[2], m_attOrientation);
+        super.registerAttribute(c_arrNames[0], m_attFrequency, "Phase frequency (MHz).");
+        super.registerAttribute(c_arrNames[1], m_attLength, "Stripline length (m)");
+        super.registerAttribute(c_arrNames[2], m_attOrientation, "Leads come in up (1) or downstream (-1)");
      };
 
     @Override

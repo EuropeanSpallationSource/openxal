@@ -2,6 +2,7 @@ package xal.smf.impl;
 
 import xal.smf.impl.qualify.*;
 import xal.ca.*;
+import xal.smf.ChannelHandle;
 
 /**
  * This class is for SNS Ring BPMs. The Ring BPMs can set up to 4 different
@@ -18,66 +19,79 @@ public class RingBPM extends BPM {
 	/**
 	 * BPM stage 1 length channel handle
 	 */
+        @ChannelHandle(readback=RingBPM.STAGE1_LEN_RB_HANDLE)
 	public static final String STAGE1_LEN_HANDLE = "Stage1Len";
 
 	/**
 	 * BPM stage 1 gain channel handle
 	 */
+        @ChannelHandle(readback=RingBPM.STAGE1_GAIN_RB_HANDLE)
 	public static final String STAGE1_GAIN_HANDLE = "Stage1Gain";
 
 	/**
 	 * BPM stage 1 method channel handle
 	 */
+        @ChannelHandle(readback=RingBPM.STAGE1_METHOD_RB_HANDLE)
 	public static final String STAGE1_METHOD_HANDLE = "Stage1Method";
 
 	/**
 	 * BPM stage 2 length channel handle
 	 */
+        @ChannelHandle(readback=RingBPM.STAGE2_LEN_RB_HANDLE)
 	public static final String STAGE2_LEN_HANDLE = "Stage2Len";
 
 	/**
 	 * BPM stage 2 gain channel handle
 	 */
+        @ChannelHandle(readback=RingBPM.STAGE2_GAIN_RB_HANDLE)
 	public static final String STAGE2_GAIN_HANDLE = "Stage2Gain";
 
 	/**
 	 * BPM stage 1 method channel handle
 	 */
+        @ChannelHandle(readback=RingBPM.STAGE2_METHOD_RB_HANDLE)
 	public static final String STAGE2_METHOD_HANDLE = "Stage2Method";
 
 	/**
 	 * BPM stage 3 length channel handle
 	 */
+        @ChannelHandle(readback=RingBPM.STAGE3_LEN_RB_HANDLE)
 	public static final String STAGE3_LEN_HANDLE = "Stage3Len";
 
 	/**
 	 * BPM stage 3 gain channel handle
 	 */
+        @ChannelHandle(readback=RingBPM.STAGE3_GAIN_RB_HANDLE)
 	public static final String STAGE3_GAIN_HANDLE = "Stage3Gain";
 
 	/**
 	 * BPM stage 1 method channel handle
 	 */
+        @ChannelHandle(readback=RingBPM.STAGE3_METHOD_RB_HANDLE)
 	public static final String STAGE3_METHOD_HANDLE = "Stage3Method";
 
 	/**
 	 * BPM stage 4 length channel handle
 	 */
+        @ChannelHandle(readback=RingBPM.STAGE4_LEN_RB_HANDLE)
 	public static final String STAGE4_LEN_HANDLE = "Stage4Len";
 
 	/**
 	 * BPM stage 4 gain channel handle
 	 */
+        @ChannelHandle(readback=RingBPM.STAGE4_GAIN_RB_HANDLE)
 	public static final String STAGE4_GAIN_HANDLE = "Stage4Gain";
 
 	/**
 	 * BPM stage 1 method channel handle
 	 */
+        @ChannelHandle(readback=RingBPM.STAGE4_METHOD_RB_HANDLE)
 	public static final String STAGE4_METHOD_HANDLE = "Stage4Method";
 
 	/**
 	 * BPM stage 1 length channel handle
 	 */
+        @ChannelHandle
 	public static final String STAGE1_LEN_RB_HANDLE = "Stage1LenRB";
 
 	private Channel stage1LenRBC = null;
@@ -85,6 +99,7 @@ public class RingBPM extends BPM {
 	/**
 	 * BPM stage 1 gain channel handle
 	 */
+        @ChannelHandle
 	public static final String STAGE1_GAIN_RB_HANDLE = "Stage1GainRB";
 
 	private Channel stage1GainRBC = null;
@@ -92,6 +107,7 @@ public class RingBPM extends BPM {
 	/**
 	 * BPM stage 1 method channel handle
 	 */
+        @ChannelHandle
 	public static final String STAGE1_METHOD_RB_HANDLE = "Stage1MethodRB";
 
 	private Channel stage1MethodRBC = null;
@@ -99,6 +115,7 @@ public class RingBPM extends BPM {
 	/**
 	 * BPM stage 2 length channel handle
 	 */
+        @ChannelHandle
 	public static final String STAGE2_LEN_RB_HANDLE = "Stage2LenRB";
 
 	private Channel stage2LenRBC = null;
@@ -106,6 +123,7 @@ public class RingBPM extends BPM {
 	/**
 	 * BPM stage 2 gain channel handle
 	 */
+        @ChannelHandle
 	public static final String STAGE2_GAIN_RB_HANDLE = "Stage2GainRB";
 
 	private Channel stage2GainRBC = null;
@@ -113,6 +131,7 @@ public class RingBPM extends BPM {
 	/**
 	 * BPM stage 1 method channel handle
 	 */
+        @ChannelHandle
 	public static final String STAGE2_METHOD_RB_HANDLE = "Stage2MethodRB";
 
 	private Channel stage2MethodRBC = null;
@@ -120,6 +139,7 @@ public class RingBPM extends BPM {
 	/**
 	 * BPM stage 3 length channel handle
 	 */
+        @ChannelHandle
 	public static final String STAGE3_LEN_RB_HANDLE = "Stage3LenRB";
 
 	private Channel stage3LenRBC = null;
@@ -127,6 +147,7 @@ public class RingBPM extends BPM {
 	/**
 	 * BPM stage 3 gain channel handle
 	 */
+        @ChannelHandle
 	public static final String STAGE3_GAIN_RB_HANDLE = "Stage3GainRB";
 
 	private Channel stage3GainRBC = null;
@@ -134,6 +155,7 @@ public class RingBPM extends BPM {
 	/**
 	 * BPM stage 1 method channel handle
 	 */
+        @ChannelHandle
 	public static final String STAGE3_METHOD_RB_HANDLE = "Stage3MethodRB";
 
 	private Channel stage3MethodRBC = null;
@@ -141,6 +163,7 @@ public class RingBPM extends BPM {
 	/**
 	 * BPM stage 4 length channel handle
 	 */
+        @ChannelHandle
 	public static final String STAGE4_LEN_RB_HANDLE = "Stage4LenRB";
 
 	private Channel stage4LenRBC = null;
@@ -148,6 +171,7 @@ public class RingBPM extends BPM {
 	/**
 	 * BPM stage 4 gain channel handle
 	 */
+        @ChannelHandle
 	public static final String STAGE4_GAIN_RB_HANDLE = "Stage4GainRB";
 
 	private Channel stage4GainRBC = null;
@@ -155,6 +179,7 @@ public class RingBPM extends BPM {
 	/**
 	 * BPM stage 4 method channel handle
 	 */
+        @ChannelHandle
 	public static final String STAGE4_METHOD_RB_HANDLE = "Stage4MethodRB";
 
 	private Channel stage4MethodRBC = null;

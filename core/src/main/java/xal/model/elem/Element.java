@@ -492,15 +492,17 @@ public abstract class Element implements IElement {
         setHardwareNodeId(strSmfId);
         setPosition(latticeElement.getCenterPosition());
         
-        AlignmentBucket alignmentBucket = latticeElement.getHardwareNode().getAlign(); 
-        setAlignX(alignmentBucket.getX());
-        setAlignY(alignmentBucket.getY());
-        setAlignZ(alignmentBucket.getZ());
-        
-        setPhiX(alignmentBucket.getPitch());
-        setPhiY(alignmentBucket.getYaw());
-        setPhiZ(alignmentBucket.getRoll());
+        AlignmentBucket alignmentBucket = latticeElement.getHardwareNode().getAlign();
+        if (alignmentBucket != null) {
+            setAlignX(alignmentBucket.getX());
+            setAlignY(alignmentBucket.getY());
+            setAlignZ(alignmentBucket.getZ());
 
+            setPhiX(alignmentBucket.getPitch());
+            setPhiY(alignmentBucket.getYaw());
+            setPhiZ(alignmentBucket.getRoll());
+        }
+        
         m_dblNodeLen = latticeElement.getHardwareNode().getLength();
         m_dblNodePos = latticeElement.getHardwareNode().getPosition();
         

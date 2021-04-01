@@ -464,6 +464,18 @@ public class XmlDataAdaptor implements FileDataAdaptor {
         return childAdaptor;
     }
     
+       
+    /**
+     * Remove a child DataAdaptor
+     */
+    public void removeChild(DataAdaptor adaptor) {
+        XmlDataAdaptor childAdaptor = (XmlDataAdaptor) adaptor;
+
+        this.childNodes.remove(childAdaptor.mainNode);
+
+        mainNode.removeChild(childAdaptor.mainNode);
+    }
+    
     
     /** append a node associated with the listener */
     public void writeNode(DataListener listener) {
@@ -658,10 +670,13 @@ public class XmlDataAdaptor implements FileDataAdaptor {
             DocumentBuilder builder = factory.newDocumentBuilder();
             DOMImplementation implementation = builder.getDOMImplementation();
             String docTag = dataHandler.dataLabel();
-            DocumentType docType = 
-                implementation.createDocumentType(docTag, null, dtdUri);
+            
             Document document = builder.newDocument();
-            document.appendChild(docType);
+            if (docTag != null && dtdUri != null) {
+                DocumentType docType
+                        = implementation.createDocumentType(docTag, null, dtdUri);
+                document.appendChild(docType);
+            }
 
             adaptor = new XmlDataAdaptor(document);
             adaptor.writeNode(dataHandler);
@@ -721,7 +736,3 @@ public class XmlDataAdaptor implements FileDataAdaptor {
         }
     }
 }
-
-
-
-

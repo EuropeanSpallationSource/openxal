@@ -75,7 +75,6 @@ class TimingDataManager {
 	 */
 	public void setURLSpec(String urlSpec, String schemaUrl) {
 		_urlSpec = urlSpec;
-		_timingCenter = null;
 		timingSchema = schemaUrl;
 	}
 	
@@ -94,9 +93,9 @@ class TimingDataManager {
 	 * @return The timing center parsed from this manager's timing data source
 	 */
 	protected TimingCenter parseTimingCenter() {
-		final TimingCenter timingCenter = new TimingCenter( CHANNEL_FACTORY );
-		updateTimingCenter( timingCenter );
-		return timingCenter;
+		_timingCenter = new TimingCenter( CHANNEL_FACTORY );
+		updateTimingCenter( _timingCenter );
+		return _timingCenter;
 	}
 	
 	
@@ -117,18 +116,17 @@ class TimingDataManager {
 	 * Write the timing center to the specified URL
 	 * @param urlSpec The URL where we will write the timing XML
 	 * @param dtdURISpec The URI spec of the DTD used for validating the XML
-	 */
-	private void writeTimingCenterToURL(final String urlSpec, final String dtdURISpec) {
-		XmlDataAdaptor adaptor = XmlDataAdaptor.newDocumentAdaptor(_timingCenter, dtdURISpec);
-		adaptor.writeToUrlSpec(urlSpec);
-	}
-	
+        */
+        public void writeTimingCenterToURL(final String urlSpec, final String dtdURISpec) {
+                XmlDataAdaptor adaptor = XmlDataAdaptor.newDocumentAdaptor(_timingCenter, dtdURISpec);
+                adaptor.writeToUrlSpec(urlSpec);
+        }
 	
 	/**
 	 * Write the timing center to the URL of this TimingDataManager
 	 * @param dtdURISpec The URI spec of the DTD used for validating the XML
 	 */
-	private void writeTimingCenter(final String dtdURISpec) {
+	public void writeTimingCenter(final String dtdURISpec) {
 		writeTimingCenterToURL(_urlSpec, dtdURISpec);
 	}
 }

@@ -43,8 +43,6 @@ public class RotationBucket extends AttributeBucket  {
     /** Override virtual to provide type signature */
     public String getType()         { return c_strType; };
     
-    public String[] getAttrNames()  { return c_arrNames; };
-    
     
     
     public RotationBucket() {
@@ -54,9 +52,9 @@ public class RotationBucket extends AttributeBucket  {
         m_attAngYaw   = new Attribute(0.0);
         m_attAngRoll  = new Attribute(0.0);
         
-        super.registerAttribute(c_arrNames[0], m_attAngPitch);
-        super.registerAttribute(c_arrNames[1], m_attAngYaw);
-        super.registerAttribute(c_arrNames[2], m_attAngRoll);
+        super.registerAttribute(c_arrNames[0], m_attAngPitch, "Pitch angle.");
+        super.registerAttribute(c_arrNames[1], m_attAngYaw, "Yaw angle.");
+        super.registerAttribute(c_arrNames[2], m_attAngRoll, "Roll angle.");
     };
     
 

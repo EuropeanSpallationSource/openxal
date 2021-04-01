@@ -10,6 +10,7 @@ import xal.ca.ChannelFactory;
 import java.util.*;
 import java.lang.reflect.*;
 import java.text.*;
+import xal.sim.scenario.DefaultElementMapping;
 
 /** 
  * The hierarchical tree of accelerator nodes, elements and sequences of elements.
@@ -45,6 +46,12 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
 	
 	/** Model element mapping */
 	private ElementMapping     elementMapping;
+        
+        // by default, status flags are exported to a different file.
+        private boolean statusFile;
+        
+        // by default, power supplies are exported to a different file.
+        private boolean powerSuppliesFile;
 
     
     // DataAdaptor interface ----------------------
@@ -55,6 +62,22 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
      * @return The accelerator's tag
      */
     public String dataLabel() { return "xdxf"; }
+
+    public boolean hasStatusFile() {
+        return statusFile;
+    }
+
+    public void setStatusFile(boolean statusFile) {
+        this.statusFile = statusFile;
+    }
+
+    public boolean hasPowerSuppliesFile() {
+        return powerSuppliesFile;
+    }
+
+    public void setPowerSuppliesFile(boolean powerSuppliesFile) {
+        this.powerSuppliesFile = powerSuppliesFile;
+    }
     
     
     /**
@@ -155,14 +178,6 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
      * @param adaptor The adaptor to which the accelerator's data is written
      */
     public void write(DataAdaptor adaptor) {
-        adaptor.setValue("system", m_strSysId);
-        adaptor.setValue("ver", m_strVer);     // what if several inputs?
-
-        Date today = new Date();
-        SimpleDateFormat dateFormatter = new SimpleDateFormat("MM.dd.yyyy");
-        String dateString = dateFormatter.format(today);
-        adaptor.setValue("date", dateString);
-
         // Combo sequences are problematic as they are only defined in Accelerator
         for (AcceleratorSeqCombo seq : getComboSequences()) {
 			final DataAdaptor constituentAdaptor = adaptor.createChild("comboseq");
@@ -170,9 +185,57 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
         }
 
         super.write(adaptor);
+        
+        // Write power supplies into the same file if this flag is false. Otherwise, they will be saved on a separated file.
+        if (powerSuppliesFile == false) {
+            _writePowerSupplies(adaptor);
+        }
     }
-    
-    
+
+    /**
+     * Write power supplies to the given data adaptor, including the accelerator
+     * node.
+     *
+     * @param adaptor
+     */
+    public void writePowerSupplies(DataAdaptor adaptor) {
+        String tagName = dataLabel();
+        DataAdaptor childAdaptor = adaptor.createChild(tagName);
+        writeAttributes(childAdaptor);
+        _writePowerSupplies(childAdaptor);
+    }
+
+    private void _writePowerSupplies(DataAdaptor adaptor) {
+        // write out power supplies
+        DataAdaptor powerSuppliesAdaptor = adaptor.createChild("powersupplies");
+        getMagnetMainSupplies().forEach(mps -> mps.write(powerSuppliesAdaptor.createChild("ps")));
+    }
+
+    protected void writeAttributes(DataAdaptor adaptor) {
+        adaptor.setValue("system", m_strSysId);
+        adaptor.setValue("ver", m_strVer);
+
+        Date today = new Date();
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy.MM.dd");
+        String dateString = dateFormatter.format(today);
+        adaptor.setValue("date", dateString);
+    }
+ 
+    /**
+     * method to write status of the node into a separate file
+     */
+    public void writeStatus(DataAdaptor adaptor) {
+        DataAdaptor seqAdaptor = adaptor.createChild(dataLabel());
+        writeAttributes(seqAdaptor);
+        m_arrNodes.forEach(node -> {
+            node.writeStatus(seqAdaptor);
+        });
+
+        if (seqAdaptor.childAdaptors().isEmpty()) {
+            adaptor.removeChild(seqAdaptor);
+        }
+    }
+
     /** 
 	 * Add a combo sequence generated from the comboAdaptor
 	 * @param comboAdaptor The data adaptor from which to generate the combo sequence
@@ -248,17 +311,21 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
 		//System.out.println( "Instantiating Accelerator with channel factory: " + channelFactory );
 
 		m_strSysId = sysId;
-		_comboSequences = new HashMap<String,AcceleratorSeqCombo>();
+		_comboSequences = new LinkedHashMap<String,AcceleratorSeqCombo>();
 
 		// Create hash maps to hold the main and trim power supplies
-		magnetMainSupplies = new HashMap<String,MagnetMainSupply>();
-		magnetTrimSupplies = new HashMap<String,MagnetTrimSupply>();
+		magnetMainSupplies = new LinkedHashMap<String,MagnetMainSupply>();
+		magnetTrimSupplies = new LinkedHashMap<String,MagnetTrimSupply>();
 
 		// Create an edit context to hold dynamic data -tap 6/7/2002
 		editContext = new EditContext();
 
 		// initialize the timing center
 		_timingCenter = new TimingCenter();
+                
+                _nodeFactory = AcceleratorNodeFactory.getDefaultFactory();
+                
+                elementMapping = DefaultElementMapping.getInstance();
 	}
 
 
@@ -381,6 +448,15 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
 	 */
     public void addComboSequence( final AcceleratorSeqCombo comboSequence ) {
 		_comboSequences.put( comboSequence.getId(), comboSequence );
+	}
+    
+    
+    /** 
+	 * Remove a combo sequence from this accelerator
+	 * @param comboSequenceId The ID of the combo sequence to remove.
+	 */
+        public void removeComboSequence( String comboSequenceId ) {
+		_comboSequences.remove(comboSequenceId);
 	}
 	
 	

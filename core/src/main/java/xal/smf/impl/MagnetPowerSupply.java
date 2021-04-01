@@ -6,11 +6,14 @@
 
 package xal.smf.impl;
 
+import java.lang.reflect.Field;
 import xal.smf.*;
 import xal.tools.data.*;
 import xal.ca.*;
 
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -28,8 +31,11 @@ public abstract class MagnetPowerSupply implements DataListener {
     public static final int CYCLE_VALID = 2;
     
     // channel handles
+    @ChannelHandle
     public static final String CYCLE_STATE_HANDLE = "cycleState";
+    @ChannelHandle(readback=MagnetPowerSupply.CURRENT_RB_HANDLE)
     public static final String CURRENT_SET_HANDLE = "I_Set"; 
+    @ChannelHandle
     public static final String CURRENT_RB_HANDLE = "I"; 
         
     
@@ -213,8 +219,7 @@ public abstract class MagnetPowerSupply implements DataListener {
      * Get the accelerator nodes which are tied to this supply.
      * @return The collection of nodes that use this supply.
      */
-	@SuppressWarnings( "rawtypes" )
-    public Collection getNodes() {
+    public Collection<AcceleratorNode> getNodes() {
         return getNodes( accelerator.getAllNodesOfType(Electromagnet.s_strType) );
     }
         
@@ -243,4 +248,43 @@ public abstract class MagnetPowerSupply implements DataListener {
      * @return true if the node is supplied by this supply and false otherwise
      */
     abstract public boolean suppliesNode(AcceleratorNode node);
+    
+    
+    /**
+     *
+     * @return a list with expected channel handles by default.
+     */
+    public Collection<String> getDefaultHandles() {
+        List<String> defaultHandles = new ArrayList<>();
+
+        for (Field field : getAllFields()) {
+            if (field.isAnnotationPresent(ChannelHandle.class)) {
+                try {
+                    defaultHandles.add((String) field.get(this));
+                } catch (IllegalArgumentException | IllegalAccessException ex) {
+                    Logger.getLogger(AcceleratorNode.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+
+        return defaultHandles;
+    }
+
+    private List<Field> getAllFields() {
+        return getAllFields(null, this.getClass());
+    }
+    
+    private static List<Field> getAllFields(List<Field> fields, Class<?> cls) {
+        if (fields == null) {
+            fields = new ArrayList<>();
+        }
+
+        fields.addAll(Arrays.asList(cls.getDeclaredFields()));
+
+        if (cls.getSuperclass() != null) {
+            getAllFields(fields, cls.getSuperclass());
+        }
+
+        return fields;
+    }
 }

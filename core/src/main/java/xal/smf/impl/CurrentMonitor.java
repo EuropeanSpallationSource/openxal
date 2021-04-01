@@ -48,27 +48,32 @@ public class CurrentMonitor extends AcceleratorNode {
 		this( strId, null );
 	}
 
-
+        @ChannelHandle
 	public static final String Q_INTEGRAL_HANDLE = "Particles";
 
 	private Channel qIntegralC = null;
 
+        @ChannelHandle
 	public static final String T_AVG_LEN_HANDLE = "DisplayLength";
 
 	private Channel tAvgLenC = null;
 
+        @ChannelHandle
 	public static final String I_TBT_HANDLE = "currentTBT";
 
 	private Channel iTBTC = null;
 
+        @ChannelHandle
 	public static final String T_DELAY_HANDLE = "tDelay";
 
 	private Channel tDelayC = null;
 
+        @ChannelHandle
 	public static final String I_AVG_HANDLE = "currentAvg";
 
 	private Channel iAvgC = null;
 
+        @ChannelHandle
 	public static final String I_MAX_HANDLE = "currentMax";
 
 	private Channel iMaxC = null;

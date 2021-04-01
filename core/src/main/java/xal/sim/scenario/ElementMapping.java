@@ -69,7 +69,13 @@ public abstract class ElementMapping {
 	 * @since  Dec 5, 2014  @author Christopher K. Allen
 	 */
 	public abstract Class<? extends IComposite> getDefaultSequenceType();
-	
+        
+        
+	public abstract Class<? extends IComponent> getDriftType();
+        
+        public abstract Class<? extends IComponent> getRfCavityDriftType();
+        
+        
 	/**
 	 * Different model may have different implementation of the drift element.
 	 *   

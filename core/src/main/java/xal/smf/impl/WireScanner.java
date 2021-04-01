@@ -41,6 +41,7 @@ import xal.smf.scada.ScadaFieldMap;
 import java.util.Collection;
 import java.util.MissingResourceException;
 import java.util.concurrent.RejectedExecutionException;
+import xal.smf.ChannelHandle;
 
 
 /**
@@ -175,9 +176,11 @@ public class WireScanner extends ProfileDevice {
         };
 
         /** Command-issuing handle */
+        @ChannelHandle
         public static final String HANDLE_CMD = "Command"; //$NON-NLS-1$
 
         /** command result handle */
+        @ChannelHandle
         public static final String HANDLE_RESULT = "CommandResult"; //$NON-NLS-1$
 
 
@@ -529,9 +532,11 @@ public class WireScanner extends ProfileDevice {
 	
     
     /** handle for the horizontal sigma Gauss channel */
+    @ChannelHandle
     static final public String HORIZONTAL_SIGMA_GAUSS_HANDLE = "SigHorGaussStd"; //$NON-NLS-1$
     
     /** handle for the vertical sigma Gauss channel */
+    @ChannelHandle
     static final public String VERTICAL_SIGMA_GAUSS_HANDLE = "SigVerGaussStd"; //$NON-NLS-1$
 
     

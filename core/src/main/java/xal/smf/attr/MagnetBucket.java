@@ -33,15 +33,8 @@ public class MagnetBucket extends AttributeBucket {
     private final static String[]   c_arrNames = {  "len",      // effective length
                                                     "dfltMagFld", // default field value
                                                     "polarity", // default polarity value
-                                                    "bendAngle", // bend angle
                                                     "multFieldNorm",      // normal field components
                                                     "multFieldSkew",       // skew field components
-                                                    "pathLength",   // path length
-                                                    "dipoleEntrRotAngle",  // dipole rotation angle for entrance pole face
-                                                    "dipoleExitRotAngle",  // dipole rotation angle for exit pole face
-						    "dipoleQuadComponent", // quadrupole component for bend dipole
-                                                    "slices", // number of slices in which thin correctors are split
-                                                    "slicesEffLength" // effecttive length of each slice
                                     };
     
     
@@ -49,38 +42,21 @@ public class MagnetBucket extends AttributeBucket {
     
     /** Override virtual to provide type signature */
     public String getType()         { return c_strType; };
-    
-    public String[] getAttrNames()  { return c_arrNames; };
-    
-    
+        
     public MagnetBucket() {
         super();
         
         m_attLenEff  = new Attribute(0.0);
         m_attFldDflt = new Attribute(0.0 );
-        m_attBendAngle = new Attribute(0.0 );
         m_attPolarity = new Attribute(1.0 );
         m_attFldNorm = new Attribute(new double[] {} );
         m_attFldTang = new Attribute(new double[] {} );
-        m_attPathLength = new Attribute(0.0 );
-        m_attDipoleEntrRotAngle = new Attribute(0.0 );
-        m_attDipoleExitRotAngle = new Attribute(0.0 );
-        m_attDipoleQuadComponent = new Attribute(0.0 );
-        m_attSlices = new Attribute(1);
-        m_attSlicesEffLength = new Attribute(new double[] {1.0} );
 	
-        super.registerAttribute(c_arrNames[0], m_attLenEff);
-        super.registerAttribute(c_arrNames[1], m_attFldDflt);
-        super.registerAttribute(c_arrNames[2], m_attPolarity);
-        super.registerAttribute(c_arrNames[3], m_attBendAngle);
-        super.registerAttribute(c_arrNames[4], m_attFldNorm);
-        super.registerAttribute(c_arrNames[5], m_attFldTang);
-        super.registerAttribute(c_arrNames[6], m_attPathLength);
-        super.registerAttribute(c_arrNames[7], m_attDipoleEntrRotAngle);
-        super.registerAttribute(c_arrNames[8], m_attDipoleExitRotAngle);
-	super.registerAttribute(c_arrNames[9], m_attDipoleQuadComponent);
-	super.registerAttribute(c_arrNames[10], m_attSlices);
-        super.registerAttribute(c_arrNames[11], m_attSlicesEffLength);
+        super.registerAttribute(c_arrNames[0], m_attLenEff, "Effective length (m).");
+        super.registerAttribute(c_arrNames[1], m_attFldDflt, "Design field strength (T/m^(n-1)), n=1 for dipole, 2 for quad...");
+        super.registerAttribute(c_arrNames[2], m_attPolarity, "Magnet polarity ( 1 or -1).");
+        super.registerAttribute(c_arrNames[3], m_attFldNorm, "Normal field multipole coefficients.");
+        super.registerAttribute(c_arrNames[4], m_attFldTang, "Skew field multipole coefficients.");
     }
     
      
@@ -90,22 +66,8 @@ public class MagnetBucket extends AttributeBucket {
     public double   getDfltField()  { return m_attFldDflt.getDouble(); };
     /** return the magnet polarity ( 1 or -1) */
     public double   getPolarity()   { return m_attPolarity.getDouble(); };
-    /** return the dipole bend angle (in degrees) */
-    public double   getBendAngle()   { return m_attBendAngle.getDouble(); };
     public double[] getNormField()  { return m_attFldNorm.getArrDbl(); };
     public double[] getTangField()  { return m_attFldTang.getArrDbl(); };
-    /** return the design path length (in m) */
-    public double   getPathLength() { return m_attPathLength.getDouble(); };
-    /** return the dipole rotation angle for entrance pole face (in degrees) */
-    public double   getDipoleEntrRotAngle() { return m_attDipoleEntrRotAngle.getDouble(); };
-    /** return the dipole rotation angle for exit pole face (in degrees) */
-    public double   getDipoleExitRotAngle() { return m_attDipoleExitRotAngle.getDouble(); };
-    /** return the quadrupole component for bend dipole */
-    public double   getDipoleQuadComponent() { return m_attDipoleQuadComponent.getDouble(); };
-    /** return the number of slices in which thin correctors are split */
-    public int      getSlices() { return m_attSlices.getInteger(); };
-    /** return array with each slice weight */
-    public double[] getSlicesEffLength() { return m_attSlicesEffLength.getArrDbl(); };
     
     /** set the magnetic length (in m) 
      * @param dblVal magnetic length in meters
@@ -115,38 +77,12 @@ public class MagnetBucket extends AttributeBucket {
      * @param dblVal magnet polarity (1 or -1)
      */
     public void setPolarity(double dblVal)      { m_attPolarity.set(dblVal); };
-    /** set the dipole bend angle (in degrees)
-     * @param dblVal dipole bend angle in degrees
-     */
-    public void setBendAngle(double dblVal)      { m_attBendAngle.set(dblVal); };
     public void setNormField(double[] arrVal)   { m_attFldNorm.set(arrVal); };
     public void setTangField(double[] arrVal)   { m_attFldTang.set(arrVal); };
     public void setDfltField(double dblVal)   { m_attFldDflt.set(dblVal); };   
-    /** set the dipole path length (in m) 
-     * @param dblVal path length in meters
-     */
-    public void setPathLength(double dblVal)    { m_attPathLength.set(dblVal); };
     /** set the dipole rotation angle for entrance pole face (in degrees) 
      * @param dblVal dipole rotation angle for entrance pole face in degrees
      */
-    public void setDipoleEntrRotAngle(double dblVal)    { m_attDipoleEntrRotAngle.set(dblVal); };
-    /** set the dipole rotation angle for exit pole face (in degrees) 
-     * @param dblVal dipole rotation angle for exit pole face in degrees
-     */
-    public void setDipoleExitRotAngle(double dblVal)    { m_attDipoleExitRotAngle.set(dblVal); };
-    /** set the quadrupole component for bend dipole
-     * @param dblVal quadrupole component for bend dipole
-     */
-    public void setDipoleQuadComponent(double dblVal)    { m_attDipoleQuadComponent.set(dblVal); };  
-    
-    /** set the number of slices in which thin correctors are split
-     * @param intVal number of slices
-     */
-    public void setSlices(int intVal) { m_attSlices.set(intVal); }
-    /** set the number of slices in which thin correctors are split
-     * @param arrVal array with weight of slices
-     */
-    public void setSlicesEffLength(double[] arrVal) { m_attSlicesEffLength.set(arrVal); }
     
     /*
      *  Local Attributes
@@ -157,23 +93,10 @@ public class MagnetBucket extends AttributeBucket {
     /**  design field strength (T/m^(n-1)), n=1 for dipole, 2 for quad,... */
     private Attribute       m_attFldDflt;           
     /** polarity */
-    private Attribute       m_attPolarity;          
-    /** bend Angle for dipoles (deg)  */
-    private Attribute       m_attBendAngle;         
+    private Attribute       m_attPolarity;           
     /**  normal field multipole coefficients */
     private Attribute       m_attFldNorm;           
     /** tangential field multipole coefficients */
     private Attribute       m_attFldTang;
-    /** path length  (m) */
-    private Attribute       m_attPathLength;
-    /** dipole rotation angle for entrance pole face (degree) */
-    private Attribute       m_attDipoleEntrRotAngle;
-    /** dipole rotation angle for exit pole face (degree) */
-    private Attribute       m_attDipoleExitRotAngle;
-    /** quadrupole component for bend dipole */
-    private Attribute       m_attDipoleQuadComponent;
-    /** number of slices in which thin correctors are split */
-    private Attribute       m_attSlices;
-    /** effetive length of  each slice */
-    private Attribute       m_attSlicesEffLength;
+
 }

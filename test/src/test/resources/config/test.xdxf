@@ -125,7 +125,7 @@
     </node>
     <node type="DCH" id="MEBT_Mag:DCH01" pos=".128" len=".061" status="true">
        <attributes>
-          <magnet len=".061" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".061" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".016"/>
        </attributes>
@@ -136,7 +136,7 @@
     </node>
     <node type="DCV" id="MEBT_Mag:DCV01" pos=".128" len=".061" status="true">
        <attributes>
-          <magnet len=".061" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".061" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".016"/>
        </attributes>
@@ -180,7 +180,7 @@
     </node>
     <node type="DCH" id="MEBT_Mag:DCH04" pos=".638" len=".061" status="true">
        <attributes>
-          <magnet len=".061" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".061" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".016"/>
        </attributes>
@@ -191,7 +191,7 @@
     </node>
     <node type="DCV" id="MEBT_Mag:DCV04" pos=".638" len=".061" status="true">
        <attributes>
-          <magnet len=".061" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".061" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".016"/>
        </attributes>
@@ -213,7 +213,7 @@
     </node>
     <node type="DCH" id="MEBT_Mag:DCH05" pos="1.398" len=".066" status="true">
        <attributes>
-          <magnet len=".066" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".066" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".021"/>
        </attributes>
@@ -224,7 +224,7 @@
     </node>
     <node type="DCV" id="MEBT_Mag:DCV05" pos="1.398" len=".066" status="true">
        <attributes>
-          <magnet len=".066" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".066" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".021"/>
        </attributes>
@@ -290,7 +290,7 @@
     </node>
     <node type="DCH" id="MEBT_Mag:DCH10" pos="2.138" len=".066" status="true">
        <attributes>
-          <magnet len=".066" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".066" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".021"/>
        </attributes>
@@ -301,7 +301,7 @@
     </node>
     <node type="DCV" id="MEBT_Mag:DCV10" pos="2.138" len=".066" status="true">
        <attributes>
-          <magnet len=".066" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".066" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".021"/>
        </attributes>
@@ -323,7 +323,7 @@
     </node>
     <node type="DCH" id="MEBT_Mag:DCH11" pos="2.903" len=".061" status="true">
        <attributes>
-          <magnet len=".061" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".061" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".016"/>
        </attributes>
@@ -334,7 +334,7 @@
     </node>
     <node type="DCV" id="MEBT_Mag:DCV11" pos="2.903" len=".061" status="true">
        <attributes>
-          <magnet len=".061" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".061" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".016"/>
        </attributes>
@@ -378,7 +378,7 @@
     </node>
     <node type="DCH" id="MEBT_Mag:DCH14" pos="3.408" len=".061" status="true">
        <attributes>
-          <magnet len=".061" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".061" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".016"/>
        </attributes>
@@ -389,7 +389,7 @@
     </node>
     <node type="DCV" id="MEBT_Mag:DCV14" pos="3.408" len=".061" status="true">
        <attributes>
-          <magnet len=".061" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".061" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".016"/>
        </attributes>
@@ -1609,7 +1609,7 @@
     </node>
     <node type="DCH" id="DTL_Mag:DCH149" pos="3.20868" len=".0225" status="true">
        <attributes>
-          <magnet len=".0365" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".0365" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".028"/>
        </attributes>
@@ -1634,7 +1634,7 @@
     </node>
     <node type="DCV" id="DTL_Mag:DCV152" pos="3.458403" len=".0225" status="true">
        <attributes>
-          <magnet len=".0365" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".0365" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".028"/>
        </attributes>
@@ -1659,7 +1659,7 @@
     </node>
     <node type="DCH" id="DTL_Mag:DCH155" pos="3.717535" len=".0225" status="true">
        <attributes>
-          <magnet len=".0365" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".0365" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".028"/>
        </attributes>
@@ -1684,7 +1684,7 @@
     </node>
     <node type="DCV" id="DTL_Mag:DCV158" pos="3.986025" len=".0225" status="true">
        <attributes>
-          <magnet len=".0365" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".0365" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".028"/>
        </attributes>
@@ -2302,7 +2302,7 @@
     </node>
     <node type="DCH" id="DTL_Mag:DCH236" pos="4.228777" len=".0225" status="true">
        <attributes>
-          <magnet len=".0365" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".0365" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".028"/>
        </attributes>
@@ -2327,7 +2327,7 @@
     </node>
     <node type="DCV" id="DTL_Mag:DCV239" pos="4.665326" len=".0225" status="true">
        <attributes>
-          <magnet len=".0365" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".0365" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".028"/>
        </attributes>
@@ -2352,7 +2352,7 @@
     </node>
     <node type="DCH" id="DTL_Mag:DCH242" pos="5.115495" len=".0225" status="true">
        <attributes>
-          <magnet len=".0365" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".0365" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".028"/>
        </attributes>
@@ -2377,7 +2377,7 @@
     </node>
     <node type="DCV" id="DTL_Mag:DCV245" pos="5.579428" len=".0225" status="true">
        <attributes>
-          <magnet len=".0365" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".0365" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".028"/>
        </attributes>
@@ -2941,7 +2941,7 @@
     </node>
     <node type="DCH" id="DTL_Mag:DCH323" pos="4.118779" len=".0225" status="true">
        <attributes>
-          <magnet len=".0365" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".0365" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".028"/>
        </attributes>
@@ -2966,7 +2966,7 @@
     </node>
     <node type="DCV" id="DTL_Mag:DCV326" pos="4.709408" len=".0225" status="true">
        <attributes>
-          <magnet len=".0365" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".0365" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".028"/>
        </attributes>
@@ -2991,7 +2991,7 @@
     </node>
     <node type="DCH" id="DTL_Mag:DCH329" pos="5.312785" len=".0225" status="true">
        <attributes>
-          <magnet len=".0365" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".0365" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".028"/>
        </attributes>
@@ -3016,7 +3016,7 @@
     </node>
     <node type="DCV" id="DTL_Mag:DCV332" pos="5.927231" len=".0225" status="true">
        <attributes>
-          <magnet len=".0365" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".0365" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".028"/>
        </attributes>
@@ -3456,7 +3456,7 @@
     </node>
     <node type="DCH" id="DTL_Mag:DCH418" pos="3.996796" len=".0225" status="true">
        <attributes>
-          <magnet len=".0365" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".0365" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".028"/>
        </attributes>
@@ -3481,7 +3481,7 @@
     </node>
     <node type="DCV" id="DTL_Mag:DCV421" pos="4.705987" len=".0225" status="true">
        <attributes>
-          <magnet len=".0365" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".0365" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".028"/>
        </attributes>
@@ -3506,7 +3506,7 @@
     </node>
     <node type="DCH" id="DTL_Mag:DCH424" pos="5.42702" len=".0225" status="true">
        <attributes>
-          <magnet len=".0365" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".0365" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".028"/>
        </attributes>
@@ -3531,7 +3531,7 @@
     </node>
     <node type="DCV" id="DTL_Mag:DCV427" pos="6.156003" len=".0225" status="true">
        <attributes>
-          <magnet len=".0365" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".0365" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".028"/>
        </attributes>
@@ -3939,7 +3939,7 @@
     </node>
     <node type="DCH" id="DTL_Mag:DCH513" pos="3.345482" len=".0225" status="true">
        <attributes>
-          <magnet len=".0365" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".0365" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".028"/>
        </attributes>
@@ -3964,7 +3964,7 @@
     </node>
     <node type="DCV" id="DTL_Mag:DCV516" pos="4.141942" len=".0225" status="true">
        <attributes>
-          <magnet len=".0365" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".0365" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".028"/>
        </attributes>
@@ -3989,7 +3989,7 @@
     </node>
     <node type="DCH" id="DTL_Mag:DCH519" pos="4.949437" len=".0225" status="true">
        <attributes>
-          <magnet len=".0365" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".0365" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".028"/>
        </attributes>
@@ -4014,7 +4014,7 @@
     </node>
     <node type="DCV" id="DTL_Mag:DCV522" pos="5.76528" len=".0225" status="true">
        <attributes>
-          <magnet len=".0365" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".0365" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".028"/>
        </attributes>
@@ -4376,7 +4376,7 @@
     </node>
     <node type="DCH" id="DTL_Mag:DCH612" pos="3.39536" len=".0225" status="true">
        <attributes>
-          <magnet len=".0365" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".0365" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".028"/>
        </attributes>
@@ -4401,7 +4401,7 @@
     </node>
     <node type="DCV" id="DTL_Mag:DCV615" pos="4.268866" len=".0225" status="true">
        <attributes>
-          <magnet len=".0365" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".0365" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".028"/>
        </attributes>
@@ -4426,7 +4426,7 @@
     </node>
     <node type="DCH" id="DTL_Mag:DCH618" pos="5.15164" len=".0225" status="true">
        <attributes>
-          <magnet len=".0365" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".0365" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".028"/>
        </attributes>
@@ -4451,7 +4451,7 @@
     </node>
     <node type="DCV" id="DTL_Mag:DCV621" pos="6.035599" len=".0225" status="true">
        <attributes>
-          <magnet len=".0365" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".0365" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".028"/>
        </attributes>
@@ -4731,7 +4731,7 @@
     </node>
     <node type="DCV" id="CCL_Mag:DCV103" pos="2.863761" len="0.0" status="true">
        <attributes>
-          <magnet len=".09769" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".09769" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".017691"/>
        </attributes>
@@ -4753,7 +4753,7 @@
     </node>
     <node type="DCH" id="CCL_Mag:DCH104" pos="3.842436" len="0.0" status="true">
        <attributes>
-          <magnet len=".09769" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".09769" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".017691"/>
        </attributes>
@@ -4775,7 +4775,7 @@
     </node>
     <node type="DCV" id="CCL_Mag:DCV105" pos="4.840458" len="0.0" status="true">
        <attributes>
-          <magnet len=".09769" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".09769" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".017691"/>
        </attributes>
@@ -4797,7 +4797,7 @@
     </node>
     <node type="DCH" id="CCL_Mag:DCH106" pos="5.85797" len="0.0" status="true">
        <attributes>
-          <magnet len=".09769" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".09769" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".017691"/>
        </attributes>
@@ -4841,7 +4841,7 @@
     </node>
     <node type="DCV" id="CCL_Mag:DCV109" pos="8.944645" len="0.0" status="true">
        <attributes>
-          <magnet len=".09769" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".09769" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".017691"/>
        </attributes>
@@ -4863,7 +4863,7 @@
     </node>
     <node type="DCH" id="CCL_Mag:DCH110" pos="9.989809" len="0.0" status="true">
        <attributes>
-          <magnet len=".09769" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".09769" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".017691"/>
        </attributes>
@@ -4885,7 +4885,7 @@
     </node>
     <node type="DCV" id="CCL_Mag:DCV111" pos="11.043139" len="0.0" status="true">
        <attributes>
-          <magnet len=".09769" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".09769" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".017691"/>
        </attributes>
@@ -4907,7 +4907,7 @@
     </node>
     <node type="DCH" id="CCL_Mag:DCH112" pos="12.104594" len="0.0" status="true">
        <attributes>
-          <magnet len=".09769" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".09769" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".017691"/>
        </attributes>
@@ -5934,7 +5934,7 @@
     </node>
     <node type="DCV" id="CCL_Mag:DCV203" pos="3.034619" len="0.0" status="true">
        <attributes>
-          <magnet len=".09769" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".09769" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".017691"/>
        </attributes>
@@ -5956,7 +5956,7 @@
     </node>
     <node type="DCH" id="CCL_Mag:DCH204" pos="4.128159" len="0.0" status="true">
        <attributes>
-          <magnet len=".09769" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".09769" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".017691"/>
        </attributes>
@@ -5978,7 +5978,7 @@
     </node>
     <node type="DCV" id="CCL_Mag:DCV205" pos="5.229615" len="0.0" status="true">
        <attributes>
-          <magnet len=".09769" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".09769" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".017691"/>
        </attributes>
@@ -6000,7 +6000,7 @@
     </node>
     <node type="DCH" id="CCL_Mag:DCH206" pos="6.338945" len="0.0" status="true">
        <attributes>
-          <magnet len=".09769" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".09769" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".017691"/>
        </attributes>
@@ -6033,7 +6033,7 @@
     </node>
     <node type="DCV" id="CCL_Mag:DCV209" pos="9.713753" len="0.0" status="true">
        <attributes>
-          <magnet len=".09769" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".09769" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".017691"/>
        </attributes>
@@ -6066,7 +6066,7 @@
     </node>
     <node type="DCH" id="CCL_Mag:DCH210" pos="10.854154" len="0.0" status="true">
        <attributes>
-          <magnet len=".09769" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".09769" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".017691"/>
        </attributes>
@@ -6088,7 +6088,7 @@
     </node>
     <node type="DCV" id="CCL_Mag:DCV211" pos="12.002214" len="0.0" status="true">
        <attributes>
-          <magnet len=".09769" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".09769" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".017691"/>
        </attributes>
@@ -6110,7 +6110,7 @@
     </node>
     <node type="DCH" id="CCL_Mag:DCH212" pos="13.157892" len="0.0" status="true">
        <attributes>
-          <magnet len=".09769" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".09769" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".017691"/>
        </attributes>
@@ -6957,7 +6957,7 @@
     </node>
     <node type="DCV" id="CCL_Mag:DCV303" pos="3.278125" len="0.0" status="true">
        <attributes>
-          <magnet len=".09769" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".09769" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".017691"/>
        </attributes>
@@ -6979,7 +6979,7 @@
     </node>
     <node type="DCH" id="CCL_Mag:DCH304" pos="4.463842" len="0.0" status="true">
        <attributes>
-          <magnet len=".09769" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".09769" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".017691"/>
        </attributes>
@@ -7001,7 +7001,7 @@
     </node>
     <node type="DCV" id="CCL_Mag:DCV305" pos="5.656962" len="0.0" status="true">
        <attributes>
-          <magnet len=".09769" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".09769" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".017691"/>
        </attributes>
@@ -7023,7 +7023,7 @@
     </node>
     <node type="DCH" id="CCL_Mag:DCH306" pos="6.857439" len="0.0" status="true">
        <attributes>
-          <magnet len=".09769" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".09769" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".017691"/>
        </attributes>
@@ -7067,7 +7067,7 @@
     </node>
     <node type="DCV" id="CCL_Mag:DCV309" pos="10.503031" len="0.0" status="true">
        <attributes>
-          <magnet len=".09769" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".09769" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".017691"/>
        </attributes>
@@ -7089,7 +7089,7 @@
     </node>
     <node type="DCH" id="CCL_Mag:DCH310" pos="11.732713" len="0.0" status="true">
        <attributes>
-          <magnet len=".09769" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".09769" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".017691"/>
        </attributes>
@@ -7111,7 +7111,7 @@
     </node>
     <node type="DCV" id="CCL_Mag:DCV311" pos="12.969597" len="0.0" status="true">
        <attributes>
-          <magnet len=".09769" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".09769" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".017691"/>
        </attributes>
@@ -7133,7 +7133,7 @@
     </node>
     <node type="DCH" id="CCL_Mag:DCH312" pos="14.213651" len="0.0" status="true">
        <attributes>
-          <magnet len=".09769" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".09769" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".017691"/>
        </attributes>
@@ -7969,7 +7969,7 @@
     </node>
     <node type="DCH" id="CCL_Mag:DCH402" pos="2.241376" len="0.0" status="true">
        <attributes>
-          <magnet len=".09769" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".09769" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".017691"/>
        </attributes>
@@ -7991,7 +7991,7 @@
     </node>
     <node type="DCV" id="CCL_Mag:DCV403" pos="3.506735" len="0.0" status="true">
        <attributes>
-          <magnet len=".09769" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".09769" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".017691"/>
        </attributes>
@@ -8013,7 +8013,7 @@
     </node>
     <node type="DCH" id="CCL_Mag:DCH404" pos="4.779129" len="0.0" status="true">
        <attributes>
-          <magnet len=".09769" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".09769" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".017691"/>
        </attributes>
@@ -8035,7 +8035,7 @@
     </node>
     <node type="DCV" id="CCL_Mag:DCV405" pos="6.058523" len="0.0" status="true">
        <attributes>
-          <magnet len=".09769" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".09769" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".017691"/>
        </attributes>
@@ -8057,7 +8057,7 @@
     </node>
     <node type="DCH" id="CCL_Mag:DCH406" pos="7.344886" len="0.0" status="true">
        <attributes>
-          <magnet len=".09769" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".09769" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".017691"/>
        </attributes>
@@ -8079,7 +8079,7 @@
     </node>
     <node type="DCV" id="CCL_Mag:DCV407" pos="8.63818" len="0.0" status="true">
        <attributes>
-          <magnet len=".09769" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".09769" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".017691"/>
        </attributes>
@@ -8101,7 +8101,7 @@
     </node>
     <node type="DCH" id="CCL_Mag:DCH408" pos="9.938373" len="0.0" status="true">
        <attributes>
-          <magnet len=".09769" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".09769" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".017691"/>
        </attributes>
@@ -8123,7 +8123,7 @@
     </node>
     <node type="DCV" id="CCL_Mag:DCV409" pos="11.245429" len="0.0" status="true">
        <attributes>
-          <magnet len=".09769" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".09769" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".017691"/>
        </attributes>
@@ -8933,7 +8933,7 @@
     </node>
     <node type="DCV" id="SCL_Mag:DCV00" pos="1.35" len="0" status="false">
        <attributes>
-          <magnet len=".104" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".104" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".024"/>
        </attributes>
@@ -8955,7 +8955,7 @@
     </node>
     <node type="DCH" id="SCL_Mag:DCH01" pos="6.91138" len="0" status="true">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -8977,7 +8977,7 @@
     </node>
     <node type="DCV" id="SCL_Mag:DCV01" pos="7.82662" len="0" status="true">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -8999,7 +8999,7 @@
     </node>
     <node type="DCH" id="SCL_Mag:DCH02" pos="12.75038" len="0" status="true">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -9021,7 +9021,7 @@
     </node>
     <node type="DCV" id="SCL_Mag:DCV02" pos="13.66562" len="0" status="true">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -9043,7 +9043,7 @@
     </node>
     <node type="DCH" id="SCL_Mag:DCH03" pos="18.58938" len="0" status="false">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -9065,7 +9065,7 @@
     </node>
     <node type="DCV" id="SCL_Mag:DCV03" pos="19.50462" len="0" status="false">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -9087,7 +9087,7 @@
     </node>
     <node type="DCH" id="SCL_Mag:DCH04" pos="24.42838" len="0" status="false">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -9109,7 +9109,7 @@
     </node>
     <node type="DCV" id="SCL_Mag:DCV04" pos="25.34362" len="0" status="false">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -9131,7 +9131,7 @@
     </node>
     <node type="DCH" id="SCL_Mag:DCH05" pos="30.26738" len="0" status="true">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -9153,7 +9153,7 @@
     </node>
     <node type="DCV" id="SCL_Mag:DCV05" pos="31.18262" len="0" status="true">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -9175,7 +9175,7 @@
     </node>
     <node type="DCH" id="SCL_Mag:DCH06" pos="36.10638" len="0" status="true">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -9197,7 +9197,7 @@
     </node>
     <node type="DCV" id="SCL_Mag:DCV06" pos="37.02162" len="0" status="true">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -9219,7 +9219,7 @@
     </node>
     <node type="DCH" id="SCL_Mag:DCH07" pos="41.94538" len="0" status="false">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -9241,7 +9241,7 @@
     </node>
     <node type="DCV" id="SCL_Mag:DCV07" pos="42.86062" len="0" status="false">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -9263,7 +9263,7 @@
     </node>
     <node type="DCH" id="SCL_Mag:DCH08" pos="47.78438" len="0" status="false">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -9285,7 +9285,7 @@
     </node>
     <node type="DCV" id="SCL_Mag:DCV08" pos="48.69962" len="0" status="false">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -9307,7 +9307,7 @@
     </node>
     <node type="DCH" id="SCL_Mag:DCH09" pos="53.62338" len="0" status="true">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -9329,7 +9329,7 @@
     </node>
     <node type="DCV" id="SCL_Mag:DCV09" pos="54.53862" len="0" status="true">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -9351,7 +9351,7 @@
     </node>
     <node type="DCH" id="SCL_Mag:DCH10" pos="59.46238" len="0" status="true">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -9373,7 +9373,7 @@
     </node>
     <node type="DCV" id="SCL_Mag:DCV10" pos="60.37762" len="0" status="true">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -9395,7 +9395,7 @@
     </node>
     <node type="DCH" id="SCL_Mag:DCH11" pos="65.30138" len="0" status="false">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -9417,7 +9417,7 @@
     </node>
     <node type="DCV" id="SCL_Mag:DCV11" pos="66.21662" len="0" status="false">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -12112,7 +12112,7 @@
     </node>
     <node type="DCH" id="SCL_Mag:DCH12" pos="6.23038" len="0" status="false">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -12134,7 +12134,7 @@
     </node>
     <node type="DCV" id="SCL_Mag:DCV12" pos="7.14562" len="0" status="false">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -12156,7 +12156,7 @@
     </node>
     <node type="DCH" id="SCL_Mag:DCH13" pos="14.12138" len="0" status="true">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -12178,7 +12178,7 @@
     </node>
     <node type="DCV" id="SCL_Mag:DCV13" pos="15.03662" len="0" status="true">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -12200,7 +12200,7 @@
     </node>
     <node type="DCH" id="SCL_Mag:DCH14" pos="22.01238" len="0" status="true">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -12222,7 +12222,7 @@
     </node>
     <node type="DCV" id="SCL_Mag:DCV14" pos="22.92762" len="0" status="true">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -12244,7 +12244,7 @@
     </node>
     <node type="DCH" id="SCL_Mag:DCH15" pos="29.90338" len="0" status="false">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -12266,7 +12266,7 @@
     </node>
     <node type="DCV" id="SCL_Mag:DCV15" pos="30.81862" len="0" status="false">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -12288,7 +12288,7 @@
     </node>
     <node type="DCH" id="SCL_Mag:DCH16" pos="37.79438" len="0" status="false">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -12310,7 +12310,7 @@
     </node>
     <node type="DCV" id="SCL_Mag:DCV16" pos="38.70962" len="0" status="false">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -12332,7 +12332,7 @@
     </node>
     <node type="DCH" id="SCL_Mag:DCH17" pos="45.68538" len="0" status="true">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -12354,7 +12354,7 @@
     </node>
     <node type="DCV" id="SCL_Mag:DCV17" pos="46.60062" len="0" status="true">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -12376,7 +12376,7 @@
     </node>
     <node type="DCH" id="SCL_Mag:DCH18" pos="53.57638" len="0" status="true">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -12398,7 +12398,7 @@
     </node>
     <node type="DCV" id="SCL_Mag:DCV18" pos="54.49162" len="0" status="true">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -12420,7 +12420,7 @@
     </node>
     <node type="DCH" id="SCL_Mag:DCH19" pos="61.46738" len="0" status="false">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -12442,7 +12442,7 @@
     </node>
     <node type="DCV" id="SCL_Mag:DCV19" pos="62.38262" len="0" status="false">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -12464,7 +12464,7 @@
     </node>
     <node type="DCH" id="SCL_Mag:DCH20" pos="69.35838" len="0" status="false">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -12486,7 +12486,7 @@
     </node>
     <node type="DCV" id="SCL_Mag:DCV20" pos="70.27362" len="0" status="false">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -12508,7 +12508,7 @@
     </node>
     <node type="DCH" id="SCL_Mag:DCH21" pos="77.24938" len="0" status="true">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -12530,7 +12530,7 @@
     </node>
     <node type="DCV" id="SCL_Mag:DCV21" pos="78.16462" len="0" status="true">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -12552,7 +12552,7 @@
     </node>
     <node type="DCH" id="SCL_Mag:DCH22" pos="85.14038" len="0" status="true">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -12574,7 +12574,7 @@
     </node>
     <node type="DCV" id="SCL_Mag:DCV22" pos="86.05562" len="0" status="true">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -12596,7 +12596,7 @@
     </node>
     <node type="DCH" id="SCL_Mag:DCH23" pos="93.03138" len="0" status="false">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -12618,7 +12618,7 @@
     </node>
     <node type="DCV" id="SCL_Mag:DCV23" pos="93.94662" len="0" status="false">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -12640,7 +12640,7 @@
     </node>
     <node type="DCH" id="SCL_Mag:DCH24" pos="100.92238" len="0" status="false">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -12662,7 +12662,7 @@
     </node>
     <node type="DCV" id="SCL_Mag:DCV24" pos="101.83762" len="0" status="false">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -12684,7 +12684,7 @@
     </node>
     <node type="DCH" id="SCL_Mag:DCH25" pos="108.81338" len="0" status="true">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -12706,7 +12706,7 @@
     </node>
     <node type="DCV" id="SCL_Mag:DCV25" pos="109.72862" len="0" status="true">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -12728,7 +12728,7 @@
     </node>
     <node type="DCH" id="SCL_Mag:DCH26" pos="116.70438" len="0" status="true">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -12750,7 +12750,7 @@
     </node>
     <node type="DCV" id="SCL_Mag:DCV26" pos="117.61962" len="0" status="true">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -12772,7 +12772,7 @@
     </node>
     <node type="DCH" id="SCL_Mag:DCH27" pos="124.59538" len="0" status="false">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -12794,7 +12794,7 @@
     </node>
     <node type="DCV" id="SCL_Mag:DCV27" pos="125.51062" len="0" status="false">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -12816,7 +12816,7 @@
     </node>
     <node type="DCH" id="SCL_Mag:DCH28" pos="132.48638" len="0" status="false">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -12838,7 +12838,7 @@
     </node>
     <node type="DCV" id="SCL_Mag:DCV28" pos="133.40162" len="0" status="false">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -12860,7 +12860,7 @@
     </node>
     <node type="DCH" id="SCL_Mag:DCH29" pos="140.37738" len="0" status="true">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -12882,7 +12882,7 @@
     </node>
     <node type="DCV" id="SCL_Mag:DCV29" pos="141.29262" len="0" status="true">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -12904,7 +12904,7 @@
     </node>
     <node type="DCH" id="SCL_Mag:DCH30" pos="148.26838" len="0" status="true">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -12926,7 +12926,7 @@
     </node>
     <node type="DCV" id="SCL_Mag:DCV30" pos="149.18362" len="0" status="true">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -12948,7 +12948,7 @@
     </node>
     <node type="DCH" id="SCL_Mag:DCH31" pos="156.15938" len="0" status="false">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -12970,7 +12970,7 @@
     </node>
     <node type="DCV" id="SCL_Mag:DCV31" pos="157.07462" len="0" status="false">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -12992,7 +12992,7 @@
     </node>
     <node type="DCH" id="SCL_Mag:DCH32" pos="164.05038" len="0" status="false">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -13014,7 +13014,7 @@
     </node>
     <node type="DCV" id="SCL_Mag:DCV32" pos="164.96562" len="0" status="false">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -13036,7 +13036,7 @@
     </node>
     <node type="DCH" id="SCL_Mag:DCH33" pos="168.358" len="0" status="false">
        <attributes>
-          <magnet len=".38" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".38" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".03999"/>
        </attributes>
@@ -17000,7 +17000,7 @@
     </node>
     <node type="DCV" id="HEBT_Mag:DCV05" pos="17.520192" len="0.0" status="true">
        <attributes>
-          <magnet len=".33" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".33" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".16"/>
        </attributes>
@@ -17022,7 +17022,7 @@
     </node>
     <node type="DCH" id="HEBT_Mag:DCH06" pos="21.520192" len="0.0" status="true">
        <attributes>
-          <magnet len=".33" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".33" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".16"/>
        </attributes>
@@ -17044,7 +17044,7 @@
     </node>
     <node type="DCV" id="HEBT_Mag:DCV07" pos="25.520192" len="0.0" status="true">
        <attributes>
-          <magnet len=".33" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".33" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".16"/>
        </attributes>
@@ -17066,7 +17066,7 @@
     </node>
     <node type="DCH" id="HEBT_Mag:DCH08" pos="29.520192" len="0.0" status="true">
        <attributes>
-          <magnet len=".33" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".33" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".16"/>
        </attributes>
@@ -17945,7 +17945,7 @@
     </node>
     <node type="DCH" id="LDmp_Mag:DCH05" pos="19.047097" len="0.0" status="true">
        <attributes>
-          <magnet len=".33" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".33" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".16"/>
        </attributes>
@@ -17967,7 +17967,7 @@
     </node>
     <node type="DCV" id="LDmp_Mag:DCV06" pos="21.547097" len="0.0" status="true">
        <attributes>
-          <magnet len=".33" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".33" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".16"/>
        </attributes>
@@ -18232,7 +18232,7 @@
     <node type="marker" id="Begin_Of_HEBT2" pos="0" len="0"/>
     <node type="DH" id="HEBT_Mag:DH11" pos="2.943512" len="0.0" status="true">
        <attributes>
-          <magnet len="5.432" polarity="+1" pathLength="5.440836" dipoleQuadComponent="-.001403" bendAngle="-11.25" dipoleEntrRotAngle="-5.625" dipoleExitRotAngle="-5.625" dfltMagFld=".204391"/>
+          <dipole len="5.432" polarity="+1" pathLength="5.440836" dipoleQuadComponent="-.001403" bendAngle="-11.25" dipoleEntrRotAngle="-5.625" dipoleExitRotAngle="-5.625" dfltMagFld=".204391"/>
           <align x="0.0" y="0.0" z="0.0" pitch="5.625" yaw="0" roll="0"/>
           <aperture shape="0" x=".08"/>
        </attributes>
@@ -18254,7 +18254,7 @@
     </node>
     <node type="DH" id="HEBT_Mag:DH12" pos="10.276726" len="0.0" status="true">
        <attributes>
-          <magnet len="5.432" polarity="+1" pathLength="5.440836" dipoleQuadComponent="-.000638" bendAngle="-11.25" dipoleEntrRotAngle="-5.625" dipoleExitRotAngle="-5.625" dfltMagFld=".204391"/>
+          <dipole len="5.432" polarity="+1" pathLength="5.440836" dipoleQuadComponent="-.000638" bendAngle="-11.25" dipoleEntrRotAngle="-5.625" dipoleExitRotAngle="-5.625" dfltMagFld=".204391"/>
           <align x="0.0" y="0.0" z="0.0" pitch="16.875" yaw="0" roll="0"/>
           <aperture shape="0" x=".08"/>
        </attributes>
@@ -18276,7 +18276,7 @@
     </node>
     <node type="DH" id="HEBT_Mag:DH13" pos="17.60994" len="0.0" status="true">
        <attributes>
-          <magnet len="5.432" polarity="+1" pathLength="5.440836" dipoleQuadComponent="-.000847" bendAngle="-11.25" dipoleEntrRotAngle="-5.625" dipoleExitRotAngle="-5.625" dfltMagFld=".204391"/>
+          <dipole len="5.432" polarity="+1" pathLength="5.440836" dipoleQuadComponent="-.000847" bendAngle="-11.25" dipoleEntrRotAngle="-5.625" dipoleExitRotAngle="-5.625" dfltMagFld=".204391"/>
           <align x="0.0" y="0.0" z="0.0" pitch="28.125" yaw="0" roll="0"/>
           <aperture shape="0" x=".08"/>
        </attributes>
@@ -18287,7 +18287,7 @@
     </node>
     <node type="DCH" id="HEBT_Mag:DCH14" pos="20.973335" len="0.0" status="true">
        <attributes>
-          <magnet len=".538" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".538" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="33.75" yaw="0" roll="0"/>
           <aperture shape="0" x=".27"/>
        </attributes>
@@ -18309,7 +18309,7 @@
     </node>
     <node type="DH" id="HEBT_Mag:DH14" pos="24.943157" len="0.0" status="true">
        <attributes>
-          <magnet len="5.432" polarity="+1" pathLength="5.440836" dipoleQuadComponent=".000013" bendAngle="-11.25" dipoleEntrRotAngle="-5.625" dipoleExitRotAngle="-5.625" dfltMagFld=".204391"/>
+          <dipole len="5.432" polarity="+1" pathLength="5.440836" dipoleQuadComponent=".000013" bendAngle="-11.25" dipoleEntrRotAngle="-5.625" dipoleExitRotAngle="-5.625" dfltMagFld=".204391"/>
           <align x="0.0" y="0.0" z="0.0" pitch="39.375" yaw="0" roll="0"/>
           <aperture shape="0" x=".08"/>
        </attributes>
@@ -18320,7 +18320,7 @@
     </node>
     <node type="DCV" id="HEBT_Mag:DCV15" pos="28.306549" len="0.0" status="true">
        <attributes>
-          <magnet len=".538" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".538" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="45" yaw="0" roll="0"/>
           <aperture shape="0" x=".27"/>
        </attributes>
@@ -18342,7 +18342,7 @@
     </node>
     <node type="DH" id="HEBT_Mag:DH15" pos="32.276379" len="0.0" status="true">
        <attributes>
-          <magnet len="5.432" polarity="+1" pathLength="5.440836" dipoleQuadComponent="-.000636" bendAngle="-11.25" dipoleEntrRotAngle="-5.625" dipoleExitRotAngle="-5.625" dfltMagFld=".204391"/>
+          <dipole len="5.432" polarity="+1" pathLength="5.440836" dipoleQuadComponent="-.000636" bendAngle="-11.25" dipoleEntrRotAngle="-5.625" dipoleExitRotAngle="-5.625" dfltMagFld=".204391"/>
           <align x="0.0" y="0.0" z="0.0" pitch="50.625" yaw="0" roll="0"/>
           <aperture shape="0" x=".08"/>
        </attributes>
@@ -18353,7 +18353,7 @@
     </node>
     <node type="DCH" id="HEBT_Mag:DCH16" pos="35.639763" len="0.0" status="true">
        <attributes>
-          <magnet len=".538" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".538" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="56.25" yaw="0" roll="0"/>
           <aperture shape="0" x=".27"/>
        </attributes>
@@ -18375,7 +18375,7 @@
     </node>
     <node type="DH" id="HEBT_Mag:DH16" pos="39.6096" len="0.0" status="true">
        <attributes>
-          <magnet len="5.432" polarity="+1" pathLength="5.440836" dipoleQuadComponent=".000414" bendAngle="-11.25" dipoleEntrRotAngle="-5.625" dipoleExitRotAngle="-5.625" dfltMagFld=".204391"/>
+          <dipole len="5.432" polarity="+1" pathLength="5.440836" dipoleQuadComponent=".000414" bendAngle="-11.25" dipoleEntrRotAngle="-5.625" dipoleExitRotAngle="-5.625" dfltMagFld=".204391"/>
           <align x="0.0" y="0.0" z="0.0" pitch="61.875" yaw="0" roll="0"/>
           <aperture shape="0" x=".08"/>
        </attributes>
@@ -18386,7 +18386,7 @@
     </node>
     <node type="DCV" id="HEBT_Mag:DCV17" pos="42.972977" len="0.0" status="true">
        <attributes>
-          <magnet len=".538" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".538" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="67.5" yaw="0" roll="0"/>
           <aperture shape="0" x=".27"/>
        </attributes>
@@ -18408,7 +18408,7 @@
     </node>
     <node type="DH" id="HEBT_Mag:DH17" pos="46.942821" len="0.0" status="true">
        <attributes>
-          <magnet len="5.432" polarity="+1" pathLength="5.440836" dipoleQuadComponent=".000114" bendAngle="-11.25" dipoleEntrRotAngle="-5.625" dipoleExitRotAngle="-5.625" dfltMagFld=".204391"/>
+          <dipole len="5.432" polarity="+1" pathLength="5.440836" dipoleQuadComponent=".000114" bendAngle="-11.25" dipoleEntrRotAngle="-5.625" dipoleExitRotAngle="-5.625" dfltMagFld=".204391"/>
           <align x="0.0" y="0.0" z="0.0" pitch="73.125" yaw="0" roll="0"/>
           <aperture shape="0" x=".08"/>
        </attributes>
@@ -18430,7 +18430,7 @@
     </node>
     <node type="DH" id="HEBT_Mag:DH18" pos="54.276043" len="0.0" status="true">
        <attributes>
-          <magnet len="5.432" polarity="+1" pathLength="5.440836" dipoleQuadComponent="-.000412" bendAngle="-11.25" dipoleEntrRotAngle="-5.625" dipoleExitRotAngle="-5.625" dfltMagFld=".204391"/>
+          <dipole len="5.432" polarity="+1" pathLength="5.440836" dipoleQuadComponent="-.000412" bendAngle="-11.25" dipoleEntrRotAngle="-5.625" dipoleExitRotAngle="-5.625" dfltMagFld=".204391"/>
           <align x="0.0" y="0.0" z="0.0" pitch="84.375" yaw="0" roll="0"/>
           <aperture shape="0" x=".08"/>
        </attributes>
@@ -18474,7 +18474,7 @@
     </node>
     <node type="DCV" id="HEBT_Mag:DCV21" pos="69.212809" len="0.0" status="true">
        <attributes>
-          <magnet len=".33" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".33" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="90" yaw="0" roll="0"/>
           <aperture shape="0" x=".16"/>
        </attributes>
@@ -18496,7 +18496,7 @@
     </node>
     <node type="DCH" id="HEBT_Mag:DCH22" pos="73.712809" len="0.0" status="true">
        <attributes>
-          <magnet len=".33" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".33" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="90" yaw="0" roll="0"/>
           <aperture shape="0" x=".16"/>
        </attributes>
@@ -18518,7 +18518,7 @@
     </node>
     <node type="DCV" id="HEBT_Mag:DCV23" pos="78.212809" len="0.0" status="true">
        <attributes>
-          <magnet len=".33" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".33" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="90" yaw="0" roll="0"/>
           <aperture shape="0" x=".16"/>
        </attributes>
@@ -18540,7 +18540,7 @@
     </node>
     <node type="DCH" id="HEBT_Mag:DCH24" pos="82.712809" len="0.0" status="true">
        <attributes>
-          <magnet len=".33" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".33" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="90" yaw="0" roll="0"/>
           <aperture shape="0" x=".16"/>
        </attributes>
@@ -18562,7 +18562,7 @@
     </node>
     <node type="DH" id="HEBT_Mag:DH25" pos="89.514667" len="0.0" status="true">
        <attributes>
-          <magnet len="4.13" polarity="-1" pathLength="4.134021" dipoleQuadComponent="-.000179" bendAngle="8.75486" dipoleEntrRotAngle="4.37743" dipoleExitRotAngle="4.37743" dfltMagFld="-.209335"/>
+          <dipole len="4.13" polarity="-1" pathLength="4.134021" dipoleQuadComponent="-.000179" bendAngle="8.75486" dipoleEntrRotAngle="4.37743" dipoleExitRotAngle="4.37743" dfltMagFld="-.209335"/>
           <align x="0.0" y="0.0" z="0.0" pitch="85.623" yaw="0" roll="0"/>
           <aperture shape="0" x=".08"/>
        </attributes>
@@ -18606,7 +18606,7 @@
     </node>
     <node type="DCH" id="HEBT_Mag:DCH28" pos="100.856829" len="0.0" status="true">
        <attributes>
-          <magnet len=".33" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".33" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="81.245132" yaw="0" roll="0"/>
           <aperture shape="0" x=".16"/>
        </attributes>
@@ -18628,7 +18628,7 @@
     </node>
     <node type="DCV" id="HEBT_Mag:DCV29" pos="104.856829" len="0.0" status="true">
        <attributes>
-          <magnet len=".33" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".33" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="81.245132" yaw="0" roll="0"/>
           <aperture shape="0" x=".16"/>
        </attributes>
@@ -18650,7 +18650,7 @@
     </node>
     <node type="DCH" id="HEBT_Mag:DCH30" pos="108.356829" len="0.0" status="true">
        <attributes>
-          <magnet len=".33" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".33" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="81.245132" yaw="0" roll="0"/>
           <aperture shape="0" x=".16"/>
        </attributes>
@@ -18672,7 +18672,7 @@
     </node>
     <node type="DCV" id="HEBT_Mag:DCV31" pos="112.356829" len="0.0" status="true">
        <attributes>
-          <magnet len=".33" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".33" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="81.245132" yaw="0" roll="0"/>
           <aperture shape="0" x=".16"/>
        </attributes>
@@ -18716,7 +18716,7 @@
     </node>
     <node type="DH" id="HEBT_Mag:InjSptm" pos="126.343479" len="0.0" status="true">
        <attributes>
-          <magnet len="3.064" polarity="+1" pathLength="3.06356" dipoleQuadComponent="0.0" bendAngle="-6.351" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".204918"/>
+          <dipole len="3.064" polarity="+1" pathLength="3.06356" dipoleQuadComponent="0.0" bendAngle="-6.351" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".204918"/>
           <align x="0.0" y="0.0" z="0.0" pitch="84.421" yaw="0" roll="0"/>
           <aperture shape="0" x=".07"/>
        </attributes>
@@ -18727,7 +18727,7 @@
     </node>
     <node type="DH" id="Ring_Mag:DH_A11" pos="130.690932" len="0.0" status="true">
        <attributes>
-          <magnet len=".94" polarity="+1" pathLength=".94" dipoleQuadComponent="0.0" bendAngle="-3.042406" dipoleEntrRotAngle="-2.406423" dipoleExitRotAngle="-0.635983" dfltMagFld=".3196"/>
+          <dipole len=".94" polarity="+1" pathLength=".94" dipoleQuadComponent="0.0" bendAngle="-3.042406" dipoleEntrRotAngle="-2.406423" dipoleExitRotAngle="-0.635983" dfltMagFld=".3196"/>
           <align x="0.0" y="0.0" z="0.0" pitch="90" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -19964,7 +19964,7 @@
     <node type="marker" id="Begin_Of_IDmp-" pos="0" len="0"/>
     <node type="DH" id="Ring_Mag:DH_A12" pos="1.364325" len="0.0" status="true">
        <attributes>
-          <magnet len=".908" polarity="+1" pathLength=".908" dipoleQuadComponent="0.0" bendAngle="-2.03973" dipoleEntrRotAngle="0.635983" dipoleExitRotAngle="-2.669983" dfltMagFld=".2218"/>
+          <dipole len=".908" polarity="+1" pathLength=".908" dipoleQuadComponent="0.0" bendAngle="-2.03973" dipoleEntrRotAngle="0.635983" dipoleExitRotAngle="-2.669983" dfltMagFld=".2218"/>
           <align x="0.0" y="0.0" z="0.0" pitch="90" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -19986,7 +19986,7 @@
     <node type="marker" id="Begin_Of_IDmp+" pos="0" len="0"/>
     <node type="DH" id="Ring_Mag:DH_A13" pos=".904955" len="0.0" status="true">
        <attributes>
-          <magnet len=".91" polarity="-1" pathLength=".91" dipoleQuadComponent="0.0" bendAngle="-2.669983" dipoleEntrRotAngle="-2.669983" dipoleExitRotAngle="0" dfltMagFld="-.2897"/>
+          <dipole len=".91" polarity="-1" pathLength=".91" dipoleQuadComponent="0.0" bendAngle="-2.669983" dipoleEntrRotAngle="-2.669983" dipoleExitRotAngle="0" dfltMagFld="-.2897"/>
           <align x="0.0" y="0.0" z="0.0" pitch="90" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -19997,7 +19997,7 @@
     </node>
     <node type="DH" id="IDmp_Mag:Sptm" pos="2.953955" len="0.0" status="true">
        <attributes>
-          <magnet len="2" polarity="-1" pathLength="2.00192" dipoleQuadComponent=".1844" bendAngle="-8.649" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0" dfltMagFld="-.426914"/>
+          <dipole len="2" polarity="-1" pathLength="2.00192" dipoleQuadComponent=".1844" bendAngle="-8.649" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0" dfltMagFld="-.426914"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -20008,7 +20008,7 @@
     </node>
     <node type="DH" id="IDmp_Mag:DH01" pos="4.558955" len=".15" status="true">
        <attributes>
-          <magnet len=".1514" polarity="+1" pathLength=".1514" dipoleQuadComponent="0" bendAngle="0" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld="0"/>
+          <dipole len=".1514" polarity="+1" pathLength=".1514" dipoleQuadComponent="0" bendAngle="0" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x=".11"/>
        </attributes>
@@ -20030,7 +20030,7 @@
     </node>
     <node type="DCH" id="IDmp_Mag:DCH01" pos="10.68252" len="0.0" status="true">
        <attributes>
-          <magnet len=".673" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".673" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -20041,7 +20041,7 @@
     </node>
     <node type="DCV" id="IDmp_Mag:DCV01" pos="10.68252" len="0.0" status="true">
        <attributes>
-          <magnet len=".673" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".673" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -20455,7 +20455,7 @@
     <node type="marker" id="Begin_Of_Ring1" pos="0" len="0"/>
     <node type="DH" id="Ring_Mag:DH_A12" pos="1.364145" len="0.0" status="true">
        <attributes>
-          <magnet len=".908" polarity="+1" pathLength=".908" dipoleQuadComponent="0.0" bendAngle="2.03973" dipoleEntrRotAngle="-.635983" dipoleExitRotAngle="2.669983" dfltMagFld=".2218"/>
+          <dipole len=".908" polarity="+1" pathLength=".908" dipoleQuadComponent="0.0" bendAngle="2.03973" dipoleEntrRotAngle="-.635983" dipoleExitRotAngle="2.669983" dfltMagFld=".2218"/>
           <align x="0.0" y="0.0" z="0.0" pitch="90" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -20466,7 +20466,7 @@
     </node>
     <node type="DH" id="Ring_Mag:DH_A13" pos="3.392" len="0.0" status="true">
        <attributes>
-          <magnet len=".91" polarity="-1" pathLength=".91" dipoleQuadComponent="0.0" bendAngle="-2.669983" dipoleEntrRotAngle="-2.669983" dipoleExitRotAngle="0" dfltMagFld="-.2897"/>
+          <dipole len=".91" polarity="-1" pathLength=".91" dipoleQuadComponent="0.0" bendAngle="-2.669983" dipoleEntrRotAngle="-2.669983" dipoleExitRotAngle="0" dfltMagFld="-.2897"/>
           <align x="0.0" y="0.0" z="0.0" pitch="90" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -20499,7 +20499,7 @@
     </node>
     <node type="DCH" id="Ring_Mag:DCH_A13" pos="8.669651" len="0.0" status="true">
        <attributes>
-          <magnet len=".673" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".673" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="90" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -20510,7 +20510,7 @@
     </node>
     <node type="DCV" id="Ring_Mag:DCV_A13" pos="8.669651" len="0.0" status="true">
        <attributes>
-          <magnet len=".673" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".673" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="90" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -20617,7 +20617,7 @@
     <node type="marker" id="Begin_Of_Ring2" pos="0" len="0"/>
     <node type="DCV" id="Ring_Mag:DCV_B01" pos=".6468" len="0.0" status="true">
        <attributes>
-          <magnet len=".585" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".585" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="90" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -20650,7 +20650,7 @@
     </node>
     <node type="DH" id="Ring_Mag:DH_B01" pos="3.20005" len="0.0" status="true">
        <attributes>
-          <magnet len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
+          <dipole len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
           <align x="0.0" y="0.0" z="0.0" pitch="84.375" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -20661,7 +20661,7 @@
     </node>
     <node type="DCH" id="Ring_Mag:DCH_B02" pos="4.647" len="0.0" status="true">
        <attributes>
-          <magnet len=".585" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".585" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="78.75" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -20694,7 +20694,7 @@
     </node>
     <node type="DH" id="Ring_Mag:DH_B02" pos="7.20025" len="0.0" status="true">
        <attributes>
-          <magnet len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
+          <dipole len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
           <align x="0.0" y="0.0" z="0.0" pitch="73.125" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -20705,7 +20705,7 @@
     </node>
     <node type="DCV" id="Ring_Mag:DCV_B03" pos="8.6472" len="0.0" status="true">
        <attributes>
-          <magnet len=".585" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".585" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="67.5" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -20749,7 +20749,7 @@
     </node>
     <node type="DH" id="Ring_Mag:DH_B03" pos="11.20045" len="0.0" status="true">
        <attributes>
-          <magnet len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
+          <dipole len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
           <align x="0.0" y="0.0" z="0.0" pitch="61.875" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -20760,7 +20760,7 @@
     </node>
     <node type="DCH" id="Ring_Mag:DCH_B04" pos="12.6148" len="0.0" status="true">
        <attributes>
-          <magnet len=".618" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".618" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="56.25" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -20793,7 +20793,7 @@
     </node>
     <node type="DH" id="Ring_Mag:DH_B04" pos="15.20065" len="0.0" status="true">
        <attributes>
-          <magnet len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
+          <dipole len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
           <align x="0.0" y="0.0" z="0.0" pitch="50.625" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -20826,7 +20826,7 @@
     </node>
     <node type="DCV" id="Ring_Mag:DCV_B05" pos="17.754" len="0.0" status="true">
        <attributes>
-          <magnet len=".585" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".585" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="45" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -20848,7 +20848,7 @@
     </node>
     <node type="DH" id="Ring_Mag:DH_B06" pos="19.20085" len="0.0" status="true">
        <attributes>
-          <magnet len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
+          <dipole len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
           <align x="0.0" y="0.0" z="0.0" pitch="39.375" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -20881,7 +20881,7 @@
     </node>
     <node type="DCH" id="Ring_Mag:DCH_B06" pos="21.7867" len="0.0" status="true">
        <attributes>
-          <magnet len=".618" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".618" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="33.75" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -20892,7 +20892,7 @@
     </node>
     <node type="DH" id="Ring_Mag:DH_B07" pos="23.20105" len="0.0" status="true">
        <attributes>
-          <magnet len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
+          <dipole len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
           <align x="0.0" y="0.0" z="0.0" pitch="28.125" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -20925,7 +20925,7 @@
     </node>
     <node type="DCV" id="Ring_Mag:DCV_B07" pos="25.7544" len="0.0" status="true">
        <attributes>
-          <magnet len=".585" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".585" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="22.5" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -20947,7 +20947,7 @@
     </node>
     <node type="DH" id="Ring_Mag:DH_B08" pos="27.20125" len="0.0" status="true">
        <attributes>
-          <magnet len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
+          <dipole len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
           <align x="0.0" y="0.0" z="0.0" pitch="16.875" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -20969,7 +20969,7 @@
     </node>
     <node type="DCH" id="Ring_Mag:DCH_B08" pos="29.7545" len="0.0" status="true">
        <attributes>
-          <magnet len=".585" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".585" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="11.25" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -20991,7 +20991,7 @@
     </node>
     <node type="DH" id="Ring_Mag:DH_B09" pos="31.20145" len="0.0" status="true">
        <attributes>
-          <magnet len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
+          <dipole len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
           <align x="0.0" y="0.0" z="0.0" pitch="5.625" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -21013,7 +21013,7 @@
     </node>
     <node type="DCV" id="Ring_Mag:DCV_B09" pos="33.7547" len="0.0" status="true">
        <attributes>
-          <magnet len=".585" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".585" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -21035,7 +21035,7 @@
     </node>
     <node type="DCH" id="Ring_Mag:DCH_B10" pos="39.9977" len="0.0" status="true">
        <attributes>
-          <magnet len=".673" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".673" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -21046,7 +21046,7 @@
     </node>
     <node type="DCV" id="Ring_Mag:DCV_B10" pos="39.9977" len="0.0" status="true">
        <attributes>
-          <magnet len=".673" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".673" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -21101,7 +21101,7 @@
     </node>
     <node type="DCH" id="Ring_Mag:DCH_B13" pos="56.4053" len="0.0" status="true">
        <attributes>
-          <magnet len=".673" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".673" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -21112,7 +21112,7 @@
     </node>
     <node type="DCV" id="Ring_Mag:DCV_B13" pos="56.4053" len="0.0" status="true">
        <attributes>
-          <magnet len=".673" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".673" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -21123,7 +21123,7 @@
     </node>
     <node type="DCV" id="Ring_Mag:DCV_C01" pos="62.6483" len="0.0" status="true">
        <attributes>
-          <magnet len=".585" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".585" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -21156,7 +21156,7 @@
     </node>
     <node type="DH" id="Ring_Mag:DH_C01" pos="65.20165" len="0.0" status="true">
        <attributes>
-          <magnet len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
+          <dipole len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-5.625" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -21167,7 +21167,7 @@
     </node>
     <node type="DCH" id="Ring_Mag:DCH_C02" pos="66.6485" len="0.0" status="true">
        <attributes>
-          <magnet len=".585" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".585" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-11.25" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -21200,7 +21200,7 @@
     </node>
     <node type="DH" id="Ring_Mag:DH_C02" pos="69.20185" len="0.0" status="true">
        <attributes>
-          <magnet len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
+          <dipole len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-16.875" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -21211,7 +21211,7 @@
     </node>
     <node type="DCV" id="Ring_Mag:DCV_C03" pos="70.6487" len="0.0" status="true">
        <attributes>
-          <magnet len=".585" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".585" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-22.5" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -21255,7 +21255,7 @@
     </node>
     <node type="DH" id="Ring_Mag:DH_C03" pos="73.20195" len="0.0" status="true">
        <attributes>
-          <magnet len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
+          <dipole len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-28.125" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -21266,7 +21266,7 @@
     </node>
     <node type="DCH" id="Ring_Mag:DCH_C04" pos="74.6164" len="0.0" status="true">
        <attributes>
-          <magnet len=".618" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".618" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-33.75" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -21299,7 +21299,7 @@
     </node>
     <node type="DH" id="Ring_Mag:DH_C04" pos="77.20215" len="0.0" status="true">
        <attributes>
-          <magnet len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
+          <dipole len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-39.375" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -21332,7 +21332,7 @@
     </node>
     <node type="DCV" id="Ring_Mag:DCV_C05" pos="79.7555" len="0.0" status="true">
        <attributes>
-          <magnet len=".585" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".585" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-45" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -21354,7 +21354,7 @@
     </node>
     <node type="DH" id="Ring_Mag:DH_C06" pos="81.20235" len="0.0" status="true">
        <attributes>
-          <magnet len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
+          <dipole len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-50.625" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -21387,7 +21387,7 @@
     </node>
     <node type="DCH" id="Ring_Mag:DCH_C06" pos="83.7882" len="0.0" status="true">
        <attributes>
-          <magnet len=".618" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".618" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-56.25" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -21398,7 +21398,7 @@
     </node>
     <node type="DH" id="Ring_Mag:DH_C07" pos="85.20275" len="0.0" status="true">
        <attributes>
-          <magnet len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
+          <dipole len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-61.875" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -21431,7 +21431,7 @@
     </node>
     <node type="DCV" id="Ring_Mag:DCV_C07" pos="87.7556" len="0.0" status="true">
        <attributes>
-          <magnet len=".585" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".585" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-67.5" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -21453,7 +21453,7 @@
     </node>
     <node type="DH" id="Ring_Mag:DH_C08" pos="89.20275" len="0.0" status="true">
        <attributes>
-          <magnet len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
+          <dipole len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-73.125" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -21475,7 +21475,7 @@
     </node>
     <node type="DCH" id="Ring_Mag:DCH_C08" pos="91.7556" len="0.0" status="true">
        <attributes>
-          <magnet len=".585" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".585" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-78.75" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -21497,7 +21497,7 @@
     </node>
     <node type="DH" id="Ring_Mag:DH_C09" pos="93.20275" len="0.0" status="true">
        <attributes>
-          <magnet len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
+          <dipole len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-84.375" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -21519,7 +21519,7 @@
     </node>
     <node type="DCV" id="Ring_Mag:DCV_C09" pos="95.7566" len="0.0" status="true">
        <attributes>
-          <magnet len=".585" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".585" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-90" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -22637,7 +22637,7 @@
     <node type="marker" id="Begin_Of_Ring3" pos="0" len="0"/>
     <node type="DCH" id="Ring_Mag:DCH_C10" pos="4.347" len="0.0" status="true">
        <attributes>
-          <magnet len=".673" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".673" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-90" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -22648,7 +22648,7 @@
     </node>
     <node type="DCV" id="Ring_Mag:DCV_C10" pos="4.347" len="0.0" status="true">
        <attributes>
-          <magnet len=".673" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".673" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-90" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -22789,7 +22789,7 @@
     </node>
     <node type="DCH" id="Ring_Mag:DCH_C13" pos="4.979" len="0.0" status="true">
        <attributes>
-          <magnet len=".673" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".673" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-90" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -22800,7 +22800,7 @@
     </node>
     <node type="DCV" id="Ring_Mag:DCV_C13" pos="4.979" len="0.0" status="true">
        <attributes>
-          <magnet len=".673" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".673" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-90" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -22811,7 +22811,7 @@
     </node>
     <node type="DCV" id="Ring_Mag:DCV_D01" pos="11.222" len="0.0" status="true">
        <attributes>
-          <magnet len=".585" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".585" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-90" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -22844,7 +22844,7 @@
     </node>
     <node type="DH" id="Ring_Mag:DH_D01" pos="13.77515" len="0.0" status="true">
        <attributes>
-          <magnet len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
+          <dipole len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-95.625" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -22855,7 +22855,7 @@
     </node>
     <node type="DCH" id="Ring_Mag:DCH_D02" pos="15.222" len="0.0" status="true">
        <attributes>
-          <magnet len=".585" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".585" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-101.25" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -22888,7 +22888,7 @@
     </node>
     <node type="DH" id="Ring_Mag:DH_D02" pos="17.77615" len="0.0" status="true">
        <attributes>
-          <magnet len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
+          <dipole len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-106.875" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -22899,7 +22899,7 @@
     </node>
     <node type="DCV" id="Ring_Mag:DCV_D03" pos="19.223" len="0.0" status="true">
        <attributes>
-          <magnet len=".585" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".585" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-112.5" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -22943,7 +22943,7 @@
     </node>
     <node type="DH" id="Ring_Mag:DH_D03" pos="21.77615" len="0.0" status="true">
        <attributes>
-          <magnet len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
+          <dipole len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-118.125" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -22954,7 +22954,7 @@
     </node>
     <node type="DCH" id="Ring_Mag:DCH_D04" pos="23.1905" len="0.0" status="true">
        <attributes>
-          <magnet len=".618" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".618" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-123.75" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -22987,7 +22987,7 @@
     </node>
     <node type="DH" id="Ring_Mag:DH_D04" pos="25.77615" len="0.0" status="true">
        <attributes>
-          <magnet len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
+          <dipole len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-129.375" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -23020,7 +23020,7 @@
     </node>
     <node type="DCV" id="Ring_Mag:DCV_D05" pos="28.329" len="0.0" status="true">
        <attributes>
-          <magnet len=".585" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".585" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-135" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -23042,7 +23042,7 @@
     </node>
     <node type="DH" id="Ring_Mag:DH_D06" pos="29.77615" len="0.0" status="true">
        <attributes>
-          <magnet len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
+          <dipole len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-140.625" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -23075,7 +23075,7 @@
     </node>
     <node type="DCH" id="Ring_Mag:DCH_D06" pos="32.3625" len="0.0" status="true">
        <attributes>
-          <magnet len=".618" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".618" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-146.25" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -23086,7 +23086,7 @@
     </node>
     <node type="DH" id="Ring_Mag:DH_D07" pos="33.77615" len="0.0" status="true">
        <attributes>
-          <magnet len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
+          <dipole len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-151.875" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -23119,7 +23119,7 @@
     </node>
     <node type="DCV" id="Ring_Mag:DCV_D07" pos="36.33" len="0.0" status="true">
        <attributes>
-          <magnet len=".585" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".585" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-157.5" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -23141,7 +23141,7 @@
     </node>
     <node type="DH" id="Ring_Mag:DH_D08" pos="37.77715" len="0.0" status="true">
        <attributes>
-          <magnet len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
+          <dipole len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-163.125" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -23163,7 +23163,7 @@
     </node>
     <node type="DCH" id="Ring_Mag:DCH_D08" pos="40.33" len="0.0" status="true">
        <attributes>
-          <magnet len=".585" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".585" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-168.75" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -23185,7 +23185,7 @@
     </node>
     <node type="DH" id="Ring_Mag:DH_D09" pos="41.77715" len="0.0" status="true">
        <attributes>
-          <magnet len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
+          <dipole len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-174.375" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -23207,7 +23207,7 @@
     </node>
     <node type="DCV" id="Ring_Mag:DCV_D09" pos="44.33" len="0.0" status="true">
        <attributes>
-          <magnet len=".585" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".585" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="180" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -23229,7 +23229,7 @@
     </node>
     <node type="DCH" id="Ring_Mag:DCH_D10" pos="50.573" len="0.0" status="true">
        <attributes>
-          <magnet len=".673" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".673" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="180" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -23240,7 +23240,7 @@
     </node>
     <node type="DCV" id="Ring_Mag:DCV_D10" pos="50.573" len="0.0" status="true">
        <attributes>
-          <magnet len=".673" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".673" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="180" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -23295,7 +23295,7 @@
     </node>
     <node type="DCH" id="Ring_Mag:DCH_D13" pos="66.981" len="0.0" status="true">
        <attributes>
-          <magnet len=".673" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".673" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="180" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -23306,7 +23306,7 @@
     </node>
     <node type="DCV" id="Ring_Mag:DCV_D13" pos="66.981" len="0.0" status="true">
        <attributes>
-          <magnet len=".673" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".673" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="180" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -23317,7 +23317,7 @@
     </node>
     <node type="DCV" id="Ring_Mag:DCV_A01" pos="73.224" len="0.0" status="true">
        <attributes>
-          <magnet len=".585" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".585" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="180" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -23350,7 +23350,7 @@
     </node>
     <node type="DH" id="Ring_Mag:DH_A01" pos="75.77715" len="0.0" status="true">
        <attributes>
-          <magnet len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
+          <dipole len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
           <align x="0.0" y="0.0" z="0.0" pitch="174.375" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -23361,7 +23361,7 @@
     </node>
     <node type="DCH" id="Ring_Mag:DCH_A02" pos="77.224" len="0.0" status="true">
        <attributes>
-          <magnet len=".585" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".585" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="168.75" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -23394,7 +23394,7 @@
     </node>
     <node type="DH" id="Ring_Mag:DH_A02" pos="79.77715" len="0.0" status="true">
        <attributes>
-          <magnet len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
+          <dipole len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
           <align x="0.0" y="0.0" z="0.0" pitch="163.125" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -23405,7 +23405,7 @@
     </node>
     <node type="DCV" id="Ring_Mag:DCV_A03" pos="81.224" len="0.0" status="true">
        <attributes>
-          <magnet len=".585" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".585" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="157.5" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -23449,7 +23449,7 @@
     </node>
     <node type="DH" id="Ring_Mag:DH_A03" pos="83.77715" len="0.0" status="true">
        <attributes>
-          <magnet len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
+          <dipole len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
           <align x="0.0" y="0.0" z="0.0" pitch="151.875" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -23460,7 +23460,7 @@
     </node>
     <node type="DCH" id="Ring_Mag:DCH_A04" pos="85.1915" len="0.0" status="true">
        <attributes>
-          <magnet len=".618" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".618" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="146.25" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -23493,7 +23493,7 @@
     </node>
     <node type="DH" id="Ring_Mag:DH_A04" pos="87.77815" len="0.0" status="true">
        <attributes>
-          <magnet len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
+          <dipole len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
           <align x="0.0" y="0.0" z="0.0" pitch="140.625" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -23526,7 +23526,7 @@
     </node>
     <node type="DCV" id="Ring_Mag:DCV_A05" pos="90.331" len="0.0" status="true">
        <attributes>
-          <magnet len=".585" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".585" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="135" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -23548,7 +23548,7 @@
     </node>
     <node type="DH" id="Ring_Mag:DH_A06" pos="91.77815" len="0.0" status="true">
        <attributes>
-          <magnet len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
+          <dipole len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
           <align x="0.0" y="0.0" z="0.0" pitch="129.375" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -23581,7 +23581,7 @@
     </node>
     <node type="DCH" id="Ring_Mag:DCH_A06" pos="94.3635" len="0.0" status="true">
        <attributes>
-          <magnet len=".618" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".618" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="123.75" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -23592,7 +23592,7 @@
     </node>
     <node type="DH" id="Ring_Mag:DH_A07" pos="95.77815" len="0.0" status="true">
        <attributes>
-          <magnet len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
+          <dipole len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
           <align x="0.0" y="0.0" z="0.0" pitch="118.125" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -23625,7 +23625,7 @@
     </node>
     <node type="DCV" id="Ring_Mag:DCV_A07" pos="98.331" len="0.0" status="true">
        <attributes>
-          <magnet len=".585" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".585" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="112.5" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -23647,7 +23647,7 @@
     </node>
     <node type="DH" id="Ring_Mag:DH_A08" pos="99.77815" len="0.0" status="true">
        <attributes>
-          <magnet len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
+          <dipole len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
           <align x="0.0" y="0.0" z="0.0" pitch="106.875" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -23669,7 +23669,7 @@
     </node>
     <node type="DCH" id="Ring_Mag:DCH_A08" pos="102.332" len="0.0" status="true">
        <attributes>
-          <magnet len=".585" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".585" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="101.25" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -23691,7 +23691,7 @@
     </node>
     <node type="DH" id="Ring_Mag:DH_A09" pos="103.77815" len="0.0" status="true">
        <attributes>
-          <magnet len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
+          <dipole len="1.441" polarity="+1" pathLength="1.4407" dipoleQuadComponent="0.0" bendAngle="11.25" dipoleEntrRotAngle="0" dipoleExitRotAngle="0" dfltMagFld=".771047"/>
           <align x="0.0" y="0.0" z="0.0" pitch="95.625" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -23713,7 +23713,7 @@
     </node>
     <node type="DCV" id="Ring_Mag:DCV_A09" pos="106.332" len="0.0" status="true">
        <attributes>
-          <magnet len=".585" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".585" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="90" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -25150,7 +25150,7 @@
     <node type="marker" id="Begin_Of_Ring5" pos="0" len="0"/>
     <node type="DCH" id="Ring_Mag:DCH_A10" pos="5.596" len="0.0" status="true">
        <attributes>
-          <magnet len=".673" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".673" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="90" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -25161,7 +25161,7 @@
     </node>
     <node type="DCV" id="Ring_Mag:DCV_A10" pos="5.596" len="0.0" status="true">
        <attributes>
-          <magnet len=".673" polarity="+1" dfltMagFld="0"/>
+          <steerer len=".673" polarity="+1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="90" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -25194,7 +25194,7 @@
     </node>
     <node type="DH" id="Ring_Mag:DH_A10" pos="10.504873" len="0.0" status="true">
        <attributes>
-          <magnet len="1.08" polarity="-1" pathLength="1.08" dipoleQuadComponent="0.0" bendAngle="-2.406423" dipoleEntrRotAngle="0" dipoleExitRotAngle="-2.406423" dfltMagFld="-.22"/>
+          <dipole len="1.08" polarity="-1" pathLength="1.08" dipoleQuadComponent="0.0" bendAngle="-2.406423" dipoleEntrRotAngle="0" dipoleExitRotAngle="-2.406423" dfltMagFld="-.22"/>
           <align x="0.0" y="0.0" z="0.0" pitch="90" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -25205,7 +25205,7 @@
     </node>
     <node type="DH" id="Ring_Mag:DH_A11" pos="12.88738" len="0.0" status="true">
        <attributes>
-          <magnet len=".94" polarity="+1" pathLength=".94" dipoleQuadComponent="0.0" bendAngle="3.042406" dipoleEntrRotAngle="2.406423" dipoleExitRotAngle=".635983" dfltMagFld=".3196"/>
+          <dipole len=".94" polarity="+1" pathLength=".94" dipoleQuadComponent="0.0" bendAngle="3.042406" dipoleEntrRotAngle="2.406423" dipoleExitRotAngle=".635983" dfltMagFld=".3196"/>
           <align x="0.0" y="0.0" z="0.0" pitch="90" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -25287,7 +25287,7 @@
     <node type="marker" id="Begin_Of_RTBT1" pos="0" len="0"/>
     <node type="EKick" id="Ring_Mag:EKick01" pos=".423" len="0.0" status="true">
        <attributes>
-          <magnet len=".4" polarity="-1" dfltMagFld="0"/>
+          <dipole len=".4" polarity="-1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-90" yaw="0" roll="0"/>
           <aperture shape="0" x=".12"/>
        </attributes>
@@ -25298,7 +25298,7 @@
     </node>
     <node type="EKick" id="Ring_Mag:EKick02" pos=".877" len="0.0" status="true">
        <attributes>
-          <magnet len=".4" polarity="-1" dfltMagFld="0"/>
+          <dipole len=".4" polarity="-1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-90" yaw="0" roll="0"/>
           <aperture shape="0" x=".1445"/>
        </attributes>
@@ -25309,7 +25309,7 @@
     </node>
     <node type="EKick" id="Ring_Mag:EKick03" pos="1.357" len="0.0" status="true">
        <attributes>
-          <magnet len=".4" polarity="-1" dfltMagFld="0"/>
+          <dipole len=".4" polarity="-1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-90" yaw="0" roll="0"/>
           <aperture shape="0" x=".1445"/>
        </attributes>
@@ -25320,7 +25320,7 @@
     </node>
     <node type="EKick" id="Ring_Mag:EKick04" pos="1.89" len="0.0" status="true">
        <attributes>
-          <magnet len=".39" polarity="-1" dfltMagFld="0"/>
+          <dipole len=".39" polarity="-1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-90" yaw="0" roll="0"/>
           <aperture shape="0" x=".151"/>
        </attributes>
@@ -25331,7 +25331,7 @@
     </node>
     <node type="EKick" id="Ring_Mag:EKick05" pos="2.475" len="0.0" status="true">
        <attributes>
-          <magnet len=".39" polarity="-1" dfltMagFld="0"/>
+          <dipole len=".39" polarity="-1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-90" yaw="0" roll="0"/>
           <aperture shape="0" x=".151"/>
        </attributes>
@@ -25342,7 +25342,7 @@
     </node>
     <node type="EKick" id="Ring_Mag:EKick06" pos="3.06" len="0.0" status="true">
        <attributes>
-          <magnet len=".39" polarity="-1" dfltMagFld="0"/>
+          <dipole len=".39" polarity="-1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-90" yaw="0" roll="0"/>
           <aperture shape="0" x=".151"/>
        </attributes>
@@ -25353,7 +25353,7 @@
     </node>
     <node type="EKick" id="Ring_Mag:EKick07" pos="3.645" len="0.0" status="true">
        <attributes>
-          <magnet len=".4275" polarity="-1" dfltMagFld="0"/>
+          <dipole len=".4275" polarity="-1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-90" yaw="0" roll="0"/>
           <aperture shape="0" x=".1622"/>
        </attributes>
@@ -25386,7 +25386,7 @@
     </node>
     <node type="EKick" id="Ring_Mag:EKick08" pos="6.973" len="0.0" status="true">
        <attributes>
-          <magnet len=".4275" polarity="-1" dfltMagFld="0"/>
+          <dipole len=".4275" polarity="-1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-90" yaw="0" roll="0"/>
           <aperture shape="0" x=".1622"/>
        </attributes>
@@ -25397,7 +25397,7 @@
     </node>
     <node type="EKick" id="Ring_Mag:EKick09" pos="7.482" len="0.0" status="true">
        <attributes>
-          <magnet len=".4275" polarity="-1" dfltMagFld="0"/>
+          <dipole len=".4275" polarity="-1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-90" yaw="0" roll="0"/>
           <aperture shape="0" x=".1622"/>
        </attributes>
@@ -25408,7 +25408,7 @@
     </node>
     <node type="EKick" id="Ring_Mag:EKick10" pos="7.992" len="0.0" status="true">
        <attributes>
-          <magnet len=".4275" polarity="-1" dfltMagFld="0"/>
+          <dipole len=".4275" polarity="-1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-90" yaw="0" roll="0"/>
           <aperture shape="0" x=".1622"/>
        </attributes>
@@ -25419,7 +25419,7 @@
     </node>
     <node type="EKick" id="Ring_Mag:EKick11" pos="8.498" len="0.0" status="true">
        <attributes>
-          <magnet len=".505" polarity="-1" dfltMagFld="0"/>
+          <dipole len=".505" polarity="-1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-90" yaw="0" roll="0"/>
           <aperture shape="0" x=".1779"/>
        </attributes>
@@ -25430,7 +25430,7 @@
     </node>
     <node type="EKick" id="Ring_Mag:EKick12" pos="8.9873" len="0.0" status="true">
        <attributes>
-          <magnet len=".505" polarity="-1" dfltMagFld="0"/>
+          <dipole len=".505" polarity="-1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-90" yaw="0" roll="0"/>
           <aperture shape="0" x=".1779"/>
        </attributes>
@@ -25441,7 +25441,7 @@
     </node>
     <node type="EKick" id="Ring_Mag:EKick13" pos="9.4566" len="0.0" status="true">
        <attributes>
-          <magnet len=".505" polarity="-1" dfltMagFld="0"/>
+          <dipole len=".505" polarity="-1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-90" yaw="0" roll="0"/>
           <aperture shape="0" x=".2113"/>
        </attributes>
@@ -25452,7 +25452,7 @@
     </node>
     <node type="EKick" id="Ring_Mag:EKick14" pos="9.9277" len="0.0" status="true">
        <attributes>
-          <magnet len=".505" polarity="-1" dfltMagFld="0"/>
+          <dipole len=".505" polarity="-1" dfltMagFld="0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-90" yaw="0" roll="0"/>
           <aperture shape="0" x=".2113"/>
        </attributes>
@@ -25463,7 +25463,7 @@
     </node>
     <node type="DH" id="RTBT_Mag:ExSptm" pos="17.480021" len="0.0" status="true">
        <attributes>
-          <magnet len="2.48" polarity="-1" pathLength="2.48" dipoleQuadComponent="0.0" bendAngle="-16.799" dipoleEntrRotAngle="0" dipoleExitRotAngle="-16.799" dfltMagFld="-.668854"/>
+          <dipole len="2.48" polarity="-1" pathLength="2.48" dipoleQuadComponent="0.0" bendAngle="-16.799" dipoleEntrRotAngle="0" dipoleExitRotAngle="-16.799" dfltMagFld="-.668854"/>
           <align x="0.0" y="0.0" z="0.0" pitch="0" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -25529,7 +25529,7 @@
     </node>
     <node type="DCV" id="RTBT_Mag:DCV05" pos="37.333412" len="0.0" status="true">
        <attributes>
-          <magnet len=".538" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".538" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-73.201399" yaw="0" roll="0"/>
           <aperture shape="0" x=".27"/>
        </attributes>
@@ -25551,7 +25551,7 @@
     </node>
     <node type="DCH" id="RTBT_Mag:DCH06" pos="41.194212" len="0.0" status="true">
        <attributes>
-          <magnet len=".538" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".538" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-73.201399" yaw="0" roll="0"/>
           <aperture shape="0" x=".27"/>
        </attributes>
@@ -25573,7 +25573,7 @@
     </node>
     <node type="DCV" id="RTBT_Mag:DCV07" pos="45.055012" len="0.0" status="true">
        <attributes>
-          <magnet len=".538" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".538" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-73.201399" yaw="0" roll="0"/>
           <aperture shape="0" x=".27"/>
        </attributes>
@@ -25595,7 +25595,7 @@
     </node>
     <node type="DCH" id="RTBT_Mag:DCH08" pos="48.915812" len="0.0" status="true">
        <attributes>
-          <magnet len=".538" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".538" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-73.201399" yaw="0" roll="0"/>
           <aperture shape="0" x=".27"/>
        </attributes>
@@ -25639,7 +25639,7 @@
     </node>
     <node type="DCV" id="RTBT_Mag:DCV11" pos="60.498212" len="0.0" status="true">
        <attributes>
-          <magnet len=".538" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".538" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-73.201399" yaw="0" roll="0"/>
           <aperture shape="0" x=".27"/>
        </attributes>
@@ -25661,7 +25661,7 @@
     </node>
     <node type="DCV" id="RTBT_Mag:DCV13" pos="68.445984" len="0.0" status="true">
        <attributes>
-          <magnet len=".538" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".538" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-73.201399" yaw="0" roll="0"/>
           <aperture shape="0" x=".27"/>
        </attributes>
@@ -26107,7 +26107,7 @@
     <node type="marker" id="Begin_Of_RTBT2" pos="0" len="0"/>
     <node type="DH" id="RTBT_Mag:DH13" pos="1.4888" len="0.0" status="true">
        <attributes>
-          <magnet len="2.42" polarity="-1" pathLength="2.48" dipoleQuadComponent="0.0" bendAngle="-16.802" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0.0" dfltMagFld="-.668974"/>
+          <dipole len="2.42" polarity="-1" pathLength="2.48" dipoleQuadComponent="0.0" bendAngle="-16.802" dipoleEntrRotAngle="0.0" dipoleExitRotAngle="0.0" dfltMagFld="-.668974"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-64.800584" yaw="0" roll="0"/>
           <aperture shape="0" x="0.0"/>
        </attributes>
@@ -26129,7 +26129,7 @@
     </node>
     <node type="DCH" id="RTBT_Mag:DCH14" pos="4.434114" len="0.0" status="true">
        <attributes>
-          <magnet len=".538" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".538" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-56.399769" yaw="0" roll="0"/>
           <aperture shape="0" x=".27"/>
        </attributes>
@@ -26151,7 +26151,7 @@
     </node>
     <node type="DCV" id="RTBT_Mag:DCV15" pos="8.834114" len="0.0" status="true">
        <attributes>
-          <magnet len=".538" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".538" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-56.399769" yaw="0" roll="0"/>
           <aperture shape="0" x=".27"/>
        </attributes>
@@ -26173,7 +26173,7 @@
     </node>
     <node type="DCH" id="RTBT_Mag:DCH16" pos="14.625314" len="0.0" status="true">
        <attributes>
-          <magnet len=".538" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".538" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-56.399769" yaw="0" roll="0"/>
           <aperture shape="0" x=".27"/>
        </attributes>
@@ -26195,7 +26195,7 @@
     </node>
     <node type="DCV" id="RTBT_Mag:DCV17" pos="20.416514" len="0.0" status="true">
        <attributes>
-          <magnet len=".538" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".538" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-56.399769" yaw="0" roll="0"/>
           <aperture shape="0" x=".27"/>
        </attributes>
@@ -26228,7 +26228,7 @@
     </node>
     <node type="DCV" id="RTBT_Mag:DCV19" pos="31.998914" len="0.0" status="true">
        <attributes>
-          <magnet len=".538" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".538" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-56.399769" yaw="0" roll="0"/>
           <aperture shape="0" x=".27"/>
        </attributes>
@@ -26250,7 +26250,7 @@
     </node>
     <node type="DCH" id="RTBT_Mag:DCH20" pos="37.790114" len="0.0" status="true">
        <attributes>
-          <magnet len=".538" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".538" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-56.399769" yaw="0" roll="0"/>
           <aperture shape="0" x=".27"/>
        </attributes>
@@ -26272,7 +26272,7 @@
     </node>
     <node type="DCV" id="RTBT_Mag:DCV21" pos="43.581314" len="0.0" status="true">
        <attributes>
-          <magnet len=".538" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".538" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-56.399769" yaw="0" roll="0"/>
           <aperture shape="0" x=".27"/>
        </attributes>
@@ -26305,7 +26305,7 @@
     </node>
     <node type="DCV" id="RTBT_Mag:DCV23" pos="55.163714" len="0.0" status="true">
        <attributes>
-          <magnet len=".538" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".538" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-56.399769" yaw="0" roll="0"/>
           <aperture shape="0" x=".27"/>
        </attributes>
@@ -26371,7 +26371,7 @@
     </node>
     <node type="DCH" id="RTBT_Mag:DCH28" pos="80.965719" len="0.0" status="true">
        <attributes>
-          <magnet len=".68" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".68" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-56.399769" yaw="0" roll="0"/>
           <aperture shape="0" x=".365"/>
        </attributes>
@@ -26382,7 +26382,7 @@
     </node>
     <node type="DCV" id="RTBT_Mag:DCV28" pos="80.965719" len="0.0" status="true">
        <attributes>
-          <magnet len=".68" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".68" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-56.399769" yaw="0" roll="0"/>
           <aperture shape="0" x=".365"/>
        </attributes>
@@ -26415,7 +26415,7 @@
     </node>
     <node type="DCH" id="RTBT_Mag:DCH30" pos="87.474708" len="0.0" status="true">
        <attributes>
-          <magnet len=".68" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".68" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-56.399769" yaw="0" roll="0"/>
           <aperture shape="0" x=".365"/>
        </attributes>
@@ -26426,7 +26426,7 @@
     </node>
     <node type="DCV" id="RTBT_Mag:DCV30" pos="87.474708" len="0.0" status="true">
        <attributes>
-          <magnet len=".68" polarity="+1" dfltMagFld="0.0"/>
+          <steerer len=".68" polarity="+1" dfltMagFld="0.0"/>
           <align x="0.0" y="0.0" z="0.0" pitch="-56.399769" yaw="0" roll="0"/>
           <aperture shape="0" x=".365"/>
        </attributes>

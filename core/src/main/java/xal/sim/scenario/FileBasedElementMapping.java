@@ -9,8 +9,8 @@ package xal.sim.scenario;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-
-import javax.swing.text.StyledEditorKit.BoldAction;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xal.model.IComponent;
 import xal.model.IComposite;
@@ -172,6 +172,45 @@ public class FileBasedElementMapping extends ElementMapping {
         // Return the completed collection of (hardware node, modeling element) associations
         return mapHwToModElem;
     }
+    
+    /**
+     *
+     * @author Juan F. Esteban Müller
+     * @since Feb 25, 2021
+     */
+    public void saveTo(String urlModelConfig) {
+        XmlDataAdaptor daDoc = XmlDataAdaptor.newEmptyDocumentAdaptor();
+
+        DataAdaptor daCfg = daDoc.createChild("configuration");
+
+        daCfg.setValue("debug", bolDebug);
+        daCfg.setValue("divMags", bolDivMags);
+        daCfg.setValue("subsectionCtrOrigin", bolSubsectionCtrOrigin);
+
+        DataAdaptor daElements = daCfg.createChild("elements");
+
+        DataAdaptor defaultElement = daElements.createChild("default");
+        defaultElement.setValue("type", getDefaultElementType().getCanonicalName());
+
+        DataAdaptor defaultSequence = daElements.createChild("sequence");
+        defaultSequence.setValue("type", getDefaultSequenceType().getCanonicalName());
+
+        DataAdaptor defaultDrift = daElements.createChild("drift");
+        defaultDrift.setValue("type", getDriftType().getCanonicalName());
+
+        DataAdaptor defaultRfCavDrift = daElements.createChild("rfcavdrift");
+        defaultRfCavDrift.setValue("type", getRfCavityDriftType().getCanonicalName());
+
+        DataAdaptor daAssoc = daCfg.createChild("associations");
+
+        for (String type : elementMapping.keySet()) {
+            DataAdaptor srcDas = daAssoc.createChild("map");
+            srcDas.setValue("smf", type);
+            srcDas.setValue("model", elementMapping.get(type).getCanonicalName());
+        }
+
+        daDoc.writeToUrlSpec(urlModelConfig);
+    }
 
 
     /* 
@@ -204,6 +243,23 @@ public class FileBasedElementMapping extends ElementMapping {
 	protected FileBasedElementMapping() {
 	}
 	
+        public FileBasedElementMapping(ElementMapping elementMapping) {
+            bolSubsectionCtrOrigin = elementMapping.bolSubsectionCtrOrigin;
+            bolDebug = elementMapping.bolDebug;
+            bolSubsectionCtrOrigin = elementMapping.bolSubsectionCtrOrigin;
+
+            this.elementMapping = elementMapping.elementMapping;
+
+            try {
+                setDefaultElement(elementMapping.getDefaultElementType().getCanonicalName());
+                setDefaultSequence(elementMapping.getDefaultSequenceType().getCanonicalName());
+                setDrift(elementMapping.getDriftType().getCanonicalName());
+                setRfCavityDrift(elementMapping.getRfCavityDriftType().getCanonicalName());
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(FileBasedElementMapping.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
 	
 	/*
 	 * ElementMapping Requirements
@@ -294,26 +350,29 @@ public class FileBasedElementMapping extends ElementMapping {
      * Internal Support
      */
     
-    @SuppressWarnings( "unchecked" )
-    private void setDefaultElement(String stringValue) throws ClassNotFoundException {
-        clsDefaultElem = (Class<? extends IComponent>) Class.forName(stringValue);      
+    public void setDefaultElement(String stringValue) throws ClassNotFoundException {
+        clsDefaultElem = (Class<? extends IComponent>) Class.forName(stringValue);
     }
-    
-    @SuppressWarnings("unchecked")
-    private void setDefaultSequence(String strClassType) throws ClassNotFoundException {
+
+    public void setDefaultSequence(String strClassType) throws ClassNotFoundException {
         this.clsDefaultSeq = (Class<? extends IComposite>) Class.forName(strClassType);
     }
 
+    public void setDrift(String stringValue) throws ClassNotFoundException {
+        clsDriftElem = (Class<? extends IComponent>) Class.forName(stringValue);
 
-    @SuppressWarnings( "unchecked" )
-	private void setDrift(String stringValue) throws ClassNotFoundException {
-		clsDriftElem = (Class<? extends IComponent>) Class.forName(stringValue);
-		
-	}
-    
-    @SuppressWarnings( "unchecked" )
-    private void setRfCavityDrift(String strClsName) throws ClassNotFoundException {
+    }
+
+    public Class<? extends IComponent> getDriftType() {
+        return clsDriftElem;
+    }
+
+    public void setRfCavityDrift(String strClsName) throws ClassNotFoundException {
         this.clsRfCavDriftElem = (Class<? extends IComponent>) Class.forName(strClsName);
+    }
+
+    public  Class<? extends IComponent> getRfCavityDriftType() {
+        return clsRfCavDriftElem;
     }
 
 	@SuppressWarnings( "unchecked" )
