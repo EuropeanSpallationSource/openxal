@@ -13,7 +13,7 @@
     <packaging>pom</packaging>
         
     <properties>
-        <maven.build.timestamp.format>dd. MMM yyyy</maven.build.timestamp.format>
+        <maven.build.timestamp.format>dd MMM. yyyy</maven.build.timestamp.format>
         <timestamp>${maven.build.timestamp}</timestamp>
     </properties>
     
