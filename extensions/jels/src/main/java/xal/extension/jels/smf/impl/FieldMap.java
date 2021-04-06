@@ -32,6 +32,7 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import xal.extension.jels.model.elem.FieldMapPoint;
@@ -537,9 +538,9 @@ public abstract class FieldMap {
         PrintWriter pw = new PrintWriter(new FileWriter(fieldMapfile));
 
         double[] field = fieldComponent.getField();
-        pw.printf("%d %f%n%f%n", field.length - 1, fieldComponent.getMax()[0], 1.0);
+        pw.format(Locale.US, "%d %f%n%f%n", field.length - 1, fieldComponent.getMax()[0], 1.0);
         for (int i = 0; i < field.length; i++) {
-            pw.printf("%e%n", field[i]);
+            pw.format(Locale.US, "%e%n", field[i]);
         }
         pw.close();
     }
@@ -559,10 +560,10 @@ public abstract class FieldMap {
         double zmax = fieldComponent.getMax()[0];
         double rmax = fieldComponent.getMax()[1];
         double[][] field = fieldComponent.getField();
-        pw.printf("%d %f%n%d %f%n%f%n", field.length - 1, zmax, field[0].length - 1, rmax, fieldComponent.getNorm());
+        pw.format(Locale.US, "%d %f%n%d %f%n%f%n", field.length - 1, zmax, field[0].length - 1, rmax, fieldComponent.getNorm());
         for (int i = 0; i < field.length; i++) {
             for (int j = 0; j < field[0].length; j++) {
-                pw.printf("%e%n", field[i][j]);
+                pw.format(Locale.US, "%e%n", field[i][j]);
             }
         }
         pw.close();
@@ -586,11 +587,11 @@ public abstract class FieldMap {
         double ymin = fieldComponent.getMin()[2];
         double ymax = fieldComponent.getMax()[2];
         double[][][] field = fieldComponent.getField();
-        pw.printf("%d %f%n%d %f %f%n%d %f %f%n%f%n", field.length - 1, zmax, field[0].length - 1, ymin, ymax, field[0][0].length - 1, xmin, xmax, fieldComponent.getNorm());
+        pw.format(Locale.US, "%d %f%n%d %f %f%n%d %f %f%n%f%n", field.length - 1, zmax, field[0].length - 1, ymin, ymax, field[0][0].length - 1, xmin, xmax, fieldComponent.getNorm());
         for (int i = 0; i < field.length; i++) {
             for (int j = 0; j < field[0].length; j++) {
                 for (int k = 0; k < field[0][0].length; k++) {
-                    pw.printf("%e%n", field[i][j][k]);
+                    pw.format(Locale.US, "%e%n", field[i][j][k]);
                 }
             }
             pw.close();
