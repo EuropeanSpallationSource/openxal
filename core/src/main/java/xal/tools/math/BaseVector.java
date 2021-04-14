@@ -325,14 +325,17 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      * @return True if obj is equal to this
      */
     public boolean equals(Object obj) {
-        if (! (obj instanceof BaseVector))
-            return false;
-        BaseVector b = (BaseVector) obj;
-        if (this.getSize() != b.getSize())
-            return false;
-        for (int i=0; i<this.getSize(); i++) {
-            if (this.getElem(i) != b.getElem(i))
+        if (! (obj instanceof BaseVector)) {
                 return false;
+            }
+        BaseVector b = (BaseVector) obj;
+        if (this.getSize() != b.getSize()) {
+                return false;
+            }
+        for (int i=0; i<this.getSize(); i++) {
+            if (this.getElem(i) != b.getElem(i)) {
+                return false;
+            }
         }
         return true;
     }
