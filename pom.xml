@@ -13,7 +13,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <javafx-version>16</javafx-version>
         <sonar.exclusions> <!-- Exclude source we do not use -->
-            **/tools/data/KeyValueSorting.java
+            **/tools/data/KeyValueSorting.java,
+            **/sim/slg/*.py
         </sonar.exclusions>
     </properties>
     
