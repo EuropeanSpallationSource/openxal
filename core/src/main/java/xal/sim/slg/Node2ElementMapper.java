@@ -18,16 +18,16 @@ import xal.smf.*;
  * @author  wdklotz
  */
 public class Node2ElementMapper implements Visitor {
-	private Map<AcceleratorNode,Element> node2ElementMap; //dictionary (key,value)=(node,element)
-	private Map<String,AcceleratorNode> id2NodeMap; //dictionary (key,value)=(node ID,node)
+	private Map<AcceleratorNode, Element> node2ElementMap; //dictionary (key,value)=(node,element)
+	private Map<String, AcceleratorNode> id2NodeMap; //dictionary (key,value)=(node ID,node)
 
 	/** Creates a new instance of Node2ElementMapper */
 	Node2ElementMapper() {
-		node2ElementMap= new HashMap<AcceleratorNode,Element>();
-		id2NodeMap= new HashMap<String,AcceleratorNode>();
+		node2ElementMap = new HashMap<AcceleratorNode, Element>();
+		id2NodeMap = new HashMap<String, AcceleratorNode>();
 	}
 	/**
-	 * Returns a set view of the mappings contained in this map.  
+	 * Returns a set view of the mappings contained in this map.
 	 */
 	Set<Map.Entry<AcceleratorNode,Element>> entrySet() {
 		return node2ElementMap.entrySet();
@@ -42,11 +42,11 @@ public class Node2ElementMapper implements Visitor {
 
 	public String NodeId2ElementId(String nodeId) throws LatticeError {
 		try {
-			AcceleratorNode node= id2NodeMap.get(nodeId);
-			Element element= node2ElementMap.get(node);
-			String elementId= element.getName();
+			AcceleratorNode node = id2NodeMap.get(nodeId);
+			Element element = node2ElementMap.get(node);
+			String elementId = element.getName();
 			return elementId;
-		} catch (Throwable t) {
+		} catch (NullPointerException e) {
 			throw new LatticeError(nodeId+": not a lattice element!");
 		}
 	}
@@ -94,8 +94,8 @@ public class Node2ElementMapper implements Visitor {
 		node2ElementMap.put(e.getAcceleratorNode(), e);
 		id2NodeMap.put(e.getAcceleratorNode().getId(), e.getAcceleratorNode());
 	}
-	
-	
+
+
 	/** visit a HSteerer lattice element  */
 	public void visit(HSteerer e) {
 		node2ElementMap.put(e.getAcceleratorNode(), e);
@@ -107,13 +107,13 @@ public class Node2ElementMapper implements Visitor {
 	        node2ElementMap.put(e.getAcceleratorNode(), e);
 		id2NodeMap.put(e.getAcceleratorNode().getId(), e.getAcceleratorNode());
 	}
-	
+
 	/** visit a EKicker lattice element  */
 	public void visit( final EKicker element ) {
 		node2ElementMap.put( element.getAcceleratorNode(), element );
 		id2NodeMap.put( element.getAcceleratorNode().getId(), element.getAcceleratorNode() );
 	}
-	
+
 	/** visit a VSteerer lattice element  */
 	public void visit(VSteerer e) {
 		node2ElementMap.put(e.getAcceleratorNode(), e);
@@ -153,15 +153,15 @@ public class Node2ElementMapper implements Visitor {
 		node2ElementMap.put(e.getAcceleratorNode(), e);
 		id2NodeMap.put(e.getAcceleratorNode().getId(), e.getAcceleratorNode());
 	}
-	
-	
+
+
 	/** visit a BSMonitor lattice element  */
 	public void visit( final BSMonitor element ) {
 		node2ElementMap.put( element.getAcceleratorNode(), element );
 		id2NodeMap.put( element.getAcceleratorNode().getId(), element.getAcceleratorNode() );
 	}
-	
-	
+
+
 	/** visit a SkewQuad lattice element  */
 	public void visit(SkewQuad e) {
 	}
@@ -176,6 +176,6 @@ public class Node2ElementMapper implements Visitor {
 
 	@Override
 	public void visit(EDipole e) {
-		
+
 	}
 }
