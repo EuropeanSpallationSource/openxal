@@ -13,10 +13,6 @@
     <!-- For the local repository -->
     <properties>
         <main.basedir>${project.basedir}/..</main.basedir>
-        <sonar.exclusions>
-            # Exclude source we do not use..
-            **/tools/data/KeyValueSorting.java
-        </sonar.exclusions>
     </properties>
 
     <build>

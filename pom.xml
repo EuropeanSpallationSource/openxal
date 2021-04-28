@@ -12,6 +12,10 @@
         <surefireArgLine></surefireArgLine>                 <!-- To be able to run tests on Netbeans -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <javafx-version>16</javafx-version>
+        <sonar.exclusions> <!-- Exclude source we do not use -->
+            **/tools/data/KeyValueSorting.java,
+            **/sim/slg/*.py
+        </sonar.exclusions>
     </properties>
     
     

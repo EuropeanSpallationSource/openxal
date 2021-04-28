@@ -12,52 +12,52 @@ import java.lang.reflect.*;
 import java.text.*;
 import xal.sim.scenario.DefaultElementMapping;
 
-/** 
+/**
  * The hierarchical tree of accelerator nodes, elements and sequences of elements.
  * @author  Nikolay Malitsky, Christopher K. Allen
  */
 
 public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataListener {
     /** accelerator system unique identifier */
-    private String              m_strSysId;    
-    /** date stamp */     
-    private String              m_strDate;     
+    private String              m_strSysId;
+    /** date stamp */
+    private String              m_strDate;
     /** version stamp */
-    private String              m_strVer;           
-    
+    private String              m_strVer;
+
 
 	/** Map of predefined combo sequences mapped by combo sequence ID */
-	private Map<String,AcceleratorSeqCombo> _comboSequences;    
-    
+	private Map<String,AcceleratorSeqCombo> _comboSequences;
+
     /** Map of main power supplies keyed by the power supply id */
     private Map<String,MagnetMainSupply> magnetMainSupplies;
-    
+
     /** Map of trim power supplies keyed by the power supply id */
     private Map<String,MagnetTrimSupply> magnetTrimSupplies;
-        
+
     /** edit context holds the dynamic data */
     private EditContext editContext;
-	
+
 	/** timing center for this accelerator */
 	private TimingCenter _timingCenter;
-	
+
 	/** factory for generating accelerator nodes */
 	private AcceleratorNodeFactory _nodeFactory;
-	
+
 	/** Model element mapping */
 	private ElementMapping     elementMapping;
-        
+
         // by default, status flags are exported to a different file.
         private boolean statusFile;
-        
+
         // by default, power supplies are exported to a different file.
         private boolean powerSuppliesFile;
 
-    
+
     // DataAdaptor interface ----------------------
-    
-    /** 
-     * dataLabel() provides the name used to identify the accelerator in an 
+
+    /**
+     * dataLabel() provides the name used to identify the accelerator in an
      * external data source.
      * @return The accelerator's tag
      */
@@ -78,8 +78,8 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
     public void setPowerSuppliesFile(boolean powerSuppliesFile) {
         this.powerSuppliesFile = powerSuppliesFile;
     }
-    
-    
+
+
     /**
      * Instructs the accelerator to update its data based on the given adaptor.
      * @param adaptor The adaptor from which to update the accelerator's data
@@ -95,14 +95,14 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
 		if ( adaptor.hasAttribute( "date") ) {
 			m_strDate = adaptor.stringValue( "date" );
 		}
-        
+
         DataAdaptor powerSuppliesAdaptor = adaptor.childAdaptor("powersupplies");
         if ( powerSuppliesAdaptor != null ) {
             updatePowerSupplies(powerSuppliesAdaptor);
         }
-        
+
         super.update(adaptor);
-		
+
         // read all pre defined combo sequences
         final List<DataAdaptor> comboAdaptors = adaptor.childAdaptors( "comboseq" );
         for ( final DataAdaptor comboAdaptor : comboAdaptors ) {
@@ -115,8 +115,8 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
             }
         }
     }
-    
-    
+
+
     /**
      * Update the power supplies given the power supply adaptor
      * @param adaptor The adaptor for the accelerator power supplies
@@ -142,8 +142,8 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
     }
 
 
-	/** 
-	 * Programmatically add or replace a magnet main supply keyed by its ID. 
+	/**
+	 * Programmatically add or replace a magnet main supply keyed by its ID.
 	 * If a power supply has the same ID as another power supply in this accelerator then it will replace that one.
 	 * @param mainSupply main power supply to add or replace
 	 * @throws IllegalArgumentException if the power supply's accelerator does not match this accelerator to which it is being put
@@ -185,7 +185,7 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
         }
 
         super.write(adaptor);
-        
+
         // Write power supplies into the same file if this flag is false. Otherwise, they will be saved on a separated file.
         if (powerSuppliesFile == false) {
             _writePowerSupplies(adaptor);
@@ -220,7 +220,7 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
         String dateString = dateFormatter.format(today);
         adaptor.setValue("date", dateString);
     }
- 
+
     /**
      * method to write status of the node into a separate file
      */
@@ -236,7 +236,7 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
         }
     }
 
-    /** 
+    /**
 	 * Add a combo sequence generated from the comboAdaptor
 	 * @param comboAdaptor The data adaptor from which to generate the combo sequence
 	 */
@@ -257,8 +257,8 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
 			comboSequence.update(comboAdaptor);   // update the sequence
 		}
     }
-	
-	
+
+
 	/**
 	 * Instantiate a predefined combo sequence.
 	 * @param comboType the type of combo sequence identifying the combo sequence subclass
@@ -281,17 +281,17 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
 			return null;
 		}
 	}
-	
-	
+
+
     // end DataAdaptor interface ----------------------
-    
+
 
     // empty constructor added by tap  2/25/2002
     public Accelerator() {
         this( "" );
     }
-    
-    
+
+
     /** Primary constructor */
     public Accelerator( final String sysId ) {
 		this( sysId, ChannelFactory.defaultFactory() );
@@ -322,9 +322,9 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
 
 		// initialize the timing center
 		_timingCenter = new TimingCenter();
-                
+
                 _nodeFactory = AcceleratorNodeFactory.getDefaultFactory();
-                
+
                 elementMapping = DefaultElementMapping.getInstance();
 	}
 
@@ -335,52 +335,52 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
 	 */
     protected void nodeAdded( final AcceleratorNode p_node ) {
     }
-	
-	
-	/** 
+
+
+	/**
 	 * Handle the event indicating that a node has been removed.
 	 * @param p_node the node that has been removed
 	 */
     protected void nodeRemoved( final AcceleratorNode p_node ) {
     }
-	
+
 
     public String           getSystemId()   { return m_strSysId; };
     public String           getDate()       { return m_strDate; };
     public String           getVersion()    { return m_strVer; };
-    
-    
+
+
     public AcceleratorSeq   getRoot()       { return this; };
     public Accelerator getAccelerator() { return this; }
 
-    
+
     public void setDate(String strDate)     { m_strDate = strDate; };
     public void setVersion(String strVer)   { m_strVer = strVer; };
-  
-	
+
+
 	/** Get the accelerator node factory */
 	public AcceleratorNodeFactory getNodeFactory() {
 		return _nodeFactory;
 	}
-	
-	
+
+
 	/** Set the factory used to generate new accelerator nodes */
 	public void setNodeFactory( final AcceleratorNodeFactory nodeFactory ) {
 		_nodeFactory = nodeFactory;
 	}
-    
+
 	/**
 	 * Sets the model element mapping used by this accelerator
 	 * object.
 	 *
-	 * @param elementMapping     the new element mapping 
+	 * @param elementMapping     the new element mapping
 	 *
 	 * @author Ivo List
 	 */
 	public void setElementMapping(ElementMapping elementMapping) {
 	    this.elementMapping = elementMapping;
 	}
-	
+
 	/**
 	 * Returns the model element mapping currently in use
 	 * by this accelerator.
@@ -392,20 +392,20 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
 	public ElementMapping getElementMapping() {
 	    return this.elementMapping;
 	}
-        
-    /** 
+
+    /**
      * Updates the channel suites with the new ChannelFactory. This method is
      * useful when running a CA server after the context is disposed.
      * @param channelFactory - the new ChannelFactory
      * added by Juan
      */
     public void updateChannelFactory( ChannelFactory channelFactory ) {
-        channelSuite.setChannelFactory(channelFactory);        
-        
+        channelSuite.setChannelFactory(channelFactory);
+
         getAllNodes().forEach(node -> node.channelSuite.setChannelFactory(channelFactory));
         getMagnetMainSupplies().forEach(mps -> mps.getChannelSuite().setChannelFactory(channelFactory));
     }
-	
+
 	/**
 	 * Get this accelerator's edit context
 	 * @return This accelerator's edit context
@@ -413,8 +413,8 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
     public EditContext editContext() {
         return editContext;
     }
-    
-    
+
+
 	/**
 	 * Set this accelerator's edit context
 	 * @param newContext the accelerator's new edit context
@@ -422,8 +422,8 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
     public void setEditContext( final EditContext newContext ) {
         editContext = newContext;
     }
-	
-	
+
+
 	/**
 	 * Get this accelerator's timing center
 	 * @return This accelerator's timing center
@@ -431,8 +431,8 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
 	public TimingCenter getTimingCenter() {
 		return _timingCenter;
 	}
-	
-	
+
+
 	/**
 	 * Set this accelerator's timing center
 	 * @param timingCenter the accelerator's new timing center
@@ -440,26 +440,26 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
 	public void setTimingCenter( final TimingCenter timingCenter ) {
 		_timingCenter = timingCenter;
 	}
-    
-    
-    /** 
+
+
+    /**
 	 * Add a combo sequence to this accelerator
 	 * @param comboSequence The combo sequence to add
 	 */
     public void addComboSequence( final AcceleratorSeqCombo comboSequence ) {
 		_comboSequences.put( comboSequence.getId(), comboSequence );
 	}
-    
-    
-    /** 
+
+
+    /**
 	 * Remove a combo sequence from this accelerator
 	 * @param comboSequenceId The ID of the combo sequence to remove.
 	 */
         public void removeComboSequence( String comboSequenceId ) {
 		_comboSequences.remove(comboSequenceId);
 	}
-	
-	
+
+
 	/**
 	 * Fetch the predefined combo sequence based on its ID
 	 * @param comboID the id identifying the combo sequence
@@ -468,8 +468,8 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
 	public AcceleratorSeqCombo getComboSequence( final String comboID ) {
 		return _comboSequences.get( comboID );
 	}
-	
-	
+
+
 	/**
 	 * Get the list of predefined combo sequences ordered by ID.
 	 * @return the list of predefined combo sequences ordered by ID.
@@ -478,17 +478,13 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
 		final List<AcceleratorSeqCombo> sequences = new ArrayList<AcceleratorSeqCombo>( _comboSequences.values() );
 		Collections.sort( sequences, new Comparator<AcceleratorSeqCombo>() {
 			public int compare( final AcceleratorSeqCombo combo1, final AcceleratorSeqCombo combo2 ) {
-				return combo1.getId().compareTo( combo2.getId() ); 
-			}
-            
-			public boolean equals( final Object comparator ) {
-				return this.equals( comparator );
+				return combo1.getId().compareTo( combo2.getId() );
 			}
 		});
 		return sequences;
 	}
-	
-	
+
+
 	/**
 	 * Get the ring in this accelerator with the specified ID
 	 * @param ringID the ID of the ring to get
@@ -497,8 +493,8 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
 	public Ring getRing( final String ringID ) {
 		return (Ring)getComboSequence( ringID );
 	}
-	
-	
+
+
 	/**
 	 * Get the list of all rings in the accelerator
 	 * @return a list of all rings in the accelerator
@@ -506,15 +502,15 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
 	public List<Ring> getRings() {
 		final List<AcceleratorSeqCombo> comboSequences = getComboSequences();
 		final List<Ring> rings = new ArrayList<Ring>();
-        
+
         for ( final AcceleratorSeqCombo candidate : comboSequences ) {
 			if ( candidate instanceof Ring ) rings.add( (Ring)candidate );
         }
-		
+
 		return rings;
 	}
-	
-	
+
+
 	/**
 	 * Find a sequence with the specified ID.  The sequence may either be a direct child
 	 * sequence or a predefined combo sequence.
@@ -523,22 +519,22 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
 	 */
 	public AcceleratorSeq findSequence(String sequenceID) {
 		AcceleratorSeq sequence = null;
-		
-		sequence = getSequence(sequenceID);		
+
+		sequence = getSequence(sequenceID);
 		if ( sequence != null )  return sequence;
-		
+
 		return getComboSequence(sequenceID);
 	}
-	    
-    
+
+
     /*
      *  Convenience Functions
      */
-    
 
-    /** 
+
+    /**
 	 * Returns the AcceleratorNode with a requsted name
-     * @param nodeID - the name to match 
+     * @param nodeID - the name to match
      */
     public AcceleratorNode  getNode( final String nodeID )   {
         final List<AcceleratorNode> allNodes = getAllNodes();
@@ -546,11 +542,11 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
             if ( node.getId().equals( nodeID ) )
                 return node;
         }
-        
+
         return null;
     }
-	
-	
+
+
 	/**
 	 * Get the set of all magnet main supplies
 	 * @return the set of all magnet main supplies
@@ -558,8 +554,8 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
 	public Collection<MagnetMainSupply> getMagnetMainSupplies() {
 		return magnetMainSupplies.values();
 	}
-    
-    
+
+
     /**
      * Get a main power supply whose id is supplyId
      * @param supplyId The id of the main power supply to get
@@ -568,8 +564,8 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
     public MagnetMainSupply getMagnetMainSupply(String supplyId) {
         return magnetMainSupplies.get( supplyId );
     }
-	
-	
+
+
 	/**
 	 * Get the set of all magnet trim supplies
 	 * @return the set of all magnet trim supplies
@@ -577,8 +573,8 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
 	public Collection<MagnetTrimSupply> getMagnetTrimSupplies() {
 		return magnetTrimSupplies.values();
 	}
-    
-    
+
+
     /**
      * Get a main power supply whose id is supplyId
      * @param supplyId The id of the main power supply to get
