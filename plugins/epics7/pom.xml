@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.xal</groupId>
         <artifactId>openxal.plugins</artifactId>
-        <version>5.1-SNAPSHOT</version>
+        <version>5.2-SNAPSHOT</version>
     </parent>
     
     <artifactId>openxal.plugins.epics7</artifactId>

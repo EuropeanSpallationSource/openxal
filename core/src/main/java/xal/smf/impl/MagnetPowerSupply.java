@@ -287,4 +287,93 @@ public abstract class MagnetPowerSupply implements DataListener {
 
         return fields;
     }
+
+    /**
+     * Get a map with all set and readback handle pairs.
+     *
+     * @return The map with all set/readback handle pairs. The key is the set
+     * handle and the value is the readback.
+     */
+    public Map<String, String> getReadbackHandleMap() {
+        Map<String, String> readbackHandles = new HashMap<>();
+
+        for (Field field : getAllFields(null, this.getClass())) {
+            if (field.isAnnotationPresent(ChannelHandle.class)) {
+                try {
+                    String setHandle = (String) field.get(this);
+                    String readbackHandle = field.getAnnotation(ChannelHandle.class).readback();
+                    if (readbackHandle.equals("")) {
+                        readbackHandle = setHandle;
+                    }
+                    if (!readbackHandles.containsKey(setHandle) || !readbackHandle.equals("")) {
+                        // Remove the readbackHandle if the setHandle is been processed.
+                        if (readbackHandles.containsKey(readbackHandle)) {
+                            readbackHandles.remove(readbackHandle);
+                        }
+                        // Do not add a readbackHandle if the setHandle has already been processed.
+                        if (!readbackHandles.containsValue(readbackHandle)) {
+                            readbackHandles.put(setHandle, readbackHandle);
+                        }
+                    }
+                } catch (IllegalArgumentException | IllegalAccessException ex) {
+                    Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+
+        return readbackHandles;
+    }
+
+    /**
+     * Get the readback handle corresponding to a set channel.
+     *
+     * @param setHandle The set handle.
+     * @return The corresponding readback handle.
+     */
+    public String getReadbackHandle(String setHandle) {
+        for (Field field : getAllFields(null, this.getClass())) {
+            if (field.isAnnotationPresent(ChannelHandle.class)) {
+                try {
+                    if (((String) field.get(this)).equals(setHandle)) {
+                        String readback = field.getAnnotation(ChannelHandle.class).readback();
+                        if (readback.equals("")) {
+                            return setHandle;
+                        } else {
+                            return readback;
+                        }
+                    }
+                } catch (IllegalArgumentException ex) {
+                    Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
+                } catch (IllegalAccessException ex) {
+                    Logger.getLogger(AcceleratorNode.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Get the set handle corresponding to a readback channel.
+     *
+     * @param readbackHandle The readback handle.
+     * @return The corresponding set handle.
+     */
+    public String getSetHandle(String readbackHandle) {
+        String setHandle = null;
+        for (Field field : getAllFields(null, this.getClass())) {
+            if (field.isAnnotationPresent(ChannelHandle.class)) {
+                try {
+                    String readback = field.getAnnotation(ChannelHandle.class).readback();
+                    if (readback.equals(readbackHandle)) {
+                        return (String) field.get(this);
+                    } else if (((String) field.get(this)).equals(readbackHandle)) {
+                        setHandle = readbackHandle;
+                    }
+                } catch (IllegalArgumentException | IllegalAccessException ex) {
+                    Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        return setHandle;
+    }
 }

@@ -147,6 +147,73 @@ abstract public class Electromagnet extends Magnet {
         return handles;
     }
     
+    /**
+     * Get the readback handle corresponding to a set channel.
+     *
+     * @param setHandle The set handle. public String getReadbackHandle(String
+     * setHandle) {
+     * @return The corresponding readback handle.
+     */
+    public String getReadbackHandle(String setHandle) {
+        String readbackHandle = super.getReadbackHandle(setHandle);
+        if (readbackHandle == null) {
+            try {
+                final MagnetMainSupply supply = getMainSupply();
+                if (supply != null) {
+                    readbackHandle = supply.getReadbackHandle(setHandle);
+                }
+            } catch (NullPointerException exception) {
+                System.err.println("exception getting ReadbackHandle from the main supply \"" + getMainSupply() + "\" for electromagnet: " + getId());
+                throw exception;
+            }
+        }
+        return readbackHandle;
+    }
+
+    /**
+     * Get the set handle corresponding to a readback channel.
+     *
+     * @param readbackHandle The readback handle.
+     * @return The corresponding set handle.
+     */
+    public String getSetHandle(String readbackHandle) {
+        String setHandle = super.getSetHandle(readbackHandle);
+        if (setHandle == null) {
+            try {
+                final MagnetMainSupply supply = getMainSupply();
+                if (supply != null) {
+                    setHandle = supply.getSetHandle(readbackHandle);
+                }
+            } catch (NullPointerException exception) {
+                System.err.println("exception getting setHandle from the main supply \"" + getMainSupply() + "\" for electromagnet: " + getId());
+                throw exception;
+            }
+        }
+        return setHandle;
+    }
+
+    /**
+     * Get a map with all set and readback handle pairs.
+     *
+     * @return The map with all set/readback handle pairs. The key is the set
+     * handle and the value is the readback.
+     */
+        @Override
+    public Map<String, String> getReadbackHandleMap() {
+        Map<String, String> readbackHandles = super.getReadbackHandleMap();
+
+        try {
+            final MagnetMainSupply supply = getMainSupply();
+            if (supply != null) {
+                readbackHandles.putAll(getMainSupply().getReadbackHandleMap());
+            }
+        } catch (NullPointerException exception) {
+            System.err.println("exception getting ReadbackHandleMap from the main supply \"" + getMainSupply() + "\" for electromagnet: " + getId());
+            throw exception;
+        }
+        return readbackHandles;
+    }
+    
     
     /**
      * Find the channel for the specified handle searching the main supply if necessary.
