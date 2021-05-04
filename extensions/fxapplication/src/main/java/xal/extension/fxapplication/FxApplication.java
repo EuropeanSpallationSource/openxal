@@ -351,7 +351,7 @@ abstract public class FxApplication extends Application {
     }
 
     @Override
-    public void start(Stage stage) throws IOException {
+    public final void start(Stage stage) throws IOException {
         try {
             setup(stage);
         } catch (Exception e) {
