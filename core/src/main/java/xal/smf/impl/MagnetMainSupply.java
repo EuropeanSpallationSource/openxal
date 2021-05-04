@@ -20,7 +20,7 @@ public class MagnetMainSupply extends MagnetPowerSupply {
     // channel handles
     @ChannelHandle
     public static final String CYCLE_ENABLE_HANDLE = "cycleEnable";
-    @ChannelHandle(readback=MagnetMainSupply.FIELD_RB_HANDLE)
+    @ChannelHandle(readback=Electromagnet.FIELD_RB_HANDLE)
     public static final String FIELD_SET_HANDLE = "fieldSet"; 
     @ChannelHandle
     public static final String FIELD_RB_HANDLE = "psFieldRB";
