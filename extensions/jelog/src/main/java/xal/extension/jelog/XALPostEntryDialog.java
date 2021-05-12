@@ -34,6 +34,12 @@ import javafx.util.Pair;
  */
 public class XALPostEntryDialog {
 
+    private static String elogURL = null;
+
+    public static void setElogServer(String elogURL) {
+        XALPostEntryDialog.elogURL = elogURL;
+    }
+
     public static Stage post(Pair<String, String>... defaultAttributes) throws IOException, Exception {
         return post(null, null, defaultAttributes);
     }
@@ -55,7 +61,11 @@ public class XALPostEntryDialog {
         ckeditorPath += "/html/ckeditor.html";
         System.setProperty("eu.ess.jelog.ckeditor_path", ckeditorPath);
 
-        PostEntryDialog.setElogServer(ElogServer.getElogURL());
+        if (elogURL == null) {
+            PostEntryDialog.setElogServer(ElogServer.getElogURL());
+        } else {
+            PostEntryDialog.setElogServer(elogURL);
+        }
 
         return PostEntryDialog.post(attachments, defaultLogbook, defaultAttributes);
     }
