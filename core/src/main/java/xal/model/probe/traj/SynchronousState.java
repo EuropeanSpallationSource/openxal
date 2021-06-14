@@ -8,7 +8,6 @@ package xal.model.probe.traj;
 
 import xal.tools.data.DataAdaptor;
 import xal.tools.data.DataFormatException;
-import xal.tools.math.r3.R3;
 import xal.model.probe.SynchronousProbe;
 
 /**
@@ -20,18 +19,12 @@ public class SynchronousState extends ProbeState<SynchronousState> {
     // element tag for RF phase
     protected static final String LABEL_SYNCH = "synch";
 
-    // attribute tag for betatron phase
-    protected static final String ATTR_PHASEBETA = "phasebeta";
-
     // attribute tag for RF phase
     protected static final String ATTR_PHASERF = "phaserf";
 
     // Local Attributes
     // Synchronous particle position with respect to any RF drive phase
     private double m_dblPhsRf;
-
-    // synchronous particle betatron phase without space charge
-    private R3 m_vecPhsBeta;
 
     // Initialization
     /**
@@ -41,7 +34,6 @@ public class SynchronousState extends ProbeState<SynchronousState> {
     public SynchronousState() {
         super();
         this.m_dblPhsRf = 0.0;
-        this.m_vecPhsBeta = R3.zero();
     }
 
     /**
@@ -58,7 +50,6 @@ public class SynchronousState extends ProbeState<SynchronousState> {
         super(stateSync);
 
         this.m_dblPhsRf = stateSync.m_dblPhsRf;
-        this.m_vecPhsBeta = stateSync.m_vecPhsBeta.clone();
     }
 
     /**
@@ -69,24 +60,10 @@ public class SynchronousState extends ProbeState<SynchronousState> {
      */
     public SynchronousState(final SynchronousProbe probe) {
         super(probe);
-        this.setBetatronPhase(probe.getBetatronPhase().clone());
         this.setRfPhase(probe.getRfPhase());
     }
 
     // Property Accessors 
-    /**
-     * Set the betatron phase of the synchronous particle without space charge.
-     * The betatron phase of all three planes is maintained as an
-     * <code>R3</code> vector object. Thus, the betatron phase of each plane is
-     * set simultaneously.
-     *
-     * @param vecPhase vector (psix,psiy,psiz) of betatron phases in
-     * <b>radians</b>
-     */
-    public void setBetatronPhase(R3 vecPhase) {
-        this.m_vecPhsBeta = vecPhase;
-    }
-
     /**
      * Set the phase location of the synchronous particle with respect to the
      * drive RF power.
@@ -95,15 +72,6 @@ public class SynchronousState extends ProbeState<SynchronousState> {
      */
     public void setRfPhase(double dblPhase) {
         this.m_dblPhsRf = dblPhase;
-    }
-
-    /**
-     * Return the betatron phase advances in each plane.
-     *
-     * @return vector (psix,psiy,psiz) of betatron phases in <b>radians</b>
-     */
-    public R3 getBetatronPhase() {
-        return this.m_vecPhsBeta;
     }
 
     /**
@@ -145,7 +113,6 @@ public class SynchronousState extends ProbeState<SynchronousState> {
         super.addPropertiesTo(daptSink);
 
         DataAdaptor daptSync = daptSink.createChild(SynchronousState.LABEL_SYNCH);
-        daptSync.setValue(SynchronousState.ATTR_PHASEBETA, this.getBetatronPhase().toString());
         daptSync.setValue(SynchronousState.ATTR_PHASERF, this.getRfPhase());
     }
 
@@ -169,10 +136,6 @@ public class SynchronousState extends ProbeState<SynchronousState> {
             throw new DataFormatException("SynchronousState#readPropertiesFrom(): no child element = " + LABEL_SYNCH);
         }
 
-        if (daptSync.hasAttribute(SynchronousState.ATTR_PHASEBETA)) {
-            String strBeta = daptSync.stringValue(SynchronousState.ATTR_PHASEBETA);
-            this.setBetatronPhase(new R3(strBeta));
-        }
         if (daptSync.hasAttribute(SynchronousState.ATTR_PHASERF)) {
             this.setRfPhase(daptSync.doubleValue(SynchronousState.ATTR_PHASERF));
         }
