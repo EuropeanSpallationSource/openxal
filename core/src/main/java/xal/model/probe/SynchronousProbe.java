@@ -6,7 +6,6 @@ package xal.model.probe;
 
 import xal.tools.data.DataAdaptor;
 import xal.tools.data.DataFormatException;
-import xal.tools.math.r3.R3;
 import xal.model.probe.traj.SynchronousState;
 import xal.model.probe.traj.Trajectory;
 
@@ -23,7 +22,6 @@ public class SynchronousProbe extends Probe<SynchronousState> {
     public SynchronousProbe() {
         super();
         this.setRfPhase(0.0);
-        this.setBetatronPhase(new R3());
     }
 
     /**
@@ -32,25 +30,11 @@ public class SynchronousProbe extends Probe<SynchronousState> {
     public SynchronousProbe(final SynchronousProbe probe) {
         super(probe);
         this.setRfPhase(probe.getRfPhase());
-        this.setBetatronPhase(new R3(probe.getBetatronPhase()));
     }
 
     @Override
     public SynchronousProbe copy() {
         return new SynchronousProbe(this);
-    }
-
-    /**
-     * Set the betatron phase of the synchronous particle without space charge.
-     * The betatron phase of all three planes is maintained as an
-     * <code>R3</code> vector object. Thus, the betatron phase of each plane is
-     * set simultaneously.
-     *
-     * @param vecPhase vector (psix,psiy,psiz) of betatron phases in
-     * <b>radians</b>
-     */
-    public void setBetatronPhase(R3 vecPhase) {
-        this.stateCurrent.setBetatronPhase(vecPhase);
     }
 
     /**
@@ -72,17 +56,6 @@ public class SynchronousProbe extends Probe<SynchronousState> {
      */
     public double getRfPhase() {
         return this.stateCurrent.getRfPhase();
-    }
-
-    /**
-     * Return the set of betatron phase advances for any particle in the
-     * synchronous bucket. The phase advances for all threes planes are
-     * returned. Space charge is not considered.
-     *
-     * @return vector (sigx,sigy,sigz) of phase advances without space charge
-     */
-    public R3 getBetatronPhase() {
-        return this.stateCurrent.getBetatronPhase();
     }
 
     // Trajectory Support
