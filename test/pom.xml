@@ -20,5 +20,10 @@
             <groupId>org.xal</groupId>
             <artifactId>openxal.library</artifactId>
         </dependency>
+        <!-- adding dependencies for JaCoCo aggregate -->
+        <dependency>
+            <groupId>org.xal</groupId>
+            <artifactId>core</artifactId>
+        </dependency>
     </dependencies>
 </project>
