@@ -1,8 +1,33 @@
 /*
- * Created on Jun 1, 2004
+ * Copyright (c) 2021, Open XAL Collaboration
  *
- * To change the template for this generated file go to
- * Window>Preferences>Java>Code Generation>Code and Comments
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software
+ *    without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
  */
 package xal.model.probe.traj;
 
@@ -11,20 +36,25 @@ import xal.tools.data.DataFormatException;
 import xal.model.probe.SynchronousProbe;
 
 /**
- * @author Christopher K. Allen
+ * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
  */
-public class SynchronousState extends ProbeState<SynchronousState> {
+public class SynchronousState extends BunchProbeState<SynchronousState> {
 
     // Global Constants
-    // element tag for RF phase
+    // element tag for Synchronouse State
     protected static final String LABEL_SYNCH = "synch";
 
-    // attribute tag for RF phase
-    protected static final String ATTR_PHASERF = "phaserf";
+    // attribute tag for synchronous phase
+    protected static final String ATTR_SYNCH_PHASE = "synch_phase";
+
+    // attribute tag for energy gain
+    protected static final String ATTR_ENERGY_GAIN = "energy_gain";
 
     // Local Attributes
-    // Synchronous particle position with respect to any RF drive phase
+    // Synchronous phase
     private double m_dblPhsRf;
+    // Energy gain
+    private double m_dblEnergyGain;
 
     // Initialization
     /**
@@ -34,6 +64,7 @@ public class SynchronousState extends ProbeState<SynchronousState> {
     public SynchronousState() {
         super();
         this.m_dblPhsRf = 0.0;
+        this.m_dblEnergyGain = 0.0;
     }
 
     /**
@@ -42,14 +73,12 @@ public class SynchronousState extends ProbeState<SynchronousState> {
      * given <code>SynchronousState</code>.
      *
      * @param stateSync initializing state
-     *
-     * @author Christopher K. Allen, Jonathan M. Freed
-     * @since Jun 26, 2014
      */
-    public SynchronousState(final SynchronousState stateSync) {
+    public SynchronousState(SynchronousState stateSync) {
         super(stateSync);
 
         this.m_dblPhsRf = stateSync.m_dblPhsRf;
+        this.m_dblEnergyGain = stateSync.m_dblEnergyGain;
     }
 
     /**
@@ -58,74 +87,64 @@ public class SynchronousState extends ProbeState<SynchronousState> {
      *
      * @param probe probe containing initializing state information
      */
-    public SynchronousState(final SynchronousProbe probe) {
+    public SynchronousState(SynchronousProbe probe) {
         super(probe);
-        this.setRfPhase(probe.getRfPhase());
+        this.setSynchronousPhase(probe.getSynchronousPhase());
+        this.setEnergyGain(probe.getEnergyGain());
     }
 
     // Property Accessors 
     /**
-     * Set the phase location of the synchronous particle with respect to the
-     * drive RF power.
+     * Set synchronous phase.
      *
-     * @param dblPhase synchronous particle phase w.r.t. RF in <b>radians</b>
+     * @param dblPhase synchronous phase in <b>radians</b>
      */
-    public void setRfPhase(double dblPhase) {
+    public void setSynchronousPhase(double dblPhase) {
         this.m_dblPhsRf = dblPhase;
     }
 
     /**
-     * Return the phase location of the synchronous particle with respect to any
-     * driving RF power.
+     * Return the synchronous phase.
      *
-     * @return phase location of synchronous particle in <b>radians</b>
+     * @return synchronous phase in <b>radians</b>
      */
-    public double getRfPhase() {
+    public double getSynchronousPhase() {
         return this.m_dblPhsRf;
     }
 
-    // ProbeState Overrides
     /**
-     * Implements the clone operation required by the base class
-     * <code>ProbeState</code>
+     * Set the energy gain for the current element.
      *
-     * @see xal.model.probe.traj.ProbeState#copy()
-     *
-     * @author Christopher K. Allen
-     * @since Jun 27, 2014
+     * @param dblEnergyGain energy gain in <b>eV</b>
      */
+    public void setEnergyGain(double dblEnergyGain) {
+        this.m_dblEnergyGain = dblEnergyGain;
+    }
+
+    /**
+     * Return the energy gain in the current element.
+     *
+     * @return energy gain in <b>eV</b>
+     */
+    public double getEnergyGain() {
+        return m_dblEnergyGain;
+    }
+
+    // ProbeState Overrides
     @Override
     public SynchronousState copy() {
         return new SynchronousState(this);
     }
 
-    /**
-     * Save the probe state values to a data store represented by the
-     * <code>DataAdaptor</code> interface.
-     *
-     * @param daptSink data sink to receive state information
-     *
-     * @see
-     * xal.model.probe.traj.ProbeState#addPropertiesTo(gov.DataAdaptor.tools.data.IDataAdaptor)
-     */
     @Override
     protected void addPropertiesTo(DataAdaptor daptSink) {
         super.addPropertiesTo(daptSink);
 
         DataAdaptor daptSync = daptSink.createChild(SynchronousState.LABEL_SYNCH);
-        daptSync.setValue(SynchronousState.ATTR_PHASERF, this.getRfPhase());
+        daptSync.setValue(SynchronousState.ATTR_SYNCH_PHASE, this.getSynchronousPhase());
+        daptSync.setValue(SynchronousState.ATTR_ENERGY_GAIN, this.getEnergyGain());
     }
 
-    /**
-     * Restore the state values for this probe state object from the data store
-     * represented by the <code>DataAdaptor</code> interface.
-     *
-     * @param daptSrc data source for probe state information
-     * @throws DataFormatException error in data format
-     *
-     * @see
-     * xal.model.probe.traj.ProbeState#readPropertiesFrom(gov.DataAdaptor.tools.data.IDataAdaptor)
-     */
     @Override
     protected void readPropertiesFrom(DataAdaptor daptSrc)
             throws DataFormatException {
@@ -136,23 +155,20 @@ public class SynchronousState extends ProbeState<SynchronousState> {
             throw new DataFormatException("SynchronousState#readPropertiesFrom(): no child element = " + LABEL_SYNCH);
         }
 
-        if (daptSync.hasAttribute(SynchronousState.ATTR_PHASERF)) {
-            this.setRfPhase(daptSync.doubleValue(SynchronousState.ATTR_PHASERF));
+        if (daptSync.hasAttribute(SynchronousState.ATTR_SYNCH_PHASE)) {
+            this.setSynchronousPhase(daptSync.doubleValue(SynchronousState.ATTR_SYNCH_PHASE));
+        }
+        if (daptSync.hasAttribute(SynchronousState.ATTR_ENERGY_GAIN)) {
+            this.setEnergyGain(daptSync.doubleValue(SynchronousState.ATTR_ENERGY_GAIN));
         }
     }
 
     // Object Overrides
-    /**
-     * Returns a string representation of this particle state. Currently returns
-     * only the super class implementation.
-     *
-     * @return the value <code>super.toString()</code>
-     *
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
-        return super.toString();
+        return super.toString()
+                + " synchPhase=" + getSynchronousPhase()
+                + " energyGain=" + getEnergyGain();
     }
 
 }
