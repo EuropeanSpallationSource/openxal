@@ -164,6 +164,25 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
      */
     @Deprecated
     public static double COEFF_Y = 1.0; 
+    private double synchronousPhase;
+    private double energyGain;
+
+    @Override
+    public void computeSynchronousPhaseAndEnergyGain(IProbe probe) {
+        synchronousPhase = compGapEntrancePhase(probe);
+        energyGain = energyGain(probe);
+    }
+
+    @Override
+    public double getSynchronousPhase() {
+        return synchronousPhase;
+    }
+
+    
+    @Override
+    public double getEnergyGain() {
+        return energyGain;
+    }
     
 
     /*

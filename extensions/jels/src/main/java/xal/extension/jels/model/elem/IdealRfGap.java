@@ -129,6 +129,7 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
 
     private double m_dblAmpFactor;
     private double m_dblPhaseFactor;
+    private double synchronousPhase;
 
     /*
      * Initialization
@@ -337,6 +338,8 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
 
         if (getE0() == 0) {
             matPhi = PhaseMatrix.identity();
+            deltaPhi = 0.0;
+            energyGain = 0.0;
         } else {
             double mass = probe.getSpeciesRestEnergy();
             double gammaStart = probe.getGamma();
@@ -359,7 +362,7 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
             double E0TL_scaled = E0TL * TTFFit.evaluateAt(betaMiddle);
 
             energyGain = E0TL_scaled * Math.cos(phiS);
-            
+
             double gammaEnd = gammaStart + energyGain / mass;
             double betaEnd = computeBetaFromGamma(gammaEnd);
             double gammaAvg = (gammaEnd + gammaStart) / 2;
@@ -579,5 +582,48 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
     @Override
     public boolean isFirstCell() {
         return this.bolStartCell;
+    }
+
+    @Override
+    public void computeSynchronousPhaseAndEnergyGain(IProbe probe) {
+        if (isFirstGap() || !probe.getAlgorithm().getRfGapPhaseCalculation()) {
+            synchronousPhase = getPhase();
+            synchronousPhase += structureMode * Math.PI * indCell;
+        } else {
+            synchronousPhase = probe.getLongitinalPhase();
+            synchronousPhase += structureMode * Math.PI * indCell;
+        }
+
+        // Applying phase offset
+        synchronousPhase += m_dblPhaseFactor;
+        
+        if (getE0() == 0) {
+            energyGain = 0.0;
+        } else {
+            double mass = probe.getSpeciesRestEnergy();
+            double gammaStart = probe.getGamma();
+
+            double E0TL = getE0() * getCellLength();
+            // Applying amplitude relative error
+            E0TL *= m_dblAmpFactor;
+
+            double gammaMiddle = gammaStart + E0TL / mass * Math.cos(synchronousPhase) / 2;
+            double betaMiddle = computeBetaFromGamma(gammaMiddle);
+
+            double E0TL_scaled = E0TL * TTFFit.evaluateAt(betaMiddle);
+            // Compute energy gain to be able to calculate the synchronous phase
+            // of a cavity consisting of several cells.
+            energyGain = E0TL_scaled * Math.cos(synchronousPhase);
+        }
+    }
+    
+    @Override
+    public double getSynchronousPhase() {
+        return synchronousPhase;
+    }
+    
+    @Override
+    public double getEnergyGain() {
+        return energyGain;
     }
 }
