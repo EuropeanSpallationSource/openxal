@@ -23,7 +23,7 @@
         <!-- adding dependencies for JaCoCo aggregate -->
         <dependency>
             <groupId>org.xal</groupId>
-            <artifactId>core</artifactId>
+            <artifactId>openxal.core</artifactId>
         </dependency>
     </dependencies>
 </project>
