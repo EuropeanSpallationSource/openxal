@@ -6,6 +6,8 @@
 
 package xal.model.elem.sync;
 
+import xal.model.IProbe;
+
 
 /**
  *  This interface defines the common properties of all RF Gap structures.
@@ -94,5 +96,25 @@ public interface IRfGap /*extends gov.sns.xal.model.IElement*/ {
      * @since  Jan 23, 2015   by Christopher K. Allen
      */
     public boolean isFirstGap();
-
-};
+    
+    /**
+     * Compute the synchronous phase and the energy gain for a cavity gap.
+     * @param probe
+     */
+    public void computeSynchronousPhaseAndEnergyGain(IProbe probe);
+    
+    /**
+     * Return the synchronous phase of a cavity gap, which must be previously
+     * calculated using computeSynchronousPhase.
+     *
+     * @return synchronous phase [rad]
+     */
+    public double getSynchronousPhase();
+    
+    /**
+     * Return the energy gain of a cavity gap previously calculated.
+     *
+     * @return 
+     */
+    public double getEnergyGain();
+}
