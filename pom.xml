@@ -50,7 +50,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.2.0</version>
+                <version>3.3.0</version>
                 <configuration>
                     <isOffline>true</isOffline>
                     <doclint>none</doclint>
@@ -67,7 +67,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.6</version>
+                <version>0.8.7</version>
                 <configuration>
                     <!-- Sets the VM argument line used when unit tests are run. -->
                     <propertyName>surefireArgLine</propertyName>
@@ -86,6 +86,13 @@
                             <goal>report</goal>
                         </goals>
                     </execution>
+                    <execution>
+                        <id>report-aggregate</id>
+                        <goals>
+                          <goal>report-aggregate</goal>
+                        </goals>
+                        <phase>verify</phase>
+                  </execution>
                 </executions>
             </plugin>
             <plugin>
@@ -103,7 +110,7 @@
             <plugin>
                 <groupId>org.jfrog.buildinfo</groupId>
                 <artifactId>artifactory-maven-plugin</artifactId>
-                <version>2.7.0</version>
+                <version>3.2.3</version>
                 <inherited>false</inherited>
                 <executions>
                     <execution>                        
