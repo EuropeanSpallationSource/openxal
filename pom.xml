@@ -16,6 +16,7 @@
             **/tools/data/KeyValueSorting.java,
             **/sim/slg/*.py
         </sonar.exclusions>
+        <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/target/site/jacoco-aggregate/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
     </properties>
     
     
