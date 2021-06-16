@@ -7,10 +7,13 @@
 package xal.model.elem;
 
 import java.util.Iterator;
+import xal.model.IAlgorithm;
 
 import xal.model.IComponent;
 import xal.model.IProbe;
 import xal.model.ModelException;
+import xal.model.alg.SynchronousTracker;
+import xal.model.alg.Tracker;
 import xal.model.elem.sync.IRfCavity;
 import xal.model.elem.sync.IRfCavityCell;
 import xal.model.elem.sync.IRfGap;
@@ -60,6 +63,11 @@ public class IdealRfCavity extends ElementSeq  implements IRfCavity {
     
     /** The mode constant (1/2 the mode number) of the cavity which we are exciting */
     private double  dblModeConst;
+    
+    // Energy gain in the cavity [eV]
+    private double energyGain;
+    // Synchronous phase in the cavity [rad]
+    private double synchronousPhase;
     
     
     /*
@@ -307,10 +315,18 @@ public class IdealRfCavity extends ElementSeq  implements IRfCavity {
         // We are not acting on the probe component.
         this.distributeCavityProperties();
         this.distributeCellIndices();
-        
+
         // Now we propagate the probe through this composite modeling element
         //  as usual.
         super.propagate(probe);
+
+        // Propagate also this element in the Synchronous tracker
+        // This must be done after super.propagate() so that synchronous phases 
+        // are calculated correctly.
+        IAlgorithm alg = probe.getAlgorithm();
+        if (alg instanceof SynchronousTracker) {
+            ((SynchronousTracker) alg).propagate(probe, this);
+        }
     }
 
     /**
@@ -450,5 +466,38 @@ public class IdealRfCavity extends ElementSeq  implements IRfCavity {
             else
                 indCell++;
         }
+    }
+    
+    @Override
+    public void computeSynchronousPhaseAndEnergyGain() {
+        synchronousPhase = 0.;
+        energyGain = 0.;
+        for (IComponent cmp : getForwardCompList()) {
+            // The child component is a cavity gap
+            if (cmp instanceof IRfGap) {
+                IRfGap gap = (IRfGap) cmp;
+
+                double synchronousPhase_i = gap.getSynchronousPhase();
+                double energyGain_i = gap.getEnergyGain();
+
+                energyGain += energyGain_i;
+                synchronousPhase += Math.tan(synchronousPhase_i) * energyGain_i;
+            }
+        }
+
+        synchronousPhase = Math.atan2(synchronousPhase, energyGain);
+    }
+
+    public double getSynchronousPhase() {
+        return synchronousPhase;
+    }
+
+    /**
+     * Return the energy gain of a cavity gap previously calculated.
+     *
+     * @return
+     */
+    public double getEnergyGain() {
+        return energyGain;
     }
 }
