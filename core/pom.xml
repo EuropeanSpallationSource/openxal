@@ -13,7 +13,6 @@
     <!-- For the local repository -->
     <properties>
         <main.basedir>${project.basedir}/..</main.basedir>
-        <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/../test/target/site/jacoco-aggregate/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
     </properties>
 
     <build>
