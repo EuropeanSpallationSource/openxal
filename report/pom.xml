@@ -10,6 +10,28 @@
 
     <artifactId>openxal.report</artifactId>
         
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.7</version>
+                <configuration>
+                    <!-- Sets the VM argument line used when unit tests are run. -->
+                    <propertyName>surefireArgLine</propertyName>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>report-aggregate</id>
+                        <goals>
+                            <goal>report-aggregate</goal>
+                        </goals>
+                        <phase>verify</phase>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
     <dependencies>
         <dependency>
