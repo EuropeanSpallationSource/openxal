@@ -19,7 +19,6 @@ package xal.extension.jels;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Locale;
 import org.junit.Assert;
 import org.junit.Test;
@@ -37,7 +36,7 @@ import xal.smf.AcceleratorSeq;
  *
  * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
  */
-public class SynchronousTrackerTest extends TestCommon {
+public class SynchronousTrackerTestCommon extends TestCommon {
 
     protected SynchronousTrackerTestData data;
 
@@ -96,9 +95,11 @@ public class SynchronousTrackerTest extends TestCommon {
         }
     }
 
-    public SynchronousTrackerTest(Probe probe, ElementMapping elementMapping) {
-        super(probe, elementMapping);
+    public SynchronousTrackerTestCommon(SynchronousTrackerTestData data) {
+        super(data.probe, data.elementMapping);
+        this.data = data;
     }
+    
 
     public static SynchronousProbe setupOpenXALProbe(double energy, double frequency) {
         // Synchronous probe and tracker

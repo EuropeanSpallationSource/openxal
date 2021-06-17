@@ -33,10 +33,10 @@ import xal.extension.jels.model.elem.ThinRfFieldMap;
  * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
  */
 @RunWith(Parameterized.class)
-public class SynchronousPhaseTest extends SynchronousTrackerTest {
+public class SynchronousPhaseTest extends SynchronousTrackerTestCommon {
 
     public SynchronousPhaseTest(SynchronousTrackerTestData data) {
-        super(data.probe, data.elementMapping);
+        super(data);
         this.data = data;
     }
 
