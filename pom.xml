@@ -16,6 +16,11 @@
             **/tools/data/KeyValueSorting.java,
             **/sim/slg/*.py
         </sonar.exclusions>
+        <sonar.coverage.jacoco.xmlReportPaths>
+            ${project.basedir}/../report/target/site/jacoco-aggregate/jacoco.xml,
+            ${project.basedir}/../../report/target/site/jacoco-aggregate/jacoco.xml,
+            ${project.basedir}/../../../report/target/site/jacoco-aggregate/jacoco.xml
+        </sonar.coverage.jacoco.xmlReportPaths>
     </properties>
     
     
@@ -50,7 +55,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.2.0</version>
+                <version>3.3.0</version>
                 <configuration>
                     <isOffline>true</isOffline>
                     <doclint>none</doclint>
@@ -67,7 +72,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.6</version>
+                <version>0.8.7</version>
                 <configuration>
                     <!-- Sets the VM argument line used when unit tests are run. -->
                     <propertyName>surefireArgLine</propertyName>
@@ -76,14 +81,6 @@
                     <execution>
                         <goals>
                             <goal>prepare-agent</goal>
-                        </goals>
-                    </execution>
-                    <!-- attached to Maven test phase -->
-                    <execution>
-                        <id>report</id>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>report</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -103,7 +100,7 @@
             <plugin>
                 <groupId>org.jfrog.buildinfo</groupId>
                 <artifactId>artifactory-maven-plugin</artifactId>
-                <version>2.7.0</version>
+                <version>3.2.3</version>
                 <inherited>false</inherited>
                 <executions>
                     <execution>                        
