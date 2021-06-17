@@ -201,11 +201,9 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
      * (i.e from probe.getPosition, and for dblLength).
      *
      * @return
-     * @throws xal.model.ModelException
      */
     @Override
-    public PhaseMap transferMap(IProbe probe, double dblLen)
-            throws ModelException {
+    public PhaseMap transferMap(IProbe probe, double dblLen) {
         computePhaseDriftAndEnergyGain(probe, dblLen);
 
         double phiS;
