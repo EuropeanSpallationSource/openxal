@@ -153,7 +153,7 @@ public class TestScenario {
 
     /**
      * Test method for {@link xal.sim.scenario.Scenario#run()}.
-     * Uses an adaptive envelope probe.
+     * Uses a Synchronous probe.
      */
     @Test
     public void testRunSynchronousProbeFromFactories() {
