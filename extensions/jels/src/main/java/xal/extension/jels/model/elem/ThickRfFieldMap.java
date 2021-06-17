@@ -127,11 +127,11 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
 
         startPosition = getLatticePosition() - getLength() / 2. - sliceStartPosition;
 
-        double initial_phase;
+        double initialPhase;
         if (Math.abs(probe.getPosition() - startPosition) < 1e-6 || !probe.getAlgorithm().getRfGapPhaseCalculation()) {
-            initial_phase = getPhase();
+            initialPhase = getPhase();
         } else {
-            initial_phase = probe.getLongitinalPhase();
+            initialPhase = probe.getLongitinalPhase();
         }
 
         // Find the field map points included in the current slice.
@@ -179,8 +179,8 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
                 dz /= 2.;
             }
 
-            a_energyGain[i + 1] = a_energyGain[i] + fieldMapPoint.getEz() * dz * Math.cos(initial_phase + a_deltaPhi[i + 1]);
-            a_sinIntegral[i + 1] = a_sinIntegral[i] + fieldMapPoint.getEz() * dz * Math.sin(initial_phase + a_deltaPhi[i + 1]);
+            a_energyGain[i + 1] = a_energyGain[i] + fieldMapPoint.getEz() * dz * Math.cos(initialPhase + a_deltaPhi[i + 1]);
+            a_sinIntegral[i + 1] = a_sinIntegral[i] + fieldMapPoint.getEz() * dz * Math.sin(initialPhase + a_deltaPhi[i + 1]);
 
             // Set the length of the following drift spaces.
             dz = getCellLength();

@@ -278,11 +278,11 @@ public class ThinRfFieldMap extends ThinElement implements IRfGap, IRfCavityCell
 
     @Override
     public void computeSynchronousPhaseAndEnergyGain(IProbe probe) {
-        double initial_phase;
+        double initialPhase;
         if (isFirstGap() || !probe.getAlgorithm().getRfGapPhaseCalculation()) {
-            initial_phase = getPhase();
+            initialPhase = getPhase();
         } else {
-            initial_phase = probe.getLongitinalPhase();
+            initialPhase = probe.getLongitinalPhase();
         }
 
         double dz = getCellLength();
@@ -294,8 +294,8 @@ public class ThinRfFieldMap extends ThinElement implements IRfGap, IRfCavityCell
         FieldMapPoint fieldMapPoint = rfFieldmap.getFieldAt(position - startPosition);
         fieldMapPoint.setAmplitudeFactorE(getE0());
 
-        double sinIntegral = fieldMapPoint.getEz() * dz * Math.sin(initial_phase);
-        energyGain = fieldMapPoint.getEz() * dz * Math.cos(initial_phase);
+        double sinIntegral = fieldMapPoint.getEz() * dz * Math.sin(initialPhase);
+        energyGain = fieldMapPoint.getEz() * dz * Math.cos(initialPhase);
 
         synchronousPhase = Math.atan2(sinIntegral, energyGain);
     }
