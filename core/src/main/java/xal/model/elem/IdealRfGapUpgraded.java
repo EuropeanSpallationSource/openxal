@@ -144,6 +144,25 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
     /** Maximum number of allowable iterations in the phase change search */
     private static final int    INT_PHASECALC_MAXITER = 50;
 
+    private double synchronousPhase;
+    private double energyGain;
+
+    @Override
+    public void computeSynchronousPhaseAndEnergyGain(IProbe probe) {
+        synchronousPhase = compGapEntrancePhase(probe);
+        energyGain = energyGain(probe);
+    }
+
+    @Override
+    public double getSynchronousPhase() {
+        return synchronousPhase;
+    }
+    
+    @Override
+    public double getEnergyGain() {
+        return energyGain;
+    }
+
 
     /*
      * Internal Data Structures

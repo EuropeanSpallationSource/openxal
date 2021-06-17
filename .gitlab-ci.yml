@@ -64,7 +64,6 @@ sonarqube.maven:
     <<: *maven
     stage: deploy
     script:
-    script:
         - 'mvn $MAVEN_CLI_OPTS jacoco:report-aggregate'
         - 'mvn $MAVEN_CLI_OPTS -Dsonar.login=$SONARQUBE_TOKEN -Dsonar.branch.name=$CI_COMMIT_REF_NAME -Dsonar.junit.reportPaths=target/surefire-reports sonar:sonar'
     only:

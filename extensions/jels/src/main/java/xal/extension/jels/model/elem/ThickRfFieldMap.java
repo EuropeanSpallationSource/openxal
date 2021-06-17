@@ -18,8 +18,6 @@
 package xal.extension.jels.model.elem;
 
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import xal.extension.jels.smf.impl.FieldMap;
 import xal.extension.jels.smf.impl.RfFieldMap;
 import xal.model.IProbe;
@@ -49,10 +47,12 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
     private double startPosition = 0;
     private double deltaPhi = 0;
     private double energyGain = 0;
+    private double synchronousPhase = 0;
 
     private double[] a_deltaPhi = null;
     private double[] a_energyGain = null;
-    
+    private double[] a_sinIntegral = null;
+
     private double m_dblAmpFactor;
     private double m_dblPhaseFactor;
 
@@ -106,13 +106,13 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
         }
         sliceStartPosition = element.getStartPosition() - (fieldmap.getPosition() - fieldmap.getLength() / 2.0);
         rfFieldmap = fieldmap.getFieldMap();
-        cellLength = fieldmap.getSliceLength();        
-               
-        m_dblETL = fieldmap.getGapDfltE0TL()*1e6;
-        m_dblFreq = fieldmap.getGapDfltFrequency()*1e6;
-        m_dblPhase = fieldmap.getGapDfltPhase()*Math.PI/180.;
-        m_dblE0 = fieldmap.getGapDfltAmp()*1e6;
-                
+        cellLength = fieldmap.getSliceLength();
+
+        m_dblETL = fieldmap.getGapDfltE0TL() * 1e6;
+        m_dblFreq = fieldmap.getGapDfltFrequency() * 1e6;
+        m_dblPhase = fieldmap.getGapDfltPhase() * Math.PI / 180.;
+        m_dblE0 = fieldmap.getGapDfltAmp() * 1e6;
+
         m_dblAmpFactor = fieldmap.getRfGap().getAmpFactor();
         m_dblPhaseFactor = fieldmap.getRfGap().getPhaseFactor();
     }
@@ -123,16 +123,15 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
      *
      * @throws xal.model.ModelException
      */
-    public void computePhaseDriftAndEnergyGain(IProbe probe, double dblLen)
-            throws ModelException {
+    public void computePhaseDriftAndEnergyGain(IProbe probe, double dblLen) {
 
         startPosition = getLatticePosition() - getLength() / 2. - sliceStartPosition;
 
-        double phiS;
+        double initialPhase;
         if (Math.abs(probe.getPosition() - startPosition) < 1e-6 || !probe.getAlgorithm().getRfGapPhaseCalculation()) {
-            phiS = getPhase();
+            initialPhase = getPhase();
         } else {
-            phiS = probe.getLongitinalPhase();
+            initialPhase = probe.getLongitinalPhase();
         }
 
         // Find the field map points included in the current slice.
@@ -149,9 +148,11 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
 
         a_deltaPhi = new double[numberOfPoints + 1];
         a_energyGain = new double[numberOfPoints + 1];
+        a_sinIntegral = new double[numberOfPoints + 1];
 
         a_deltaPhi[0] = 0;
         a_energyGain[0] = 0;
+        a_sinIntegral[0] = 0;
 
         for (int i = 0; i < numberOfPoints; i++) {
             gamma = (probe.getKineticEnergy() + a_energyGain[i]) / probe.getSpeciesRestEnergy() + 1.0;
@@ -166,16 +167,20 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
 
             if (fieldMapPoint == null) {
                 a_energyGain[i + 1] = a_energyGain[i] + 0;
+                a_sinIntegral[i + 1] = a_sinIntegral[i] + 0;
                 a_deltaPhi[i + 1] = a_deltaPhi[i] + 0;
                 continue;
             }
+
+            fieldMapPoint.setAmplitudeFactorE(getE0());
 
             // First and last slices of the element get half a kick
             if ((Math.abs(fieldMapPointPositions.get(i) - startPosition) < 1e-6) || (Math.abs(fieldMapPointPositions.get(i) - startPosition - rfFieldmap.getLength()) < 1e-6)) {
                 dz /= 2.;
             }
 
-            a_energyGain[i + 1] = a_energyGain[i] + fieldMapPoint.getEz() * dz * getE0() * Math.cos(phiS + a_deltaPhi[i + 1]);
+            a_energyGain[i + 1] = a_energyGain[i] + fieldMapPoint.getEz() * dz * Math.cos(initialPhase + a_deltaPhi[i + 1]);
+            a_sinIntegral[i + 1] = a_sinIntegral[i] + fieldMapPoint.getEz() * dz * Math.sin(initialPhase + a_deltaPhi[i + 1]);
 
             // Set the length of the following drift spaces.
             dz = getCellLength();
@@ -188,6 +193,7 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
 
         deltaPhi = a_deltaPhi[numberOfPoints] + 2 * Math.PI * getFrequency() * dz / (beta * LightSpeed);
         energyGain = a_energyGain[numberOfPoints];
+        synchronousPhase = Math.atan2(a_sinIntegral[numberOfPoints], a_energyGain[numberOfPoints]);
     }
 
     /**
@@ -259,11 +265,7 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
 
     @Override
     public double longitudinalPhaseAdvance(IProbe probe, double dblLen) {
-        try {
-            computePhaseDriftAndEnergyGain(probe, dblLen);
-        } catch (ModelException ex) {
-            Logger.getLogger(ThickRfFieldMap.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        computePhaseDriftAndEnergyGain(probe, dblLen);
 
         // WORKAROUND to set the initial phase
         if (Math.abs(probe.getPosition() - startPosition) < 1e-6) {
@@ -277,12 +279,6 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
 
     @Override
     public double energyGain(IProbe probe, double dblLen) {
-        try {
-            computePhaseDriftAndEnergyGain(probe, dblLen);
-        } catch (ModelException ex) {
-            Logger.getLogger(ThickRfFieldMap.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
         return energyGain;
     }
 
@@ -301,6 +297,10 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
         m_dblE0 = cavAmp * m_dblAmpFactor;
     }
 
+    /**
+     *
+     * @param cavPhase
+     */
     @Override
     public void setPhase(double cavPhase) {
         m_dblPhase = cavPhase + m_dblPhaseFactor;
@@ -364,5 +364,22 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
     @Override
     public boolean isFirstCell() {
         return initialGap;
+    }
+
+    @Override
+    public void computeSynchronousPhaseAndEnergyGain(IProbe probe) {
+        double dblLen = getLength();
+        computePhaseDriftAndEnergyGain(probe, dblLen);
+    }
+    
+    
+    @Override
+    public double getSynchronousPhase() {
+        return synchronousPhase;
+    }
+    
+    @Override
+    public double getEnergyGain() {
+        return energyGain;
     }
 }

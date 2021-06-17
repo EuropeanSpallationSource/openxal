@@ -1,79 +1,81 @@
 /*
- * Created on Jun 8, 2004
+ * Copyright (c) 2021, Open XAL Collaboration
  *
- * Copyright SNS/LANL, 2004
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software
+ *    without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
  */
 package xal.model.alg;
 
+import xal.model.IComponent;
 import xal.model.IElement;
 import xal.model.IProbe;
 import xal.model.ModelException;
+import xal.model.elem.sync.IRfCavity;
+import xal.model.elem.sync.IRfGap;
 import xal.model.probe.SynchronousProbe;
-import xal.tools.data.DataAdaptor;
-import xal.tools.data.DataFormatException;
-import xal.tools.data.DataTable;
-import xal.tools.data.EditContext;
-import xal.tools.data.GenericRecord;
 
 /**
- * Algorithm for propagating a <code>SynchronousParticle</code> probe object 
- * through any modeling element that exposes the <code>IComponent</code> 
- * interface.
- * 
- * @author Christopher K. Allen
+ * Algorithm for propagating a <code>SynchronousProbe</code> object through any
+ * modeling element that exposes the <code>IComponent</code> interface. It
+ * computes the synchronous phase at each cavity and cavity gaps, as well as the
+ * energy gain.
+ *
+ * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
  *
  */
 public class SynchronousTracker extends Tracker {
 
+    //  Global Constants
+    // string type identifier for this algorithm
+    public static final String s_strTypeId = SynchronousTracker.class.getName();
 
+    // current version of this algorithm
+    public static final int s_intVersion = 1;
 
+    // probe type recognized by this algorithm
+    public static final Class<SynchronousProbe> s_clsProbeType = SynchronousProbe.class;
 
-    /*
-     *  Global Constants
-     */
-
-    /** Label of the edit context parameter table in the "model.params" file */
-    private static final String STR_LBL_TABLE = "SynchronousTracker";
-
-    
-    
-    /** string type identifier for this algorithm */
-    public static final String      s_strTypeId = SynchronousTracker.class.getName();
-    
-    /** current version of this algorithm */
-    public static final int         s_intVersion = 1;
-
-    /** probe type recognized by this algorithm */
-    public static final Class<SynchronousProbe>       s_clsProbeType = SynchronousProbe.class;
-    
-
-    
-    /*
-     *  Local Attributes
-     */
-    
-    
-    
-    /*
-     * Initialization
-     */
-     
     /**
-     * Default constructor for a <code>SynchronousTracker</code> objects.  These
+     * Default constructor for a <code>SynchronousTracker</code> objects. These
      * objects have no internal state information.
-     * 
+     *
      */
     public SynchronousTracker() {
         super(s_strTypeId, s_intVersion, s_clsProbeType);
     }
-    
+
     /**
      * Copy constructor for SynchronousTracker
      *
-     * @param       sourceTracker   Tracker that is being copied
+     * @param sourceTracker Tracker that is being copied
      */
-    public SynchronousTracker( SynchronousTracker sourceTracker ) {
-        super( sourceTracker );
+    public SynchronousTracker(SynchronousTracker sourceTracker) {
+        super(sourceTracker);
     }
 
     /**
@@ -81,78 +83,65 @@ public class SynchronousTracker extends Tracker {
      */
     @Override
     public SynchronousTracker copy() {
-        return new SynchronousTracker( this );
+        return new SynchronousTracker(this);
     }
 
-    /*
-     * IArchive Interface
-     */
-    
-    /**
-     * Place holder for loading additional parameters from an edit context.
-     *  
-     * @since Oct 26, 2012
-     * @see xal.model.alg.Tracker#load(java.lang.String, xal.tools.data.EditContext)
-     */
-    @Override
-    public void load(String strPrimKeyVal, EditContext ecTableData) throws DataFormatException {
-        super.load(strPrimKeyVal, ecTableData);
-        
-        // Get the algorithm class name from the EditContext
-        DataTable     tblAlgorithm = ecTableData.getTable( STR_LBL_TABLE );
-        GenericRecord recTracker = tblAlgorithm.record( Tracker.TBL_PRIM_KEY_NAME,  strPrimKeyVal );
-    
-        if ( recTracker == null ) {
-            recTracker = tblAlgorithm.record( Tracker.TBL_PRIM_KEY_NAME, "default" );  // just use the default record
-        }
-        
-    }
-
-
-    /**
-     * Place holder for loading additional parameters from a data adaptor.
-     * 
-     * @since Oct 26, 2012
-     * @see xal.model.alg.Tracker#load(xal.tools.data.DataAdaptor)
-     */
-    @Override
-    public void load(DataAdaptor daSource) throws DataFormatException {
-        super.load(daSource);
-    }
-
-
-    /**
-     * Place holder for loading additional parameters from a data adaptor.
-     * 
-     * @since Oct 26, 2012
-     * @see xal.model.alg.Tracker#save(xal.tools.data.DataAdaptor)
-     */
-    @Override
-    public void save(DataAdaptor daptArchive) {
-        super.save(daptArchive);
-    }
-
-
-    /*
-     * Tracker Protocol
-     */
-     
-     
+    // Tracker Protocol
     /**
      * Perform the actual probe propagation through the the modeling element.
-     * 
-     * @param probe     interface to <code>SynchronousProbe</code> to be advanced
-     * @param elem      interface to modeling element through which to advance probe
-     * 
-     * @throws ModelException   error during propagation
-     * 
-     * @see xal.model.alg.Tracker#doPropagation(xal.model.IProbe, xal.model.IElement)
+     *
+     * @param probe interface to <code>SynchronousProbe</code> to be advanced
+     * @param elem interface to modeling element through which to advance probe
+     *
+     * @throws ModelException error during propagation
+     *
+     * @see xal.model.alg.Tracker#doPropagation(xal.model.IProbe,
+     * xal.model.IElement)
      */
     @Override
     public void doPropagation(IProbe probe, IElement elem)
-        throws ModelException 
-    {
-    
+            throws ModelException {
+        double elemPos = this.getElemPosition();
+        double elemLen = elem.getLength();
+        double propLen = elemLen - elemPos;
+
+        this.advanceState(probe, elem, propLen);
+        this.advanceProbe(probe, elem, propLen);
     }
 
+    /**
+     * This method was included to deal with RfCavitie objects
+     *
+     * @param probe
+     * @param elem
+     * @throws ModelException
+     */
+    public void propagate(IProbe probe, IComponent elem) throws ModelException {
+        probe.setCurrentElement(elem.getId());
+        probe.setCurrentElementTypeId(elem.getType());
+        probe.setCurrentHardwareId(elem.getHardwareNodeId());
+
+        if (elem instanceof IRfCavity) {
+            IRfCavity cavity = (IRfCavity) elem;
+            SynchronousProbe syncProbe = (SynchronousProbe) probe;
+            cavity.computeSynchronousPhaseAndEnergyGain();
+            syncProbe.setSynchronousPhase(cavity.getSynchronousPhase());
+            syncProbe.setEnergyGain(cavity.getEnergyGain());
+        }
+
+        if (this.getProbeUpdatePolicy() == Tracker.UPDATE_ALWAYS) {
+            probe.update();
+        }
+    }
+
+    protected void advanceState(IProbe ifcProbe, IElement elem, double dblLen) {
+        SynchronousProbe probe = (SynchronousProbe) ifcProbe;
+
+        if (elem instanceof IRfGap) {
+            IRfGap gap = (IRfGap) elem;
+            gap.computeSynchronousPhaseAndEnergyGain(probe);
+            probe.setSynchronousPhase(gap.getSynchronousPhase());
+            probe.setEnergyGain(gap.getEnergyGain());
+        }
+    }
 }

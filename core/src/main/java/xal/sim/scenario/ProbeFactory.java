@@ -24,6 +24,7 @@ import xal.model.probe.BunchProbe;
 import xal.model.probe.EnvelopeProbe;
 import xal.model.probe.ParticleProbe;
 import xal.model.probe.Probe;
+import xal.model.probe.SynchronousProbe;
 import xal.model.probe.TransferMapProbe;
 import xal.model.probe.TwissProbe;
 import xal.model.probe.traj.BunchProbeState;
@@ -287,6 +288,43 @@ public class ProbeFactory {
 		boolean success = initializeLocation( probe, sequence.getEntranceID(), sequence);
 		success &= initializeBeam( probe, sequence );
 		success &= initializeTwiss( probe, locationID, sequence );
+		
+		// initialize the probe so the initial state is set
+		probe.initialize();
+		
+		return success ? probe : null;
+	}
+	
+	/**
+	 * Generate an Synchronous probe initialized with the default entrance parameters for the
+	 * specified sequence.  The location used defaults to the sequence's entrance ID.
+	 *
+	 * @param sequence   the sequence for which to initialize the probe
+	 * @param algorithm  the online model algorithm to use
+	 * @return           the initialized transfer map probe
+	 */
+	public static SynchronousProbe getSynchronousProbe( final AcceleratorSeq sequence, final IAlgorithm algorithm ) {
+		return getSynchronousProbe( sequence.getEntranceID(), sequence, algorithm );
+	}
+	
+	
+	/**
+	 * Generate an Synchronous probe initialized with the entrance parameters for the specified location.
+	 *
+	 * @param locationID the location ID of the entrance parameters to use
+	 * @param sequence   the sequence for which to initialize the probe
+	 * @param algorithm  the online model algorithm to use
+	 * @return           the initialized transfer map probe
+	 */
+	public static SynchronousProbe getSynchronousProbe( final String locationID, final AcceleratorSeq sequence, final IAlgorithm algorithm ) {
+		final SynchronousProbe probe = new SynchronousProbe();
+		
+		if ( !probe.setAlgorithm( algorithm ) ) {
+			return null;
+		}
+		
+		boolean success = initializeLocation( probe, sequence.getEntranceID(), sequence);
+		success &= initializeBeam( probe, sequence );
 		
 		// initialize the probe so the initial state is set
 		probe.initialize();

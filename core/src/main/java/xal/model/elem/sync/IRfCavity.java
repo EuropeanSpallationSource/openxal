@@ -3,6 +3,8 @@
  */
 package xal.model.elem.sync;
 
+import xal.model.IProbe;
+
 /**
  * Common parameters of RF Cavity structures.
  * 
@@ -59,4 +61,24 @@ public interface IRfCavity  {
      *  @param  dblAmp    cavity phase (in <bold>Rad</bold>).
      */
     public void setCavPhase(double dblPhase);
+    
+    /**
+     * Compute the synchronous phase and the energy gain for a cavity gap.
+     */
+    public void computeSynchronousPhaseAndEnergyGain();
+    
+    /**
+     * Return the synchronous phase of a cavity gap, which must be previously
+     * calculated using computeSynchronousPhase.
+     *
+     * @return synchronous phase [rad]
+     */
+    public double getSynchronousPhase();
+    
+    /**
+     * Return the energy gain of a cavity gap previously calculated.
+     *
+     * @return 
+     */
+    public double getEnergyGain();
 }

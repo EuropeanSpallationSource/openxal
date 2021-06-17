@@ -153,6 +153,9 @@ public class IdealRfGap extends ThinElement implements IRfGap {
 	 *  fit of the S-prime vs. beta
 	 */
 	private RealUnivariatePolynomial SPrimeFit;
+        
+        // Synchronous phase in the gap
+        private double synchronousPhase;
 
 	/**
 	 *  Creates a new instance of IdealRfGap
@@ -690,5 +693,46 @@ public class IdealRfGap extends ThinElement implements IRfGap {
 	    SFit = rfgap.getSFit();
 	    structureMode = rfgap.getStructureMode();
 	}
-}
 
+    @Override
+    public void computeSynchronousPhaseAndEnergyGain(IProbe probe) {
+        // Compute energy gain to be able to calculate the synchronous phase of a cavity consisting of several cells.
+        if (probe.getAlgorithm().getRfGapPhaseCalculation()) {
+            compEnergyGain(probe);
+        } else {
+            simpleEnergyGain(probe);
+        }
+        
+        double bi = probe.getBeta();
+        synchronousPhase = 0.;
+        double arrival_time = probe.getTime();
+
+        //the correction for the gap offset needed
+        arrival_time = arrival_time + gapOffset / (bi * IElement.LightSpeed);
+
+        // get phase at the gap center:
+        if (!isFirstGap()) {
+            synchronousPhase = 2. * Math.PI * arrival_time * getFrequency() - firstGapPhaseCorr;
+            double driftTime = probe.getTime() - ((getCellLength() / 2.) / (bi * IElement.LightSpeed) + upstreamExitTime);
+            int nLabmda = (int) Math.round(2 * structureMode * driftTime * getFrequency());
+            structurePhase = structurePhase + Math.PI * nLabmda;
+            synchronousPhase = synchronousPhase + structurePhase;
+            setPhase(synchronousPhase);
+        } // for first gap use input for phase at the gap center
+        else {
+            structurePhase = 0.;
+            firstGapPhaseCorr = 2. * Math.PI * arrival_time * getFrequency() - getPhase();
+            synchronousPhase = getPhase();
+        }
+    }
+    
+    @Override
+    public double getSynchronousPhase() {
+        return synchronousPhase;
+    }
+    
+    @Override
+    public double getEnergyGain() {
+        return theEnergyGain;
+    }
+}

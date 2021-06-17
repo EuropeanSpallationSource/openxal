@@ -74,6 +74,7 @@ public class ThinRfFieldMap extends ThinElement implements IRfGap, IRfCavityCell
      * flag indicating that this is the leading gap of a cavity
      */
     private boolean initialGap = false;
+    private double synchronousPhase;
 
     public ThinRfFieldMap() {
         this(null);
@@ -145,16 +146,15 @@ public class ThinRfFieldMap extends ThinElement implements IRfGap, IRfCavityCell
         }
 
         double dz = getCellLength();
+        // First and last slices of the element get half a kick
+        if ((Math.abs(position - startPosition) < 1e-6) || (Math.abs(position - startPosition - rfFieldmap.getLength()) < 1e-6)) {
+            dz /= 2.;
+        }
 
         FieldMapPoint fieldMapPoint = rfFieldmap.getFieldAt(position - startPosition);
 
         fieldMapPoint.setAmplitudeFactorE(getE0() * Math.cos(phiS));
         fieldMapPoint.setAmplitudeFactorB(2.0 * Math.PI * getFrequency() / (LightSpeed * LightSpeed) * getE0() * Math.sin(phiS));
-
-        // First and last slices of the element get half a kick
-        if ((Math.abs(position - startPosition) < 1e-6) || (Math.abs(position - startPosition - rfFieldmap.getLength()) < 1e-6)) {
-            dz /= 2.;
-        }
 
         // Set energy gain and phase
         energyGain = fieldMapPoint.getEz() * dz;
@@ -274,5 +274,39 @@ public class ThinRfFieldMap extends ThinElement implements IRfGap, IRfCavityCell
     @Override
     public boolean isFirstCell() {
         return initialGap;
+    }
+
+    @Override
+    public void computeSynchronousPhaseAndEnergyGain(IProbe probe) {
+        double initialPhase;
+        if (isFirstGap() || !probe.getAlgorithm().getRfGapPhaseCalculation()) {
+            initialPhase = getPhase();
+        } else {
+            initialPhase = probe.getLongitinalPhase();
+        }
+
+        double dz = getCellLength();
+        // First and last slices of the element get half a kick
+        if ((Math.abs(position - startPosition) < 1e-6) || (Math.abs(position - startPosition - rfFieldmap.getLength()) < 1e-6)) {
+            dz /= 2.;
+        }
+
+        FieldMapPoint fieldMapPoint = rfFieldmap.getFieldAt(position - startPosition);
+        fieldMapPoint.setAmplitudeFactorE(getE0());
+
+        double sinIntegral = fieldMapPoint.getEz() * dz * Math.sin(initialPhase);
+        energyGain = fieldMapPoint.getEz() * dz * Math.cos(initialPhase);
+
+        synchronousPhase = Math.atan2(sinIntegral, energyGain);
+    }
+
+    @Override
+    public double getSynchronousPhase() {
+        return synchronousPhase;
+    }
+
+    @Override
+    public double getEnergyGain() {
+        return energyGain;
     }
 }

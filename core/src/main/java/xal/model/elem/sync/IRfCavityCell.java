@@ -158,6 +158,4 @@ public interface IRfCavityCell {
      * @since  Jan 23, 2015   by Christopher K. Allen
      */
     public boolean isFirstCell();
-
-
 }

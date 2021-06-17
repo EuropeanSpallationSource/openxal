@@ -100,13 +100,6 @@ public abstract class ProbeState<S extends ProbeState<S>> implements IProbeState
     /** Probe velocity with respect to the speed of light */
     private double m_dblBeta = 0.0;
     
-//  CKA This does not belong here
-//      We have not way of knowing whether or not the  
-//      derived probe class actually has Twiss parameters.
-//    
-//    protected boolean bolSaveTwiss = false;
-//    
-    
     /*
      * Abstract Methods
      */
@@ -145,6 +138,7 @@ public abstract class ProbeState<S extends ProbeState<S>> implements IProbeState
     public ProbeState(final S state) {
         
         this.m_strElemId = state.getElementId();
+        this.strElemTypeId = state.getElementTypeId();
         this.strSmfId = state.getHardwareNodeId();
 
         this.m_dblParQ = state.getSpeciesCharge();
@@ -168,6 +162,7 @@ public abstract class ProbeState<S extends ProbeState<S>> implements IProbeState
      */
     public ProbeState(final Probe<S> probe) {
         this.setElementId( probe.getCurrentElement() );
+        this.setElementTypeId( probe.getCurrentElementTypeId() );
         this.setHardwareNodeId( probe.getCurrentHardwareId() );
 
         this.setSpeciesCharge( probe.getSpeciesCharge() );
