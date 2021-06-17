@@ -40,8 +40,8 @@ build.maven:
         paths:
             - "$SUBDIR/target/surefire-reports/TEST-*.xml"
             - "$SUBDIR/*/target/surefire-reports/TEST-*.xml"
-            - "$SUBDIR/target/site/jacoco-aggregate/jacoco.xml"
-            - "$SUBDIR/*/target/site/jacoco-aggregate/jacoco.xml"
+            - "$SUBDIR/target/jacoco.exec"
+            - "$SUBDIR/*/target/jacoco.exec"
         reports:
             junit:
                 - "$SUBDIR/target/surefire-reports/TEST-*.xml"
