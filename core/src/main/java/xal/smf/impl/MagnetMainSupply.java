@@ -24,7 +24,7 @@ public class MagnetMainSupply extends MagnetPowerSupply {
     public static final String FIELD_SET_HANDLE = "fieldSet"; 
     @ChannelHandle
     public static final String FIELD_RB_HANDLE = "psFieldRB";
-	public static final String FIELD_BOOK_HANDLE = "B_Book";		// MPS - field setpoint about which warnings and alarms are specified
+    public static final String FIELD_BOOK_HANDLE = "B_Book";		// MPS - field setpoint about which warnings and alarms are specified
     
     
     /** Creates a new instance of MainSupply */

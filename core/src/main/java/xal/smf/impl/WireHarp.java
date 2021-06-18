@@ -1048,7 +1048,7 @@ public class WireHarp extends ProfileDevice {
             sigVer = @ASignal(hndPosRb = "DatVerRawPositions", hndValRb = "DatVerRawSignal" ),
             sigDia = @ASignal(hndPosRb = "DatDiaRawPositions", hndValRb = "DatDiaRawSignal" ) 
             )
-    static public class DataRaw extends SignalSet {
+    public static class DataRaw extends SignalSet {
 
 
         /*

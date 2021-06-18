@@ -56,7 +56,7 @@ public class GenericNode extends AcceleratorNode {
 
 	/** Instantiate a new GenericNode */
 	@Deprecated
-	static public GenericNode newNode( final String strType, final String strId ) {
+	public static GenericNode newNode( final String strType, final String strId ) {
 		return new GenericNode( strType, strId, null );
 	}
 

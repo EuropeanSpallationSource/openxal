@@ -44,21 +44,21 @@ public class RfCavity extends AcceleratorSeq {
      * Constant PV signal names
      */
     @ChannelHandle(readback=RfCavity.CAV_AMP_AVG_HANDLE)
-    static public final String CAV_AMP_SET_HANDLE = "cavAmpSet";
+    public static final String CAV_AMP_SET_HANDLE = "cavAmpSet";
     @ChannelHandle(readback=RfCavity.CAV_PHASE_AVG_HANDLE)
-    static public final String CAV_PHASE_SET_HANDLE = "cavPhaseSet";
+    public static final String CAV_PHASE_SET_HANDLE = "cavPhaseSet";
     @ChannelHandle
-    static public final String CAV_AMP_AVG_HANDLE = "cavAmpAvg";
+    public static final String CAV_AMP_AVG_HANDLE = "cavAmpAvg";
     @ChannelHandle
-    static public final String CAV_PHASE_AVG_HANDLE = "cavPhaseAvg";
+    public static final String CAV_PHASE_AVG_HANDLE = "cavPhaseAvg";
     @ChannelHandle
-    static public final String DELTA_TRF_START_HANDLE = "deltaTRFStart";
+    public static final String DELTA_TRF_START_HANDLE = "deltaTRFStart";
     @ChannelHandle
-    static public final String DELTA_TRF_END_HANDLE = "deltaTRFEnd";
+    public static final String DELTA_TRF_END_HANDLE = "deltaTRFEnd";
     @ChannelHandle
-    static public final String T_DELAY_HANDLE = "tDelay";
+    public static final String T_DELAY_HANDLE = "tDelay";
     @ChannelHandle
-	static public final String BLANK_BEAM_HANDLE = "blankBeam";
+    public static final String BLANK_BEAM_HANDLE = "blankBeam";
 
     /** accelerator node type */
     public static final String      s_strType = "RF";

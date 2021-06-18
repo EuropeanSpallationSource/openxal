@@ -14,13 +14,13 @@ import xal.smf.NoSuchChannelException;
 public class Klystron implements DataListener {
 
         @ChannelHandle(readback=Klystron.KLYS_AMP_RB_HANDLE)
-	static public final String KLYS_AMP_SET_HANDLE = "klysAmpSet";
+	public static final String KLYS_AMP_SET_HANDLE = "klysAmpSet";
         @ChannelHandle(readback=Klystron.KLYS_PHASE_SET_HANDLE)
-	static public final String KLYS_PHASE_SET_HANDLE = "klysPhaseSet";
+	public static final String KLYS_PHASE_SET_HANDLE = "klysPhaseSet";
         @ChannelHandle
-	static public final String KLYS_AMP_RB_HANDLE = "klysAmp";
+	public static final String KLYS_AMP_RB_HANDLE = "klysAmp";
         @ChannelHandle
-	static public final String KLYS_PHASE_RB_HANDLE = "klysPhase";
+	public static final String KLYS_PHASE_RB_HANDLE = "klysPhase";
 	
 	protected Accelerator accelerator;
     protected ChannelSuite channelSuite;
