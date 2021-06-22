@@ -325,41 +325,53 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
     }
 
     /**
-     *
-     * @return a list with expected channel handles by default.
+     * @return properties that can be accessed via EPICS.
      */
-    public Collection<String> getDefaultHandles() {
-        List<String> defaultHandles = new ArrayList<>();
+    public List<AccessibleProperty> getAccessibleProperties() {
+        return getAccessibleProperties(null, this.getClass());
+    }
 
-        for (Field field : getAllFields()) {
-            if (field.isAnnotationPresent(ChannelHandle.class)) {
+    protected List<AccessibleProperty> getAccessibleProperties(List<AccessibleProperty> properties, Class<?> cls) {
+        if (properties == null) {
+            properties = new ArrayList<>();
+        }
+
+        List<Field> fieldList = Arrays.asList(cls.getDeclaredFields());
+        for (Field field : fieldList) {
+            if (field.getType().equals(AccessibleProperty.class)){
                 try {
-                    defaultHandles.add((String) field.get(this));
+                    properties.add((AccessibleProperty) field.get(this));
                 } catch (IllegalArgumentException | IllegalAccessException ex) {
                     Logger.getLogger(AcceleratorNode.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }
 
-        return defaultHandles;
-    }
+        if (cls.getSuperclass() != null) {
+            getAccessibleProperties(properties, cls.getSuperclass());
+        }
 
-    private List<Field> getAllFields() {
-        return getAllFields(null, this.getClass());
+        return properties;
     }
     
-    private static List<Field> getAllFields(List<Field> fields, Class<?> cls) {
-        if (fields == null) {
-            fields = new ArrayList<>();
+    /**
+     *
+     * @return a list with expected channel handles by default.
+     */
+    public Collection<String> getDefaultHandles() {
+        List<String> defaultHandles = new ArrayList<>();
+        List<AccessibleProperty> properties = getAccessibleProperties();
+        for (AccessibleProperty property : properties) {
+            if (!defaultHandles.contains(property.getSetHandle())) {
+                defaultHandles.add(property.getSetHandle());
+            }
+            for (String readbackHandle : property.getReadbackHandles()) {
+                if (!defaultHandles.contains(readbackHandle)) {
+                    defaultHandles.add(readbackHandle);
+                }
+            }
         }
-
-        fields.addAll(Arrays.asList(cls.getDeclaredFields()));
-
-        if (cls.getSuperclass() != null) {
-            getAllFields(fields, cls.getSuperclass());
-        }
-
-        return fields;
+        return defaultHandles;
     }
 
     /**
@@ -367,16 +379,16 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
      * them. This method is useful when setting a value and checking that the
      * value was set.
      *
-     * @param setHandle The set handle for the channel to get.
+     * @param readbackHandle The readback handle for the channel to get.
      * @return A map containing the set and readback channels associated with
      * this node and the specified set handle or null if there is no match.
      * @throws xal.smf.NoSuchChannelException if no such channel as specified by
      * the handle is associated with this node.
      * @throws xal.ca.ConnectionException if the channel cannot be connected
      */
-    public Map<ChannelType, Channel> getAndConnectChannelSetAndReadback(String setHandle) throws NoSuchChannelException, ConnectionException {
-        Channel setChannel = getChannel(setHandle);
-        Channel redBackChannel = getChannel(getReadbackHandle(setHandle));
+    public Map<ChannelType, Channel> getAndConnectChannelSetAndReadback(String readbackHandle) throws NoSuchChannelException, ConnectionException {
+        Channel setChannel = getChannel(getSetHandle(readbackHandle));
+        Channel redBackChannel = getChannel(readbackHandle);
         setChannel.connectAndWait();
         redBackChannel.connectAndWait();
 
@@ -388,69 +400,19 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
     }
 
     /**
-     * Get a map with all set and readback handle pairs.
-     *
-     * @return The map with all set/readback handle pairs. The key is the set
-     * handle and the value is the readback.
-     */
-    public Map<String, String> getReadbackHandleMap() {
-        Map<String, String> readbackHandles = new HashMap<>();
-
-        for (Field field : getAllFields(null, this.getClass())) {
-            if (field.isAnnotationPresent(ChannelHandle.class)) {
-                try {
-                    String setHandle = (String) field.get(this);
-                    String readbackHandle = field.getAnnotation(ChannelHandle.class).readback();
-                    if (readbackHandle.equals("")) {
-                        readbackHandle = setHandle;
-                    }
-                    if (!readbackHandles.containsKey(setHandle) || !readbackHandle.equals("")) {
-                        // Remove the readbackHandle if the setHandle is been processed.
-                        if (readbackHandles.containsKey(readbackHandle)) {
-                            readbackHandles.remove(readbackHandle);
-                        }
-                        // Do not add a readbackHandle if the setHandle has already been processed.
-                        if (!readbackHandles.containsValue(readbackHandle)) {
-                            readbackHandles.put(setHandle, readbackHandle);
-                        }
-                    }
-                } catch (IllegalArgumentException | IllegalAccessException ex) {
-                    Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        }
-
-        return readbackHandles;
-    }
-
-    /**
      * Get the readback handle corresponding to a set channel.
      *
      * @param setHandle The set handle.
      * @return The corresponding readback handle.
      */
-    public String getReadbackHandle(String setHandle) {
-        for (Field field : getAllFields(null, this.getClass())) {
-            if (field.isAnnotationPresent(ChannelHandle.class)) {
-                try {
-                    if (((String) field.get(this)).equals(setHandle)) {
-                        String readback = field.getAnnotation(ChannelHandle.class).readback();
-                        if (readback.equals("")) {
-                            return setHandle;
-                        } else {
-                            return readback;
-                        }
-                    }
-                } catch (IllegalArgumentException ex) {
-                    Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
-                } catch (IllegalAccessException ex) {
-                    Logger.getLogger(AcceleratorNode.class.getName()).log(Level.SEVERE, null, ex);
-                }
+    public String[] getReadbackHandles(String setHandle) {
+        for (AccessibleProperty prop : getAccessibleProperties()) {
+            if (prop.getSetHandle().equals(setHandle)) {
+                return prop.getReadbackHandles();
             }
         }
         return null;
     }
-
 
     /**
      * Get the set handle corresponding to a readback channel.
@@ -459,22 +421,14 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
      * @return The corresponding set handle.
      */
     public String getSetHandle(String readbackHandle) {
-        String setHandle = null;
-        for (Field field : getAllFields(null, this.getClass())) {
-            if (field.isAnnotationPresent(ChannelHandle.class)) {
-                try {
-                    String readback = field.getAnnotation(ChannelHandle.class).readback();
-                    if (readback.equals(readbackHandle)) {
-                        return (String) field.get(this);
-                    } else if (((String) field.get(this)).equals(readbackHandle)) {
-                        setHandle = readbackHandle;
-                    }
-                } catch (IllegalArgumentException | IllegalAccessException ex) {
-                    Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
+        for (AccessibleProperty prop : getAccessibleProperties()) {
+            for (String readback : prop.getReadbackHandles()) {
+                if (readback.equals(readbackHandle)) {
+                    return prop.getSetHandle();
                 }
             }
         }
-        return setHandle;
+        return null;
     }
 
     /**
@@ -575,28 +529,60 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
     /**
      * @return properties that can be accessed via EPICS.
      */
-    public List<String> getAccesibleProperties() {
-        return new ArrayList<>();
+    public List<String> getProperties() {
+        List<AccessibleProperty> accessibleProperties = getAccessibleProperties();
+        List<String> properties = new ArrayList<>();
+        for (AccessibleProperty prop : accessibleProperties) {
+            if (prop.hasGetters()) {
+                properties.add(prop.getName());
+            }
+        }
+        return properties;
     }
-	/** Get the design value for the specified property */
-	public double getDesignPropertyValue( final String propertyName ) {
-		throw new IllegalArgumentException( "Unsupported AcceleratorNode design value property: " + propertyName );
-	}
 
+    /**
+     * Get the design value for the specified property
+     */
+    public double getDesignPropertyValue(final String propertyName) {
+        List<AccessibleProperty> properties = getAccessibleProperties();
+        for (AccessibleProperty prop : properties) {
+            if (prop.getName().equals(propertyName) && prop.hasGetters()) {
+                return prop.getDesign();
+            }
+        }
+        throw new IllegalArgumentException("Unsupported AcceleratorNode design value property: " + propertyName);
+    }
 
-	/** Get the live property value for the corresponding array of channel values in the order given by getLivePropertyChannels() */
-	public double getLivePropertyValue( final String propertyName, final double[] channelValues ) {
-		throw new IllegalArgumentException( "Unsupported AcceleratorNode live value property: " + propertyName );
-	}
+    /**
+     * Get the live property value for the corresponding array of channel values
+     * in the order given by getLivePropertyChannels()
+     */
+    public double getLivePropertyValue(final String propertyName, final double[] channelValues) {
+        List<AccessibleProperty> properties = getAccessibleProperties();
+        for (AccessibleProperty prop : properties) {
+            if (prop.getName().equals(propertyName) && prop.hasGetters()) {
+                return prop.getLive(channelValues);
+            }
+        }
+        throw new IllegalArgumentException("Unsupported AcceleratorNode live value property: " + propertyName);
+    }
 
-
-	/** Get the array of channels for the specified property */
-	public Channel[] getLivePropertyChannels( final String propertyName ) {
-		throw new IllegalArgumentException( "Unsupported AcceleratorNode live channels property: " + propertyName );
-	}
-
-
-
+    /**
+     * Get the array of channels for the specified property
+     */
+    public Channel[] getLivePropertyChannels(final String propertyName) {
+        List<Channel> channels = new ArrayList<>();
+        List<AccessibleProperty> properties = getAccessibleProperties();
+        for (AccessibleProperty prop : properties) {
+            if (prop.getName().equals(propertyName) && prop.hasGetters()) {
+                for(String readback : prop.getReadbackHandles())
+                    channels.add(findChannel(readback));
+                return channels.toArray(new Channel[0]);
+            }
+        }
+        throw new IllegalArgumentException("Unsupported AcceleratorNode live channels property: " + propertyName);
+    }
+    
     /*
      *  User Interface
      */

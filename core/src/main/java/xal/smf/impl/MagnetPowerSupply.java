@@ -31,13 +31,12 @@ public abstract class MagnetPowerSupply implements DataListener {
     public static final int CYCLE_VALID = 2;
     
     // channel handles
-    @ChannelHandle
     public static final String CYCLE_STATE_HANDLE = "cycleState";
-    @ChannelHandle(readback=MagnetPowerSupply.CURRENT_RB_HANDLE)
     public static final String CURRENT_SET_HANDLE = "I_Set"; 
-    @ChannelHandle
     public static final String CURRENT_RB_HANDLE = "I"; 
-        
+    
+    public final AccessibleProperty current = new AccessibleProperty("current", CURRENT_RB_HANDLE, CURRENT_SET_HANDLE);
+    public final AccessibleProperty cycleState = new AccessibleProperty("cycleState", CYCLE_STATE_HANDLE);
     
     /** Creates a new instance of PowerSupply using the same channel factory as the provided accelerator */
     public MagnetPowerSupply( final Accelerator anAccelerator ) {
@@ -241,88 +240,32 @@ public abstract class MagnetPowerSupply implements DataListener {
         return nodes;
     }
     
-    
-    /**
-     * Check if the electromagnet is supplied by this power supply.
-     * @param node The electromagnet to check
-     * @return true if the node is supplied by this supply and false otherwise
-     */
-    abstract public boolean suppliesNode(AcceleratorNode node);
-    
-    
     /**
      *
      * @return a list with expected channel handles by default.
      */
     public Collection<String> getDefaultHandles() {
         List<String> defaultHandles = new ArrayList<>();
-
-        for (Field field : getAllFields()) {
-            if (field.isAnnotationPresent(ChannelHandle.class)) {
-                try {
-                    defaultHandles.add((String) field.get(this));
-                } catch (IllegalArgumentException | IllegalAccessException ex) {
-                    Logger.getLogger(AcceleratorNode.class.getName()).log(Level.SEVERE, null, ex);
+        List<AccessibleProperty> properties = getAccessibleProperties();
+        for (AccessibleProperty property : properties) {
+            if (!defaultHandles.contains(property.getSetHandle())) {
+                defaultHandles.add(property.getSetHandle());
+            }
+            for (String readbackHandle : property.getReadbackHandles()) {
+                if (!defaultHandles.contains(readbackHandle)) {
+                    defaultHandles.add(readbackHandle);
                 }
             }
         }
-
         return defaultHandles;
     }
 
-    private List<Field> getAllFields() {
-        return getAllFields(null, this.getClass());
-    }
-    
-    private static List<Field> getAllFields(List<Field> fields, Class<?> cls) {
-        if (fields == null) {
-            fields = new ArrayList<>();
-        }
-
-        fields.addAll(Arrays.asList(cls.getDeclaredFields()));
-
-        if (cls.getSuperclass() != null) {
-            getAllFields(fields, cls.getSuperclass());
-        }
-
-        return fields;
-    }
-
     /**
-     * Get a map with all set and readback handle pairs.
-     *
-     * @return The map with all set/readback handle pairs. The key is the set
-     * handle and the value is the readback.
+     * Check if the electromagnet is supplied by this power supply.
+     * @param node The electromagnet to check
+     * @return true if the node is supplied by this supply and false otherwise
      */
-    public Map<String, String> getReadbackHandleMap() {
-        Map<String, String> readbackHandles = new HashMap<>();
-
-        for (Field field : getAllFields(null, this.getClass())) {
-            if (field.isAnnotationPresent(ChannelHandle.class)) {
-                try {
-                    String setHandle = (String) field.get(this);
-                    String readbackHandle = field.getAnnotation(ChannelHandle.class).readback();
-                    if (readbackHandle.equals("")) {
-                        readbackHandle = setHandle;
-                    }
-                    if (!readbackHandles.containsKey(setHandle) || !readbackHandle.equals("")) {
-                        // Remove the readbackHandle if the setHandle is been processed.
-                        if (readbackHandles.containsKey(readbackHandle)) {
-                            readbackHandles.remove(readbackHandle);
-                        }
-                        // Do not add a readbackHandle if the setHandle has already been processed.
-                        if (!readbackHandles.containsValue(readbackHandle)) {
-                            readbackHandles.put(setHandle, readbackHandle);
-                        }
-                    }
-                } catch (IllegalArgumentException | IllegalAccessException ex) {
-                    Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        }
-
-        return readbackHandles;
-    }
+    abstract public boolean suppliesNode(AcceleratorNode node);
 
     /**
      * Get the readback handle corresponding to a set channel.
@@ -330,23 +273,10 @@ public abstract class MagnetPowerSupply implements DataListener {
      * @param setHandle The set handle.
      * @return The corresponding readback handle.
      */
-    public String getReadbackHandle(String setHandle) {
-        for (Field field : getAllFields(null, this.getClass())) {
-            if (field.isAnnotationPresent(ChannelHandle.class)) {
-                try {
-                    if (((String) field.get(this)).equals(setHandle)) {
-                        String readback = field.getAnnotation(ChannelHandle.class).readback();
-                        if (readback.equals("")) {
-                            return setHandle;
-                        } else {
-                            return readback;
-                        }
-                    }
-                } catch (IllegalArgumentException ex) {
-                    Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
-                } catch (IllegalAccessException ex) {
-                    Logger.getLogger(AcceleratorNode.class.getName()).log(Level.SEVERE, null, ex);
-                }
+    public String[] getReadbackHandles(String setHandle) {
+        for (AccessibleProperty prop : getAccessibleProperties()) {
+            if (prop.getSetHandle().equals(setHandle)) {
+                return prop.getReadbackHandles();
             }
         }
         return null;
@@ -359,21 +289,58 @@ public abstract class MagnetPowerSupply implements DataListener {
      * @return The corresponding set handle.
      */
     public String getSetHandle(String readbackHandle) {
-        String setHandle = null;
-        for (Field field : getAllFields(null, this.getClass())) {
-            if (field.isAnnotationPresent(ChannelHandle.class)) {
-                try {
-                    String readback = field.getAnnotation(ChannelHandle.class).readback();
-                    if (readback.equals(readbackHandle)) {
-                        return (String) field.get(this);
-                    } else if (((String) field.get(this)).equals(readbackHandle)) {
-                        setHandle = readbackHandle;
-                    }
-                } catch (IllegalArgumentException | IllegalAccessException ex) {
-                    Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
+        for (AccessibleProperty prop : getAccessibleProperties()) {
+            for (String readback : prop.getReadbackHandles()) {
+                if (readback.equals(readbackHandle)) {
+                    return prop.getSetHandle();
                 }
             }
         }
-        return setHandle;
+        return null;
+    }
+
+    
+    /**
+     * @return properties that can be accessed via EPICS.
+     */
+    public List<String> getProperties() {
+        List<AccessibleProperty> accessibleProperties = getAccessibleProperties();
+        List<String> properties = new ArrayList<>();
+        for (AccessibleProperty prop : accessibleProperties) {
+            if (prop.hasGetters()) {
+                properties.add(prop.getName());
+            }
+        }
+        return properties;
+    }
+    
+    /**
+     * @return properties that can be accessed via EPICS.
+     */
+    public List<AccessibleProperty> getAccessibleProperties() {
+        return getAccessibleProperties(null, this.getClass());
+    }
+
+    protected List<AccessibleProperty> getAccessibleProperties(List<AccessibleProperty> properties, Class<?> cls) {
+        if (properties == null) {
+            properties = new ArrayList<>();
+        }
+
+        List<Field> fieldList = Arrays.asList(cls.getDeclaredFields());
+        for (Field field : fieldList) {
+            if (field.getType().equals(AccessibleProperty.class)){
+                try {
+                    properties.add((AccessibleProperty) field.get(this));
+                } catch (IllegalArgumentException | IllegalAccessException ex) {
+                    Logger.getLogger(AcceleratorNode.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+
+        if (cls.getSuperclass() != null) {
+            getAccessibleProperties(properties, cls.getSuperclass());
+        }
+
+        return properties;
     }
 }
