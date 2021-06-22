@@ -2,7 +2,7 @@ package xal.smf.impl;
 
 import xal.smf.impl.qualify.*;
 import xal.ca.*;
-import xal.smf.ChannelHandle;
+import xal.smf.AccessibleProperty;
 
 /**
  * This class is for SNS Ring BPMs. The Ring BPMs can set up to 4 different
@@ -19,169 +19,97 @@ public class RingBPM extends BPM {
 	/**
 	 * BPM stage 1 length channel handle
 	 */
-        @ChannelHandle(readback=RingBPM.STAGE1_LEN_RB_HANDLE)
 	public static final String STAGE1_LEN_HANDLE = "Stage1Len";
-
-	/**
-	 * BPM stage 1 gain channel handle
-	 */
-        @ChannelHandle(readback=RingBPM.STAGE1_GAIN_RB_HANDLE)
-	public static final String STAGE1_GAIN_HANDLE = "Stage1Gain";
-
-	/**
-	 * BPM stage 1 method channel handle
-	 */
-        @ChannelHandle(readback=RingBPM.STAGE1_METHOD_RB_HANDLE)
-	public static final String STAGE1_METHOD_HANDLE = "Stage1Method";
-
-	/**
-	 * BPM stage 2 length channel handle
-	 */
-        @ChannelHandle(readback=RingBPM.STAGE2_LEN_RB_HANDLE)
-	public static final String STAGE2_LEN_HANDLE = "Stage2Len";
-
-	/**
-	 * BPM stage 2 gain channel handle
-	 */
-        @ChannelHandle(readback=RingBPM.STAGE2_GAIN_RB_HANDLE)
-	public static final String STAGE2_GAIN_HANDLE = "Stage2Gain";
-
-	/**
-	 * BPM stage 1 method channel handle
-	 */
-        @ChannelHandle(readback=RingBPM.STAGE2_METHOD_RB_HANDLE)
-	public static final String STAGE2_METHOD_HANDLE = "Stage2Method";
-
-	/**
-	 * BPM stage 3 length channel handle
-	 */
-        @ChannelHandle(readback=RingBPM.STAGE3_LEN_RB_HANDLE)
-	public static final String STAGE3_LEN_HANDLE = "Stage3Len";
-
-	/**
-	 * BPM stage 3 gain channel handle
-	 */
-        @ChannelHandle(readback=RingBPM.STAGE3_GAIN_RB_HANDLE)
-	public static final String STAGE3_GAIN_HANDLE = "Stage3Gain";
-
-	/**
-	 * BPM stage 1 method channel handle
-	 */
-        @ChannelHandle(readback=RingBPM.STAGE3_METHOD_RB_HANDLE)
-	public static final String STAGE3_METHOD_HANDLE = "Stage3Method";
-
-	/**
-	 * BPM stage 4 length channel handle
-	 */
-        @ChannelHandle(readback=RingBPM.STAGE4_LEN_RB_HANDLE)
-	public static final String STAGE4_LEN_HANDLE = "Stage4Len";
-
-	/**
-	 * BPM stage 4 gain channel handle
-	 */
-        @ChannelHandle(readback=RingBPM.STAGE4_GAIN_RB_HANDLE)
-	public static final String STAGE4_GAIN_HANDLE = "Stage4Gain";
-
-	/**
-	 * BPM stage 1 method channel handle
-	 */
-        @ChannelHandle(readback=RingBPM.STAGE4_METHOD_RB_HANDLE)
-	public static final String STAGE4_METHOD_HANDLE = "Stage4Method";
-
-	/**
-	 * BPM stage 1 length channel handle
-	 */
-        @ChannelHandle
 	public static final String STAGE1_LEN_RB_HANDLE = "Stage1LenRB";
-
-	private Channel stage1LenRBC = null;
+        public final AccessibleProperty stage1Len = new AccessibleProperty("Stage1Len", STAGE1_LEN_RB_HANDLE, STAGE1_LEN_HANDLE);
 
 	/**
 	 * BPM stage 1 gain channel handle
 	 */
-        @ChannelHandle
+	public static final String STAGE1_GAIN_HANDLE = "Stage1Gain";
 	public static final String STAGE1_GAIN_RB_HANDLE = "Stage1GainRB";
-
-	private Channel stage1GainRBC = null;
+        public final AccessibleProperty stage1Gain = new AccessibleProperty("Stage1Gain", STAGE1_GAIN_RB_HANDLE, STAGE1_GAIN_HANDLE);
 
 	/**
 	 * BPM stage 1 method channel handle
 	 */
-        @ChannelHandle
+	public static final String STAGE1_METHOD_HANDLE = "Stage1Method";
 	public static final String STAGE1_METHOD_RB_HANDLE = "Stage1MethodRB";
-
-	private Channel stage1MethodRBC = null;
+        public final AccessibleProperty stage1Method = new AccessibleProperty("Stage1Method", STAGE1_METHOD_RB_HANDLE, STAGE1_METHOD_HANDLE);
 
 	/**
 	 * BPM stage 2 length channel handle
 	 */
-        @ChannelHandle
+	public static final String STAGE2_LEN_HANDLE = "Stage2Len";
 	public static final String STAGE2_LEN_RB_HANDLE = "Stage2LenRB";
-
-	private Channel stage2LenRBC = null;
+        public final AccessibleProperty stage2Len = new AccessibleProperty("Stage2Len", STAGE2_LEN_RB_HANDLE, STAGE2_LEN_HANDLE);
 
 	/**
 	 * BPM stage 2 gain channel handle
 	 */
-        @ChannelHandle
+	public static final String STAGE2_GAIN_HANDLE = "Stage2Gain";
 	public static final String STAGE2_GAIN_RB_HANDLE = "Stage2GainRB";
-
-	private Channel stage2GainRBC = null;
+        public final AccessibleProperty stage2Gain = new AccessibleProperty("Stage2Gain", STAGE2_GAIN_RB_HANDLE, STAGE2_GAIN_HANDLE);
 
 	/**
-	 * BPM stage 1 method channel handle
+	 * BPM stage 2 method channel handle
 	 */
-        @ChannelHandle
+	public static final String STAGE2_METHOD_HANDLE = "Stage2Method";
 	public static final String STAGE2_METHOD_RB_HANDLE = "Stage2MethodRB";
-
-	private Channel stage2MethodRBC = null;
+        public final AccessibleProperty stage2Method = new AccessibleProperty("Stage2Method", STAGE2_METHOD_RB_HANDLE, STAGE2_METHOD_HANDLE);
 
 	/**
 	 * BPM stage 3 length channel handle
 	 */
-        @ChannelHandle
+	public static final String STAGE3_LEN_HANDLE = "Stage3Len";
 	public static final String STAGE3_LEN_RB_HANDLE = "Stage3LenRB";
+        public final AccessibleProperty stage3Len = new AccessibleProperty("Stage3Len", STAGE3_LEN_RB_HANDLE, STAGE3_LEN_HANDLE);
 
-	private Channel stage3LenRBC = null;
-
-	/**
-	 * BPM stage 3 gain channel handle
-	 */
-        @ChannelHandle
+	// BPM stage 3 gain channel handle
+	public static final String STAGE3_GAIN_HANDLE = "Stage3Gain";
 	public static final String STAGE3_GAIN_RB_HANDLE = "Stage3GainRB";
+        public final AccessibleProperty stage3Gain = new AccessibleProperty("Stage3Gain", STAGE3_GAIN_RB_HANDLE, STAGE3_GAIN_HANDLE);
 
-	private Channel stage3GainRBC = null;
-
-	/**
-	 * BPM stage 1 method channel handle
-	 */
-        @ChannelHandle
+	// BPM stage 3 method channel handle
+	public static final String STAGE3_METHOD_HANDLE = "Stage3Method";
 	public static final String STAGE3_METHOD_RB_HANDLE = "Stage3MethodRB";
-
-	private Channel stage3MethodRBC = null;
+        public final AccessibleProperty stage3Method = new AccessibleProperty("Stage3Method", STAGE3_METHOD_RB_HANDLE, STAGE3_METHOD_HANDLE);
 
 	/**
 	 * BPM stage 4 length channel handle
 	 */
-        @ChannelHandle
+	public static final String STAGE4_LEN_HANDLE = "Stage4Len";
 	public static final String STAGE4_LEN_RB_HANDLE = "Stage4LenRB";
-
-	private Channel stage4LenRBC = null;
+        public final AccessibleProperty stage4Len = new AccessibleProperty("Stage4Len", STAGE4_LEN_RB_HANDLE, STAGE4_LEN_HANDLE);
 
 	/**
 	 * BPM stage 4 gain channel handle
 	 */
-        @ChannelHandle
+	public static final String STAGE4_GAIN_HANDLE = "Stage4Gain";
 	public static final String STAGE4_GAIN_RB_HANDLE = "Stage4GainRB";
-
-	private Channel stage4GainRBC = null;
+        public final AccessibleProperty stage4Gain = new AccessibleProperty("Stage4Gain", STAGE4_GAIN_RB_HANDLE, STAGE4_GAIN_HANDLE);
 
 	/**
 	 * BPM stage 4 method channel handle
 	 */
-        @ChannelHandle
+	public static final String STAGE4_METHOD_HANDLE = "Stage4Method";
 	public static final String STAGE4_METHOD_RB_HANDLE = "Stage4MethodRB";
+        public final AccessibleProperty stage4Method = new AccessibleProperty("Stage4Method", STAGE4_METHOD_RB_HANDLE, STAGE4_METHOD_HANDLE);
 
+	private Channel stage1LenRBC = null;
+	private Channel stage1GainRBC = null;
+	private Channel stage1MethodRBC = null;
+
+	private Channel stage2LenRBC = null;
+	private Channel stage2GainRBC = null;
+	private Channel stage2MethodRBC = null;
+
+	private Channel stage3LenRBC = null;
+	private Channel stage3GainRBC = null;
+	private Channel stage3MethodRBC = null;
+
+	private Channel stage4LenRBC = null;
+	private Channel stage4GainRBC = null;
 	private Channel stage4MethodRBC = null;
 
 

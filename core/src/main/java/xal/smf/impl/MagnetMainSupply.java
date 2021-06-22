@@ -7,7 +7,6 @@
 package xal.smf.impl;
 
 import xal.smf.*;
-import xal.tools.data.*;
 import xal.ca.*;
 
 
@@ -18,14 +17,15 @@ import xal.ca.*;
  */
 public class MagnetMainSupply extends MagnetPowerSupply {
     // channel handles
-    @ChannelHandle
     public static final String CYCLE_ENABLE_HANDLE = "cycleEnable";
-    @ChannelHandle(readback=Electromagnet.FIELD_RB_HANDLE)
     public static final String FIELD_SET_HANDLE = "fieldSet"; 
-    @ChannelHandle
     public static final String FIELD_RB_HANDLE = "psFieldRB";
     public static final String FIELD_BOOK_HANDLE = "B_Book";		// MPS - field setpoint about which warnings and alarms are specified
     
+    public final AccessibleProperty fieldSet = new AccessibleProperty("fieldSet", FIELD_RB_HANDLE, FIELD_SET_HANDLE);
+    public final AccessibleProperty bBook = new AccessibleProperty("B_Book", FIELD_BOOK_HANDLE);
+    public final AccessibleProperty cycleEnable = new AccessibleProperty("cycleEnable", CYCLE_ENABLE_HANDLE);
+
     
     /** Creates a new instance of MainSupply */
     public MagnetMainSupply( final Accelerator anAccelerator ) {

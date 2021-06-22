@@ -28,59 +28,49 @@ public class BPM extends AcceleratorNode {
     protected BPMBucket       bpmBucket;
 
     // BPM channel handles
-    /**
-     * BPMs official xAvg channel handle
-     */
-    @ChannelHandle
+    // BPMs official xAvg channel handle
     public static final String X_AVG_HANDLE = "xAvg";
+    public final AccessibleProperty xAvg = new AccessibleProperty("xAvg", X_AVG_HANDLE);
     private Channel xAvgC = null;
-    /**
-     * BPMs official yAvg channel handle
-     */
-    @ChannelHandle
+
+    // BPMs official yAvg channel handle
     public static final String Y_AVG_HANDLE = "yAvg";
+    public final AccessibleProperty yAvg = new AccessibleProperty("yAvg", Y_AVG_HANDLE);
     private Channel yAvgC = null;
-    /**
-     * BPMs official ampAvg channel handle
-     */
-    @ChannelHandle
+
+    // BPMs official ampAvg channel handle
     public static final String AMP_AVG_HANDLE = "amplitudeAvg";
+    public final AccessibleProperty amplitudeAvg = new AccessibleProperty("amplitudeAvg", AMP_AVG_HANDLE);
     private Channel ampAvgC = null;
-    /**
-     * BPMs official phaseAvg channel handle
-     */
-    @ChannelHandle
+
+    // BPMs official phaseAvg channel handle
     public static final String PHASE_AVG_HANDLE = "phaseAvg";
+    public final AccessibleProperty phaseAvg = new AccessibleProperty("phaseAvg", PHASE_AVG_HANDLE);
     private Channel phaseAvgC = null;
-    /**
-     * BPMs official x turn-by-turn channel handle
-     */
-    @ChannelHandle
+
+    // BPMs official x turn-by-turn channel handle
     public static final String X_TBT_HANDLE = "xTBT";
+    public final AccessibleProperty xTBT = new AccessibleProperty("xTBT", X_TBT_HANDLE);
     private Channel xTBTC = null;
-    /**
-     * BPMs official y turn-by-turn channel handle
-     */
-    @ChannelHandle
+
+    // BPMs official y turn-by-turn channel handle
     public static final String Y_TBT_HANDLE = "yTBT";
+    public final AccessibleProperty yTBT = new AccessibleProperty("yTBT", Y_TBT_HANDLE);
     private Channel yTBTC = null;
-    /**
-     * BPMs official amplitude turn-by-turn channel handle
-     */
-    @ChannelHandle
+
+    // BPMs official amplitude turn-by-turn channel handle
     public static final String AMP_TBT_HANDLE = "ampTBT";
+    public final AccessibleProperty ampTBT = new AccessibleProperty("ampTBT", AMP_TBT_HANDLE);
     private Channel ampTBTC = null;
-    /**
-     * BPMs official phase turn-by-turn channel handle
-     */
-    @ChannelHandle
+    
+    // BPMs official phase turn-by-turn channel handle
     public static final String PHASE_TBT_HANDLE = "phaseTBT";
+    public final AccessibleProperty phaseTBT = new AccessibleProperty("phaseTBT", PHASE_TBT_HANDLE);
     private Channel phaseTBTC = null;
-    /**
-     * BPM official tAvgLen channel handle
-     */
-    @ChannelHandle
+    
+    // BPM official tAvgLen channel handle
     public static final String T_AVG_LEN_HANDLE = "tAvgLen";
+    public final AccessibleProperty tAvgLen = new AccessibleProperty("tAvgLen", T_AVG_LEN_HANDLE);
     private Channel tAvgLenC = null;
 
     static {
@@ -113,13 +103,13 @@ public class BPM extends AcceleratorNode {
     }
 
     /** return the BPM Bucket */
-    public BPMBucket  getBPMBucket()   { return bpmBucket; };
+    public BPMBucket  getBPMBucket()   { return bpmBucket; }
 
     /**
      * Set the attribute bucket containing the bpm info
      */
     public void setBPMBucket(BPMBucket buc)
-        { bpmBucket = buc; super.addBucket(buc); };
+        { bpmBucket = buc; super.addBucket(buc); }
 
     /**
      *
@@ -130,30 +120,7 @@ public class BPM extends AcceleratorNode {
         if (buc.getClass().equals(BPMBucket.class))
               setBPMBucket((BPMBucket) buc);
         super.addBucket(buc);
-    };
-
-    /** the measured horizontal (x) position array,  minipulse by minipulse  (m) */
-    public double [] xTBT;
-
-    /** the measured vertical (y) position array,  minipulse by minipulse  (m) */
-    public double [] yTBT;
-
-    /** the measured amplitude array, minipulse by minipulse (au) */
-    public double [] ampTBT;
-
-    /** the measured phase array,  minipulse by minipulse  (deg) */
-    public double [] phaseTBT;
-
-    /*
-    /** the measured horizontal (x) position array,  raw values  (m)
-    public double [] xRaw;
-
-    /** the measured vertical (y) position array,  raw values  (m)
-    public double [] yRaw;
-
-    /** the measured phase array,  raw values (deg)
-    public double [] phaseRaw;
-    */
+    }
 
     /*
      *  Process variable Gets

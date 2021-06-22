@@ -7,14 +7,11 @@
 package xal.smf.impl;
 
 import xal.smf.*;
-import xal.smf.attr.*;
 import xal.smf.impl.qualify.*;
 import xal.ca.*;
 import xal.tools.data.*;
 
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 
 /**
@@ -23,18 +20,17 @@ import java.util.stream.Stream;
  * @author  tap
  */
 abstract public class Electromagnet extends Magnet {
-	/** accessible properties */
-	public enum Property { FIELD }
-
     /** the node type */
     public static final String      s_strType   = "emag";
 	
-    /** field readback handle */
-    @ChannelHandle
+    // field readback handle
     public static final String FIELD_RB_HANDLE = "fieldRB";
     
-	/** indicates whether to use the actual field readback or the field setting in the getField() method */
-	protected boolean _useFieldReadback;
+    public final AccessibleProperty field = new AccessibleProperty("field", FIELD_RB_HANDLE, MagnetMainSupply.FIELD_SET_HANDLE , () -> getDesignField(), (channelValues) -> toFieldFromCA(channelValues[0]));
+    
+    // indicates whether to use the actual field readback or the field setting in the getField() method
+    // by default use the field readback
+    protected boolean _useFieldReadback = true;
     
     /** the ID of this magnet's main power supply */
     protected String mainSupplyId;
@@ -54,7 +50,6 @@ abstract public class Electromagnet extends Magnet {
 	/** Primary Constructor */
 	public Electromagnet( final String strId, final ChannelFactory channelFactory )     {
 		super( strId, channelFactory );
-		_useFieldReadback = true;		// by default use the field readback
 	}
 
 
@@ -113,10 +108,15 @@ abstract public class Electromagnet extends Magnet {
 	 * Set whether or not to use the field readback in the getField() method.
 	 * @param useFieldReadback true to use the field readback and false to use the field setting.
 	 */
-	public void setUseFieldReadback( final boolean useFieldReadback ) {
-		_useFieldReadback = useFieldReadback;
-	}
-	
+        public void setUseFieldReadback(final boolean useFieldReadback) {
+            _useFieldReadback = useFieldReadback;
+            if (useFieldReadback) {
+                field.setSetHandle(MagnetMainSupply.FIELD_SET_HANDLE);
+            } else {
+                field.setSetHandle(FIELD_RB_HANDLE);
+            }
+        }
+
 	
 	/**
 	 * Determines whether the field readback is used in the getField() method.
@@ -147,6 +147,16 @@ abstract public class Electromagnet extends Magnet {
         return handles;
     }
     
+    // Overriding to not return handles from the power supply.
+    @Override
+    public Collection<String> getDefaultHandles() {
+        List<String> defaultHandles = new ArrayList<>();
+
+        defaultHandles.add(FIELD_RB_HANDLE);
+
+        return defaultHandles;
+    }
+
     /**
      * Get the readback handle corresponding to a set channel.
      *
@@ -154,20 +164,20 @@ abstract public class Electromagnet extends Magnet {
      * setHandle) {
      * @return The corresponding readback handle.
      */
-    public String getReadbackHandle(String setHandle) {
-        String readbackHandle = super.getReadbackHandle(setHandle);
-        if (readbackHandle == null) {
+    public String[] getReadbackHandles(String setHandle) {
+        String[] readbackHandles = super.getReadbackHandles(setHandle);
+        if (readbackHandles == null) {
             try {
                 final MagnetMainSupply supply = getMainSupply();
                 if (supply != null) {
-                    readbackHandle = supply.getReadbackHandle(setHandle);
+                    readbackHandles = supply.getReadbackHandles(setHandle);
                 }
             } catch (NullPointerException exception) {
                 System.err.println("exception getting ReadbackHandle from the main supply \"" + getMainSupply() + "\" for electromagnet: " + getId());
                 throw exception;
             }
         }
-        return readbackHandle;
+        return readbackHandles;
     }
 
     /**
@@ -191,29 +201,6 @@ abstract public class Electromagnet extends Magnet {
         }
         return setHandle;
     }
-
-    /**
-     * Get a map with all set and readback handle pairs.
-     *
-     * @return The map with all set/readback handle pairs. The key is the set
-     * handle and the value is the readback.
-     */
-        @Override
-    public Map<String, String> getReadbackHandleMap() {
-        Map<String, String> readbackHandles = super.getReadbackHandleMap();
-
-        try {
-            final MagnetMainSupply supply = getMainSupply();
-            if (supply != null) {
-                readbackHandles.putAll(getMainSupply().getReadbackHandleMap());
-            }
-        } catch (NullPointerException exception) {
-            System.err.println("exception getting ReadbackHandleMap from the main supply \"" + getMainSupply() + "\" for electromagnet: " + getId());
-            throw exception;
-        }
-        return readbackHandles;
-    }
-    
     
     /**
      * Find the channel for the specified handle searching the main supply if necessary.
@@ -237,81 +224,35 @@ abstract public class Electromagnet extends Magnet {
      * @return The main power supply for this magnet
      */
     public MagnetMainSupply getMainSupply() {
-        return getAccelerator().getMagnetMainSupply( mainSupplyId );
+        Accelerator accelerator = getAccelerator();
+        if (accelerator != null) {
+            return getAccelerator().getMagnetMainSupply(mainSupplyId);
+        } else {
+            return null;
+        }
     }
 
     /**
      * Set the main power supply for this magnet by id.
-     * @param mainSupplyId Id of main power supply;
+     * @param id Id of main power supply;
      */
     public void setMainSupplyId(String id) {
     	mainSupplyId = id;
     }
-
-
-    /**
-     * @return properties that can be accessed via EPICS.
-     */
+    
     @Override
-    public List<String> getAccesibleProperties() {
-        return Stream.of(Property.values())
-                .map(Property::name)
-                .collect(Collectors.toList());
+    public List<AccessibleProperty> getAccessibleProperties() {
+        List<AccessibleProperty> properties = new ArrayList<>();
+        properties.addAll(getAccessibleProperties(null, this.getClass()));
+        MagnetMainSupply supply = getMainSupply();
+        if (supply != null) {
+            properties.addAll(supply.getAccessibleProperties());
+        }
+
+        return properties;
     }
     
-	/** Get the design value for the specified property */
-	public double getDesignPropertyValue( final String propertyName ) {
-		try {
-			final Property property = Property.valueOf( propertyName );		// throws IllegalArgumentException if no matching property
-			switch( property ) {
-				case FIELD:
-					return getDesignField();
-				default:
-					throw new IllegalArgumentException( "Unsupported Electromagnet design value property: " + propertyName );
-			}
-		}
-		catch ( IllegalArgumentException exception ) {
-			return super.getDesignPropertyValue( propertyName );
-		}
-	}
-
-
-	/** Get the live property value for the corresponding array of channel values in the order given by getLivePropertyChannels() */
-	public double getLivePropertyValue( final String propertyName, final double[] channelValues ) {
-		try {
-			final Property property = Property.valueOf( propertyName );		// throws IllegalArgumentException if no matching property
-			switch( property ) {
-				case FIELD:
-					return toFieldFromCA( channelValues[0] );
-				default:
-					throw new IllegalArgumentException( "Unsupported Electromagnet live value property: " + propertyName );
-			}
-		}
-		catch( IllegalArgumentException exception ) {
-			return super.getLivePropertyValue( propertyName, channelValues );
-		}
-	}
-
-
-	/** Get the array of channels for the specified property */
-	public Channel[] getLivePropertyChannels( final String propertyName ) {
-		try {
-			final Property property = Property.valueOf( propertyName );		// throws IllegalArgumentException if no matching property
-			switch( property ) {
-				case FIELD:
-					final Channel fieldChannel = _useFieldReadback ? findChannel( FIELD_RB_HANDLE ) : findChannel( MagnetMainSupply.FIELD_SET_HANDLE );
-					return new Channel[] { fieldChannel };
-				default:
-					throw new IllegalArgumentException( "Unsupported Electromagnet live channels property: " + propertyName );
-		}
-		}
-		catch( IllegalArgumentException exception ) {
-                    return super.getLivePropertyChannels( propertyName );
-		}
-	}
-
-
-    /**
+    /** 
      * Set the cycle enable state of the magnet.  If enabled, the magnet will 
      * be cycled when the field is set.
      * @param enable True to enable cycling; false to disable cycling.

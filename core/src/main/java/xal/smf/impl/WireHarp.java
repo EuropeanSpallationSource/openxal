@@ -13,7 +13,7 @@ import xal.ca.ChannelFactory;
 import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.ca.PutException;
-import xal.smf.ChannelHandle;
+import xal.smf.AccessibleProperty;
 import xal.tools.data.DataAdaptor;
 import xal.smf.NoSuchChannelException;
 import xal.smf.impl.profile.ASignal;
@@ -86,12 +86,12 @@ public class WireHarp extends ProfileDevice {
 
 
         /** Command-issuing handle */
-        @ChannelHandle
         public static final String HANDLE_CMD = "Command"; //$NON-NLS-1$
+        public final AccessibleProperty cmd = new AccessibleProperty("command", HANDLE_CMD);
 
         /** command result handle */
-        @ChannelHandle
         public static final String HANDLE_RESULT = "CommandResult"; //$NON-NLS-1$
+        public final AccessibleProperty cmdResult = new AccessibleProperty("commandResult", HANDLE_RESULT);
 
 
         /**
